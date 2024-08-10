@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="chart" model="account.chart.template">
+        <field name="property_account_receivable_id" ref="a_1120000000" />
+        <field name="property_account_payable_id" ref="a_2110000000" />
+        <field name="property_account_expense_categ_id" ref="a_5000000000" />
+        <field name="property_account_income_categ_id" ref="a_4000000000" />
+    </record>
+</odoo>

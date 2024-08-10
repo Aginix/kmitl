@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+<!-- CHART OF Template -->
+
+<record id="chart" model="account.chart.template">
+    <field name="name">KMITL - Chart of Accounts</field>
+    <field name="cash_account_code_prefix">1111</field>
+    <field name="bank_account_code_prefix">1112</field>
+    <field name="transfer_account_code_prefix">16</field>
+    <field name="code_digits">10</field>
+    <field name="currency_id" ref="base.THB" />
+    <field name="country_id" ref="base.th" />
+</record>
+</odoo>
