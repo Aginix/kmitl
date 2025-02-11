@@ -5,7 +5,7 @@ fund_0300,0300,กองทุนวิจัย,analytic_plan_funds,
 fund_0400,0400,กองทุนบริการวิชาการ,analytic_plan_funds,
 fund_0500,0500,กองทุนกิจการนักศึกษา,analytic_plan_funds,
 fund_0600,0600,กองทุนสินทรัพย์ถาวร,analytic_plan_funds,
-fund_0700,0700,กองทุนอื่นๆ,analytic_plan_funds,
+fund_0700,0700,กองทุนอื่น,analytic_plan_funds,
 fund_0701,0701,กองทุนทำนุบำรุงศิลปวัฒนธรรม,analytic_plan_funds,fund_0700
 fund_0702,0702,กองทุนสำรอง,analytic_plan_funds,fund_0700
 fund_0703,0703,กองทุนพัฒนาบุคลากร,analytic_plan_funds,fund_0700
@@ -23,11 +23,11 @@ fund_0705,0705,กองทุนยุทธศาสตร์,analytic_plan_fu
 "activity_09007010110220","220",กิจกรรมย่อย งานด้านวิเทศสัมพันธ์,analytic_plan_activities,activity_09007010110
 "activity_09007010110230","230",กิจกรรมย่อย งานด้านโรงพิมพ์ สารนิเทศและประชาสัมพันธ์,analytic_plan_activities,activity_09007010110
 "activity_09007010111","11",กิจกรรมรอง กิจกรรมทะเบียนนักศึกษาและประมวลผล,analytic_plan_activities,activity_090070101
-"activity_09007010111114","114",กิจกรรมย่อย งานด้านรับเข้านักศึกษาและทะเบียนประวัติ,analytic_plan_activities,activity_090070101111
-"activity_09007010111115","115",กิจกรรมย่อย งานด้านทะเบียนการศึกษา,analytic_plan_activities,activity_090070101111
-"activity_09007010111116","116",กิจกรรมย่อย งานด้านบริหารการเรียนการสอน,analytic_plan_activities,activity_090070101111
-"activity_09007010111117","117",กิจกรรมย่อย งานด้านประมวลผลการศึกษา,analytic_plan_activities,activity_090070101111
-"activity_09007010111118","118",กิจกรรมย่อย งานด้านตรวจสอบและรับรองผลการศึกษา,analytic_plan_activities,activity_090070101111
+"activity_09007010111114","114",กิจกรรมย่อย งานด้านรับเข้านักศึกษาและทะเบียนประวัติ,analytic_plan_activities,activity_09007010111
+"activity_09007010111115","115",กิจกรรมย่อย งานด้านทะเบียนการศึกษา,analytic_plan_activities,activity_09007010111
+"activity_09007010111116","116",กิจกรรมย่อย งานด้านบริหารการเรียนการสอน,analytic_plan_activities,activity_09007010111
+"activity_09007010111117","117",กิจกรรมย่อย งานด้านประมวลผลการศึกษา,analytic_plan_activities,activity_09007010111
+"activity_09007010111118","118",กิจกรรมย่อย งานด้านตรวจสอบและรับรองผลการศึกษา,analytic_plan_activities,activity_09007010111
 "activity_09007010112","12",กิจกรรมรอง กิจกรรมบริการห้องสมุดและเทคโนโลยีทางการศึกษา,analytic_plan_activities,activity_090070101
 "activity_09007010112123","123",กิจกรรมย่อย งานด้านเทคนิค,analytic_plan_activities,activity_09007010112
 "activity_09007010112124","124",กิจกรรมย่อย งานด้านบริการสารนิเทศ,analytic_plan_activities,activity_09007010112
@@ -159,14 +159,14 @@ fund_0705,0705,กองทุนยุทธศาสตร์,analytic_plan_fu
 "activity_06004040142","42",กิจกรรมรอง วิจัยและพัฒนา และถ่ายทอดเทคโนโลยี,analytic_plan_activities,activity_060040401
 "activity_06004040143","43",กิจกรรมรอง การวิจัยเพื่อดําเนินการตามนโยบายรัฐบาล (แผนงานบูรณาการวิจัยและนวัตกรรม),analytic_plan_activities,activity_060040401
 "activity_06005","005",แผนงานบูรณาการ,analytic_plan_activities,activity_06
-"activity_060050501","0501",กิจกรรมหลัก งานส่งเสริม และพัฒนาเทคโนโลยี นวัตกรรม,analytic_plan_activities,activity_06006
+"activity_060050501","0501",กิจกรรมหลัก งานส่งเสริม และพัฒนาเทคโนโลยี นวัตกรรม,analytic_plan_activities,activity_06005
 "activity_06005050150","50",กิจกรรมรอง พัฒนาอุตสาหกรรมศักยภาพ,analytic_plan_activities,activity_060050501
 "activity_06005050151","51",กิจกรรมรอง สร้างรายได้จากการท่องเที่ยวและบริการ,analytic_plan_activities,activity_060050501
 "activity_06005050152","52",กิจกรรมรอง พัฒนาศักยภาพการผลิตภาคเกษตร,analytic_plan_activities,activity_060050501
 "activity_06005050153","53",กิจกรรมรอง พัฒนาศักยภาพคนตามช่วงวัย,analytic_plan_activities,activity_060050501
 "activity_06005050154","54",กิจกรรมรอง ยกระดับคุณภาพการศึกษาและการเรียนรู้ตลอดชีวิต,analytic_plan_activities,activity_060050501
 "activity_06005050155","55",กิจกรรมรอง เสริมสร้างความเข้มแข็งและยั่งยืนให้กับเศรษฐกิจภายในประเทศ,analytic_plan_activities,activity_060050501
-"activity_060050502","0502",กิจกรรมหลัก งานพัฒนาพื้นที่ระเบียงเศรษฐกิจภาคตะวันออก,analytic_plan_activities,activity_06006
+"activity_060050502","0502",กิจกรรมหลัก งานพัฒนาพื้นที่ระเบียงเศรษฐกิจภาคตะวันออก,analytic_plan_activities,activity_06005
 "activity_06005050256","56",กิจกรรมรอง พัฒนาพื้นที่ระเบียงเศรษฐกิจภาคตะวันออก,analytic_plan_activities,activity_060050502
-"activity_060050503","0503",กิจกรรมหลัก งานพัฒนาคุณภาพชีวิต สร้างความสมดุลทางเศรษฐกิจ,analytic_plan_activities,activity_06006
+"activity_060050503","0503",กิจกรรมหลัก งานพัฒนาคุณภาพชีวิต สร้างความสมดุลทางเศรษฐกิจ,analytic_plan_activities,activity_06005
 "activity_06005050357","57",กิจกรรมรอง พัฒนาคุณภาพชีวิต สร้างความสมดุลทางเศรษฐกิจ,analytic_plan_activities,activity_060050503
