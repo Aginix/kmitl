@@ -1,0 +1,4 @@
+id,color,default_applicability,name
+analytic_plan_activities,1,Mandatory,"Activity (ด้าน/แผนงาน/กิจกรรม)"
+analytic_plan_departments,11,Mandatory,"Departments (หน่วยงาน)"
+analytic_plan_funds,3,Mandatory,"Fund (กองทุน)"
