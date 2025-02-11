@@ -170,3 +170,9 @@ fund_0705,0705,กองทุนยุทธศาสตร์,analytic_plan_fu
 "activity_06005050256","56",กิจกรรมรอง พัฒนาพื้นที่ระเบียงเศรษฐกิจภาคตะวันออก,analytic_plan_activities,activity_060050502
 "activity_060050503","0503",กิจกรรมหลัก งานพัฒนาคุณภาพชีวิต สร้างความสมดุลทางเศรษฐกิจ,analytic_plan_activities,activity_06005
 "activity_06005050357","57",กิจกรรมรอง พัฒนาคุณภาพชีวิต สร้างความสมดุลทางเศรษฐกิจ,analytic_plan_activities,activity_060050503
+source_1,"1",งบประมาณแผ่นดิน,analytic_plan_sources,
+source_2,"2",งบประมาณเงินรายได้,analytic_plan_sources,
+source_3,"3",งบกลาง (งบประมาณแผ่นดิน),analytic_plan_sources,
+source_4,"4",เงินสะสม (งบประมาณเงินรายได้),analytic_plan_sources,
+source_5,"5",เงินกันเหลื่อมปี (งบประมาณแผ่นดิน),analytic_plan_sources,
+source_6,"6",เงินกันเหลื่อมปี (งบประมาณเงินรายได้),analytic_plan_sources,
