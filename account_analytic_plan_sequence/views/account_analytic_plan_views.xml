@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- View account.analytic.plan form -->
+    <record id="view_account_analytic_plan_sequence_form_inherit" model="ir.ui.view">
+        <field name="name">view.account.analytic.plan.sequence.form.inherit.form</field>
+        <field name="model">account.analytic.plan</field>
+        <field name="inherit_id" ref="analytic.account_analytic_plan_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='color']" position="after">
+                <field name="sequence" />
+            </xpath>
+        </field>
+    </record>
+
+  </odoo>

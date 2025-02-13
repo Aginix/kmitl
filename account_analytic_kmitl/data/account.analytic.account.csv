@@ -1,179 +1,179 @@
-id,code,name,plan_id/id,parent_id/id
-fund_0100,0100,กองทุนทั่วไป,analytic_plan_funds,
-fund_0200,0200,กองทุนเพื่อการศึกษา,analytic_plan_funds,
-fund_0300,0300,กองทุนวิจัย,analytic_plan_funds,
-fund_0400,0400,กองทุนบริการวิชาการ,analytic_plan_funds,
-fund_0500,0500,กองทุนกิจการนักศึกษา,analytic_plan_funds,
-fund_0600,0600,กองทุนสินทรัพย์ถาวร,analytic_plan_funds,
-fund_0700,0700,กองทุนอื่น,analytic_plan_funds,
-fund_0701,0701,กองทุนทำนุบำรุงศิลปวัฒนธรรม,analytic_plan_funds,fund_0700
-fund_0702,0702,กองทุนสำรอง,analytic_plan_funds,fund_0700
-fund_0703,0703,กองทุนพัฒนาบุคลากร,analytic_plan_funds,fund_0700
-fund_0704,0704,กองทุนบูรณาการ,analytic_plan_funds,fund_0700
-fund_0705,0705,กองทุนยุทธศาสตร์,analytic_plan_funds,fund_0700
-"activity_09","09",ด้านการพัฒนาประชากร,analytic_plan_activities,
-"activity_09007","007",แผนงานจัดการศึกษาอุดมศึกษา,analytic_plan_activities,activity_09
-"activity_090070101","0101",กิจกรรมหลัก งานสนับสนุนการจัดการศึกษา,analytic_plan_activities,activity_09007
-"activity_09007010110","10",กิจกรรมรอง กิจกรรมบริหารทั่วไป,analytic_plan_activities,activity_090070101
-"activity_09007010110170","170",กิจกรรมย่อย งานด้านบริหารทั่วไป (รวมบริหารจัดการกลาง),analytic_plan_activities,activity_09007010110
-"activity_09007010110180","180",กิจกรรมย่อย งานด้านทรัพยากรบุคคลและนิติการ,analytic_plan_activities,activity_09007010110
-"activity_09007010110190","190",กิจกรรมย่อย งานด้านอาคารสถานที่ บํารุงรักษาและยานพาหนะ ระบบสาธารณูปโภค,analytic_plan_activities,activity_09007010110
-"activity_09007010110200","200",กิจกรรมย่อย งานด้านนโยบาย แผนพัฒนา แผนงบประมาณ วิจัยสถาบันและการประกันคุณภาพการศึกษา,analytic_plan_activities,activity_09007010110
-"activity_09007010110210","210",กิจกรรมย่อย งานด้านการเงิน บัญชี งบประมาณ และพัสดุ,analytic_plan_activities,activity_09007010110
-"activity_09007010110220","220",กิจกรรมย่อย งานด้านวิเทศสัมพันธ์,analytic_plan_activities,activity_09007010110
-"activity_09007010110230","230",กิจกรรมย่อย งานด้านโรงพิมพ์ สารนิเทศและประชาสัมพันธ์,analytic_plan_activities,activity_09007010110
-"activity_09007010111","11",กิจกรรมรอง กิจกรรมทะเบียนนักศึกษาและประมวลผล,analytic_plan_activities,activity_090070101
-"activity_09007010111114","114",กิจกรรมย่อย งานด้านรับเข้านักศึกษาและทะเบียนประวัติ,analytic_plan_activities,activity_09007010111
-"activity_09007010111115","115",กิจกรรมย่อย งานด้านทะเบียนการศึกษา,analytic_plan_activities,activity_09007010111
-"activity_09007010111116","116",กิจกรรมย่อย งานด้านบริหารการเรียนการสอน,analytic_plan_activities,activity_09007010111
-"activity_09007010111117","117",กิจกรรมย่อย งานด้านประมวลผลการศึกษา,analytic_plan_activities,activity_09007010111
-"activity_09007010111118","118",กิจกรรมย่อย งานด้านตรวจสอบและรับรองผลการศึกษา,analytic_plan_activities,activity_09007010111
-"activity_09007010112","12",กิจกรรมรอง กิจกรรมบริการห้องสมุดและเทคโนโลยีทางการศึกษา,analytic_plan_activities,activity_090070101
-"activity_09007010112123","123",กิจกรรมย่อย งานด้านเทคนิค,analytic_plan_activities,activity_09007010112
-"activity_09007010112124","124",กิจกรรมย่อย งานด้านบริการสารนิเทศ,analytic_plan_activities,activity_09007010112
-"activity_09007010112125","125",กิจกรรมย่อย งานเทคโนโลยีสารสนเทศ,analytic_plan_activities,activity_09007010112
-"activity_09007010113","13",กิจกรรมรอง กิจกรรมบริการคอมพิวเตอร์ทางวิชาการ,analytic_plan_activities,activity_090070101
-"activity_09007010113133","133",กิจกรรมย่อย งานด้านควบคุมเครื่องและระบบเครือข่าย,analytic_plan_activities,activity_09007010113
-"activity_09007010113134","134",กิจกรรมย่อย งานด้านบริการคอมพิวเตอร์,analytic_plan_activities,activity_09007010113
-"activity_09007010114","14",กิจกรรมรอง กิจกรรมบริหารวิชาการ (รวมงานบริการทุนการศึกษา),analytic_plan_activities,activity_090070101
-"activity_09007010114142","142",กิจกรรมย่อย งานวิชาการและมาตรฐานการศึกษา,analytic_plan_activities,activity_09007010114
-"activity_09007010114143","143",กิจกรรมย่อย งานบริหารจัดการศึกษาทั่วไป,analytic_plan_activities,activity_09007010114
-"activity_09007010114144","144",กิจกรรมย่อย งานส่งเสริมและพัฒนาการศึกษา,analytic_plan_activities,activity_09007010114
-"activity_09007010114145","145",กิจกรรมย่อย งานบริการทุนการศึกษา (ระดับปริญญาตรี โท-เอก),analytic_plan_activities,activity_09007010114
-"activity_09007010115","15",กิจกรรมรอง กิจกรรมพัฒนาคุณภาพนักศึกษา,analytic_plan_activities,activity_090070101
-"activity_09007010115151","151",กิจกรรมย่อย งานด้านกิจกรรมนักศึกษา,analytic_plan_activities,activity_09007010115
-"activity_09007010115152","152",กิจกรรมย่อย งานด้านบริการนักศึกษา,analytic_plan_activities,activity_09007010115
-"activity_09007010116","16",กิจกรรมรอง กิจกรรมพัฒนาบุคลากรทางวิชาการ,analytic_plan_activities,activity_090070101
-"activity_09007010116161","161",กิจกรรมย่อย การฝึกอบรม/สัมมนา/ศึกษาดูงาน,analytic_plan_activities,activity_09007010116
-"activity_09007010116162","162",กิจกรรมย่อย การศึกษาต่อ,analytic_plan_activities,activity_09007010116
-"activity_09007010116163","163",กิจกรรมย่อย การส่งเสริม/สนับสนุนการพัฒนาวิชาการ,analytic_plan_activities,activity_09007010116
-"activity_09007010117","17",กิจกรรมรอง กิจกรรมผลิตและพัฒนาสื่อการศึกษา,analytic_plan_activities,activity_090070101
-"activity_09007010117171","171",กิจกรรมย่อย อุปกรณ์การสอน และพัฒนาต้นแบบชุดสื่อการสอน,analytic_plan_activities,activity_09007010117
-"activity_09007010117172","172",กิจกรรมย่อย บริการเครื่องมือเทคโนโลยีทางการศึกษา(รวมบริการด้านโสตทัศนศึกษา),analytic_plan_activities,activity_09007010117
-"activity_09007010118","18",กิจกรรมรอง กิจกรรมพัฒนาหลักสูตรและการเรียนการสอน,analytic_plan_activities,activity_090070101
-"activity_09007010118181","181",กิจกรรมย่อย การปรับปรุงและพัฒนาหลักสูตร,analytic_plan_activities,activity_09007010118
-"activity_09007010118182","182",กิจกรรมย่อย การประเมินผลโครงสร้างหลักสูตร,analytic_plan_activities,activity_09007010118
-"activity_09007010118183","183",กิจกรรมย่อย การบริหารและสนับสนุนวิชาการ,analytic_plan_activities,activity_09007010118
-"activity_09007010119","19",กิจกรรมรอง กิจกรรมส่งเสริมการผลิตตํารา,analytic_plan_activities,activity_090070101
-"activity_09007010119191","191",กิจกรรมย่อย ผลิตและพัฒนาตําราในสาขาวิชาต่าง ๆ,analytic_plan_activities,activity_09007010119
-"activity_090070102","0102",กิจกรรมหลัก งานจัดการศึกษาด้านวิทยาศาสตร์และเทคโนโลยี,analytic_plan_activities,activity_09007
-"activity_09007010220","20",กิจกรรมรอง กิจกรรมสาขาครุศาสตร์อุตสาหกรรม,analytic_plan_activities,activity_090070102
-"activity_09007010220211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010220
-"activity_09007010220212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010220
-"activity_09007010220213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010220
-"activity_09007010221","21",กิจกรรมรอง กิจกรรมสาขาวิทยาศาสตร์,analytic_plan_activities,activity_090070102
-"activity_09007010221211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010221
-"activity_09007010221212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010221
-"activity_09007010221213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010221
-"activity_09007010222","22",กิจกรรมรอง กิจกรรมสาขาวิศวกรรมศาสตร์,analytic_plan_activities,activity_090070102
-"activity_09007010222211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010222
-"activity_09007010222212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010222
-"activity_09007010222213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010222
-"activity_09007010223","23",กิจกรรมรอง กิจกรรมสาขาสถาปัตยกรรมศาสตร์,analytic_plan_activities,activity_090070102
-"activity_09007010223211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010223
-"activity_09007010223212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010223
-"activity_09007010223213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010223
-"activity_09007010224","24",กิจกรรมรอง กิจกรรมสาขาเทคโนโลยีการเกษตร,analytic_plan_activities,activity_090070102
-"activity_09007010224211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010224
-"activity_09007010224212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010224
-"activity_09007010224213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010224
-"activity_09007010225","25",กิจกรรมรอง กิจกรรมสาขาเทคโนโลยีสารสนเทศ,analytic_plan_activities,activity_090070102
-"activity_09007010225211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010225
-"activity_09007010225212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010225
-"activity_09007010225213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010225
-"activity_09007010226","26",กิจกรรมรอง กิจกรรมสาขาวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_090070102
-"activity_09007010226211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010226
-"activity_09007010226212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010226
-"activity_09007010226213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010226
-"activity_09007010227","27",กิจกรรมรอง กิจกรรมสาขาอุตสาหกรรมเกษตร,analytic_plan_activities,activity_090070102
-"activity_09007010227211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010227
-"activity_09007010227212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010227
-"activity_09007010227213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010227
-"activity_09007010228","28",กิจกรรมรอง กิจกรรมสาขาวิชาพื้นฐานทั่วไป,analytic_plan_activities,activity_090070102
-"activity_09007010228211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010228
-"activity_09007010228212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010228
-"activity_09007010228213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010228
-"activity_09007010229","29",กิจกรรมรอง กิจกรรมสาขาบริหารและการจัดการ,analytic_plan_activities,activity_090070102
-"activity_09007010229211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010229
-"activity_09007010229212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010229
-"activity_09007010229213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010229
-"activity_09007010230","30",กิจกรรมรอง กิจกรรมสาขาวิทยาศาสตร์สุขภาพ,analytic_plan_activities,activity_090070102
-"activity_09007010230211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010230
-"activity_09007010230212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010230
-"activity_09007010230213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010230
-"activity_09007010231","31",กิจกรรมรอง กิจกรรมสาขานวัตกรรมทางการศึกษา,analytic_plan_activities,activity_090070102
-"activity_09007010231211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010231
-"activity_09007010231212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010231
-"activity_09007010231213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010231
-"activity_09007010232","32",กิจกรรมรอง กิจกรรมอุตสาหกรรมการบิน,analytic_plan_activities,activity_090070102
-"activity_09007010232211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010232
-"activity_09007010232212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010232
-"activity_09007010232213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010232
-"activity_09007010233","33",กิจกรรมรอง กิจกรรมสาขาศิลปศาสตร์,analytic_plan_activities,activity_090070102
-"activity_09007010233211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010233
-"activity_09007010233212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010233
-"activity_09007010233213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010233
-"activity_09007010234","34",กิจกรรมรอง กิจกรรมสาขาพยาบาลศาสตร์,analytic_plan_activities,activity_090070102
-"activity_09007010234211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010234
-"activity_09007010234212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010234
-"activity_09007010234213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010234
-"activity_09010","010",แผนงานบริการวิชาการแก่สังคม,analytic_plan_activities,activity_09
-"activity_090100201","0201",กิจกรรมหลัก งานบริการวิชาการแก่ชุมชน,analytic_plan_activities,activity_09010
-"activity_09010020151","51",กิจกรรมรอง จัดฝึกอบรมทางวิชาการ,analytic_plan_activities,activity_090100201
-"activity_09010020152","52",กิจกรรมรอง จัดทําวารสารทางวิชาการ,analytic_plan_activities,activity_090100201
-"activity_09010020153","53",กิจกรรมรอง จัดแสดงนิทรรศการ,analytic_plan_activities,activity_090100201
-"activity_09010020154","54",กิจกรรมรอง บริการวิชาการรูปแบบต่าง ๆ,analytic_plan_activities,activity_090100201
-"activity_09011","011",แผนงานศาสนา ศิลปะ และวัฒนธรรม,analytic_plan_activities,activity_09
-"activity_090110301","0301",กิจกรรมหลัก งานทํานุบํารุงศิลปวัฒนธรรม,analytic_plan_activities,activity_09011
-"activity_09011030130","30",กิจกรรมรอง การจัดฝึกอบรม/การจัดนิทรรศการ,analytic_plan_activities,activity_090110301
-"activity_09011030131","31",กิจกรรมรอง การเผยแพร่ประชาสัมพันธ์,analytic_plan_activities,activity_090110301
-"activity_09011030132","32",กิจกรรมรอง การดําเนินงานอื่นๆ (ด้านศิลปวัฒนธรรม),analytic_plan_activities,activity_090110301
-"activity_09006","006",แผนงานยุทธศาสตร์,analytic_plan_activities,activity_09
-"activity_090060601","0601",กิจกรรมหลัก งานพัฒนาและผลิตกําลังคนของประเทศ เพื่อรองรับนโยบาย Thailand 4.0,analytic_plan_activities,activity_09006
-"activity_09006060160","60",กิจกรรมรอง พัฒนารูปแบบข้อสอบวัดระดับมาตราฐานภาษาอังกฤษสําหรับบุคลากรในภาคอุตสาหกรรม S – Curve,analytic_plan_activities,activity_090060601
-"activity_09006060161","61",กิจกรรมรอง ยกระดับแรงงานไทยในภาคอุตสาหกรรมให้มีศักยภาพเพิ่มขึ้น เพื่อเพิ่มขีดความสามารถในการแข่งขันของประเทศ,analytic_plan_activities,activity_090060601
-"activity_09006060162","62",กิจกรรมรอง กําลังคนต้นแบบด้านวิทยาศาสตร์และเทคโนโลยี เพื่อตอบสนองความต้องการภาคอุตสาหกรรมตามนโยบายรัฐบาล (KNAST),analytic_plan_activities,activity_090060601
-"activity_09006060163","63",กิจกรรมรอง ผลิตและพัฒนากําลังคนระดับอาชีวศึกษาและอุดมศึกษาตามความต้องการของประเทศ (ปริญญาตรีต่อเนื่อง),analytic_plan_activities,activity_090060601
-"activity_09006060164","64",กิจกรรมรอง พัฒนาทรัพยากรบุคคลตามโครงการยกระดับคุณภาพหลักสูตรตามนโยบายกระทรวงศึกษาธิการ สําหรับสาขาอุตสาหกรรมเป้าหมายเร่งด่วนของประเทศ(อาชีวะพรีเมี่ยม),analytic_plan_activities,activity_090060601
-"activity_090060602","0602",กิจกรรมหลัก งานสร้างกําลังคนที่มีสมรรถนะสูง สําหรับอุตสาหกรรม New Growth Engine ตามนโยบาย Thailand 4.0,analytic_plan_activities,activity_09006
-"activity_09006060265","65",กิจกรรมรอง สร้างกําลังคนที่มีสมรรถนะสูง สําหรับอุตสาหกรรมNew Growth Engine ตามนโยบาย Thailand 4.0 (บัณฑิตพันธ์ใหม่),analytic_plan_activities,activity_090060602
-"activity_090060603","0603",กิจกรรมหลัก งานพัฒนากําลังคนด้านวิศวกรรมศาสตร์เทคโนโลยีและนวัตกรรม,analytic_plan_activities,activity_09006
-"activity_09006060366","66",กิจกรรมรอง พัฒนาผู้มีความสามารถพิเศษด้านวิทยาศาสตร์และคณิตศาสตร์ (โคเซ็น),analytic_plan_activities,activity_090060603
-"activity_090060604","0604",กิจกรรมหลัก งานวิจัยและพัฒนานวัตกรรม,analytic_plan_activities,activity_09006
-"activity_09006060467","67",กิจกรรมรอง สถานีอัดประจุยานพาหนะไฟฟ้าแบบเคลื่อนย้ายได้โดยใช้พลังงานแสงอาทิตย์,analytic_plan_activities,activity_090060604
-"activity_09006060468","68",กิจกรรมรอง ความเป็นเลิศด้านวิจัยและพัฒนาเทคโนโลยีและนวัตกรรมจากวัสดุอนุพันธ์กราฟี นขั้นแนวหน้าสําหรับอุตสาหกรรมสมัยใหม่,analytic_plan_activities,activity_090060604
-"activity_09006060469","69",กิจกรรมรอง เพิ่มผลผลิตข้าวโพดเลี้ยงสัตว์และมูลค่าวัสดุเหลือใช้ทางการเกษตรในอุตสาหกรรมอาหารสัตว์,analytic_plan_activities,activity_090060604
-"activity_09006060470","70",กิจกรรมรอง การใช้ประโยชน์ของวัตถุดิบพื้นถิ่นอย่างคุ้มค่าและต่อยอดพัฒนาเศรษฐกิจฐานรากของชุมชน,analytic_plan_activities,activity_090060604
-"activity_090060605","0605",กิจกรรมหลัก งานพัฒนาทักษะกําลังคนของประเทศ,analytic_plan_activities,activity_09006
-"activity_09006060571","71",กิจกรรมรอง เรียนรู้ตลอดชีวิตและพัฒนาทักษะเพื่ออนาคต (Upskill/Reskill),analytic_plan_activities,activity_090060605
-"activity_09006060572","72",กิจกรรมรอง ยุวชนอาสา,analytic_plan_activities,activity_090060605
-"activity_090060606","0606",กิจกรรมหลัก งาน 1 อําเภอ 1 แปลงเกษตรอัจฉริยะ,analytic_plan_activities,activity_09006
-"activity_09006060673","73",กิจกรรมรอง ส่งเสริมและพัฒนาต้นแบบเกษตรอัจฉริยะ,analytic_plan_activities,activity_090060606
-"activity_090060607","0607",กิจกรรมหลัก งานพัฒนาความเป็นเลิศของสถาบันอุดมศึกษาและพัฒนากําลังคนขั้นสูง,analytic_plan_activities,activity_09006
-"activity_09006060774","74",กิจกรรมรอง พัฒนาหลักสูตรรูปแบบ Entrepreneurship Educationที่เป็น Niche Area หรือ Strength ของสถาบันอุดมศึกษา,analytic_plan_activities,activity_090060607
-"activity_06","06",ด้านวิทยาศาสตร์และเทคโนโลยี,analytic_plan_activities,
-"activity_06004","004",แผนงานวิจัย,analytic_plan_activities,activity_06
-"activity_060040401","0401",กิจกรรมหลัก งานวิจัยพัฒนาและถ่ายทอดเทคโนโลยี (รวมแผนงานบูรณาการวิจัยและนวัตกรรม),analytic_plan_activities,activity_06004
-"activity_06004040140","40",กิจกรรมรอง วิจัยพื้นฐาน,analytic_plan_activities,activity_060040401
-"activity_06004040141","41",กิจกรรมรอง วิจัยประยุกต์,analytic_plan_activities,activity_060040401
-"activity_06004040142","42",กิจกรรมรอง วิจัยและพัฒนา และถ่ายทอดเทคโนโลยี,analytic_plan_activities,activity_060040401
-"activity_06004040143","43",กิจกรรมรอง การวิจัยเพื่อดําเนินการตามนโยบายรัฐบาล (แผนงานบูรณาการวิจัยและนวัตกรรม),analytic_plan_activities,activity_060040401
-"activity_06005","005",แผนงานบูรณาการ,analytic_plan_activities,activity_06
-"activity_060050501","0501",กิจกรรมหลัก งานส่งเสริม และพัฒนาเทคโนโลยี นวัตกรรม,analytic_plan_activities,activity_06005
-"activity_06005050150","50",กิจกรรมรอง พัฒนาอุตสาหกรรมศักยภาพ,analytic_plan_activities,activity_060050501
-"activity_06005050151","51",กิจกรรมรอง สร้างรายได้จากการท่องเที่ยวและบริการ,analytic_plan_activities,activity_060050501
-"activity_06005050152","52",กิจกรรมรอง พัฒนาศักยภาพการผลิตภาคเกษตร,analytic_plan_activities,activity_060050501
-"activity_06005050153","53",กิจกรรมรอง พัฒนาศักยภาพคนตามช่วงวัย,analytic_plan_activities,activity_060050501
-"activity_06005050154","54",กิจกรรมรอง ยกระดับคุณภาพการศึกษาและการเรียนรู้ตลอดชีวิต,analytic_plan_activities,activity_060050501
-"activity_06005050155","55",กิจกรรมรอง เสริมสร้างความเข้มแข็งและยั่งยืนให้กับเศรษฐกิจภายในประเทศ,analytic_plan_activities,activity_060050501
-"activity_060050502","0502",กิจกรรมหลัก งานพัฒนาพื้นที่ระเบียงเศรษฐกิจภาคตะวันออก,analytic_plan_activities,activity_06005
-"activity_06005050256","56",กิจกรรมรอง พัฒนาพื้นที่ระเบียงเศรษฐกิจภาคตะวันออก,analytic_plan_activities,activity_060050502
-"activity_060050503","0503",กิจกรรมหลัก งานพัฒนาคุณภาพชีวิต สร้างความสมดุลทางเศรษฐกิจ,analytic_plan_activities,activity_06005
-"activity_06005050357","57",กิจกรรมรอง พัฒนาคุณภาพชีวิต สร้างความสมดุลทางเศรษฐกิจ,analytic_plan_activities,activity_060050503
-source_1,"1",งบประมาณแผ่นดิน,analytic_plan_sources,
-source_2,"2",งบประมาณเงินรายได้,analytic_plan_sources,
-source_3,"3",งบกลาง (งบประมาณแผ่นดิน),analytic_plan_sources,
-source_4,"4",เงินสะสม (งบประมาณเงินรายได้),analytic_plan_sources,
-source_5,"5",เงินกันเหลื่อมปี (งบประมาณแผ่นดิน),analytic_plan_sources,
-source_6,"6",เงินกันเหลื่อมปี (งบประมาณเงินรายได้),analytic_plan_sources,
-source_7,"7",เงินกันเหลื่อมปี (เงินรายได้สะสม),analytic_plan_sources,
+id,code,name,plan_id/id,parent_id/id,sequence
+fund_0100,0100,กองทุนทั่วไป,analytic_plan_funds,1
+fund_0200,0200,กองทุนเพื่อการศึกษา,analytic_plan_funds,2
+fund_0300,0300,กองทุนวิจัย,analytic_plan_funds,3
+fund_0400,0400,กองทุนบริการวิชาการ,analytic_plan_funds,4
+fund_0500,0500,กองทุนกิจการนักศึกษา,analytic_plan_funds,5
+fund_0600,0600,กองทุนสินทรัพย์ถาวร,analytic_plan_funds,6
+fund_0700,0700,กองทุนอื่น,analytic_plan_funds,7
+fund_0701,0701,กองทุนทำนุบำรุงศิลปวัฒนธรรม,analytic_plan_funds,fund_0700,8
+fund_0702,0702,กองทุนสำรอง,analytic_plan_funds,fund_0700,9
+fund_0703,0703,กองทุนพัฒนาบุคลากร,analytic_plan_funds,fund_0700,10
+fund_0704,0704,กองทุนบูรณาการ,analytic_plan_funds,fund_0700,11
+fund_0705,0705,กองทุนยุทธศาสตร์,analytic_plan_funds,fund_0700,12
+"activity_09","09",ด้านการพัฒนาประชากร,analytic_plan_activities,,
+"activity_09007","007",แผนงานจัดการศึกษาอุดมศึกษา,analytic_plan_activities,activity_09,
+"activity_090070101","0101",กิจกรรมหลัก งานสนับสนุนการจัดการศึกษา,analytic_plan_activities,activity_09007,
+"activity_09007010110","10",กิจกรรมรอง กิจกรรมบริหารทั่วไป,analytic_plan_activities,activity_090070101,
+"activity_09007010110170","170",กิจกรรมย่อย งานด้านบริหารทั่วไป (รวมบริหารจัดการกลาง),analytic_plan_activities,activity_09007010110,
+"activity_09007010110180","180",กิจกรรมย่อย งานด้านทรัพยากรบุคคลและนิติการ,analytic_plan_activities,activity_09007010110,
+"activity_09007010110190","190",กิจกรรมย่อย งานด้านอาคารสถานที่ บํารุงรักษาและยานพาหนะ ระบบสาธารณูปโภค,analytic_plan_activities,activity_09007010110,
+"activity_09007010110200","200",กิจกรรมย่อย งานด้านนโยบาย แผนพัฒนา แผนงบประมาณ วิจัยสถาบันและการประกันคุณภาพการศึกษา,analytic_plan_activities,activity_09007010110,
+"activity_09007010110210","210",กิจกรรมย่อย งานด้านการเงิน บัญชี งบประมาณ และพัสดุ,analytic_plan_activities,activity_09007010110,
+"activity_09007010110220","220",กิจกรรมย่อย งานด้านวิเทศสัมพันธ์,analytic_plan_activities,activity_09007010110,
+"activity_09007010110230","230",กิจกรรมย่อย งานด้านโรงพิมพ์ สารนิเทศและประชาสัมพันธ์,analytic_plan_activities,activity_09007010110,
+"activity_09007010111","11",กิจกรรมรอง กิจกรรมทะเบียนนักศึกษาและประมวลผล,analytic_plan_activities,activity_090070101,
+"activity_09007010111114","114",กิจกรรมย่อย งานด้านรับเข้านักศึกษาและทะเบียนประวัติ,analytic_plan_activities,activity_09007010111,
+"activity_09007010111115","115",กิจกรรมย่อย งานด้านทะเบียนการศึกษา,analytic_plan_activities,activity_09007010111,
+"activity_09007010111116","116",กิจกรรมย่อย งานด้านบริหารการเรียนการสอน,analytic_plan_activities,activity_09007010111,
+"activity_09007010111117","117",กิจกรรมย่อย งานด้านประมวลผลการศึกษา,analytic_plan_activities,activity_09007010111,
+"activity_09007010111118","118",กิจกรรมย่อย งานด้านตรวจสอบและรับรองผลการศึกษา,analytic_plan_activities,activity_09007010111,
+"activity_09007010112","12",กิจกรรมรอง กิจกรรมบริการห้องสมุดและเทคโนโลยีทางการศึกษา,analytic_plan_activities,activity_090070101,
+"activity_09007010112123","123",กิจกรรมย่อย งานด้านเทคนิค,analytic_plan_activities,activity_09007010112,
+"activity_09007010112124","124",กิจกรรมย่อย งานด้านบริการสารนิเทศ,analytic_plan_activities,activity_09007010112,
+"activity_09007010112125","125",กิจกรรมย่อย งานเทคโนโลยีสารสนเทศ,analytic_plan_activities,activity_09007010112,
+"activity_09007010113","13",กิจกรรมรอง กิจกรรมบริการคอมพิวเตอร์ทางวิชาการ,analytic_plan_activities,activity_090070101,
+"activity_09007010113133","133",กิจกรรมย่อย งานด้านควบคุมเครื่องและระบบเครือข่าย,analytic_plan_activities,activity_09007010113,
+"activity_09007010113134","134",กิจกรรมย่อย งานด้านบริการคอมพิวเตอร์,analytic_plan_activities,activity_09007010113,
+"activity_09007010114","14",กิจกรรมรอง กิจกรรมบริหารวิชาการ (รวมงานบริการทุนการศึกษา),analytic_plan_activities,activity_090070101,
+"activity_09007010114142","142",กิจกรรมย่อย งานวิชาการและมาตรฐานการศึกษา,analytic_plan_activities,activity_09007010114,
+"activity_09007010114143","143",กิจกรรมย่อย งานบริหารจัดการศึกษาทั่วไป,analytic_plan_activities,activity_09007010114,
+"activity_09007010114144","144",กิจกรรมย่อย งานส่งเสริมและพัฒนาการศึกษา,analytic_plan_activities,activity_09007010114,
+"activity_09007010114145","145",กิจกรรมย่อย งานบริการทุนการศึกษา (ระดับปริญญาตรี โท-เอก),analytic_plan_activities,activity_09007010114,
+"activity_09007010115","15",กิจกรรมรอง กิจกรรมพัฒนาคุณภาพนักศึกษา,analytic_plan_activities,activity_090070101,
+"activity_09007010115151","151",กิจกรรมย่อย งานด้านกิจกรรมนักศึกษา,analytic_plan_activities,activity_09007010115,
+"activity_09007010115152","152",กิจกรรมย่อย งานด้านบริการนักศึกษา,analytic_plan_activities,activity_09007010115,
+"activity_09007010116","16",กิจกรรมรอง กิจกรรมพัฒนาบุคลากรทางวิชาการ,analytic_plan_activities,activity_090070101,
+"activity_09007010116161","161",กิจกรรมย่อย การฝึกอบรม/สัมมนา/ศึกษาดูงาน,analytic_plan_activities,activity_09007010116,
+"activity_09007010116162","162",กิจกรรมย่อย การศึกษาต่อ,analytic_plan_activities,activity_09007010116,
+"activity_09007010116163","163",กิจกรรมย่อย การส่งเสริม/สนับสนุนการพัฒนาวิชาการ,analytic_plan_activities,activity_09007010116,
+"activity_09007010117","17",กิจกรรมรอง กิจกรรมผลิตและพัฒนาสื่อการศึกษา,analytic_plan_activities,activity_090070101,
+"activity_09007010117171","171",กิจกรรมย่อย อุปกรณ์การสอน และพัฒนาต้นแบบชุดสื่อการสอน,analytic_plan_activities,activity_09007010117,
+"activity_09007010117172","172",กิจกรรมย่อย บริการเครื่องมือเทคโนโลยีทางการศึกษา(รวมบริการด้านโสตทัศนศึกษา),analytic_plan_activities,activity_09007010117,
+"activity_09007010118","18",กิจกรรมรอง กิจกรรมพัฒนาหลักสูตรและการเรียนการสอน,analytic_plan_activities,activity_090070101,
+"activity_09007010118181","181",กิจกรรมย่อย การปรับปรุงและพัฒนาหลักสูตร,analytic_plan_activities,activity_09007010118,
+"activity_09007010118182","182",กิจกรรมย่อย การประเมินผลโครงสร้างหลักสูตร,analytic_plan_activities,activity_09007010118,
+"activity_09007010118183","183",กิจกรรมย่อย การบริหารและสนับสนุนวิชาการ,analytic_plan_activities,activity_09007010118,
+"activity_09007010119","19",กิจกรรมรอง กิจกรรมส่งเสริมการผลิตตํารา,analytic_plan_activities,activity_090070101,
+"activity_09007010119191","191",กิจกรรมย่อย ผลิตและพัฒนาตําราในสาขาวิชาต่าง ๆ,analytic_plan_activities,activity_09007010119,
+"activity_090070102","0102",กิจกรรมหลัก งานจัดการศึกษาด้านวิทยาศาสตร์และเทคโนโลยี,analytic_plan_activities,activity_09007,
+"activity_09007010220","20",กิจกรรมรอง กิจกรรมสาขาครุศาสตร์อุตสาหกรรม,analytic_plan_activities,activity_090070102,
+"activity_09007010220211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010220,
+"activity_09007010220212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010220,
+"activity_09007010220213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010220,
+"activity_09007010221","21",กิจกรรมรอง กิจกรรมสาขาวิทยาศาสตร์,analytic_plan_activities,activity_090070102,
+"activity_09007010221211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010221,
+"activity_09007010221212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010221,
+"activity_09007010221213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010221,
+"activity_09007010222","22",กิจกรรมรอง กิจกรรมสาขาวิศวกรรมศาสตร์,analytic_plan_activities,activity_090070102,
+"activity_09007010222211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010222,
+"activity_09007010222212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010222,
+"activity_09007010222213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010222,
+"activity_09007010223","23",กิจกรรมรอง กิจกรรมสาขาสถาปัตยกรรมศาสตร์,analytic_plan_activities,activity_090070102,
+"activity_09007010223211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010223,
+"activity_09007010223212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010223,
+"activity_09007010223213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010223,
+"activity_09007010224","24",กิจกรรมรอง กิจกรรมสาขาเทคโนโลยีการเกษตร,analytic_plan_activities,activity_090070102,
+"activity_09007010224211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010224,
+"activity_09007010224212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010224,
+"activity_09007010224213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010224,
+"activity_09007010225","25",กิจกรรมรอง กิจกรรมสาขาเทคโนโลยีสารสนเทศ,analytic_plan_activities,activity_090070102,
+"activity_09007010225211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010225,
+"activity_09007010225212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010225,
+"activity_09007010225213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010225,
+"activity_09007010226","26",กิจกรรมรอง กิจกรรมสาขาวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_090070102,
+"activity_09007010226211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010226,
+"activity_09007010226212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010226,
+"activity_09007010226213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010226,
+"activity_09007010227","27",กิจกรรมรอง กิจกรรมสาขาอุตสาหกรรมเกษตร,analytic_plan_activities,activity_090070102,
+"activity_09007010227211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010227,
+"activity_09007010227212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010227,
+"activity_09007010227213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010227,
+"activity_09007010228","28",กิจกรรมรอง กิจกรรมสาขาวิชาพื้นฐานทั่วไป,analytic_plan_activities,activity_090070102,
+"activity_09007010228211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010228,
+"activity_09007010228212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010228,
+"activity_09007010228213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010228,
+"activity_09007010229","29",กิจกรรมรอง กิจกรรมสาขาบริหารและการจัดการ,analytic_plan_activities,activity_090070102,
+"activity_09007010229211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010229,
+"activity_09007010229212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010229,
+"activity_09007010229213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010229,
+"activity_09007010230","30",กิจกรรมรอง กิจกรรมสาขาวิทยาศาสตร์สุขภาพ,analytic_plan_activities,activity_090070102,
+"activity_09007010230211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010230,
+"activity_09007010230212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010230,
+"activity_09007010230213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010230,
+"activity_09007010231","31",กิจกรรมรอง กิจกรรมสาขานวัตกรรมทางการศึกษา,analytic_plan_activities,activity_090070102,
+"activity_09007010231211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010231,
+"activity_09007010231212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010231,
+"activity_09007010231213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010231,
+"activity_09007010232","32",กิจกรรมรอง กิจกรรมอุตสาหกรรมการบิน,analytic_plan_activities,activity_090070102,
+"activity_09007010232211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010232,
+"activity_09007010232212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010232,
+"activity_09007010232213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010232,
+"activity_09007010233","33",กิจกรรมรอง กิจกรรมสาขาศิลปศาสตร์,analytic_plan_activities,activity_090070102,
+"activity_09007010233211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010233,
+"activity_09007010233212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010233,
+"activity_09007010233213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010233,
+"activity_09007010234","34",กิจกรรมรอง กิจกรรมสาขาพยาบาลศาสตร์,analytic_plan_activities,activity_090070102,
+"activity_09007010234211","211",กิจกรรมย่อย ระดับปริญญาตรี,analytic_plan_activities,activity_09007010234,
+"activity_09007010234212","212",กิจกรรมย่อย ระดับปริญญาโท-เอก,analytic_plan_activities,activity_09007010234,
+"activity_09007010234213","213",กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท,analytic_plan_activities,activity_09007010234,
+"activity_09010","010",แผนงานบริการวิชาการแก่สังคม,analytic_plan_activities,activity_09,
+"activity_090100201","0201",กิจกรรมหลัก งานบริการวิชาการแก่ชุมชน,analytic_plan_activities,activity_09010,
+"activity_09010020151","51",กิจกรรมรอง จัดฝึกอบรมทางวิชาการ,analytic_plan_activities,activity_090100201,
+"activity_09010020152","52",กิจกรรมรอง จัดทําวารสารทางวิชาการ,analytic_plan_activities,activity_090100201,
+"activity_09010020153","53",กิจกรรมรอง จัดแสดงนิทรรศการ,analytic_plan_activities,activity_090100201,
+"activity_09010020154","54",กิจกรรมรอง บริการวิชาการรูปแบบต่าง ๆ,analytic_plan_activities,activity_090100201,
+"activity_09011","011",แผนงานศาสนา ศิลปะ และวัฒนธรรม,analytic_plan_activities,activity_09,
+"activity_090110301","0301",กิจกรรมหลัก งานทํานุบํารุงศิลปวัฒนธรรม,analytic_plan_activities,activity_09011,
+"activity_09011030130","30",กิจกรรมรอง การจัดฝึกอบรม/การจัดนิทรรศการ,analytic_plan_activities,activity_090110301,
+"activity_09011030131","31",กิจกรรมรอง การเผยแพร่ประชาสัมพันธ์,analytic_plan_activities,activity_090110301,
+"activity_09011030132","32",กิจกรรมรอง การดําเนินงานอื่นๆ (ด้านศิลปวัฒนธรรม),analytic_plan_activities,activity_090110301,
+"activity_09006","006",แผนงานยุทธศาสตร์,analytic_plan_activities,activity_09,
+"activity_090060601","0601",กิจกรรมหลัก งานพัฒนาและผลิตกําลังคนของประเทศ เพื่อรองรับนโยบาย Thailand 4.0,analytic_plan_activities,activity_09006,
+"activity_09006060160","60",กิจกรรมรอง พัฒนารูปแบบข้อสอบวัดระดับมาตราฐานภาษาอังกฤษสําหรับบุคลากรในภาคอุตสาหกรรม S – Curve,analytic_plan_activities,activity_090060601,
+"activity_09006060161","61",กิจกรรมรอง ยกระดับแรงงานไทยในภาคอุตสาหกรรมให้มีศักยภาพเพิ่มขึ้น เพื่อเพิ่มขีดความสามารถในการแข่งขันของประเทศ,analytic_plan_activities,activity_090060601,
+"activity_09006060162","62",กิจกรรมรอง กําลังคนต้นแบบด้านวิทยาศาสตร์และเทคโนโลยี เพื่อตอบสนองความต้องการภาคอุตสาหกรรมตามนโยบายรัฐบาล (KNAST),analytic_plan_activities,activity_090060601,
+"activity_09006060163","63",กิจกรรมรอง ผลิตและพัฒนากําลังคนระดับอาชีวศึกษาและอุดมศึกษาตามความต้องการของประเทศ (ปริญญาตรีต่อเนื่อง),analytic_plan_activities,activity_090060601,
+"activity_09006060164","64",กิจกรรมรอง พัฒนาทรัพยากรบุคคลตามโครงการยกระดับคุณภาพหลักสูตรตามนโยบายกระทรวงศึกษาธิการ สําหรับสาขาอุตสาหกรรมเป้าหมายเร่งด่วนของประเทศ(อาชีวะพรีเมี่ยม),analytic_plan_activities,activity_090060601,
+"activity_090060602","0602",กิจกรรมหลัก งานสร้างกําลังคนที่มีสมรรถนะสูง สําหรับอุตสาหกรรม New Growth Engine ตามนโยบาย Thailand 4.0,analytic_plan_activities,activity_09006,
+"activity_09006060265","65",กิจกรรมรอง สร้างกําลังคนที่มีสมรรถนะสูง สําหรับอุตสาหกรรมNew Growth Engine ตามนโยบาย Thailand 4.0 (บัณฑิตพันธ์ใหม่),analytic_plan_activities,activity_090060602,
+"activity_090060603","0603",กิจกรรมหลัก งานพัฒนากําลังคนด้านวิศวกรรมศาสตร์เทคโนโลยีและนวัตกรรม,analytic_plan_activities,activity_09006,
+"activity_09006060366","66",กิจกรรมรอง พัฒนาผู้มีความสามารถพิเศษด้านวิทยาศาสตร์และคณิตศาสตร์ (โคเซ็น),analytic_plan_activities,activity_090060603,
+"activity_090060604","0604",กิจกรรมหลัก งานวิจัยและพัฒนานวัตกรรม,analytic_plan_activities,activity_09006,
+"activity_09006060467","67",กิจกรรมรอง สถานีอัดประจุยานพาหนะไฟฟ้าแบบเคลื่อนย้ายได้โดยใช้พลังงานแสงอาทิตย์,analytic_plan_activities,activity_090060604,
+"activity_09006060468","68",กิจกรรมรอง ความเป็นเลิศด้านวิจัยและพัฒนาเทคโนโลยีและนวัตกรรมจากวัสดุอนุพันธ์กราฟี นขั้นแนวหน้าสําหรับอุตสาหกรรมสมัยใหม่,analytic_plan_activities,activity_090060604,
+"activity_09006060469","69",กิจกรรมรอง เพิ่มผลผลิตข้าวโพดเลี้ยงสัตว์และมูลค่าวัสดุเหลือใช้ทางการเกษตรในอุตสาหกรรมอาหารสัตว์,analytic_plan_activities,activity_090060604,
+"activity_09006060470","70",กิจกรรมรอง การใช้ประโยชน์ของวัตถุดิบพื้นถิ่นอย่างคุ้มค่าและต่อยอดพัฒนาเศรษฐกิจฐานรากของชุมชน,analytic_plan_activities,activity_090060604,
+"activity_090060605","0605",กิจกรรมหลัก งานพัฒนาทักษะกําลังคนของประเทศ,analytic_plan_activities,activity_09006,
+"activity_09006060571","71",กิจกรรมรอง เรียนรู้ตลอดชีวิตและพัฒนาทักษะเพื่ออนาคต (Upskill/Reskill),analytic_plan_activities,activity_090060605,
+"activity_09006060572","72",กิจกรรมรอง ยุวชนอาสา,analytic_plan_activities,activity_090060605,
+"activity_090060606","0606",กิจกรรมหลัก งาน 1 อําเภอ 1 แปลงเกษตรอัจฉริยะ,analytic_plan_activities,activity_09006,
+"activity_09006060673","73",กิจกรรมรอง ส่งเสริมและพัฒนาต้นแบบเกษตรอัจฉริยะ,analytic_plan_activities,activity_090060606,
+"activity_090060607","0607",กิจกรรมหลัก งานพัฒนาความเป็นเลิศของสถาบันอุดมศึกษาและพัฒนากําลังคนขั้นสูง,analytic_plan_activities,activity_09006,
+"activity_09006060774","74",กิจกรรมรอง พัฒนาหลักสูตรรูปแบบ Entrepreneurship Educationที่เป็น Niche Area หรือ Strength ของสถาบันอุดมศึกษา,analytic_plan_activities,activity_090060607,
+"activity_06","06",ด้านวิทยาศาสตร์และเทคโนโลยี,analytic_plan_activities,,
+"activity_06004","004",แผนงานวิจัย,analytic_plan_activities,activity_06,
+"activity_060040401","0401",กิจกรรมหลัก งานวิจัยพัฒนาและถ่ายทอดเทคโนโลยี (รวมแผนงานบูรณาการวิจัยและนวัตกรรม),analytic_plan_activities,activity_06004,
+"activity_06004040140","40",กิจกรรมรอง วิจัยพื้นฐาน,analytic_plan_activities,activity_060040401,
+"activity_06004040141","41",กิจกรรมรอง วิจัยประยุกต์,analytic_plan_activities,activity_060040401,
+"activity_06004040142","42",กิจกรรมรอง วิจัยและพัฒนา และถ่ายทอดเทคโนโลยี,analytic_plan_activities,activity_060040401,
+"activity_06004040143","43",กิจกรรมรอง การวิจัยเพื่อดําเนินการตามนโยบายรัฐบาล (แผนงานบูรณาการวิจัยและนวัตกรรม),analytic_plan_activities,activity_060040401,
+"activity_06005","005",แผนงานบูรณาการ,analytic_plan_activities,activity_06,
+"activity_060050501","0501",กิจกรรมหลัก งานส่งเสริม และพัฒนาเทคโนโลยี นวัตกรรม,analytic_plan_activities,activity_06005,
+"activity_06005050150","50",กิจกรรมรอง พัฒนาอุตสาหกรรมศักยภาพ,analytic_plan_activities,activity_060050501,
+"activity_06005050151","51",กิจกรรมรอง สร้างรายได้จากการท่องเที่ยวและบริการ,analytic_plan_activities,activity_060050501,
+"activity_06005050152","52",กิจกรรมรอง พัฒนาศักยภาพการผลิตภาคเกษตร,analytic_plan_activities,activity_060050501,
+"activity_06005050153","53",กิจกรรมรอง พัฒนาศักยภาพคนตามช่วงวัย,analytic_plan_activities,activity_060050501,
+"activity_06005050154","54",กิจกรรมรอง ยกระดับคุณภาพการศึกษาและการเรียนรู้ตลอดชีวิต,analytic_plan_activities,activity_060050501,
+"activity_06005050155","55",กิจกรรมรอง เสริมสร้างความเข้มแข็งและยั่งยืนให้กับเศรษฐกิจภายในประเทศ,analytic_plan_activities,activity_060050501,
+"activity_060050502","0502",กิจกรรมหลัก งานพัฒนาพื้นที่ระเบียงเศรษฐกิจภาคตะวันออก,analytic_plan_activities,activity_06005,
+"activity_06005050256","56",กิจกรรมรอง พัฒนาพื้นที่ระเบียงเศรษฐกิจภาคตะวันออก,analytic_plan_activities,activity_060050502,
+"activity_060050503","0503",กิจกรรมหลัก งานพัฒนาคุณภาพชีวิต สร้างความสมดุลทางเศรษฐกิจ,analytic_plan_activities,activity_06005,
+"activity_06005050357","57",กิจกรรมรอง พัฒนาคุณภาพชีวิต สร้างความสมดุลทางเศรษฐกิจ,analytic_plan_activities,activity_060050503,
+source_1,"1",งบประมาณแผ่นดิน,analytic_plan_sources,1
+source_2,"2",งบประมาณเงินรายได้,analytic_plan_sources,2
+source_3,"3",งบกลาง (งบประมาณแผ่นดิน),analytic_plan_sources,3
+source_4,"4",เงินสะสม (งบประมาณเงินรายได้),analytic_plan_sources,4
+source_5,"5",เงินกันเหลื่อมปี (งบประมาณแผ่นดิน),analytic_plan_sources,5
+source_6,"6",เงินกันเหลื่อมปี (งบประมาณเงินรายได้),analytic_plan_sources,6
+source_7,"7",เงินกันเหลื่อมปี (เงินรายได้สะสม),analytic_plan_sources,7
