@@ -2,10 +2,12 @@
 <odoo>
 
     <!-- View account.analytic form -->
-    <record id="view_account_analytic_sequence_form_inherit" model="ir.ui.view">
-        <field name="name">view.account.analytic.sequence.form.inherit.form</field>
-        <field name="model">account.analytic</field>
-        <field name="inherit_id" ref="analytic.account_analytic_form_view" />
+    <record id="view_account_analytic_account_sequence_form_inherit" model="ir.ui.view">
+        <field
+            name="name"
+        >view.account.analytic.account.sequence.form.inherit.form</field>
+        <field name="model">account.analytic.account</field>
+        <field name="inherit_id" ref="analytic.view_account_analytic_account_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='code']" position="after">
                 <field name="sequence" />
