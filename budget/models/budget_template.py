@@ -108,6 +108,13 @@ class BudgetTemplateLine(models.Model):
         required=False,
     )
 
+    hierarchy_level = fields.Integer(
+        string="Level",
+        compute="_compute_hierarchy_level",
+        store=False,
+        recursive=True,
+    )
+
     _sql_constraints = [
         (
             "unique_budget_template_line",
@@ -115,6 +122,14 @@ class BudgetTemplateLine(models.Model):
             _("Budget indicator must be unique"),
         )
     ]
+
+    @api.depends("parent_id.hierarchy_level")
+    def _compute_hierarchy_level(self):
+        for report_line in self:
+            if report_line.parent_id:
+                report_line.hierarchy_level = report_line.parent_id.hierarchy_level + 1
+            else:
+                report_line.hierarchy_level = 0
 
     @api.constrains("parent_id")
     def _check_parent_id(self):
