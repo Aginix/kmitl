@@ -26,6 +26,8 @@
                             <field name="name" />
                             <field name="template_id" />
                             <field name="date_range_fy_id" />
+                            <field name="department_analytic_id" />
+                            <field name="source_analytic_id" />
                             <field name="budget_type" />
                             <field name="user_id" />
                         </group>

@@ -36,6 +36,20 @@ class BudgetPlan(models.Model):
         store=True,
         readonly=False,
     )
+    department_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="ส่วนงาน",
+        store=True,
+        readonly=False,
+        domain=[("root_plan_id.code", "=", "departments")],
+    )
+    source_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="แหล่งเงิน",
+        store=True,
+        readonly=False,
+        domain=[("root_plan_id.code", "=", "sources")],
+    )
 
     @api.model
     def _search_date_range_fy(self, operator, value):
