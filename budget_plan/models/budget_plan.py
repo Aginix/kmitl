@@ -18,6 +18,7 @@ class BudgetPlan(models.Model):
     date_range_fy_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="Fiscal year",
+        store=True,
         related="template_id.date_range_fy_id",
         search="_search_date_range_fy",
     )
@@ -41,14 +42,18 @@ class BudgetPlan(models.Model):
         string="ส่วนงาน",
         store=True,
         readonly=False,
-        domain=[("root_plan_id.code", "=", "departments")],
     )
     source_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="แหล่งเงิน",
         store=True,
         readonly=False,
-        domain=[("root_plan_id.code", "=", "sources")],
+    )
+    line_ids = fields.One2many(
+        comodel_name="budget.plan.line",
+        inverse_name="plan_id",
+        copy=True,
+        tracking=True,
     )
 
     @api.model
@@ -76,3 +81,25 @@ class BudgetPlan(models.Model):
                 ]
             )
         return domain
+
+
+class BudgetPlanLine(models.Model):
+    _name = "budget.plan.line"
+    _description = "Budget Plan Line"
+    _inherit = ["mail.thread", "analytic.distribution.mixin"]
+
+    code = fields.Char(related="template_line_id.code")
+    name = fields.Char(related="template_line_id.name")
+    plan_id = fields.Many2one(
+        comodel_name="budget.plan", ondelete="cascade", required=True
+    )
+    template_id = fields.Many2one(related="plan_id.template_id")
+    template_line_id = fields.Many2one(
+        comodel_name="budget.template.line",
+        ondelete="restrict",
+        domain="[('template_id', '=', template_id)]",
+        required=True,
+    )
+    amount = fields.Float(tracking=True)
+    department_analytic_id = fields.Many2one(related="plan_id.department_analytic_id")
+    source_analytic_id = fields.Many2one(related="plan_id.source_analytic_id")

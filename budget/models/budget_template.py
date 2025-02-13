@@ -84,6 +84,9 @@ class BudgetTemplateLine(models.Model):
     name = fields.Char("ชื่อรายการ", required=True, tracking=True, copy=True)
     sequence = fields.Integer(default=_default_sequence)
 
+    def name_get(self):
+        return [(record.id, "%s %s" % (record.code, record.name)) for record in self]
+
     parent_id = fields.Many2one(
         "budget.template.line",
         string="Parent",
@@ -137,6 +140,27 @@ class BudgetTemplateLine(models.Model):
             raise ValidationError(
                 _("You cannot create recursive budget template line.")
             )
+
+    @api.model
+    def name_search(self, name="", args=None, operator="ilike", limit=100):
+        if args is None:
+            args = []
+        domain = ["|", ("code", operator, name), ("name", operator, name)]
+        return self.search(domain + args, limit=limit).name_get()
+
+    @api.model
+    def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None):
+        if domain is None:
+            domain = []
+        if not fields:
+            fields = []
+        if "code" not in fields:
+            fields.append("code")
+        if "name" not in fields:
+            fields.append("name")
+        return super(BudgetTemplateLine, self).search_read(
+            domain, fields, offset, limit, order
+        )
 
 
 class BudgetTemplateLineAccount(models.Model):
