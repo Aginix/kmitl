@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem id="budget_root_menu" name="Budgeting" sequence="10">
+
+        <menuitem id="budget_config_menu" name="Configuration">
+            <menuitem
+                id="action_budget_template_menu_action"
+                name="Budget Template"
+                action="action_budget_template"
+            />
+        </menuitem>
+    </menuitem>
+</odoo>
