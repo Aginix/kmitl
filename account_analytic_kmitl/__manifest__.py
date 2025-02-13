@@ -5,11 +5,11 @@
     "category": "KMITL/Accounting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["account_analytic_parent"],
+    "depends": ["account_analytic_parent", "account_analytic_plan_code"],
     "data": [
         "data/account.analytic.plan.csv",
         "data/account.analytic.account.csv",
     ],
     "auto_install": False,
-    "license": "LGPL-3",
+    "license": "AGPL-3",
 }
