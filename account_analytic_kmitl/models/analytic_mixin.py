@@ -18,6 +18,7 @@ class AnalyticDistributionMixin(models.AbstractModel):
         compute="_compute_analytic_distribution",
         store=True,
         readonly=False,
+        domain=[("root_plan_id.code", "=", "activities")],
     )
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -25,6 +26,7 @@ class AnalyticDistributionMixin(models.AbstractModel):
         compute="_compute_analytic_distribution",
         store=True,
         readonly=False,
+        domain=[("root_plan_id.code", "=", "departments")],
     )
     fund_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -32,6 +34,7 @@ class AnalyticDistributionMixin(models.AbstractModel):
         compute="_compute_analytic_distribution",
         store=True,
         readonly=False,
+        domain=[("root_plan_id.code", "=", "funds")],
     )
     source_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -39,6 +42,7 @@ class AnalyticDistributionMixin(models.AbstractModel):
         compute="_compute_analytic_distribution",
         store=True,
         readonly=False,
+        domain=[("root_plan_id.code", "=", "sources")],
     )
 
     @api.depends("analytic_distribution")
@@ -66,11 +70,11 @@ class AnalyticDistributionMixin(models.AbstractModel):
                 _logger.info(analytic_id)
 
                 # Check analytic plan or dimension type to assign to correct field
-                if analytic_account.plan_id.name == "แผนงาน/กิจกรรม":
+                if analytic_account.plan_id.code == "activities":
                     record.activity_analytic_id = analytic_account
-                elif analytic_account.plan_id.name == "ส่วนงาน":
+                elif analytic_account.plan_id.code == "departments":
                     record.department_analytic_id = analytic_account
-                elif analytic_account.plan_id.name == "กองทุน":
+                elif analytic_account.plan_id.code == "funds":
                     record.fund_analytic_id = analytic_account
-                elif analytic_account.plan_id.name == "แหล่งเงิน":
+                elif analytic_account.plan_id.code == "sources":
                     record.source_analytic_id = analytic_account
