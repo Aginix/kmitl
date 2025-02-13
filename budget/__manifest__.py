@@ -5,7 +5,7 @@
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["account", "account_fiscal_year"],
+    "depends": ["account", "account_fiscal_year", "mail"],
     "data": [
         "views/budget_template_views.xml",
         "views/budget_menus.xml",
