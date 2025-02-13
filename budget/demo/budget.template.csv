@@ -1,0 +1,3 @@
+id,name,date_range_fy_id/id,budget_type,note
+budget_template_y2568_expense,โครงสร้างรหัสงบประมาณรายจ่าย ปีงบประมาณ 2568,account_fiscal_year_y2568,expense
+budget_template_y2568_revenue,โครงสร้างรหัสงบประมาณรายรับ ปีงบประมาณ 2568,account_fiscal_year_y2568,revenue
