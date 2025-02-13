@@ -8,7 +8,7 @@
     "depends": [
         "account_analytic_parent",
         "account_analytic_plan_code",
-        "account_analytic_plan_sequence",
+        "account_analytic_sequence",
     ],
     "data": [
         "data/account.analytic.plan.csv",
