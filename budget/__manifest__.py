@@ -17,5 +17,6 @@
         "demo/budget.template.line.csv",
     ],
     "auto_install": False,
-    "license": "LGPL-3",
+    "application": True,
+    "license": "AGPL-3",
 }
