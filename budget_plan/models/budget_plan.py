@@ -42,12 +42,14 @@ class BudgetPlan(models.Model):
         string="ส่วนงาน",
         store=True,
         readonly=False,
+        domain=[("root_plan_id.code", "=", "departments")],
     )
     source_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="แหล่งเงิน",
         store=True,
         readonly=False,
+        domain=[("root_plan_id.code", "=", "sources")],
     )
     line_ids = fields.One2many(
         comodel_name="budget.plan.line",

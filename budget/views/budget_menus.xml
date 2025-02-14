@@ -2,7 +2,14 @@
 <odoo>
     <menuitem id="budget_root_menu" name="Budgeting" sequence="10">
 
-        <menuitem id="budget_config_menu" name="Configuration">
+        <menuitem id="budget_move_menu" name="Budget Moves" sequence="30">
+            <menuitem
+                id="action_budget_move_menu_action"
+                name="Budget Moves"
+                action="action_budget_move"
+            />
+        </menuitem>
+        <menuitem id="budget_config_menu" name="Configuration" sequence="99">
             <menuitem
                 id="action_budget_template_menu_action"
                 name="Budget Template"
