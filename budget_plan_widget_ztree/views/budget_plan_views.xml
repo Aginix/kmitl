@@ -1,0 +1,50 @@
+<odoo>
+    <!-- Product -->
+    <record id="view_budget_plan_form_inherit_widget_ztree" model="ir.ui.view">
+        <field name="name">view.budget.plan.form.inherit.widget.ztree</field>
+        <field name="model">budget.plan</field>
+        <field name="inherit_id" ref="budget_plan.view_budget_plan_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='department_analytic_id']" position="attributes">
+                <!-- Add your fields or attributes here -->
+                <attribute name="widget">ztree_select</attribute>
+                <attribute
+                    name="options"
+                >{'ztree_parent_key': 'parent_id','ztree_expend_level': '2',
+                    'ztree_name_field': 'display_name', 'order': 'sequence' }</attribute>
+            </xpath>
+            <xpath expr="//field[@name='source_analytic_id']" position="attributes">
+                <!-- Add your fields or attributes here -->
+                <attribute name="widget">ztree_select</attribute>
+                <attribute
+                    name="options"
+                >{'ztree_parent_key': 'parent_id','ztree_expend_level': '2',
+                    'ztree_name_field': 'display_name', 'order': 'sequence' }</attribute>
+            </xpath>
+            <xpath expr="//field[@name='activity_analytic_id']" position="attributes">
+                <!-- Add your fields or attributes here -->
+                <attribute name="widget">ztree_select</attribute>
+                <attribute
+                    name="options"
+                >{'ztree_parent_key': 'parent_id','ztree_expend_level': '2',
+                    'ztree_name_field': 'display_name', 'order': 'sequence' }</attribute>
+            </xpath>
+            <xpath expr="//field[@name='fund_analytic_id']" position="attributes">
+                <!-- Add your fields or attributes here -->
+                <attribute name="widget">ztree_select</attribute>
+                <attribute
+                    name="options"
+                >{'ztree_parent_key': 'parent_id','ztree_expend_level': '2',
+                    'ztree_name_field': 'display_name', 'order': 'sequence' }</attribute>
+            </xpath>
+            <xpath expr="//field[@name='template_line_id']" position="attributes">
+                <!-- Add your fields or attributes here -->
+                <attribute name="widget">ztree_select</attribute>
+                <attribute
+                    name="options"
+                >{'ztree_parent_key': 'parent_id','ztree_expend_level': '2',
+                    'ztree_name_field': 'display_name', 'order': 'sequence' }</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
