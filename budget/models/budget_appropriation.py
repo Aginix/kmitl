@@ -1,6 +1,7 @@
 import logging
 
 from odoo import api, fields, models
+from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
 
@@ -87,6 +88,32 @@ class BudgetAppropriation(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
+
+    @api.model
+    def _search_date_range_fy(self, operator, value):
+        if operator in ("=", "!=", "in", "not in"):
+            date_range_domain = [("id", operator, value)]
+        else:
+            date_range_domain = [("name", operator, value)]
+
+        date_ranges = self.env["account.fiscal.year"].search(date_range_domain)
+
+        domain = [("id", "=", -1)]
+        for date_range in date_ranges:
+            domain = expression.OR(
+                [
+                    domain,
+                    [
+                        "&",
+                        ("date", ">=", date_range.date_from),
+                        ("date", "<=", date_range.date_to),
+                        "|",
+                        ("company_id", "=", False),
+                        ("company_id", "=", date_range.company_id.id),
+                    ],
+                ]
+            )
+        return domain
 
     @api.depends("date", "state")
     def _compute_hide_post_button(self):
