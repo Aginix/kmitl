@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- View budget.appropriation View Tree -->
+    <record id="view_budget_appropriation_tree" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.tree</field>
+        <field name="model">budget.appropriation</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="date" />
+                <field name="name" />
+                <field name="date_range_fy_id" />
+                <field name="department_analytic_id" />
+                <field name="source_analytic_id" />
+                <field
+                    name="state"
+                    widget="badge"
+                    decoration-info="state == 'draft'"
+                    decoration-success="state == 'posted'"
+                />
+            </tree>
+        </field>
+    </record>
+
+    <!-- View budget.appropriation form -->
+    <record id="view_budget_appropriation_form" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.form</field>
+        <field name="model">budget.appropriation</field>
+        <field name="arch" type="xml">
+            <form string="Budget Appropriation">
+                <header>
+                    <button
+                        name="action_post"
+                        string="Post"
+                        class="oe_highlight"
+                        type="object"
+                        data-hotkey="v"
+                        attrs="{'invisible': [('hide_post_button', '=', True)]}"
+                    />
+                    <button
+                        name="button_draft"
+                        string="Reset to Draft"
+                        type="object"
+                        attrs="{'invisible' : [('show_reset_to_draft_button', '=', False)]}"
+                        data-hotkey="q"
+                    />
+                    <button
+                        name="button_cancel"
+                        string="Cancel"
+                        type="object"
+                        data-hotkey="w"
+                        attrs="{'invisible' : ['|', ('id', '=', False), ('state', '!=', 'draft')]}"
+                    />
+
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,posted"
+                        readonly="1"
+                    />
+                </header>
+                <!-- Invisible Fields -->
+                <field name="show_reset_to_draft_button" invisible="1" />
+                <field name="hide_post_button" invisible="1" />
+                <field name="state" invisible="1" />
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" />
+                            <field name="date" />
+                            <field
+                                name="date_range_fy_id"
+                                options='{"no_open": True}'
+                            />
+                            <field
+                                name="department_analytic_id"
+                                options='{"no_open": True}'
+                            />
+                            <field
+                                name="source_analytic_id"
+                                options='{"no_open": True}'
+                            />
+                            <field name="user_id" />
+                            <field name="ref" />
+                            <field name="note" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="line_ids" string="Budget Appropriation Lines">
+                            <field name="line_ids">
+                                <tree>
+                                    <field name="date_range_fy_id" invisible="1" />
+                                    <field name="appropriation_id" invisible="1" />
+                                    <field
+                                        name="department_analytic_id"
+                                        options='{"no_open": True}'
+                                    />
+                                    <field
+                                        name="activity_analytic_id"
+                                        options='{"no_open": True}'
+                                    />
+                                    <field
+                                        name="fund_analytic_id"
+                                        options='{"no_open": True}'
+                                    />
+                                    <field
+                                        name="template_id"
+                                        options='{"no_open": True}'
+                                    />
+                                    <field
+                                        name="template_line_id"
+                                        options='{"no_open": True}'
+                                    />
+                                    <field name="amount" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="help" string="Help">
+                            <div name="help">
+                                <p>
+                                    This operation will involve creating a template for budget
+                                    checking, which will have the following principles of creation.
+                                </p>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_ids" widget="mail_thread" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- View budget.appropriation.line View Tree -->
+    <record id="view_budget_appropriation_line_tree" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.line.tree</field>
+        <field name="model">budget.appropriation.line</field>
+        <field name="arch" type="xml">
+            <tree
+                create="false"
+                edit="false"
+                delete="false"
+                expand="context.get('expand', False)"
+                sample="1"
+            >
+                <field name="appropriation_id" widget="many2onebutton" />
+                <field name="date_range_fy_id" />
+                <field name="department_analytic_id" />
+                <field name="activity_analytic_id" />
+                <field name="fund_analytic_id" />
+                <field name="template_line_id" />
+                <field name="amount" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- View budget.appropriation.line form -->
+    <record id="view_budget_appropriation_line_form" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.line.form</field>
+        <field name="model">budget.appropriation.line</field>
+        <field name="arch" type="xml">
+            <form string="Budget Appropriation Line">
+                <sheet>
+                    <group>
+                        <field name="date_range_fy_id" readonly="1" />
+                        <field name="appropriation_id" readonly="1" />
+                        <field name="department_analytic_id" />
+                        <field name="activity_analytic_id" />
+                        <field name="fund_analytic_id" />
+                        <field name="template_id" />
+                        <field name="template_line_id" />
+                        <field name="amount" />
+                        <field name="note" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- View budget.appropriation search -->
+    <record id="view_budget_appropriation_search" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.search</field>
+        <field name="model">budget.appropriation</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter
+                        string="Name"
+                        name="name"
+                        domain="[]"
+                        context="{'group_by':'name'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- View budget.appropriation.line search -->
+    <record id="view_budget_appropriation_line_search" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.line.search</field>
+        <field name="model">budget.appropriation.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter
+                        string="Fiscal Year"
+                        name="date_range_fy_id"
+                        domain="[]"
+                        context="{'group_by':'date_range_fy_id'}"
+                    />
+                    <filter
+                        string="Department"
+                        name="department_analytic_id"
+                        domain="[]"
+                        context="{'group_by':'department_analytic_id'}"
+                    />
+                    <filter
+                        string="Activity"
+                        name="activity_analytic_id"
+                        domain="[]"
+                        context="{'group_by':'activity_analytic_id'}"
+                    />
+                    <filter
+                        string="Fund"
+                        name="fund_analytic_id"
+                        domain="[]"
+                        context="{'group_by':'fund_analytic_id'}"
+                    />
+                    <filter
+                        string="Source"
+                        name="source_analytic_id"
+                        domain="[]"
+                        context="{'group_by':'source_analytic_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action budget.appropriation -->
+    <record id="action_budget_appropriation" model="ir.actions.act_window">
+        <field name="name">Budget Appropriation</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">budget.appropriation</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Budget Appropriation.
+            </p>
+        </field>
+    </record>
+
+    <!-- Action budget.appropriation -->
+    <record id="action_budget_appropriation_line" model="ir.actions.act_window">
+        <field name="name">Budget Appropriation Line</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">budget.appropriation.line</field>
+        <field name="view_mode">tree,pivot</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Budget Appropriation.
+            </p>
+        </field>
+    </record>
+
+</odoo>
