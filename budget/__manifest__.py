@@ -21,6 +21,9 @@
         "demo/budget.appropriation.csv",
         "demo/budget.appropriation.line.csv",
     ],
+    "assets": {
+        "web.assets_backend": ["budget/static/src/**/*"],
+    },
     "auto_install": False,
     "application": True,
     "license": "AGPL-3",

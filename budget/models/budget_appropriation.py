@@ -64,6 +64,14 @@ class BudgetAppropriation(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
+    template_id = fields.Many2one(
+        comodel_name="budget.template",
+        index=True,
+        ondelete="cascade",
+        copy=False,
+        domain="[('date_range_fy_id', '=', date_range_fy_id)]",
+    )
+    active = fields.Boolean(default=True)
     user_id = fields.Many2one(
         string="Responsible user",
         comodel_name="res.users",
@@ -151,11 +159,7 @@ class BudgetAppropriationLine(models.Model):
     )
 
     template_id = fields.Many2one(
-        comodel_name="budget.template",
-        index=True,
-        ondelete="cascade",
-        copy=False,
-        domain="[('date_range_fy_id', '=', date_range_fy_id)]",
+        related="appropriation_id.template_id", store=True, readonly=True
     )
     template_line_id = fields.Many2one(
         comodel_name="budget.template.line",
