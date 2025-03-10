@@ -12,6 +12,7 @@
         "views/budget_appropriation_views.xml",
         "views/budget_commitment_views.xml",
         "views/budget_menus.xml",
+        "views/budget_expenditure_report_views.xml",
         "security/ir.model.access.csv",
     ],
     "demo": [

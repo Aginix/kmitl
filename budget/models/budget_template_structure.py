@@ -10,13 +10,11 @@ class BudgetTemplateStructure(models.AbstractModel):
     _description = "Budget Structure"
 
     @api.model
-    def get_html(self, template_id, fund_analytic_id=None):
-        return self._get_data(
-            template_id=template_id, fund_analytic_id=fund_analytic_id
-        )
+    def get_html(self, template_id, domain=[]):
+        return self._get_data(template_id=template_id, domain=domain)
 
     @api.model
-    def _get_data(self, template_id, fund_analytic_id=None):
+    def _get_data(self, template_id, domain):
         budget_template = self.env["budget.template"].browse(template_id)
         lines = self._get_budget_structure(budget_template=budget_template)
 
@@ -29,61 +27,69 @@ class BudgetTemplateStructure(models.AbstractModel):
         }
 
     def _get_budget_structure(self, budget_template):
-        def build_tree(data):
-            # สร้าง dictionary เพื่อเก็บโหนดตาม id
-            nodes = {}
-            for item in data:
-                item["children"] = []
-                nodes[item["id"]] = item
+        lines = self._prepare_lines(budget_template)
+        return self._flatten_tree(self._build_tree(lines))
 
-            # สร้างตัวแปรสำหรับเก็บ root node
-            tree = []
+    def _build_tree(self, data):
+        # สร้าง dictionary เพื่อเก็บโหนดตาม id
+        nodes = {}
+        for item in data:
+            item["children"] = []
+            nodes[item["id"]] = item
 
-            # จัดโครงสร้างตาม parent_id
-            for item in data:
-                node_id = item["id"]
-                parent_id = item["parent_id"]
+        # สร้างตัวแปรสำหรับเก็บ root node
+        tree = []
 
-                # ถ้าไม่มี parent_id (root node)
-                if parent_id is None or parent_id is False:
-                    tree.append(nodes[node_id])
-                # ถ้ามี parent_id เพิ่มเข้าไปใน children ของ parent
-                elif parent_id in nodes:
-                    nodes[parent_id]["children"].append(nodes[node_id])
+        # จัดโครงสร้างตาม parent_id
+        for item in data:
+            node_id = item["id"]
+            parent_id = item["parent_id"]
 
-            # เรียงลำดับ children ตาม sequence
-            def sort_children(node):
-                node["children"] = sorted(node["children"], key=lambda x: x["sequence"])
-                for child in node["children"]:
-                    sort_children(child)
+            # ถ้าไม่มี parent_id (root node)
+            if parent_id is None or parent_id is False:
+                tree.append(nodes[node_id])
+            # ถ้ามี parent_id เพิ่มเข้าไปใน children ของ parent
+            elif parent_id in nodes:
+                nodes[parent_id]["children"].append(nodes[node_id])
 
-            for root in tree:
-                sort_children(root)
+        # เรียงลำดับ children ตาม sequence
+        def sort_children(node):
+            node["children"] = sorted(node["children"], key=lambda x: x["sequence"])
+            for child in node["children"]:
+                sort_children(child)
 
-            return tree
+        for root in tree:
+            sort_children(root)
 
-        # ฟังก์ชัน flatten tree เป็น list
-        def flatten_tree(tree):
-            flat_list = []
+        return self._traverse_tree(tree)
 
-            def traverse(node):
-                data = node.copy()
-                del data["children"]
-                flat_list.append(data)
-                for child in node["children"]:  # children ถูกเรียงตาม sequence แล้ว
-                    traverse(child)
+    def _traverse_tree(self, tree):
+        for root in tree:
+            self._traverse_node(root)
+        return tree
 
-            for root in tree:
-                traverse(root)
+    def _traverse_node(self, node):
+        return node
 
-            return flat_list
+    # ฟังก์ชัน flatten tree เป็น list
+    def _flatten_tree(self, tree):
+        flat_list = []
 
-        lines = self._prepare_lines(budget_template.line_ids)
-        return flatten_tree(build_tree(lines))
+        def traverse(node):
+            data = node.copy()
+            del data["children"]
+            flat_list.append(data)
+            for child in node["children"]:  # children ถูกเรียงตาม sequence แล้ว
+                traverse(child)
 
-    def _prepare_lines(self, line_ids):
+        for root in tree:
+            traverse(root)
+
+        return flat_list
+
+    def _prepare_lines(self, budget_template):
         lines = []
-        for template_line in line_ids:
+        for template_line in budget_template.line_ids:
             lines.append(self._prepare_line(template_line))
         return lines
 

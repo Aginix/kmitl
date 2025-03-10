@@ -157,7 +157,8 @@ class BudgetAppropriationLine(models.Model):
         auto_join=True,
         ondelete="cascade",
     )
-
+    code = fields.Char("รหัสงบประมาณ", related="template_line_id.code", store=True)
+    name = fields.Char("ชื่อรายการ", related="template_line_id.name", store=True)
     template_id = fields.Many2one(
         related="appropriation_id.template_id", store=True, readonly=True
     )

@@ -72,6 +72,8 @@
                                 name="date_range_fy_id"
                                 options='{"no_open": True}'
                             />
+                            <field name="template_id" options="{'no_open': True}" />
+
                             <field
                                 name="department_analytic_id"
                                 options='{"no_open": True}'
@@ -168,7 +170,7 @@
                         <field name="department_analytic_id" />
                         <field name="activity_analytic_id" />
                         <field name="fund_analytic_id" />
-                        <field name="template_id" />
+                        <field name="template_id" invisible="1" />
                         <field name="template_line_id" />
                         <field name="amount" />
                         <field name="note" />

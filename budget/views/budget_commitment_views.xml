@@ -30,8 +30,8 @@
             <form string="Budget Commitment">
                 <header>
                     <button
-                        name="action_post"
-                        string="Post"
+                        name="action_submit"
+                        string="Submit"
                         class="oe_highlight"
                         type="object"
                         data-hotkey="v"
@@ -68,6 +68,7 @@
                         <group>
                             <field name="name" />
                             <field name="date" />
+                <field name="template_id" />
                             <field
                                 name="date_range_fy_id"
                                 options='{"no_open": True}'

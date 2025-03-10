@@ -20,15 +20,9 @@ class BudgetCommitmentLine(models.Model):
         ondelete="cascade",
     )
 
-    template_id = fields.Many2one(
-        comodel_name="budget.template",
-        index=True,
-        ondelete="cascade",
-        copy=False,
-        domain="['&', \
-            ('date_range_fy_id', '=', date_range_fy_id), ('budget_type', '=','expense') \
-        ]",
-    )
+    code = fields.Char("รหัสงบประมาณ", related="template_line_id.code", store=True)
+    name = fields.Char("ชื่อรายการ", related="template_line_id.name", store=True)
+    template_id = fields.Many2one(related="commitment_id.template_id", store=True)
     template_line_id = fields.Many2one(
         comodel_name="budget.template.line",
         index=True,

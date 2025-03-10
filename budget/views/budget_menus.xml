@@ -53,6 +53,7 @@
                 />
             </menuitem>
         </menuitem>
+        <menuitem id="budget_reporting_menu" name="Reporting" sequence="90" />
         <menuitem id="budget_config_menu" name="Configuration" sequence="99">
             <menuitem
                 id="action_budget_template_menu_action"

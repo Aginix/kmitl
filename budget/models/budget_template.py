@@ -139,15 +139,19 @@ class BudgetTemplateLine(models.Model):
         return record
 
     def write(self, vals):
-        # อัปเดต record และจัดการกรณีเปลี่ยน analytic_account_ids
         res = super(BudgetTemplateLine, self).write(vals)
         if "fund_analytic_ids" in vals:
-            # อัปเดต child_ids ด้วยค่าใหม่ของ fund_analytic_ids
             for record in self:
                 if record.child_ids:
                     record.child_ids.write(
                         {"fund_analytic_ids": [(6, 0, record.fund_analytic_ids.ids)]}
                     )
+        # ถ้ามี parent_id และ fund_analytic_ids ว่าง ให้ใช้ค่าจาก parent
+        for record in self:
+            if record.parent_id and not record.fund_analytic_ids:
+                record.write({
+                    "fund_analytic_ids": [(6, 0, record.parent_id.fund_analytic_ids.ids)]
+                })
         return res
 
     @api.depends("parent_id", "parent_id.fund_analytic_ids")

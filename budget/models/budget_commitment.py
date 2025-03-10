@@ -43,6 +43,13 @@ class BudgetCommitment(models.Model):
         tracking=True,
         default="draft",
     )
+    template_id = fields.Many2one(
+        comodel_name="budget.template",
+        index=True,
+        ondelete="cascade",
+        copy=False,
+        domain="[('date_range_fy_id', '=', date_range_fy_id)]",
+    )
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="ส่วนงาน",
@@ -100,10 +107,10 @@ class BudgetCommitment(models.Model):
     @api.depends("state")
     def _compute_show_reset_to_draft_button(self):
         for record in self:
-            record.show_reset_to_draft_button = record.state in ("posted", "cancel")
+            record.show_reset_to_draft_button = record.state in ("submitted", "cancel")
 
-    def action_post(self):
-        self.write({"state": "posted"})
+    def action_submit(self):
+        self.write({"state": "submitted"})
 
     def button_cancel(self):
         self.write({"state": "cancel"})
