@@ -26,7 +26,7 @@ class BudgetPlan(models.Model):
     budget_type = fields.Selection(
         related="template_id.budget_type",
         required=True,
-        readonly=True,
+        readonly=False,
     )
     user_id = fields.Many2one(
         string="Responsible user",
