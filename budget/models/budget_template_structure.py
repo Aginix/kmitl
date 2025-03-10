@@ -99,6 +99,7 @@ class BudgetTemplateStructure(models.AbstractModel):
             "code": template_line.code,
             "name": template_line.name,
             "sequence": template_line.sequence,
+            "has_children": template_line.child_ids.ids,
             "parent_id": template_line.parent_id.id,
             "level": template_line.hierarchy_level,
             "template_id": template_line.template_id.id,
