@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Tree View -->
+    <record id="view_project_kmitl_tree" model="ir.ui.view">
+        <field name="name">view.project.kmitl.tree</field>
+        <field name="model">project.kmitl</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="source"/>
+                <field name="user_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_project_kmitl_form" model="ir.ui.view">
+        <field name="name">view.project.kmitl.form</field>
+        <field name="model">project.kmitl</field>
+        <field name="arch" type="xml">
+            <form string="Project Kmitl">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="ชื่อโครงการ..."/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <field name="source"/>
+                        <field name="user_id"/>
+                        <field name="introduction"/>
+                        <field name="national_strategy_id"/>
+                        <field name="impact_ids" widget="many2many_tags"/>
+                        <field name="global_index_ids" widget="many2many_tags"/>
+                        <field name="okr" widget="many2many_tags"/>
+                        <field name="fight_ids" widget="many2many_tags"/>
+                        <field name="objective_ids">
+                            <tree editable="bottom">
+                                <field name="name"/>
+                            </tree>
+                        </field>
+                        <field name="location"/>
+                        <field name="methodology"/>
+                        <field name="methodology_description"/>
+                        <field name="output_ids">
+                            <tree editable="bottom">
+                                <field name="name"/>
+                                <field name="line_type"/>
+                                <field name="unit"/>
+                                <field name="target"/>
+                            </tree>
+                        </field>
+                        <field name="expected_result"/>
+                        <field name="evaluation_method_ids" widget="many2many_tags"/>
+                        <field name="evaluation_method_description"/>
+                        <field name="attachment_ids" filename="ชื่อไฟล์"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <!-- View project.kmitl search -->
+    <record id="view_project_kmitl_search" model="ir.ui.view">
+        <field name="name">view.project.kmitl.search</field>
+        <field name="model">project.kmitl</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action project.kmitl -->
+    <record id="action_project_kmitl" model="ir.actions.act_window">
+        <field name="name">Project Kmitl</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">project.kmitl</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Project Kmitl.
+            </p>
+        </field>
+    </record>
+
+    <menuitem action="action_project_kmitl" id="menu_project_proposal" name="Proposal" parent="project.menu_main_pm" sequence="2"/>
+
+</odoo>
