@@ -6,6 +6,7 @@ _logger = logging.getLogger(__name__)
 
 
 class AccountAnalyticPlan(models.Model):
+    _name = "account.analytic.plan"
     _inherit = ["account.analytic.plan", "mail.activity.mixin"]
 
     code = fields.Char(tracking=True)  # For internal identification
