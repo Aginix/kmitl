@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_capital_expenditure_tree" model="ir.ui.view">
+        <field name="name">view.capital.expenditure.tree</field>
+        <field name="model">capital.expenditure</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="amount" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_capital_expenditure_form" model="ir.ui.view">
+        <field name="name">capital.expenditure.form</field>
+        <field name="model">capital.expenditure</field>
+        <field name="arch" type="xml">
+            <form string="แผนการจัดซื้อจัดจ้าง">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="expected_purchase_date"/>
+                        <field name="note"/>
+                        <field name="payment"/>
+                        <field name="budget_plan_line_id" />
+                    </group>
+                    <group>
+                        <field name="amount" attrs="{'invisible': [('payment', '=', 'installment')]}"/>
+                    </group>
+                    <group>
+                        <field name="line_ids" attrs="{'invisible': [('payment', '=', 'single')]}">
+                            <tree editable="bottom">
+                                <field name="installment_date"/>
+                                <field name="installment_amount"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_purchase_plan_search" model="ir.ui.view">
+        <field name="name">view.capital.expenditure.search</field>
+        <field name="model">capital.expenditure</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_capital_expenditure" model="ir.actions.act_window">
+        <field name="name">Capital Expenditure</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">capital.expenditure</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Purchase Plan.
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+                id="action_capital_expenditure_menu_action"
+                name="Capital Expenditure"
+                action="action_capital_expenditure"
+                parent="budget.budget_root_menu"
+                sequence="89"
+            />
+
+</odoo>

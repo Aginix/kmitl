@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="budget_plan_ui.revenue_budget" owl="1">
+        <Budget_control_panel />
+        <div class="o_content">
+            <div class="o_budget_template_revenue_page py-4 px-0 overflow-auto border-bottom bg-view">
+                <div class="container-fluid">
+                    <RevenueBudgetRenderer />
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
