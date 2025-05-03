@@ -17,13 +17,11 @@ class ProjectKmitl(models.Model):
         string="ประเภทแหล่งเงิน",
     )
     introduction = fields.Html(string="หลักการและเหตุผล", sanitize_attributes=False)
-    national_strategy_id = fields.Integer(string="ความสอดคล้องกับยุทธศาสตร์ แผนระดับที่ 1")
-    impact_ids = fields.Many2many("project.impact", string="Allowed Journals")
-    global_index_ids = fields.Many2many(
-        "project.global.index", string="ความสอดคล้องกับนโยบายสถาบัน"
-    )
-    okr = fields.Many2many(
-        "project.okr", string="ความสอดคล้องกับนโยบายสถาบัน Objective Key Result (OKR)"
+    national_strategy_id = fields.Integer(string="ความสอดคล้องกับยุทธศาสตร์")
+    impact_ids = fields.Many2many("project.impact", string="Impact")
+    global_index_ids = fields.Many2many("project.global.index", string="Global Index")
+    okr_1 = fields.Many2many(
+        "project.okr", string="Objective Key Result (OKR)(ตัวชี้วัดตามแผนบริหารสถาบัน)"
     )
     fight_ids = fields.Many2many("project.fight", string="ความสอดคล้องกับค่านิยม")
     objective_ids = fields.One2many(
@@ -60,3 +58,19 @@ class ProjectKmitl(models.Model):
         "res.users", string="ผู้รับผิดชอบข้อมูล", default=lambda self: self.env.user
     )
     attachment_ids = fields.Binary(string="เอกสารประกอบการพิจารณาโครงการ")
+
+    @api.onchange("methodology")
+    def _onchange_methodology(self):
+        mapping = {
+            "describe": "บรรยาย",
+            "lecture": "บรรยายเชิงปฏิบัติการ",
+            "exhibition": "นิทรรศการ",
+            "other": "อื่น ๆ",
+        }
+        if self.methodology:
+            first_line = mapping.get(self.methodology, "")
+            current_text = self.methodology_description or ""
+            other_lines = (
+                "\n".join(current_text.split("\n")[1:]) if current_text else ""
+            )
+            self.methodology_description = f"{first_line}\n{other_lines}".strip()

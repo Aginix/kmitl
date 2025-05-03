@@ -6,10 +6,14 @@
     "author": "Aginix Technology",
     "website": "",
     "category": "",
-    "depends": ["base", "web", "project"],
+    "depends": ["base", "web", "project", "project_department"],
     "data": [
         "security/ir.model.access.csv",
         "views/project_kmitl_views.xml",
+        "data/project.evaluation.methods.csv",
+        "data/project.fight.csv",
+        "data/project.global.index.csv",
+        "data/project.impact.csv",
     ],
     "assets": {
         "web.assets_backend": ["project_proposal/static/src/**/*"],
