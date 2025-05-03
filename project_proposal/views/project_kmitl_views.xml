@@ -21,7 +21,6 @@
         <field name="arch" type="xml">
             <form string="Project Kmitl">
                 <sheet>
-
                     <group>
                         <field name="source" />
                         <field name="name" />
@@ -46,14 +45,20 @@
                         <field name="location" />
                         <field name="methodology" />
                         <field name="methodology_description" />
-                        <field name="output_ids">
-                            <tree editable="bottom">
-                                <field name="name" />
-                                <field name="line_type" />
-                                <field name="unit" />
-                                <field name="target" />
-                            </tree>
-                        </field>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="output_ids" widget="table_output">
+                                <tree editable="bottom">
+                                    <field name="name" />
+                                    <field name="line_type" />
+                                    <field name="unit" />
+                                    <field name="target" />
+                                </tree>
+                            </field>
+                        </group>
+                    </group>
+                    <group>
                         <field name="expected_result" />
                         <field name="evaluation_method_ids" widget="many2many_tags" />
                         <field name="evaluation_method_description" />
@@ -64,7 +69,6 @@
             </form>
         </field>
     </record>
-
 
     <!-- View project.kmitl search -->
     <record id="view_project_kmitl_search" model="ir.ui.view">
