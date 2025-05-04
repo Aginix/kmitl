@@ -6,6 +6,8 @@ export class List_render_output extends ListRenderer {
   setup() {
     super.setup();
   }
+  freezeColumnWidths() {
+  }
 }
 
 List_render_output.template = "project_proposal.List_render_output";
