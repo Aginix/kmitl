@@ -7,3 +7,4 @@ from . import project_output
 from . import project_evaluation_methods
 from . import project_fight
 from . import project_objectives
+from . import project_activity

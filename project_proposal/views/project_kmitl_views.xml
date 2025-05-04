@@ -20,8 +20,18 @@
         <field name="model">project.kmitl</field>
         <field name="arch" type="xml">
             <form string="Project Kmitl">
+                <header>
+                    <field name="state" widget="statusbar" />
+                    <button name="action_next_state"
+                        type="object"
+                        string="ถัดไป"
+                        class="btn-primary"
+                        icon="fa-arrow-right"
+                        attrs="{'invisible': [('state', '=', 'approved')]}" />
+                </header>
                 <sheet>
                     <group>
+                        <field name="date_range_fy_id" />
                         <field name="source" />
                         <field name="name" />
                         <field name="user_id" />
@@ -42,6 +52,12 @@
                                 <field name="name" />
                             </tree>
                         </field>
+                        <field name="department_id" />
+                        <field name="department_name" />
+                        <field name="project_manager_name" />
+                        <field name="project_manager_position" />
+                        <field name="project_manager_tel" />
+                        <field name="project_manager_email" />
                         <field name="location" />
                         <field name="methodology" />
                         <field name="methodology_description" />
@@ -59,10 +75,12 @@
                         </group>
                     </group>
                     <group>
+                        <field name="activity_ids" />
                         <field name="expected_result" />
                         <field name="evaluation_method_ids" widget="many2many_tags" />
                         <field name="evaluation_method_description" />
                         <field name="attachment_ids" filename="ชื่อไฟล์" />
+                        <field name="total_budget" />
                     </group>
 
                 </sheet>
