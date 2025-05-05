@@ -11,9 +11,9 @@ class BudgetPlan(models.Model):
     _description = "Budget Plan"
     _inherit = ["mail.thread"]
 
-    name = fields.Char(tracking=True)
+    name = fields.Char(string="ชื่อ", tracking=True)
     template_id = fields.Many2one(
-        comodel_name="budget.template", ondelete="restrict", tracking=True
+        string="โครงสร้างงบประมาณ", comodel_name="budget.template", ondelete="restrict", tracking=True
     )
     date_range_fy_id = fields.Many2one(
         comodel_name="account.fiscal.year",
@@ -29,7 +29,7 @@ class BudgetPlan(models.Model):
         readonly=False,
     )
     user_id = fields.Many2one(
-        string="Responsible user",
+        string="ชื่อผู้รับผิดชอบ",
         comodel_name="res.users",
         copy=False,
         tracking=True,

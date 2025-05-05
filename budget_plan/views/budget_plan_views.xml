@@ -82,7 +82,7 @@
 
     <!-- Action budget.plan -->
     <record id="action_budget_plan" model="ir.actions.act_window">
-        <field name="name">Budget Plan</field>
+        <field name="name">แผนงบประมาณ</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">budget.plan</field>
         <field name="view_mode">tree,form</field>
@@ -96,7 +96,7 @@
     </record>
 
     <menuitem
-        name="Budget Plan"
+        name="แผนงบประมาณ"
         sequence="1"
         parent="budget.budget_root_menu"
         id="menu_budget_plan"
