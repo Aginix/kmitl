@@ -19,9 +19,4 @@
             <value eval="[ref('account_kmitl.chart')]" />
         </function>
     </data>
-
-    <!-- <function model="account.chart.template" name="try_loading">
-        <value eval="[ref('account_kmitl.chart')]" />
-        <value model="res.company" eval="obj().env.ref('base.main_company')" />
-    </function> -->
 </odoo>
