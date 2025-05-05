@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_budget_expenditure_report" model="ir.actions.client">
+        <field name="name">Budget Expenditure Report</field>
+        <field name="res_model">report.budget.budget_expenditure_report</field>
+        <field name="tag">budget_expenditure_report</field>
+    </record>
+
+    <menuitem id="expenditure_reporting_menu"
+        name="Expenditure"
+        sequence="3"
+        parent="budget_reporting_menu"/>
+
+    <menuitem
+        id="budget_expenditure_report_menu"
+        name="Budget Expenditure Report"
+        action="action_budget_expenditure_report"
+        sequence="1"
+        parent="expenditure_reporting_menu"/>
+</odoo>

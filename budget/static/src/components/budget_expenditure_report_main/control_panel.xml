@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="budget.BudgetExpenditureReportControlPanel" owl="1">
+        <ControlPanel display="{
+            'bottom-right': false,
+        }">
+            <t t-set-slot="control-panel-bottom-left-buttons">
+                <div class="o_cp_buttons">
+                    <div class="o_list_buttons o_budget_template_structure_buttons">
+                        <button type="button" class="btn btn-primary">Print</button>
+                        <button t-on-click="clickUnfold" type="button" class="btn btn-primary ms-1">Unfold</button>
+                    </div>
+                </div>
+            </t>
+            <t t-set-slot="control-panel-top-right">
+                <form class="row gx-0">
+                    <div class="col-lg-8 row">
+                        <div class="col-lg-11 row gx-1 mb-1">
+                            <div class="col-xl-10 col-lg-9 col-sm-8">
+                                <Dropdown class="'btn-group'" togglerClass="'btn btn-secondary'">
+                                    <t t-set-slot="toggler">
+                                        <span class="fa fa-filter"/>
+                                        <t t-if="props.selectedBudgetTemplate">
+                                            <t t-esc="' ' + props.selectedBudgetTemplate.name" />
+                                        </t>
+                                    </t>
+                                    <t t-foreach="props.budgetTemplates" t-as="template" t-key="template.id">
+                                        <DropdownItem onSelected="() => this.props.changeBudgetTemplate(template.id)">
+                                            <t t-esc="template.name"/>
+                                        </DropdownItem>
+                                    </t>
+                                </Dropdown>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </t>
+        </ControlPanel>
+    </t>
+</templates>

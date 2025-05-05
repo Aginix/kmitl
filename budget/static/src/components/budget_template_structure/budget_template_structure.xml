@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates xml:space="preserve">
+    <div t-name="budget.BudgetTemplateStructure" class="o_action" owl="1">
+        <ControlPanel display="controlPanelDisplay">
+            <t t-set-slot="control-panel-bottom-left-buttons">
+                <div class="o_cp_buttons">
+                    <div class="o_list_buttons o_budget_template_structure_buttons">
+                        <button type="button" class="btn btn-primary">Print</button>
+                        <button
+                            t-on-click="clickUnfold"
+                            type="button"
+                            class="btn btn-primary ms-1"
+                        >Unfold</button>
+                    </div>
+                </div>
+            </t>
+        </ControlPanel>
+        <div class="o_content">
+            <div
+                class="o_budget_template_structure_page py-3 py-lg-5 px-0 overflow-auto border-bottom bg-view"
+            >
+                <div class="container-fluid">
+                    <div class="d-flex mb-5">
+                        <div class="me-auto">
+                            <h2>
+                                <t t-esc="budget_template.name" />
+                            </h2>
+                        </div>
+                    </div>
+                    <table class="o_budget_template_structure_expandable table">
+                        <thead>
+                            <tr>
+                                <th
+                                    class="text-center"
+                                    style="width: 148px;"
+                                >รหัสงบประมาณ</th>
+                                <th>ชื่อ</th>
+                                <th class="text-center">กองทุน</th>
+                                <th>รหัสบัญชี</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="data" t-as="line" t-key="line.id">
+                                <td class="text-center" style="width: 148px;">
+                                    <t t-esc="line.code" />
+                                </td>
+                                <td>
+                                    <div
+                                        t-attf-style="margin-left: {{ line.level * 24 }}px"
+                                    >
+                                        <div t-attf-class="d-inline-block">
+                                            <t t-esc="line.name" />
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div
+                                        class="o_field_tags d-inline-flex flex-wrap gap-1"
+                                    >
+                                        <span
+                                            t-foreach="line.fund_analytic_ids"
+                                            t-as="fund"
+                                            t-key="fund.id"
+                                            class="o_tag_color_0 badge rounded-pill o_tag d-inline-flex align-items-center mw-100"
+                                        >
+                                            <div class="o_tag_badge_text">
+                                                <t
+                                                    t-esc="fund.code + ' ' + fund.name"
+                                                />
+                                            </div>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td />
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</templates>

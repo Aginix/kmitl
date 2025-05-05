@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- View budget.move View Tree -->
+    <record id="view_budget_move_tree" model="ir.ui.view">
+        <field name="name">view.budget.move.tree</field>
+        <field name="model">budget.move</field>
+        <field name="arch" type="xml">
+            <tree
+                decoration-info="state == 'draft'"
+                decoration-muted="state == 'cancel'"
+            >
+                <field name="date" />
+                <field name="name" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- View budget.move form -->
+    <record id="view_budget_move_form" model="ir.ui.view">
+        <field name="name">view.budget.move.form</field>
+        <field name="model">budget.move</field>
+        <field name="arch" type="xml">
+            <form string="Budget Move">
+                <header>
+                    <button
+                        name="action_post"
+                        string="Post"
+                        class="oe_highlight"
+                        type="object"
+                        data-hotkey="v"
+                        attrs="{'invisible': [('hide_post_button', '=', True)]}"
+                    />
+                    <button
+                        name="button_draft"
+                        string="Reset to Draft"
+                        type="object"
+                        attrs="{'invisible' : [('show_reset_to_draft_button', '=', False)]}"
+                        data-hotkey="q"
+                    />
+                    <button
+                        name="button_cancel"
+                        string="Cancel"
+                        type="object"
+                        data-hotkey="w"
+                        attrs="{'invisible' : ['|', ('id', '=', False), ('state', '!=', 'draft')]}"
+                    />
+
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,posted"
+                        readonly="1"
+                    />
+                </header>
+                <!-- Invisible Fields -->
+                <field name="show_reset_to_draft_button" invisible="1" />
+                <field name="hide_post_button" invisible="1" />
+                <field name="state" invisible="1" />
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="date" />
+                            <field name="date_range_fy_id" />
+                            <field name="name" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="line_ids" string="Budget Move Lines">
+                            <field name="line_ids">
+                                <tree>
+                                    <field name="amount" />
+                                    <field
+                                        name="analytic_distribution"
+                                        widget="analytic_distribution"
+                                        groups="analytic.group_analytic_accounting"
+                                    />
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="help" string="Help">
+                            <div name="help">
+                                <p>
+                                    This operation will involve creating a template for budget
+                                    checking, which will have the following principles of creation.
+                                </p>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_ids" widget="mail_thread" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- View budget.move search -->
+    <record id="view_budget_move_search" model="ir.ui.view">
+        <field name="name">view.budget.move.search</field>
+        <field name="model">budget.move</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter
+                        string="Name"
+                        name="name"
+                        domain="[]"
+                        context="{'group_by':'name'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action budget.move -->
+    <record id="action_budget_move" model="ir.actions.act_window">
+        <field name="name">Budget Move</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">budget.move</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Budget Move.
+            </p>
+        </field>
+    </record>
+
+</odoo>
