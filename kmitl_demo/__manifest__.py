@@ -18,6 +18,7 @@
         "data/company.xml",
         "data/hr.department.csv",
         "data/account.fiscal.year.csv",
+        "data/ir_config_parameter.xml"
     ],
     "application": False,
     "installable": True,

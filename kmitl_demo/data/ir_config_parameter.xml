@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ปิดการสมัครสมาชิก -->
+    <record id="config_no_signup" model="ir.config_parameter">
+        <field name="key">auth_signup.invitation_scope</field>
+        <field name="value">False</field>
+    </record>
+
+    <!-- ปิด Reset Password -->
+    <record id="config_no_reset_password" model="ir.config_parameter">
+        <field name="key">auth_signup.reset_password</field>
+        <field name="value">False</field>
+    </record>
+</odoo>
