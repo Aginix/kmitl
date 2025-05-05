@@ -6,10 +6,8 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["base", "account", "account_kmitl"],
-    "data": [
-        "data/company.xml",
-    ],
+    "depends": ["base", "account", "account_kmitl", "hr"],
+    "data": ["data/company.xml", "data/hr_department.csv"],
     "application": False,
     "installable": True,
     "auto_install": False,
