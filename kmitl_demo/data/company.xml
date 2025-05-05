@@ -27,6 +27,5 @@
 
     <function model="res.config.settings" name="execute">
         <value eval="[ref('res_config_settings_enable_analytic_accounting')]"/>
-        <value eval="{}"/>
     </function>
 </odoo>
