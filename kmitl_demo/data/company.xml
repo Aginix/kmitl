@@ -13,14 +13,6 @@
         <field name="logo" type="base64" file="kmitl_demo/static/src/img/logo.png"/>
     </record>
 
-    <record model="res.config.settings" id="res_config_settings_setup_coa">
-        <field name="chart_template_id" eval="[ref('account_kmitl.chart')]"/>
-    </record>
-
-    <function model="res.config.settings" name="execute">
-        <value eval="[ref('res_config_settings_setup_coa')]"/>
-    </function>
-
     <!-- เปิดใช้งาน Analytic Accounting -->
     <record model="res.config.settings" id="res_config_settings_enable_analytic_accounting">
         <field name="group_analytic_accounting" eval="1"/>
