@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem id="budget_root_menu" name="Budgeting" sequence="10">
+
+        <!-- <menuitem id="budget_move_menu" name="Budget Moves" sequence="30">
+            <menuitem
+                id="action_budget_move_menu_action"
+                name="Budget Moves"
+                action="action_budget_move"
+            />
+        </menuitem> -->
+        <menuitem
+            id="budget_appropriation_management"
+            name="Budget Appropriations"
+            sequence="30"
+        >
+            <menuitem
+                id="budget_appropriation_menu"
+                name="Budget Appropriations"
+                sequence="1"
+            >
+                <menuitem
+                    id="action_budget_appropriation_menu_action"
+                    name="Budget Appropriation Entries"
+                    action="action_budget_appropriation"
+                />
+                <menuitem
+                    id="action_budget_appropriation_line_menu_action"
+                    name="Budget Appropriation Items"
+                    action="action_budget_appropriation_line"
+                />
+            </menuitem>
+        </menuitem>
+        <menuitem
+            id="budget_commitment_management"
+            name="Budget Commitments"
+            sequence="30"
+        >
+            <menuitem
+                id="budget_commitment_menu"
+                name="Budget Commitments"
+                sequence="1"
+            >
+                <menuitem
+                    id="action_budget_commitment_menu_action"
+                    name="Budget Commitment Entries"
+                    action="action_budget_commitment"
+                />
+                <menuitem
+                    id="action_budget_commitment_line_menu_action"
+                    name="Budget Commitment Items"
+                    action="action_budget_commitment_line"
+                />
+            </menuitem>
+        </menuitem>
+        <menuitem id="budget_reporting_menu" name="Reporting" sequence="90" />
+        <menuitem id="budget_config_menu" name="Configuration" sequence="99">
+            <menuitem
+                id="action_budget_template_menu_action"
+                name="Budget Template"
+                action="action_budget_template"
+            />
+        </menuitem>
+    </menuitem>
+</odoo>

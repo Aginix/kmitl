@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <div t-name="budget.BudgetExpenditureReportMain" class="main o_action" owl="1">
+        <BudgetExpenditureReportControlPanel budgetTemplates="state.budgetTemplates" changeBudgetTemplate.bind="onChangeBudgetTemplate" selectedBudgetTemplate="selectedBudgetTemplate" />
+        <div class="o_content">
+            <div class="o_budget_expenditure_report_page py-1 py-lg-2 px-0 overflow-auto border-bottom bg-view">
+                <div class="container-fluid">
+                    <table class="o_budget_expenditure_report_expandable table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th name="name" rowSpan="2">รหัสงบประมาณ</th>
+                                <th name="var_a" class="text-center" rowSpan="2" style="width: 120px;">งบประมาณ                                    <br />
+(a)</th>
+                                <th class="text-center" colSpan="5">ขอใช้/ผูกพัน/ตัดจ่าย/ส่งคืน</th>
+                                <th name="var_b" class="text-center" rowSpan="2" style="width: 120px;">งบประมาณคงเหลือ                                    <br />
+(g) = (a) - (f)</th>
+                            </tr>
+                            <tr>
+                                <th name="var_c" class="text-center" style="width: 120px;">รอยืนยันจองเงิน                                    <br />
+(b)</th>
+                                <th name="var_d" class="text-center" style="width: 120px;">จองเงิน                                    <br/>
+(c)</th>
+                                <th name="var_e" class="text-center" style="width: 120px;">ผูกพัน                                    <br/>
+(d)</th>
+                                <th name="var_f" class="text-center" style="width: 120px;">เบิกจ่ายแล้ว                                    <br/>
+(e)</th>
+                                <th name="var_g" class="text-center" style="width: 120px;">รวม                                    <br/>
+(f) = (b) + (c) + (d) + (e)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="state.report.lines" t-as="line" t-key="line.id">
+                                <td>
+                                    <div t-attf-style="margin-left: {{ line.level * 24 }}px">
+                                        <div t-attf-class="d-inline-block">
+                                            <t t-esc="line.code + ' ' + line.name" />
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    <t t-esc="formatFloat(line.a, {'digits': [false, precision]})" />
+                                </td>
+                                <td class="text-end">
+                                    <t t-esc="formatFloat(line.b, {'digits': [false, precision]})" />
+                                </td>
+                                <td class="text-end">
+                                    <t t-esc="formatFloat(line.c, {'digits': [false, precision]})" />
+                                </td>
+                                <td class="text-end">
+                                    <t t-esc="formatFloat(line.d, {'digits': [false, precision]})" />
+                                </td>
+                                <td class="text-end">
+                                    <t t-esc="formatFloat(line.e, {'digits': [false, precision]})" />
+                                </td>
+                                <td class="text-end">
+                                    <t t-esc="formatFloat(line.f, {'digits': [false, precision]})" />
+                                </td>
+                                <td class="text-end">
+                                    <t t-esc="formatFloat(line.g, {'digits': [false, precision]})" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</templates>
