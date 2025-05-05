@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 class BudgetTemplate(models.Model):
     _name = "budget.template"
     _description = "Budget Template"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ["mail.thread"]
 
     name = fields.Char(tracking=True)
     date_range_fy_id = fields.Many2one(
@@ -210,7 +210,7 @@ class BudgetTemplateLine(models.Model):
 
 
 class BudgetTemplateLineAccount(models.Model):
-    _name = "budget.template.line.account"
+    _name = _description = "budget.template.line.account"
 
     budget_template_line_id = fields.Many2one(
         "budget.template.line",

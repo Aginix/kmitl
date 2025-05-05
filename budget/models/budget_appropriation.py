@@ -146,7 +146,7 @@ class BudgetAppropriation(models.Model):
 class BudgetAppropriationLine(models.Model):
     _name = "budget.appropriation.line"
     _description = "Budget Appropriation Line"
-    _inherit = ["analytic.distribution.mixin"]
+    _inherit = ["analytic.distribution.mixin", "mail.thread"]
 
     appropriation_id = fields.Many2one(
         comodel_name="budget.appropriation",
