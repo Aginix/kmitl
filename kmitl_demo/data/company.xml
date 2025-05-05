@@ -2,9 +2,7 @@
 <odoo>
     <record id="base.main_company" model="res.company">
         <field name="name">สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</field>
-        <field
-            name="street"
-        >1 Chalong Krung 1 Alley, สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง ถนนฉลองกรุง เขตลาดกระบัง</field>
+        <field name="street">1 Chalong Krung 1 Alley, สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง ถนนฉลองกรุง เขตลาดกระบัง</field>
         <field name="city">กรุงเทพ</field>
         <field name="country_id" ref="base.th" />
 
@@ -12,6 +10,14 @@
         <field name="phone">+66 2 329 8000</field>
         <field name="email">pr.kmitl@demo.kmitl.ac.th</field>
         <field name="website">www.kmitl.ac.th/</field>
+        <field name="lang">th_TH</field>
+        <field name="use_analytic_accounts" eval="True"/>
+        <field name="logo" type="base64" file="kmitl_demo/static/src/img/logo.png"/>
+    </record>
+
+    <!-- ตั้งค่าภาษาให้กับผู้ใช้ทั้งหมด -->
+    <record id="base.user_admin" model="res.users">
+        <field name="lang">th_TH</field>        <!-- ตั้งค่าภาษาเป็นภาษาไทยสำหรับ Admin -->
     </record>
 
     <data noupdate="1">
