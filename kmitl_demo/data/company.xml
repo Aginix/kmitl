@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="base.main_company" model="res.company">
-        <field name="name">King Mongkut's Institute of Technology Ladkrabang</field>
+        <field name="name">สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</field>
         <field
             name="street"
         >1 Chalong Krung 1 Alley, สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง ถนนฉลองกรุง เขตลาดกระบัง</field>
