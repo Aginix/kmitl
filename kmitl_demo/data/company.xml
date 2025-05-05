@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="base.main_company" model="res.company">
+        <field name="name">King Mongkut's Institute of Technology Ladkrabang</field>
+        <field
+            name="street"
+        >1 Chalong Krung 1 Alley, สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง ถนนฉลองกรุง เขตลาดกระบัง</field>
+        <field name="city">กรุงเทพ</field>
+        <field name="country_id" ref="base.th" />
+
+        <field name="zip">10520</field>
+        <field name="phone">+66 2 329 8000</field>
+        <field name="email">pr.kmitl@demo.kmitl.ac.th</field>
+        <field name="website">www.kmitl.ac.th/</field>
+    </record>
+
+    <function model="account.chart.template" name="try_loading">
+        <value eval="[ref('account_kmitl.chart')]" />
+        <value model="res.company" eval="obj().env.ref('base.main_company')" />
+    </function>
+</odoo>
