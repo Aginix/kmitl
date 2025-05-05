@@ -133,15 +133,6 @@ class BudgetTemplateLine(models.Model):
         )
     ]
 
-    @api.model
-    def create(self, vals_list):
-        # ตรวจสอบว่า vals_list เป็น list หรือไม่
-        if not isinstance(vals_list, list):
-            vals_list = [vals_list]  # แปลงเป็น list ถ้าเป็น dict เดียว
-
-        records = super(BudgetTemplateLine, self).create(vals_list)
-        return records
-
     def write(self, vals):
         res = super(BudgetTemplateLine, self).write(vals)
         if "fund_analytic_ids" in vals:
