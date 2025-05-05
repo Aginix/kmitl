@@ -2,7 +2,7 @@
 <odoo>
     <data>
         <!-- ปิดการสมัครสมาชิก -->
-        <function model="ir.config_parameter" name="set_param" eval="('auth_signup.invitation_scope', 'False')"/>
+        <function model="ir.config_parameter" name="set_param" eval="('auth_signup.invitation_scope', 'b2b')"/>
         <!-- ปิด Reset Password -->
         <function model="ir.config_parameter" name="set_param" eval="('auth_signup.reset_password', 'False')"/>
     </data>
