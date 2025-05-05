@@ -75,7 +75,26 @@
                         </group>
                     </group>
                     <group>
-                        <field name="activity_ids" />
+                        <field name="activity_ids" widget="table_activity">
+                            <tree>
+                                <field name="name" />
+                                <field name="amount" />
+                                <field name="line_type" invisible="1" />
+                                <field name="parent_id" invisible="1" />
+                                <field name="m10" />
+                                <field name="m11" />
+                                <field name="m12" />
+                                <field name="m1" />
+                                <field name="m2" />
+                                <field name="m3" />
+                                <field name="m4" />
+                                <field name="m5" />
+                                <field name="m6" />
+                                <field name="m7" />
+                                <field name="m8" />
+                                <field name="m9" />
+                            </tree>
+                        </field>
                         <field name="expected_result" />
                         <field name="evaluation_method_ids" widget="many2many_tags" />
                         <field name="evaluation_method_description" />
@@ -115,6 +134,76 @@
             </p>
         </field>
     </record>
+
+    <record id="view_form_project_activity" model="ir.ui.view">
+        <field name="name">project.activity.form</field>
+        <field name="model">project.activity</field>
+        <field name="arch" type="xml">
+            <form string="กิจกรรม / ขั้นตอน">
+                <sheet>
+                    <group>
+                        <field name="name"
+                            attrs="{'readonly': [
+                                        '|', '|', '|',
+                                        ('name', '=', 'ดําเนินงานตามแผน'),
+                                        ('name', '=', 'วางแผนการดําเนินงาน'),
+                                        ('name', '=', 'สรุป/ประเมินผลการดําเนินงาน'),
+                                        ('name', '=', 'รายงานผลโครงการ')
+                                    ]}" />
+                        <field name="seq" />
+                        <field name="amount"
+                            attrs="{'readonly': [('name', '=', 'ดําเนินงานตามแผน')]}" />
+                        <field name="line_type" />
+                        <field name="parent_id" options="{'no_create': True}" readonly="1" />
+                        <field name="project_kmitl_id" readonly="1" />
+                    </group>
+
+                    <group string="ระบุเดือนที่ดำเนินการ" col="4">
+                        <separator string="ไตรมาสที่ 1 (ต.ค. - ธ.ค.)" colspan="3" />
+                        <group>
+                            <field name="m10" />
+                            <field name="m11" />
+                            <field name="m12" />
+                        </group>
+
+                        <separator string="ไตรมาสที่ 2 (ม.ค. - มี.ค.)" colspan="3" />
+                        <group>
+                            <field name="m1" />
+                            <field name="m2" />
+                            <field name="m3" />
+                        </group>
+
+                        <separator string="ไตรมาสที่ 3 (เม.ย. - มิ.ย.)" colspan="3" />
+                        <group>
+                            <field name="m4" />
+                            <field name="m5" />
+                            <field name="m6" />
+                        </group>
+
+                        <separator string="ไตรมาสที่ 4 (ก.ค. - ก.ย.)" colspan="3" />
+                        <group>
+                            <field name="m7" />
+                            <field name="m8" />
+                            <field name="m9" />
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="รายการย่อย">
+                            <field name="child_ids" readonly="1">
+                                <tree editable="bottom">
+                                    <field name="name" />
+                                    <field name="amount" />
+                                    <field name="seq" />
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
 
     <menuitem action="action_project_kmitl" id="menu_project_proposal" name="Proposal"
         parent="project.menu_main_pm" sequence="2" />

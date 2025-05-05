@@ -46,7 +46,7 @@
     <t t-name="project_proposal.ListRenderer.Rows" owl="1">
         <t t-if="!list.isGrouped">
             <tr class="o_data_row fw-bold">
-                <td>13.1 ผลผลิต (Output)</td>
+                <td>ผลผลิต (Output)</td>
                 <td></td>
                 <td></td>
             </tr>
@@ -77,7 +77,7 @@
                 </td>
             </tr>
             <tr class="o_data_row fw-bold">
-                <td>13.2 ผลลัพธ์ (Outcome)</td>
+                <td>ผลลัพธ์ (Outcome)</td>
                 <td></td>
                 <td></td>
             </tr>

@@ -3,22 +3,23 @@
 import { registry } from "@web/core/registry";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import { X2ManyField } from "@web/views/fields/x2many/x2many_field";
-import { List_renderer_output } from "../list_renderer_output/list_renderer_output";
+import { List_rendererer_activity } from "../list_renderer_activity/list_renderer_activity"
 
-export class Table_output extends X2ManyField {
+export class Table_activity extends X2ManyField {
   setup() {
     super.setup();
+    
   }
 }
 
-Table_output.props = {
+Table_activity.props = {
   ...standardFieldProps,
   addLabel: { type: String, optional: true },
   editable: { type: String, optional: true },
 };
-Table_output.components = {
-  List_renderer_output,
+Table_activity.template = "project_proposal.Table_activity";
+Table_activity.components = {
+  List_rendererer_activity,
 };
-Table_output.template = "project_proposal.Table_output";
 
-registry.category("fields").add("table_output", Table_output);
+registry.category("fields").add("table_activity", Table_activity);

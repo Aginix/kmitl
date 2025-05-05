@@ -88,6 +88,43 @@ class ProjectKmitl(models.Model):
         default="draft",
     )
 
+    @api.model
+    def create(self, vals):
+        record = super().create(vals)
+        self.env["project.activity"].create(
+            {
+                "name": "วางแผนการดําเนินงาน",
+                "seq": 1,
+                "line_type": "plan",
+                "project_kmitl_id": record.id,
+            }
+        )
+        self.env["project.activity"].create(
+            {
+                "name": "ดําเนินงานตามแผน",
+                "seq": 1,
+                "line_type": "plan",
+                "project_kmitl_id": record.id,
+            }
+        )
+        self.env["project.activity"].create(
+            {
+                "name": "สรุป/ประเมินผลการดําเนินงาน",
+                "seq": 1,
+                "line_type": "plan",
+                "project_kmitl_id": record.id,
+            }
+        )
+        self.env["project.activity"].create(
+            {
+                "name": "รายงานผลโครงการ",
+                "seq": 1,
+                "line_type": "plan",
+                "project_kmitl_id": record.id,
+            }
+        )
+        return record
+
     def action_next_state(self):
         for rec in self:
             if rec.state == "draft":
