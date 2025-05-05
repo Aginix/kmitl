@@ -10,6 +10,7 @@ _logger = logging.getLogger(__name__)
 class ProjectKmitl(models.Model):
     _name = "project.kmitl"
     _description = "ProjectKmitl"
+    _inherit = ["mail.thread"]
 
     date_range_fy_id = fields.Many2one(
         comodel_name="account.fiscal.year",
@@ -38,7 +39,7 @@ class ProjectKmitl(models.Model):
         comodel_name="hr.department", string="หน่วยงานผู้รับผิดชอบโครงการ"
     )
     department_name = fields.Char(
-        string="หน่วยงานผู้รับผิดชอบโครงการ", related="department_id.name", store=True
+        string="=ชื่อหน่วยงานผู้รับผิดชอบโครงการ", related="department_id.name", store=True
     )
     project_manager_name = fields.Char(string="หัวหน้าโครงการ")
     project_manager_position = fields.Char(string="หัวหน้าโครงการ ตำแหน่ง")
@@ -88,42 +89,39 @@ class ProjectKmitl(models.Model):
         default="draft",
     )
 
-    @api.model
-    def create(self, vals):
-        record = super().create(vals)
-        self.env["project.activity"].create(
-            {
-                "name": "วางแผนการดําเนินงาน",
-                "seq": 1,
-                "line_type": "plan",
-                "project_kmitl_id": record.id,
-            }
-        )
-        self.env["project.activity"].create(
-            {
-                "name": "ดําเนินงานตามแผน",
-                "seq": 1,
-                "line_type": "plan",
-                "project_kmitl_id": record.id,
-            }
-        )
-        self.env["project.activity"].create(
-            {
-                "name": "สรุป/ประเมินผลการดําเนินงาน",
-                "seq": 1,
-                "line_type": "plan",
-                "project_kmitl_id": record.id,
-            }
-        )
-        self.env["project.activity"].create(
-            {
-                "name": "รายงานผลโครงการ",
-                "seq": 1,
-                "line_type": "plan",
-                "project_kmitl_id": record.id,
-            }
-        )
-        return record
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        for record in records:
+            self.env["project.activity"].create(
+                [
+                    {
+                        "name": "วางแผนการดําเนินงาน",
+                        "seq": 1,
+                        "line_type": "plan",
+                        "project_kmitl_id": record.id,
+                    },
+                    {
+                        "name": "ดําเนินงานตามแผน",
+                        "seq": 1,
+                        "line_type": "plan",
+                        "project_kmitl_id": record.id,
+                    },
+                    {
+                        "name": "สรุป/ประเมินผลการดําเนินงาน",
+                        "seq": 1,
+                        "line_type": "plan",
+                        "project_kmitl_id": record.id,
+                    },
+                    {
+                        "name": "รายงานผลโครงการ",
+                        "seq": 1,
+                        "line_type": "plan",
+                        "project_kmitl_id": record.id,
+                    },
+                ]
+            )
+        return records
 
     def action_next_state(self):
         for rec in self:

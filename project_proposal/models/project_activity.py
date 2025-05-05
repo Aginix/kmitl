@@ -25,7 +25,7 @@ class ProjectActivity(models.Model):
         "project.activity", string="รายการแม่", index=True, ondelete="cascade"
     )
     child_ids = fields.One2many("project.activity", "parent_id", string="รายการย่อย")
-    parent_path = fields.Char(index=True)
+    parent_path = fields.Char(index=True, unaccent=False)
     m1 = fields.Boolean(string="ม.ค.")
     m2 = fields.Boolean(string="ก.พ.")
     m3 = fields.Boolean(string="มี.ค.")
@@ -39,6 +39,31 @@ class ProjectActivity(models.Model):
     m11 = fields.Boolean(string="พ.ย.")
     m12 = fields.Boolean(string="ธ.ค.")
     project_kmitl_id = fields.Many2one("project.kmitl", string="โครงการ", readonly=True)
+    amount_grouped = fields.Float(
+        string="รวมงบประมาณย่อย",
+        compute="_compute_amount_grouped",
+        store=True,
+    )
+    activity_ids = fields.One2many(
+        "project.activity", "project_kmitl_id", string="กิจกรรมทั้งหมด"
+    )
+    total_activity = fields.Float(
+        string="รวมงบประมาณทั้งหมด",
+        compute="_compute_total_activity",
+        store=True,
+    )
+
+    @api.depends("activity_ids.amount")
+    def _compute_total_activity(self):
+        for record in self:
+            record.total_activity = sum(
+                activity.amount for activity in record.activity_ids
+            )
+
+    @api.depends("child_ids.amount")
+    def _compute_amount_grouped(self):
+        for rec in self:
+            rec.amount_grouped = sum(child.amount for child in rec.child_ids)
 
     @api.onchange("line_type")
     def _onchange_line_type(self):

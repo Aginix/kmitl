@@ -79,6 +79,7 @@
                             <tree>
                                 <field name="name" />
                                 <field name="amount" />
+                                <field name="amount_grouped" invisible="1" />
                                 <field name="line_type" invisible="1" />
                                 <field name="parent_id" invisible="1" />
                                 <field name="m10" />
@@ -93,6 +94,7 @@
                                 <field name="m7" />
                                 <field name="m8" />
                                 <field name="m9" />
+                                <field name="total_activity" readonly="1"/>
                             </tree>
                         </field>
                         <field name="expected_result" />
@@ -151,6 +153,8 @@
                                         ('name', '=', 'รายงานผลโครงการ')
                                     ]}" />
                         <field name="seq" />
+                        <field name="amount_grouped"
+                            attrs="{'invisible': [('name', '!=', 'ดําเนินงานตามแผน')]}" />
                         <field name="amount"
                             attrs="{'readonly': [('name', '=', 'ดําเนินงานตามแผน')]}" />
                         <field name="line_type" />

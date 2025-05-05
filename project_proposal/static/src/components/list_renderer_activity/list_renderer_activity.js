@@ -1,10 +1,16 @@
 /** @odoo-module **/
 
 import { ListRenderer } from "@web/views/list/list_renderer";
+import {
+  useState,
+
+} from "@odoo/owl";
 
 export class List_rendererer_activity extends ListRenderer {
   setup() {
     super.setup();
+    const total = this.props.list.records.reduce((sum, rec) => sum + rec.data.amount, 0);
+
   }
   freezeColumnWidths() {}
 

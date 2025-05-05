@@ -73,7 +73,7 @@
                 <t t-call="{{ constructor.recordRowTemplate }}"/>
                 <!-- create btn  -->
                 <t t-if="record.data.name === 'ดําเนินงานตามแผน'">
-
+                
                     <!-- child -->
                     <t t-foreach="child_records" t-as="record" t-key="record.id">
                         <t t-call="{{ constructor.recordRowTemplate }}"/>
@@ -122,7 +122,7 @@
                 </td>
                 <!-- total  -->
                 <td class="text-end">
-                    155,000
+                    <t t-esc="props.list.records.reduce((sum, rec) => sum + rec.data.amount, 0);"/>
                 </td>
             </tr>
         </t>
@@ -150,13 +150,28 @@
                         t-att-class="getCellClass(column, record)  + (record.data.parent_id ? ' bg-light' : '')"
                         t-att-name="column.name"
                         t-att-colspan="column.colspan"
-                        t-att-style="record.data.parent_id ? 'padding-left: 15px;' : ''"
+                        t-att-style="record.data.parent_id and column.name === 'name' ? 'padding-left: 15px;' : ''"
                         t-att-data-tooltip="!isInvisible ? getCellTitle(column, record) : false"
                         data-tooltip-delay="1000"
                         t-on-click="(ev) => this.onCellClicked(record, column, ev)" tabindex="-1">
-                        <t t-if="!isInvisible">
-                            <t t-if="canUseFormatter(column, record)" t-out="getFormattedValue(column, record)"/>
-                            <Field t-else="" name="column.name" record="record" type="column.widget" class="getFieldClass(column)" fieldInfo="props.archInfo.fieldNodes[column.name]" setDirty="(isDirty) => this.setDirty(isDirty)" readonly="props.activeActions?.edit === false and !record.isNew"/>
+                        <t t-if="column.name != 'total_activity'">
+                            
+                        
+                            <t t-if="!isInvisible and column.name != 'amount'">
+                                <t t-if="canUseFormatter(column, record)" t-out="getFormattedValue(column, record)"/>
+                                <Field t-else="" name="column.name" record="record" type="column.widget" class="getFieldClass(column)" fieldInfo="props.archInfo.fieldNodes[column.name]" setDirty="(isDirty) => this.setDirty(isDirty)" readonly="props.activeActions?.edit === false and !record.isNew"/>
+                            </t>
+                            <t t-else="">
+                                <t t-set="field_name" t-value="record.data.name === 'ดําเนินงานตามแผน' ? 'amount_grouped' : 'amount'" />
+                                <Field
+                                    name="field_name"
+                                    record="record"
+                                    type="column.widget"
+                                    class="getFieldClass(column)"
+                                    fieldInfo="props.archInfo.fieldNodes[field_name]"
+                                    setDirty="(isDirty) => this.setDirty(isDirty)"
+                                    readonly="props.activeActions?.edit === false and !record.isNew" />
+                            </t>
                         </t>
                     </td>
                 </t>
