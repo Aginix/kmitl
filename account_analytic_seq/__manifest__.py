@@ -1,7 +1,7 @@
 {
-    "name": "Account Analytic Req",
+    "name": "Account Analytic Seq",
     "version": "16.0.1.0.0",
-    "summary": """ Account Analytic Req Summary """,
+    "summary": """ Account Analytic sequence field for ordering""",
     "category": "Accounting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
