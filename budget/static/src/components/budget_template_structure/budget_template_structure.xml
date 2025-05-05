@@ -4,14 +4,14 @@
         <ControlPanel display="controlPanelDisplay">
             <t t-set-slot="control-panel-bottom-left-buttons">
                 <div class="o_cp_buttons">
-                    <div class="o_list_buttons o_budget_template_structure_buttons">
+                    <!-- <div class="o_list_buttons o_budget_template_structure_buttons">
                         <button type="button" class="btn btn-primary">Print</button>
                         <button
                             t-on-click="clickUnfold"
                             type="button"
                             class="btn btn-primary ms-1"
                         >Unfold</button>
-                    </div>
+                    </div> -->
                 </div>
             </t>
         </ControlPanel>
