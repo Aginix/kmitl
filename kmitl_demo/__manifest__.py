@@ -8,7 +8,7 @@
     "category": "",
     "depends": ["account_kmitl"],
     "data": ["data/company.xml"],
-    "application": false,
+    "application": False,
     "installable": True,
     "auto_install": False,
     "license": "LGPL-3",
