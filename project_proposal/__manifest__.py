@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 {
-    "name": "Project_proposal",
+    "name": "Project Proposal",
     "version": "16.0.1.0.0",
-    "summary": """ Project_proposal Summary """,
+    "summary": """ Project Proposal Summary """,
     "author": "Aginix Technology",
     "website": "",
-    "category": "",
+    "category": "KMITL",
     "depends": ["base", "web", "project", "hr", "account_fiscal_year"],
     "data": [
         "data/project.evaluation.methods.csv",
