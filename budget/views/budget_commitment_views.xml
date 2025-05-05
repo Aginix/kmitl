@@ -12,12 +12,7 @@
                 <field name="date_range_fy_id" />
                 <field name="department_analytic_id" />
                 <field name="source_analytic_id" />
-                <field
-                    name="state"
-                    widget="badge"
-                    decoration-info="state == 'draft'"
-                    decoration-success="state == 'posted'"
-                />
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'posted'" />
             </tree>
         </field>
     </record>
@@ -29,35 +24,11 @@
         <field name="arch" type="xml">
             <form string="Budget Commitment">
                 <header>
-                    <button
-                        name="action_submit"
-                        string="Submit"
-                        class="oe_highlight"
-                        type="object"
-                        data-hotkey="v"
-                        attrs="{'invisible': [('hide_post_button', '=', True)]}"
-                    />
-                    <button
-                        name="button_draft"
-                        string="Reset to Draft"
-                        type="object"
-                        attrs="{'invisible' : [('show_reset_to_draft_button', '=', False)]}"
-                        data-hotkey="q"
-                    />
-                    <button
-                        name="button_cancel"
-                        string="Cancel"
-                        type="object"
-                        data-hotkey="w"
-                        attrs="{'invisible' : ['|', ('id', '=', False), ('state', '!=', 'draft')]}"
-                    />
+                    <button name="action_submit" string="Submit" class="oe_highlight" type="object" data-hotkey="v" attrs="{'invisible': [('hide_post_button', '=', True)]}" />
+                    <button name="button_draft" string="Reset to Draft" type="object" attrs="{'invisible' : [('show_reset_to_draft_button', '=', False)]}" data-hotkey="q" />
+                    <button name="button_cancel" string="Cancel" type="object" data-hotkey="w" attrs="{'invisible' : ['|', ('id', '=', False), ('state', '!=', 'draft')]}" />
 
-                    <field
-                        name="state"
-                        widget="statusbar"
-                        statusbar_visible="draft,submitted,reserved,obligated,done"
-                        readonly="1"
-                    />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,reserved,obligated,done" readonly="1" />
                 </header>
                 <!-- Invisible Fields -->
                 <field name="show_reset_to_draft_button" invisible="1" />
@@ -68,20 +39,14 @@
                         <group>
                             <field name="name" />
                             <field name="date" />
-                <field name="template_id" />
-                            <field
-                                name="date_range_fy_id"
-                                options='{"no_open": True}'
+                            <field name="template_id" />
+                            <field name="date_range_fy_id" options='{"no_open": True}'
                             />
-                            <field
-                                name="department_analytic_id"
-                                options='{"no_open": True}'
+<field name="department_analytic_id" options='{"no_open": True}'
                             />
-                            <field
-                                name="source_analytic_id"
-                                options='{"no_open": True}'
+<field name="source_analytic_id" options='{"no_open": True}'
                             />
-                            <field name="user_id" />
+<field name="user_id" />
                             <field name="ref" />
                             <field name="note" />
                         </group>
@@ -92,35 +57,24 @@
                                 <tree>
                                     <field name="date_range_fy_id" invisible="1" />
                                     <field name="commitment_id" invisible="1" />
-                                    <field
-                                        name="department_analytic_id"
-                                        options='{"no_open": True}'
+                                    <field name="department_analytic_id" options='{"no_open": True}'
                                     />
-                                    <field
-                                        name="activity_analytic_id"
-                                        options='{"no_open": True}'
+<field name="activity_analytic_id" options='{"no_open": True}'
                                     />
-                                    <field
-                                        name="fund_analytic_id"
-                                        options='{"no_open": True}'
+<field name="fund_analytic_id" options='{"no_open": True}'
                                     />
-                                    <field
-                                        name="template_id"
-                                        options='{"no_open": True}'
+<field name="template_id" options='{"no_open": True}'
                                     />
-                                    <field
-                                        name="template_line_id"
-                                        options='{"no_open": True}'
+<field name="template_line_id" options='{"no_open": True}'
                                     />
-                                    <field name="amount" />
+<field name="amount" />
                                 </tree>
                             </field>
                         </page>
                         <page name="help" string="Help">
                             <div name="help">
                                 <p>
-                                    This operation will involve creating a template for budget
-                                    checking, which will have the following principles of creation.
+                                    คำอธิบายรอใส่ภายหลัง
                                 </p>
                             </div>
                         </page>
@@ -138,13 +92,7 @@
         <field name="name">view.budget.commitment.line.tree</field>
         <field name="model">budget.commitment.line</field>
         <field name="arch" type="xml">
-            <tree
-                create="false"
-                edit="false"
-                delete="false"
-                expand="context.get('expand', False)"
-                sample="1"
-            >
+            <tree create="false" edit="false" delete="false" expand="context.get('expand', False)" sample="1">
                 <field name="commitment_id" widget="many2onebutton" />
                 <field name="date_range_fy_id" />
                 <field name="department_analytic_id" />
@@ -185,12 +133,7 @@
         <field name="arch" type="xml">
             <search>
                 <group expand="1" string="Group By">
-                    <filter
-                        string="Name"
-                        name="name"
-                        domain="[]"
-                        context="{'group_by':'name'}"
-                    />
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}" />
                 </group>
             </search>
         </field>
@@ -203,36 +146,11 @@
         <field name="arch" type="xml">
             <search>
                 <group expand="1" string="Group By">
-                    <filter
-                        string="Fiscal Year"
-                        name="date_range_fy_id"
-                        domain="[]"
-                        context="{'group_by':'date_range_fy_id'}"
-                    />
-                    <filter
-                        string="Department"
-                        name="department_analytic_id"
-                        domain="[]"
-                        context="{'group_by':'department_analytic_id'}"
-                    />
-                    <filter
-                        string="Activity"
-                        name="activity_analytic_id"
-                        domain="[]"
-                        context="{'group_by':'activity_analytic_id'}"
-                    />
-                    <filter
-                        string="Fund"
-                        name="fund_analytic_id"
-                        domain="[]"
-                        context="{'group_by':'fund_analytic_id'}"
-                    />
-                    <filter
-                        string="Source"
-                        name="source_analytic_id"
-                        domain="[]"
-                        context="{'group_by':'source_analytic_id'}"
-                    />
+                    <filter string="Fiscal Year" name="date_range_fy_id" domain="[]" context="{'group_by':'date_range_fy_id'}" />
+                    <filter string="Department" name="department_analytic_id" domain="[]" context="{'group_by':'department_analytic_id'}" />
+                    <filter string="Activity" name="activity_analytic_id" domain="[]" context="{'group_by':'activity_analytic_id'}" />
+                    <filter string="Fund" name="fund_analytic_id" domain="[]" context="{'group_by':'fund_analytic_id'}" />
+                    <filter string="Source" name="source_analytic_id" domain="[]" context="{'group_by':'source_analytic_id'}" />
                 </group>
             </search>
         </field>
@@ -240,7 +158,7 @@
 
     <!-- Action budget.commitment -->
     <record id="action_budget_commitment" model="ir.actions.act_window">
-        <field name="name">Budget Commitment</field>
+        <field name="name">การจองเงิน/ผูกพันงบประมาณ</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">budget.commitment</field>
         <field name="view_mode">tree,form</field>
@@ -248,14 +166,14 @@
         <field name="context">{}</field>
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">
-                There is no examples click here to add new Budget Commitment.
+                ไม่มีข้อมูลการจองเงิน/ผูกพันงบประมาณ
             </p>
         </field>
     </record>
 
     <!-- Action budget.commitment -->
     <record id="action_budget_commitment_line" model="ir.actions.act_window">
-        <field name="name">Budget Commitment Line</field>
+        <field name="name">รายการจองเงิน/ผูกพันงบประมาณ</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">budget.commitment.line</field>
         <field name="view_mode">tree,pivot</field>
@@ -263,7 +181,7 @@
         <field name="context">{}</field>
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">
-                There is no examples click here to add new Budget Commitment.
+                ไม่มีข้อมูลการจองเงิน/ผูกพันงบประมาณ
             </p>
         </field>
     </record>

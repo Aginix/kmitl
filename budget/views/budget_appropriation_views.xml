@@ -242,7 +242,7 @@
 
     <!-- Action budget.appropriation -->
     <record id="action_budget_appropriation" model="ir.actions.act_window">
-        <field name="name">Budget Appropriation</field>
+        <field name="name">การจัดสรรงบประมาณ</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">budget.appropriation</field>
         <field name="view_mode">tree,form</field>
@@ -250,14 +250,14 @@
         <field name="context">{}</field>
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">
-                There is no examples click here to add new Budget Appropriation.
+                ไม่มีข้อมูลการจัดสรรงบประมาณ
             </p>
         </field>
     </record>
 
     <!-- Action budget.appropriation -->
     <record id="action_budget_appropriation_line" model="ir.actions.act_window">
-        <field name="name">Budget Appropriation Line</field>
+        <field name="name">รายการจัดสรรงบประมาณ</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">budget.appropriation.line</field>
         <field name="view_mode">tree,pivot</field>
@@ -265,7 +265,7 @@
         <field name="context">{}</field>
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">
-                There is no examples click here to add new Budget Appropriation.
+                ไม่มีข้อมูลการจัดสรรงบประมาณ
             </p>
         </field>
     </record>

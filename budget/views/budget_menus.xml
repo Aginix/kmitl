@@ -11,22 +11,22 @@
         </menuitem> -->
         <menuitem
             id="budget_appropriation_management"
-            name="Budget Appropriations"
+            name="จัดสรรงบประมาณ"
             sequence="30"
         >
             <menuitem
                 id="budget_appropriation_menu"
-                name="Budget Appropriations"
+                name="การจัดสรรงบประมาณ"
                 sequence="1"
             >
                 <menuitem
                     id="action_budget_appropriation_menu_action"
-                    name="Budget Appropriation Entries"
+                    name="รายการจัดการ"
                     action="action_budget_appropriation"
                 />
                 <menuitem
                     id="action_budget_appropriation_line_menu_action"
-                    name="Budget Appropriation Items"
+                    name="รายการจัดสรร​ (แบบแจกแจง)"
                     action="action_budget_appropriation_line"
                 />
             </menuitem>
@@ -38,26 +38,26 @@
         >
             <menuitem
                 id="budget_commitment_menu"
-                name="Budget Commitments"
+                name="จองงบประมาณ"
                 sequence="1"
             >
                 <menuitem
                     id="action_budget_commitment_menu_action"
-                    name="Budget Commitment Entries"
+                    name="รายการจองงบประมาณ"
                     action="action_budget_commitment"
                 />
                 <menuitem
                     id="action_budget_commitment_line_menu_action"
-                    name="Budget Commitment Items"
+                    name="รายการจองงบประมาณ (แบบแจกแจง)"
                     action="action_budget_commitment_line"
                 />
             </menuitem>
         </menuitem>
-        <menuitem id="budget_reporting_menu" name="Reporting" sequence="90" />
-        <menuitem id="budget_config_menu" name="Configuration" sequence="99">
+        <menuitem id="budget_reporting_menu" name="รายงาน" sequence="90" />
+        <menuitem id="budget_config_menu" name="ตั้งค่า" sequence="99">
             <menuitem
                 id="action_budget_template_menu_action"
-                name="Budget Template"
+                name="โครงสร้างรหัสงบประมาณ"
                 action="action_budget_template"
             />
         </menuitem>
