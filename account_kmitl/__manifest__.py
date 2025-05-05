@@ -10,7 +10,6 @@
     "data": [
         "data/account_kmitl_chart_data.xml",
         "data/account.account.template.csv",
-        "data/account_chart_template_data.xml",
         "data/account_kmitl_chart_post_data.xml",
     ],
     "demo": [
