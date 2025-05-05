@@ -1,4 +1,4 @@
-id,code,name,plan_id/id,parent_id/id,sequence
+id,code,name,plan_id/id,parent_id/id,line_seq
 fund_0100,0100,กองทุนทั่วไป,analytic_plan_funds,,1
 fund_0200,0200,กองทุนเพื่อการศึกษา,analytic_plan_funds,,2
 fund_0300,0300,กองทุนวิจัย,analytic_plan_funds,,3
