@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View procurement.plan View Tree -->
+    <record id="view_procurement_plan_tree" model="ir.ui.view">
+        <field name="name">view.procurement.plan.tree</field>
+        <field name="model">procurement.plan</field>
+        <field name="arch" type="xml">
+            <tree decoration-info="state == 'procurement'" decoration-success="state == 'done'" decoration-warning="state in ('validate', 'pending')">
+                <field name="date_range_fy_id"/>
+                <field name="source_analytic_id" />
+                <field name="department_analytic_id" />
+                <field name="name"/>
+                <field name="amount"/>
+                <field name="unit"/>
+                <field name="price_per_unit"/>
+                <field name="total_price" sum="รวมทั้งหมด" widget="monetary" />
+                <field name="procurement_method_id"/>
+                <field name="state" widget="badge" decoration-info="state == 'procurement'" decoration-success="state == 'done'" decoration-warning="state in ('validate', 'pending')" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- View procurement.plan form -->
+    <record id="view_procurement_plan_form" model="ir.ui.view">
+        <field name="name">view.procurement.plan.form</field>
+        <field name="model">procurement.plan</field>
+        <field name="arch" type="xml">
+            <form string="Procurement Plan">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,validate,pending,procurement,done"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="procurement_method_id"/>
+                            <field name="note"/>
+                        </group>
+                        <group>
+                            <field name="date_range_fy_id" required="1" />
+                            <field name="source_analytic_id" />
+                            <field name="activity_analytic_id" />
+                            <field name="department_analytic_id" />
+                            <field name="fund_analytic_id" invisible="1" />
+                        </group>
+                    </group>
+                    <div class="o_procurement_plan_budget">
+                        <separator string="รายละเอียดงบประมาณ" class="mb-4"/>
+                        <table class="table table-bordered table-sm">
+                            <thead>
+                                <tr>
+                                    <td align="center">จำนวน</td>
+                                    <td align="center">หน่วยนับ</td>
+                                    <td align="center">ราคาต่อหน่วย</td>
+                                    <td align="center">วงเงินรวม</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td align="center">
+                                        <field name="amount"/>
+                                    </td>
+                                    <td align="center">
+                                        <field name="unit"/>
+                                    </td>
+                                    <td align="center">
+                                        <field name="price_per_unit"/>
+                                    </td>
+                                    <td align="center">
+                                        <field name="total_price"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="o_procurement_plan_eta">
+                        <separator string="แผนการดำเนินงาน" class="mb-4"/>
+                        <table class="table table-bordered table-sm">
+                            <thead>
+                                <tr>
+                                    <td align="center" rowSpan="2">จัดทำพ.1</td>
+                                    <td align="center" colSpan="3">การจัดซื้อจัดจ้าง</td>
+                                    <td align="center" rowSpan="2">ตรวจรับ/ส่งมอบ</td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        ประกาศจัดซื้อจัดจ้าง
+                                    </td>
+                                    <td align="center">อนุมัติผล (รอลงนามสัญญา)</td>
+                                    <td align="center">ลงนามสัญญา/ใบสั่งซื้อสั่งจ้าง</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td align="center">
+                                        <field name="purchase_request_eta" />
+                                    </td>
+                                    <td align="center">
+                                        <field name="procurement_announcement_eta" />
+                                    </td>
+                                    <td align="center">
+                                        <field name="approval_signing_eta" />
+                                    </td>
+                                    <td align="center">
+                                        <field name="contract_order_signing_eta" />
+                                    </td>
+                                    <td align="center">
+                                        <field name="acceptance_eta" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="o_procurement_plan_payment_ids">
+                        <separator string="การเบิกจ่าย" class="mb-4"/>
+                        <field name="payment_ids" nolabel="1">
+                            <tree editable="bottom">
+                                <field name="number" />
+                                <field name="number_of_days" />
+                                <field name="month" />
+                                <field name="amount" />
+                            </tree>
+                        </field>
+                    </div>
+                </sheet>
+                <!-- Chatter -->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- View procurement.plan search -->
+    <record id="view_procurement_plan_search" model="ir.ui.view">
+        <field name="name">view.procurement.plan.search</field>
+        <field name="model">procurement.plan</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action procurement.plan -->
+    <record id="action_procurement_plan" model="ir.actions.act_window">
+        <field name="name">Procurement Plan</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">procurement.plan</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', '!=', 'cancel')]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Procurement Plan.
+            </p>
+        </field>
+    </record>
+
+</odoo>
