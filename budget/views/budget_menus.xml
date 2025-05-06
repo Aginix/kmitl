@@ -33,7 +33,7 @@
         </menuitem>
         <menuitem
             id="budget_commitment_management"
-            name="จองงบปประมาณ"
+            name="จองงบประมาณ"
             sequence="30"
         >
             <menuitem
