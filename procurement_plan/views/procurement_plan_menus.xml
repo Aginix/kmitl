@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem id="procurement_plan_root_menu" name="Procurement Plan" sequence="10">
+        <menuitem id="action_procurement_plan_menu_action" name="Procurement Plan" action="action_procurement_plan" />
+    </menuitem>
+</odoo>
