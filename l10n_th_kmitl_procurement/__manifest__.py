@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
     "name": "l10n_th_kmitl_procurement",
-    "version": "16.0.1.0.0",
-    "author": "Aginix Technologies",
+    "version": "16.0.1.0.1",
+    "author": "nopparuts, Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
     "depends": ["base", "hr", "purchase_request"],
@@ -18,5 +18,7 @@
     "application": False,
     "installable": True,
     "auto_install": False,
+    "post_init_hook": "post_init",
+    "uninstall_hook": "uninstall_hook",
     "license": "LGPL-3",
 }
