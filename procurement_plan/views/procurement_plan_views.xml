@@ -38,7 +38,7 @@
                             <field name="note"/>
                         </group>
                         <group>
-                            <field name="date_range_fy_id"/>
+                            <field name="date_range_fy_id" required="1" />
                             <field name="source_analytic_id" />
                             <field name="activity_analytic_id" />
                             <field name="department_analytic_id" />
@@ -52,7 +52,7 @@
                                 <tr>
                                     <td align="center">จำนวน</td>
                                     <td align="center">หน่วยนับ</td>
-                                    <td align="center">จำนวนต่อหน่วย</td>
+                                    <td align="center">ราคาต่อหน่วย</td>
                                     <td align="center">วงเงินรวม</td>
                                 </tr>
                             </thead>
