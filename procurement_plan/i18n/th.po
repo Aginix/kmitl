@@ -6,16 +6,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-06 16:29+0000\n"
-"PO-Revision-Date: 2025-05-06 23:32+0700\n"
+"POT-Creation-Date: 2025-05-06 17:39+0000\n"
+"PO-Revision-Date: 2025-05-06 17:39+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: th\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.5\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
 
 #. module: procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__acceptance_eta
@@ -58,6 +56,7 @@ msgstr "อนุมัติผล (รอลงนามสัญญา)"
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__04
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__04
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__04
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__04
 msgid "April"
 msgstr "เมษายน"
 
@@ -72,6 +71,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__08
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__08
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__08
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__08
 msgid "August"
 msgstr "สิงหาคม"
 
@@ -103,6 +103,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__12
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__12
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__12
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__12
 msgid "December"
 msgstr "ธันวาคม"
 
@@ -128,6 +129,7 @@ msgstr "แบบร่าง"
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__02
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__02
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__02
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__02
 msgid "February"
 msgstr "กุมภาพันธ์"
 
@@ -189,6 +191,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__01
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__01
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__01
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__01
 msgid "January"
 msgstr "มกราคม"
 
@@ -198,6 +201,7 @@ msgstr "มกราคม"
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__07
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__07
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__07
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__07
 msgid "July"
 msgstr "กรกฎาคม"
 
@@ -207,6 +211,7 @@ msgstr "กรกฎาคม"
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__06
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__06
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__06
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__06
 msgid "June"
 msgstr "มิถุนายน"
 
@@ -239,6 +244,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__03
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__03
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__03
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__03
 msgid "March"
 msgstr "มีนาคม"
 
@@ -248,6 +254,7 @@ msgstr "มีนาคม"
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__05
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__05
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__05
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__05
 msgid "May"
 msgstr "พฤษภาคม"
 
@@ -278,6 +285,7 @@ msgstr "โน๊ต"
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__11
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__11
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__11
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__11
 msgid "November"
 msgstr "พฤศจิกายน"
 
@@ -312,6 +320,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__10
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__10
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__10
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__10
 msgid "October"
 msgstr "ตุลาคม"
 
@@ -386,6 +395,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__09
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__09
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__09
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__09
 msgid "September"
 msgstr "กันยายน"
 
