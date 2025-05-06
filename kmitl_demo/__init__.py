@@ -1,4 +1,1 @@
-# -*- coding: utf-8 -*-
-from . import hooks
-
-post_init_hook = hooks.post_init_hook
+from .hooks import post_init, uninstall_hook

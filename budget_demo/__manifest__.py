@@ -12,8 +12,6 @@
         "data/budget.appropriation.csv",
         "data/budget.appropriation.line.csv",
     ],
-    "post_init_hook": "post_init",
-    "uninstall_hook": "uninstall_hook",
     "auto_install": False,
     "application": True,
     "license": "AGPL-3",
