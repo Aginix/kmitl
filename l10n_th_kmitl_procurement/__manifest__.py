@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 {
-    "name": "L10n_th_kmitl_procurement",
-    "version": "",
-    "summary": """ L10n_th_kmitl_procurement Summary """,
-    "author": "",
-    "website": "",
-    "category": "",
+    "name": "l10n_th_kmitl_procurement",
+    "version": "16.0.1.0.0",
+    "author": "Aginix Technologies",
+    "website": "https://github.com/aginix/kmitl",
+    "category": "KMITL",
     "depends": ["base", "hr", "purchase_request"],
     "data": [
         "security/ir.model.access.csv",
