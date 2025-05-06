@@ -15,7 +15,7 @@
         "data/procurement_type.xml",
         "data/purchase_type.xml",
     ],
-    "application": True,
+    "application": False,
     "installable": True,
     "auto_install": False,
     "license": "LGPL-3",
