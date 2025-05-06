@@ -7,10 +7,10 @@
         <field
             name="procurement_method_ids"
             eval="[
-            (6, 0, [ref('l10n_th_gov_purchase_request.procurement_specific'),
-                    ref('l10n_th_gov_purchase_request.procurement_bidding'),
-                    ref('l10n_th_gov_purchase_request.procurement_select'),
-                    ref('l10n_th_gov_purchase_request.procurement_general')])]"
+            (6, 0, [ref('l10n_th_kmitl_procurement.procurement_specific'),
+                    ref('l10n_th_kmitl_procurement.procurement_bidding'),
+                    ref('l10n_th_kmitl_procurement.procurement_select'),
+                    ref('l10n_th_kmitl_procurement.procurement_general')])]"
         />
     </record>
     <record id="purchase_type_002" model="purchase.type">
@@ -22,7 +22,7 @@
         <field name="is_default">False</field>
         <field
             name="procurement_method_ids"
-            eval="[(6, 0, [ref('l10n_th_gov_purchase_request.procurement_specific')])]"
+            eval="[(6, 0, [ref('l10n_th_kmitl_procurement.procurement_specific')])]"
         />
     </record>
     <record id="purchase_type_003" model="purchase.type">
@@ -34,7 +34,7 @@
         <field name="is_default">False</field>
         <field
             name="procurement_method_ids"
-            eval="[(6, 0, [ref('l10n_th_gov_purchase_request.procurement_specific')])]"
+            eval="[(6, 0, [ref('l10n_th_kmitl_procurement.procurement_specific')])]"
         />
     </record>
     <record id="purchase_type_004" model="purchase.type">
@@ -46,7 +46,7 @@
         <field name="code">3</field>
         <field
             name="procurement_method_ids"
-            eval="[(6, 0, [ref('l10n_th_gov_purchase_request.procurement_specific')])]"
+            eval="[(6, 0, [ref('l10n_th_kmitl_procurement.procurement_specific')])]"
         />
     </record>
 </odoo>
