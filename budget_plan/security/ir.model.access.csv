@@ -1,0 +1,3 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_budget_plan_manager,budget_plan_manager,model_budget_plan,,1,1,1,1
+access_budget_plan_line_manager,budget_plan_line_manager,model_budget_plan_line,,1,1,1,1

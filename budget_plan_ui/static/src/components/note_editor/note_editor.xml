@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="budget_plan_ui.NoteEditor" owl="1">
+        <div class="d-flex gap-2 align-items-center">
+            <span t-attf-style="margin-left: {{ props.data.level * 24 }}px">
+                <t t-esc="props.data.name" />
+            </span>
+            <i t-on-click="toggleNote" t-if="props.data.can_edit" class="fa fa-edit cursor-pointer fa-lg"></i>
+        </div>
+        <div>
+            <textarea class="form-control mt-2"
+                    t-if="props.data.plan_line" 
+                    t-att-class="state.toggle or props.data.plan_line.note ? '' : 'd-none'" 
+                    t-model="state.noteValue" 
+                    placeholder="รายละเอียด" 
+                    t-att-disabled="!state.toggle"
+                    t-attf-style="margin-left: {{ props.data.level * 24 }}px;height: 70px; width: 400px;"                                                                                                                   
+                    >
+            </textarea>
+            <textarea class="form-control mt-2"
+                    t-if="!props.data.plan_line" 
+                    t-att-class="state.toggle ? '' : 'd-none'" 
+                    t-model="state.noteValue" 
+                    placeholder="รายละเอียด" 
+                    t-att-disabled="!state.toggle"
+                    t-attf-style="margin-left: {{ props.data.level * 24 }}px;height: 70px; width: 400px;"                                                                                                                   
+                    >
+            </textarea>
+            <div class="d-flex gap-2">
+                <button class="btn btn-success mt-2" 
+                    t-att-class="!state.toggle ? 'd-none' : ''" 
+                    t-attf-style="margin-left: {{ props.data.level * 24 }}px"   
+                    t-on-click="saveNote">บันทึก</button>
+                <button class="btn btn-danger mt-2" 
+                    t-att-class="!state.toggle ? 'd-none' : ''" 
+                    t-on-click="resetNote">ยกเลิก</button>
+            </div>
+        </div>
+    </t>
+</templates>

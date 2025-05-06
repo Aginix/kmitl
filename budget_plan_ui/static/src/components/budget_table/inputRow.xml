@@ -1,0 +1,20 @@
+<templates>
+  <t t-name="budget_plan_ui.InputRow" t-inherit-mode="primary" owl="1">
+    <tr>
+      <td class="fw-semibold text-center">
+        <t t-esc="template.code" />
+      </td>
+      <td>
+        <NoteEditor data="template" updateNote="updateNote" />
+      </td>
+      <td>
+        <t t-set="props" t-value="getInputProps(template)" />
+        <input type="text" class="form-control text-end"
+            t-model="state.formated.amount[props.key]"
+            t-att-value="props.inputValue"
+            t-att-disabled="props.disabled"
+            t-on-blur="() => onBlurSave(template, props.mode)" />
+      </td>
+    </tr>
+  </t>
+</templates>

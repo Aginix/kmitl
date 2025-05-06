@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="budget_plan_ui.Budget_tree_modal" owl="1">
+        <div class="modal fade" id="capital_tree" tabindex="-1" aria-labelledby="Modal_tree" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">แผนการจัดซื้อจัดจ้าง</h1>
+                        <button type="button" class="btn-close" 
+                            data-bs-dismiss="modal" 
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr class="bg-head">
+                                    <th>รายการ</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                                <t t-if="state.budget_plan.budget_plan_line_modal">
+                                    <t t-foreach="state.budget_plan.budget_plan_line_modal" t-as="capital" t-key="capital.id">
+                                        <tr class="record-row">
+                                            <td  t-on-click="() => this.openModal('edit',capital)">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span t-esc="capital.name" />
+                                                </div>
+                                            </td>
+                                            <td style="width:20px;">
+                                                <i class="fa fa-trash cursor-pointer fa-lg text-danger" 
+                                                    data-bs-dismiss="modal" 
+                                                    t-on-click="() => this.deleteCapital(capital)">
+                                                </i>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </t>
+                        </table>
+                    </div>
+                    <div class="modal-footer gap-2 d-flex">
+                        <button type="button" 
+                            class="btn btn-secondary" 
+                            data-bs-dismiss="modal">ปิด</button>
+                        <button type="button" class="btn btn-primary" 
+                            t-on-click="() => this.openModal('create')">เพิ่มข้อมูล</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

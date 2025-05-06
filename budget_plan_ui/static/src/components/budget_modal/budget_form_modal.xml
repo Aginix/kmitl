@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="budget_plan_ui.Budget_form_modal" owl="1">
+        <div class="modal fade" id="capital_modal" tabindex="-1" aria-labelledby="capitalModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="capitalModalLabel">
+                            <t t-if="state.modalMode === 'edit'">แผนการจัดซื้อจัดจ้าง (แก้ไข)</t>
+                            <t t-else="">แผนการจัดซื้อจัดจ้าง (สร้าง)</t>
+                        </h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="d-flex align-items-center flex-column gap-2">
+                            <div class="input-group align-items-center flex-nowrap">
+                                <span style="width:200px">ชื่อรายการ</span>
+                                <input type="text" class="form-control text-start" t-model="state.capital.name" placeholder="รายการ" />
+                            </div>
+                            <div class="input-group align-items-center flex-nowrap">
+                                <span style="width:200px">วันที่คาดว่าจะจัดซื้อจัดจ้าง</span>
+                                <input type="date" class="form-control text-start" t-model="state.capital.expected_purchase_date" />
+                            </div>
+                            <div class="input-group align-items-center flex-nowrap">
+                                <span style="width:200px">หมายเหตุ</span>
+                                <input type="text" class="form-control text-start" t-model="state.capital.note" />
+                            </div>
+                            <div class="input-group align-items-center flex-nowrap">
+                                <span style="width:200px">แผนการเบิกจ่าย</span>
+                                <select class="form-select" t-model="state.capital.payment_plan">
+                                    <option value="single">ไม่มีการแบ่งงวด</option>
+                                    <option value="installment">แบ่งจ่ายเป็นงวด</option>
+                                </select>
+                            </div>
+                            <div class="input-group align-items-center flex-nowrap">
+                                <span style="width:200px">จำนวนเงิน</span>
+                                <input type="number" class="form-control text-start" t-model="state.capital.amount" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer gap-2 d-flex">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                            t-on-click="() => this.sendEvent()">
+                            <t t-if="state.modalMode === 'edit'">บันทึกการแก้ไข</t>
+                            <t t-else="">สร้างข้อมูล</t>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
