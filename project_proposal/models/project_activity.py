@@ -10,10 +10,6 @@ _logger = logging.getLogger(__name__)
 class ProjectActivity(models.Model):
     _name = "project.activity"
     _description = "ProjectActivity"
-    _description = "Project Activity"
-    _parent_name = "parent_id"
-    _parent_store = True
-    _order = "parent_path, seq"
 
     name = fields.Char(string="ชื่อ")
     seq = fields.Integer(string="ลำดับการแสดงผล")
@@ -21,11 +17,7 @@ class ProjectActivity(models.Model):
     line_type = fields.Selection(
         [("activity", "กิจกรรม"), ("plan", "ขั้นตอน")], string="ประเภท"
     )
-    parent_id = fields.Many2one(
-        "project.activity", string="รายการแม่", index=True, ondelete="cascade"
-    )
-    child_ids = fields.One2many("project.activity", "parent_id", string="รายการย่อย")
-    parent_path = fields.Char(index=True, unaccent=False)
+    percentage = fields.Float(string="ร้อยละ", digits=(5, 2))
     m1 = fields.Boolean(string="ม.ค.")
     m2 = fields.Boolean(string="ก.พ.")
     m3 = fields.Boolean(string="มี.ค.")
@@ -39,57 +31,8 @@ class ProjectActivity(models.Model):
     m11 = fields.Boolean(string="พ.ย.")
     m12 = fields.Boolean(string="ธ.ค.")
     project_kmitl_id = fields.Many2one("project.kmitl", string="โครงการ", readonly=True)
-    amount_grouped = fields.Float(
-        string="รวมงบประมาณย่อย",
-        compute="_compute_amount_grouped",
-        store=True,
-    )
-    activity_ids = fields.One2many(
-        "project.activity", "project_kmitl_id", string="กิจกรรมทั้งหมด"
-    )
-    total_activity = fields.Float(
-        string="รวมงบประมาณทั้งหมด",
-        compute="_compute_total_activity",
-        store=True,
-    )
-
-    @api.depends("activity_ids.amount")
-    def _compute_total_activity(self):
-        for record in self:
-            record.total_activity = sum(
-                activity.amount for activity in record.activity_ids
-            )
-
-    @api.depends("child_ids.amount")
-    def _compute_amount_grouped(self):
-        for rec in self:
-            rec.amount_grouped = sum(child.amount for child in rec.child_ids)
 
     @api.onchange("line_type")
     def _onchange_line_type(self):
         if self.line_type != "activity":
             self.amount = None
-
-    @api.model
-    def create(self, vals):
-        skip_names = [
-            "วางแผนการดําเนินงาน",
-            "ดําเนินงานตามแผน",
-            "สรุป/ประเมินผลการดําเนินงาน",
-            "รายงานผลโครงการ",
-        ]
-
-        if vals.get("name") in skip_names:
-            return super(ProjectActivity, self).create(vals)
-
-        if vals.get("project_kmitl_id") and not vals.get("parent_id"):
-            parent_activity = self.env["project.activity"].search(
-                [
-                    ("project_kmitl_id", "=", vals["project_kmitl_id"]),
-                    ("name", "=", "ดําเนินงานตามแผน"),
-                ],
-                limit=1,
-            )
-            if parent_activity:
-                vals["parent_id"] = parent_activity.id
-        return super(ProjectActivity, self).create(vals)

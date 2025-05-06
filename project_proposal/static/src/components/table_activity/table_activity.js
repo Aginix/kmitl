@@ -1,25 +1,46 @@
 /** @odoo-module **/
 
 import { registry } from "@web/core/registry";
-import { standardFieldProps } from "@web/views/fields/standard_field_props";
+import { SectionAndNoteFieldOne2Many } from "@account/components/section_and_note_fields_backend/section_and_note_fields_backend";
+import { ListRenderer } from "@web/views/list/list_renderer";
 import { X2ManyField } from "@web/views/fields/x2many/x2many_field";
-import { List_rendererer_activity } from "../list_renderer_activity/list_renderer_activity"
 
-export class Table_activity extends X2ManyField {
+export class TableActivityRenderer extends ListRenderer {
   setup() {
     super.setup();
-    
+  }
+  freezeColumnWidths() {}
+  get validPercentage() {
+    const total = this.props.list.records.reduce(
+      (sum, rec) => sum + rec.data.percentage,
+      0
+    );
+    return total < 100 || total > 100;
+  }
+  get totalAmount() {
+    const total = this.props.list.records.reduce(
+      (sum, rec) => sum + (rec.data.amount || 0),
+      0
+    );
+    return new Intl.NumberFormat("th-TH", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(total);
+  }
+}
+TableActivityRenderer.template = "project_proposal.ListRenderer";
+TableActivityRenderer.rowsTemplate =
+  "project_proposal.ListRendererActivity.Rows";
+
+export class Table_activity extends SectionAndNoteFieldOne2Many {
+  setup() {
+    super.setup();
   }
 }
 
-Table_activity.props = {
-  ...standardFieldProps,
-  addLabel: { type: String, optional: true },
-  editable: { type: String, optional: true },
-};
-Table_activity.template = "project_proposal.Table_activity";
 Table_activity.components = {
-  List_rendererer_activity,
+  ...X2ManyField.components,
+  ListRenderer: TableActivityRenderer,
 };
 
 registry.category("fields").add("table_activity", Table_activity);

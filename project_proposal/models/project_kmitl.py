@@ -56,6 +56,12 @@ class ProjectKmitl(models.Model):
         string="วิธีดำเนินการ",
     )
     methodology_description = fields.Text(string="วิธีดำเนินการ ระบุ")
+    target_ids = fields.One2many(
+        comodel_name="project.activity",
+        inverse_name="project_kmitl_id",
+        string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ",
+        domain=[("line_type", "=", "activity")],
+    )
     output_ids = fields.One2many(
         comodel_name="project.output",
         inverse_name="project_kmitl_id",
@@ -88,40 +94,6 @@ class ProjectKmitl(models.Model):
         string="สถานะการขออนุมัติโครงการ",
         default="draft",
     )
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        records = super().create(vals_list)
-        for record in records:
-            self.env["project.activity"].create(
-                [
-                    {
-                        "name": "วางแผนการดําเนินงาน",
-                        "seq": 1,
-                        "line_type": "plan",
-                        "project_kmitl_id": record.id,
-                    },
-                    {
-                        "name": "ดําเนินงานตามแผน",
-                        "seq": 1,
-                        "line_type": "plan",
-                        "project_kmitl_id": record.id,
-                    },
-                    {
-                        "name": "สรุป/ประเมินผลการดําเนินงาน",
-                        "seq": 1,
-                        "line_type": "plan",
-                        "project_kmitl_id": record.id,
-                    },
-                    {
-                        "name": "รายงานผลโครงการ",
-                        "seq": 1,
-                        "line_type": "plan",
-                        "project_kmitl_id": record.id,
-                    },
-                ]
-            )
-        return records
 
     def action_next_state(self):
         for rec in self:
