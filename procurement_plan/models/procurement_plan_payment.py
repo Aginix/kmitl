@@ -33,4 +33,5 @@ class ProcurementPlanPayment(models.Model):
         ],
         string="Payment Disbursement Date (Month)",
     )
+    # month = fields.Integer(string="Payment Disbursement Date (Month)")
     amount = fields.Float("Payment Amount")

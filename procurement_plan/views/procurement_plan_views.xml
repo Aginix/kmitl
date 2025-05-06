@@ -7,6 +7,10 @@
         <field name="model">procurement.plan</field>
         <field name="arch" type="xml">
             <tree>
+                <field name="date_range_fy_id"/>
+                <field name="source_analytic_id" />
+                <field name="department_analytic_id" />
+                <field name="state" widget="badge" decoration-warning="state == 'draft'" decoration-success="state == 'done'" decoration-info="state in ('validate', 'pending', 'procurement')"/>
                 <field name="name"/>
                 <field name="amount"/>
                 <field name="unit"/>
@@ -29,17 +33,47 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="date_range_fy_id"/>
                             <field name="name"/>
-                            <field name="amount"/>
-                            <field name="unit"/>
-                            <field name="price_per_unit"/>
-                            <field name="total_price"/>
                             <field name="procurement_method_id"/>
-
-
+                            <field name="note"/>
+                        </group>
+                        <group>
+                            <field name="date_range_fy_id"/>
+                            <field name="source_analytic_id" />
+                            <field name="activity_analytic_id" />
+                            <field name="department_analytic_id" />
+                            <field name="fund_analytic_id" invisible="1" />
                         </group>
                     </group>
+                    <div class="o_procurement_plan_budget">
+                        <separator string="รายละเอียดงบประมาณ" class="mb-4"/>
+                        <table class="table table-bordered table-sm">
+                            <thead>
+                                <tr>
+                                    <td align="center">จำนวน</td>
+                                    <td align="center">หน่วยนับ</td>
+                                    <td align="center">จำนวนต่อหน่วย</td>
+                                    <td align="center">วงเงินรวม</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td align="center">
+                                        <field name="amount"/>
+                                    </td>
+                                    <td align="center">
+                                        <field name="unit"/>
+                                    </td>
+                                    <td align="center">
+                                        <field name="price_per_unit"/>
+                                    </td>
+                                    <td align="center">
+                                        <field name="total_price"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <div class="o_procurement_plan_eta">
                         <separator string="แผนการดำเนินงาน" class="mb-4"/>
                         <table class="table table-bordered table-sm">
