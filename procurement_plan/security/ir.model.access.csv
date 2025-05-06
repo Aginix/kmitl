@@ -1,5 +1,5 @@
 id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
 access_procurement_plan_user,procurement_plan_user,model_procurement_plan,,1,0,0,0
 access_procurement_plan_manager,procurement_plan_manager,model_procurement_plan,,1,1,1,1
-access_procurement_plan_line_user,procurement_plan_line_user,model_procurement_plan_line,,1,0,0,0
-access_procurement_plan_line_manager,procurement_plan_line_manager,model_procurement_plan_line,,1,1,1,1
+access_procurement_plan_payment_user,procurement_plan_payment_user,model_procurement_plan_payment,,1,0,0,0
+access_procurement_plan_payment_manager,procurement_plan_payment_manager,model_procurement_plan_payment,,1,1,1,1

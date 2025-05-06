@@ -36,17 +36,59 @@
                             <field name="price_per_unit"/>
                             <field name="total_price"/>
                             <field name="procurement_method_id"/>
-                            <field name="payment_ids">
-                                <tree editable="bottom">
-                                    <field name="number" />
-                                    <field name="number_of_days" />
-                                    <field name="month" />
-                                    <field name="amount" />
-                                </tree>
-                            </field>
+
 
                         </group>
                     </group>
+                    <div class="o_procurement_plan_eta">
+                        <separator string="แผนการดำเนินงาน" class="mb-4"/>
+                        <table class="table table-bordered table-sm">
+                            <thead>
+                                <tr>
+                                    <td align="center" rowSpan="2">จัดทำพ.1</td>
+                                    <td align="center" colSpan="3">การจัดซื้อจัดจ้าง</td>
+                                    <td align="center" rowSpan="2">ตรวจรับ/ส่งมอบ</td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        ประกาศจัดซื้อจัดจ้าง
+                                    </td>
+                                    <td align="center">อนุมัติผล (รอลงนามสัญญา)</td>
+                                    <td align="center">ลงนามสัญญา/ใบสั่งซื้อสั่งจ้าง</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td align="center">
+                                        <field name="purchase_request_eta" />
+                                    </td>
+                                    <td align="center">
+                                        <field name="procurement_announcement_eta" />
+                                    </td>
+                                    <td align="center">
+                                        <field name="approval_signing_eta" />
+                                    </td>
+                                    <td align="center">
+                                        <field name="contract_order_signing_eta" />
+                                    </td>
+                                    <td align="center">
+                                        <field name="acceptance_eta" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="o_procurement_plan_payment_ids">
+                        <separator string="การเบิกจ่าย" class="mb-4"/>
+                        <field name="payment_ids" nolabel="1">
+                            <tree editable="bottom">
+                                <field name="number" />
+                                <field name="number_of_days" />
+                                <field name="month" />
+                                <field name="amount" />
+                            </tree>
+                        </field>
+                    </div>
                 </sheet>
                 <!-- Chatter -->
                 <div class="oe_chatter">

@@ -28,7 +28,10 @@ class ProcurementPlan(models.Model):
         tracking=True,
     )
     procurement_method_id = fields.Many2one(
-        comodel_name="procurement.method", string="Procurement Method", tracking=True
+        comodel_name="procurement.method",
+        string="Procurement Method",
+        required=True,
+        tracking=True,
     )
     state = fields.Selection(
         [
