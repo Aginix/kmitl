@@ -7,9 +7,6 @@
     "website": "https://github.com/aginix/kmitl",
     "depends": ["budget_plan", "app_web_widget_ztree"],
     "data": ["views/budget_plan_views.xml"],
-    "assets": {
-        "web.assets_backend": ["budget_plan_widget_ztree/static/src/**/*"],
-    },
     "application": False,
     "installable": True,
     "auto_install": False,
