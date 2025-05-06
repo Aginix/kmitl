@@ -1,1 +1,0 @@
-Chart of Accounts for KMITL.
