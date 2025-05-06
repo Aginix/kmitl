@@ -8,7 +8,7 @@
     "depends": ["base", "account_fiscal_year", "l10n_th_kmitl_procurement"],
     "data": [
         "security/ir.model.access.csv",
-        "views/procurement_plan_views.xml"
+        "views/procurement_plan_views.xml",
         "views/procurement_plan_menus.xml",
     ],
     "application": False,
