@@ -21,8 +21,7 @@ class ProcurementPlan(models.Model):
     }
 
     date_range_fy_id = fields.Many2one(
-        comodel_name="account.fiscal.year",
-        string="Fiscal year",
+        comodel_name="account.fiscal.year", string="Fiscal year", states=READONLY_STATES
     )
     name = fields.Char("Name", required=True, tracking=True, states=READONLY_STATES)
     amount = fields.Integer(
@@ -59,7 +58,7 @@ class ProcurementPlan(models.Model):
         ],
         string="Status",
         readonly=True,
-        default="validate",
+        default="draft",
         tracking=True,
     )
     note = fields.Text("Notes", tracking=True, states=READONLY_STATES)
@@ -85,9 +84,9 @@ class ProcurementPlan(models.Model):
     )
 
     activity_analytic_id = fields.Many2one(states=READONLY_STATES)
-    department_analytic_id = fields.Many2one(states=READONLY_STATES)
+    department_analytic_id = fields.Many2one(required=True, states=READONLY_STATES)
     fund_analytic_id = fields.Many2one(states=READONLY_STATES)
-    source_analytic_id = fields.Many2one(states=READONLY_STATES)
+    source_analytic_id = fields.Many2one(required=True, states=READONLY_STATES)
 
     @api.depends("amount", "price_per_unit")
     def _compute_total_price(self):
