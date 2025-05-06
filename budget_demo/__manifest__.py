@@ -1,9 +1,9 @@
 {
     "name": "KMITL Budgeting demo",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "summary": """ KMITL Budgeting""",
     "category": "KMITL/Budgeting",
-    "author": "Aginix Technologies",
+    "author": "nopparuts, Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "depends": ["account_analytic_kmitl", "budget", "kmitl_demo"],
     "data": [
@@ -12,6 +12,8 @@
         "data/budget.appropriation.csv",
         "data/budget.appropriation.line.csv",
     ],
+    "post_init_hook": "post_init",
+    "uninstall_hook": "uninstall_hook",
     "auto_install": False,
     "application": True,
     "license": "AGPL-3",
