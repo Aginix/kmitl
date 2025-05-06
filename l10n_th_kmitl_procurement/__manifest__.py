@@ -6,9 +6,7 @@
     "author": "",
     "website": "",
     "category": "",
-    "depends": [
-        "base",
-    ],
+    "depends": ["base", "hr", "purchase_request"],
     "data": [
         "security/ir.model.access.csv",
         "views/procurement_method_views.xml",
