@@ -11,7 +11,7 @@
                 <attribute
                     name="options"
                 >{'ztree_parent_key': 'parent_id','ztree_expend_level': '2',
-                    'ztree_name_field': 'display_name', 'order': 'sequence' }</attribute>
+                    'ztree_name_field': 'display_name', 'order': 'line_seq' }</attribute>
             </xpath>
             <xpath expr="//field[@name='source_analytic_id']" position="attributes">
                 <!-- Add your fields or attributes here -->
@@ -19,7 +19,7 @@
                 <attribute
                     name="options"
                 >{'ztree_parent_key': 'parent_id','ztree_expend_level': '2',
-                    'ztree_name_field': 'display_name', 'order': 'sequence' }</attribute>
+                    'ztree_name_field': 'display_name', 'order': 'line_seq' }</attribute>
             </xpath>
             <xpath expr="//field[@name='activity_analytic_id']" position="attributes">
                 <!-- Add your fields or attributes here -->
@@ -27,7 +27,7 @@
                 <attribute
                     name="options"
                 >{'ztree_parent_key': 'parent_id','ztree_expend_level': '2',
-                    'ztree_name_field': 'display_name', 'order': 'sequence' }</attribute>
+                    'ztree_name_field': 'display_name', 'order': 'line_seq' }</attribute>
             </xpath>
             <xpath expr="//field[@name='fund_analytic_id']" position="attributes">
                 <!-- Add your fields or attributes here -->
@@ -35,7 +35,7 @@
                 <attribute
                     name="options"
                 >{'ztree_parent_key': 'parent_id','ztree_expend_level': '2',
-                    'ztree_name_field': 'display_name', 'order': 'sequence' }</attribute>
+                    'ztree_name_field': 'display_name', 'order': 'line_seq' }</attribute>
             </xpath>
             <xpath expr="//field[@name='template_line_id']" position="attributes">
                 <!-- Add your fields or attributes here -->
@@ -43,7 +43,7 @@
                 <attribute
                     name="options"
                 >{'ztree_parent_key': 'parent_id','ztree_expend_level': '2',
-                    'ztree_name_field': 'display_name', 'order': 'sequence' }</attribute>
+                    'ztree_name_field': 'display_name', 'order': 'line_seq' }</attribute>
             </xpath>
         </field>
     </record>
