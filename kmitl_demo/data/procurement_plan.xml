@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="procurement_plan_1" model="procurement.plan">
+        <field name="date_range_fy_id" ref="account_fiscal_year_y2567" />
+        <field name="name">ปรับปรุงอาคารเรียนรวม 12 ชั้น</field>
+        <field name="amount">12</field>
+        <field name="unit">ชั้น</field>
+        <field name="price_per_unit">1500000</field>
+        <field
+            name="procurement_method_id"
+            ref="l10n_th_kmitl_procurement.procurement_general"
+        />
+        <field name="state">draft</field>
+        <field name="note">ผู้รับเหมาจะดำเนินงานในวันหยุดพิเศษต่าง ๆ ด้วย</field>
+        <field name="purchase_request_eta">1</field>
+        <field name="procurement_announcement_eta">2</field>
+        <field name="approval_signing_eta">2</field>
+        <field name="contract_order_signing_eta">3</field>
+        <field name="acceptance_eta">4</field>
+        <field
+            name="activity_analytic_id"
+            ref="account_analytic_kmitl.activity_09007010225211"
+        />
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06" />
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0600" />
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1" />
+    </record>
+    <record id="procurement_plan_1_payment_1" model="procurement.plan.payment">
+        <field name="procurement_plan_id" ref="procurement_plan_1" />
+        <field name="number">1</field>
+        <field name="number_of_days">30</field>
+        <field name="month">1</field>
+        <field name="amount">4000000</field>
+    </record>
+    <record id="procurement_plan_1_payment_2" model="procurement.plan.payment">
+        <field name="procurement_plan_id" ref="procurement_plan_1" />
+        <field name="number">2</field>
+        <field name="number_of_days">30</field>
+        <field name="month">2</field>
+        <field name="amount">4000000</field>
+    </record>
+    <record id="procurement_plan_1_payment_3" model="procurement.plan.payment">
+        <field name="procurement_plan_id" ref="procurement_plan_1" />
+        <field name="number">3</field>
+        <field name="number_of_days">30</field>
+        <field name="month">3</field>
+        <field name="amount">2500000</field>
+    </record>
+    <record id="procurement_plan_1_payment_4" model="procurement.plan.payment">
+        <field name="procurement_plan_id" ref="procurement_plan_1" />
+        <field name="number">4</field>
+        <field name="number_of_days">90</field>
+        <field name="month">6</field>
+        <field name="amount">7400000</field>
+    </record>
+    <record id="procurement_plan_1_payment_5" model="procurement.plan.payment">
+        <field name="procurement_plan_id" ref="procurement_plan_1" />
+        <field name="number">5</field>
+        <field name="number_of_days">5</field>
+        <field name="month">6</field>
+        <field name="amount">100000</field>
+    </record>
+</odoo>
