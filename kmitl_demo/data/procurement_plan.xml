@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <!-- Procurement plan 1 -->
     <record id="procurement_plan_1" model="procurement.plan">
         <field name="date_range_fy_id" ref="account_fiscal_year_y2567" />
         <field name="name">ปรับปรุงอาคารเรียนรวม 12 ชั้น</field>
@@ -23,7 +24,7 @@
         />
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06" />
         <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0600" />
-        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1" />
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_2" />
     </record>
     <record id="procurement_plan_1_payment_1" model="procurement.plan.payment">
         <field name="procurement_plan_id" ref="procurement_plan_1" />
@@ -59,5 +60,239 @@
         <field name="number_of_days">5</field>
         <field name="month">6</field>
         <field name="amount">100000</field>
+    </record>
+
+    <!-- Procurement plan 2 -->
+    <record id="procurement_plan_2" model="procurement.plan">
+        <field name="date_range_fy_id" ref="account_fiscal_year_y2567" />
+        <field
+            name="name"
+        >ปรับปรุงห้องเรียนและห้องปฏิบัติการ อาคารปฏิบัติการพิเศษจอมไตร</field>
+        <field name="amount">7</field>
+        <field name="unit">ห้อง</field>
+        <field name="price_per_unit">750000</field>
+        <field
+            name="procurement_method_id"
+            ref="l10n_th_kmitl_procurement.procurement_general"
+        />
+        <field name="state">done</field>
+        <field name="purchase_request_eta">4</field>
+        <field name="procurement_announcement_eta">5</field>
+        <field name="approval_signing_eta">6</field>
+        <field name="contract_order_signing_eta">7</field>
+        <field name="acceptance_eta">8</field>
+        <field
+            name="activity_analytic_id"
+            ref="account_analytic_kmitl.activity_09007010224211"
+        />
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01" />
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0600" />
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1" />
+    </record>
+    <record id="procurement_plan_2_payment_1" model="procurement.plan.payment">
+        <field name="procurement_plan_id" ref="procurement_plan_2" />
+        <field name="number">1</field>
+        <field name="number_of_days">90</field>
+        <field name="month">1</field>
+        <field name="amount">2250000</field>
+    </record>
+    <record id="procurement_plan_2_payment_2" model="procurement.plan.payment">
+        <field name="procurement_plan_id" ref="procurement_plan_2" />
+        <field name="number">2</field>
+        <field name="number_of_days">90</field>
+        <field name="month">4</field>
+        <field name="amount">2250000</field>
+    </record>
+    <record id="procurement_plan_2_payment_3" model="procurement.plan.payment">
+        <field name="procurement_plan_id" ref="procurement_plan_2" />
+        <field name="number">3</field>
+        <field name="number_of_days">30</field>
+        <field name="month">7</field>
+        <field name="amount">750000</field>
+    </record>
+
+    <!-- Procurement plan 3 -->
+    <record id="procurement_plan_3" model="procurement.plan">
+        <field name="date_range_fy_id" ref="account_fiscal_year_y2567" />
+        <field name="name">ครุภัณฑ์วิทยาศาสตร์และการแพทย์ จำนวน 5 รายการ</field>
+        <field name="amount">1</field>
+        <field name="unit">โครงการ</field>
+        <field name="price_per_unit">2360700</field>
+        <field
+            name="procurement_method_id"
+            ref="l10n_th_kmitl_procurement.procurement_specific"
+        />
+        <field name="state">procurement</field>
+        <field name="note">รับประกันสินค้าทั้งหมด 1.5 ปี</field>
+        <field name="purchase_request_eta">1</field>
+        <field name="procurement_announcement_eta">2</field>
+        <field name="approval_signing_eta">2</field>
+        <field name="contract_order_signing_eta">3</field>
+        <field name="acceptance_eta">4</field>
+        <field
+            name="activity_analytic_id"
+            ref="account_analytic_kmitl.activity_09007010221212"
+        />
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_38040" />
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0300" />
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_2" />
+    </record>
+    <record id="procurement_plan_3_payment_1" model="procurement.plan.payment">
+        <field name="procurement_plan_id" ref="procurement_plan_3" />
+        <field name="number">1</field>
+        <field name="number_of_days">15</field>
+        <field name="month">1</field>
+        <field name="amount">2360700</field>
+    </record>
+
+    <!-- Procurement plan 4 -->
+    <record id="procurement_plan_4" model="procurement.plan">
+        <field name="date_range_fy_id" ref="account_fiscal_year_y2567" />
+        <field name="name">ปรับปรุงห้องผ่าตัด โรงพยาบาลพระจอมเกล้าเจ้าคุณทหาร</field>
+        <field name="amount">1</field>
+        <field name="unit">ห้อง</field>
+        <field name="price_per_unit">17540000</field>
+        <field
+            name="procurement_method_id"
+            ref="l10n_th_kmitl_procurement.procurement_select"
+        />
+        <field name="state">pending</field>
+        <field name="note">-</field>
+        <field name="purchase_request_eta">11</field>
+        <field name="procurement_announcement_eta">5</field>
+        <field name="approval_signing_eta">7</field>
+        <field name="contract_order_signing_eta">8</field>
+        <field name="acceptance_eta">9</field>
+        <field
+            name="activity_analytic_id"
+            ref="account_analytic_kmitl.activity_09007010230211"
+        />
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_44030" />
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0600" />
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_2" />
+    </record>
+    <record id="procurement_plan_4_payment_1" model="procurement.plan.payment">
+        <field name="procurement_plan_id" ref="procurement_plan_4" />
+        <field name="number">1</field>
+        <field name="number_of_days">30</field>
+        <field name="month">1</field>
+        <field name="amount">140000</field>
+    </record>
+    <record id="procurement_plan_4_payment_2" model="procurement.plan.payment">
+        <field name="procurement_plan_id" ref="procurement_plan_4" />
+        <field name="number">2</field>
+        <field name="number_of_days">60</field>
+        <field name="month">3</field>
+        <field name="amount">500000</field>
+    </record>
+    <record id="procurement_plan_4_payment_3" model="procurement.plan.payment">
+        <field name="procurement_plan_id" ref="procurement_plan_4" />
+        <field name="number">3</field>
+        <field name="number_of_days">45</field>
+        <field name="month">5</field>
+        <field name="amount">7000000</field>
+    </record>
+    <record id="procurement_plan_4_payment_4" model="procurement.plan.payment">
+        <field name="procurement_plan_id" ref="procurement_plan_4" />
+        <field name="number">4</field>
+        <field name="number_of_days">15</field>
+        <field name="month">7</field>
+        <field name="amount">10000000</field>
+    </record>
+
+    <!-- Procurement plan 5 -->
+    <record id="procurement_plan_5" model="procurement.plan">
+        <field name="date_range_fy_id" ref="account_fiscal_year_y2567" />
+        <field name="name">ปรับปรุงไฟแสงสว่างสนามฟุตบอล</field>
+        <field name="amount">1</field>
+        <field name="unit">สนาม</field>
+        <field name="price_per_unit">4498300</field>
+        <field
+            name="procurement_method_id"
+            ref="l10n_th_kmitl_procurement.procurement_general"
+        />
+        <field name="state">cancel</field>
+        <field name="note" />
+        <field name="purchase_request_eta">1</field>
+        <field name="procurement_announcement_eta">1</field>
+        <field name="approval_signing_eta">1</field>
+        <field name="contract_order_signing_eta">2</field>
+        <field name="acceptance_eta">2</field>
+        <field
+            name="activity_analytic_id"
+            ref="account_analytic_kmitl.activity_09007010110190"
+        />
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_10" />
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0703" />
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_2" />
+    </record>
+    <record id="procurement_plan_5_payment_1" model="procurement.plan.payment">
+        <field name="procurement_plan_id" ref="procurement_plan_5" />
+        <field name="number">1</field>
+        <field name="number_of_days">10</field>
+        <field name="month">1</field>
+        <field name="amount">2000000</field>
+    </record>
+    <record id="procurement_plan_5_payment_2" model="procurement.plan.payment">
+        <field name="procurement_plan_id" ref="procurement_plan_5" />
+        <field name="number">2</field>
+        <field name="number_of_days">20</field>
+        <field name="month">1</field>
+        <field name="amount">2498300</field>
+    </record>
+
+    <!-- Procurement plan 6 -->
+    <record id="procurement_plan_6" model="procurement.plan">
+        <field name="date_range_fy_id" ref="account_fiscal_year_y2567" />
+        <field name="name">ปรับปรุงห้องปฏิบัติการฟิสิกส์</field>
+        <field name="amount">1</field>
+        <field name="unit">รายการ</field>
+        <field name="price_per_unit">19500000</field>
+        <field
+            name="procurement_method_id"
+            ref="l10n_th_kmitl_procurement.procurement_bidding"
+        />
+        <field name="state">done</field>
+        <field name="note" />
+        <field name="purchase_request_eta">8</field>
+        <field name="procurement_announcement_eta">9</field>
+        <field name="approval_signing_eta">10</field>
+        <field name="contract_order_signing_eta">10</field>
+        <field name="acceptance_eta">2</field>
+        <field
+            name="activity_analytic_id"
+            ref="account_analytic_kmitl.activity_09007010221211"
+        />
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_05180" />
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0600" />
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1" />
+    </record>
+    <record id="procurement_plan_6_payment_1" model="procurement.plan.payment">
+        <field name="procurement_plan_id" ref="procurement_plan_6" />
+        <field name="number">1</field>
+        <field name="number_of_days">30</field>
+        <field name="month">11</field>
+        <field name="amount">5000000</field>
+    </record>
+    <record id="procurement_plan_6_payment_2" model="procurement.plan.payment">
+        <field name="procurement_plan_id" ref="procurement_plan_6" />
+        <field name="number">2</field>
+        <field name="number_of_days">30</field>
+        <field name="month">12</field>
+        <field name="amount">5000000</field>
+    </record>
+    <record id="procurement_plan_6_payment_3" model="procurement.plan.payment">
+        <field name="procurement_plan_id" ref="procurement_plan_6" />
+        <field name="number">2</field>
+        <field name="number_of_days">30</field>
+        <field name="month">1</field>
+        <field name="amount">7500000</field>
+    </record>
+    <record id="procurement_plan_6_payment_4" model="procurement.plan.payment">
+        <field name="procurement_plan_id" ref="procurement_plan_6" />
+        <field name="number">2</field>
+        <field name="number_of_days">30</field>
+        <field name="month">2</field>
+        <field name="amount">2000000</field>
     </record>
 </odoo>
