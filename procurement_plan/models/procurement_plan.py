@@ -4,6 +4,21 @@ from odoo import api, fields, models
 
 _logger = logging.getLogger(__name__)
 
+MONTH_SELECTION = [
+    ("1", "January"),
+    ("2", "February"),
+    ("3", "March"),
+    ("4", "April"),
+    ("5", "May"),
+    ("6", "June"),
+    ("7", "July"),
+    ("8", "August"),
+    ("9", "September"),
+    ("10", "October"),
+    ("11", "November"),
+    ("12", "December"),
+]
+
 
 class ProcurementPlan(models.Model):
     _name = "procurement.plan"
@@ -17,21 +32,6 @@ class ProcurementPlan(models.Model):
         "done": [("readonly", True)],
         "cancel": [("readonly", True)],
     }
-
-    MONTH_SELECTION = [
-        ("01", "January"),
-        ("02", "February"),
-        ("03", "March"),
-        ("04", "April"),
-        ("05", "May"),
-        ("06", "June"),
-        ("07", "July"),
-        ("08", "August"),
-        ("09", "September"),
-        ("10", "October"),
-        ("11", "November"),
-        ("12", "December"),
-    ]
 
     date_range_fy_id = fields.Many2one(
         comodel_name="account.fiscal.year", string="Fiscal year", states=READONLY_STATES
