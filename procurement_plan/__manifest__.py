@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 {
     "name": "Procurement Plan",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
