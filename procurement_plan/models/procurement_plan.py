@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
 import logging
 
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo import api, fields, models
 
 _logger = logging.getLogger(__name__)
 
@@ -20,13 +18,26 @@ class ProcurementPlan(models.Model):
         "cancel": [("readonly", True)],
     }
 
+    MONTH_SELECTION = [
+        ("01", "January"),
+        ("02", "February"),
+        ("03", "March"),
+        ("04", "April"),
+        ("05", "May"),
+        ("06", "June"),
+        ("07", "July"),
+        ("08", "August"),
+        ("09", "September"),
+        ("10", "October"),
+        ("11", "November"),
+        ("12", "December"),
+    ]
+
     date_range_fy_id = fields.Many2one(
         comodel_name="account.fiscal.year", string="Fiscal year", states=READONLY_STATES
     )
-    name = fields.Char("Name", required=True, tracking=True, states=READONLY_STATES)
-    amount = fields.Integer(
-        "Amount", required=True, tracking=True, states=READONLY_STATES
-    )
+    name = fields.Char(required=True, tracking=True, states=READONLY_STATES)
+    amount = fields.Integer(required=True, tracking=True, states=READONLY_STATES)
     unit = fields.Char(
         "Unit of Measure", required=True, tracking=True, states=READONLY_STATES
     )
@@ -62,20 +73,26 @@ class ProcurementPlan(models.Model):
         tracking=True,
     )
     note = fields.Text("Notes", tracking=True, states=READONLY_STATES)
-    purchase_request_eta = fields.Integer(
-        "Purchase Request (ETA)", tracking=True, states=READONLY_STATES
+    purchase_request_eta = fields.Selection(
+        MONTH_SELECTION, "Purchase Request (ETA)", tracking=True, states=READONLY_STATES
     )
-    procurement_announcement_eta = fields.Integer(
-        "Procurement Announcement (ETA)", tracking=True, states=READONLY_STATES
+    procurement_announcement_eta = fields.Selection(
+        MONTH_SELECTION,
+        "Procurement Announcement (ETA)",
+        tracking=True,
+        states=READONLY_STATES,
     )
-    approval_signing_eta = fields.Integer(
-        "Approval Signing (ETA)", tracking=True, states=READONLY_STATES
+    approval_signing_eta = fields.Selection(
+        MONTH_SELECTION, "Approval Signing (ETA)", tracking=True, states=READONLY_STATES
     )
-    contract_order_signing_eta = fields.Integer(
-        "Contract Order Signing (ETA)", tracking=True, states=READONLY_STATES
+    contract_order_signing_eta = fields.Selection(
+        MONTH_SELECTION,
+        "Contract Order Signing (ETA)",
+        tracking=True,
+        states=READONLY_STATES,
     )
-    acceptance_eta = fields.Integer(
-        "Acceptance (ETA)", tracking=True, states=READONLY_STATES
+    acceptance_eta = fields.Selection(
+        MONTH_SELECTION, "Acceptance (ETA)", tracking=True, states=READONLY_STATES
     )
     payment_ids = fields.One2many(
         comodel_name="procurement.plan.payment",
