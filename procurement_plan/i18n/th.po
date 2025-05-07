@@ -6,14 +6,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-06 17:39+0000\n"
-"PO-Revision-Date: 2025-05-06 17:39+0000\n"
+"POT-Creation-Date: 2025-05-07 07:01+0000\n"
+"PO-Revision-Date: 2025-05-07 14:04+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
+"Language: th\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
-"Plural-Forms: \n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.5\n"
 
 #. module: procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__acceptance_eta
@@ -51,12 +53,12 @@ msgid "Approval Signing (ETA)"
 msgstr "อนุมัติผล (รอลงนามสัญญา)"
 
 #. module: procurement_plan
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__acceptance_eta__04
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__approval_signing_eta__04
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__04
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__04
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__04
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__04
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__acceptance_eta__4
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__approval_signing_eta__4
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__4
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__4
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__4
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__4
 msgid "April"
 msgstr "เมษายน"
 
@@ -66,12 +68,12 @@ msgid "Attachment Count"
 msgstr ""
 
 #. module: procurement_plan
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__acceptance_eta__08
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__approval_signing_eta__08
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__08
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__08
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__08
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__08
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__acceptance_eta__8
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__approval_signing_eta__8
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__8
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__8
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__8
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__8
 msgid "August"
 msgstr "สิงหาคม"
 
@@ -124,12 +126,12 @@ msgid "Draft"
 msgstr "แบบร่าง"
 
 #. module: procurement_plan
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__acceptance_eta__02
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__approval_signing_eta__02
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__02
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__02
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__02
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__02
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__acceptance_eta__2
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__approval_signing_eta__2
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__2
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__2
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__2
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__2
 msgid "February"
 msgstr "กุมภาพันธ์"
 
@@ -186,32 +188,32 @@ msgid "Is Follower"
 msgstr ""
 
 #. module: procurement_plan
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__acceptance_eta__01
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__approval_signing_eta__01
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__01
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__01
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__01
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__01
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__acceptance_eta__1
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__approval_signing_eta__1
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__1
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__1
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__1
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__1
 msgid "January"
 msgstr "มกราคม"
 
 #. module: procurement_plan
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__acceptance_eta__07
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__approval_signing_eta__07
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__07
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__07
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__07
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__07
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__acceptance_eta__7
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__approval_signing_eta__7
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__7
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__7
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__7
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__7
 msgid "July"
 msgstr "กรกฎาคม"
 
 #. module: procurement_plan
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__acceptance_eta__06
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__approval_signing_eta__06
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__06
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__06
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__06
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__06
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__acceptance_eta__6
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__approval_signing_eta__6
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__6
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__6
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__6
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__6
 msgid "June"
 msgstr "มิถุนายน"
 
@@ -239,22 +241,22 @@ msgid "Main Attachment"
 msgstr ""
 
 #. module: procurement_plan
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__acceptance_eta__03
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__approval_signing_eta__03
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__03
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__03
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__03
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__03
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__acceptance_eta__3
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__approval_signing_eta__3
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__3
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__3
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__3
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__3
 msgid "March"
 msgstr "มีนาคม"
 
 #. module: procurement_plan
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__acceptance_eta__05
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__approval_signing_eta__05
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__05
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__05
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__05
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__05
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__acceptance_eta__5
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__approval_signing_eta__5
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__5
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__5
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__5
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__5
 msgid "May"
 msgstr "พฤษภาคม"
 
@@ -390,12 +392,12 @@ msgid "SMS Delivery error"
 msgstr ""
 
 #. module: procurement_plan
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__acceptance_eta__09
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__approval_signing_eta__09
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__09
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__09
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__09
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__09
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__acceptance_eta__9
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__approval_signing_eta__9
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__contract_order_signing_eta__9
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__procurement_announcement_eta__9
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__purchase_request_eta__9
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__9
 msgid "September"
 msgstr "กันยายน"
 
