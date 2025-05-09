@@ -13,7 +13,7 @@
         "procurement_plan",
     ],
     "data": [
-        "views/capital_expenditure_views.xml",
+        "views/procurement_inherit_view.xml",
         "security/ir.model.access.csv",
         "views/budget_plan_views.xml",
     ],

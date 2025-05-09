@@ -128,7 +128,7 @@ export class Expense_budget extends Component {
                         res_model: "procurement.plan",
                         views: [[false, "form"]],
                         context: {
-                            default_hide_header: true,
+                            hide_header: true,
                         },
                     },
                     {
@@ -307,15 +307,6 @@ export class Expense_budget extends Component {
         );
         this.state.budget_plan.budget_plan_line_list = [...budget_plan_line_id];
     }
-    //fetch budget capital
-    async fetchBudgetCapital() {
-        const capital_expenditure_id = await this.orm.searchRead(
-            "capital.expenditure",
-            [],
-            []
-        );
-        this.state.capital.capital_expenditure_list = [...capital_expenditure_id];
-    }
 
     async fetchProcuremnet() {
         const procurement_list = await this.orm.searchRead("procurement.plan", [], []);
@@ -386,13 +377,6 @@ export class Expense_budget extends Component {
                                 planLine.template_line_id[0] === templateLine.id
                         );
 
-                    const matchingCapitalExpenditures =
-                        this.state.capital.capital_expenditure_list.filter(
-                            (capital) =>
-                                matchingPlanLine &&
-                                capital.budget_plan_line_id[0] === matchingPlanLine.id
-                        );
-
                     const matchingProcurement =
                         this.state.procurement.procurement_list.filter((procurement) =>
                             matchingPlanLine2.some(
@@ -404,10 +388,6 @@ export class Expense_budget extends Component {
                     return {
                         ...templateLine,
                         plan_line: matchingPlanLine || null,
-                        capital_expenditures:
-                            matchingCapitalExpenditures.length > 0
-                                ? matchingCapitalExpenditures
-                                : null,
                         procurement_plan:
                             matchingProcurement.length > 0 ? matchingProcurement : null,
                     };
@@ -490,7 +470,6 @@ export class Expense_budget extends Component {
         await this.fetchBudgetPlanLines();
 
         // หา capital ทั้งหมด
-        await this.fetchBudgetCapital();
         await this.fetchProcuremnet();
         await this.mergeData();
         await this.generateState();
