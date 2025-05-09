@@ -8,6 +8,7 @@
                 </th>
                 <th rowspan="3"></th>
                 <th rowspan="3" class="align-middle">กิจกรรม/ขั้นตอน</th>
+                <th rowspan="3" class="align-middle">ร้อยละ</th>
                 <th rowspan="3" class="align-middle">งบประมาณ</th>
                 <th colspan="12" class="text-center">ปีงบประมาณ พ.ศ. 2568</th>
             </tr>
@@ -31,7 +32,7 @@
                 <th>ส.ค.</th>
                 <th>ก.ย.</th>
             </tr>
-            
+
         </xpath>
         <xpath expr="//table" position="after">
             <div t-if="validPercentage" class="alert alert-warning" role="alert">
@@ -44,6 +45,9 @@
         <xpath expr="//tr[@t-if='displayRowCreates']" position="after">
             <tr>
                 <td colspan="2">รวม</td>
+                <td class="text-end">
+                    <t t-esc="totalPercentage"/> %
+                </td>
                 <td class="text-end">
                     <t t-esc="totalAmount"/>
                 </td>

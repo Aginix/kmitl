@@ -56,12 +56,7 @@ class ProjectKmitl(models.Model):
         string="วิธีดำเนินการ",
     )
     methodology_description = fields.Text(string="วิธีดำเนินการ ระบุ")
-    target_ids = fields.One2many(
-        comodel_name="project.activity",
-        inverse_name="project_kmitl_id",
-        string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ",
-        domain=[("line_type", "=", "activity")],
-    )
+    target_ids = fields.Text(string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ")
     output_ids = fields.One2many(
         comodel_name="project.output",
         inverse_name="project_kmitl_id",

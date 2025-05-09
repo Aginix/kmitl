@@ -27,6 +27,15 @@ export class TableActivityRenderer extends ListRenderer {
       maximumFractionDigits: 2,
     }).format(total);
   }
+
+  get totalPercentage() {
+    const total = this.props.list.records.reduce(
+      (sum, rec) => sum + (rec.data.percentage || 0),
+      0
+    );
+    return new Intl.NumberFormat("th-TH", {
+    }).format(total);
+  }
 }
 TableActivityRenderer.template = "project_proposal.ListRenderer";
 TableActivityRenderer.rowsTemplate =

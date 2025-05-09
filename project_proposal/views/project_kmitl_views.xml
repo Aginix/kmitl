@@ -31,55 +31,71 @@
                 </header>
                 <sheet>
                     <group>
-                        <field name="date_range_fy_id" />
-                        <field name="source" />
-                        <field name="name" />
-                        <field name="user_id" />
-                        <field name="introduction" />
-                        <field name="national_strategy_id" />
+                        <group>
+                            <field name="name" />
+                            <field name="user_id" />
+                            <field name="introduction" />
+                            <field name="national_strategy_id" />
+                        </group>
+                        <group>
+                            <field name="date_range_fy_id" />
+                            <field name="source" />
+                        </group>
                     </group>
 
                     <group string="ความสอดคล้องกับนโยบายสถาบัน">
-                        <field name="impact_ids" widget="many2many_tags" />
-                        <field name="global_index_ids" widget="many2many_tags" />
-                        <field name="okr_1" widget="many2many_tags" />
+                        <group>
+                            <field name="impact_ids" widget="many2many_tags" />
+                            <field name="global_index_ids" widget="many2many_tags" />
+
+                        </group>
+                        <group>
+                            <field name="okr_1" widget="many2many_tags" />
+                            <field name="fight_ids" widget="many2many_tags" />
+                        </group>
                     </group>
 
                     <group>
-                        <field name="fight_ids" widget="many2many_tags" />
                         <field name="objective_ids">
                             <tree editable="bottom">
                                 <field name="name" />
                             </tree>
                         </field>
-                        <field name="department_id" />
-                        <field name="department_name" />
-                        <field name="project_manager_name" />
-                        <field name="project_manager_position" />
-                        <field name="project_manager_tel" />
-                        <field name="project_manager_email" />
-                        <field name="location" />
+                    </group>
+
+                    <group name="project" string="โครงการ">
+                        <group>
+                            <field name="project_manager_name" />
+                            <field name="project_manager_position" />
+                            <field name="project_manager_tel" />
+                            <field name="project_manager_email" />
+                            <field name="location" />
+                        </group>
+                        <group>
+                            <field name="department_id" />
+                            <field name="department_name" />
+                        </group>
+                    </group>
+
+                    <group>
                         <field name="methodology" />
                         <field name="methodology_description" />
                         <field name="target_ids" />
-                    </group>
-                    <group>
-                        <group>
-                            <field name="output_ids" widget="table_output">
-                                <tree editable="bottom">
-                                    <field name="name" />
-                                    <field name="line_type" />
-                                    <field name="unit" />
-                                    <field name="target" />
-                                </tree>
-                            </field>
-                        </group>
+                        <field name="output_ids" widget="table_output">
+                            <tree editable="bottom">
+                                <field name="name" />
+                                <field name="line_type" />
+                                <field name="unit" />
+                                <field name="target" />
+                            </tree>
+                        </field>
                     </group>
                     <group>
                         <field name="activity_ids" widget="table_activity">
                             <tree>
                                 <field name="seq" />
                                 <field name="name" />
+                                <field name="percentage" />
                                 <field name="amount" />
                                 <field name="line_type" invisible="1" />
                                 <field name="m10" />
@@ -100,10 +116,15 @@
                         <field name="expected_result" />
                         <field name="evaluation_method_ids" widget="many2many_tags" />
                         <field name="evaluation_method_description" />
-                        <field name="attachment_ids" filename="ชื่อไฟล์" />
-                        <field name="total_budget" />
                     </group>
-
+                    <group>
+                        <group>
+                            <field name="total_budget" />
+                        </group>
+                        <group>
+                            <field name="attachment_ids" filename="ชื่อไฟล์" />
+                        </group>
+                    </group>
                 </sheet>
             </form>
         </field>
@@ -149,33 +170,34 @@
                         <field name="amount" />
                         <field name="line_type" />
                         <field name="percentage" />
-                        <field name="project_kmitl_id" readonly="1" />
+                        <field name="project_kmitl_id" invisible="1" />
                     </group>
 
-                    <group string="ระบุเดือนที่ดำเนินการ" col="4">
-                        <separator string="ไตรมาสที่ 1 (ต.ค. - ธ.ค.)" colspan="3" />
+                    <group string="ระบุเดือนที่ดำเนินการ">
                         <group>
+                            <separator string="ไตรมาสที่ 1 (ต.ค. - ธ.ค.)" />
                             <field name="m10" />
                             <field name="m11" />
                             <field name="m12" />
                         </group>
 
-                        <separator string="ไตรมาสที่ 2 (ม.ค. - มี.ค.)" colspan="3" />
                         <group>
+                            <separator string="ไตรมาสที่ 2 (ม.ค. - มี.ค.)" />
                             <field name="m1" />
                             <field name="m2" />
                             <field name="m3" />
                         </group>
+                    </group>
 
-                        <separator string="ไตรมาสที่ 3 (เม.ย. - มิ.ย.)" colspan="3" />
+                    <group>
                         <group>
+                            <separator string="ไตรมาสที่ 3 (เม.ย. - มิ.ย.)" />
                             <field name="m4" />
                             <field name="m5" />
                             <field name="m6" />
                         </group>
-
-                        <separator string="ไตรมาสที่ 4 (ก.ค. - ก.ย.)" colspan="3" />
                         <group>
+                            <separator string="ไตรมาสที่ 4 (ก.ค. - ก.ย.)" />
                             <field name="m7" />
                             <field name="m8" />
                             <field name="m9" />
@@ -187,7 +209,7 @@
     </record>
 
 
-    <menuitem action="action_project_kmitl" id="menu_project_proposal" name="Proposal"
+    <menuitem action="action_project_kmitl" id="menu_project_proposal" name="โครงการยุทธศาสตร์"
         parent="project.menu_main_pm" sequence="2" />
 
 </odoo>
