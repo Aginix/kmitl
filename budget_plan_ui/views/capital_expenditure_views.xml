@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
     <record id="view_capital_expenditure_tree" model="ir.ui.view">
@@ -6,7 +6,7 @@
         <field name="model">capital.expenditure</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="name"/>
+                <field name="name" />
                 <field name="amount" />
             </tree>
         </field>
@@ -19,20 +19,26 @@
             <form string="แผนการจัดซื้อจัดจ้าง">
                 <sheet>
                     <group>
-                        <field name="name"/>
-                        <field name="expected_purchase_date"/>
-                        <field name="note"/>
-                        <field name="payment"/>
+                        <field name="name" />
+                        <field name="expected_purchase_date" />
+                        <field name="note" />
+                        <field name="payment" />
                         <field name="budget_plan_line_id" />
                     </group>
                     <group>
-                        <field name="amount" attrs="{'invisible': [('payment', '=', 'installment')]}"/>
+                        <field
+                            name="amount"
+                            attrs="{'invisible': [('payment', '=', 'installment')]}"
+                        />
                     </group>
                     <group>
-                        <field name="line_ids" attrs="{'invisible': [('payment', '=', 'single')]}">
+                        <field
+                            name="line_ids"
+                            attrs="{'invisible': [('payment', '=', 'single')]}"
+                        >
                             <tree editable="bottom">
-                                <field name="installment_date"/>
-                                <field name="installment_amount"/>
+                                <field name="installment_date" />
+                                <field name="installment_amount" />
                             </tree>
                         </field>
                     </group>
@@ -47,7 +53,12 @@
         <field name="arch" type="xml">
             <search>
                 <group expand="1" string="Group By">
-                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                    <filter
+                        string="Name"
+                        name="name"
+                        domain="[]"
+                        context="{'group_by':'name'}"
+                    />
                 </group>
             </search>
         </field>
@@ -67,12 +78,54 @@
         </field>
     </record>
 
+    <record id="inherit_procurement_form" model="ir.ui.view">
+        <field name="name">procurement.plan.view.form.inherit</field>
+        <field name="model">procurement.plan</field>
+        <field name="inherit_id" ref="procurement_plan.view_procurement_plan_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='note']" position="after">
+                <field name="budget_plan_line_id" />
+                <field name="hide_header" invisible="1" />
+            </xpath>
+            <xpath expr="//field[@name='state']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': [('hide_header', '=', True)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_range_fy_id']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'readonly': [('hide_header', '=', True)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='source_analytic_id']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'readonly': [('hide_header', '=', True)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='activity_analytic_id']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'readonly': [('hide_header', '=', True)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='department_analytic_id']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'readonly': [('hide_header', '=', True)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='budget_plan_line_id']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'readonly': [('hide_header', '=', True)]}</attribute>
+            </xpath>
+        </field>
+    </record>
+
     <menuitem
-                id="action_capital_expenditure_menu_action"
-                name="Capital Expenditure"
-                action="action_capital_expenditure"
-                parent="budget.budget_root_menu"
-                sequence="89"
-            />
+        id="action_procurement_menu_action"
+        name="procurement"
+        action="procurement_plan.action_procurement_plan"
+        parent="budget.budget_root_menu"
+        sequence="89"
+    />
 
 </odoo>

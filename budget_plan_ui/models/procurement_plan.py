@@ -1,0 +1,16 @@
+import logging
+
+from odoo import fields, models
+
+_logger = logging.getLogger(__name__)
+
+
+class ProcurementPlan(models.Model):
+    _inherit = "procurement.plan"
+
+    budget_plan_line_id = fields.Many2one(
+        "budget.plan.line",
+        string="Budget Plan line",
+        ondelete="cascade",
+    )
+    hide_header = fields.Boolean(default=False)

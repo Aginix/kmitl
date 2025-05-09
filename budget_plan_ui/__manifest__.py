@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 {
     "name": "KMITL Budget Plan UI",
     "version": "16.0.1.0.0",
@@ -11,6 +10,7 @@
         "web",
         "budget_plan",
         "account_analytic_parent",
+        "procurement_plan",
     ],
     "data": [
         "views/capital_expenditure_views.xml",

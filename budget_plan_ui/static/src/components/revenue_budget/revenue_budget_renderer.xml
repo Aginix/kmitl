@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<templates>
-    <t t-name="budget_plan_ui.revenue_budget_renderer" owl="1">
-        <Budget_table data="state.merged_lines" type="'revenue'" t-key="state.refresh_key" />
-    </t>
-</templates>

@@ -1,11 +1,56 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <templates xml:space="preserve">
     <t t-name="budget_plan_ui.revenue_budget" owl="1">
         <Budget_control_panel />
         <div class="o_content">
-            <div class="o_budget_template_revenue_page py-4 px-0 overflow-auto border-bottom bg-view">
+            <div
+                class="o_budget_template_revenue_page py-4 px-0 overflow-auto border-bottom bg-view"
+            >
                 <div class="container-fluid">
-                    <RevenueBudgetRenderer />
+                    <table
+                        class="o_budget_template_revenue_expandable table table-bordered table-sm"
+                    >
+                        <thead class="table-header">
+                            <tr class="bg-head">
+                                <th />
+                                <th />
+                                <th>จำนวนเงิน</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            <tr
+                                t-foreach="state.budget_template_line.budget_template_merge"
+                                t-as="template"
+                                t-key="template.id"
+                            >
+                                <td class="fw-bold text-center">
+                                    <t t-esc="template.code" />
+                                </td>
+                                <NoteEditor data="template" updateNote="updateNote" />
+                                <td>
+                                    <t t-if="template.plan_line">
+                                        <input
+                                            type="text"
+                                            class="form-control text-end"
+                                            t-model="this.state.formated.amount[`${template.plan_line.id}-${template.id}`]"
+                                            t-att-value="formattedAmount(this.state.budget_plan_line.budget_plan_line_amount[`${template.plan_line.id}-${template.id}`] || template.plan_line.amount)"
+                                            t-att-disabled="!template.can_edit"
+                                            t-on-blur="() => onBlurSavePlan(template)"
+                                        />
+                                    </t>
+                                    <t t-else="">
+                                        <input
+                                            type="text"
+                                            class="form-control text-end"
+                                            t-model="this.state.formated.amount[`${template.code}-${template.id}`]"
+                                            t-att-disabled="!template.can_edit"
+                                            t-on-blur="() => onBlurSaveCreate(template)"
+                                        />
+                                    </t>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
