@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
     <!-- Tree View -->
@@ -22,12 +22,14 @@
             <form string="Project Kmitl">
                 <header>
                     <field name="state" widget="statusbar" />
-                    <button name="action_next_state"
+                    <button
+                        name="action_next_state"
                         type="object"
                         string="ถัดไป"
                         class="btn-primary"
                         icon="fa-arrow-right"
-                        attrs="{'invisible': [('state', '=', 'approved')]}" />
+                        attrs="{'invisible': [('state', '=', 'approved')]}"
+                    />
                 </header>
                 <sheet>
                     <group>
@@ -137,7 +139,12 @@
         <field name="arch" type="xml">
             <search>
                 <group expand="1" string="Group By">
-                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}" />
+                    <filter
+                        string="Name"
+                        name="name"
+                        domain="[]"
+                        context="{'group_by':'name'}"
+                    />
                 </group>
             </search>
         </field>
@@ -209,7 +216,12 @@
     </record>
 
 
-    <menuitem action="action_project_kmitl" id="menu_project_proposal" name="โครงการยุทธศาสตร์"
-        parent="project.menu_main_pm" sequence="2" />
+    <menuitem
+        action="action_project_kmitl"
+        id="menu_project_proposal"
+        name="โครงการยุทธศาสตร์"
+        parent="project.menu_main_pm"
+        sequence="2"
+    />
 
 </odoo>
