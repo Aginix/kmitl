@@ -35,16 +35,27 @@
                 >{'readonly': [('hide_header', '=', True)]}</attribute>
             </xpath>
             <xpath expr="//field[@name='budget_plan_line_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
                 <attribute
                     name="attrs"
                 >{'readonly': [('hide_header', '=', True)]}</attribute>
+            </xpath>
+
+            <xpath
+                expr="//div[@class='o_procurement_plan_budget']"
+                position="attributes"
+            >
+                <attribute name="class">o_procurement_plan_budget col-6</attribute>
+            </xpath>
+            <xpath expr="//div[@class='o_procurement_plan_eta']" position="attributes">
+                <attribute name="class">o_procurement_plan_eta col-6</attribute>
             </xpath>
         </field>
     </record>
 
     <menuitem
         id="action_procurement_menu_action"
-        name="procurement"
+        name="แผนจัดซื้อจัดจ้าง"
         action="procurement_plan.action_procurement_plan"
         parent="budget.budget_root_menu"
         sequence="89"
