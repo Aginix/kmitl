@@ -31,6 +31,9 @@ class BudgetTemplate(models.Model):
         copy=True,
         tracking=True,
     )
+    company_id = fields.Many2one(
+        comodel_name="res.company", required=True, default=lambda self: self.env.company
+    )
 
     @api.model
     def _search_date_range_fy(self, operator, value):
@@ -73,6 +76,7 @@ class BudgetTemplateLine(models.Model):
         readonly=True,
         copy=True,
     )
+    company_id = fields.Many2one(related="template_id.company_id", store=True)
 
     def _default_sequence(self):
         """

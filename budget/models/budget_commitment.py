@@ -98,6 +98,9 @@ class BudgetCommitment(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
+    company_id = fields.Many2one(
+        comodel_name="res.company", required=True, default=lambda self: self.env.company
+    )
 
     @api.depends("date", "state")
     def _compute_hide_post_button(self):

@@ -19,7 +19,8 @@ class BudgetCommitmentLine(models.Model):
         auto_join=True,
         ondelete="cascade",
     )
-
+    date = fields.Date(related="commitment_id.date")
+    account_id = fields.Many2one(comodel_name="budget.template.line", store=True, compute="_compute_account_id")
     code = fields.Char("รหัสงบประมาณ", related="template_line_id.code", store=True)
     name = fields.Char("ชื่อรายการ", related="template_line_id.name", store=True)
     template_id = fields.Many2one(related="commitment_id.template_id", store=True)
@@ -35,15 +36,22 @@ class BudgetCommitmentLine(models.Model):
         required=True,
         digits="Budget Precision",
         help="Amount",
+        store=True,
+        compute="_compute_amount_credit_debit"
     )
     credit = fields.Float(
         readonly=True,
         digits="Budget Precision",
+        store=True,
+        compute="_compute_amount_credit_debit"
     )
     debit = fields.Float(
         readonly=True,
         digits="Budget Precision",
+        store=True,
+        compute="_compute_amount_credit_debit"
     )
+    company_id = fields.Many2one(related="commitment_id.company_id", store=True)
 
     # === Parent fields === #
     name = fields.Char(
@@ -61,5 +69,16 @@ class BudgetCommitmentLine(models.Model):
     )
 
     @api.depends("amount")
-    def _compute_amount(self):
-        pass
+    def _compute_amount_credit_debit(self):
+        for record in self:
+            if record.amount >= 0:
+                record.debit = record.amount
+                record.credit = 0
+            else:
+                record.credit = record.amount
+                record.debit = 0
+
+    @api.depends("template_line_id")
+    def _compute_account_id(self):
+        for record in self:
+            record.account_id = record.template_line_id
