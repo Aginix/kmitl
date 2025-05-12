@@ -8,7 +8,6 @@
     "depends": ["account", "account_analytic_kmitl", "account_fiscal_year", "mail"],
     "data": [
         "views/budget_template_views.xml",
-        "views/budget_move_views.xml",
         "views/budget_appropriation_views.xml",
         "views/budget_commitment_views.xml",
         "views/budget_menus.xml",
