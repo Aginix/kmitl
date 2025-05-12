@@ -1,2 +1,3 @@
 id,name,template_id/id,date_range_fy_id/id,date,state,department_analytic_id/id,source_analytic_id/id
 approp_dept_02_2568,"เงินจัดสรรอนุมัติสภาสถาบัน",budget_template_y2568_expense,kmitl_demo.account_fiscal_year_y2568,2024-10-01,posted,account_analytic_kmitl.dept_02,account_analytic_kmitl.source_2
+approp_dept_03_2568,ประมาณการรายรับเงินรายได้,budget_template_y2568_revenue,kmitl_demo.account_fiscal_year_y2568,2024-10-01,posted,account_analytic_kmitl.dept_01,account_analytic_kmitl.source_2

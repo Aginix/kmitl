@@ -56,6 +56,12 @@ class BudgetAppropriationLine(models.Model):
     note = fields.Char(tracking=True)
 
     # === Parent fields === #
+    department_analytic_id = fields.Many2one(
+        related="appropriation_id.department_analytic_id",
+        store=True,
+        readonly=True,
+        string="ส่วนงาน",
+    )
     name = fields.Char(
         related="appropriation_id.name", store=True, index="btree", readonly=True
     )
@@ -65,9 +71,6 @@ class BudgetAppropriationLine(models.Model):
     parent_state = fields.Selection(related="appropriation_id.state", store=True)
     source_analytic_id = fields.Many2one(
         related="appropriation_id.source_analytic_id", store=True
-    )
-    department_analytic_id = fields.Many2one(
-        related="appropriation_id.department_analytic_id", store=True
     )
     company_id = fields.Many2one(related="appropriation_id.company_id", store=True)
 
