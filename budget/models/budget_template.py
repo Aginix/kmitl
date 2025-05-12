@@ -133,40 +133,6 @@ class BudgetTemplateLine(models.Model):
         )
     ]
 
-    def write(self, vals):
-        res = super(BudgetTemplateLine, self).write(vals)
-        if "fund_analytic_ids" in vals:
-            for record in self:
-                if record.child_ids:
-                    record.child_ids.write(
-                        {"fund_analytic_ids": [(6, 0, record.fund_analytic_ids.ids)]}
-                    )
-        # ถ้ามี parent_id และ fund_analytic_ids ว่าง ให้ใช้ค่าจาก parent
-        for record in self:
-            if record.parent_id and not record.fund_analytic_ids:
-                record.write({
-                    "fund_analytic_ids": [(6, 0, record.parent_id.fund_analytic_ids.ids)]
-                })
-        return res
-
-    @api.depends("parent_id", "parent_id.fund_analytic_ids")
-    def _compute_fund_accounts(self):
-        # ถ้ามี parent ให้ใช้ค่า fund_analytic_ids จาก parent
-        for record in self:
-            if record.parent_id:
-                record.fund_analytic_ids = record.parent_id.fund_analytic_ids
-            # ถ้าไม่มี parent ให้คงค่าเดิม (หรือกำหนดค่าเริ่มต้นถ้าต้องการ)
-
-    @api.onchange("fund_analytic_ids")
-    def _onchange_fund_analytic_ids(self):
-        # เมื่อเปลี่ยนแปลง fund_analytic_ids ใน parent อัปเดตไปยัง child_ids
-        _logger.info("Onchange triggered for analytic_account_ids:")
-        _logger.info(self.fund_analytic_ids.ids)
-        if self.child_ids:
-            self.child_ids.write(
-                {"fund_analytic_ids": [(6, 0, self.fund_analytic_ids.ids)]}
-            )
-
     @api.depends("parent_id.hierarchy_level")
     def _compute_hierarchy_level(self):
         for report_line in self:

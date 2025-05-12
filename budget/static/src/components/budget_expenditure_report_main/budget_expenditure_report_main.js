@@ -86,7 +86,6 @@ export class BudgetExpenditureReportMain extends Component {
 
 BudgetExpenditureReportMain.template = "budget.BudgetExpenditureReportMain";
 BudgetExpenditureReportMain.components = {BudgetExpenditureReportControlPanel};
-BudgetExpenditureReportMain.props = {};
 
 registry
     .category("actions")
