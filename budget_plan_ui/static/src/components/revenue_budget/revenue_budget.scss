@@ -1,0 +1,21 @@
+.o_budget_template_revenue_page {
+    max-height: calc(85vh);
+    overflow-y: auto;
+}
+
+.table-header {
+
+    top: 0;
+    background-color: white;
+    z-index: 10;
+}
+
+.table-sm input.form-control {
+    padding: 2px;
+    font-size: 12px;
+    text-align: right;
+}
+
+.table-sm > :not(caption) > * > *{
+    padding: 0.3rem 0.3rem;
+}

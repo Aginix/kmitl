@@ -1,0 +1,71 @@
+.full-height-scroll {
+    height: 80vh;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+}
+.bg-fund{
+    background-color:#bebebe;
+}
+
+.record-row:hover,
+.record-row:active {
+    background-color: #e6e6e6 !important;
+    transition: background-color 0.1s ease-in-out;
+    cursor: pointer;
+}
+
+.bg-head{
+    background-color:#969696;
+}
+
+.rotated {
+    transform: rotate(180deg);
+}
+
+.fade-out {
+    opacity: 0;
+    height: 0;
+    transition: opacity 0.5s ease-out, height 0.5s ease-out;
+}
+
+tr {
+    max-height: 50px;
+    overflow: hidden;
+    transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+}
+
+tr.slide-up {
+    max-height: 0;
+    padding: 0;
+}
+
+.loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    animation: spin 1s linear infinite;
+}
+
+.o_budget_template_expense_page {
+    max-height: calc(80vh);
+    overflow-y: auto;
+}
+
+.table-header {
+    top: 0;
+    background-color: white;
+    z-index: 10;
+}
+
+.table-sm input.form-control {
+    padding: 2px;
+    font-size: 12px;
+    text-align: right;
+}
+
+.table-sm > :not(caption) > * > *{
+    padding: 0.3rem 0.3rem;
+}
+
