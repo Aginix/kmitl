@@ -48,21 +48,6 @@ tr.slide-up {
     animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-@keyframes blink {
-    0% { opacity: 1; }
-    50% { opacity: 0; }
-    100% { opacity: 1; }
-}
-
-.blink-text {
-    animation: blink 3s infinite;
-}
-
 .o_budget_template_expense_page {
     max-height: calc(80vh);
     overflow-y: auto;
