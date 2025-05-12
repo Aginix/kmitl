@@ -166,6 +166,12 @@ class BudgetAppropriationLine(models.Model):
         comodel_name="budget.template.line",
         index=True,
     )
+    department_analytic_id = fields.Many2one(
+        related="appropriation_id.department_analytic_id",
+        store=True,
+        readonly=True,
+        string="ส่วนงาน",
+        )
     budget_type = fields.Selection(
         related="template_line_id.template_id.budget_type", store=True, readonly=True
     )
