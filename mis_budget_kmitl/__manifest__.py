@@ -9,7 +9,7 @@
     "depends": ["base", "budget", "mis_builder"],
     "data": [
         "data/mis.report.style.csv",
-        "views/budget_template_server_action.xml",
+        "views/server_action.xml",
         "views/mis_budget_report_mis_report_instance_views.xml"
     ],
     "application": False,
