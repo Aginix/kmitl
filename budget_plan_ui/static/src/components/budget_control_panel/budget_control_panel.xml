@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="budget_plan_ui.budget_control_panel" owl="1">
+        <ControlPanel display="controlPanelDisplay">
+            <!-- <t t-set-slot="control-panel-bottom-left-buttons">
+                <div class="o_cp_buttons">
+                    <div class="o_list_buttons o_mrp_bom_report_buttons">
+                    </div>
+                </div>
+            </t> -->
+        </ControlPanel>
+    </t>
+</templates>

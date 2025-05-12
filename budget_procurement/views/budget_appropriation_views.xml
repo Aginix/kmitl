@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+
+    <!-- View budget.appropriation form -->
+    <record id="view_budget_appropriation_form" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.form</field>
+        <field name="model">budget.appropriation</field>
+        <field name="inherit_id" ref="budget.view_budget_appropriation_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='help']" position="replace">
+                <page string="แผนจัดซื้อจัดจ้าง">
+                    <field name="procurement_ids">
+                        <tree>
+                            <field name="name"/>
+                            <field name="budget_plan_line_id"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+  </odoo>

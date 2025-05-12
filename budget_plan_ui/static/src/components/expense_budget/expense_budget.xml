@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="budget_plan_ui.expense_budget" owl="1">
+        <Budget_control_panel />
+        <div class="o_content">
+            <div
+                class="o_budget_template_expense_page py-4 px-0 overflow-auto border-bottom bg-view"
+            >
+                <div class="container-fluid">
+
+                    <div class="text-center">
+                        <div class="mt-3">
+                            <h5><span
+                                    t-esc="state.budget_template.budget_template_name"
+                                /></h5>
+                            <h5>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h5>
+                        </div>
+                    </div>
+
+                    <!-- select กองทุน -->
+                    <div
+                        class="text-center o_select_budget_fund py-3"
+                        t-if="1 or state.activity.activity_active_name"
+                    >
+                        <div class="d-flex col-6 mt-3">
+                            <span style="width: 150px">กองทุน : </span>
+                            <select
+                                class="form-select"
+                                aria-label="กรุณาเลือกงบประมาณ..."
+                                t-model="state.fund"
+                            >
+                                <option value="0">กรุณาเลือกกองทุน...</option>
+                                <t
+                                    t-foreach="state.budget_plan.budget_fund"
+                                    t-as="fund"
+                                    t-key="fund.id"
+                                >
+                                    <t t-if="!fund.parent_id">
+                                        <option
+                                        t-att-value="fund.id"
+                                        t-esc="fund.name"
+                                    />
+                                    </t>
+
+                                </t>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- กิจกรรม  -->
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr class="bg-head">
+                                <th class="text-center" style="width: 150px"><i
+                                        t-on-click="() =>this.toggleRotate('all_activity')"
+                                        t-att-class="state.rotated.all_activity ? 'rotated' : ''"
+                                        class="fa cursor-pointer fa-chevron-down"
+                                        style="font-size:15px;transition: transform 0.3s;"
+                                    /></th>
+                                <th />
+                                <th>จำนวนเงิน</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t
+                                t-if="!state.rotated.all_activity"
+                                t-foreach="state.activity.activity_list"
+                                t-as="activity"
+                                t-key="activity.id"
+                            >
+                                <tr
+                                    t-att-class="activity.hierarchy_level == 0 ? 'bg-fund' : ''"
+                                >
+                                    <td class="fw-bold text-center">
+                                        <t t-esc="activity.code" />
+                                    </td>
+                                    <td>
+                                        <span
+                                            t-att-class="activity.hierarchy_level > 2 ? 'fw-medium' : 'fw-bold'"
+                                            class="d-flex gap-2"
+                                            t-attf-style="margin-left: {{ activity.hierarchy_level * 24 }}px;"
+                                        >
+                                            <span
+                                                t-att-class="state.activity.select_activity == activity.id ? 'blink-text text-danger' : ''"
+                                            >
+                                                <t t-esc="activity.name" />
+                                            </span>
+                                            <i
+                                                t-if="activity.hierarchy_level > 2"
+                                                t-att-class="state.activity.select_activity == activity.id ? 'fa fa-edit cursor-pointer fa-lg blink-text text-danger fw-semibold' : 'fa fa-edit cursor-pointer fa-lg fw-semibold'"
+                                                t-on-click="() => this.loadingToggle(activity.name ,activity)"
+                                            />
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="number"
+                                            class="form-control text-end"
+                                            value="0"
+                                            readonly="0"
+                                        />
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <div class="mt-3">
+                        <t t-if="state.activity.activity_active_name">
+                            <h4 class="text-danger blink-text">คุณกำลังทำรายการ <span
+                                    t-esc="state.activity.activity_selected_code"
+                                /></h4>
+                            <t
+                                t-foreach="state.activity.activity_selected_list"
+                                t-as="activity"
+                                t-key="activity.id"
+                            >
+                                <h4 class="text-danger blink-text"><span
+                                        t-esc="activity.name"
+                                    /></h4>
+                            </t>
+                        </t>
+                        <t t-if="!state.activity.activity_active_name">
+                            <h4 class="text-danger blink-text">กรุณาเลือกกิจกรรม</h4>
+                        </t>
+                    </div>
+
+                    <div
+                        class="text-center o_select_budget_plan"
+                        t-if="1 or state.activity.activity_active_name"
+                    >
+                        <div class="d-flex col-6 mt-3">
+                            <span style="width: 150px">งบประมาณ : </span>
+                            <select
+                                class="form-select"
+                                aria-label="กรุณาเลือกงบประมาณ..."
+                                t-model="state.budget_plan.budget_plan"
+                            >
+                                <option value="0">กรุณาเลือกงบ...</option>
+                                <t
+                                    t-foreach="state.budget_template.budget_template_line_data_list"
+                                    t-as="plan"
+                                    t-key="plan.id"
+                                >
+                                    <t t-if="!plan.parent_id">
+                                        <option
+                                            t-att-value="plan.id"
+                                            t-esc="plan.name"
+                                        />
+                                    </t>
+
+                                </t>
+                            </select>
+                        </div>
+                    </div>
+
+                    <t t-if="state.load.loading">
+                        <div class="d-flex justify-content-center mt-5">
+                            <div class="loader" />
+                        </div>
+                    </t>
+
+                    <table
+                        t-if="!state.load.loading and state.activity.activity_active_name"
+                        class="o_budget_template_expense_expandable table table-bordered table-sm mt-3"
+                    >
+                        <thead class="table-header">
+                                <tr class="bg-head">
+                                    <th />
+                                    <th />
+                                    <th>จำนวนเงิน</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-body">
+                                <t
+                                t-foreach="state.budget_template.budget_template_line_data_list"
+                                t-as="template"
+                                t-key="template.id"
+                            >
+                                    <tr
+                                    t-if="template.root_parent == state.budget_plan.budget_plan and template.root_parent != 193"
+                                >
+                                        <td class="fw-semibold text-center">
+                                            <t t-esc="template.code" />
+                                        </td>
+                                        <td>
+                                            <NoteEditor
+                                            data="template"
+                                            updateNote="updateNote"
+                                        />
+                                        </td>
+                                        <td>
+                                            <t t-if="template.plan_line">
+                                                <input
+                                                type="text"
+                                                class="form-control text-end"
+                                                t-model="this.state.formated.amount[`${template.plan_line.id}-${template.id}`]"
+                                                t-att-value="formattedAmount(this.state.budget_plan_line.budget_salary_amount[`${template.plan_line.id}-${template.id}`] || template.plan_line.amount)"
+                                                t-att-disabled="!template.can_edit"
+                                                t-on-blur="() => onBlurSavePlan(template)"
+                                            />
+                                            </t>
+                                            <t t-else="">
+                                                <input
+                                                type="text"
+                                                class="form-control text-end"
+                                                t-model="this.state.formated.amount[`${template.code}-${template.id}`]"
+                                                t-att-disabled="!template.can_edit"
+                                                t-on-blur="() => onBlurSaveCreate(template)"
+                                            />
+                                            </t>
+                                        </td>
+                                    </tr>
+                                    <tr
+                                    t-elif="state.budget_plan.budget_plan == 193 and template.root_parent == 193"
+                                >
+                                        <td class="fw-semibold text-center">
+                                            <t t-esc="template.code" />
+                                        </td>
+                                         <td>
+                                            <span
+                                            class="fw-semibold d-flex gap-2"
+                                            t-attf-style="margin-left: {{ template.level * 24 }}px;"
+                                        >
+                                                <t t-esc="template.name" />
+                                                <i
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#capital_tree"
+                                                t-on-click="() => this.modalProcurement(template)"
+                                                t-att-class="template.can_edit ? '' : 'd-none'"
+                                                class="fa fa-edit cursor-pointer fa-lg"
+                                            />
+                                            </span>
+                                            <t t-if="template.procurement_plan">
+                                                <t
+                                                t-foreach="template.procurement_plan"
+                                                t-as="procurement"
+                                                t-key="procurement.id"
+                                            >
+                                                    <div
+                                                    class="d-flex gap-2 align-items-center"
+                                                >
+                                                        <span
+                                                        class="fw-semibold"
+                                                        t-attf-style="margin-left: {{ template.level * 24 }}px;"
+                                                    >
+                                                            - <t
+                                                            t-esc="procurement.name"
+                                                        /> <t
+                                                            t-esc="procurement.amount"
+                                                        /> บาท
+                                                        </span>
+                                                    </div>
+                                                </t>
+                                            </t>
+                                        </td>
+                                        <td>
+                                            <t t-if="template.plan_line">
+                                                <input
+                                                type="text"
+                                                class="form-control text-end"
+                                                t-att-disabled="true"
+                                                t-att-value="template.plan_line.sum_amount"
+                                            />
+                                            </t>
+                                            <t t-else="">
+                                                <input
+                                                type="text"
+                                                class="form-control text-end"
+                                                t-att-disabled="true"
+                                                value="0"
+                                            />
+                                            </t>
+                                        </td>
+                                    </tr>
+
+                                <!-- modal -->
+                                    <div
+                                    class="modal fade"
+                                    id="capital_tree"
+                                    tabindex="-1"
+                                    aria-labelledby="Modal_tree"
+                                    aria-hidden="true"
+                                >
+                                        <div class="modal-dialog modal-xl">
+                                            <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1
+                                                    class="modal-title fs-5"
+                                                    id="exampleModalLabel"
+                                                >แผนการจัดซื้อจัดจ้าง</h1>
+                                                <button
+                                                    type="button"
+                                                    class="btn-close"
+                                                    data-bs-dismiss="modal"
+                                                    aria-label="Close"
+                                                />
+                                            </div>
+                                            <div class="modal-body">
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr class="bg-head">
+                                                            <th>รายการ</th>
+                                                            <th />
+                                                        </tr>
+                                                    </thead>
+                                                        <t
+                                                        t-if="state.budget_plan.budget_plan_line_modal"
+                                                    >
+                                                            <t
+                                                            t-foreach="state.budget_plan.budget_plan_line_modal"
+                                                            t-as="procurement"
+                                                            t-key="procurement.id"
+                                                        >
+                                                                <tr class="record-row">
+                                                                    <td
+                                                                    t-on-click="() => this.openModal(procurement)"
+                                                                >
+                                                                        <div
+                                                                        class="d-flex justify-content-between align-items-center"
+                                                                    >
+                                                                            <span
+                                                                            t-esc="procurement.name"
+                                                                        />
+                                                                        </div>
+                                                                    </td>
+                                                                    <td
+                                                                    style="width:20px;"
+                                                                >
+                                                                        <i
+                                                                        class="fa fa-trash cursor-pointer fa-lg text-danger"
+                                                                        data-bs-dismiss="modal"
+                                                                        t-on-click="() => this.deleteProcurement(procurement)"
+                                                                    >
+                                                                        </i>
+                                                                    </td>
+                                                                </tr>
+                                                            </t>
+                                                        </t>
+                                                </table>
+                                            </div>
+                                            <div class="modal-footer gap-2 d-flex">
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-secondary"
+                                                    data-bs-dismiss="modal"
+                                                >ปิด</button>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-primary"
+                                                    t-on-click="() => this.createProcurement()"
+                                                >เพิ่มข้อมูล</button>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
