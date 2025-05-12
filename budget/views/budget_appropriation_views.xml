@@ -12,12 +12,7 @@
                 <field name="date_range_fy_id" />
                 <field name="department_analytic_id" />
                 <field name="source_analytic_id" />
-                <field
-                    name="state"
-                    widget="badge"
-                    decoration-info="state == 'draft'"
-                    decoration-success="state == 'posted'"
-                />
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'posted'" />
             </tree>
         </field>
     </record>
@@ -29,35 +24,11 @@
         <field name="arch" type="xml">
             <form string="Budget Appropriation">
                 <header>
-                    <button
-                        name="action_post"
-                        string="Post"
-                        class="oe_highlight"
-                        type="object"
-                        data-hotkey="v"
-                        attrs="{'invisible': [('hide_post_button', '=', True)]}"
-                    />
-                    <button
-                        name="button_draft"
-                        string="Reset to Draft"
-                        type="object"
-                        attrs="{'invisible' : [('show_reset_to_draft_button', '=', False)]}"
-                        data-hotkey="q"
-                    />
-                    <button
-                        name="button_cancel"
-                        string="Cancel"
-                        type="object"
-                        data-hotkey="w"
-                        attrs="{'invisible' : ['|', ('id', '=', False), ('state', '!=', 'draft')]}"
-                    />
+                    <button name="action_post" string="Post" class="oe_highlight" type="object" data-hotkey="v" attrs="{'invisible': [('hide_post_button', '=', True)]}" />
+                    <button name="button_draft" string="Reset to Draft" type="object" attrs="{'invisible' : [('show_reset_to_draft_button', '=', False)]}" data-hotkey="q" />
+                    <button name="button_cancel" string="Cancel" type="object" data-hotkey="w" attrs="{'invisible' : ['|', ('id', '=', False), ('state', '!=', 'draft')]}" />
 
-                    <field
-                        name="state"
-                        widget="statusbar"
-                        statusbar_visible="draft,posted"
-                        readonly="1"
-                    />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,posted" readonly="1" />
                 </header>
                 <!-- Invisible Fields -->
                 <field name="show_reset_to_draft_button" invisible="1" />
@@ -68,21 +39,15 @@
                         <group>
                             <field name="name" />
                             <field name="date" />
-                            <field
-                                name="date_range_fy_id"
-                                options='{"no_open": True}'
+                            <field name="date_range_fy_id" options='{"no_open": True}'
                             />
-                            <field name="template_id" options="{'no_open': True}" />
+<field name="template_id" options="{'no_open': True}" />
 
-                            <field
-                                name="department_analytic_id"
-                                options='{"no_open": True}'
+                            <field name="department_analytic_id" options='{"no_open": True}'
                             />
-                            <field
-                                name="source_analytic_id"
-                                options='{"no_open": True}'
+<field name="source_analytic_id" options='{"no_open": True}'
                             />
-                            <field name="user_id" />
+<field name="user_id" />
                             <field name="ref" />
                             <field name="note" />
                         </group>
@@ -93,27 +58,17 @@
                                 <tree>
                                     <field name="date_range_fy_id" invisible="1" />
                                     <field name="appropriation_id" invisible="1" />
-                                    <field
-                                        name="department_analytic_id"
-                                        options='{"no_open": True}'
+                                    <field name="department_analytic_id" options='{"no_open": True}'
                                     />
-                                    <field
-                                        name="activity_analytic_id"
-                                        options='{"no_open": True}'
+<field name="activity_analytic_id" options='{"no_open": True}'
                                     />
-                                    <field
-                                        name="fund_analytic_id"
-                                        options='{"no_open": True}'
+<field name="fund_analytic_id" options='{"no_open": True}'
                                     />
-                                    <field
-                                        name="template_id"
-                                        options='{"no_open": True}'
+<field name="template_id" options='{"no_open": True}'
                                     />
-                                    <field
-                                        name="template_line_id"
-                                        options='{"no_open": True}'
+<field name="template_line_id" options='{"no_open": True}'
                                     />
-                                    <field name="amount" />
+<field name="amount" />
                                 </tree>
                             </field>
                         </page>
@@ -139,13 +94,7 @@
         <field name="name">view.budget.appropriation.line.tree</field>
         <field name="model">budget.appropriation.line</field>
         <field name="arch" type="xml">
-            <tree
-                create="false"
-                edit="false"
-                delete="false"
-                expand="context.get('expand', False)"
-                sample="1"
-            >
+            <tree create="false" edit="false" delete="false" expand="context.get('expand', False)" sample="1">
                 <field name="appropriation_id" widget="many2onebutton" />
                 <field name="date_range_fy_id" />
                 <field name="department_analytic_id" />
@@ -186,13 +135,11 @@
         <field name="model">budget.appropriation</field>
         <field name="arch" type="xml">
             <search>
+                <field name="department_analytic_id" domain="[('root_plan_id.code', '=', 'departments')]" />
+                <field name="source_analytic_id" domain="[('root_plan_id.code', '=', 'sources')]" />
+                <separator />
                 <group expand="1" string="Group By">
-                    <filter
-                        string="Name"
-                        name="name"
-                        domain="[]"
-                        context="{'group_by':'name'}"
-                    />
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}" />
                 </group>
             </search>
         </field>
@@ -204,37 +151,18 @@
         <field name="model">budget.appropriation.line</field>
         <field name="arch" type="xml">
             <search>
+                <field name="code" />
+                <field name="name" />
+                <field name="department_analytic_id" domain="[('root_plan_id.code', '=', 'departments')]" />
+                <field name="fund_analytic_id" domain="[('root_plan_id.code', '=', 'funds')]" />
+                <field name="source_analytic_id" domain="[('root_plan_id.code', '=', 'sources')]" />
+                <separator />
                 <group expand="1" string="Group By">
-                    <filter
-                        string="Fiscal Year"
-                        name="date_range_fy_id"
-                        domain="[]"
-                        context="{'group_by':'date_range_fy_id'}"
-                    />
-                    <filter
-                        string="Department"
-                        name="department_analytic_id"
-                        domain="[]"
-                        context="{'group_by':'department_analytic_id'}"
-                    />
-                    <filter
-                        string="Activity"
-                        name="activity_analytic_id"
-                        domain="[]"
-                        context="{'group_by':'activity_analytic_id'}"
-                    />
-                    <filter
-                        string="Fund"
-                        name="fund_analytic_id"
-                        domain="[]"
-                        context="{'group_by':'fund_analytic_id'}"
-                    />
-                    <filter
-                        string="Source"
-                        name="source_analytic_id"
-                        domain="[]"
-                        context="{'group_by':'source_analytic_id'}"
-                    />
+                    <filter string="Fiscal Year" name="date_range_fy_id" domain="[]" context="{'group_by':'date_range_fy_id'}" />
+                    <filter string="Department" name="department_analytic_id" domain="[]" context="{'group_by':'department_analytic_id'}" />
+                    <filter string="Activity" name="activity_analytic_id" domain="[]" context="{'group_by':'activity_analytic_id'}" />
+                    <filter string="Fund" name="fund_analytic_id" domain="[]" context="{'group_by':'fund_analytic_id'}" />
+                    <filter string="Source" name="source_analytic_id" domain="[]" context="{'group_by':'source_analytic_id'}" />
                 </group>
             </search>
         </field>

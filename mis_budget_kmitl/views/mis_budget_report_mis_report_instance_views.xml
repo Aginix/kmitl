@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- <data inherit_id="mis_builder.report_mis_report_instance">
+        <xpath expr="//div[hasclass('page')]" position="inside">
+            <style>
+                .mis_cell {
+                  padding-top: 4px !important;
+                  padding-bottom: 4px !important;
+                }
+                .mis_table div {
+                  line-height: 1.35;
+                }
+            </style>
+        </xpath>
+    </data> -->
+
+</odoo>
