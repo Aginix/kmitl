@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <!-- <data inherit_id="mis_builder.report_mis_report_instance">
-        <xpath expr="//div[hasclass('page')]" position="inside">
+    <template id="report_mis_report_instance" inherit_id="mis_builder.report_mis_report_instance">
+        <xpath expr="//div[hasclass('page')]" position="before">
             <style>
                 .mis_cell {
                   padding-top: 4px !important;
@@ -13,6 +12,5 @@
                 }
             </style>
         </xpath>
-    </data> -->
-
+    </template>
 </odoo>
