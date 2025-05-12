@@ -9,13 +9,49 @@ _logger = logging.getLogger(__name__)
 class MisReportF3p003(models.AbstractModel):
     _name = _description = "mis.report.kmitl.f3_p_003_overall"
 
+    revenues = [
+        {"name": "rev", "description": "รายรับ", "line_type": "str"},
+        {
+            "name": "rev_kmitl",
+            "description": "เงินรายได้สถาบัน",
+            "children": [
+                {
+                    "name": "rev_r49000",
+                    "description": "ค่าธรรมเนียมการศึกษา และค่าธรรมเนียมอื่น ๆ",
+                    "account": ["43100","43200","4121010099","4124000004","4121010025","4121010026","4121010050","4121010054","4121010059","4121010060","4121010061","4121010062","4121010063","4121010094","4121010200","4121010092","4121010010","4121010011","4121010051","4121010052","4121010053","4121010013","4121010014","4121010017","4121010022","4121010023","4121010024","4121020004","4121020007","4121020008","4121020003","4121020099","4121020015","4121020002","4121020001","4121020097","4121020098"],
+                },
+                {
+                    "name": "rev_43300",
+                    "description": "รายได้จากงานบริการ",
+                    "account": ["4121030016","4121030003","4121030001","4121030017","4121030096","4121030097","4121030099","4121030098","4121030006","4121030007","4121030008","4121030009","4121030010","4121030012","4121030011","4121030014","4121030013","4121030005","4121030015","4121030004"],
+                },
+                {
+                    "name": "rev_43400",
+                    "description": "รายได้จากเงินผลประโยชน์",
+                    "account": ["4121040022","4121040001","4121040002","4121040003","4121040004","4121040005","4121040006","4121040048","4121040049","4121040007","4121040008","4121040009","4121040010","4121040036","4121040037","4121040038","4121040050","4121040039","4121040041","4121040034","4121040028","4121040029","4121040031","4121040032","4121040033","4121040018","4121040019","4121040099","4121040051","4121040096","4121040097","4121040098","4121040021","4121040023","4121040024","4121040025","4121040026","4121040027","4121040035","4121040042","4121040043","4121040044","4121040045","4121040046","4121040047","4121040012","4121040013","4121040015","4121040016","4121040017"],
+                },
+                {
+                    "name": "rev_interest",
+                    "description": "รายได้ดอกเบี้ย",
+                    "account": ["4123000002", "4123000001"],
+                },
+                {
+                    "name": "rev_43500",
+                    "description": "รายได้จากการรับบริจาค หรือ เงินอุดหนุน",
+                    "account": ["4122000025","4122000024","4122000023","4122000021","4122000018","4122000001","4122000002","4122000003","4122000004","4122000005","4122000006","4122000008","4122000009","4122000011","4122000012","4122000014","4122000016","4122000015","4122000017","43600","2210000005","2210000001","2210000002","2210000003","2210000004","2230000004","2210000006","2210000007","2210000008","2210000009","2210000010","2210000011","2210000012","2210000013","2210000027","2230000003"],
+                },
+                {
+                    "name": "rev_43700",
+                    "description": "รายได้อื่น",
+                    "account": ["4121050002","4121050011","4121050010","4121050009","4121050008","4121050007","4121050004","4121050001","4121050005","4121050003","4121050006"],
+                },
+            ],
+        },
+    ]
+
     # level 1, 2
     expenses = [
-        {
-            "name": "exp",
-            "description": "รายจ่าย",
-            "line_type": "str"
-        },
+        {"name": "exp", "description": "รายจ่าย", "line_type": "str"},
         {
             "name": "exp_51000",
             "description": "1. งบบุคลากร",
@@ -559,9 +595,35 @@ class MisReportF3p003(models.AbstractModel):
         ["0705", "กองทุนอื่น / กองทุนยุทธศาสตร์"],
     ]
 
+    def heading1(self):
+        return self.env.ref("mis_budget_kmitl.mis_report_style_f3_p_003_heading_1").id
+
+    def heading2(self):
+        return self.env.ref("mis_budget_kmitl.mis_report_style_f3_p_003_heading_2").id
+
+    def heading3(self):
+        return self.env.ref("mis_budget_kmitl.mis_report_style_f3_p_003_heading_3").id
+
+    def heading4(self):
+        return self.env.ref("mis_budget_kmitl.mis_report_style_f3_p_003_heading_4").id
+
     def _generate_mis_report_template(self, template_id):
         report_name = "F3-P-วง-003"
         template = self.env["budget.template"].browse(template_id)
+        report = self._find_or_create_report()
+
+        items = self.get_revenues() + [self._get_spacing()] + self.get_expenses()
+
+        sequence = 1
+        for item in items:
+            item["sequence"] = sequence
+            sequence += 1
+
+        vals = {"kpi_ids": [Command.clear()] + [Command.create(vals) for vals in items]}
+        report.write(vals)
+
+    def _find_or_create_report(self):
+        report_name = "F3-P-วง-003"
         report = self.env["mis.report"].search([("name", "=", report_name)], limit=1)
 
         if not report:
@@ -577,28 +639,52 @@ class MisReportF3p003(models.AbstractModel):
                     "move_lines_source": move_lines_source.id,
                 }
             )
+        return report
 
+    def get_revenues(self):
         items = []
-        style_ref = 'mis_budget_kmitl.mis_report_style_f3_p_003_heading_'
-        heading1 = self.env.ref(style_ref + '1').id
-        heading2 = self.env.ref(style_ref + '2').id
-        heading3 = self.env.ref(style_ref + '3').id
-        heading4 = self.env.ref(style_ref + '4').id
-
-        sequence = 1
-        for item in self.expenses:
+        for item in self.revenues:
+            if item.get("line_type", "num") == "str":
+                items.append(self._get_line_str(item))
             if item.get("children"):
+                expression = " + ".join(map(lambda i: i["name"], item.get("children")))
+                items.append(
+                    {
+                        "name": item["name"],
+                        "description": item["description"],
+                        "style_id": self.heading1(),
+                        "expression": expression,
+                        "type": "num",
+                    }
+                )
+                for child in item.get("children"):
+                    items.append(
+                        {
+                            "name": child["name"],
+                            "description": child["description"],
+                            "style_id": self.heading2(),
+                            "expression": "balp[%(account)s]"
+                            % {"account": ",".join(child["account"])},
+                            "type": "num",
+                        }
+                    )
+        return items
+
+    def get_expenses(self):
+        items = []
+        for item in self.expenses:
+            if item.get("line_type", "num") == "str":
+                items.append(self._get_line_str(item))
+                continue
+            elif item.get("children"):
                 expression = " + ".join(map(lambda i: i["name"], item.get("children")))
                 data = {
                     "name": item["name"],
                     "description": item["description"],
-                    "sequence": sequence,
-                    "style_id": heading1,
+                    "style_id": self.heading1(),
                     "expression": expression,
                     "type": "num",
                 }
-
-                sequence += 1
 
                 items.append(data)
                 for child in item.get("children"):
@@ -611,13 +697,11 @@ class MisReportF3p003(models.AbstractModel):
                         {
                             "name": name,
                             "description": child["description"],
-                            "sequence": sequence,
-                            "style_id": heading2,
+                            "style_id": self.heading2(),
                             "expression": expression,
                             "type": "num",
                         }
                     )
-                    sequence += 1
 
                     for activity in self.activities:
                         name = child["name"] + "_" + activity["name"]
@@ -628,13 +712,11 @@ class MisReportF3p003(models.AbstractModel):
                             {
                                 "name": name,
                                 "description": activity["description"],
-                                "sequence": sequence,
-                                "style_id": heading3,
+                                "style_id": self.heading3(),
                                 "expression": expression,
                                 "type": "num",
                             }
                         )
-                        sequence += 1
 
                         for fund in self.funds:
                             name = "_".join([child["name"], activity["name"], fund[0]])
@@ -642,8 +724,7 @@ class MisReportF3p003(models.AbstractModel):
                                 {
                                     "name": name,
                                     "description": fund[1],
-                                    "sequence": sequence,
-                                    "style_id": heading4,
+                                    "style_id": self.heading4(),
                                     "expression": "balp[%(account)s]['&', ('activity_analytic_id.code', '=like', '%(activity_analytic_code)s'), ('fund_analytic_id.code', '=', '%(fund_analytic_code)s')]"
                                     % {
                                         "account": account,
@@ -654,117 +735,104 @@ class MisReportF3p003(models.AbstractModel):
                                     "type": "num",
                                 }
                             )
-                            sequence += 1
-            else:
-                if item.get("code") in ["e702", "702"]:
-                    name = item["name"]
-                    expression = "+".join(
-                        map(lambda i: name + "_" + i["name"], self.activities)
-                    )
+            elif item.get("code") in ["e702", "702"]:
+                name = item["name"]
+                expression = "+".join(
+                    map(lambda i: name + "_" + i["name"], self.activities)
+                )
+                items.append(
+                    {
+                        "name": item["name"],
+                        "description": item["description"],
+                        "style_id": self.heading1(),
+                        "expression": expression,
+                        "type": "num",
+                    }
+                )
+
+                for activity in self.activities:
+                    name = item["name"] + "_" + activity["name"]
+                    expression = "+".join(map(lambda i: name + "_" + i[0], self.funds))
                     items.append(
                         {
-                            "name": item["name"],
-                            "description": item["description"],
-                            "sequence": sequence,
-                            "style_id": heading1,
+                            "name": name,
+                            "description": activity["description"],
+                            "style_id": self.heading3(),
                             "expression": expression,
                             "type": "num",
                         }
                     )
-                    sequence += 1
+            elif item.get("account"):
+                name = item["name"]
+                expression = "+".join(
+                    map(lambda i: name + "_" + i["name"], self.activities)
+                )
+                items.append(
+                    {
+                        "name": item["name"],
+                        "description": item["description"],
+                        "style_id": self.heading1(),
+                        "expression": expression,
+                        "type": "num",
+                    }
+                )
 
-                    for activity in self.activities:
-                        name = item["name"] + "_" + activity["name"]
-                        expression = "+".join(
-                            map(lambda i: name + "_" + i[0], self.funds)
-                        )
-                        items.append(
-                            {
-                                "name": name,
-                                "description": activity["description"],
-                                "sequence": sequence,
-                                "style_id": heading3,
-                                "expression": expression,
-                                "type": "num",
-                            }
-                        )
-                        sequence += 1
-                elif item.get("account"):
-                    name = item["name"]
-                    expression = "+".join(
-                        map(lambda i: name + "_" + i["name"], self.activities)
-                    )
+                for activity in self.activities:
+                    name = item["name"] + "_" + activity["name"]
+                    expression = "+".join(map(lambda i: name + "_" + i[0], self.funds))
                     items.append(
                         {
-                            "name": item["name"],
-                            "description": item["description"],
-                            "sequence": sequence,
-                            "style_id": heading1,
+                            "name": name,
+                            "description": activity["description"],
+                            "style_id": self.heading3(),
                             "expression": expression,
                             "type": "num",
                         }
                     )
-                    sequence += 1
 
-                    for activity in self.activities:
-                        name = item["name"] + "_" + activity["name"]
-                        expression = "+".join(
-                            map(lambda i: name + "_" + i[0], self.funds)
-                        )
+                    for fund in self.funds:
+                        name = item["name"] + "_" + activity["name"] + "_" + fund[0]
                         items.append(
                             {
                                 "name": name,
-                                "description": activity["description"],
-                                "sequence": sequence,
-                                "style_id": heading3,
-                                "expression": expression,
+                                "description": fund[1],
+                                "style_id": self.heading4(),
+                                "expression": "balp[%(account)s]['&', ('activity_analytic_id.code', '=like', '%(activity_analytic_code)s'), ('fund_analytic_id.code', '=', '%(fund_analytic_code)s')]"
+                                % {
+                                    "account": account,
+                                    "activity_analytic_code": activity["name"] + "%",
+                                    "fund_analytic_code": fund[0],
+                                },
                                 "type": "num",
                             }
                         )
-                        sequence += 1
 
-                        for fund in self.funds:
-                            name = item["name"] + "_" + activity["name"] + "_" + fund[0]
-                            items.append(
-                                {
-                                    "name": name,
-                                    "description": fund[1],
-                                    "sequence": sequence,
-                                    "style_id": heading4,
-                                    "expression": "balp[%(account)s]['&', ('activity_analytic_id.code', '=like', '%(activity_analytic_code)s'), ('fund_analytic_id.code', '=', '%(fund_analytic_code)s')]"
-                                    % {
-                                        "account": account,
-                                        "activity_analytic_code": activity["name"]
-                                        + "%",
-                                        "fund_analytic_code": fund[0],
-                                    },
-                                    "type": "num",
-                                }
-                            )
-                            sequence += 1
+        items.append(self._get_total_expense_line())
+        return items
+
+    def _get_line_str(self, item):
+        return {
+            "name": item.get("name"),
+            "description": item.get("description"),
+            "style_id": self.heading1(),
+            "type": "str",
+        }
+
+    def _get_spacing(self, item):
+        return {
+            "name": "spacing",
+            "description": "---",
+            "style_id": self.heading1(),
+            "type": "str",
+        }
+
+    def _get_total_expense_line(self):
         name = "total_expense"
         expression = "+".join(map(lambda i: i["name"], self.expenses))
-        items.append(
-            {
-                "name": name,
-                "description": "รวมทั้งสิ้น",
-                "sequence": sequence,
-                "style_id": heading3,
-                "type": "num",
-            }
-        )
-        report.write(
-            {"kpi_ids": [Command.clear()] + [Command.create(vals) for vals in items]}
-        )
-
-    def _get_kpi_vals(self, line):
         return {
-            "name": "exp_" + line.code,
-            "description": line.name,
-            "expression": "balp[%(account)s]" % {"account": ""},
-            "sequence": 1,
-            "style_id": self.env.ref(
-                "mis_budget_kmitl.mis_report_style_f3_p_003_heading_2"
-            ),
+            "name": name,
+            "description": "รวมทั้งสิ้น",
+            "expression": expression,
+            "style_id": self.heading3(),
             "type": "num",
         }
