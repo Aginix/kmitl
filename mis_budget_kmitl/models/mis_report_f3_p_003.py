@@ -818,7 +818,7 @@ class MisReportF3p003(models.AbstractModel):
             "type": "str",
         }
 
-    def _get_spacing(self, item):
+    def _get_spacing(self):
         return {
             "name": "spacing",
             "description": "---",
