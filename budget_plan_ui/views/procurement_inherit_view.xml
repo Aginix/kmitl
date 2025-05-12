@@ -42,12 +42,12 @@
             </xpath>
 
             <xpath
-                expr="//div[@class='o_procurement_plan_budget']"
+                expr="//div[hasclass('o_procurement_plan_budget')]"
                 position="attributes"
             >
                 <attribute name="class">o_procurement_plan_budget col-6</attribute>
             </xpath>
-            <xpath expr="//div[@class='o_procurement_plan_eta']" position="attributes">
+            <xpath expr="//div[hasclass('o_procurement_plan_eta')]" position="attributes">
                 <attribute name="class">o_procurement_plan_eta col-6</attribute>
             </xpath>
         </field>

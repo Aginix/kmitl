@@ -8,7 +8,7 @@
         <field name="inherit_id" ref="budget.view_budget_appropriation_form"/>
         <field name="arch" type="xml">
             <xpath expr="//page[@name='help']" position="replace">
-                <page string="แผนจัดซื้อจัดจ้าง">
+                <page string="แผนจัดซื้อจัดจ้าง" attrs="{'invisible': [('budget_type', '=', 'revenue')]}">
                     <field name="procurement_ids">
                         <tree>
                             <field name="name"/>

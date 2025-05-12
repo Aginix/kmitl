@@ -319,7 +319,7 @@ export class Expense_budget extends Component {
     async fetchActivity() {
         const activity_selected = await this.orm.searchRead(
             "account.analytic.account",
-            [["id", "=", this.state.activity.activity_parent_path]],
+            [["id", "in", this.state.activity.activity_parent_path]],
             []
         );
         this.state.activity.activity_selected_code = activity_selected

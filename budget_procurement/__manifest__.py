@@ -12,7 +12,6 @@
     ],
     'assets': {
               'web.assets_backend': [
-                  'budget_procurement/static/src/**/*'
               ],
           },
     'application': False,
