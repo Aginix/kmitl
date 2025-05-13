@@ -116,6 +116,9 @@ class BudgetAppropriation(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
+    initial_budget = fields.Boolean(
+        string="จัดสรรงบประมาณครั้งแรก", default=False, readonly=True
+    )
 
     @api.model
     def _search_date_range_fy(self, operator, value):
