@@ -14,6 +14,7 @@ class BudgetAppropriationLine(models.Model):
     appropriation_id = fields.Many2one(
         comodel_name="budget.appropriation",
         string="Budget Appropriation",
+        copy=True,
         required=True,
         readonly=True,
         index=True,
@@ -28,6 +29,7 @@ class BudgetAppropriationLine(models.Model):
     template_line_id = fields.Many2one(
         comodel_name="budget.template.line",
         index=True,
+        domain=[("budgetable", "=", True)]
     )
     budget_type = fields.Selection(
         related="template_line_id.template_id.budget_type", store=True, readonly=True
@@ -45,7 +47,7 @@ class BudgetAppropriationLine(models.Model):
         readonly=True,
         digits="Budget Precision",
     )
-    note = fields.Char(tracking=True)
+    note = fields.Text(tracking=True)
 
     # === Parent fields === #
     department_analytic_id = fields.Many2one(

@@ -11,7 +11,12 @@ class BudgetAppropriation(models.Model):
     _description = "Budget Appropriation"
     _inherit = ["mail.thread", "mail.activity.mixin"]
 
-    name = fields.Char()
+    name = fields.Char(
+        copy=True,
+        tracking=True,
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+    )
     date_range_fy_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="Fiscal year",
@@ -27,7 +32,11 @@ class BudgetAppropriation(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
-    note = fields.Char(readonly=True, tracking=True)
+    note = fields.Char(
+        readonly=True,
+        tracking=True,
+        states={"draft": [("readonly", False)]},
+    )
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
@@ -44,6 +53,7 @@ class BudgetAppropriation(models.Model):
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="ส่วนงาน",
+        copy=True,
         store=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
@@ -53,9 +63,16 @@ class BudgetAppropriation(models.Model):
         "account.analytic.account",
         string="แหล่งเงิน",
         store=True,
+        copy=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
         domain=[("root_plan_id.code", "=", "sources")],
+    )
+    budget_type = fields.Selection(
+        string="ประเภทงบประมาณ",
+        related="template_id.budget_type",
+        store=True,
+        readonly=True,
     )
     ref = fields.Char(
         string="Reference",
@@ -70,6 +87,9 @@ class BudgetAppropriation(models.Model):
         ondelete="cascade",
         copy=False,
         domain="[('date_range_fy_id', '=', date_range_fy_id)]",
+        tracking=True,
+        readonly=True,
+        states={"draft": [("readonly", False)]},
     )
     active = fields.Boolean(default=True)
     user_id = fields.Many2one(
@@ -95,6 +115,9 @@ class BudgetAppropriation(models.Model):
         tracking=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
+    )
+    initial_budget = fields.Boolean(
+        string="จัดสรรงบประมาณครั้งแรก", default=False, readonly=True
     )
 
     @api.model

@@ -10,7 +10,12 @@ class BudgetCommitment(models.Model):
     _description = "Budget Commitment"
     _inherit = ["mail.thread", "mail.activity.mixin"]
 
-    name = fields.Char()
+    name = fields.Char(
+        tracking=True,
+        readonly=True,
+        copy=True,
+        states={"draft": [("readonly", False)]},
+    )
     date_range_fy_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="Fiscal year",
@@ -26,7 +31,11 @@ class BudgetCommitment(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
-    note = fields.Char(readonly=True, tracking=True)
+    note = fields.Char(
+        tracking=True,
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+    )
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
@@ -49,11 +58,16 @@ class BudgetCommitment(models.Model):
         ondelete="cascade",
         copy=False,
         domain="[('date_range_fy_id', '=', date_range_fy_id)]",
+        tracking=True,
+        readonly=True,
+        states={"draft": [("readonly", False)]},
     )
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="ส่วนงาน",
         store=True,
+        copy=True,
+        tracking=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
         domain=[("root_plan_id.code", "=", "departments")],
@@ -62,6 +76,8 @@ class BudgetCommitment(models.Model):
         "account.analytic.account",
         string="แหล่งเงิน",
         store=True,
+        copy=True,
+        tracking=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
         domain=[("root_plan_id.code", "=", "sources")],
@@ -77,9 +93,9 @@ class BudgetCommitment(models.Model):
         string="Responsible user",
         comodel_name="res.users",
         copy=False,
-        tracking=True,
         default=lambda self: self.env.user,
         store=True,
+        tracking=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
