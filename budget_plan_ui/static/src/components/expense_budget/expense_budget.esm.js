@@ -122,7 +122,7 @@ export class Expense_budget extends Component {
                 this.action.doAction(
                     {
                         type: "ir.actions.act_window",
-                        name: this.env._t("test"),
+                        name: this.env._t("รายการ"),
                         target: "new",
                         res_id: procurement.id,
                         res_model: "procurement.plan",
@@ -151,7 +151,7 @@ export class Expense_budget extends Component {
             this.action.doAction(
                 {
                     type: "ir.actions.act_window",
-                    name: this.env._t("test"),
+                    name: this.env._t("รายการ"),
                     target: "new",
                     res_model: "procurement.plan",
                     views: [[false, "form"]],
@@ -191,7 +191,7 @@ export class Expense_budget extends Component {
             this.action.doAction(
                 {
                     type: "ir.actions.act_window",
-                    name: this.env._t("test"),
+                    name: this.env._t("รายการ"),
                     target: "new",
                     res_model: "procurement.plan",
                     views: [[false, "form"]],

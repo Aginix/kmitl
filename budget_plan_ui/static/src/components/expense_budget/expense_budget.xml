@@ -227,7 +227,7 @@
                                                             - <t
                                                             t-esc="procurement.name"
                                                         /> <t
-                                                            t-esc="procurement.amount"
+                                                            t-esc="procurement.total_price"
                                                         /> บาท
                                                         </span>
                                                     </div>
