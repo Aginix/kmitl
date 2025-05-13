@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-12 09:51+0000\n"
-"PO-Revision-Date: 2025-05-12 17:16+0700\n"
+"POT-Creation-Date: 2025-05-13 09:31+0000\n"
+"PO-Revision-Date: 2025-05-13 16:33+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -167,28 +167,23 @@ msgstr "รายการจัดสรรงบประมาณ"
 #: model:ir.model.fields,field_description:budget.field_budget_commitment_line__commitment_id
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_commitment_form
 msgid "Budget Commitment"
-msgstr ""
+msgstr "จองงบประมาณ"
 
 #. module: budget
 #: model:ir.model,name:budget.model_budget_commitment_line
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_commitment_line_form
 msgid "Budget Commitment Line"
-msgstr ""
+msgstr "รายการจองงบประมาณ"
 
 #. module: budget
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_commitment_form
 msgid "Budget Commitment Lines"
-msgstr ""
+msgstr "รายการจองงบประมาณ"
 
 #. module: budget
 #: model:ir.model,name:budget.model_report_budget_budget_expenditure_report
 msgid "Budget Expenditure Report"
-msgstr ""
-
-#. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_template_form
-msgid "Budget Indicators"
-msgstr ""
+msgstr "รายงานสรุปรายจ่าย (ภาพรวม)"
 
 #. module: budget
 #: model:ir.actions.act_window,name:budget.action_budget_move
@@ -255,7 +250,7 @@ msgstr ""
 #. module: budget
 #: model:ir.ui.menu,name:budget.budget_root_menu
 msgid "Budgeting"
-msgstr "การจัดการงบประมาณ"
+msgstr "งบประมาณ"
 
 #. module: budget
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_appropriation_form
@@ -431,10 +426,7 @@ msgid "Has Message"
 msgstr ""
 
 #. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_appropriation_form
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_commitment_form
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_move_form
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_template_form
 msgid "Help"
 msgstr "ช่วยเหลือ"
 
@@ -622,6 +614,13 @@ msgid "Name"
 msgstr "ชื่อ"
 
 #. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_appropriation__activity_calendar_event_id
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__activity_calendar_event_id
+#: model:ir.model.fields,field_description:budget.field_budget_move__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr ""
+
+#. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_appropriation__activity_date_deadline
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__activity_date_deadline
 #: model:ir.model.fields,field_description:budget.field_budget_move__activity_date_deadline
@@ -646,6 +645,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:budget.field_budget_appropriation__note
 #: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__note
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__note
+#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__note
 #: model:ir.model.fields,field_description:budget.field_budget_move__note
 msgid "Note"
 msgstr "หมายเหตุ"
@@ -847,13 +847,10 @@ msgid "There is no examples click here to add new Budget Move."
 msgstr ""
 
 #. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_appropriation_form
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_move_form
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_template_form
 msgid ""
 "This operation will involve creating a template for budget\n"
-"                                    checking, which will have the following "
-"principles of creation."
+"                                    checking, which will have the following principles of creation."
 msgstr ""
 
 #. module: budget
@@ -925,8 +922,9 @@ msgid "ขอใช้/ผูกพัน/ตัดจ่าย/ส่งคื�
 msgstr ""
 
 #. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_appropriation_form
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_commitment_form
-msgid "คำอธิบายรอใส่ภายหลัง"
+msgid "ข้อมูลทั่วไป"
 msgstr ""
 
 #. module: budget
@@ -962,6 +960,11 @@ msgid "จัดสรรงบประมาณ"
 msgstr ""
 
 #. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_appropriation__initial_budget
+msgid "จัดสรรงบประมาณครั้งแรก"
+msgstr ""
+
+#. module: budget
 #. odoo-javascript
 #: code:addons/budget/static/src/components/budget_template_structure/budget_template_structure.xml:0
 #, python-format
@@ -986,6 +989,16 @@ msgid "ตั้งค่า"
 msgstr ""
 
 #. module: budget
+#: model:ir.model.fields,help:budget.field_budget_template_line__budgetable
+msgid "ติ๊กถูกเพื่อระบุว่ารหัสค่าใช้จ่ายสามารถจัดสรรงบประมาณได้"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_appropriation__budget_type
+msgid "ประเภทงบประมาณ"
+msgstr ""
+
+#. module: budget
 #. odoo-javascript
 #: code:addons/budget/static/src/components/budget_expenditure_report_main/budget_expenditure_report_main.xml:0
 #, python-format
@@ -995,6 +1008,12 @@ msgstr ""
 #. module: budget
 #: model:ir.model.fields,help:budget.field_budget_template_line__fund_analytic_ids
 msgid "ผูกรหัสงบประมาณกับกองทุน"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_appropriation_form
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_commitment_form
+msgid "มิติบัญชี"
 msgstr ""
 
 #. module: budget
@@ -1011,6 +1030,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__code
 #: model:ir.model.fields,field_description:budget.field_budget_commitment_line__code
 #: model:ir.model.fields,field_description:budget.field_budget_template_line__code
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_template_form
 #, python-format
 msgid "รหัสงบประมาณ"
 msgstr ""
@@ -1027,6 +1047,11 @@ msgstr ""
 #: code:addons/budget/static/src/components/budget_expenditure_report_main/budget_expenditure_report_main.xml:0
 #, python-format
 msgid "รอยืนยันจองเงิน"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_template_line__budgetable
+msgid "ระบุงบประมาณได้"
 msgstr ""
 
 #. module: budget
