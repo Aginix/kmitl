@@ -36,20 +36,19 @@
                 <field name="state" invisible="1" />
                 <sheet>
                     <group>
-                        <group>
-                            <field name="name" />
-                            <field name="date_range_fy_id" options='{"no_open": True}'
-                            />
-<field name="date" />
-                            <field name="template_id" options="{'no_open': True}" />
+                        <group string="ข้อมูลทั่วไป">
+                            <field name="name" required="1" />
+                            <field name="date_range_fy_id" options='{"no_open": True}' required="1" />
+                            <field name="date" required="1" />
+                            <field name="template_id" options="{'no_open': True}" required="1" />
 
-                            <field name="department_analytic_id" options='{"no_open": True}'
-                            />
-<field name="source_analytic_id" options='{"no_open": True}'
-                            />
-<field name="user_id" />
+                            <field name="user_id" widget="many2one_avatar_user" required="1" />
                             <field name="ref" />
                             <field name="note" />
+                        </group>
+                        <group string="มิติบัญชี">
+                            <field name="department_analytic_id" options='{"no_open": True}' required="1" />
+                            <field name="source_analytic_id" options='{"no_open": True}' required="1" />
                         </group>
                     </group>
                     <notebook>
@@ -68,14 +67,6 @@
                                 </tree>
                             </field>
                         </page>
-                        <page name="help" string="Help">
-                            <div name="help">
-                                <p>
-                                    This operation will involve creating a template for budget
-                                    checking, which will have the following principles of creation.
-                                </p>
-                            </div>
-                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
@@ -93,11 +84,13 @@
             <tree create="false" edit="false" delete="false" expand="context.get('expand', False)" sample="1">
                 <field name="appropriation_id" widget="many2onebutton" />
                 <field name="date_range_fy_id" />
+                <field name="source_analytic_id" />
                 <field name="department_analytic_id" />
                 <field name="activity_analytic_id" />
                 <field name="fund_analytic_id" />
                 <field name="template_line_id" />
                 <field name="amount" />
+                <field name="parent_state" widget="badge" decoration-info="parent_state == 'draft'" decoration-success="parent_state == 'posted'" />
             </tree>
         </field>
     </record>
@@ -110,13 +103,15 @@
             <form string="Budget Appropriation Line">
                 <sheet>
                     <group>
-                        <field name="date_range_fy_id" readonly="1" />
-                        <field name="appropriation_id" readonly="1" />
-                        <field name="department_analytic_id" />
-                        <field name="activity_analytic_id" />
-                        <field name="fund_analytic_id" />
+                        <field name="date_range_fy_id" readonly="1" invisible="1"/>
+                        <field name="appropriation_id" readonly="1" invisible="1"/>
                         <field name="template_id" invisible="1" />
-                        <field name="template_line_id" />
+                        <field name="department_analytic_id" readonly="1" invisible="1"/>
+                        <field name="source_analytic_id" readonly="1" invisible="1"/>
+                        <field name="budget_type" invisible="1"/>
+                        <field name="activity_analytic_id" attrs="{'required': [('budget_type', '=', 'expense')]}" />
+                        <field name="fund_analytic_id" required="1" />
+                        <field name="template_line_id" required="1" />
                         <field name="amount" />
                         <field name="note" />
                     </group>
