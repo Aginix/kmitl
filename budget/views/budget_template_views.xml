@@ -48,7 +48,6 @@
                                     <field name="budget_type" invisible="1" />
                                     <field name="fund_analytic_ids" widget="many2many_tags" />
                                     <field name="budgetable" attrs="{
-                                        'column_invisible': [('budget_type', '!=', 'expense')],
                                         'invisible': [('budget_type', '!=', 'expense')],
                                     }" />
                                 </tree>

@@ -68,6 +68,12 @@ class BudgetAppropriation(models.Model):
         states={"draft": [("readonly", False)]},
         domain=[("root_plan_id.code", "=", "sources")],
     )
+    budget_type = fields.Selection(
+        string="ประเภทงบประมาณ",
+        related="template_id.budget_type",
+        store=True,
+        readonly=True,
+    )
     ref = fields.Char(
         string="Reference",
         copy=False,

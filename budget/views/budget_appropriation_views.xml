@@ -7,6 +7,7 @@
         <field name="model">budget.appropriation</field>
         <field name="arch" type="xml">
             <tree>
+                <field name="budget_type" />
                 <field name="date" />
                 <field name="name" />
                 <field name="date_range_fy_id" />
@@ -82,6 +83,7 @@
         <field name="model">budget.appropriation.line</field>
         <field name="arch" type="xml">
             <tree create="false" edit="false" delete="false" expand="context.get('expand', False)" sample="1">
+                <field name="budget_type" />
                 <field name="appropriation_id" widget="many2onebutton" />
                 <field name="date_range_fy_id" />
                 <field name="source_analytic_id" />
