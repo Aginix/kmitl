@@ -115,6 +115,11 @@ class BudgetCommitment(models.Model):
         states={"draft": [("readonly", False)]},
     )
 
+    @api.onchange('template_id')
+    def _onchange_template_id(self):
+        if self.line_ids:
+            self.line_ids = [(5, 0, 0)]
+
     @api.depends("date", "state")
     def _compute_hide_post_button(self):
         for record in self:
