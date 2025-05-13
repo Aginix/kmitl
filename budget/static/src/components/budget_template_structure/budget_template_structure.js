@@ -57,6 +57,5 @@ export class BudgetTemplateStructure extends Component {
 
 BudgetTemplateStructure.template = "budget.BudgetTemplateStructure";
 BudgetTemplateStructure.components = {ControlPanel};
-BudgetTemplateStructure.props = {};
 
 registry.category("actions").add("budget_template_structure", BudgetTemplateStructure);
