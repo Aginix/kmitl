@@ -28,6 +28,7 @@ class BudgetAppropriationLine(models.Model):
     template_line_id = fields.Many2one(
         comodel_name="budget.template.line",
         index=True,
+        domain=[("budgetable", "=", True)]
     )
     budget_type = fields.Selection(
         related="template_line_id.template_id.budget_type", store=True, readonly=True
