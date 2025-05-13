@@ -45,11 +45,7 @@ class BudgetCommitmentLine(models.Model):
         readonly=True,
         digits="Budget Precision",
     )
-<<<<<<< HEAD
-    note = fields.Text()
-=======
     note = fields.Text(tracking=True)
->>>>>>> 684621b (update)
 
     # === Parent fields === #
     name = fields.Char(
