@@ -54,7 +54,7 @@
                     </group>
                     <notebook>
                         <page name="line_ids" string="Budget Appropriation Lines">
-                            <field name="line_ids" widget='note_line' style="max-width: 100%; display: block;">
+                            <field name="line_ids" widget='budget_line' style="max-width: 100%; display: block;">
                                 <tree>
                                     <field name="date_range_fy_id" invisible="1" />
                                     <field name="appropriation_id" invisible="1" />
@@ -63,8 +63,8 @@
                                     <field name="fund_analytic_id" options='{"no_open": True}' />
                                     <field name="template_id" options='{"no_open": True}' invisible="1" />
                                     <field name="template_line_id" options='{"no_open": True}' />
-                                    <field name="note" />
                                     <field name="amount" />
+                                    <field name="note" invisible="1" />
                                 </tree>
                             </field>
                         </page>

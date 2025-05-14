@@ -9,8 +9,13 @@ export class NoteLineRenderer extends ListRenderer {
       super.setup();
       console.log("test setup");
     }
+    test(test) {
+      console.log(test);
+    }
   }
   NoteLineRenderer.template = "budget.NoteLineRenderer";
+  NoteLineRenderer.recordRowTemplate = "budget.ListRenderer.RecordRow";
+  NoteLineRenderer.rowsTemplate = "budget.ListRenderer.Rows";
 
 export class NoteLine extends X2ManyField {
     setup() {
@@ -22,4 +27,4 @@ NoteLine.components = {
     ListRenderer: NoteLineRenderer,
 }
 
-registry.category("fields").add("note_line", NoteLine);
+registry.category("fields").add("budget_line", NoteLine);
