@@ -64,7 +64,7 @@
                                     <field name="template_id" options='{"no_open": True}' invisible="1" />
                                     <field name="template_line_id" options='{"no_open": True}' />
                                     <field name="amount" />
-                                    <field name="note" invisible="1" />
+                                    <field name="note" />
                                 </tree>
                             </field>
                         </page>

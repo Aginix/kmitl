@@ -52,7 +52,7 @@
                     </group>
                     <notebook>
                         <page name="line_ids" string="Budget Commitment Lines">
-                            <field name="line_ids">
+                            <field name="line_ids" widget='budget_line' style="max-width: 100%; display: block;">
                                 <tree>
                                     <field name="date_range_fy_id" invisible="1" />
                                     <field name="commitment_id" invisible="1" />
@@ -62,6 +62,7 @@
                                     <field name="template_id" options='{"no_open": True}' invisible="1" />
                                     <field name="template_line_id" options='{"no_open": True}' />
                                     <field name="amount" />
+                                    <field name="note" />
                                 </tree>
                             </field>
                         </page>
