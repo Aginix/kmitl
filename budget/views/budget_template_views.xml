@@ -40,16 +40,14 @@
                     </group>
                     <notebook>
                         <page name="line_ids" string="รหัสงบประมาณ">
-                            <field name="line_ids">
+                            <field name="line_ids" widget='budget_template_line' style="max-width: 100%; display: block;">
                                 <tree limit="2000">
                                     <field name="code" />
                                     <field name="name" />
                                     <field name="parent_id" />
                                     <field name="budget_type" invisible="1" />
                                     <field name="fund_analytic_ids" widget="many2many_tags" />
-                                    <field name="budgetable" attrs="{
-                                        'invisible': [('budget_type', '!=', 'expense')],
-                                    }" />
+                                    <field name="budgetable" />
                                 </tree>
                             </field>
                         </page>

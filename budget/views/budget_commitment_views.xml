@@ -38,21 +38,21 @@
                     <group>
                         <group string="ข้อมูลทั่วไป">
                             <field name="name" required="1" />
-                            <field name="date_range_fy_id" options='{"no_open": True}' required="1" />
+                            <field name="date_range_fy_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                             <field name="date" required="1" />
-                            <field name="template_id" required="1" />
+                            <field name="template_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                             <field name="user_id" widget="many2one_avatar_user" required="1" />
                             <field name="ref" />
                             <field name="note" />
                         </group>
                         <group string="มิติบัญชี">
-                            <field name="department_analytic_id" options='{"no_open": True}' required="1"/>
-                            <field name="source_analytic_id" options='{"no_open": True}' required="1"/>
+                            <field name="department_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1"/>
+                            <field name="source_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1"/>
                         </group>
                     </group>
                     <notebook>
                         <page name="line_ids" string="Budget Commitment Lines">
-                            <field name="line_ids">
+                            <field name="line_ids" widget='budget_line' style="max-width: 100%; display: block;">
                                 <tree>
                                     <field name="date_range_fy_id" invisible="1" />
                                     <field name="commitment_id" invisible="1" />
@@ -62,6 +62,7 @@
                                     <field name="template_id" options='{"no_open": True}' invisible="1" />
                                     <field name="template_line_id" options='{"no_open": True}' />
                                     <field name="amount" />
+                                    <field name="note" />
                                 </tree>
                             </field>
                         </page>
@@ -103,9 +104,9 @@
                         <field name="commitment_id" invisible="1" readonly="1" />
                         <field name="template_id" invisible="1" />
                         <field name="department_analytic_id" invisible="1" />
-                        <field name="activity_analytic_id" required="1" />
-                        <field name="fund_analytic_id" required="1" />
-                        <field name="template_line_id" required="1" />
+                        <field name="activity_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
+                        <field name="fund_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
+                        <field name="template_line_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                         <field name="amount" required="1" />
                         <field name="note" />
                     </group>
