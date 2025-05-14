@@ -5,6 +5,7 @@ from odoo import api, fields, models
 _logger = logging.getLogger(__name__)
 
 
+
 class BudgetCommitmentLine(models.Model):
     _name = "budget.commitment.line"
     _description = "Budget Commitment Line"
@@ -52,6 +53,7 @@ class BudgetCommitmentLine(models.Model):
         compute="_compute_amount_credit_debit"
     )
     company_id = fields.Many2one(related="commitment_id.company_id", store=True)
+    note = fields.Text()
 
     # === Parent fields === #
     name = fields.Char(
