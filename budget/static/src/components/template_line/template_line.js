@@ -29,7 +29,6 @@ export class Template_line extends X2ManyField {
         super.setup();
     }
 }
-Template_line.template = "budget.Template_line";
 Template_line.components = {
     ...X2ManyField.components,
     ListRenderer: Template_line_renderer,
