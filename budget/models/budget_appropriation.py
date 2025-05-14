@@ -1,6 +1,6 @@
 import logging
 
-from odoo import api, fields, models
+from odoo import Command, api, fields, models
 from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
@@ -123,7 +123,7 @@ class BudgetAppropriation(models.Model):
     @api.onchange('template_id')
     def _onchange_template_id(self):
         if self.line_ids:
-            self.line_ids = [(5, 0, 0)]
+            self.line_ids = [Command.clear()]
 
     @api.model
     def _search_date_range_fy(self, operator, value):

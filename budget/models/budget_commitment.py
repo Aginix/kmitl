@@ -1,6 +1,6 @@
 import logging
 
-from odoo import api, fields, models
+from odoo import Command, api, fields, models
 
 _logger = logging.getLogger(__name__)
 
@@ -118,7 +118,7 @@ class BudgetCommitment(models.Model):
     @api.onchange('template_id')
     def _onchange_template_id(self):
         if self.line_ids:
-            self.line_ids = [(5, 0, 0)]
+            self.line_ids = [Command.clear()]
 
     @api.depends("date", "state")
     def _compute_hide_post_button(self):
