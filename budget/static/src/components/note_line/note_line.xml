@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="budget.NoteLineRenderer" t-inherit="web.ListRenderer" t-inherit-mode="primary" owl="1">
+        <xpath expr="//t[@t-foreach='state.columns']" position="attributes">
+            <attribute name="t-if">column.name == 'note'</attribute>
+        </xpath>
+    </t>
+</templates>

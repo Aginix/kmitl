@@ -54,7 +54,7 @@
                     </group>
                     <notebook>
                         <page name="line_ids" string="Budget Appropriation Lines">
-                            <field name="line_ids">
+                            <field name="line_ids" widget='note_line' style="max-width: 100%; display: block;">
                                 <tree>
                                     <field name="date_range_fy_id" invisible="1" />
                                     <field name="appropriation_id" invisible="1" />
