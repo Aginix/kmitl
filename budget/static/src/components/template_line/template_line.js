@@ -4,7 +4,7 @@ import {registry} from "@web/core/registry";
 import {X2ManyField} from "@web/views/fields/x2many/x2many_field";
 import {ListRenderer} from "@web/views/list/list_renderer";
 
-export class Template_line_renderer extends ListRenderer {
+export class TemplateLineRenderer extends ListRenderer {
     setup() {
         super.setup();
     }
@@ -24,13 +24,13 @@ export class Template_line_renderer extends ListRenderer {
     }
 }
 
-export class Template_line extends X2ManyField {
+export class TemplateLine extends X2ManyField {
     setup() {
         super.setup();
     }
 }
-Template_line.components = {
+TemplateLine.components = {
     ...X2ManyField.components,
-    ListRenderer: Template_line_renderer,
+    ListRenderer: TemplateLineRenderer,
 };
-registry.category("fields").add("template_line", Template_line);
+registry.category("fields").add("budget_template_line", TemplateLine);

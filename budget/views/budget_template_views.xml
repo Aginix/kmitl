@@ -40,7 +40,7 @@
                     </group>
                     <notebook>
                         <page name="line_ids" string="รหัสงบประมาณ">
-                            <field name="line_ids" widget='template_line' style="max-width: 100%; display: block;">
+                            <field name="line_ids" widget='budget_template_line' style="max-width: 100%; display: block;">
                                 <tree limit="2000">
                                     <field name="code" />
                                     <field name="name" />
