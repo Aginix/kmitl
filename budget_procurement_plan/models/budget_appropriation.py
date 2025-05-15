@@ -9,14 +9,14 @@ _logger = logging.getLogger(__name__)
 class BudgetAppropriation(models.Model):
     _inherit = 'budget.appropriation'
 
-    procurement_plan_ids = fields.One2many(
+    procurement_plan_ids = fields.Many2many(
         comodel_name='procurement.plan',
-        compute='_compute_procurement_plans',
-        string="แผนจัดซื้อจัดจ้าง (ทั้งหมดจากรายการจัดสรร)",
+        compute='_compute_procurement_plans_m2m',
+        string='แผนจัดซื้อจัดจ้างทั้งหมด',
         store=False,
     )
 
-    @api.depends('line_ids.procurement_plan_ids')
-    def _compute_procurement_plans(self):
+    def _compute_procurement_plans_m2m(self):
         for rec in self:
-            rec.procurement_plan_ids = rec.line_ids.mapped('procurement_plan_ids')
+            plans = rec.line_ids.mapped('procurement_plan_ids')
+            rec.procurement_plan_ids = plans

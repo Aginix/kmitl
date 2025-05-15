@@ -16,10 +16,10 @@ class BudgetAppropriationLine(models.Model):
         compute="_compute_amount",
     )
     unallocated_amount = fields.Float(string="ยังไม่ระบุรายการ", help="จำนวนเงินที่ยังไม่มีการวางแผนการใช้งาน แต่ต้องการจองจำนวนเงินไว้ก่อน")
-    procurement_plan_ids = fields.Many2many(comodel_name='procurement.plan', string="แผนจัดซื้อจัดจ้าง", help="รายการแผนจัดซื้อจัดจ้างที่ใช้เงินจากรหัสงบประมาณนี้")
+    procurement_plan_ids = fields.One2many(comodel_name='procurement.plan',inverse_name="budget_appropriation_line_id", string="แผนจัดซื้อจัดจ้าง", help="รายการแผนจัดซื้อจัดจ้างที่ใช้เงินจากรหัสงบประมาณนี้")
     procurement_plan = fields.Boolean(
         related="template_line_id.procurement_plan",
-        store=True,
+        store=False,
         readonly=True,
     )
 
@@ -27,19 +27,3 @@ class BudgetAppropriationLine(models.Model):
     def _compute_amount(self):
         for rec in self:
             rec.amount = sum(rec.procurement_plan_ids.mapped('total_price')) + rec.unallocated_amount
-
-    def unlink(self):
-        for line in self:
-            line.procurement_plan_ids.unlink()
-        return super().unlink()
-
-    def write(self, vals):
-        if 'procurement_plan_ids' in vals:
-            for rec in self:
-                new_ids = vals['procurement_plan_ids'][0][2]
-                current_ids = rec.procurement_plan_ids.ids
-                removed_ids = set(current_ids) - set(new_ids)
-
-                if removed_ids:
-                    self.env['procurement.plan'].browse(list(removed_ids)).unlink()
-        return super().write(vals)

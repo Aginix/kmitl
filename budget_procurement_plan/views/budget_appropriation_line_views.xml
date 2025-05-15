@@ -7,18 +7,19 @@
         <field name="model">budget.appropriation.line</field>
         <field name="inherit_id" ref="budget.view_budget_appropriation_line_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='amount']" position="attributes">
-                <attribute name="attrs">{'readonly': [('procurement_plan', '=', True)], 'required': [('procurement_plan', '=', False)]}</attribute>
-            </xpath>
             <xpath expr="//field[@name='amount']" position="before">
                 <field name="procurement_plan" invisible="1" />
             </xpath>
+            <xpath expr="//field[@name='amount']" position="attributes">
+                <attribute name="attrs">{'readonly': [('procurement_plan', '=', True)], 'required': [('procurement_plan', '=', False)]}</attribute>
+            </xpath>
             <xpath expr="//field[@name='note']" position="before">
-                <field name="procurement_plan_ids" attrs="{'invisible': [('procurement_plan', '=', False)]}" context="{'default_date_range_fy_id': date_range_fy_id,
+                <field name="procurement_plan_ids" attrs="{'invisible': [('procurement_plan', '=', False)]}"
+                context="{
+                    'default_date_range_fy_id': date_range_fy_id,
                     'default_source_analytic_id':source_analytic_id,
                     'default_activity_analytic_id': activity_analytic_id,
-                    'default_department_analytic_id': department_analytic_id,
-                    'from_budget_line': 1}
+                    'default_department_analytic_id': department_analytic_id}
                     ">
                     <tree>
                         <field name="name"/>
