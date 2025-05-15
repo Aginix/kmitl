@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <odoo>
+<odoo>
 
     <!-- View budget.appropriation.line form -->
     <record id="view_budget_appropriation_line_inherit_form" model="ir.ui.view">
@@ -8,12 +8,32 @@
         <field name="inherit_id" ref="budget.view_budget_appropriation_line_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='amount']" position="attributes">
-                <attribute name="attrs">{'readonly': [('procurement_plan', '=', True)]}</attribute>
+                <attribute name="attrs">{'readonly': [('procurement_plan', '=', True)], 'required': [('procurement_plan', '=', False)]}</attribute>
             </xpath>
             <xpath expr="//field[@name='amount']" position="before">
                 <field name="procurement_plan" invisible="1" />
             </xpath>
+            <xpath expr="//field[@name='note']" position="before">
+                <field name="procurement_plan_ids" attrs="{'invisible': [('procurement_plan', '=', False)]}" context="{'default_date_range_fy_id': date_range_fy_id,
+                    'default_source_analytic_id':source_analytic_id,
+                    'default_activity_analytic_id': activity_analytic_id,
+                    'default_department_analytic_id': department_analytic_id,
+                    'from_budget_line': 1}
+                    ">
+                    <tree>
+                        <field name="name"/>
+                        <field name="amount" />
+                        <field name="unit" />
+                        <field name="price_per_unit" />
+                        <field name="total_price"/>
+                        <field name="procurement_method_id" />
+                    </tree>
+                </field>
+            </xpath>
+            <xpath expr="//field[@name='amount']" position="after">
+                <field name="unallocated_amount" attrs="{'invisible': [('procurement_plan', '=', False)]}" />
+            </xpath>
         </field>
     </record>
 
-  </odoo>
+</odoo>

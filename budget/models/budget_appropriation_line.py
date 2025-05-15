@@ -35,7 +35,6 @@ class BudgetAppropriationLine(models.Model):
         related="template_line_id.template_id.budget_type", store=True, readonly=True
     )
     amount = fields.Float(
-        required=True,
         digits="Budget Precision",
         help="Amount",
     )
