@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Budget_procurement_plan',
+    'name': 'Budget Procurement Plan',
     'version': '16.0.1.0.0',
-    'summary': """ Budget_procurement_plan Summary """,
-    'author': '',
-    'website': '',
-    'category': '',
+    'summary': """ Budget Procurement Plan Summary """,
+    'author': 'Aginix Technologies',
+    'website': 'https://github.com/aginix/kmitl',
+    'category': 'KMITL/Budgeting',
     'depends': ['base', 'web', 'procurement_plan', 'budget'],
     "data": [
         "views/budget_appropriation_line_views.xml",

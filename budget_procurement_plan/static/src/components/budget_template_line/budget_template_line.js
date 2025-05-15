@@ -9,24 +9,16 @@ export class CustomTemplateLineRenderer extends TemplateLineRenderer {
     }
     getActiveColumns(list) {
         const budgetType = list?.records?.[0]?.data?.budget_type;
+        const columns = super.getActiveColumns(list)
+        return columns.filter((col) => {
+        	if (budgetType === 'revenue' && col.name === 'procurement_plan') {
+        		return false
+        	}
 
-        return this.allColumns.filter((col) => {
-            if (list.isGrouped && col.widget === "handle") {
-                return false;
-            }
-
-            if (
-                budgetType !== "expense" &&
-                (col.name === "budgetable" || col.name === "procurement_plan")
-            ) {
-                return false;
-            }
-
-            return !col.optional || this.optionalActiveFields[col.name];
-        });
+        	return true
+        })
     }
 }
-
 export class CustomTemplateLine extends X2ManyField {
     setup() {
         super.setup();

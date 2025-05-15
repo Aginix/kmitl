@@ -15,7 +15,7 @@ export class TemplateLineRenderer extends ListRenderer {
             if (list.isGrouped && col.widget === "handle") {
                 return false;
             }
-            if (budgetType !== "expense" && col.name === "budgetable") {
+            if (budgetType === 'revenue' && col.name === "budgetable") {
                 return false;
             }
 
