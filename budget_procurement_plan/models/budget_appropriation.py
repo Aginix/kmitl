@@ -6,20 +6,14 @@ from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
-
 class BudgetAppropriation(models.Model):
     _inherit = 'budget.appropriation'
 
-    from odoo import api, fields, models
-
-class BudgetAppropriation(models.Model):
-    _inherit = 'budget.appropriation'
-
-    procurement_plan_ids = fields.Many2many(
+    procurement_plan_ids = fields.One2many(
         comodel_name='procurement.plan',
         compute='_compute_procurement_plans',
         string="แผนจัดซื้อจัดจ้าง (ทั้งหมดจากรายการจัดสรร)",
-        store=True,
+        store=False,
     )
 
     @api.depends('line_ids.procurement_plan_ids')
