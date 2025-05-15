@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+
+    <!-- View budget.template.line form -->
+    <record id="view_budget_template_line_inherit_form" model="ir.ui.view">
+        <field name="name">view.budget.template.line.form</field>
+        <field name="model">budget.template.line</field>
+        <field name="inherit_id" ref="budget.view_budget_template_line_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='budgetable']" position="after">
+                <field name="procurement_plan" attrs="{'invisible': [('budget_type', '!=', 'expense')]}" />
+            </xpath>
+        </field>
+    </record>
+
+  </odoo>
