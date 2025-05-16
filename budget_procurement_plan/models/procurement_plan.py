@@ -12,3 +12,4 @@ class ProcurementPlan(models.Model):
 
     budget_template_line_id = fields.Many2one(comodel_name='budget.template.line')
     budget_appropriation_line_id = fields.Many2one(comodel_name="budget.appropriation.line")
+

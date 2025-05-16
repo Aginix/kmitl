@@ -21,6 +21,25 @@
                     </field>
                 </page>
             </xpath>
+            <xpath expr="//field[@name='line_ids']" position="replace">
+                <field name="line_ids" widget='custom_budget_line' style="max-width: 100%; display: block;">
+                    <tree>
+                        <field name="date_range_fy_id" invisible="1" />
+                        <field name="appropriation_id" invisible="1" />
+                        <field name="department_analytic_id" options='{"no_open": True}' invisible="1" />
+                        <field name="procurement_plan_ids">
+                        </field>
+                        <field name="unallocated_amount" invisible="1" />
+                        <field name="activity_analytic_id" options='{"no_open": True}' />
+                        <field name="fund_analytic_id" options='{"no_open": True}' />
+                        <field name="template_id" options='{"no_open": True}' invisible="1" />
+                        <field name="template_line_id" options='{"no_open": True}' />
+                        <field name="amount" />
+                        <field name="note" />
+                    </tree>
+                </field>
+
+            </xpath>
         </field>
     </record>
 

@@ -23,6 +23,12 @@ class BudgetAppropriationLine(models.Model):
         readonly=True,
     )
 
+    procurement_plan_lines = fields.Boolean(
+        related="template_line_id.procurement_plan",
+        store=False,
+        readonly=True,
+    )
+
     @api.depends('procurement_plan_ids.amount', 'unallocated_amount')
     def _compute_amount(self):
         for rec in self:

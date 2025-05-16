@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="budget_procurement_plan.NoteLineRenderer" t-inherit="web.ListRenderer" t-inherit-mode="primary" owl="1">
+        <xpath expr="//t[@t-foreach='state.columns']/th" position="attributes">
+            <attribute name="t-if">column.type === 'field' and column.name != 'note'</attribute>
+        </xpath>
+    </t>
+
+    <t t-name="budget_procurement_plan.ListRenderer.RecordRow" t-inherit="web.ListRenderer.RecordRow" t-inherit-mode="primary" owl="1">
+        <xpath expr="//t[@t-foreach='getColumns(record)']/t/td" position="attributes">
+            <attribute name="t-if">column.name != 'note'</attribute>
+        </xpath>
+        <xpath expr="//t[@t-foreach='getColumns(record)']/t/td" position="inside">
+            <div t-if="column.name == 'template_line_id'">
+                <t t-esc="test(record.data.procurement_plan_ids)"/>
+                <t t-foreach="record.data.procurement_plan_ids.records" t-as="procurement" t-key="procurement.id">
+                    <div>
+                        <span>
+                            - <t t-esc="procurementData[procurement.data.id]?.name"/>
+                            จำนวนเงิน
+                            <t t-esc="formattedAmount(procurementData[procurement.data.id]?.total_price)"/>
+                            บาท
+                        </span>
+                    </div>
+                </t>
+                <span t-if="record.data.unallocated_amount > 0">- จำนวนเงินไม่ระบุ <t t-esc="formattedAmount(record.data.unallocated_amount)"/> บาท</span>
+            </div>
+            <div t-if="column.name == 'template_line_id' and record.data.note" style="width: 100%;" class="o_note_textarea">
+                <t t-out="record.data.note"/>
+            </div>
+        </xpath>
+    </t>
+</templates>
