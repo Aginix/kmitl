@@ -12,7 +12,6 @@
         </xpath>
         <xpath expr="//t[@t-foreach='getColumns(record)']/t/td" position="inside">
             <div t-if="column.name == 'template_line_id'">
-                <t t-esc="test(record.data.procurement_plan_ids)"/>
                 <t t-foreach="record.data.procurement_plan_ids.records" t-as="procurement" t-key="procurement.id">
                     <div>
                         <span>
