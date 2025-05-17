@@ -16,10 +16,9 @@ odoo_version: 16.0
 org_name: Aginix Technologies
 org_slug: aginix
 rebel_module_groups: []
-repo_description: ''
+repo_description: ""
 repo_name: Addons for KMITL
 repo_slug: kmitl
 repo_website: https://github.com/aginix/kmitl
 use_pyproject_toml: false
 use_ruff: false
-

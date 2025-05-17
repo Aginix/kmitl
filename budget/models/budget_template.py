@@ -85,7 +85,7 @@ class BudgetTemplateLine(models.Model):
     sequence = fields.Integer(default=_default_sequence)
 
     def name_get(self):
-        return [(record.id, "%s %s" % (record.code, record.name)) for record in self]
+        return [(record.id, f"{record.code} {record.name}") for record in self]
 
     parent_id = fields.Many2one(
         "budget.template.line",
@@ -126,7 +126,11 @@ class BudgetTemplateLine(models.Model):
         domain=[("root_plan_id.code", "=", "funds")],
     )
 
-    budgetable = fields.Boolean(string="ระบุงบประมาณได้", help="ติ๊กถูกเพื่อระบุว่ารหัสค่าใช้จ่ายสามารถจัดสรรงบประมาณได้", default=True)
+    budgetable = fields.Boolean(
+        string="ระบุงบประมาณได้",
+        help="ติ๊กถูกเพื่อระบุว่ารหัสค่าใช้จ่ายสามารถจัดสรรงบประมาณได้",
+        default=True,
+    )
 
     _sql_constraints = [
         (
@@ -168,9 +172,7 @@ class BudgetTemplateLine(models.Model):
             fields.append("code")
         if "name" not in fields:
             fields.append("name")
-        return super(BudgetTemplateLine, self).search_read(
-            domain, fields, offset, limit, order
-        )
+        return super().search_read(domain, fields, offset, limit, order)
 
 
 class BudgetTemplateLineAccount(models.Model):
