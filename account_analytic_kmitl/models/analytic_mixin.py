@@ -6,7 +6,6 @@ _logger = logging.getLogger(__name__)
 
 
 class AnalyticDistributionMixin(models.AbstractModel):
-
     _name = "analytic.distribution.mixin"
     _inherit = ["analytic.mixin"]
     _description = "Analytic Distribution Mixin"

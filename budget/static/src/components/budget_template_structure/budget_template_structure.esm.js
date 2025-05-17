@@ -1,8 +1,10 @@
 /** @odoo-module **/
+
+import {Component, onWillStart, useState} from "@odoo/owl";
+
+import {ControlPanel} from "@web/search/control_panel/control_panel";
 import {registry} from "@web/core/registry";
 import {useService} from "@web/core/utils/hooks";
-import {ControlPanel} from "@web/search/control_panel/control_panel";
-import {Component, useState, onWillStart} from "@odoo/owl";
 
 export class BudgetTemplateStructure extends Component {
     setup() {
@@ -31,12 +33,12 @@ export class BudgetTemplateStructure extends Component {
             args,
             {context}
         );
-        this.state.data = result["lines"];
-        this.state.budget_template = result["budget_template"];
+        this.state.data = result.lines;
+        this.state.budget_template = result.budget_template;
         return result;
     }
 
-    //---- Getters ----
+    // ---- Getters ----
 
     get data() {
         return this.state.data;

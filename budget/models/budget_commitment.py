@@ -115,7 +115,7 @@ class BudgetCommitment(models.Model):
         states={"draft": [("readonly", False)]},
     )
 
-    @api.onchange('template_id')
+    @api.onchange("template_id")
     def _onchange_template_id(self):
         if self.line_ids:
             self.line_ids = [Command.clear()]

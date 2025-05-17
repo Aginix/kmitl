@@ -10,7 +10,7 @@ class BudgetTemplateStructure(models.AbstractModel):
     _description = "Budget Structure"
 
     @api.model
-    def get_html(self, template_id, domain=[]):
+    def get_html(self, template_id, domain):
         return self._get_data(template_id=template_id, domain=domain)
 
     @api.model
