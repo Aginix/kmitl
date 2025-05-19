@@ -12,7 +12,8 @@
         "views/budget_appropriation_views.xml",
         "views/budget_template_form_views.xml",
         "views/budget_template_line_views.xml",
-        "views/procurement_plan_views.xml"
+        "views/procurement_plan_views.xml",
+        "views/procurement_plan_menu.xml"
     ],
     'assets': {
               'web.assets_backend': [

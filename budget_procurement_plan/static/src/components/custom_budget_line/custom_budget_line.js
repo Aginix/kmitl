@@ -2,7 +2,7 @@
 
 import {registry} from "@web/core/registry";
 import {X2ManyField} from "@web/views/fields/x2many/x2many_field";
-import {NoteLineRenderer} from "@budget/components/note_line/note_line";
+import {NoteLineRenderer} from "@budget/components/note_line/note_line.esm";
 import {useService} from "@web/core/utils/hooks";
 import {useState, onWillStart} from "@odoo/owl";
 

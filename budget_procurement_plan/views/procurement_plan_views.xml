@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
   <odoo>
 
+    <record id="procurement_plan_tree_inherit" model="ir.ui.view">
+        <field name="name">procurement.plan.view.tree.inherit</field>
+        <field name="model">procurement.plan</field>
+        <field name="inherit_id" ref="procurement_plan.view_procurement_plan_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='department_analytic_id']" position="before">
+                <field name="budget_template_line_id" />
+            </xpath>
+            <xpath expr="//tree" position="attributes">
+                <attribute name="create">false</attribute>
+            </xpath>
+        </field>
+    </record>
+
     <!-- View procurement.plan form -->
     <record id="view_procurement_plan_inherit_form" model="ir.ui.view">
         <field name="name">view.procurement.plan.inherit.form</field>

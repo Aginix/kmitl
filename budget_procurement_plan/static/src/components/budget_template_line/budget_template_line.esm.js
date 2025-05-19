@@ -1,7 +1,7 @@
 /** @odoo-module **/
 import {registry} from "@web/core/registry";
 import {X2ManyField} from "@web/views/fields/x2many/x2many_field";
-import {TemplateLineRenderer} from "@budget/components/template_line/template_line";
+import {TemplateLineRenderer} from "@budget/components/template_line/template_line.esm";
 
 export class CustomTemplateLineRenderer extends TemplateLineRenderer {
     setup() {
