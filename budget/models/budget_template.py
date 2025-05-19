@@ -67,6 +67,7 @@ class BudgetTemplateLine(models.Model):
     _description = "Budget Template Lines"
     _parent_store = True
     _order = "sequence"
+
     _inherit = ["mail.thread"]
 
     template_id = fields.Many2one(
@@ -87,9 +88,9 @@ class BudgetTemplateLine(models.Model):
     code = fields.Char("รหัสงบประมาณ", required=True, tracking=True, copy=True)
     name = fields.Char("ชื่อรายการ", required=True, tracking=True, copy=True)
     sequence = fields.Integer(default=_default_sequence)
-
-    def name_get(self):
-        return [(record.id, f"{record.code} {record.name}") for record in self]
+    complete_name = fields.Char(
+        compute="_compute_complete_name", recursive=True, store=True
+    )
 
     parent_id = fields.Many2one(
         "budget.template.line",
@@ -144,6 +145,17 @@ class BudgetTemplateLine(models.Model):
         )
     ]
 
+    @api.depends("name", "parent_id.complete_name")
+    def _compute_complete_name(self):
+        for template_line in self:
+            if template_line.parent_id:
+                template_line.complete_name = _("%(parent)s / %(own)s") % {
+                    "parent": template_line.parent_id.complete_name,
+                    "own": template_line.name,
+                }
+            else:
+                template_line.complete_name = template_line.name
+
     @api.depends("parent_id.hierarchy_level")
     def _compute_hierarchy_level(self):
         for report_line in self:
@@ -177,6 +189,20 @@ class BudgetTemplateLine(models.Model):
         if "name" not in fields:
             fields.append("name")
         return super().search_read(domain, fields, offset, limit, order)
+
+    def name_get(self):
+        res = []
+        for record in self:
+            name = record.complete_name
+            if record.code:
+                name = ("[%(code)s] %(name)s") % {"code": record.code, "name": name}
+            if record.parent_id:
+                name = _("%(name)s - %(parent_id)s") % {
+                    "name": name,
+                    "parent_id": record.parent_id.name,
+                }
+            res.append((record.id, name))
+        return res
 
 
 class BudgetTemplateLineAccount(models.Model):
