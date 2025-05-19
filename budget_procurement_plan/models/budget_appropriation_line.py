@@ -28,4 +28,7 @@ class BudgetAppropriationLine(models.Model):
     @api.depends('procurement_plan_ids.amount', 'unallocated_amount')
     def _compute_amount(self):
         for rec in self:
-            rec.amount = sum(rec.procurement_plan_ids.mapped('total_price')) + rec.unallocated_amount
+            if rec.template_line_id.procurement_plan:
+                rec.amount = sum(rec.procurement_plan_ids.mapped('total_price')) + rec.unallocated_amount
+            else:
+                rec.amount = rec.amount + rec.unallocated_amount
