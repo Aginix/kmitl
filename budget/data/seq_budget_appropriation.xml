@@ -6,7 +6,6 @@
             <field name="prefix">AP/%(year_be)s/</field>
             <field name="padding">4</field>
             <field name="number_next">1</field>
-            <field name="implementation">standard</field>
             <field name="active" eval="True"/>
             <field name="company_id" eval="False"/>
         </record>
