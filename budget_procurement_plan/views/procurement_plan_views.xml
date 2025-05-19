@@ -21,6 +21,9 @@
         <field name="model">procurement.plan</field>
         <field name="inherit_id" ref="procurement_plan.view_procurement_plan_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='department_analytic_id']" position="after">
+                <field name="budget_template_line_id" readonly="1" />
+            </xpath>
             <xpath expr="//field[@name='activity_analytic_id']" position="attributes">
                 <attribute name="readonly">context.get('from_budget_line', False)</attribute>
             </xpath>
