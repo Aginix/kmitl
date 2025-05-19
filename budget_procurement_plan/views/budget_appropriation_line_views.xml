@@ -13,7 +13,7 @@
             <xpath expr="//field[@name='amount']" position="attributes">
                 <attribute name="attrs">{'readonly': [('procurement_plan', '=', True)], 'required': [('procurement_plan', '=', False)]}</attribute>
             </xpath>
-            <xpath expr="//field[@name='note']" position="before">
+            <xpath expr="//field[@name='amount']" position="before">
                 <field name="procurement_plan_ids" attrs="{'invisible': [('procurement_plan', '=', False)]}"
                 context="{
                     'default_date_range_fy_id': date_range_fy_id,
@@ -31,7 +31,7 @@
                     </tree>
                 </field>
             </xpath>
-            <xpath expr="//field[@name='amount']" position="after">
+            <xpath expr="//field[@name='procurement_plan_ids']" position="after">
                 <field name="unallocated_amount" attrs="{'invisible': [('procurement_plan', '=', False)]}" />
             </xpath>
         </field>

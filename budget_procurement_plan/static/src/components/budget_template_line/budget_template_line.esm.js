@@ -8,7 +8,8 @@ export class CustomTemplateLineRenderer extends TemplateLineRenderer {
         super.setup();
     }
     getActiveColumns(list) {
-        const budgetType = list?.records?.[0]?.data?.budget_type;
+        const records = list.records || [];
+        const budgetType = records[0] ? records[0].data.budget_type : undefined;
         const columns = super.getActiveColumns(list)
         return columns.filter((col) => {
         	if (budgetType === 'revenue' && col.name === 'procurement_plan') {

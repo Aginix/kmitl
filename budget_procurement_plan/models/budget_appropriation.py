@@ -11,12 +11,11 @@ class BudgetAppropriation(models.Model):
 
     procurement_plan_ids = fields.Many2many(
         comodel_name='procurement.plan',
-        compute='_compute_procurement_plans_m2m',
+        compute='_compute_procurement_plan_ids',
         string='แผนจัดซื้อจัดจ้างทั้งหมด',
         store=False,
     )
 
-    def _compute_procurement_plans_m2m(self):
-        for rec in self:
-            plans = rec.line_ids.mapped('procurement_plan_ids')
-            rec.procurement_plan_ids = plans
+    def _compute_procurement_plan_ids(self):
+        for record in self:
+            record.procurement_plan_ids = record.line_ids.mapped('procurement_plan_ids')
