@@ -5,8 +5,9 @@
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["account", "account_analytic_kmitl", "account_fiscal_year", "mail"],
+    "depends": ["account", "account_analytic_kmitl", "account_fiscal_year", "mail", "l10n_th_base_sequence"],
     "data": [
+        "data/seq_budget_appropriation.xml",
         "views/budget_template_views.xml",
         "views/budget_move_views.xml",
         "views/budget_appropriation_views.xml",

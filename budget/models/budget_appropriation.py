@@ -17,6 +17,7 @@ class BudgetAppropriation(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
+    ref = fields.Char(string="เลขที่")
     date_range_fy_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="Fiscal year",
@@ -39,6 +40,7 @@ class BudgetAppropriation(models.Model):
     )
     state = fields.Selection(
         selection=[
+            ("submit", "Submit"),
             ("draft", "Draft"),
             ("posted", "Posted"),
             ("cancel", "Cancelled"),
@@ -169,3 +171,10 @@ class BudgetAppropriation(models.Model):
 
     def button_draft(self):
         self.write({"state": "draft"})
+
+    @api.model
+    def create(self,vals):
+        if not vals.get('ref'):
+            vals['ref'] = self.env['ir.sequence'].next_by_code('budget.appropriation') or _('New')
+        res = super(BudgetAppropriation, self).create(vals)
+        return res
