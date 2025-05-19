@@ -172,9 +172,9 @@ class BudgetAppropriation(models.Model):
     def button_draft(self):
         self.write({"state": "draft"})
 
-    @api.model
-    def create(self,vals):
-        if not vals.get('ref'):
-            vals['ref'] = self.env['ir.sequence'].next_by_code('budget.appropriation') or _('New')
-        res = super(BudgetAppropriation, self).create(vals)
-        return res
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if not vals.get('ref'):
+                vals['ref'] = self.env['ir.sequence'].next_by_code('budget.appropriation') or _('New')
+        return super().create(vals_list)
