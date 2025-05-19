@@ -26,7 +26,7 @@
                         <field name="amount" />
                         <field name="unit" />
                         <field name="price_per_unit" />
-                        <field name="total_price"/>
+                        <field name="total_price" sum="รวมทั้งหมด" />
                         <field name="procurement_method_id" />
                     </tree>
                 </field>
