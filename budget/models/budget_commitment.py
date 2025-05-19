@@ -118,7 +118,7 @@ class BudgetCommitment(models.Model):
         comodel_name="res.company", required=True, default=lambda self: self.env.company
     )
 
-    @api.onchange('template_id')
+    @api.onchange("template_id")
     def _onchange_template_id(self):
         if self.line_ids:
             self.line_ids = [Command.clear()]

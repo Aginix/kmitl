@@ -1,6 +1,6 @@
 import logging
 
-from odoo import api, models
+from odoo import models
 
 _logger = logging.getLogger(__name__)
 
@@ -19,8 +19,10 @@ class BudgetExpenditureReport(models.AbstractModel):
             budget_commitments = budget_commitment_map.get(template_line.code, [])
             prepare_line = self._prepare_line(
                 template_line,
-                budget_appropriations,
+                budget_appropriations=budget_appropriations,
                 budget_commitments=budget_commitments,
+                budget_reserveds=[],
+                budget_obligated=[],
             )
             lines.append(prepare_line)
         return lines
@@ -63,9 +65,9 @@ class BudgetExpenditureReport(models.AbstractModel):
         self,
         template_line,
         budget_appropriations,
-        budget_commitments=[],
-        budget_reserveds=[],
-        budget_obligated=[],
+        budget_commitments,
+        budget_reserveds,
+        budget_obligated,
     ):
         line = super()._prepare_line(template_line)
         # (a)

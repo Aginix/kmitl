@@ -5,7 +5,6 @@ from odoo import api, fields, models
 _logger = logging.getLogger(__name__)
 
 
-
 class BudgetCommitmentLine(models.Model):
     _name = "budget.commitment.line"
     _description = "Budget Commitment Line"

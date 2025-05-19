@@ -1,8 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="base.main_company" model="res.company">
         <field name="name">สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</field>
-        <field name="street">1 Chalong Krung 1 Alley, สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง ถนนฉลองกรุง เขตลาดกระบัง</field>
+        <field
+            name="street"
+        >1 Chalong Krung 1 Alley, สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง ถนนฉลองกรุง เขตลาดกระบัง</field>
         <field name="city">กรุงเทพ</field>
         <field name="country_id" ref="base.th" />
 
@@ -10,15 +12,18 @@
         <field name="phone">+66 2 329 8000</field>
         <field name="email">pr.kmitl@demo.kmitl.ac.th</field>
         <field name="website">www.kmitl.ac.th/</field>
-        <field name="logo" type="base64" file="kmitl_demo/static/src/img/logo.png"/>
+        <field name="logo" type="base64" file="kmitl_demo/static/src/img/logo.png" />
     </record>
 
     <!-- เปิดใช้งาน Analytic Accounting -->
-    <record model="res.config.settings" id="res_config_settings_enable_analytic_accounting">
-        <field name="group_analytic_accounting" eval="1"/>
+    <record
+        model="res.config.settings"
+        id="res_config_settings_enable_analytic_accounting"
+    >
+        <field name="group_analytic_accounting" eval="1" />
     </record>
 
     <function model="res.config.settings" name="execute">
-        <value eval="[ref('res_config_settings_enable_analytic_accounting')]"/>
+        <value eval="[ref('res_config_settings_enable_analytic_accounting')]" />
     </function>
 </odoo>

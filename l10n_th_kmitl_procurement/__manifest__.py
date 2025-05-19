@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 {
     "name": "l10n_th_kmitl_procurement",
     "version": "16.0.1.0.0",

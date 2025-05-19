@@ -1,11 +1,12 @@
 /** @odoo-module **/
 
+import {Component, EventBus, onWillStart, useState, useSubEnv} from "@odoo/owl";
+
+import {BudgetExpenditureReportControlPanel} from "./control_panel.esm";
+import {formatFloat} from "@web/views/fields/formatters";
+import {getDefaultConfig} from "@web/views/view";
 import {registry} from "@web/core/registry";
 import {useService} from "@web/core/utils/hooks";
-import {getDefaultConfig} from "@web/views/view";
-import {BudgetExpenditureReportControlPanel} from "./control_panel";
-import {formatFloat} from "@web/views/fields/formatters";
-import {Component, EventBus, useSubEnv, onWillStart, useState} from "@odoo/owl";
 
 export class BudgetExpenditureReportMain extends Component {
     setup() {
@@ -70,7 +71,7 @@ export class BudgetExpenditureReportMain extends Component {
         return data;
     }
 
-    //---- Getters ----
+    // ---- Getters ----
     get selectedBudgetTemplate() {
         if (!this.state.selectedBudgetTemplateId) return undefined;
         return this.state.budgetTemplates.find(
@@ -80,7 +81,7 @@ export class BudgetExpenditureReportMain extends Component {
 
     async onChangeBudgetTemplate(templateId) {
         this.state.selectedBudgetTemplateId = templateId;
-        await this.loadData()
+        await this.loadData();
     }
 }
 

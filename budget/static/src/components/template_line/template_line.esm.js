@@ -1,15 +1,16 @@
 /** @odoo-module **/
 
-import {registry} from "@web/core/registry";
-import {X2ManyField} from "@web/views/fields/x2many/x2many_field";
 import {ListRenderer} from "@web/views/list/list_renderer";
+import {X2ManyField} from "@web/views/fields/x2many/x2many_field";
+import {registry} from "@web/core/registry";
 
 export class TemplateLineRenderer extends ListRenderer {
     setup() {
         super.setup();
     }
     getActiveColumns(list) {
-        const budgetType = list?.records?.[0]?.data?.budget_type;
+        const records = list.records || [];
+        const budgetType = records[0] ? records[0].data.budget_type : undefined;
 
         return this.allColumns.filter((col) => {
             if (list.isGrouped && col.widget === "handle") {

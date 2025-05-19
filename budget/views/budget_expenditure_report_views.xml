@@ -6,15 +6,18 @@
         <field name="tag">budget_expenditure_report</field>
     </record>
 
-    <menuitem id="expenditure_reporting_menu"
+    <menuitem
+        id="expenditure_reporting_menu"
         name="รายจ่าย"
         sequence="3"
-        parent="budget_reporting_menu"/>
+        parent="budget_reporting_menu"
+    />
 
     <menuitem
         id="budget_expenditure_report_menu"
         name="รายงานสรุปรายจ่ายภาพรวม (ภาพรวม)"
         action="action_budget_expenditure_report"
         sequence="1"
-        parent="expenditure_reporting_menu"/>
+        parent="expenditure_reporting_menu"
+    />
 </odoo>

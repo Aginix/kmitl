@@ -123,7 +123,7 @@ class BudgetAppropriation(models.Model):
         string="จัดสรรงบประมาณครั้งแรก", default=False, readonly=True
     )
 
-    @api.onchange('template_id')
+    @api.onchange("template_id")
     def _onchange_template_id(self):
         if self.line_ids:
             self.line_ids = [Command.clear()]

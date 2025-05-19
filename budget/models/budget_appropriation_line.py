@@ -1,7 +1,6 @@
 import logging
 
 from odoo import api, fields, models
-from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
 
@@ -31,7 +30,7 @@ class BudgetAppropriationLine(models.Model):
     template_line_id = fields.Many2one(
         comodel_name="budget.template.line",
         index=True,
-        domain=[("budgetable", "=", True)]
+        domain=[("budgetable", "=", True)],
     )
     budget_type = fields.Selection(
         related="template_line_id.template_id.budget_type", store=True, readonly=True
