@@ -8,6 +8,7 @@ export class TemplateLineRenderer extends ListRenderer {
     setup() {
         super.setup();
     }
+
     getActiveColumns(list) {
         const records = list.records || [];
         const budgetType = records[0] ? records[0].data.budget_type : undefined;
@@ -16,7 +17,8 @@ export class TemplateLineRenderer extends ListRenderer {
             if (list.isGrouped && col.widget === "handle") {
                 return false;
             }
-            if (budgetType !== "expense" && col.name === "budgetable") {
+
+            if (budgetType === "revenue" && col.name === "budgetable") {
                 return false;
             }
 
