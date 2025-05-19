@@ -14,7 +14,8 @@ class BudgetAppropriationLine(models.Model):
         digits="Budget Precision",
         help="Amount",
         compute="_compute_amount",
-        store=True
+        store=True,
+        required=False
     )
     unallocated_amount = fields.Float(string="ยังไม่ระบุรายการ", help="จำนวนเงินที่ยังไม่มีการวางแผนการใช้งาน แต่ต้องการจองจำนวนเงินไว้ก่อน")
     procurement_plan_ids = fields.One2many(comodel_name='procurement.plan',inverse_name="budget_appropriation_line_id", string="แผนจัดซื้อจัดจ้าง", help="รายการแผนจัดซื้อจัดจ้างที่ใช้เงินจากรหัสงบประมาณนี้")
