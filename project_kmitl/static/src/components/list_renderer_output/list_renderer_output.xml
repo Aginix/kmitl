@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="project_proposal.List_render_output" owl="1">
+        <div
+            class="o_list_renderer o_renderer table-responsive"
+            t-attf-class="{{ props.archInfo.className or '' }}"
+            tabindex="-1"
+            t-ref="root"
+        >
+            <t t-if="showNoContentHelper" t-call="web.ActionHelper">
+                <t t-set="noContentHelp" t-value="props.noContentHelp"/>
+            </t>
+            <table t-attf-class="o_list_table table table-sm table-hover position-relative mb-0 {{props.list.isGrouped ? 'o_list_table_grouped' : 'o_list_table_ungrouped table-striped'}}" t-ref="table">
+                <thead>
+                    <tr>
+                        <th t-if="hasSelectors" class="o_list_record_selector o_list_controller align-middle pe-1 cursor-pointer" tabindex="-1" t-on-keydown="(ev) => this.onCellKeydown(ev)" t-on-click.stop="toggleSelection">
+                            <CheckBox disabled="!canSelectRecord" value="selectAll" className="'d-flex'" onChange.bind="toggleSelection"/>
+                        </th>
+                        <th>ตัวชี้วัด</th>
+                        <th>หน่วยนับ</th>
+                        <th>เป้าหมาย ปีงบประมาณ 2568</th>
+                    </tr>
+                </thead>
+                <tbody class="ui-sortable">
+                    <t t-call="{{ constructor.rowsTemplate }}">
+                        <t t-set="list" t-value="props.list"/>
+                    </t>
+                </tbody>
+                <tfoot t-on-click="() => props.list.unselectRecord(true)" class="o_list_footer cursor-default" t-att-class="{o_sample_data_disabled: props.list.model.useSampleModel}">
+                    <tr>
+                        <td t-if="hasSelectors"/>
+                        <t t-foreach="state.columns" t-as="column" t-key="column.id">
+                            <t t-set="aggregate" t-value="aggregates[column.name]"/>
+                            <td t-if="aggregate" class="o_list_number" t-att-data-tooltip="aggregate.help">
+                                <t t-esc="aggregate.value"/>
+                            </td>
+                            <td t-else=""/>
+                        </t>
+                        <td t-if="displayOptionalFields or activeActions.onDelete"/>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </t>
+
+    <t t-name="project_proposal.ListRenderer.Rows" owl="1">
+        <t t-if="!list.isGrouped">
+            <tr class="o_data_row fw-bold">
+                <td>ผลผลิต (Output)</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <t t-foreach="list.records" t-as="record" t-key="record.id">
+                <t t-if="record.data.line_type === 'output'">
+                    <t t-call="{{ constructor.recordRowTemplate }}"/>
+                </t>
+            </t>
+            <!-- ปุ่ม add line -->
+            <tr t-if="displayRowCreates">
+                <td t-if="withHandleColumn"/>
+                <td t-att-colspan="withHandleColumn ? nbCols - 1 : nbCols"
+                    class="o_field_x2many_list_row_add"
+                    t-on-keydown="(ev) => this.onCellKeydown(ev, null)"
+                >
+                    <t t-foreach="creates" t-as="create" t-key="create_index">
+                        <a
+                            t-if="create.type === 'create'"
+                            href="#"
+                            role="button"
+                            t-att-class="create_index !== 0 ? 'ml16' : ''"
+                            t-att-tabindex="props.list.editedRecord ? '-1' : '0'"
+                            t-on-click.stop.prevent="() => this.add({ context: { default_line_type: 'output' } })"
+                        >
+                            <t t-esc="create.string"/>
+                        </a>
+                    </t>
+                </td>
+            </tr>
+            <tr class="o_data_row fw-bold">
+                <td>ผลลัพธ์ (Outcome)</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <t t-foreach="list.records" t-as="record" t-key="record.id">
+                <t t-if="record.data.line_type === 'outcome'">
+                    <t t-call="{{ constructor.recordRowTemplate }}"/>
+                </t>
+            </t>
+
+            <!-- ปุ่ม add line -->
+            <tr t-if="displayRowCreates">
+                <td t-if="withHandleColumn"/>
+                <td t-att-colspan="withHandleColumn ? nbCols - 1 : nbCols"
+                    class="o_field_x2many_list_row_add"
+                    t-on-keydown="(ev) => this.onCellKeydown(ev, null)"
+                >
+                    <t t-foreach="creates" t-as="create" t-key="create_index">
+                        <a
+                            t-if="create.type === 'create'"
+                            href="#"
+                            role="button"
+                            t-att-class="create_index !== 0 ? 'ml16' : ''"
+                            t-att-tabindex="props.list.editedRecord ? '-1' : '0'"
+                            t-on-click.stop.prevent="() => this.add({ context: { default_line_type: 'outcome' } })"
+                        >
+                            <t t-esc="create.string"/>
+                        </a>
+                    </t>
+                </td>
+            </tr>
+        </t>
+    </t>
+
+    <t t-name="project_proposal.ListRenderer.RecordRow" owl="1">
+
+        <tr class="o_data_row"
+            t-att-class="getRowClass(record)"
+            t-att-data-id="record.id"
+            t-on-click.capture="(ev) => this.onClickCapture(record, ev)"
+            t-on-mouseover.capture="(ev) => this.ignoreEventInSelectionMode(ev)"
+            t-on-mouseout.capture="(ev) => this.ignoreEventInSelectionMode(ev)"
+            t-on-mouseenter.capture="(ev) => this.ignoreEventInSelectionMode(ev)"
+            t-on-touchstart="(ev) => this.onRowTouchStart(record, ev)"
+            t-on-touchend="() => this.onRowTouchEnd(record)"
+            t-on-touchmove="() => this.onRowTouchMove(record)"
+        >
+            <!-- data -->
+            <t t-foreach="getColumns(record)" t-as="column" t-key="column.id">
+                <t t-if="column.type === 'field' and column.name !== 'line_type'">
+                    <t t-set="isInvisible" t-value="evalModifier(column.modifiers.invisible, record)"/>
+                    <td t-on-keydown="(ev) => this.onCellKeydown(ev, group, record)"
+                        class="o_data_cell cursor-pointer"
+                        t-att-class="getCellClass(column, record)"
+                        t-att-name="column.name"
+                        t-att-colspan="column.colspan"
+                        t-att-data-tooltip="!isInvisible ? getCellTitle(column, record) : false"
+                        data-tooltip-delay="1000"
+                        t-on-click="(ev) => this.onCellClicked(record, column, ev)" tabindex="-1">
+                        <t t-if="!isInvisible">
+                            <t t-if="canUseFormatter(column, record)" t-out="getFormattedValue(column, record)"/>
+                            <Field t-else="" name="column.name" record="record" type="column.widget"
+            class="getFieldClass(column)" fieldInfo="props.archInfo.fieldNodes[column.name]"
+            setDirty="(isDirty) => this.setDirty(isDirty)" readonly="props.activeActions?.edit ===
+            false and !record.isNew"/>
+                        </t>
+                    </td>
+                </t>
+            </t>
+
+            <!-- delete -->
+            <t t-set="useUnlink" t-value="'unlink' in activeActions" />
+            <t t-set="hasX2ManyAction" t-value="isX2Many and (useUnlink ? activeActions.unlink : activeActions.delete)" />
+            <t t-if="displayOptionalFields or hasX2ManyAction">
+                <t t-if="hasX2ManyAction">
+                    <td class="o_list_record_remove text-center"
+                        t-on-keydown="(ev) => this.onCellKeydown(ev, group, record)"
+                        t-on-click.stop="() => this.onDeleteRecord(record)"
+                        tabindex="-1"
+                    >
+                        <button class="fa"
+                            t-att-class="{
+                                'fa-trash-o': !useUnlink and activeActions.delete,
+                                'fa-times': useUnlink and activeActions.unlink,
+                            }"
+                            name="delete"
+                            aria-label="Delete row"
+                            tabindex="-1"
+                        />
+                    </td>
+                </t>
+                <td t-else="" tabindex="-1" />
+            </t>
+        </tr>
+    </t>
+
+</templates>

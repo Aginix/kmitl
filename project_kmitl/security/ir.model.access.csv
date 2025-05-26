@@ -1,0 +1,9 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_project_okr_manager,project_okr_manager,model_project_okr,,1,1,1,1
+access_project_impact_manager,project_impact_manager,model_project_impact,,1,1,1,1
+access_project_global_index_manager,project_global_index_manager,model_project_global_index,,1,1,1,1
+access_project_output_manager,project_output_manager,model_project_output,,1,1,1,1
+access_project_evaluation_methods_manager,project_evaluation_methods_manager,model_project_evaluation_methods,,1,1,1,1
+access_project_fight_manager,project_fight_manager,model_project_fight,,1,1,1,1
+access_project_objectives_manager,project_objectives_manager,model_project_objectives,,1,1,1,1
+access_project_activity_manager,project_activity_manager,model_project_activity,,1,1,1,1
