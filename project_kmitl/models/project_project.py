@@ -37,7 +37,7 @@ class ProjectProject(models.Model):
         string="วัตถุประสงค์ของโครงการ",
     )
     department_id = fields.Many2one(
-        comodel_name="hr.department", compute="_compute_department_id", string="หน่วยงานผู้รับผิดชอบโครงการ", index=True
+        comodel_name="hr.department", compute="_compute_department_id", string="หน่วยงานผู้รับผิดชอบโครงการ", index=True, store=True,
     )
     department_name = fields.Char(
         string="ชื่อหน่วยงานผู้รับผิดชอบโครงการ", related="department_id.name", store=True
