@@ -6,3 +6,9 @@ access_budget_appropriation_manager,budget_appropriation_manager,model_budget_ap
 access_budget_appropriation_line_manager,budget_appropriation_line_manager,model_budget_appropriation_line,,1,1,1,1
 access_budget_commitment_manager,budget_commitment_manager,model_budget_commitment,,1,1,1,1
 access_budget_commitment_line_manager,budget_commitment_line_manager,model_budget_commitment_line,,1,1,1,1
+access_budget_move_manager,budget_move_manager,model_budget_move,,1,1,1,1
+access_budget_move_line_manager,budget_move_line_manager,model_budget_move_line,,1,1,1,1
+access_budget_account_user,budget_account_user,model_budget_account,,1,0,0,0
+access_budget_account_manager,budget_account_manager,model_budget_account,,1,1,1,1
+access_budget_journal_manager,budget_journal_manager,model_budget_journal,,1,1,1,1
+access_budget_procurement_manager,budget_procurement_manager,model_budget_procurement,,1,1,1,1

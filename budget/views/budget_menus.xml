@@ -13,13 +13,18 @@
                 sequence="1"
             >
                 <menuitem
-                    id="action_budget_appropriation_menu_action"
+                    id="action_view_move_budget_appropriation_type_menu_action"
                     name="รายการจัดการ"
+                    action="action_view_move_budget_appropriation_type"
+                />
+                <menuitem
+                    id="action_budget_appropriation_menu_action"
+                    name="รายการจัดการ (เก่า)"
                     action="action_budget_appropriation"
                 />
                 <menuitem
                     id="action_budget_appropriation_line_menu_action"
-                    name="รายการจัดสรร​ (แบบแจกแจง)"
+                    name="รายการจัดสรร​ (แบบแจกแจง) (เก่า)"
                     action="action_budget_appropriation_line"
                 />
             </menuitem>
@@ -38,8 +43,34 @@
                 />
             </menuitem>
         </menuitem>
+
+        <menuitem id="budget_move" name="บัญชีงบประมาณ" sequence="40">
+            <menuitem id="budget_move_menu" name="บัญชีงบประมาณ" sequence="1">
+                <menuitem
+                    id="action_budget_move_menu_action"
+                    name="รายการบันทึกสมุดบัญชีงบประมาณ"
+                    action="action_budget_move"
+                />
+                <menuitem
+                    id="action_budget_move_line_menu_action"
+                    name="รายการบันทึกสมุดบัญชีงบประมาณ (แบบแจกแจง)"
+                    action="action_budget_move_line"
+                />
+            </menuitem>
+        </menuitem>
+
         <menuitem id="budget_reporting_menu" name="รายงาน" sequence="90" />
         <menuitem id="budget_config_menu" name="ตั้งค่า" sequence="99">
+            <menuitem
+                id="action_budget_account_menu_action"
+                name="รหัสงบประมาณ"
+                action="action_budget_account"
+            />
+            <menuitem
+                id="action_budget_journal_menu_action"
+                name="ประเภทสมุดบัญชีงบประมาณ"
+                action="action_budget_journal"
+            />
             <menuitem
                 id="action_budget_template_menu_action"
                 name="โครงสร้างรหัสงบประมาณ"

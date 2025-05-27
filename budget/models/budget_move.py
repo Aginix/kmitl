@@ -1,0 +1,357 @@
+import logging
+
+from contextlib import ExitStack, contextmanager
+from odoo import Command, api, fields, models, _
+from odoo.exceptions import UserError
+from odoo.osv import expression
+from odoo.tools import format_amount
+
+
+_logger = logging.getLogger(__name__)
+
+
+class BudgetMove(models.Model):
+    _name = "budget.move"
+    _description = "Budget Move"
+    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _order = "date desc, name desc, id desc"
+    _rec_names_search = ["name", "ref"]
+
+    READONLY_STATES = {
+        "review": [("readonly", True)],
+        "posted": [("readonly", True)],
+        "cancel": [("readonly", True)],
+    }
+
+    name = fields.Char(
+        string="Number",
+        compute="_compute_name",
+        readonly=False,
+        store=True,
+        copy=False,
+        tracking=True,
+        index="trigram",
+        default=lambda self: _("New"),
+    )
+    ref = fields.Char(string="Reference", copy=False, tracking=True)
+    date = fields.Date(
+        string="Date",
+        index=True,
+        default=lambda self: fields.Date.context_today(self),
+        required=True,
+        readonly=False,
+        copy=False,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+    state = fields.Selection(
+        selection=[
+            ("draft", "Draft"),
+            ("review", "In Review"),
+            ("posted", "Posted"),
+            ("cancel", "Cancelled"),
+        ],
+        string="Status",
+        required=True,
+        readonly=True,
+        copy=False,
+        tracking=True,
+        default="draft",
+    )
+    date_range_fy_id = fields.Many2one(
+        comodel_name="account.fiscal.year",
+        string="Fiscal year",
+        search="_search_date_range_fy",
+        tracking=True,
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+    )
+
+    note = fields.Char(
+        readonly=False,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
+    department_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="ส่วนงาน",
+        store=True,
+        copy=True,
+        readonly=False,
+        states=READONLY_STATES,
+        domain=[("root_plan_id.code", "=", "departments")],
+        tracking=True,
+    )
+    source_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="แหล่งเงิน",
+        store=True,
+        copy=True,
+        readonly=False,
+        states=READONLY_STATES,
+        domain=[("root_plan_id.code", "=", "sources")],
+        tracking=True,
+    )
+    ref = fields.Char(
+        string="Reference",
+        copy=False,
+        tracking=True,
+        readonly=False,
+        states=READONLY_STATES,
+    )
+    active = fields.Boolean(default=True, tracking=True)
+    user_id = fields.Many2one(
+        string="Responsible user",
+        comodel_name="res.users",
+        copy=False,
+        tracking=True,
+        default=lambda self: self.env.user,
+        store=True,
+        readonly=False,
+        states=READONLY_STATES,
+    )
+    show_reset_to_draft_button = fields.Boolean(
+        compute="_compute_show_reset_to_draft_button"
+    )
+    hide_post_button = fields.Boolean(
+        compute="_compute_hide_post_button", readonly=True
+    )
+    hide_review_button = fields.Boolean(
+        compute="_compute_hide_review_button", readonly=True
+    )
+    line_ids = fields.One2many(
+        comodel_name="budget.move.line",
+        inverse_name="move_id",
+        copy=True,
+        tracking=True,
+        readonly=False,
+        states=READONLY_STATES,
+    )
+    journal_id = fields.Many2one(
+        "budget.journal",
+        string="Journal",
+        store=True,
+        readonly=False,
+        required=True,
+        states=READONLY_STATES,
+        check_company=True,
+        tracking=True,
+    )
+    company_id = fields.Many2one(
+        comodel_name="res.company",
+        string="Company",
+        default=lambda self: self.env.company,
+        required=True,
+        tracking=True,
+    )
+    currency_id = fields.Many2one(
+        "res.currency",
+        string="Account Currency",
+        default=lambda self: self.env.company.currency_id,
+        tracking=True,
+        store=True,
+        required=True,
+    )
+    company_currency_id = fields.Many2one(related="company_id.currency_id")
+    move_type = fields.Selection(
+        selection=[
+            ("entry", "Budget Entry"),
+            ("appropriation", "Budget Appropriation"),
+        ],
+        string="Type",
+        required=True,
+        readonly=False,
+        tracking=True,
+        change_default=True,
+        index=True,
+        default="entry",
+    )
+
+    total_amount = fields.Float(
+        string="Total Amount",
+        compute="_compute_amount",
+        readonly=True,
+        store=True,
+    )
+
+    @api.depends("state", "line_ids.balance")
+    def _compute_amount(self):
+        for move in self:
+            total = 0.0
+
+            for line in move.line_ids:
+                total += line.balance
+            move.total_amount = total
+
+    @api.depends("state", "date")
+    def _compute_name(self):
+        self = self.sorted(lambda m: (m.date, m.ref or "", m.id))
+
+        for move in self:
+            if move.state == "cancel":
+                continue
+
+            move_has_name = move.name and move.name != "New"
+            if move_has_name or (move.state not in ("review", "posted")):
+                continue
+            if not move_has_name and move.date:
+                move.name = self.env["ir.sequence"].next_by_code("budget.move") or _(
+                    "New"
+                )
+
+    @api.depends("date", "state")
+    def _compute_hide_post_button(self):
+        for record in self:
+            record.hide_post_button = record.state != "review"
+
+    @api.depends("state")
+    def _compute_hide_review_button(self):
+        for record in self:
+            record.hide_review_button = record.state != "draft"
+
+    @api.depends("state")
+    def _compute_show_reset_to_draft_button(self):
+        for record in self:
+            record.show_reset_to_draft_button = record.state in (
+                "review",
+                "posted",
+                "cancel",
+            )
+
+    def action_review(self):
+        self.write({"state": "review"})
+
+    def action_post(self):
+        self.write({"state": "posted"})
+
+    def button_cancel(self):
+        self.write({"state": "cancel"})
+
+    def button_draft(self):
+        self.write({"state": "draft"})
+
+    @contextmanager
+    def _check_balanced(self, container):
+        """Assert the move is fully balanced debit = credit.
+        An error is raised if it's not the case.
+        """
+        yield
+
+        unbalanced_moves = self._get_unbalanced_moves(container)
+        _logger.info(unbalanced_moves)
+        if unbalanced_moves:
+            error_msg = _("An error has occurred.")
+            for move_id, sum_debit, sum_credit in unbalanced_moves:
+                move = self.browse(move_id)
+                error_msg += _(
+                    "\n\n"
+                    "The move (%s) is not balanced.\n"
+                    "The total of debits equals %s and the total of credits equals %s.\n"
+                    'You might want to specify a default account on journal "%s" to automatically balance each move.',
+                    move.display_name,
+                    format_amount(self.env, sum_debit, move.company_id.currency_id),
+                    format_amount(self.env, sum_credit, move.company_id.currency_id),
+                    move.journal_id.name,
+                )
+            raise UserError(error_msg)
+
+    def _get_unbalanced_moves(self, container):
+        moves = container["records"].filtered(lambda move: move.line_ids)
+        if not moves:
+            return
+
+        # /!\ As this method is called in create / write, we can't make the assumption the computed stored fields
+        # are already done. Then, this query MUST NOT depend on computed stored fields.
+        # It happens as the ORM calls create() with the 'no_recompute' statement.
+        self.env["budget.move.line"].flush_model(
+            ["debit", "credit", "balance", "currency_id", "move_id"]
+        )
+        self._cr.execute(
+            """
+            SELECT line.move_id,
+                   ROUND(SUM(line.debit), currency.decimal_places) debit,
+                   ROUND(SUM(line.credit), currency.decimal_places) credit
+              FROM budget_move_line line
+              JOIN budget_move move ON move.id = line.move_id
+              JOIN res_company company ON company.id = move.company_id
+              JOIN res_currency currency ON currency.id = company.currency_id
+             WHERE line.move_id IN %s
+          GROUP BY line.move_id, currency.decimal_places
+            HAVING ROUND(SUM(line.balance), currency.decimal_places) != 0
+        """,
+            [tuple(moves.ids)],
+        )
+
+        return self._cr.fetchall()
+
+    def _stolen_move(self, vals):
+        for command in vals.get("line_ids", ()):
+            if command[0] == Command.LINK:
+                yield self.env["budget.move.line"].browse(command[1]).move_id.id
+            if command[0] == Command.SET:
+                yield from self.env["budget.move.line"].browse(command[2]).move_id.ids
+
+    def _get_protected_vals(self, vals, records):
+        protected = set()
+        for fname in vals:
+            field = records._fields[fname]
+            if field.inverse or (field.compute and not field.readonly):
+                protected.update(self.pool.field_computed.get(field, [field]))
+        return [(protected, rec) for rec in records] if protected else []
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        if any("state" in vals and vals.get("state") == "posted" for vals in vals_list):
+            raise UserError(
+                _(
+                    "You cannot create a move already in the posted state. Please create a draft move and post it after."
+                )
+            )
+        container = {"records": self}
+        with self._check_balanced(container):
+            with ExitStack() as exit_stack:
+                for vals in vals_list:
+                    self._sanitize_vals(vals)
+                stolen_moves = self.browse(
+                    set(move for vals in vals_list for move in self._stolen_move(vals))
+                )
+                moves = super().create(vals_list)
+                exit_stack.enter_context(
+                    self.env.protecting(
+                        [
+                            protected
+                            for vals, move in zip(vals_list, moves)
+                            for protected in self._get_protected_vals(vals, move)
+                        ]
+                    )
+                )
+                container["records"] = moves | stolen_moves
+        return moves
+
+    def write(self, vals):
+        if not vals:
+            return True
+        self._sanitize_vals(vals)
+        stolen_moves = self.browse(set(move for move in self._stolen_move(vals)))
+        container = {"records": self | stolen_moves}
+
+        for move in self:
+            # หากเคย submit แล้ว
+            if (
+                "/" in move.name
+                and "journal_id" in vals
+                and move.journal_id.id != vals["journal_id"]
+            ):
+                raise UserError(
+                    _(
+                        "You cannot edit the journal of a budget move if it already has a sequence number assigned."
+                    )
+                )
+
+        with self.env.protecting(self._get_protected_vals(vals, self)), self._check_balanced(container):
+            res = super().write(vals)
+        return res
+
+    def _sanitize_vals(self, vals):
+        return vals

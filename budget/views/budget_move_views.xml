@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- View budget.move View Tree -->
+    <record id="view_budget_move_tree" model="ir.ui.view">
+        <field name="name">view.budget.move.tree</field>
+        <field name="model">budget.move</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="date_range_fy_id" />
+                <field name="date" />
+                <field name="name" />
+                <field name="journal_id" />
+                <field name="move_type" />
+                <field name="source_analytic_id" />
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'review'" decoration-success="state == 'posted'" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- View budget.move form -->
+    <record id="view_budget_move_form" model="ir.ui.view">
+        <field name="name">view.budget.move.form</field>
+        <field name="model">budget.move</field>
+        <field name="arch" type="xml">
+            <form string="Budget Move">
+                <header>
+                    <button name="action_review" string="Submit for review" class="oe_highlight" type="object" data-hotkey="r" attrs="{'invisible': [('hide_review_button', '=', True)]}" />
+                    <button name="action_post" string="Post" class="oe_highlight" type="object" data-hotkey="v" attrs="{'invisible': [('hide_post_button', '=', True)]}" />
+                    <button name="button_draft" string="Reset to Draft" type="object" attrs="{'invisible' : [('show_reset_to_draft_button', '=', False)]}" data-hotkey="q" />
+                    <button name="button_cancel" string="Cancel" type="object" data-hotkey="w" attrs="{'invisible' : ['|', ('id', '=', False), ('state', '!=', 'draft')]}" />
+
+                    <field name="state" widget="statusbar" statusbar_visible="draft,review,posted" readonly="1" />
+                </header>
+                <!-- Invisible Fields -->
+                <field name="show_reset_to_draft_button" invisible="1" />
+                <field name="hide_review_button" invisible="1" />
+                <field name="hide_post_button" invisible="1" />
+                <field name="state" invisible="1" />
+                <field name="company_id" invisible="1" />
+                <sheet>
+                    <div class="oe_title">
+                        <span class="o_form_label">
+                            <!-- <field name="move_type" attrs="{'invisible': [('move_type', '=', 'entry')]}" readonly="1" nolabel="1"/> -->
+                        </span>
+                        <h1>
+                            <field name="name" readonly="1" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="ข้อมูลทั่วไป">
+                            <field name="date" required="1" />
+
+                            <field name="user_id" widget="many2one_avatar_user" required="1" />
+                            <field name="ref" />
+                            <field name="note" />
+                        </group>
+                        <group string="มิติบัญชี">
+                            <field name="date_range_fy_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
+                            <!-- <field name="department_analytic_id" options='{"no_open": True}' attrs='{"invisible": [("move_type", "not in", ("appropriation"))]}' /> -->
+                            <field name="source_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
+                            <field name="journal_id" required="1" />
+                            <field name="move_type" required="1" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="line_ids" string="Budget Move Lines">
+                            <field name="line_ids" style="max-width: 100%; display: block;">
+                                <tree>
+                                    <field name="date_range_fy_id" invisible="1" />
+                                    <field name="move_id" invisible="1" />
+                                    <!-- <field name="department_analytic_id" options='{"no_open": True}' attrs='{"invisible": [("move_type", "in", ("appropriation"))]}' /> -->
+                                    <field name="activity_analytic_id" options='{"no_open": True}' />
+                                    <field name="fund_analytic_id" options='{"no_open": True}' />
+                                    <field name="account_id" options='{"no_open": True}' />
+                                    <field name="balance" />
+                                    <field name="debit" sum="Debit" />
+                                    <field name="credit" sum="Credit" />
+                                    <field name="note" />
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_ids" widget="mail_thread" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- View budget.move.line View Tree -->
+    <record id="view_budget_move_line_tree" model="ir.ui.view">
+        <field name="name">view.budget.move.line.tree</field>
+        <field name="model">budget.move.line</field>
+        <field name="arch" type="xml">
+            <tree create="false" edit="false" delete="false" expand="context.get('expand', False)" sample="1">
+                <field name="debit" invisible="1"/>
+                <field name="credit" invisible="1"/>
+                <field name="budget_type" />
+                <field name="move_id" widget="many2onebutton" />
+                <field name="date_range_fy_id" />
+                <field name="source_analytic_id" />
+                <field name="department_analytic_id" />
+                <field name="activity_analytic_id" />
+                <field name="fund_analytic_id" />
+                <field name="account_id" />
+                <field name="balance" />
+                <field name="parent_state" widget="badge" decoration-info="parent_state == 'draft'" decoration-warning="parent_state == 'review'" decoration-success="parent_state == 'posted'" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- View budget.move.line form -->
+    <record id="view_budget_move_line_form" model="ir.ui.view">
+        <field name="name">view.budget.move.line.form</field>
+        <field name="model">budget.move.line</field>
+        <field name="arch" type="xml">
+            <form string="Budget Move Line">
+                <sheet>
+                    <group>
+                        <field name="date_range_fy_id" readonly="1" invisible="1" />
+                        <field name="move_id" readonly="1" invisible="1" />
+                        <field name="source_analytic_id" readonly="1" invisible="1" />
+                        <field name="budget_type" invisible="1" />
+                        <field name="department_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
+                        <field name="activity_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' attrs="{'required': [('budget_type', '=', 'expense')]}" />
+                        <field name="fund_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
+                        <field name="account_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
+                        <field name="balance" />
+                        <field name="debit" invisible="1"/>
+                        <field name="credit" invisible="1"/>
+                        <field name="note" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- View budget.move search -->
+    <record id="view_budget_move_search" model="ir.ui.view">
+        <field name="name">view.budget.move.search</field>
+        <field name="model">budget.move</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="source_analytic_id" domain="[('root_plan_id.code', '=', 'sources')]" />
+                <separator />
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- View budget.move.line search -->
+    <record id="view_budget_move_line_search" model="ir.ui.view">
+        <field name="name">view.budget.move.line.search</field>
+        <field name="model">budget.move.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="code" />
+                <field name="name" />
+                <field name="department_analytic_id" domain="[('root_plan_id.code', '=', 'departments')]" />
+                <field name="fund_analytic_id" domain="[('root_plan_id.code', '=', 'funds')]" />
+                <field name="source_analytic_id" domain="[('root_plan_id.code', '=', 'sources')]" />
+                <separator />
+                <group expand="1" string="Group By">
+                    <filter string="Fiscal Year" name="date_range_fy_id" domain="[]" context="{'group_by':'date_range_fy_id'}" />
+                    <filter string="Department" name="department_analytic_id" domain="[]" context="{'group_by':'department_analytic_id'}" />
+                    <filter string="Activity" name="activity_analytic_id" domain="[]" context="{'group_by':'activity_analytic_id'}" />
+                    <filter string="Fund" name="fund_analytic_id" domain="[]" context="{'group_by':'fund_analytic_id'}" />
+                    <filter string="Source" name="source_analytic_id" domain="[]" context="{'group_by':'source_analytic_id'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action budget.move -->
+    <record id="action_budget_move" model="ir.actions.act_window">
+        <field name="name">รายการบันทึกงบประมาณ</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">budget.move</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                ไม่มีข้อมูลรายการบันทึกงบประมาณ
+            </p>
+        </field>
+    </record>
+    <record id="action_budget_move_tree" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_id" ref="view_budget_move_tree"/>
+        <field name="view_mode">tree</field>
+        <field name="act_window_id" ref="action_budget_move" />
+    </record>
+    <record id="action_budget_move_form" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2"/>
+        <field name="view_id" ref="view_budget_move_form"/>
+        <field name="view_mode">form</field>
+        <field name="act_window_id" ref="action_budget_move" />
+    </record>
+
+    <!-- Action budget.move -->
+    <record id="action_budget_move_line" model="ir.actions.act_window">
+        <field name="name">รายการบันทึกงบประมาณ (แจกแจง)</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">budget.move.line</field>
+        <field name="view_mode">tree,pivot</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                ไม่มีข้อมูลรายการบันทึกงบประมาณ
+            </p>
+        </field>
+    </record>
+
+    <record id="view_budget_app_tree" model="ir.ui.view">
+        <field name="name">view.budget.app.tree</field>
+        <field name="model">budget.move</field>
+        <field name="arch" type="xml">
+            <tree string="Budget Appropriation" decoration-info="state == 'draft'" decoration-muted="state == 'cancel'">
+                <field name="date_range_fy_id" />
+                <field name="date" />
+                <field name="name" />
+                <field name="journal_id" />
+                <field name="move_type" />
+                <field name="department_analytic_id" />
+                <field name="source_analytic_id" />
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'review'" decoration-success="state == 'posted'" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_budget_app_form" model="ir.ui.view">
+        <field name="name">view.budget.app.form</field>
+        <field name="model">budget.move</field>
+        <field name="arch" type="xml">
+            <form string="Budget Move">
+                <header>
+                    <button name="action_review" string="Submit for review" class="oe_highlight" type="object" data-hotkey="r" attrs="{'invisible': [('hide_review_button', '=', True)]}" />
+                    <button name="action_post" string="Post" class="oe_highlight" type="object" data-hotkey="v" attrs="{'invisible': [('hide_post_button', '=', True)]}" />
+                    <button name="button_draft" string="Reset to Draft" type="object" attrs="{'invisible' : [('show_reset_to_draft_button', '=', False)]}" data-hotkey="q" />
+                    <button name="button_cancel" string="Cancel" type="object" data-hotkey="w" attrs="{'invisible' : ['|', ('id', '=', False), ('state', '!=', 'draft')]}" />
+
+                    <field name="state" widget="statusbar" statusbar_visible="draft,review,posted" readonly="1" />
+                </header>
+                <!-- Invisible Fields -->
+                <field name="show_reset_to_draft_button" invisible="1" />
+                <field name="hide_review_button" invisible="1" />
+                <field name="hide_post_button" invisible="1" />
+                <field name="state" invisible="1" />
+                <field name="company_id" invisible="1" />
+                <sheet>
+                    <div class="oe_title">
+                        <span class="o_form_label">
+                            <field name="move_type" attrs="{'invisible': [('move_type', '=', 'entry')]}" readonly="1" nolabel="1"/>
+                        </span>
+                        <h1>
+                            <field name="name" readonly="1" />
+                        </h1>
+                    </div>
+                    <group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_ids" widget="mail_thread" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_budget_appropriation_filter" model="ir.ui.view">
+        <field name="name">budget.appropriation.select</field>
+        <field name="model">budget.move</field>
+        <field name="arch" type="xml">
+            <search string="Search Budget Appropriation">
+                <field name="name" string="Budget Appropriation"></field>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_view_move_budget_appropriation_type" model="ir.actions.act_window">
+        <field name="name">Budget Appropriations</field>
+        <field name="res_model">budget.move</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_budget_appropriation_filter"/>
+        <field name="domain">[('move_type', '=', 'appropriation')]</field>
+        <field name="context">{'default_move_type': 'appropriation'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a budget appropriation
+            </p>
+        </field>
+    </record>
+    <record id="action_view_move_budget_appropriation_type_tree" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_id" ref="view_budget_app_tree"/>
+        <field name="view_mode">tree</field>
+        <field name="act_window_id" ref="action_view_move_budget_appropriation_type" />
+    </record>
+    <record id="action_view_move_budget_appropriation_type_form" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2"/>
+        <field name="view_id" ref="view_budget_app_form"/>
+        <field name="view_mode">form</field>
+        <field name="act_window_id" ref="action_view_move_budget_appropriation_type" />
+    </record>
+</odoo>

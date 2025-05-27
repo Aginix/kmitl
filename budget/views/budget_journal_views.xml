@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View budget.journal View Tree -->
+    <record id="view_budget_journal_tree" model="ir.ui.view">
+        <field name="name">view.budget.journal.tree</field>
+        <field name="model">budget.journal</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="default_budget_type"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- View budget.journal form -->
+    <record id="view_budget_journal_form" model="ir.ui.view">
+        <field name="name">view.budget.journal.form</field>
+        <field name="model">budget.journal</field>
+        <field name="arch" type="xml">
+            <form string="Budget Journal">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="code"/>
+                            <field name="name"/>
+                            <field name="default_budget_type"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- View budget.journal search -->
+    <record id="view_budget_journal_search" model="ir.ui.view">
+        <field name="name">view.budget.journal.search</field>
+        <field name="model">budget.journal</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action budget.journal -->
+    <record id="action_budget_journal" model="ir.actions.act_window">
+        <field name="name">Budget Journal</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">budget.journal</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Budget Journal.
+            </p>
+        </field>
+    </record>
+
+</odoo>
