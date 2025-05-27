@@ -7,3 +7,4 @@ access_project_evaluation_methods_manager,project_evaluation_methods_manager,mod
 access_project_fight_manager,project_fight_manager,model_project_fight,,1,1,1,1
 access_project_objectives_manager,project_objectives_manager,model_project_objectives,,1,1,1,1
 access_project_activity_manager,project_activity_manager,model_project_activity,,1,1,1,1
+access_project_strategic_plan_manager,project_strategic_plan_manager,model_project_strategic_plan,,1,1,1,1

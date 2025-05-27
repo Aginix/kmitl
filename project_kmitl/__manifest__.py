@@ -9,7 +9,8 @@
     'depends': ['base', 'web', 'project', 'hr', 'account_fiscal_year'],
     "data": [
         "security/ir.model.access.csv",
-        "views/project_project_views.xml"
+        "data/project.strategic.plan.csv",
+        "views/project_project_views.xml",
     ],
     'assets': {
               'web.assets_backend': [

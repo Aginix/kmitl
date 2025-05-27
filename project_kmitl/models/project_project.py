@@ -21,7 +21,10 @@ class ProjectProject(models.Model):
         string="ประเภทแหล่งเงิน",
     )
     introduction = fields.Html(string="หลักการและเหตุผล", sanitize_attributes=False)
-    national_strategy_id = fields.Integer(string="ความสอดคล้องกับยุทธศาสตร์")
+    national_strategy_id = fields.Many2one('project.strategic.plan',string="ความสอดคล้องกับยุทธศาสตร์ แผนระดับที่ 1",domain="[('level', '=', 1)]")
+    master_plan_id = fields.Many2one('project.strategic.plan',string="ความสอดคล้องกับยุทธศาสตร์ แผนระดับที่ 2",domain="[('level', '=', 2)]")
+    nesdc_plan_id = fields.Many2one('project.strategic.plan',string="ความสอดคล้องกับยุทธศาสตร์ แผนระดับที่ 2 ฉบับที่ 13",domain="[('level', '=', 2)]")
+    kmitl_plan_id = fields.Many2one('project.strategic.plan',string="ความสอดคล้องกับยุทธศาสตร์ แผนระดับที่ 3",domain="[('level', '=', 3)]")
     impact_ids = fields.Many2many("project.impact", string="Impact")
     global_index_ids = fields.Many2many("project.global.index", string="Global Index")
     okr_1 = fields.Many2many(
@@ -34,15 +37,38 @@ class ProjectProject(models.Model):
         string="วัตถุประสงค์ของโครงการ",
     )
     department_id = fields.Many2one(
-        comodel_name="hr.department", string="หน่วยงานผู้รับผิดชอบโครงการ"
+        comodel_name="hr.department",compute="_compute_department_id" , string="หน่วยงานผู้รับผิดชอบโครงการ"
     )
     department_name = fields.Char(
-        string="=ชื่อหน่วยงานผู้รับผิดชอบโครงการ", related="department_id.name", store=True
+        string="ชื่อหน่วยงานผู้รับผิดชอบโครงการ", related="department_id.name", store=True
     )
-    project_manager_name = fields.Char(string="หัวหน้าโครงการ")
-    project_manager_position = fields.Char(string="หัวหน้าโครงการ ตำแหน่ง")
-    project_manager_tel = fields.Char(string="หัวหน้าโครงการ เบอร์โทร")
-    project_manager_email = fields.Char(string="หัวหน้าโครงการ อีเมล")
+    project_manager_name = fields.Char(
+    string="หัวหน้าโครงการ",
+    related='user_id.partner_id.name',
+    store=True,
+    readonly=True
+    )
+
+    project_manager_position = fields.Char(
+        string="หัวหน้าโครงการ ตำแหน่ง",
+        related='user_id.partner_id.function',
+        store=True,
+        readonly=True
+    )
+
+    project_manager_tel = fields.Char(
+        string="หัวหน้าโครงการ เบอร์โทร",
+        related='user_id.partner_id.phone',
+        store=True,
+        readonly=True
+    )
+
+    project_manager_email = fields.Char(
+        string="หัวหน้าโครงการ อีเมล",
+        related='user_id.partner_id.email',
+        store=True,
+        readonly=True
+    )
     location = fields.Text(string="สถานที่/พื้นที่ดำเนินโครงการ")
     methodology = fields.Selection(
         [
@@ -60,7 +86,7 @@ class ProjectProject(models.Model):
         inverse_name="project_kmitl_id",
         string="เป้าหมาย ผลผลิต และผลลัพธ์",
     )
-    user_id = fields.Many2one(string="ผู้รับผิดชอบข้อมูล")
+    responsible_id = fields.Many2one('res.users', string="ผู้รับผิดชอบข้อมูล")
     project_activity_ids = fields.One2many(
         comodel_name="project.activity",
         inverse_name="project_kmitl_id",
@@ -94,3 +120,9 @@ class ProjectProject(models.Model):
                 rec.state = "pending"
             elif rec.state == "pending":
                 rec.state = "approved"
+
+    @api.depends('user_id')
+    def _compute_department_id(self):
+        for record in self:
+            employee = self.env['hr.employee'].search([('user_id', '=', record.user_id.id)], limit=1)
+            record.department_id = employee.department_id if employee else False
