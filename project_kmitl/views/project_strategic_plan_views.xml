@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View project.strategic.plan View Tree -->
+    <record id="view_project_strategic_plan_tree" model="ir.ui.view">
+        <field name="name">view.project.strategic.plan.tree</field>
+        <field name="model">project.strategic.plan</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="level" />
+                <field name="parent_id" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- View project.strategic.plan form -->
+    <record id="view_project_strategic_plan_form" model="ir.ui.view">
+        <field name="name">view.project.strategic.plan.form</field>
+        <field name="model">project.strategic.plan</field>
+        <field name="arch" type="xml">
+            <form string="Project Strategic Plan">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Name..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="level" />
+                            <field name="parent_id" />
+                        </group>
+                    </group>
+                <notebook>
+                    <page string="แผนยุทธ์ศาตร์ย่อย">
+                        <field name="child_ids" readonly="1" />
+                    </page>
+                </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- View project.strategic.plan search -->
+    <record id="view_project_strategic_plan_search" model="ir.ui.view">
+        <field name="name">view.project.strategic.plan.search</field>
+        <field name="model">project.strategic.plan</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action project.strategic.plan -->
+    <record id="action_project_strategic_plan" model="ir.actions.act_window">
+        <field name="name">Project Strategic Plan</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">project.strategic.plan</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Project Strategic Plan.
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="project_strategic_plan_config_menu"
+        name="ความสอดคล้องกับยุทธศาสตร์"
+        action="action_project_strategic_plan"
+        parent="project.menu_project_config"
+        sequence="10"/>
+
+</odoo>

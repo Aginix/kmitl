@@ -8,9 +8,10 @@
     'category': '',
     'depends': ['base', 'web', 'project', 'hr', 'account_fiscal_year'],
     "data": [
-        "security/ir.model.access.csv",
         "data/project.strategic.plan.csv",
+        "security/ir.model.access.csv",
         "views/project_project_views.xml",
+        "views/project_strategic_plan_views.xml"
     ],
     'assets': {
               'web.assets_backend': [
