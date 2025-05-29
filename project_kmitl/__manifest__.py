@@ -8,8 +8,16 @@
     'category': '',
     'depends': ['base', 'web', 'project', 'hr', 'account_fiscal_year'],
     "data": [
+        "data/project.evaluation.methods.csv",
+        "data/project.fight.csv",
+        "data/project.global.index.csv",
+        "data/project.impact.csv",
         "data/project.strategic.plan.csv",
         "security/ir.model.access.csv",
+        "views/project_evaluation_methods_views.xml",
+        "views/project_fight_views.xml",
+        "views/project_global_index_views.xml",
+        "views/project_impact_views.xml",
         "views/project_project_views.xml",
         "views/project_strategic_plan_views.xml"
     ],

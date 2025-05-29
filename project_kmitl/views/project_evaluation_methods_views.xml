@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View project.evaluation.methods View Tree -->
+    <record id="view_project_evaluation_methods_tree" model="ir.ui.view">
+        <field name="name">view.project.evaluation.methods.tree</field>
+        <field name="model">project.evaluation.methods</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- View project.evaluation.methods form -->
+    <record id="view_project_evaluation_methods_form" model="ir.ui.view">
+        <field name="name">view.project.evaluation.methods.form</field>
+        <field name="model">project.evaluation.methods</field>
+        <field name="arch" type="xml">
+            <form string="Project Evaluation Methods">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Name..."/>
+                        </h1>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- View project.evaluation.methods search -->
+    <record id="view_project_evaluation_methods_search" model="ir.ui.view">
+        <field name="name">view.project.evaluation.methods.search</field>
+        <field name="model">project.evaluation.methods</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action project.evaluation.methods -->
+    <record id="action_project_evaluation_methods" model="ir.actions.act_window">
+        <field name="name">Project Evaluation Methods</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">project.evaluation.methods</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Project Evaluation Methods.
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="project_evaluation_methods_config_menu"
+        name="วิธีการ/เครื่องมือติดตามและประเมินผล"
+        action="action_project_evaluation_methods"
+        parent="project.menu_project_config"
+        />
+
+</odoo>

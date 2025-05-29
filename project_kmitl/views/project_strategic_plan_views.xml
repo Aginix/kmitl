@@ -76,6 +76,6 @@
         name="ความสอดคล้องกับยุทธศาสตร์"
         action="action_project_strategic_plan"
         parent="project.menu_project_config"
-        sequence="10"/>
+        />
 
 </odoo>
