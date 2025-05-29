@@ -60,6 +60,13 @@ class BudgetMoveLine(models.Model):
         compute="_compute_balance_credit_debit",
     )
     note = fields.Text(tracking=True)
+    department_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        domain=[("root_plan_id.code", "=", "departments")],
+        compute="_compute_department_analytic",
+        store=True,
+        readonly=False,
+    )
 
     # === Parent fields === #
     source_analytic_id = fields.Many2one(
@@ -87,6 +94,14 @@ class BudgetMoveLine(models.Model):
         default=False,
         help='Line created automatically for double-entry'
     )
+
+    @api.depends('move_id', 'move_id.department_analytic_id', 'move_id.move_type')
+    def _compute_department_analytic(self):
+        for line in self:
+            if line.move_id and line.move_id.move_type == 'appropriation':
+                # ใช้ department จาก move สำหรับ appropriation
+                line.department_analytic_id = line.move_id.department_analytic_id
+            # สำหรับ move types อื่น ให้ผู้ใช้เลือกเอง
 
     @api.depends("balance")
     def _compute_balance_credit_debit(self):

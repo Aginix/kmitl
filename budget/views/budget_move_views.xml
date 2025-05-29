@@ -272,8 +272,8 @@
                         </group>
                         <group string="Accounting">
                             <field name="journal_id" required="1" domain="[('default_budget_type', '!=', False)]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="department_analytic_id" options='{"no_create": True, "no_create_edit": True}' domain="[('root_plan_id.code', '=', 'departments')]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="source_analytic_id" required="1" options='{"no_create": True, "no_create_edit": True}' domain="[('root_plan_id.code', '=', 'sources')]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="department_analytic_id" options='{"no_create": True, "no_create_edit": True}' domain="[('root_plan_id.code', '=', 'departments')]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="total_amount" readonly="1"/>
                             <field name="move_type" invisible="1"/>
                             <field name="appropriation_account_id" invisible="1"/>
@@ -287,7 +287,7 @@
                                 <tree editable="bottom" decoration-muted="is_virtual_line == True">
                                     <field name="budget_type" invisible="1"/>
                                     <field name="is_virtual_line" invisible="1"/>
-                                    <field name="department_analytic_id" options='{"no_create": True, "no_create_edit": True}' attrs="{'invisible': [('is_virtual_line', '=', True)]}"/>
+                                    <field name="department_analytic_id" options='{"no_create": True, "no_create_edit": True}' invisible="1"/>
                                     <field name="activity_analytic_id" options='{"no_create": True, "no_create_edit": True}' attrs="{'invisible': [('is_virtual_line', '=', True)]}"/>
                                     <field name="fund_analytic_id" options='{"no_create": True, "no_create_edit": True}' attrs="{'invisible': [('is_virtual_line', '=', True)],
                                                    'required': [('is_virtual_line', '=', False)]}"/>
