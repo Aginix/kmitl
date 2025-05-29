@@ -173,15 +173,72 @@ class BudgetMove(models.Model):
         compute="_compute_amount",
         readonly=True,
         store=True,
+        digits="Budget Precision",
     )
 
-    @api.depends("state", "line_ids.balance")
+    # เพิ่ม field สำหรับ appropriation
+    appropriation_account_id = fields.Many2one(
+        "budget.account",
+        string="Virtual Budget Account",
+        help="Virtual account used for double-entry in appropriation",
+        compute="_compute_appropriation_account",
+        store=True,
+    )
+
+    # สร้าง computed field สำหรับแสดงเฉพาะ non-virtual lines
+    appropriation_line_ids = fields.One2many(
+        comodel_name="budget.move.line",
+        inverse_name="move_id",
+        string="Appropriation Lines",
+        domain=[("is_virtual_line", "=", False)],
+        readonly=False,
+        copy=False,
+    )
+
+    @api.depends("journal_id", "move_type")
+    def _compute_appropriation_account(self):
+        for move in self:
+            if move.move_type == "appropriation" and move.journal_id:
+                # หา virtual account จาก journal หรือสร้างใหม่
+                move.appropriation_account_id = self._get_virtual_budget_account()
+            else:
+                move.appropriation_account_id = False
+
+    def _get_virtual_budget_account(self):
+        """Get virtual budget account for appropriation"""
+        self.ensure_one()
+
+        virtual_account = (
+            self.env["budget.account"]
+            .with_context(active_test=False)
+            .search(
+                [
+                    ("code", "=", "virtual_" + self.journal_id.default_budget_type),
+                    ("budget_type", "=", self.journal_id.default_budget_type),
+                ],
+                limit=1,
+            )
+        )
+
+        return virtual_account
+
+    @api.depends(
+        "line_ids.balance",
+        "line_ids.debit",
+        "line_ids.credit",
+        "line_ids.is_virtual_line",
+        "move_type",
+    )
     def _compute_amount(self):
         for move in self:
-            total = 0.0
+            if move.move_type == "appropriation":
+                # สำหรับการจัดสรรงบประมาณ นับเฉพาะ non-virtual lines
+                lines = move.line_ids.filtered(lambda l: not l.is_virtual_line)
+                total = sum(lines.mapped("balance"))
+            else:
+                # สำหรับ entry ปกติ นับทุก line
+                total = sum(move.line_ids.mapped("balance"))
 
-            for line in move.line_ids:
-                total += line.balance
             move.total_amount = total
 
     @api.depends("state", "date")
@@ -219,6 +276,20 @@ class BudgetMove(models.Model):
                 "cancel",
             )
 
+    @api.onchange('appropriation_line_ids')
+    def _onchange_appropriation_lines(self):
+        """Update total amount when appropriation lines change"""
+        if self.move_type == 'appropriation':
+            # คำนวณยอดรวมจาก appropriation_line_ids
+            self.total_amount = sum(self.appropriation_line_ids.mapped('balance'))
+
+    @api.onchange('line_ids')
+    def _onchange_line_ids(self):
+        """Update total amount when any line changes"""
+        if self.move_type != 'appropriation':
+            # สำหรับ entry ปกติ
+            self.total_amount = sum(self.line_ids.mapped('balance'))
+
     def action_review(self):
         self.write({"state": "review"})
 
@@ -239,7 +310,6 @@ class BudgetMove(models.Model):
         yield
 
         unbalanced_moves = self._get_unbalanced_moves(container)
-        _logger.info(unbalanced_moves)
         if unbalanced_moves:
             error_msg = _("An error has occurred.")
             for move_id, sum_debit, sum_credit in unbalanced_moves:
@@ -349,7 +419,9 @@ class BudgetMove(models.Model):
                     )
                 )
 
-        with self.env.protecting(self._get_protected_vals(vals, self)), self._check_balanced(container):
+        with self.env.protecting(
+            self._get_protected_vals(vals, self)
+        ), self._check_balanced(container):
             res = super().write(vals)
         return res
 

@@ -82,6 +82,11 @@ class BudgetMoveLine(models.Model):
         string="กองทุน",
         domain=[("root_plan_id.code", "=", "funds")],
     )
+    is_virtual_line = fields.Boolean(
+        string='Is Virtual Line',
+        default=False,
+        help='Line created automatically for double-entry'
+    )
 
     @api.depends("balance")
     def _compute_balance_credit_debit(self):
@@ -108,6 +113,22 @@ class BudgetMoveLine(models.Model):
         moves = self.env["budget.move"].browse({vals["move_id"] for vals in vals_list})
         container = {"records": self}
         move_container = {"records": moves}
+
+        # กรองเฉพาะ appropriation moves
+        appropriation_moves = moves.filtered(lambda m: m.move_type == 'appropriation')
+
+        if appropriation_moves:
+            # สร้าง virtual lines สำหรับ double-entry
+            virtual_vals_list = []
+            for vals in vals_list:
+                move = self.env["budget.move"].browse(vals["move_id"])
+                if move.move_type == 'appropriation' and not vals.get('is_virtual_line'):
+                    virtual_vals = self._prepare_virtual_line_vals(vals, move)
+                    virtual_vals_list.append(virtual_vals)
+
+            # เพิ่ม virtual lines เข้าไปใน vals_list
+            vals_list.extend(virtual_vals_list)
+
         with moves._check_balanced(move_container), ExitStack() as exit_stack:
             lines = super().create([self._sanitize_vals(vals) for vals in vals_list])
             exit_stack.enter_context(
@@ -122,7 +143,27 @@ class BudgetMoveLine(models.Model):
                 )
             )
             container["records"] = lines
+
         return lines
+
+    def _prepare_virtual_line_vals(self, original_vals, move):
+        """Prepare values for virtual line (opposite entry)"""
+        virtual_vals = original_vals.copy()
+
+        # สลับเครื่องหมายของ balance
+        virtual_vals['balance'] = -original_vals.get('balance', 0.0)
+
+        # ใช้ virtual account
+        virtual_vals['account_id'] = move.appropriation_account_id.id
+
+        # Mark as virtual line
+        virtual_vals['is_virtual_line'] = True
+
+        # Copy analytic distribution
+        if 'analytic_distribution' in original_vals:
+            virtual_vals['analytic_distribution'] = original_vals['analytic_distribution'].copy()
+
+        return virtual_vals
 
     def write(self, vals):
         if not vals:
@@ -168,3 +209,11 @@ class BudgetMoveLine(models.Model):
 
     def _sanitize_vals(self, vals):
         return vals
+
+    @api.model
+    def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None):
+        _logger.info("self.env.context.get('hide_virtual_lines') == " + self.env.context.get('hide_virtual_lines'))
+        if 'hide_virtual_lines' in self.env.context:
+            domain = domain or []
+            domain.append(('is_virtual_line', '=', False))
+        return super().search_read(domain, fields, offset, limit, order)
