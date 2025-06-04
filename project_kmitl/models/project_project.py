@@ -105,7 +105,9 @@ class ProjectProject(models.Model):
         [
             ("draft", "แบบร่าง"),
             ("submit", "แบบร่างเสนอเจ้าภาพ"),
-            ("validate", "อนุมัติโครงการ"),
+            ("validate", "ตรวจสอบข้อมูล"),
+            ("approve", "อนุมัติโครงการ"),
+            ("cancel", "ยกเลิกโครงการ"),
         ],
         string="สถานะการขออนุมัติโครงการ",
         default="draft",
