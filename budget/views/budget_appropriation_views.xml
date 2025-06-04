@@ -31,11 +31,8 @@
             <form string="Budget Appropriation">
                 <header>
                     <button
-
                         name="action_post"
-
                         string="Post"
-
                         class="oe_highlight"
                         type="object"
                         data-hotkey="v"
@@ -102,10 +99,6 @@
                                 options='{"no_create": True, "no_create_edit": True,"no_open": True}'
                                 required="1"
                             />
-                        </group>
-                        <group string="มิติบัญชี">
-                            <field name="department_analytic_id" options='{"no_open": True}' required="1" />
-                            <field name="source_analytic_id" options='{"no_open": True}' required="1" />
                         </group>
                     </group>
                     <notebook>
