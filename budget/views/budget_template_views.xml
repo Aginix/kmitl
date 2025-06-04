@@ -36,7 +36,8 @@
                             type="action"
                             class="oe_stat_button"
                             icon="fa-bars"
-                            string="Structure" />
+                            string="Structure"
+                        />
                     </div>
                     <group>
                         <group>
