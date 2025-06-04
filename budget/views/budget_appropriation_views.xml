@@ -39,6 +39,7 @@
                     <group>
                         <group string="ข้อมูลทั่วไป">
                             <field name="name" required="1" />
+<<<<<<< HEAD
                             <field name="date_range_fy_id" options='{"no_open": True}' required="1" />
                             <field name="date" required="1" />
                             <field name="template_id" options="{'no_open': True}" required="1" />
@@ -46,6 +47,39 @@
                             <field name="user_id" widget="many2one_avatar_user" required="1" />
                             <field name="ref" />
                             <field name="note" />
+=======
+                            <field
+                                name="date_range_fy_id"
+                                options='{"no_create": True, "no_create_edit": True,"no_open": True}'
+                                required="1"
+                            />
+                            <field name="date" required="1" />
+                            <field
+                                name="template_id"
+                                options="{'no_create': True, 'no_create_edit': True,'no_open': True}"
+                                required="1"
+                            />
+
+                            <field
+                                name="user_id"
+                                widget="many2one_avatar_user"
+                                required="1"
+                            />
+                            <field name="ref" />
+                            <field name="note" />
+                        </group>
+                        <group string="มิติบัญชี">
+                            <field
+                                name="department_analytic_id"
+                                options='{"no_create": True, "no_create_edit": True,"no_open": True}'
+                                required="1"
+                            />
+                            <field
+                                name="source_analytic_id"
+                                options='{"no_create": True, "no_create_edit": True,"no_open": True}'
+                                required="1"
+                            />
+>>>>>>> 16.0
                         </group>
                         <group string="มิติบัญชี">
                             <field name="department_analytic_id" options='{"no_open": True}' required="1" />
@@ -54,17 +88,47 @@
                     </group>
                     <notebook>
                         <page name="line_ids" string="Budget Appropriation Lines">
-                            <field name="line_ids">
+                            <field
+                                name="line_ids"
+                                widget='budget_line'
+                                style="max-width: 100%; display: block;"
+                            >
                                 <tree>
                                     <field name="date_range_fy_id" invisible="1" />
                                     <field name="appropriation_id" invisible="1" />
+<<<<<<< HEAD
                                     <field name="department_analytic_id" options='{"no_open": True}' invisible="1" />
                                     <field name="activity_analytic_id" options='{"no_open": True}' />
                                     <field name="fund_analytic_id" options='{"no_open": True}' />
                                     <field name="template_id" options='{"no_open": True}' invisible="1" />
                                     <field name="template_line_id" options='{"no_open": True}' />
                                     <field name="note" />
+=======
+                                    <field
+                                        name="department_analytic_id"
+                                        options='{"no_open": True}'
+                                        invisible="1"
+                                    />
+                                    <field
+                                        name="activity_analytic_id"
+                                        options='{"no_open": True}'
+                                    />
+                                    <field
+                                        name="fund_analytic_id"
+                                        options='{"no_open": True}'
+                                    />
+                                    <field
+                                        name="template_id"
+                                        options='{"no_open": True}'
+                                        invisible="1"
+                                    />
+                                    <field
+                                        name="template_line_id"
+                                        options='{"no_open": True}'
+                                    />
+>>>>>>> 16.0
                                     <field name="amount" />
+                                    <field name="note" />
                                 </tree>
                             </field>
                         </page>
@@ -82,7 +146,17 @@
         <field name="name">view.budget.appropriation.line.tree</field>
         <field name="model">budget.appropriation.line</field>
         <field name="arch" type="xml">
+<<<<<<< HEAD
             <tree create="false" edit="false" delete="false" expand="context.get('expand', False)" sample="1">
+=======
+            <tree
+                create="false"
+                edit="false"
+                delete="false"
+                expand="context.get('expand', False)"
+                sample="1"
+            >
+>>>>>>> 16.0
                 <field name="budget_type" />
                 <field name="appropriation_id" widget="many2onebutton" />
                 <field name="date_range_fy_id" />
@@ -92,7 +166,16 @@
                 <field name="fund_analytic_id" />
                 <field name="template_line_id" />
                 <field name="amount" />
+<<<<<<< HEAD
                 <field name="parent_state" widget="badge" decoration-info="parent_state == 'draft'" decoration-success="parent_state == 'posted'" />
+=======
+                <field
+                    name="parent_state"
+                    widget="badge"
+                    decoration-info="parent_state == 'draft'"
+                    decoration-success="parent_state == 'posted'"
+                />
+>>>>>>> 16.0
             </tree>
         </field>
     </record>
@@ -105,6 +188,7 @@
             <form string="Budget Appropriation Line">
                 <sheet>
                     <group>
+<<<<<<< HEAD
                         <field name="date_range_fy_id" readonly="1" invisible="1"/>
                         <field name="appropriation_id" readonly="1" invisible="1"/>
                         <field name="template_id" invisible="1" />
@@ -114,6 +198,33 @@
                         <field name="activity_analytic_id" attrs="{'required': [('budget_type', '=', 'expense')]}" />
                         <field name="fund_analytic_id" required="1" />
                         <field name="template_line_id" required="1" />
+=======
+                        <field name="date_range_fy_id" readonly="1" invisible="1" />
+                        <field name="appropriation_id" readonly="1" invisible="1" />
+                        <field name="template_id" invisible="1" />
+                        <field
+                            name="department_analytic_id"
+                            readonly="1"
+                            invisible="1"
+                        />
+                        <field name="source_analytic_id" readonly="1" invisible="1" />
+                        <field name="budget_type" invisible="1" />
+                        <field
+                            name="activity_analytic_id"
+                            options='{"no_create": True, "no_create_edit": True,"no_open": True}'
+                            attrs="{'required': [('budget_type', '=', 'expense')]}"
+                        />
+                        <field
+                            name="fund_analytic_id"
+                            options='{"no_create": True, "no_create_edit": True,"no_open": True}'
+                            required="1"
+                        />
+                        <field
+                            name="template_line_id"
+                            options='{"no_create": True, "no_create_edit": True,"no_open": True}'
+                            required="1"
+                        />
+>>>>>>> 16.0
                         <field name="amount" />
                         <field name="note" />
                     </group>

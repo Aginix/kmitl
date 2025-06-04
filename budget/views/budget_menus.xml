@@ -31,16 +31,8 @@
                 />
             </menuitem>
         </menuitem>
-        <menuitem
-            id="budget_commitment_management"
-            name="จองงบประมาณ"
-            sequence="30"
-        >
-            <menuitem
-                id="budget_commitment_menu"
-                name="จองงบประมาณ"
-                sequence="1"
-            >
+        <menuitem id="budget_commitment_management" name="จองงบประมาณ" sequence="30">
+            <menuitem id="budget_commitment_menu" name="จองงบประมาณ" sequence="1">
                 <menuitem
                     id="action_budget_commitment_menu_action"
                     name="รายการจองงบประมาณ"

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- Budget Template Structure -->
     <record id="action_budget_template_structure" model="ir.actions.client">
@@ -28,7 +28,8 @@
             <form string="Budget Template">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="%(action_budget_template_structure)d" type="action" class="oe_stat_button" icon="fa-bars" string="Structure" />
+                        <button name="%(action_budget_template_structure)d" type="action"
+                            class="oe_stat_button" icon="fa-bars" string="Structure" />
                     </div>
                     <group>
                         <group>
@@ -40,16 +41,21 @@
                     </group>
                     <notebook>
                         <page name="line_ids" string="รหัสงบประมาณ">
-                            <field name="line_ids">
+                            <field
+                                name="line_ids"
+                                widget='budget_template_line'
+                                style="max-width: 100%; display: block;"
+                            >
                                 <tree limit="2000">
                                     <field name="code" />
                                     <field name="name" />
                                     <field name="parent_id" />
                                     <field name="budget_type" invisible="1" />
-                                    <field name="fund_analytic_ids" widget="many2many_tags" />
-                                    <field name="budgetable" attrs="{
-                                        'invisible': [('budget_type', '!=', 'expense')],
-                                    }" />
+                                    <field
+                                        name="fund_analytic_ids"
+                                        widget="many2many_tags"
+                                    />
+                                    <field name="budgetable" />
                                 </tree>
                             </field>
                         </page>
@@ -87,7 +93,10 @@
                             <field name="code" />
                             <field name="name" />
                             <field name="sequence" />
-                            <field name="budgetable" attrs="{'invisible': [('budget_type', '!=', 'expense')]}" />
+                            <field
+                                name="budgetable"
+                                attrs="{'invisible': [('budget_type', '!=', 'expense')]}"
+                            />
                         </group>
                         <group>
                             <field name="parent_id" />

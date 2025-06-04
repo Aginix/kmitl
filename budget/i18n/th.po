@@ -217,13 +217,13 @@ msgstr "โครงสร้างรหัสงบประมาณ"
 #. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_template_line_account__budget_template_line_id
 msgid "Budget Template Line"
-msgstr "รายการโครงสร้างรหัสงบประมาณ"
+msgstr "รหัสงบประมาณ"
 
 #. module: budget
 #: model:ir.model,name:budget.model_budget_template_line
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_template_line_form
 msgid "Budget Template Lines"
-msgstr "รายการโครงสร้างรหัสงบประมาณ"
+msgstr "รหัสงบประมาณ"
 
 #. module: budget
 #: model:ir.actions.client,name:budget.action_budget_template_structure
@@ -839,7 +839,7 @@ msgstr "โครงสร้างรหัสงบประมาณ"
 #: model:ir.model.fields,field_description:budget.field_budget_commitment_line__template_line_id
 #: model:ir.model.fields,field_description:budget.field_budget_move_line__template_line_id
 msgid "Template Line"
-msgstr "รายการโครงสร้างรหัสงบประมาณ"
+msgstr "รหัสงบประมาณ"
 
 #. module: budget
 #: model_terms:ir.actions.act_window,help:budget.action_budget_move

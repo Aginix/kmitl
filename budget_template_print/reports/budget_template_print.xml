@@ -10,7 +10,10 @@
                         }
                     </style>
                     <div class="page">
-                        <div class="oe_structure" />
+                        <div
+                            id="oe_structure_budget_template_print_index_1"
+                            class="oe_structure"
+                        />
                         <div class="">
                             <h2>
                                 <span t-field="o.name" />
@@ -49,7 +52,10 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <div class="oe_structure" />
+                        <div
+                            id="oe_structure_budget_template_print_index_2"
+                            class="oe_structure"
+                        />
                     </div>
                 </t>
             </t>
