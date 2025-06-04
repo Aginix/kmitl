@@ -35,8 +35,6 @@
                     <group>
                         <field name="national_strategy_id" />
                         <field name="master_plan_id" />
-                    </group>
-                    <group>
                         <field name="nesdc_plan_id" />
                         <field name="kmitl_plan_id" />
                     </group>
