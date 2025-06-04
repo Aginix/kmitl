@@ -104,22 +104,12 @@ class ProjectProject(models.Model):
     state = fields.Selection(
         [
             ("draft", "แบบร่าง"),
-            ("submit", "กรอกข้อมูลเสร็จสิ้น"),
-            ("pending", "อยู่ระหว่างพิจารณา"),
-            ("approved", "อนุมัติโครงการแล้ว"),
+            ("submit", "แบบร่างเสนอเจ้าภาพ"),
+            ("validate", "อนุมัติโครงการ"),
         ],
         string="สถานะการขออนุมัติโครงการ",
         default="draft",
     )
-
-    def action_next_state(self):
-        for rec in self:
-            if rec.state == "draft":
-                rec.state = "submit"
-            elif rec.state == "submit":
-                rec.state = "pending"
-            elif rec.state == "pending":
-                rec.state = "approved"
 
     @api.depends('user_id')
     def _compute_department_id(self):
