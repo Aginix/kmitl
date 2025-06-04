@@ -118,3 +118,11 @@ class ProjectProject(models.Model):
         for record in self:
             employee = self.env['hr.employee'].search([('user_id', '=', record.user_id.id)], limit=1)
             record.department_id = employee.department_id if employee else False
+
+    def action_submit(self):
+        for record in self:
+            record.state = 'submit'
+
+    def action_validate(self):
+        for record in self:
+            record.state = 'validate'

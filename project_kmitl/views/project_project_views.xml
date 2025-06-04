@@ -19,6 +19,19 @@
             <xpath expr="//field[@name='label_tasks']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//form/header" position="inside">
+                <button name="action_submit"
+                        type="object"
+                        string="แบบร่างเสนอเจ้าภาพ"
+                        class="btn-primary"
+                        attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                <button name="action_validate"
+                        type="object"
+                        string="ตรวจสอบยืนยัน"
+                        class="btn-primary"
+                        attrs="{'invisible': [('state', '!=', 'submit')]}"/>
+                <field name="state" widget="statusbar"/>
+            </xpath>
             <xpath expr="//notebook" position="before">
                 <group>
                     <group>
