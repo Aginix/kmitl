@@ -125,18 +125,19 @@ class BudgetTemplateLine(models.Model):
         help="ผูกรหัสงบประมาณกับกองทุน",
         ondelete="restrict",
         domain=[("root_plan_id.code", "=", "funds")],
-<<<<<<< HEAD
-=======
     )
 
     budgetable = fields.Boolean(
         string="ระบุงบประมาณได้",
         help="ติ๊กถูกเพื่อระบุว่ารหัสค่าใช้จ่ายสามารถจัดสรรงบประมาณได้",
         default=True,
->>>>>>> 16.0
     )
 
-    budgetable = fields.Boolean(string="ระบุงบประมาณได้", help="ติ๊กถูกเพื่อระบุว่ารหัสค่าใช้จ่ายสามารถจัดสรรงบประมาณได้", default=True)
+    budgetable = fields.Boolean(
+        string="ระบุงบประมาณได้",
+        help="ติ๊กถูกเพื่อระบุว่ารหัสค่าใช้จ่ายสามารถจัดสรรงบประมาณได้",
+        default=True,
+    )
 
     _sql_constraints = [
         (

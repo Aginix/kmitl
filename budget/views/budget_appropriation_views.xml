@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <!-- View budget.appropriation View Tree -->
@@ -13,7 +13,8 @@
                 <field name="date_range_fy_id" />
                 <field name="department_analytic_id" />
                 <field name="source_analytic_id" />
-                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'posted'" />
+                <field name="state" widget="badge" decoration-info="state == 'draft'"
+                    decoration-success="state == 'posted'" />
             </tree>
         </field>
     </record>
@@ -25,11 +26,16 @@
         <field name="arch" type="xml">
             <form string="Budget Appropriation">
                 <header>
-                    <button name="action_post" string="Post" class="oe_highlight" type="object" data-hotkey="v" attrs="{'invisible': [('hide_post_button', '=', True)]}" />
-                    <button name="button_draft" string="Reset to Draft" type="object" attrs="{'invisible' : [('show_reset_to_draft_button', '=', False)]}" data-hotkey="q" />
-                    <button name="button_cancel" string="Cancel" type="object" data-hotkey="w" attrs="{'invisible' : ['|', ('id', '=', False), ('state', '!=', 'draft')]}" />
+                    <button name="action_post" string="Post" class="oe_highlight" type="object"
+                        data-hotkey="v" attrs="{'invisible': [('hide_post_button', '=', True)]}" />
+                    <button name="button_draft" string="Reset to Draft" type="object"
+                        attrs="{'invisible' : [('show_reset_to_draft_button', '=', False)]}"
+                        data-hotkey="q" />
+                    <button name="button_cancel" string="Cancel" type="object" data-hotkey="w"
+                        attrs="{'invisible' : ['|', ('id', '=', False), ('state', '!=', 'draft')]}" />
 
-                    <field name="state" widget="statusbar" statusbar_visible="draft,posted" readonly="1" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,posted"
+                        readonly="1" />
                 </header>
                 <!-- Invisible Fields -->
                 <field name="show_reset_to_draft_button" invisible="1" />
@@ -39,15 +45,6 @@
                     <group>
                         <group string="ข้อมูลทั่วไป">
                             <field name="name" required="1" />
-<<<<<<< HEAD
-                            <field name="date_range_fy_id" options='{"no_open": True}' required="1" />
-                            <field name="date" required="1" />
-                            <field name="template_id" options="{'no_open': True}" required="1" />
-
-                            <field name="user_id" widget="many2one_avatar_user" required="1" />
-                            <field name="ref" />
-                            <field name="note" />
-=======
                             <field
                                 name="date_range_fy_id"
                                 options='{"no_create": True, "no_create_edit": True,"no_open": True}'
@@ -79,11 +76,12 @@
                                 options='{"no_create": True, "no_create_edit": True,"no_open": True}'
                                 required="1"
                             />
->>>>>>> 16.0
                         </group>
                         <group string="มิติบัญชี">
-                            <field name="department_analytic_id" options='{"no_open": True}' required="1" />
-                            <field name="source_analytic_id" options='{"no_open": True}' required="1" />
+                            <field name="department_analytic_id" options='{"no_open": True}'
+                                required="1" />
+                            <field name="source_analytic_id" options='{"no_open": True}'
+                                required="1" />
                         </group>
                     </group>
                     <notebook>
@@ -96,14 +94,6 @@
                                 <tree>
                                     <field name="date_range_fy_id" invisible="1" />
                                     <field name="appropriation_id" invisible="1" />
-<<<<<<< HEAD
-                                    <field name="department_analytic_id" options='{"no_open": True}' invisible="1" />
-                                    <field name="activity_analytic_id" options='{"no_open": True}' />
-                                    <field name="fund_analytic_id" options='{"no_open": True}' />
-                                    <field name="template_id" options='{"no_open": True}' invisible="1" />
-                                    <field name="template_line_id" options='{"no_open": True}' />
-                                    <field name="note" />
-=======
                                     <field
                                         name="department_analytic_id"
                                         options='{"no_open": True}'
@@ -126,7 +116,6 @@
                                         name="template_line_id"
                                         options='{"no_open": True}'
                                     />
->>>>>>> 16.0
                                     <field name="amount" />
                                     <field name="note" />
                                 </tree>
@@ -146,9 +135,6 @@
         <field name="name">view.budget.appropriation.line.tree</field>
         <field name="model">budget.appropriation.line</field>
         <field name="arch" type="xml">
-<<<<<<< HEAD
-            <tree create="false" edit="false" delete="false" expand="context.get('expand', False)" sample="1">
-=======
             <tree
                 create="false"
                 edit="false"
@@ -156,7 +142,6 @@
                 expand="context.get('expand', False)"
                 sample="1"
             >
->>>>>>> 16.0
                 <field name="budget_type" />
                 <field name="appropriation_id" widget="many2onebutton" />
                 <field name="date_range_fy_id" />
@@ -166,16 +151,12 @@
                 <field name="fund_analytic_id" />
                 <field name="template_line_id" />
                 <field name="amount" />
-<<<<<<< HEAD
-                <field name="parent_state" widget="badge" decoration-info="parent_state == 'draft'" decoration-success="parent_state == 'posted'" />
-=======
                 <field
                     name="parent_state"
                     widget="badge"
                     decoration-info="parent_state == 'draft'"
                     decoration-success="parent_state == 'posted'"
                 />
->>>>>>> 16.0
             </tree>
         </field>
     </record>
@@ -188,17 +169,6 @@
             <form string="Budget Appropriation Line">
                 <sheet>
                     <group>
-<<<<<<< HEAD
-                        <field name="date_range_fy_id" readonly="1" invisible="1"/>
-                        <field name="appropriation_id" readonly="1" invisible="1"/>
-                        <field name="template_id" invisible="1" />
-                        <field name="department_analytic_id" readonly="1" invisible="1"/>
-                        <field name="source_analytic_id" readonly="1" invisible="1"/>
-                        <field name="budget_type" invisible="1"/>
-                        <field name="activity_analytic_id" attrs="{'required': [('budget_type', '=', 'expense')]}" />
-                        <field name="fund_analytic_id" required="1" />
-                        <field name="template_line_id" required="1" />
-=======
                         <field name="date_range_fy_id" readonly="1" invisible="1" />
                         <field name="appropriation_id" readonly="1" invisible="1" />
                         <field name="template_id" invisible="1" />
@@ -224,7 +194,6 @@
                             options='{"no_create": True, "no_create_edit": True,"no_open": True}'
                             required="1"
                         />
->>>>>>> 16.0
                         <field name="amount" />
                         <field name="note" />
                     </group>
@@ -253,11 +222,16 @@
         <field name="arch" type="xml">
             <search>
                 <group expand="1" string="Group By">
-                    <filter string="Fiscal Year" name="date_range_fy_id" domain="[]" context="{'group_by':'date_range_fy_id'}" />
-                    <filter string="Department" name="department_analytic_id" domain="[]" context="{'group_by':'department_analytic_id'}" />
-                    <filter string="Activity" name="activity_analytic_id" domain="[]" context="{'group_by':'activity_analytic_id'}" />
-                    <filter string="Fund" name="fund_analytic_id" domain="[]" context="{'group_by':'fund_analytic_id'}" />
-                    <filter string="Source" name="source_analytic_id" domain="[]" context="{'group_by':'source_analytic_id'}" />
+                    <filter string="Fiscal Year" name="date_range_fy_id" domain="[]"
+                        context="{'group_by':'date_range_fy_id'}" />
+                    <filter string="Department" name="department_analytic_id" domain="[]"
+                        context="{'group_by':'department_analytic_id'}" />
+                    <filter string="Activity" name="activity_analytic_id" domain="[]"
+                        context="{'group_by':'activity_analytic_id'}" />
+                    <filter string="Fund" name="fund_analytic_id" domain="[]"
+                        context="{'group_by':'fund_analytic_id'}" />
+                    <filter string="Source" name="source_analytic_id" domain="[]"
+                        context="{'group_by':'source_analytic_id'}" />
                 </group>
             </search>
         </field>

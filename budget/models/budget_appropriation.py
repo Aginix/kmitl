@@ -119,14 +119,11 @@ class BudgetAppropriation(models.Model):
     initial_budget = fields.Boolean(
         string="จัดสรรงบประมาณครั้งแรก", default=False, readonly=True
     )
-<<<<<<< HEAD
-=======
 
     @api.onchange("template_id")
     def _onchange_template_id(self):
         if self.line_ids:
             self.line_ids = [Command.clear()]
->>>>>>> 16.0
 
     @api.model
     def _search_date_range_fy(self, operator, value):
