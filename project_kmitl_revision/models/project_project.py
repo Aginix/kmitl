@@ -12,10 +12,10 @@ class ProjectProject(models.Model):
     _inherit = ["project.project", "base.revision"]
 
     current_revision_id = fields.Many2one(
-        comodel_name="sale.order",
+        comodel_name="project.project",
     )
     old_revision_ids = fields.One2many(
-        comodel_name="sale.order",
+        comodel_name="project.project",
     )
 
     def _prepare_revision_data(self, new_revision):
