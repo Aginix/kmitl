@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- Budget Template Structure -->
     <record id="action_budget_template_structure" model="ir.actions.client">
@@ -28,8 +28,7 @@
             <form string="Budget Template">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="%(action_budget_template_structure)d" type="action"
-                            class="oe_stat_button" icon="fa-bars" string="Structure" />
+                        <button name="%(action_budget_template_structure)d" type="action" class="oe_stat_button" icon="fa-bars" string="Structure" />
                     </div>
                     <group>
                         <group>

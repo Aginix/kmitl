@@ -133,11 +133,7 @@ class BudgetTemplateLine(models.Model):
         default=True,
     )
 
-    budgetable = fields.Boolean(
-        string="ระบุงบประมาณได้",
-        help="ติ๊กถูกเพื่อระบุว่ารหัสค่าใช้จ่ายสามารถจัดสรรงบประมาณได้",
-        default=True,
-    )
+    budgetable = fields.Boolean(string="ระบุงบประมาณได้", help="ติ๊กถูกเพื่อระบุว่ารหัสค่าใช้จ่ายสามารถจัดสรรงบประมาณได้", default=True)
 
     _sql_constraints = [
         (
