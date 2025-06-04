@@ -1,10 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- Budget Template Structure -->
     <record id="action_budget_template_structure" model="ir.actions.client">
         <field name="name">Budget Template Structure</field>
         <field name="tag">budget_template_structure</field>
-        <field name="context" eval="{'model': 'report.budget.budget_template_structure'}" />
+        <field
+            name="context"
+            eval="{'model': 'report.budget.budget_template_structure'}"
+        />
     </record>
 
     <!-- View budget.template View Tree -->
@@ -28,8 +31,12 @@
             <form string="Budget Template">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="%(action_budget_template_structure)d" type="action"
-                            class="oe_stat_button" icon="fa-bars" string="Structure" />
+                        <button
+                            name="%(action_budget_template_structure)d"
+                            type="action"
+                            class="oe_stat_button"
+                            icon="fa-bars"
+                            string="Structure" />
                     </div>
                     <group>
                         <group>
@@ -75,7 +82,12 @@
         <field name="arch" type="xml">
             <search>
                 <group expand="1" string="Group By">
-                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}" />
+                    <filter
+                        string="Name"
+                        name="name"
+                        domain="[]"
+                        context="{'group_by':'name'}"
+                    />
                 </group>
             </search>
         </field>
