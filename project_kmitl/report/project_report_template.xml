@@ -126,6 +126,79 @@
                             </tbody>
                         </table>
 
+                        <table class="table table-bordered table-sm mt-4 mb-4">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ลำดับ</th>
+                                    <th>กิจกรรม</th>
+                                    <th>% งบประมาณ</th>
+                                    <th>จำนวนเงิน</th>
+                                    <th>ม.ค.</th>
+                                    <th>ก.พ.</th>
+                                    <th>มี.ค.</th>
+                                    <th>เม.ย.</th>
+                                    <th>พ.ค.</th>
+                                    <th>มิ.ย.</th>
+                                    <th>ก.ค.</th>
+                                    <th>ส.ค.</th>
+                                    <th>ก.ย.</th>
+                                    <th>ต.ค.</th>
+                                    <th>พ.ย.</th>
+                                    <th>ธ.ค.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="doc.project_activity_ids" t-as="activity">
+                                    <tr>
+                                        <td><t t-esc="activity.seq" /></td>
+                                        <td><t t-esc="activity.name" /></td>
+                                        <td class="text-end"><t
+                                                t-esc="activity.percentage"
+                                            />%</td>
+                                        <td class="text-end"><t
+                                                t-esc="activity.amount"
+                                            /></td>
+                                        <td class="text-center"><t
+                                                t-if="activity.m1"
+                                            >✔️</t></td>
+                                        <td class="text-center"><t
+                                                t-if="activity.m2"
+                                            >✔️</t></td>
+                                        <td class="text-center"><t
+                                                t-if="activity.m3"
+                                            >✔️</t></td>
+                                        <td class="text-center"><t
+                                                t-if="activity.m4"
+                                            >✔️</t></td>
+                                        <td class="text-center"><t
+                                                t-if="activity.m5"
+                                            >✔️</t></td>
+                                        <td class="text-center"><t
+                                                t-if="activity.m6"
+                                            >✔️</t></td>
+                                        <td class="text-center"><t
+                                                t-if="activity.m7"
+                                            >✔️</t></td>
+                                        <td class="text-center"><t
+                                                t-if="activity.m8"
+                                            >✔️</t></td>
+                                        <td class="text-center"><t
+                                                t-if="activity.m9"
+                                            >✔️</t></td>
+                                        <td class="text-center"><t
+                                                t-if="activity.m10"
+                                            >✔️</t></td>
+                                        <td class="text-center"><t
+                                                t-if="activity.m11"
+                                            >✔️</t></td>
+                                        <td class="text-center"><t
+                                                t-if="activity.m12"
+                                            >✔️</t></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
                         <div class="row mt-2 mb-2" id="informations">
                             <div class="col-auto col-3 mw-100 mb-2">
                                 <strong
