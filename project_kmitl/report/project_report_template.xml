@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="project_kmitl_report_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>ชื่อโครงการ: <t t-esc="doc.name" /></h2>
+                        <p><strong>ปีงบประมาณ:</strong> <t t-esc="doc.date_range_fy_id.name" /></p>
+                        <p><strong>ประเภทแหล่งเงิน:</strong> <t t-esc="doc.source" /></p>
+                        <p><strong>หน่วยงาน:</strong> <t t-esc="doc.department_name" /></p>
+                        <p><strong>หัวหน้าโครงการ:</strong> <t t-esc="doc.project_manager_name" /></p>
+                        <p><strong>ตำแหน่ง:</strong> <t t-esc="doc.project_manager_position" /></p>
+                        <p><strong>เบอร์โทร:</strong> <t t-esc="doc.project_manager_tel" /></p>
+                        <p><strong>อีเมล:</strong> <t t-esc="doc.project_manager_email" /></p>
+                        <p><strong>สถานที่:</strong> <t t-esc="doc.location" /></p>
+
+                        <h4>หลักการและเหตุผล</h4>
+                        <div t-field="doc.introduction"/>
+
+                        <h4>วัตถุประสงค์ของโครงการ</h4>
+                        <ul>
+                            <t t-foreach="doc.objective_ids" t-as="obj">
+                                <li><t t-esc="obj.name" /></li>
+                            </t>
+                        </ul>
+
+                        <h4>ผลที่คาดว่าจะได้รับ</h4>
+                        <p><t t-esc="doc.expected_result" /></p>
+
+                        <h4>วิธีการติดตามและประเมินผล</h4>
+                        <ul>
+                            <t t-foreach="doc.evaluation_method_ids" t-as="eval">
+                                <li><t t-esc="eval.name" /></li>
+                            </t>
+                        </ul>
+                        <p><strong>เพิ่มเติม:</strong> <t t-esc="doc.evaluation_method_description" /></p>
+
+                        <p><strong>งบประมาณทั้งหมด:</strong> <t t-esc="doc.total_budget" /> บาท</p>
+
+                        <p><strong>สถานะโครงการ:</strong> <t t-esc="doc.state" /></p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <record id="project_kmitl_report_temp" model="ir.actions.report">
+        <field name="name">Project KMITL</field>
+        <field name="model">project.project</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">project_kmitl.project_kmitl_report_template</field>
+        <field name="report_file">project_kmitl.project_kmitl_report_template</field>
+        <field name="print_report_name">'Project - ' + object.name</field>
+        <field name="binding_model_id" ref="project_kmitl.model_project_project" />
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

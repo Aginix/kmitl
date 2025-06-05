@@ -19,7 +19,8 @@
         "views/project_global_index_views.xml",
         "views/project_impact_views.xml",
         "views/project_project_views.xml",
-        "views/project_strategic_plan_views.xml"
+        "views/project_strategic_plan_views.xml",
+        "report/project_report_template.xml",
     ],
     'assets': {
               'web.assets_backend': [
