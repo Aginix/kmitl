@@ -30,6 +30,16 @@
                         string="ตรวจสอบยืนยัน"
                         class="btn-primary"
                         attrs="{'invisible': [('state', '!=', 'submit')]}"/>
+                <button name="action_approve"
+                        type="object"
+                        string="อนุมัติโครงงาน"
+                        class="btn-primary"
+                        attrs="{'invisible': [('state', '!=', 'validate')]}"/>
+                <button name="action_cancel"
+                        type="object"
+                        string="ยกเลิก"
+                        class="btn-primary"
+                        attrs="{'invisible': [('state', '!=', 'approve')]}"/>
                 <field name="state" widget="statusbar"/>
             </xpath>
             <xpath expr="//notebook" position="before">

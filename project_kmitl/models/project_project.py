@@ -126,3 +126,11 @@ class ProjectProject(models.Model):
     def action_validate(self):
         for record in self:
             record.state = 'validate'
+
+    def action_approve(self):
+        for record in self:
+            record.state = 'approve'
+
+    def action_cancel(self):
+        for record in self:
+            record.state = 'cancel'

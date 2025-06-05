@@ -25,7 +25,7 @@ class ProjectProject(models.Model):
 
     def action_view_revisions(self):
         self.ensure_one()
-        result = self.env["ir.actions.act_window"]._for_xml_id("project.view_project")
+        result = self.env["ir.actions.act_window"]._for_xml_id("project.open_view_project_all")
         result["domain"] = ["|", ("active", "=", False), ("active", "=", True)]
         result["context"] = {
             "active_test": 0,
