@@ -1,16 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?>
-  <odoo>
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
 
     <!-- View project.project form -->
     <record id="view_project_project_inherit_form" model="ir.ui.view">
         <field name="name">view.project.project.inherit.form</field>
         <field name="model">project.project</field>
-        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="inherit_id" ref="project.edit_project" />
         <field name="arch" type="xml">
-            <xpath expr="//form/header/button[@name='%(project.project_share_wizard_action)d'][1]" position="attributes">
+            <xpath
+                expr="//form/header/button[@name='%(project.project_share_wizard_action)d'][1]"
+                position="attributes"
+            >
                 <attribute name="invisible">1</attribute>
             </xpath>
-            <xpath expr="//form/header/button[@name='%(project.project_share_wizard_action)d'][2]" position="attributes">
+            <xpath
+                expr="//form/header/button[@name='%(project.project_share_wizard_action)d'][2]"
+                position="attributes"
+            >
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="attributes">
@@ -20,32 +26,42 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//form/header" position="inside">
-                <button name="action_submit"
-                        type="object"
-                        string="แบบร่างเสนอเจ้าภาพ"
-                        class="btn-primary"
-                        attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                <button name="action_validate"
-                        type="object"
-                        string="ตรวจสอบยืนยัน"
-                        class="btn-primary"
-                        attrs="{'invisible': [('state', '!=', 'submit')]}"/>
-                <button name="action_approve"
-                        type="object"
-                        string="อนุมัติโครงงาน"
-                        class="btn-primary"
-                        attrs="{'invisible': [('state', '!=', 'validate')]}"/>
-                <button type="object"
-                        name="action_open_public"
-                        class="btn-primary"
-                        string="ดูหน้า Public"
-                        icon="fa-globe"/>
-                <button name="action_cancel"
-                        type="object"
-                        string="ยกเลิก"
-                        class="btn-primary"
-                        attrs="{'invisible': [('state', '!=', 'approve')]}"/>
-                <field name="state" widget="statusbar"/>
+                <button
+                    name="action_submit"
+                    type="object"
+                    string="แบบร่างเสนอเจ้าภาพ"
+                    class="btn-primary"
+                    attrs="{'invisible': [('state', '!=', 'draft')]}"
+                />
+                <button
+                    name="action_validate"
+                    type="object"
+                    string="ตรวจสอบยืนยัน"
+                    class="btn-primary"
+                    attrs="{'invisible': [('state', '!=', 'submit')]}"
+                />
+                <button
+                    name="action_approve"
+                    type="object"
+                    string="อนุมัติโครงงาน"
+                    class="btn-primary"
+                    attrs="{'invisible': [('state', '!=', 'validate')]}"
+                />
+                <button
+                    type="object"
+                    name="action_open_public"
+                    class="btn-primary"
+                    string="Public"
+                    icon="fa-globe"
+                />
+                <button
+                    name="action_cancel"
+                    type="object"
+                    string="ยกเลิก"
+                    class="btn-primary"
+                    attrs="{'invisible': [('state', '!=', 'approve')]}"
+                />
+                <field name="state" widget="statusbar" />
             </xpath>
             <xpath expr="//notebook" position="before">
                 <group>
@@ -208,7 +224,7 @@
     <record id="project_project_tree_inherit_form" model="ir.ui.view">
         <field name="name">project.project.tree.inherit.form</field>
         <field name="model">project.project</field>
-        <field name="inherit_id" ref="project.view_project"/>
+        <field name="inherit_id" ref="project.view_project" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='partner_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
@@ -230,8 +246,8 @@
             <field name="res_model">project.project</field>
             <field name="domain">[]</field>
             <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="project.view_project"/>
-            <field name="search_view_id" ref="project.view_project_project_filter"/>
+            <field name="view_id" ref="project.view_project" />
+            <field name="search_view_id" ref="project.view_project_project_filter" />
             <field name="target">main</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
     <template id="project_kmitl_report_template">
@@ -6,40 +6,161 @@
             <t t-foreach="docs" t-as="doc">
                 <t t-call="web.external_layout">
                     <div class="page">
-                        <h2>ชื่อโครงการ: <t t-esc="doc.name" /></h2>
-                        <p><strong>ปีงบประมาณ:</strong> <t t-esc="doc.date_range_fy_id.name" /></p>
-                        <p><strong>ประเภทแหล่งเงิน:</strong> <t t-esc="doc.source" /></p>
-                        <p><strong>หน่วยงาน:</strong> <t t-esc="doc.department_name" /></p>
-                        <p><strong>หัวหน้าโครงการ:</strong> <t t-esc="doc.project_manager_name" /></p>
-                        <p><strong>ตำแหน่ง:</strong> <t t-esc="doc.project_manager_position" /></p>
-                        <p><strong>เบอร์โทร:</strong> <t t-esc="doc.project_manager_tel" /></p>
-                        <p><strong>อีเมล:</strong> <t t-esc="doc.project_manager_email" /></p>
-                        <p><strong>สถานที่:</strong> <t t-esc="doc.location" /></p>
+                        <div class="oe_structure" />
+                        <h2 class="mt-4">
+                            <span>ชื่อโครงการ # </span>
+                            <span t-field="doc.name" />
+                        </h2>
+                        <div class="row mt-2 mb-2" id="informations">
+                            <div class="col-auto col-3 mw-100 mb-2">
+                                <strong>ปีงบประมาณ:</strong>
+                                <p class="m-0" t-field="doc.date_range_fy_id.name" />
+                            </div>
+                            <div class="col-auto col-3 mw-100 mb-2">
+                                <strong>ประเภทแหล่งเงิน:</strong>
+                                <p class="m-0" t-field="doc.source" />
+                            </div>
+                            <div class="col-auto col-3 mw-100 mb-2">
+                                <strong>หน่วยงาน:</strong>
+                                <p class="m-0" t-field="doc.department_name" />
+                            </div>
+                        </div>
 
-                        <h4>หลักการและเหตุผล</h4>
-                        <div t-field="doc.introduction"/>
+                        <div class="row mt-2 mb-2" id="informations">
+                            <div class="col-auto col-3 mw-100 mb-2">
+                                <strong>หัวหน้าโครงการ:</strong>
+                                <p class="m-0" t-field="doc.project_manager_name" />
+                            </div>
+                            <div class="col-auto col-3 mw-100 mb-2">
+                                <strong>ตำแหน่ง:</strong>
+                                <p class="m-0" t-field="doc.project_manager_position" />
+                            </div>
+                            <div class="col-auto col-3 mw-100 mb-2">
+                                <strong>เบอร์โทร:</strong>
+                                <p class="m-0" t-field="doc.project_manager_tel" />
+                            </div>
+                            <div class="col-auto col-3 mw-100 mb-2">
+                                <strong>อีเมล:</strong>
+                                <p class="m-0" t-field="doc.project_manager_email" />
+                            </div>
+                        </div>
 
-                        <h4>วัตถุประสงค์ของโครงการ</h4>
-                        <ul>
-                            <t t-foreach="doc.objective_ids" t-as="obj">
-                                <li><t t-esc="obj.name" /></li>
-                            </t>
-                        </ul>
+                        <div class="row mt-2 mb-2" id="informations">
+                            <div class="col-auto col-3 mw-100 mb-2">
+                                <strong>สถานที่:</strong>
+                                <p class="m-0" t-field="doc.location" />
+                            </div>
+                            <div class="col-auto col-3 mw-100 mb-2">
+                                <strong>หลักการและเหตุผล:</strong>
+                                <p class="m-0" t-field="doc.introduction" />
+                            </div>
+                            <div class="col-auto col-3 mw-100 mb-2">
+                                <strong>วัตถุประสงค์ของโครงการ:</strong>
+                                <t t-foreach="doc.objective_ids" t-as="obj">
+                                    <p class="m-0" t-field="obj.name" />
+                                </t>
+                            </div>
+                        </div>
 
-                        <h4>ผลที่คาดว่าจะได้รับ</h4>
-                        <p><t t-esc="doc.expected_result" /></p>
+                        <div class="row mt-2 mb-2" id="informations">
+                            <div class="col-auto col-3 mw-100 mb-2">
+                                <strong>ผลที่คาดว่าจะได้รับ:</strong>
+                                <p class="m-0" t-field="doc.expected_result" />
+                            </div>
+                            <div class="col-auto col-3 mw-100 mb-2">
+                                <strong>หลักการและเหตุผล:</strong>
+                                <t t-foreach="doc.evaluation_method_ids" t-as="obj">
+                                    <p class="m-0" t-field="obj.name" />
+                                </t>
+                            </div>
+                            <div class="col-auto col-3 mw-100 mb-2">
+                                <strong>เพิ่มเติม:</strong>
+                                <p
+                                    class="m-0"
+                                    t-field="doc.evaluation_method_description"
+                                />
+                            </div>
+                        </div>
 
-                        <h4>วิธีการติดตามและประเมินผล</h4>
-                        <ul>
-                            <t t-foreach="doc.evaluation_method_ids" t-as="eval">
-                                <li><t t-esc="eval.name" /></li>
-                            </t>
-                        </ul>
-                        <p><strong>เพิ่มเติม:</strong> <t t-esc="doc.evaluation_method_description" /></p>
+                        <div class="row mt-2 mb-2" id="informations">
+                            <div class="col-auto col-3 mw-100 mb-2">
+                                <strong>งบประมาณทั้งหมด:</strong>
+                                <p class="m-0" t-field="doc.total_budget" />
+                            </div>
+                            <div class="col-auto col-3 mw-100 mb-2">
+                                <strong>สถานะโครงการ:</strong>
+                                <p class="m-0" t-field="doc.state" />
+                            </div>
+                        </div>
 
-                        <p><strong>งบประมาณทั้งหมด:</strong> <t t-esc="doc.total_budget" /> บาท</p>
+                        <table class="table table-sm table-bordered mt-4 mb-4">
+                            <thead style="display: table-row-group">
+                                <tr class="table-primary">
+                                    <th class="text-start text-danger">ตัวชี้วัด</th>
+                                    <th class="text-end text-danger">หน่วยนับ</th>
+                                    <th
+                                        class="text-end text-danger"
+                                    >เป้าหมาย ปีงบประมาณ 2568</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="doc.output_ids" t-as="output">
+                                    <tr>
+                                        <td colspan="3" style="font-weight: bold;">
+                                            <t
+                                                t-if="output.line_type == 'output'"
+                                            >ผลผลิต</t>
+                                            <t t-else="">ผลลัพธ์</t>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><span t-field="output.name" /></td>
+                                        <td class="text-end"><span
+                                                t-field="output.unit"
+                                            /></td>
+                                        <td class="text-end"><span
+                                                t-field="output.target"
+                                            /></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
 
-                        <p><strong>สถานะโครงการ:</strong> <t t-esc="doc.state" /></p>
+                        <div class="row mt-2 mb-2" id="informations">
+                            <div class="col-auto col-3 mw-100 mb-2">
+                                <strong
+                                >ความสอดคล้องกับยุทธศาสตร์ แผนระดับที่ 1:</strong>
+                                <p
+                                    class="m-0"
+                                    t-field="doc.national_strategy_id.name"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 mb-2" id="informations">
+                            <div class="col-auto col-3 mw-100 mb-2">
+                                <strong
+                                >ความสอดคล้องกับยุทธศาสตร์ แผนระดับที่ 2:</strong>
+                                <p class="m-0" t-field="doc.master_plan_id.name" />
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 mb-2" id="informations">
+                            <div class="col-auto col-3 mw-100 mb-2">
+                                <strong
+                                >ความสอดคล้องกับยุทธศาสตร์ แผนระดับที่ 2 ฉบับที่ 13:</strong>
+                                <p class="m-0" t-field="doc.nesdc_plan_id.name" />
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 mb-2" id="informations">
+                            <div class="col-auto col-3 mw-100 mb-2">
+                                <strong
+                                >ความสอดคล้องกับยุทธศาสตร์ แผนระดับที่ 3:</strong>
+                                <p class="m-0" t-field="doc.kmitl_plan_id.name" />
+                            </div>
+                        </div>
+
                     </div>
                 </t>
             </t>
