@@ -1,0 +1,29 @@
+<odoo>
+  <data>
+
+    <template id="public_project_template" name="Public Project View">
+        <t t-call="web.basic_layout">
+            <div class="container">
+                <h1><t t-esc="project.name" /></h1>
+                <p><strong>ประเภทแหล่งเงิน:</strong> <t t-esc="project.source" /></p>
+                <p><strong>ปีงบประมาณ:</strong> <t t-esc="project.date_range_fy_id.name" /></p>
+                <p><strong>หัวหน้าโครงการ:</strong> <t t-esc="project.project_manager_name" /></p>
+                <h3>หลักการและเหตุผล</h3>
+                <div t-field="project.introduction"/>
+
+                <h3>วัตถุประสงค์</h3>
+                <ul>
+                    <t t-foreach="project.objective_ids" t-as="obj">
+                        <li><t t-esc="obj.name" /></li>
+                    </t>
+                </ul>
+
+                <h3>ผลที่คาดว่าจะได้รับ</h3>
+                <p><t t-esc="project.expected_result" /></p>
+            </div>
+        </t>
+    </template>
+
+
+  </data>
+</odoo>

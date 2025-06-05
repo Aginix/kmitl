@@ -134,3 +134,11 @@ class ProjectProject(models.Model):
     def action_cancel(self):
         for record in self:
             record.state = 'cancel'
+
+    def action_open_public(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/projects/{self.id}',
+            'target': 'new',
+        }

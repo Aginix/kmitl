@@ -35,6 +35,11 @@
                         string="อนุมัติโครงงาน"
                         class="btn-primary"
                         attrs="{'invisible': [('state', '!=', 'validate')]}"/>
+                <button type="object"
+                        name="action_open_public"
+                        class="btn-primary"
+                        string="ดูหน้า Public"
+                        icon="fa-globe"/>
                 <button name="action_cancel"
                         type="object"
                         string="ยกเลิก"

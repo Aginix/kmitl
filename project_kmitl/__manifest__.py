@@ -20,7 +20,8 @@
         "views/project_impact_views.xml",
         "views/project_project_views.xml",
         "views/project_strategic_plan_views.xml",
-        "report/project_report_template.xml",
+        "views/public_project_templates.xml",
+        "report/project_report_template.xml"
     ],
     'assets': {
               'web.assets_backend': [
