@@ -57,11 +57,18 @@
                 <button
                     name="action_cancel"
                     type="object"
-                    string="ยกเลิก"
-                    class="btn-primary"
-                    attrs="{'invisible': [('state', '!=', 'approve')]}"
+                    string="ยกเลิกโครงการ"
+                    class="btn-danger"
+                    attrs="{'invisible': [('state', 'in', ['draft', 'cancel'])]}"
                 />
                 <field name="state" widget="statusbar" />
+            </xpath>
+            <xpath expr="//field[@name='name']" position="replace">
+                <field
+                    name="reference"
+                    class="o_text_overflow"
+                    attrs="{'readonly': 1}"
+                />
             </xpath>
             <xpath expr="//notebook" position="before">
                 <group>
@@ -237,6 +244,9 @@
             </xpath>
             <xpath expr="//field[@name='display_name']" position="after">
                 <field name="date_range_fy_id" />
+            </xpath>
+            <xpath expr="//field[@name='is_favorite']" position="after">
+                <field name="reference" />
             </xpath>
         </field>
     </record>

@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*-
 import logging
 
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo import api, fields, models
 
 _logger = logging.getLogger(__name__)
 
 
 class ProjectProject(models.Model):
-    _inherit = 'project.project'
+    _inherit = "project.project"
 
     date_range_fy_id = fields.Many2one(
         comodel_name="account.fiscal.year",
@@ -16,15 +14,32 @@ class ProjectProject(models.Model):
         tracking=True,
     )
     name = fields.Char(string="ชื่อโครงการ")
+    reference = fields.Char(string="เลขที่", default="แบบร่าง")
     source = fields.Selection(
         [("national_budget", "เงินงบประมาณแผ่นดิน"), ("income_budget", "เงินรายได้")],
         string="ประเภทแหล่งเงิน",
     )
     introduction = fields.Html(string="หลักการและเหตุผล", sanitize_attributes=False)
-    national_strategy_id = fields.Many2one('project.strategic.plan',string="ความสอดคล้องกับยุทธศาสตร์ แผนระดับที่ 1",domain="[('level', '=', 1)]")
-    master_plan_id = fields.Many2one('project.strategic.plan',string="ความสอดคล้องกับยุทธศาสตร์ แผนระดับที่ 2",domain="[('level', '=', 2)]")
-    nesdc_plan_id = fields.Many2one('project.strategic.plan',string="ความสอดคล้องกับยุทธศาสตร์ แผนระดับที่ 2 ฉบับที่ 13",domain="[('level', '=', 2)]")
-    kmitl_plan_id = fields.Many2one('project.strategic.plan',string="ความสอดคล้องกับยุทธศาสตร์ แผนระดับที่ 3",domain="[('level', '=', 3)]")
+    national_strategy_id = fields.Many2one(
+        "project.strategic.plan",
+        string="ความสอดคล้องกับยุทธศาสตร์ แผนระดับที่ 1",
+        domain="[('level', '=', 1)]",
+    )
+    master_plan_id = fields.Many2one(
+        "project.strategic.plan",
+        string="ความสอดคล้องกับยุทธศาสตร์ แผนระดับที่ 2",
+        domain="[('level', '=', 2)]",
+    )
+    nesdc_plan_id = fields.Many2one(
+        "project.strategic.plan",
+        string="ความสอดคล้องกับยุทธศาสตร์ แผนระดับที่ 2 ฉบับที่ 13",
+        domain="[('level', '=', 2)]",
+    )
+    kmitl_plan_id = fields.Many2one(
+        "project.strategic.plan",
+        string="ความสอดคล้องกับยุทธศาสตร์ แผนระดับที่ 3",
+        domain="[('level', '=', 3)]",
+    )
     impact_ids = fields.Many2many("project.impact", string="Impact")
     global_index_ids = fields.Many2many("project.global.index", string="Global Index")
     okr_1 = fields.Many2many(
@@ -37,37 +52,41 @@ class ProjectProject(models.Model):
         string="วัตถุประสงค์ของโครงการ",
     )
     department_id = fields.Many2one(
-        comodel_name="hr.department", compute="_compute_department_id", string="หน่วยงานผู้รับผิดชอบโครงการ", index=True, store=True,
+        comodel_name="hr.department",
+        compute="_compute_department_id",
+        string="หน่วยงานผู้รับผิดชอบโครงการ",
+        index=True,
+        store=True,
     )
     department_name = fields.Char(
         string="ชื่อหน่วยงานผู้รับผิดชอบโครงการ", related="department_id.name", store=True
     )
     project_manager_name = fields.Char(
-    string="หัวหน้าโครงการ",
-    related='user_id.partner_id.name',
-    store=True,
-    readonly=True
+        string="หัวหน้าโครงการ",
+        related="user_id.partner_id.name",
+        store=True,
+        readonly=True,
     )
 
     project_manager_position = fields.Char(
         string="หัวหน้าโครงการ ตำแหน่ง",
-        related='user_id.partner_id.function',
+        related="user_id.partner_id.function",
         store=True,
-        readonly=True
+        readonly=True,
     )
 
     project_manager_tel = fields.Char(
         string="หัวหน้าโครงการ เบอร์โทร",
-        related='user_id.partner_id.phone',
+        related="user_id.partner_id.phone",
         store=True,
-        readonly=True
+        readonly=True,
     )
 
     project_manager_email = fields.Char(
         string="หัวหน้าโครงการ อีเมล",
-        related='user_id.partner_id.email',
+        related="user_id.partner_id.email",
         store=True,
-        readonly=True
+        readonly=True,
     )
     location = fields.Text(string="สถานที่/พื้นที่ดำเนินโครงการ")
     methodology = fields.Selection(
@@ -86,7 +105,7 @@ class ProjectProject(models.Model):
         inverse_name="project_kmitl_id",
         string="เป้าหมาย ผลผลิต และผลลัพธ์",
     )
-    responsible_id = fields.Many2one('res.users', string="ผู้รับผิดชอบข้อมูล")
+    responsible_id = fields.Many2one("res.users", string="ผู้รับผิดชอบข้อมูล")
     project_activity_ids = fields.One2many(
         comodel_name="project.activity",
         inverse_name="project_kmitl_id",
@@ -107,38 +126,48 @@ class ProjectProject(models.Model):
             ("submit", "แบบร่างเสนอเจ้าภาพ"),
             ("validate", "ตรวจสอบข้อมูล"),
             ("approve", "อนุมัติโครงการ"),
+            ("revised", "มีการปรับปรุงแก้ไข"),
+            ("in_progress", "ระหว่างดำเนินการ"),
+            ("done", "เสร็จสิ้น"),
             ("cancel", "ยกเลิกโครงการ"),
         ],
         string="สถานะการขออนุมัติโครงการ",
         default="draft",
     )
+    change_type = fields.Selection(
+        [("major", "กระทบแผน/งบประมาณ"), ("patch", "ไม่กระทบแผน/งบประมาณ")],
+        string="แบบกระทบแผน/งบประมาณ​",
+    )
+    office_order_no = fields.Char(string="เลขที่หนังสืออนุมัติจากระบบ e-office")
 
-    @api.depends('user_id')
+    @api.depends("user_id")
     def _compute_department_id(self):
         for record in self:
-            employee = self.env['hr.employee'].search([('user_id', '=', record.user_id.id)], limit=1)
+            employee = self.env["hr.employee"].search(
+                [("user_id", "=", record.user_id.id)], limit=1
+            )
             record.department_id = employee.department_id if employee else False
 
     def action_submit(self):
         for record in self:
-            record.state = 'submit'
+            record.state = "submit"
 
     def action_validate(self):
         for record in self:
-            record.state = 'validate'
+            record.state = "validate"
 
     def action_approve(self):
         for record in self:
-            record.state = 'approve'
+            record.state = "approve"
 
     def action_cancel(self):
         for record in self:
-            record.state = 'cancel'
+            record.state = "cancel"
 
     def action_open_public(self):
         self.ensure_one()
         return {
-            'type': 'ir.actions.act_url',
-            'url': f'/projects/{self.id}',
-            'target': 'new',
+            "type": "ir.actions.act_url",
+            "url": f"/projects/{self.id}",
+            "target": "new",
         }
