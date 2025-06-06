@@ -15,6 +15,7 @@ class ProjectProject(models.Model):
     old_revision_ids = fields.One2many(
         comodel_name="project.project",
     )
+    revision_number = fields.Integer(string="Version", copy=False, default=0)
 
     def _prepare_revision_data(self, new_revision):
         vals = super()._prepare_revision_data(new_revision)
@@ -54,7 +55,18 @@ class ProjectProject(models.Model):
 
     def open_project(self):
         self.ensure_one()
-        target_id = self.current_revision_id.id if self.current_revision_id else self.id
+        target_id = self.id
+        if self.current_revision_id and self.current_revision_id.state == "approve":
+            target_id = self.current_revision_id.id
+        else:
+            current_revision = self.env["project.project"].search(
+                [("id", "=", self.current_revision_id.id)]
+            )
+            approved_revisions = current_revision.old_revision_ids.filtered(
+                lambda r: r.state == "approve"
+            )
+            if approved_revisions:
+                target_id = approved_revisions[0].id
         return {
             "name": "project",
             "type": "ir.actions.act_window",
