@@ -159,6 +159,7 @@ class ProjectProject(models.Model):
     def action_approve(self):
         for record in self:
             record.state = "approve"
+            record.reference = self.env["ir.sequence"].next_by_code("project.project")
 
     def action_cancel(self):
         for record in self:

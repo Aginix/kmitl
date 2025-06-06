@@ -47,7 +47,7 @@ class ProjectProject(models.Model):
 
     def action_approve(self):
         for record in self:
-            record.state = "approve"
+            super(ProjectProject, record).action_approve()
         old_revisions = self.env["project.project"].search(
             [("current_revision_id", "=", self.id)]
         )

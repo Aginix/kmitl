@@ -1,18 +1,25 @@
-# -*- coding: utf-8 -*-
 {
-    'name': 'Project_kmitl',
-    'version': '16.0.1.0.0',
-    'summary': """ Project_kmitl Summary """,
-    'author': '',
-    'website': '',
-    'category': '',
-    'depends': ['base', 'web', 'project', 'hr', 'account_fiscal_year'],
+    "name": "Project_kmitl",
+    "version": "16.0.1.0.0",
+    "summary": """ Project_kmitl Summary """,
+    "author": "",
+    "website": "",
+    "category": "",
+    "depends": [
+        "base",
+        "web",
+        "project",
+        "hr",
+        "account_fiscal_year",
+        "l10n_th_base_sequence",
+    ],
     "data": [
         "data/project.evaluation.methods.csv",
         "data/project.fight.csv",
         "data/project.global.index.csv",
         "data/project.impact.csv",
         "data/project.strategic.plan.csv",
+        "data/seq_project_project.xml",
         "security/ir.model.access.csv",
         "views/project_evaluation_methods_views.xml",
         "views/project_fight_views.xml",
@@ -21,15 +28,13 @@
         "views/project_project_views.xml",
         "views/project_strategic_plan_views.xml",
         "views/public_project_templates.xml",
-        "report/project_report_template.xml"
+        "report/project_report_template.xml",
     ],
-    'assets': {
-              'web.assets_backend': [
-                  'project_kmitl/static/src/**/*'
-              ],
-          },
-    'application': True,
-    'installable': True,
-    'auto_install': False,
-    'license': 'LGPL-3',
+    "assets": {
+        "web.assets_backend": ["project_kmitl/static/src/**/*"],
+    },
+    "application": True,
+    "installable": True,
+    "auto_install": False,
+    "license": "LGPL-3",
 }

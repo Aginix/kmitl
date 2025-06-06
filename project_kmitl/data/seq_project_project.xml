@@ -1,0 +1,14 @@
+<odoo>
+    <data>
+        <record id="seq_type_project_project" model="ir.sequence">
+            <field name="name">Project Project</field>
+            <field name="code">project.project</field>
+            <field name="prefix">PP/%(year_be)s/</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="active" eval="True" />
+            <field name="company_id" eval="False" />
+        </record>
+
+    </data>
+</odoo>
