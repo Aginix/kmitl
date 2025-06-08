@@ -41,7 +41,7 @@
                     attrs="{'invisible': [('state', '!=', 'submit')]}"
                 />
                 <button
-                    name="action_approve"
+                    name="action_open_wizard"
                     type="object"
                     string="อนุมัติโครงงาน"
                     class="btn-primary"
@@ -80,6 +80,14 @@
                     <group>
                         <field name="date_range_fy_id" />
                         <field name="source" />
+                        <field
+                            name="office_order_no"
+                            attrs="{'invisible': [('state', 'in', ['draft', 'submit', 'validate'])]}"
+                        />
+                        <field
+                            name="change_type"
+                            attrs="{'invisible': [('state', '!=', 'revised')]}"
+                        />
                     </group>
                 </group>
                 <group string="ความสอดคล้องกับยุทธศาสตร์">

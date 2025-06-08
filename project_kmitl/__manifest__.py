@@ -28,6 +28,7 @@
         "views/project_project_views.xml",
         "views/project_strategic_plan_views.xml",
         "views/public_project_templates.xml",
+        "wizards/project_approve_wizard.xml",
         "report/project_report_template.xml",
     ],
     "assets": {

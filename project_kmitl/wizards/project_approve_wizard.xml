@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_project_approve_wizard" model="ir.ui.view">
+        <field name="name">project.approve.wizard.form</field>
+        <field name="model">project.approve.wizard</field>
+        <field name="arch" type="xml">
+        <form string="อนุมัติโครงการ">
+            <group>
+                <field name="office_order_no" />
+            </group>
+            <footer>
+                <button
+                        string="ยืนยัน"
+                        type="object"
+                        name="confirm_approve"
+                        class="btn-primary"
+                    />
+                <button string="ยกเลิก" special="cancel" />
+            </footer>
+        </form>
+        </field>
+    </record>
+
+    <record id="action_approve_project_wizard" model="ir.actions.act_window">
+        <field name="name">Approve Project</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">project.approve.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>
