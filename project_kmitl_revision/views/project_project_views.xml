@@ -27,18 +27,9 @@
             <xpath expr="//field[@name='change_type']" position="replace">
                 <field
                     name="change_type"
-                    attrs="{'invisible': [('current_revision_id', '=', False)]}"
+                    attrs="{'invisible': [('revision_number', '=', 0)]}"
                 />
             </xpath>
-        </field>
-    </record>
-
-    <record id="view_project_project_inherit_form" model="ir.ui.view">
-        <field name="name">project.project.form</field>
-        <field name="model">project.project</field>
-        <field name="inherit_id" ref="project.edit_project" />
-        <field name="priority">15</field>
-        <field name="arch" type="xml">
             <xpath expr="//header" position='inside'>
                 <button
                     name="create_revision"
