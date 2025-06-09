@@ -21,6 +21,9 @@
         />
         <field name="priority">15</field>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="current_revision_id" invisible="1" />
+            </xpath>
             <xpath expr="//field[@name='change_type']" position="replace">
                 <field
                     name="change_type"
@@ -57,9 +60,6 @@
                     bg_color="bg-black"
                     attrs="{'invisible': [('state', '!=', 'revised')]}"
                 />
-            </xpath>
-            <xpath expr="//field[@name='company_id']" position="after">
-                <field name="current_revision_id" invisible="1" />
             </xpath>
             <xpath expr="//div[@name='dates']" position="after">
                 <field name="revision_number" attrs="{'readonly': 1}" />
