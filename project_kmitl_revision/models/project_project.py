@@ -31,6 +31,18 @@ class ProjectProject(models.Model):
             "old_revision_ids": [(4, self.id, False)],
         }
 
+    def create_revision_wizard(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "project.revision.confirm.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "default_project_id": self.id,
+            },
+        }
+
     def action_view_revisions(self):
         self.ensure_one()
         result = self.env["ir.actions.act_window"]._for_xml_id(

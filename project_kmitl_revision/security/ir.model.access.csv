@@ -1,0 +1,2 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_project_revision_confirm_wizard_manager,project_revision_confirm_wizard_manager,model_project_revision_confirm_wizard,,1,1,1,1
