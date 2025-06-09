@@ -6,7 +6,8 @@ _logger = logging.getLogger(__name__)
 
 
 class ProjectProject(models.Model):
-    _inherit = "project.project"
+    _name = "project.project"
+    _inherit = ["project.project", "portal.mixin"]
 
     date_range_fy_id = fields.Many2one(
         comodel_name="account.fiscal.year",
@@ -199,10 +200,15 @@ class ProjectProject(models.Model):
         for record in self:
             record.state = "cancel"
 
+    def _compute_access_url(self):
+        for record in self:
+            record.access_url = f"/projects/{record.id}"
+
     def action_open_public(self):
         self.ensure_one()
+        self._portal_ensure_token()
         return {
             "type": "ir.actions.act_url",
-            "url": f"/projects/{self.id}",
+            "url": self._get_share_url(),
             "target": "new",
         }
