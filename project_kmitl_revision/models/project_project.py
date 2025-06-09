@@ -45,14 +45,6 @@ class ProjectProject(models.Model):
         }
         return result
 
-    def action_approve(self):
-        for record in self:
-            super(ProjectProject, record).action_approve()
-        old_revisions = self.env["project.project"].search(
-            [("current_revision_id", "=", self.id)]
-        )
-        old_revisions.write({"state": "revised"})
-
     def open_project(self):
         self.ensure_one()
         target_id = self.id

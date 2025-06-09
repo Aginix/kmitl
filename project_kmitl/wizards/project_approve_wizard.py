@@ -16,6 +16,10 @@ class ProjectApproveWizard(models.TransientModel):
 
     def confirm_approve(self):
         self.ensure_one()
+        old_revisions = self.env["project.project"].search(
+            [("current_revision_id", "=", self.project_id.id)]
+        )
+        old_revisions.write({"state": "revised"})
         self.project_id.write(
             {
                 "office_order_no": self.office_order_no,
