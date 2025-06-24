@@ -133,16 +133,40 @@ class BudgetMoveLine(models.Model):
         appropriation_moves = moves.filtered(lambda m: m.move_type == 'appropriation')
 
         if appropriation_moves:
-            # สร้าง virtual lines สำหรับ double-entry
-            virtual_vals_list = []
+            # Group appropriation lines by move and dimensions
+            virtual_lines_by_move = {}
+            
             for vals in vals_list:
                 move = self.env["budget.move"].browse(vals["move_id"])
                 if move.move_type == 'appropriation' and not vals.get('is_virtual_line'):
-                    virtual_vals = self._prepare_virtual_line_vals(vals, move)
-                    virtual_vals_list.append(virtual_vals)
-
-            # เพิ่ม virtual lines เข้าไปใน vals_list
-            vals_list.extend(virtual_vals_list)
+                    # Create key based on dimensions - convert dict to frozenset for hashability
+                    analytic_dist = vals.get('analytic_distribution', {})
+                    if isinstance(analytic_dist, dict):
+                        analytic_key = frozenset(analytic_dist.items())
+                    else:
+                        analytic_key = frozenset()
+                    
+                    dimension_key = (
+                        vals.get('move_id'),
+                        analytic_key,
+                    )
+                    
+                    if dimension_key not in virtual_lines_by_move:
+                        virtual_lines_by_move[dimension_key] = {
+                            'balance': 0.0,
+                            'vals': vals.copy(),
+                            'move': move
+                        }
+                    
+                    # Sum the balance
+                    virtual_lines_by_move[dimension_key]['balance'] += vals.get('balance', 0.0)
+            
+            # Create consolidated virtual lines
+            for dimension_key, virtual_data in virtual_lines_by_move.items():
+                virtual_vals = self._prepare_virtual_line_vals(virtual_data['vals'], virtual_data['move'])
+                # Set the consolidated negative balance
+                virtual_vals['balance'] = -virtual_data['balance']
+                vals_list.append(virtual_vals)
 
         with moves._check_balanced(move_container), ExitStack() as exit_stack:
             lines = super().create([self._sanitize_vals(vals) for vals in vals_list])
@@ -186,6 +210,85 @@ class BudgetMoveLine(models.Model):
         line_to_write = self
         vals = self._sanitize_vals(vals)
 
+        # Handle appropriation line updates - need to update virtual lines
+        if not self.env.context.get('skip_virtual_update'):
+            balance_update = 'balance' in vals
+            analytic_update = 'analytic_distribution' in vals
+            
+            appropriation_lines = self.filtered(lambda l: l.move_id.move_type == 'appropriation' and not l.is_virtual_line)
+            
+            if (balance_update or analytic_update) and appropriation_lines:
+                # Group lines by move to handle virtual line updates per move
+                moves_to_update = appropriation_lines.mapped('move_id')
+                
+                # Store tracking info before write
+                tracking_info = {}
+                if not self.env.context.get("tracking_disable", False):
+                    tracking_fields = []
+                    for field_name in vals:
+                        field = self._fields.get(field_name)
+                        if field and hasattr(field, "tracking") and field.tracking:
+                            tracking_fields.append(field_name)
+                    
+                    if tracking_fields:
+                        ref_fields = self.fields_get(tracking_fields)
+                        for line in appropriation_lines:
+                            tracking_info[line.id] = {
+                                'ref_fields': ref_fields,
+                                'initial_values': {field: line[field] for field in tracking_fields}
+                            }
+                
+                # Apply the write
+                result = super().write(vals)
+                
+                # Update virtual lines for each affected move
+                for move in moves_to_update:
+                    # Delete existing virtual lines
+                    move.line_ids.filtered(lambda l: l.is_virtual_line).unlink()
+                    
+                    # Recalculate consolidated virtual lines
+                    virtual_lines_data = {}
+                    for line in move.line_ids.filtered(lambda l: not l.is_virtual_line):
+                        # Create key based on analytic distribution
+                        dimension_key = frozenset(line.analytic_distribution.items()) if line.analytic_distribution else frozenset()
+                        
+                        if dimension_key not in virtual_lines_data:
+                            virtual_lines_data[dimension_key] = {
+                                'balance': 0.0,
+                                'analytic_distribution': line.analytic_distribution.copy() if line.analytic_distribution else {},
+                                'move_id': move.id,
+                                'account_id': move.appropriation_account_id.id,
+                                'is_virtual_line': True,
+                            }
+                        
+                        virtual_lines_data[dimension_key]['balance'] += line.balance
+                    
+                    # Create consolidated virtual lines with negative balance
+                    for virtual_data in virtual_lines_data.values():
+                        virtual_data['balance'] = -virtual_data['balance']
+                        self.with_context(skip_virtual_update=True).create(virtual_data)
+                
+                # Handle tracking
+                if tracking_info and not self.env.context.get("tracking_disable", False):
+                    for line in appropriation_lines:
+                        if line.id in tracking_info:
+                            tracking_value_ids = line._mail_track(
+                                tracking_info[line.id]['ref_fields'], 
+                                tracking_info[line.id]['initial_values']
+                            )[1]
+                            if tracking_value_ids:
+                                msg = _(
+                                    "Budget Item %s updated",
+                                    line._get_html_link(title=f"#{line.id}"),
+                                )
+                                line.move_id._message_log(
+                                    body=msg, tracking_value_ids=tracking_value_ids
+                                )
+                
+                return result
+        
+        # Normal write process
+
         if not self.env.context.get("tracking_disable", False):
             # Get trackable fields from vals
             tracking_fields = []
@@ -204,7 +307,11 @@ class BudgetMoveLine(models.Model):
                     for field in tracking_fields:
                         move_initial_values[line.move_id.id][field] = line[field]
 
-        result = super().write(vals)
+        # Skip updating virtual lines if already handled
+        if self.env.context.get('skip_virtual_update'):
+            result = super().write(vals)
+        else:
+            result = super().write(vals)
 
         if not self.env.context.get("tracking_disable", False):
             for move_id, initial_values in move_initial_values.items():
@@ -227,7 +334,6 @@ class BudgetMoveLine(models.Model):
 
     @api.model
     def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None):
-        _logger.info("self.env.context.get('hide_virtual_lines') == " + self.env.context.get('hide_virtual_lines'))
         if 'hide_virtual_lines' in self.env.context:
             domain = domain or []
             domain.append(('is_virtual_line', '=', False))
