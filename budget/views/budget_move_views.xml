@@ -69,7 +69,7 @@
                                 <tree>
                                     <field name="date_range_fy_id" invisible="1" />
                                     <field name="move_id" invisible="1" />
-                                    <!-- <field name="department_analytic_id" options='{"no_open": True}' attrs='{"invisible": [("move_type", "in", ("appropriation"))]}' /> -->
+                                    <field name="department_analytic_id" options='{"no_open": True}' />
                                     <field name="activity_analytic_id" options='{"no_open": True}' />
                                     <field name="fund_analytic_id" options='{"no_open": True}' />
                                     <field name="account_id" options='{"no_open": True}' />
@@ -105,7 +105,9 @@
                 <field name="activity_analytic_id" />
                 <field name="fund_analytic_id" />
                 <field name="account_id" />
-                <field name="balance" />
+                <field name="balance" sum="Total" />
+                <field name="debit" sum="Debit" />
+                <field name="credit" sum="Credit" />
                 <field name="parent_state" widget="badge" decoration-info="parent_state == 'draft'" decoration-warning="parent_state == 'review'" decoration-success="parent_state == 'posted'" />
             </tree>
         </field>
@@ -300,6 +302,18 @@
                             <group class="oe_subtotal_footer">
                                 <field name="total_amount" readonly="1"/>
                             </group>
+                        </page>
+                        <page string="Preview" name="preview" attrs="{'invisible': [('id', '=', False)]}">
+                            <div class="o_budget_preview_container">
+                                <div class="text-center p-3">
+                                    <button type="object" name="action_open_preview" class="btn btn-primary btn-lg">
+                                        <i class="fa fa-eye"/> เปิดดูตัวอย่างแบบละเอียด
+                                    </button>
+                                    <p class="text-muted mt-2">
+                                        ดูโครงสร้างการจัดสรรงบประมาณในรูปแบบ Hierarchy Tree
+                                    </p>
+                                </div>
+                            </div>
                         </page>
                         <page string="Other Info" name="other_info">
                             <group>

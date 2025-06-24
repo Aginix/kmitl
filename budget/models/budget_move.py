@@ -302,6 +302,24 @@ class BudgetMove(models.Model):
     def button_draft(self):
         self.write({"state": "draft"})
 
+    def action_open_preview(self):
+        """Open the budget appropriation preview in full screen"""
+        self.ensure_one()
+        
+        if self.move_type != 'appropriation':
+            raise UserError(_("Preview is only available for appropriation moves."))
+        
+        return {
+            'name': _('Budget Appropriation Preview'),
+            'type': 'ir.actions.client',
+            'tag': 'budget_appropriation_preview',
+            'target': 'current',
+            'context': {
+                'active_id': self.id,
+                'active_model': 'budget.move',
+            }
+        }
+
     @contextmanager
     def _check_balanced(self, container):
         """Assert the move is fully balanced debit = credit.

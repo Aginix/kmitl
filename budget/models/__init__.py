@@ -9,3 +9,4 @@ from . import budget_move
 from . import budget_move_line
 from . import budget_journal
 from . import budget_procurement
+from . import budget_appropriation_report
