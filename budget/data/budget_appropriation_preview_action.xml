@@ -4,6 +4,7 @@
     <record id="action_budget_appropriation_preview" model="ir.actions.client">
         <field name="name">Budget Appropriation Preview</field>
         <field name="tag">budget_appropriation_preview</field>
+        <field name="res_model">budget.move</field>
     </record>
     
     <!-- Report Action for PDF Export -->

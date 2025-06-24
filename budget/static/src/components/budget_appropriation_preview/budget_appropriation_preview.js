@@ -4,7 +4,6 @@ import { Component, onWillStart, useState } from "@odoo/owl";
 import { ControlPanel } from "@web/search/control_panel/control_panel";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
-import { SummaryCard } from "./summary_card/summary_card";
 
 export class BudgetAppropriationPreview extends Component {
     setup() {
@@ -39,7 +38,12 @@ export class BudgetAppropriationPreview extends Component {
             
             const moveId = this.activeId;
             if (!moveId) {
-                throw new Error("ไม่พบ Budget Move ID");
+                console.error("Debug info - Available props:", {
+                    action: this.props.action,
+                    resId: this.props.resId,
+                    props: Object.keys(this.props)
+                });
+                throw new Error("ไม่พบ Budget Move ID - กรุณาเปิดหน้าตัวอย่างจากรายการงบประมาณ");
             }
 
             const result = await this.orm.call(
@@ -73,7 +77,11 @@ export class BudgetAppropriationPreview extends Component {
     // ---- Getters ----
 
     get activeId() {
-        return this.props.action?.context?.active_id || this.props.resId;
+        // Try to get ID from various sources
+        return this.props.action?.res_id || 
+               this.props.action?.context?.active_id || 
+               this.props.resId ||
+               this.props.action?.params?.id;
     }
 
     get context() {
@@ -95,16 +103,15 @@ export class BudgetAppropriationPreview extends Component {
         return this.state.data.hierarchy;
     }
 
-    get summary() {
-        return this.state.data.summary || {};
-    }
-
     get totalAmount() {
-        return this.move.total_amount || 0;
-    }
-
-    get currencySymbol() {
-        return this.move.currency_symbol || "฿";
+        // Calculate total from hierarchy root nodes
+        if (!this.state.data.hierarchy || this.state.data.hierarchy.length === 0) {
+            return 0;
+        }
+        
+        return this.state.data.hierarchy.reduce((total, node) => {
+            return total + (node.total_amount || 0);
+        }, 0);
     }
 
     // ---- Event Handlers ----
@@ -260,8 +267,7 @@ export class BudgetAppropriationPreview extends Component {
 
 BudgetAppropriationPreview.template = "budget.BudgetAppropriationPreview";
 BudgetAppropriationPreview.components = { 
-    ControlPanel, 
-    SummaryCard 
+    ControlPanel
 };
 
 registry.category("actions").add("budget_appropriation_preview", BudgetAppropriationPreview);

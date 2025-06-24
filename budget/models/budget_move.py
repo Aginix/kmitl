@@ -314,6 +314,8 @@ class BudgetMove(models.Model):
             'type': 'ir.actions.client',
             'tag': 'budget_appropriation_preview',
             'target': 'current',
+            'res_id': self.id,
+            'res_model': 'budget.move',
             'context': {
                 'active_id': self.id,
                 'active_model': 'budget.move',

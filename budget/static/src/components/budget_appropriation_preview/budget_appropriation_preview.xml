@@ -96,16 +96,6 @@
 
             <!-- Main Content -->
             <div t-if="!state.loading and !state.error" class="budget_appropriation_content">
-                <!-- Summary Section -->
-                <div class="row mb-4 justify-content-center">
-                    <div class="col-12" style="max-width: 960px;">
-                        <SummaryCard
-                            move="move"
-                            summary="summary"
-                            currencySymbol="currencySymbol"/>
-                    </div>
-                </div>
-
                 <!-- Budget Report Table -->
                 <div class="row justify-content-center">
                     <div class="col-12" style="max-width: 960px;">
@@ -141,8 +131,7 @@
                                             </td>
                                             <td class="text-right">
                                                 <strong>
-                                                    <t t-esc="formatCurrency(totalAmount)"/>
-                                                    <t t-esc="currencySymbol"/>
+                                                    <t t-esc="formatCurrency(totalAmount)"/> บาท
                                                 </strong>
                                             </td>
                                         </tr>
