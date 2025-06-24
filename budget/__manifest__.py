@@ -11,6 +11,7 @@
         "data/budget_move_data.xml",
         "data/budget.account.csv",
         "data/budget_appropriation_preview_action.xml",
+        "report/budget_appropriation_report_templates.xml",
         "security/ir.model.access.csv",
         "views/budget_account_views.xml",
         "views/budget_appropriation_views.xml",

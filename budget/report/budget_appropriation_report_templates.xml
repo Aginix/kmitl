@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_budget_appropriation_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- Report Header -->
+                        <div class="text-center mb-4">
+                            <h2>รายงานการจัดสรรงบประมาณ</h2>
+                            <h3>Budget Appropriation Report</h3>
+                            <p class="mb-0">
+                                <strong>เลขที่เอกสาร:</strong> <span t-field="doc.name"/>
+                                <span class="mx-3">|</span>
+                                <strong>วันที่:</strong> <span t-field="doc.date"/>
+                                <span class="mx-3">|</span>
+                                <strong>สถานะ:</strong> <span t-field="doc.state"/>
+                            </p>
+                        </div>
+
+                        <!-- Summary Information -->
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td><strong>แหล่งงบประมาณ:</strong></td>
+                                        <td>
+                                            <span t-if="doc.source_analytic_id" t-field="doc.source_analytic_id.display_name"/>
+                                            <span t-else="">-</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>ส่วนงาน:</strong></td>
+                                        <td>
+                                            <span t-if="doc.department_analytic_id" t-field="doc.department_analytic_id.display_name"/>
+                                            <span t-else="">-</span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-6">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td><strong>หมายเหตุ:</strong></td>
+                                        <td>
+                                            <span t-if="doc.note" t-field="doc.note"/>
+                                            <span t-else="">-</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>ยอดรวม:</strong></td>
+                                        <td class="text-right">
+                                            <strong t-field="doc.total_amount" 
+                                                    t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Main Table -->
+                        <table class="table table-bordered table-sm" style="font-size: 10pt;">
+                            <thead style="background-color: #f0f0f0;">
+                                <tr>
+                                    <th width="85%">รายการ</th>
+                                    <th width="15%" class="text-right">จำนวนเงิน / Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="report_lines" t-value="doc._get_report_lines()"/>
+                                <t t-foreach="report_lines" t-as="line">
+                                    <tr t-att-class="'font-weight-bold' if line.get('is_total') else ''">
+                                        <td>
+                                            <div t-att-style="'margin-left: %spx;' % (line.get('level', 0) * 20)">
+                                                <t t-if="line.get('is_total')">
+                                                    <strong>
+                                                        <t t-esc="line.get('name')"/>
+                                                        <t t-if="line.get('code')"> (<t t-esc="line.get('code')"/>)</t>
+                                                    </strong>
+                                                </t>
+                                                <t t-elif="line.get('account_code')">
+                                                    <div>
+                                                        <t t-esc="line.get('account_code')"/> - <t t-esc="line.get('account_name')"/>
+                                                    </div>
+                                                    <t t-if="line.get('note')">
+                                                        <div class="text-muted small" t-att-style="'margin-left: %spx;' % ((line.get('level', 0) * 20) + 22)">
+                                                            <t t-esc="line.get('note')"/>
+                                                        </div>
+                                                    </t>
+                                                </t>
+                                                <t t-else="">
+                                                    <t t-esc="line.get('name')"/>
+                                                    <t t-if="line.get('code')">
+                                                        <span class="text-muted"> (<t t-esc="line.get('code')"/>)</span>
+                                                    </t>
+                                                </t>
+                                            </div>
+                                        </td>
+                                        <td class="text-right">
+                                            <t t-if="line.get('amount') != 0 or line.get('is_total')">
+                                                <span t-esc="'{:,.2f}'.format(line.get('amount', 0))"/>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+                                
+                                <!-- Total Row -->
+                                <tr class="font-weight-bold" style="background-color: #f0f0f0;">
+                                    <td class="text-right">
+                                        <strong>ยอดรวมทั้งหมด / Grand Total</strong>
+                                    </td>
+                                    <td class="text-right">
+                                        <strong t-field="doc.total_amount" 
+                                                t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Footer -->
+                        <div class="row mt-5">
+                            <div class="col-6 text-center">
+                                <p>_________________________</p>
+                                <p>ผู้จัดทำ / Prepared by</p>
+                                <p>วันที่ / Date: _______________</p>
+                            </div>
+                            <div class="col-6 text-center">
+                                <p>_________________________</p>
+                                <p>ผู้อนุมัติ / Approved by</p>
+                                <p>วันที่ / Date: _______________</p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Main report template -->
+    <template id="report_budget_appropriation">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="budget.report_budget_appropriation_document"/>
+            </t>
+        </t>
+    </template>
+</odoo>

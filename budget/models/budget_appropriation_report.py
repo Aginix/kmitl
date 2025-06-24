@@ -13,8 +13,11 @@ class BudgetAppropriationReport(models.TransientModel):
     move_id = fields.Many2one("budget.move", string="Budget Move", required=True)
 
     @api.model
-    def get_hierarchical_data(self, move_id):
+    def get_hierarchical_data(self, move_id, options=None):
         """Generate hierarchical data structure for budget appropriation preview"""
+        if options is None:
+            options = {}
+        
         move = self.env["budget.move"].browse(move_id)
         
         if not move or move.move_type != 'appropriation':
@@ -23,8 +26,8 @@ class BudgetAppropriationReport(models.TransientModel):
         # Get non-virtual lines only
         lines = move.line_ids.filtered(lambda l: not l.is_virtual_line)
         
-        # Build hierarchy: Activities → Departments → Funds → Budget Accounts → Lines
-        hierarchy = self._build_hierarchy(lines)
+        # Build hierarchy: Activities → [Departments] → Funds → Budget Accounts → Lines
+        hierarchy = self._build_hierarchy(lines, hide_department=options.get('hide_department', False))
         
         # Calculate totals
         total_amount = sum(line.balance for line in lines)
@@ -56,7 +59,7 @@ class BudgetAppropriationReport(models.TransientModel):
             }
         }
 
-    def _build_hierarchy(self, lines):
+    def _build_hierarchy(self, lines, hide_department=False):
         """Build complete hierarchical structure using parent_path for full hierarchy"""
         # Collect all unique analytic accounts from the lines
         all_analytic_ids = set()
@@ -99,7 +102,7 @@ class BudgetAppropriationReport(models.TransientModel):
             line_data_with_paths.append(line_data)
         
         # Build the hierarchy tree from the paths
-        return self._build_tree_from_paths(line_data_with_paths)
+        return self._build_tree_from_paths(line_data_with_paths, hide_department=hide_department)
 
     def _get_analytic_info(self, line, field_name):
         """Extract analytic account information"""
@@ -167,14 +170,14 @@ class BudgetAppropriationReport(models.TransientModel):
         
         return path
 
-    def _build_tree_from_paths(self, line_data_with_paths):
+    def _build_tree_from_paths(self, line_data_with_paths, hide_department=False):
         """Build tree structure from line data with complete paths"""
         # Group lines by their complete paths
         tree_structure = {}
         
         for line_data in line_data_with_paths:
             # Create a unique path key combining all dimensions
-            path_key = self._create_path_key(line_data['paths'])
+            path_key = self._create_path_key(line_data['paths'], hide_department=hide_department)
             
             if path_key not in tree_structure:
                 tree_structure[path_key] = {
@@ -194,9 +197,9 @@ class BudgetAppropriationReport(models.TransientModel):
             tree_structure[path_key]['accounts'][account_key]['lines'].append(line_data)
         
         # Convert to hierarchical structure
-        return self._convert_to_hierarchy_tree(tree_structure)
+        return self._convert_to_hierarchy_tree(tree_structure, hide_department=hide_department)
 
-    def _create_path_key(self, paths):
+    def _create_path_key(self, paths, hide_department=False):
         """Create a unique key from the complete paths"""
         key_parts = []
         
@@ -205,8 +208,8 @@ class BudgetAppropriationReport(models.TransientModel):
             activity_codes = [acc['code'] for acc in paths['activity']]
             key_parts.append('A:' + '|'.join(activity_codes))
         
-        # Department path  
-        if paths.get('department'):
+        # Department path (skip if hidden)
+        if not hide_department and paths.get('department'):
             dept_codes = [acc['code'] for acc in paths['department']]
             key_parts.append('D:' + '|'.join(dept_codes))
         
@@ -217,7 +220,7 @@ class BudgetAppropriationReport(models.TransientModel):
         
         return '||'.join(key_parts)
 
-    def _convert_to_hierarchy_tree(self, tree_structure):
+    def _convert_to_hierarchy_tree(self, tree_structure, hide_department=False):
         """Convert grouped structure to hierarchical tree"""
         # Build a nested tree structure
         root_nodes = {}
@@ -251,8 +254,8 @@ class BudgetAppropriationReport(models.TransientModel):
                 
                 current_level = current_level[node_key]["children"]
             
-            # Add department hierarchy
-            dept_path = paths.get('department', [])
+            # Add department hierarchy (skip if hidden)
+            dept_path = paths.get('department', []) if not hide_department else []
             for i, dept_node in enumerate(dept_path):
                 node_key = f"dept_{dept_node['code']}"
                 
@@ -273,6 +276,7 @@ class BudgetAppropriationReport(models.TransientModel):
             
             # Add fund hierarchy
             fund_path = paths.get('fund', [])
+            dept_levels = 0 if hide_department else len(dept_path)
             for i, fund_node in enumerate(fund_path):
                 node_key = f"fund_{fund_node['code']}"
                 
@@ -280,7 +284,7 @@ class BudgetAppropriationReport(models.TransientModel):
                     current_level[node_key] = {
                         "key": node_key,
                         "type": "fund", 
-                        "level": len(activity_path) + len(dept_path) + i + 1,
+                        "level": len(activity_path) + dept_levels + i + 1,
                         "name": fund_node['name'],
                         "code": fund_node['code'],
                         "children": {},
@@ -291,31 +295,15 @@ class BudgetAppropriationReport(models.TransientModel):
                 
                 current_level = current_level[node_key]["children"]
             
-            # Add accounts and lines
+            # Add individual lines directly (flatten account structure)
             for account_key, account_data in path_data['accounts'].items():
-                account_node_key = f"account_{account_key}"
-                
-                if account_node_key not in current_level:
-                    current_level[account_node_key] = {
-                        "key": account_node_key,
-                        "type": "account",
-                        "level": len(activity_path) + len(dept_path) + len(fund_path) + 1,
-                        "name": account_data['account']['name'],
-                        "code": account_key,
-                        "children": {},
-                        "total_amount": 0,
-                        "line_count": 0,
-                        "expanded": False,
-                    }
-                
-                # Add individual lines
-                account_children = current_level[account_node_key]["children"]
+                # Add individual lines directly under fund level
                 for line in account_data['lines']:
                     line_key = f"line_{line['id']}"
-                    account_children[line_key] = {
+                    current_level[line_key] = {
                         "key": line_key,
                         "type": "line",
-                        "level": len(activity_path) + len(dept_path) + len(fund_path) + 2,
+                        "level": len(activity_path) + dept_levels + len(fund_path) + 1,
                         "name": line['note'] or "รายการ",
                         "code": "",
                         "children": {},
@@ -323,11 +311,11 @@ class BudgetAppropriationReport(models.TransientModel):
                         "line_count": 1,
                         "line_data": line,
                         "expanded": False,
+                        "account_info": {
+                            "code": account_data['account']['code'],
+                            "name": account_data['account']['name'],
+                        }
                     }
-                    
-                    # Update totals
-                    current_level[account_node_key]["total_amount"] += line['balance']
-                    current_level[account_node_key]["line_count"] += 1
         
         # Convert to list format and calculate totals
         return self._convert_dict_to_list_and_calculate_totals(root_nodes)

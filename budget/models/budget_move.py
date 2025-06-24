@@ -319,6 +319,62 @@ class BudgetMove(models.Model):
                 'active_model': 'budget.move',
             }
         }
+    
+    def _get_report_lines(self):
+        """Get hierarchical lines for PDF report"""
+        self.ensure_one()
+        
+        if self.move_type != 'appropriation':
+            return []
+        
+        lines = []
+        # Get non-virtual lines only
+        move_lines = self.line_ids.filtered(lambda l: not l.is_virtual_line)
+        
+        # Build hierarchy data
+        report_obj = self.env['budget.appropriation.report']
+        hierarchy_data = report_obj.get_hierarchical_data(self.id)
+        
+        if 'hierarchy' in hierarchy_data:
+            def add_hierarchy_lines(nodes, level=0):
+                for node in nodes:
+                    # Add node line
+                    line_data = {
+                        'name': node.get('name', ''),
+                        'code': node.get('code', ''),
+                        'level': level,
+                        'amount': node.get('total_amount', 0),
+                        'is_total': node.get('type') in ['activity', 'department', 'fund'],
+                        'type': node.get('type', ''),
+                    }
+                    
+                    # Add account details for line type (now includes account_info)
+                    if node.get('type') == 'line':
+                        if node.get('account_info'):
+                            # New flattened structure with account_info
+                            line_data.update({
+                                'account_code': node['account_info'].get('code', ''),
+                                'account_name': node['account_info'].get('name', ''),
+                                'note': node.get('line_data', {}).get('note', '') if node.get('line_data') else '',
+                            })
+                        elif node.get('line_data'):
+                            # Fallback for old structure
+                            line_info = node['line_data']
+                            line_data.update({
+                                'account_code': line_info.get('account', {}).get('code', ''),
+                                'account_name': line_info.get('account', {}).get('name', ''),
+                                'note': line_info.get('note', ''),
+                            })
+                    
+                    lines.append(line_data)
+                    
+                    # Add children
+                    if node.get('children'):
+                        add_hierarchy_lines(node['children'], level + 1)
+            
+            add_hierarchy_lines(hierarchy_data['hierarchy'])
+        
+        return lines
 
     @contextmanager
     def _check_balanced(self, container):

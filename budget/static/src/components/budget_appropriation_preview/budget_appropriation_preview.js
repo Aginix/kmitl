@@ -20,6 +20,7 @@ export class BudgetAppropriationPreview extends Component {
             expandedNodes: new Set(),
             searchTerm: "",
             filterLevel: "all",
+            hideDepartment: false,
         });
 
         this.orm = useService("orm");
@@ -44,7 +45,7 @@ export class BudgetAppropriationPreview extends Component {
             const result = await this.orm.call(
                 "budget.appropriation.report",
                 "get_hierarchical_data",
-                [moveId]
+                [moveId, { hide_department: this.state.hideDepartment }]
             );
 
             if (result.error) {
@@ -133,13 +134,43 @@ export class BudgetAppropriationPreview extends Component {
         this.state.filterLevel = level;
     }
 
+    onToggleDepartment() {
+        this.state.hideDepartment = !this.state.hideDepartment;
+        this.loadData(); // Reload data with new setting
+    }
+
     onPrint() {
-        window.print();
+        // Expand all nodes before printing
+        const allKeys = this.getAllNodeKeys(this.state.data.hierarchy || []);
+        allKeys.forEach(key => this.state.expandedNodes.add(key));
+        
+        // Small delay to ensure DOM is updated before printing
+        setTimeout(() => {
+            window.print();
+        }, 100);
     }
 
     onExport() {
-        // TODO: Implement export functionality
-        this.notification.add("ฟีเจอร์ Export กำลังพัฒนา", { type: "info" });
+        // Export to PDF using the QWeb report
+        const moveId = this.activeId;
+        if (!moveId) {
+            this.notification.add("ไม่พบข้อมูลเอกสาร", { type: "danger" });
+            return;
+        }
+        
+        // Trigger the PDF report action
+        this.actionService.doAction({
+            type: 'ir.actions.report',
+            report_type: 'qweb-pdf',
+            report_name: 'budget.report_budget_appropriation',
+            report_file: 'budget.report_budget_appropriation',
+            data: null,
+            context: {
+                active_ids: [moveId],
+                active_id: moveId,
+                active_model: 'budget.move',
+            },
+        });
     }
 
     onRefresh() {
