@@ -19,7 +19,7 @@ export class BudgetAppropriationPreview extends Component {
             expandedNodes: new Set(),
             searchTerm: "",
             filterLevel: "all",
-            hideDepartment: false,
+            hideDepartment: true,
         });
 
         this.orm = useService("orm");
@@ -49,7 +49,7 @@ export class BudgetAppropriationPreview extends Component {
             const result = await this.orm.call(
                 "budget.appropriation.report",
                 "get_hierarchical_data",
-                [moveId, { hide_department: this.state.hideDepartment }]
+                [moveId, { hide_department: true }]
             );
 
             if (result.error) {
@@ -58,11 +58,10 @@ export class BudgetAppropriationPreview extends Component {
 
             this.state.data = result;
             
-            // Auto-expand first level by default
+            // Auto-expand all nodes by default
             if (result.hierarchy && result.hierarchy.length > 0) {
-                result.hierarchy.forEach(node => {
-                    this.state.expandedNodes.add(node.key);
-                });
+                const allKeys = this.getAllNodeKeys(result.hierarchy);
+                allKeys.forEach(key => this.state.expandedNodes.add(key));
             }
 
         } catch (error) {
@@ -139,11 +138,6 @@ export class BudgetAppropriationPreview extends Component {
 
     onFilterLevel(level) {
         this.state.filterLevel = level;
-    }
-
-    onToggleDepartment() {
-        this.state.hideDepartment = !this.state.hideDepartment;
-        this.loadData(); // Reload data with new setting
     }
 
     onPrint() {
@@ -230,8 +224,8 @@ export class BudgetAppropriationPreview extends Component {
 
     formatCurrency(amount) {
         return new Intl.NumberFormat('th-TH', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
         }).format(amount);
     }
 

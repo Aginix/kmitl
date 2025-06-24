@@ -59,7 +59,7 @@
                             <field name="date_range_fy_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                             <!-- <field name="department_analytic_id" options='{"no_open": True}' attrs='{"invisible": [("move_type", "not in", ("appropriation"))]}' /> -->
                             <field name="source_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
-                            <field name="journal_id" required="1" />
+                            <field name="journal_id" required="1" attrs="{'readonly': [('id', '!=', False)]}" />
                             <field name="move_type" required="1" />
                         </group>
                     </group>
@@ -273,7 +273,7 @@
                             <field name="ref" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                         <group string="Accounting">
-                            <field name="journal_id" required="1" domain="[('default_budget_type', '!=', False)]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="journal_id" required="1" domain="[('default_budget_type', '!=', False)]" attrs="{'readonly': [('id', '!=', False)]}"/>
                             <field name="source_analytic_id" required="1" options='{"no_create": True, "no_create_edit": True}' domain="[('root_plan_id.code', '=', 'sources')]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="department_analytic_id" options='{"no_create": True, "no_create_edit": True}' domain="[('root_plan_id.code', '=', 'departments')]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="total_amount" readonly="1"/>
@@ -286,7 +286,7 @@
                             <!-- <field name="line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}" context="{'default_move_type': 'appropriation',
                                             'hide_virtual_lines': True}"> -->
                             <field name="appropriation_line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}">
-                                <tree editable="bottom" decoration-muted="is_virtual_line == True">
+                                <tree decoration-muted="is_virtual_line == True">
                                     <field name="budget_type" invisible="1"/>
                                     <field name="is_virtual_line" invisible="1"/>
                                     <field name="department_analytic_id" options='{"no_create": True, "no_create_edit": True}' invisible="1"/>

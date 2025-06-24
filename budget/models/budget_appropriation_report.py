@@ -40,16 +40,27 @@ class BudgetAppropriationReport(models.TransientModel):
                 "state": move.state,
                 "total_amount": total_amount,
                 "currency_symbol": move.currency_id.symbol or "฿",
-                "source_analytic": {
+                "source_analytic_id": {
                     "id": move.source_analytic_id.id,
                     "name": move.source_analytic_id.name,
                     "code": move.source_analytic_id.code,
                 } if move.source_analytic_id else None,
-                "department_analytic": {
+                "department_analytic_id": {
                     "id": move.department_analytic_id.id,
                     "name": move.department_analytic_id.name,
                     "code": move.department_analytic_id.code,
+                    "complete_name": self._get_complete_name_without_codes(move.department_analytic_id),
                 } if move.department_analytic_id else None,
+                "journal_id": {
+                    "id": move.journal_id.id,
+                    "name": move.journal_id.name,
+                    "code": move.journal_id.code if hasattr(move.journal_id, 'code') else '',
+                } if move.journal_id else None,
+                "date_range_fy_id": {
+                    "id": move.date_range_fy_id.id,
+                    "name": move.date_range_fy_id.name,
+                    "display_name": move.date_range_fy_id.display_name,
+                } if move.date_range_fy_id else None,
             },
             "hierarchy": hierarchy,
             "summary": {
@@ -63,6 +74,7 @@ class BudgetAppropriationReport(models.TransientModel):
         """Build complete hierarchical structure using parent_path for full hierarchy"""
         # Collect all unique analytic accounts from the lines
         all_analytic_ids = set()
+        all_budget_account_ids = set()
         
         for line in lines:
             if line.activity_analytic_id:
@@ -71,9 +83,14 @@ class BudgetAppropriationReport(models.TransientModel):
                 all_analytic_ids.add(line.department_analytic_id.id)
             if line.fund_analytic_id:
                 all_analytic_ids.add(line.fund_analytic_id.id)
+            if line.account_id:
+                all_budget_account_ids.add(line.account_id.id)
         
         # Get complete hierarchy paths for all analytic accounts
         hierarchy_paths = self._get_complete_hierarchy_paths(all_analytic_ids)
+        
+        # Get complete hierarchy paths for budget accounts
+        budget_account_paths = self._get_budget_account_hierarchy_paths(all_budget_account_ids)
         
         # Build line data with complete paths
         line_data_with_paths = []
@@ -86,6 +103,17 @@ class BudgetAppropriationReport(models.TransientModel):
                 'fund': self._get_path_hierarchy(line.fund_analytic_id, hierarchy_paths) if line.fund_analytic_id else [],
             }
             
+            # Get budget account hierarchy path
+            budget_account_path = []
+            if line.account_id and line.account_id.id in budget_account_paths:
+                if line.account_id.parent_path:
+                    path_ids = [int(id_str) for id_str in line.account_id.parent_path.strip('/').split('/') if id_str]
+                    for account_id in path_ids:
+                        if account_id in budget_account_paths:
+                            budget_account_path.append(budget_account_paths[account_id])
+                else:
+                    budget_account_path.append(budget_account_paths[line.account_id.id])
+            
             line_data = {
                 "id": line.id,
                 "account": {
@@ -93,6 +121,7 @@ class BudgetAppropriationReport(models.TransientModel):
                     "name": line.account_id.name,
                     "code": line.account_id.code,
                 },
+                "budget_account_path": budget_account_path,
                 "balance": line.balance,
                 "note": line.note or "",
                 "analytic_distribution": line.analytic_distribution or {},
@@ -115,6 +144,28 @@ class BudgetAppropriationReport(models.TransientModel):
             "name": analytic_account.name,
             "code": analytic_account.code or "",
         }
+    
+    def _get_complete_name_without_codes(self, analytic_account):
+        """Get complete hierarchy name without codes and slashes"""
+        if not analytic_account:
+            return ""
+        
+        # If account has parent_path, build hierarchy of names
+        if analytic_account.parent_path:
+            # Extract all IDs from parent_path
+            path_ids = [int(id_str) for id_str in analytic_account.parent_path.strip('/').split('/') if id_str]
+            
+            # Get all parent accounts
+            parent_accounts = self.env['account.analytic.account'].browse(path_ids)
+            
+            # Build the complete name from parent names (without codes)
+            names = [acc.name for acc in parent_accounts if acc.name]
+            
+            # Join with space instead of slash
+            return ' '.join(names)
+        else:
+            # No hierarchy, just return the name
+            return analytic_account.name
 
 
     def _get_complete_hierarchy_paths(self, analytic_ids):
@@ -147,6 +198,40 @@ class BudgetAppropriationReport(models.TransientModel):
                 'parent_id': account.parent_id.id if account.parent_id else None,
                 'parent_path': account.parent_path or '',
                 'root_plan_code': account.root_plan_id.code if account.root_plan_id else '',
+                'level': len(account.parent_path.strip('/').split('/')) if account.parent_path else 1
+            }
+        
+        return hierarchy_map
+    
+    def _get_budget_account_hierarchy_paths(self, account_ids):
+        """Get complete hierarchy paths for budget accounts using parent_path"""
+        if not account_ids:
+            return {}
+            
+        # Get all related budget accounts (including parents) using parent_path
+        budget_accounts = self.env['budget.account'].browse(list(account_ids))
+        all_related_ids = set()
+        
+        for account in budget_accounts:
+            if account.parent_path:
+                # Extract all IDs from parent_path (format: "1/2/3/")
+                path_ids = [int(id_str) for id_str in account.parent_path.strip('/').split('/') if id_str]
+                all_related_ids.update(path_ids)
+            else:
+                all_related_ids.add(account.id)
+        
+        # Fetch all related accounts with their hierarchy information
+        all_accounts = self.env['budget.account'].browse(list(all_related_ids))
+        
+        # Build hierarchy mapping
+        hierarchy_map = {}
+        for account in all_accounts:
+            hierarchy_map[account.id] = {
+                'id': account.id,
+                'name': account.name,
+                'code': account.code or '',
+                'parent_id': account.parent_id.id if account.parent_id else None,
+                'parent_path': account.parent_path or '',
                 'level': len(account.parent_path.strip('/').split('/')) if account.parent_path else 1
             }
         
@@ -295,27 +380,48 @@ class BudgetAppropriationReport(models.TransientModel):
                 
                 current_level = current_level[node_key]["children"]
             
-            # Add individual lines directly (flatten account structure)
+            # Add budget account hierarchy and lines
             for account_key, account_data in path_data['accounts'].items():
-                # Add individual lines directly under fund level
+                # Process each line under this account
                 for line in account_data['lines']:
-                    line_key = f"line_{line['id']}"
-                    current_level[line_key] = {
-                        "key": line_key,
-                        "type": "line",
-                        "level": len(activity_path) + dept_levels + len(fund_path) + 1,
-                        "name": line['note'] or "รายการ",
-                        "code": "",
-                        "children": {},
-                        "total_amount": line['balance'],
-                        "line_count": 1,
-                        "line_data": line,
-                        "expanded": False,
-                        "account_info": {
-                            "code": account_data['account']['code'],
-                            "name": account_data['account']['name'],
-                        }
-                    }
+                    # Build budget account hierarchy
+                    account_level = current_level
+                    budget_account_path = line.get('budget_account_path', [])
+                    
+                    # Create hierarchy for budget accounts
+                    base_level = len(activity_path) + dept_levels + len(fund_path)
+                    for j, account_node in enumerate(budget_account_path):
+                        account_node_key = f"account_{account_node['code']}"
+                        
+                        if account_node_key not in account_level:
+                            account_level[account_node_key] = {
+                                "key": account_node_key,
+                                "type": "account",
+                                "level": base_level + j + 1,
+                                "name": account_node['name'],
+                                "code": account_node['code'],
+                                "children": {},
+                                "total_amount": 0,
+                                "line_count": 0,
+                                "expanded": False,
+                            }
+                        
+                        # If this is the last account in hierarchy and it matches our line's account,
+                        # add the line data to it
+                        if j == len(budget_account_path) - 1 and account_node['id'] == line['account']['id']:
+                            # Add line details to the final account node
+                            if 'line_details' not in account_level[account_node_key]:
+                                account_level[account_node_key]['line_details'] = []
+                            account_level[account_node_key]['line_details'].append({
+                                "id": line['id'],
+                                "balance": line['balance'],
+                                "note": line['note'],
+                            })
+                            # Update amount for this specific line
+                            account_level[account_node_key]['total_amount'] += line['balance']
+                            account_level[account_node_key]['line_count'] += 1
+                        
+                        account_level = account_level[account_node_key]["children"]
         
         # Convert to list format and calculate totals
         return self._convert_dict_to_list_and_calculate_totals(root_nodes)
@@ -325,17 +431,25 @@ class BudgetAppropriationReport(models.TransientModel):
         result = []
         
         for node_key, node_data in nodes_dict.items():
-            # Convert children
+            # Convert children first
             if node_data["children"]:
                 node_data["children"] = self._convert_dict_to_list_and_calculate_totals(node_data["children"])
                 
-                # Calculate totals from children only for parent nodes (not account nodes)
-                if node_data["type"] != "account":
-                    node_data["total_amount"] = 0
-                    node_data["line_count"] = 0
-                    for child in node_data["children"]:
-                        node_data["total_amount"] += child["total_amount"]
-                        node_data["line_count"] += child["line_count"]
+                # Calculate totals from children
+                children_total = sum(child["total_amount"] for child in node_data["children"])
+                children_count = sum(child["line_count"] for child in node_data["children"])
+                
+                # For nodes with their own amounts (like account nodes with line_details),
+                # we keep their amounts and add children amounts
+                # For other nodes, we only use children amounts
+                if node_data.get("line_details"):
+                    # This node has its own line details, add children totals to existing
+                    node_data["total_amount"] += children_total
+                    node_data["line_count"] += children_count
+                else:
+                    # This node doesn't have its own lines, use only children totals
+                    node_data["total_amount"] = children_total
+                    node_data["line_count"] = children_count
             
             # Remove the children key if it's empty and convert to list
             if isinstance(node_data["children"], dict) and not node_data["children"]:

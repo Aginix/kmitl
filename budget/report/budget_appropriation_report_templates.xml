@@ -5,32 +5,23 @@
             <t t-foreach="docs" t-as="doc">
                 <t t-call="web.external_layout">
                     <div class="page">
-                        <!-- Report Header -->
-                        <div class="text-center mb-4">
-                            <h2>รายงานการจัดสรรงบประมาณ</h2>
-                            <h3>Budget Appropriation Report</h3>
-                            <p class="mb-0">
-                                <strong>เลขที่เอกสาร:</strong> <span t-field="doc.name"/>
-                                <span class="mx-3">|</span>
-                                <strong>วันที่:</strong> <span t-field="doc.date"/>
-                                <span class="mx-3">|</span>
-                                <strong>สถานะ:</strong> <span t-field="doc.state"/>
-                            </p>
-                        </div>
-
                         <!-- Summary Information -->
                         <div class="row mb-3">
                             <div class="col-6">
                                 <table class="table table-sm">
                                     <tr>
-                                        <td><strong>แหล่งงบประมาณ:</strong></td>
+                                        <td>
+                                            <strong>แหล่งงบประมาณ:</strong>
+                                        </td>
                                         <td>
                                             <span t-if="doc.source_analytic_id" t-field="doc.source_analytic_id.display_name"/>
                                             <span t-else="">-</span>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><strong>ส่วนงาน:</strong></td>
+                                        <td>
+                                            <strong>ส่วนงาน:</strong>
+                                        </td>
                                         <td>
                                             <span t-if="doc.department_analytic_id" t-field="doc.department_analytic_id.display_name"/>
                                             <span t-else="">-</span>
@@ -41,17 +32,20 @@
                             <div class="col-6">
                                 <table class="table table-sm">
                                     <tr>
-                                        <td><strong>หมายเหตุ:</strong></td>
+                                        <td>
+                                            <strong>หมายเหตุ:</strong>
+                                        </td>
                                         <td>
                                             <span t-if="doc.note" t-field="doc.note"/>
                                             <span t-else="">-</span>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><strong>ยอดรวม:</strong></td>
+                                        <td>
+                                            <strong>ยอดรวม:</strong>
+                                        </td>
                                         <td class="text-right">
-                                            <strong t-field="doc.total_amount" 
-                                                    t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                            <strong t-field="doc.total_amount" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                                         </td>
                                     </tr>
                                 </table>
@@ -75,12 +69,14 @@
                                                 <t t-if="line.get('is_total')">
                                                     <strong>
                                                         <t t-esc="line.get('name')"/>
-                                                        <t t-if="line.get('code')"> (<t t-esc="line.get('code')"/>)</t>
+                                                        <t t-if="line.get('code')"> (                                                            <t t-esc="line.get('code')"/>
+)</t>
                                                     </strong>
                                                 </t>
                                                 <t t-elif="line.get('account_code')">
                                                     <div>
-                                                        <t t-esc="line.get('account_code')"/> - <t t-esc="line.get('account_name')"/>
+                                                        <t t-esc="line.get('account_code')"/>
+ -                                                        <t t-esc="line.get('account_name')"/>
                                                     </div>
                                                     <t t-if="line.get('note')">
                                                         <div class="text-muted small" t-att-style="'margin-left: %spx;' % ((line.get('level', 0) * 20) + 22)">
@@ -91,7 +87,8 @@
                                                 <t t-else="">
                                                     <t t-esc="line.get('name')"/>
                                                     <t t-if="line.get('code')">
-                                                        <span class="text-muted"> (<t t-esc="line.get('code')"/>)</span>
+                                                        <span class="text-muted"> (                                                            <t t-esc="line.get('code')"/>
+)</span>
                                                     </t>
                                                 </t>
                                             </div>
@@ -103,15 +100,14 @@
                                         </td>
                                     </tr>
                                 </t>
-                                
+
                                 <!-- Total Row -->
                                 <tr class="font-weight-bold" style="background-color: #f0f0f0;">
                                     <td class="text-right">
                                         <strong>ยอดรวมทั้งหมด / Grand Total</strong>
                                     </td>
                                     <td class="text-right">
-                                        <strong t-field="doc.total_amount" 
-                                                t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        <strong t-field="doc.total_amount" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                                     </td>
                                 </tr>
                             </tbody>
