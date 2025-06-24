@@ -1,0 +1,27 @@
+<odoo>
+    <record id="module_category_project_base" model="ir.module.category">
+        <field name="name">Project</field>
+        <field name="sequence">15</field>
+    </record>
+
+    <record id="module_category_project_kmitl" model="ir.module.category">
+        <field name="name">Project KMITL</field>
+        <field name="parent_id" ref="project_kmitl.module_category_project_base" />
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="group_project_kmitl_user" model="res.groups">
+        <field name="name">Project KMITL User</field>
+        <field name="category_id" ref="project_kmitl.module_category_project_kmitl" />
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]" />
+    </record>
+
+    <record id="group_project_kmitl_manager" model="res.groups">
+        <field name="name">Project KMITL Manager</field>
+        <field name="category_id" ref="project_kmitl.module_category_project_kmitl" />
+        <field
+            name="implied_ids"
+            eval="[(4, ref('project_kmitl.group_project_kmitl_user'))]"
+        />
+    </record>
+</odoo>

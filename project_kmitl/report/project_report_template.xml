@@ -3,7 +3,7 @@
 
     <template id="project_kmitl_report_template">
         <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="doc">
+            <t t-foreach="docs or [project]" t-as="doc">
                 <t t-call="web.external_layout">
                     <div class="page">
                         <div class="oe_structure" />

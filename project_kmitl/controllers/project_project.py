@@ -15,5 +15,5 @@ class ProjectProject(http.Controller):
             return request.render("website.403")
 
         return request.render(
-            "project_kmitl.public_project_template", {"project": project}
+            "project_kmitl.project_kmitl_report_template", {"project": project}
         )
