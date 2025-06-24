@@ -1,0 +1,25 @@
+$o-colors-original: lighten(#000, 46.7%), #f06050, #f4a460, #f7cd1f, #6cc1ed, #814968,
+    #eb7e7f, #2c8397, #475577, #d6145f, #30c381, #9365b8 !default;
+
+$o-colors-secondary-original: #aa4b6b, #30c381, #97743a, #f7cd1f, #4285f4, #8e24aa,
+    #d6145f, #173e43, #348f50, #aa3a38, #795548, #5e0231, #6be585, #999966, #e9d362,
+    #b56969, #bdc3c7, #649173 !default;
+
+$o-colors: () !default;
+$o-colors-secondary: () !default;
+
+@each $-color in $o-colors-original {
+    $-adjusted: saturate(mix($-color, $o-black, 50%), 80%);
+    $o-colors: append($o-colors, $-adjusted);
+}
+
+@each $-color in $o-colors-secondary-original {
+    $-adjusted: saturate(mix($-color, $o-black, 50%), 80%);
+    $o-colors-secondary: append($o-colors-secondary, $-adjusted);
+}
+
+// = ControlPanel
+// TODO: move in 'control_panel.variables.scss' when it will exist
+// in bright-mode
+// ============================================================================
+$o-control-panel-background-color: $o-gray-200 !default;
