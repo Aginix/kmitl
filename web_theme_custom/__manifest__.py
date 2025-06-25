@@ -5,16 +5,14 @@
     "category": "Hidden",
     "version": "1.0",
     "description": """
-Odoo Enterprise Web Client.
+Odoo KMITL Web Client.
 ===========================
 
-This module modifies the web addon to provide Enterprise design and responsiveness.
+This module modifies the web addon to provide Enterprise andKMITL design and responsiveness.
         """,
     "depends": ["web"],
-    "auto_install": True,
-    "data": [
-        "views/webclient_templates.xml",
-    ],
+    "auto_install": False,
+    "data": [],
     "assets": {
         "web._assets_primary_variables": [
             (

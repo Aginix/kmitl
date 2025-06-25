@@ -2,14 +2,17 @@
     "name": "Web_theme_classic_special",
     "version": "16.0.1.0.0",
     "summary": """ Web_theme_classic_special Summary """,
-    "author": "",
-    "website": "",
-    "category": "",
-    "depends": ["web"],
-    "data": [],
+    "author": "Aginix",
+    "website": "https://github.com/Aginix/kmitl",
+    "category": "Extra Tools",
+    "depends": ["web", "web_theme_classic"],
     "assets": {
         "web.assets_backend": [
-            "/web_theme_classic_special/static/src/scss/web_theme_classic.scss",
+            (
+                "replace",
+                "/web_theme_classic/static/src/scss/web_theme_classic.scss",
+                "/web_theme_classic_special/static/src/scss/web_theme_classic.scss",
+            ),
         ],
     },
     "installable": True,
