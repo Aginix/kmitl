@@ -1,7 +1,7 @@
 {
-    "name": "Web_theme_classic_special",
+    "name": "web_theme_classic_extended",
     "version": "16.0.1.0.0",
-    "summary": """ Web_theme_classic_special Summary """,
+    "summary": """ web_theme_classic_extended Summary """,
     "author": "Aginix",
     "website": "https://github.com/Aginix/kmitl",
     "category": "Extra Tools",
@@ -11,7 +11,7 @@
             (
                 "replace",
                 "/web_theme_classic/static/src/scss/web_theme_classic.scss",
-                "/web_theme_classic_special/static/src/scss/web_theme_classic.scss",
+                "/web_theme_classic_extended/static/src/scss/web_theme_classic.scss",
             ),
         ],
     },
