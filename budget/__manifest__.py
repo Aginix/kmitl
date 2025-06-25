@@ -18,8 +18,8 @@
         "views/budget_commitment_views.xml",
         "views/budget_expenditure_report_views.xml",
         "views/budget_journal_views.xml",
-        "views/budget_menus.xml",
         "views/budget_move_views.xml",
+        "views/budget_menus.xml",
         "views/budget_procurement_views.xml",
         "views/budget_template_views.xml",
         "report/budget_appropriation_report_templates.xml"
