@@ -63,7 +63,7 @@ class BudgetTemplateLine(models.Model):
     _name = "budget.template.line"
     _description = "Budget Template Lines"
     _parent_store = True
-    _order = "sequence"
+    _order = "code"
 
     _inherit = ["mail.thread"]
 
