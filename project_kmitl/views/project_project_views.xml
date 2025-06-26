@@ -13,6 +13,34 @@
             >
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//form/header" position="inside">
+                <button
+                    name="action_draft"
+                    string="set as draft"
+                    type="object"
+                    class="btn btn-secondary"
+                    attrs="{'invisible': [('state', '=', 'draft')]}"
+                    groups="project_kmitl.group_project_kmitl_manager"
+                />
+
+                <button
+                    name="action_in_progress"
+                    string="ดำเนินการ"
+                    type="object"
+                    class="btn btn-primary"
+                    attrs="{'invisible': [('state', '!=', 'approve')]}"
+                    groups="project_kmitl.group_project_kmitl_manager"
+                />
+
+                <button
+                    name="action_done"
+                    string="สิ้นสุดโครงการ"
+                    type="object"
+                    class="btn btn-primary"
+                    attrs="{'invisible': [('state', '!=', 'in_progress')]}"
+                    groups="project_kmitl.group_project_kmitl_manager"
+                />
+            </xpath>
             <xpath
                 expr="//form/header/button[@name='%(project.project_share_wizard_action)d'][2]"
                 position="attributes"

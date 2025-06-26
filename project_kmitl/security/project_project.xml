@@ -1,6 +1,6 @@
 <odoo>
     <record id="module_category_project_base" model="ir.module.category">
-        <field name="name">Project</field>
+        <field name="name">Project KMITL</field>
         <field name="sequence">15</field>
     </record>
 

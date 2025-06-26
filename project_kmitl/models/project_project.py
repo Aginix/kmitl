@@ -184,6 +184,18 @@ class ProjectProject(models.Model):
         for record in self:
             record.state = "validate"
 
+    def action_in_progress(self):
+        for record in self:
+            record.state = "in_progress"
+
+    def action_done(self):
+        for record in self:
+            record.state = "done"
+
+    def action_draft(self):
+        for record in self:
+            record.state = "draft"
+
     def action_open_wizard(self):
         self.ensure_one()
         return {
