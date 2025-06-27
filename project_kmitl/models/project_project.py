@@ -37,7 +37,9 @@ class ProjectProject(models.Model):
     nesdc_plan_id = fields.Many2one(
         "project.strategic.plan",
         string="ความสอดคล้องกับยุทธศาสตร์ แผนระดับที่ 2 ฉบับที่ 13",
-        domain="[('level', '=', 2)]",
+        domain=lambda self: [
+            ('id', 'child_of', self.env.ref('project_kmitl.nesdc_plan13').id)
+        ],
         tracking=True,
     )
     kmitl_plan_id = fields.Many2one(
