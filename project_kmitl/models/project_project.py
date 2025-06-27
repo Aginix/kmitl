@@ -21,7 +21,7 @@ class ProjectProject(models.Model):
         string="ประเภทแหล่งเงิน",
         tracking=True,
     )
-    introduction = fields.Html(string="หลักการและเหตุผล", sanitize_attributes=False)
+    introduction = fields.Html(string="หลักการและเหตุผล", sanitize_attributes=False, tracking=True)
     national_strategy_id = fields.Many2one(
         "project.strategic.plan",
         string="ความสอดคล้องกับยุทธศาสตร์ แผนระดับที่ 1",
@@ -137,7 +137,7 @@ class ProjectProject(models.Model):
         string="แผนการดําเนินงานและแผนการใช้จ่ายงบประมาณ",
         tracking=True,
     )
-    expected_result = fields.Text(string="ผลที่คาดว่าจะได้รับ")
+    expected_result = fields.Text(string="ผลที่คาดว่าจะได้รับ", tracking=True)
     evaluation_method_ids = fields.Many2many(
         "project.evaluation.methods",
         string="วิธีการ/เครื่องมือติดตามและประเมินผล มีตัวเลือกดังนี้",
@@ -161,6 +161,7 @@ class ProjectProject(models.Model):
         ],
         string="สถานะการขออนุมัติโครงการ",
         default="draft",
+        tracking=True,
     )
     change_type = fields.Selection(
         [("major", "กระทบแผน/งบประมาณ"), ("patch", "ไม่กระทบแผน/งบประมาณ")],
