@@ -1,10 +1,10 @@
 {
-    "name": "Project_kmitl",
+    "name": "KMITL Project",
     "version": "16.0.1.0.0",
-    "summary": """ Project_kmitl Summary """,
-    "author": "",
-    "website": "",
-    "category": "",
+    "summary": """ Project KMITL """,
+    "author": "Aginix Technologies",
+    "website": "https://github.com/aginix/kmitl",
+    "category": "KMITL/Project",
     "depends": [
         "base",
         "web",

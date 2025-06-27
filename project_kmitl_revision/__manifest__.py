@@ -1,10 +1,10 @@
 {
-    "name": "Project_kmitl_revision",
+    "name": "KMITL Project Revision",
     "version": "16.0.1.0.0",
-    "summary": """ Project_kmitl_revision Summary """,
-    "author": "",
-    "website": "",
-    "category": "",
+    "summary": """ Project KMITL Revision""",
+    "author": "Aginix Technologies",
+    "website": "https://github.com/aginix/kmitl",
+    "category": "KMITL/Project",
     "depends": ["base", "web", "base_revision", "project_kmitl"],
     "data": [
         "security/ir.model.access.csv",
