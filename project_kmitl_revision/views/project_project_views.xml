@@ -95,4 +95,23 @@
         </field>
     </record>
 
+    <!-- View project.project tree -->
+    <record id="view_project_project_custom_tree_inherit" model="ir.ui.view">
+        <field name="name">view.project.project.tree</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project_kmitl.project_project_tree_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="state" invisible="1" />
+            </xpath>
+            <xpath expr="//tree" position="attributes">
+                <attribute name="decoration-success">state == 'approve'</attribute>
+                <attribute name="decoration-warning">state == 'revised'</attribute>
+                <attribute name="decoration-info">state in ('draft', 'submit', 'validate', 'in_progress')</attribute>
+                <attribute name="decoration-danger">state == 'cancel'</attribute>
+                <attribute name="decoration-primary">state == 'done'</attribute>
+            </xpath>
+        </field>
+    </record>
+
   </odoo>

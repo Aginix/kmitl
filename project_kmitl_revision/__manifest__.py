@@ -5,11 +5,11 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL/Project",
-    "depends": ["base", "web", "base_revision", "project_kmitl"],
+    "depends": ["base", "web", "base_revision", "project", "project_kmitl"],
     "data": [
         "security/ir.model.access.csv",
         "views/project_project_views.xml",
-        "wizards/project_revision_confirm_wizard.xml",
+        "wizards/project_revision_confirm_wizard.xml"
     ],
     "assets": {
         "web.assets_backend": ["project_kmitl_revision/static/src/**/*"],
