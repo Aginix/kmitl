@@ -160,21 +160,19 @@ class BudgetAppropriationOverviewReport(models.TransientModel):
     def get_filter_options(self):
         """Get available options for filters"""
         # Get fiscal years that have budget appropriations
-        fiscal_years = self.env['date.range'].search([
-            ('type_id.fiscal_year', '=', True)
-        ], order='date_start desc')
+        fiscal_years = self.env['account.fiscal.year'].search([], order='date_from desc')
 
         # Get departments
         departments = self.env['account.analytic.account'].search([
-            ('plan_id.code', '=', 'KTL_DEPARTMENT')
+            ('plan_id.code', '=', 'departments')
         ], order='name')
 
         return {
             'fiscal_years': [{
                 'id': fy.id,
                 'name': fy.name,
-                'date_start': fy.date_start.strftime('%Y-%m-%d'),
-                'date_end': fy.date_end.strftime('%Y-%m-%d'),
+                'date_start': fy.date_from.strftime('%Y-%m-%d'),
+                'date_end': fy.date_to.strftime('%Y-%m-%d'),
             } for fy in fiscal_years],
             'departments': [{
                 'id': dept.id,

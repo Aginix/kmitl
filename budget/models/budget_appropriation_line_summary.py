@@ -78,7 +78,8 @@ class BudgetAppropriationLineSummary(models.Model):
     @api.depends('child_ids.amount')
     def _compute_debit_credit_balance(self):
         for record in self.filtered("child_ids"):
-
+            # TODO: Implement debit credit balance computation
+            pass
 
     def init(self):
         query = """

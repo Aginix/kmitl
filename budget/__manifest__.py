@@ -12,6 +12,7 @@
         "data/budget_move_data.xml",
         "data/budget.account.csv",
         "data/budget_paper_format.xml",
+        "data/budget_sequence.xml",
         "security/ir.model.access.csv",
         "views/budget_account_views.xml",
         "views/budget_appropriation_views.xml",
@@ -20,9 +21,12 @@
         "views/budget_move_views.xml",
         "views/budget_template_views.xml",
         "views/budget_menus.xml",
+        "views/budget_report_views.xml",
+        "views/budget_execution_status_report_views.xml",
         "views/budget_expenditure_report_views.xml",
         "views/budget_appropriation_overview_views.xml",
-        "report/budget_appropriation_report_templates.xml"
+        "report/budget_appropriation_report_templates.xml",
+        "report/budget_execution_status_report_templates.xml"
     ],
     "assets": {
         "web.assets_backend": ["budget/static/src/**/*"],

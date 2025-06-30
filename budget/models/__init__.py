@@ -1,7 +1,5 @@
 from . import budget_template
 from . import budget_appropriation
-from . import budget_commitment
-from . import budget_commitment_line
 from . import budget_template_structure
 from . import budget_appropriation_line
 from . import budget_account
@@ -10,3 +8,13 @@ from . import budget_move_line
 from . import budget_journal
 from . import budget_appropriation_report
 from . import budget_appropriation_overview_report
+
+# Modern budget models (renamed from _new to normal)
+from . import budget_commitment
+from . import budget_commitment_line
+from . import budget_report
+from . import budget_report_line
+
+# Budget execution status report
+from . import budget_execution_status_report
+from . import budget_execution_status_line

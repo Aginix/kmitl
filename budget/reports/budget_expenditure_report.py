@@ -13,14 +13,11 @@ class BudgetExpenditureReport(models.AbstractModel):
     def _prepare_lines(self, budget_template):
         lines = []
         budget_appropriation_map = self._get_budget_appropriations(budget_template.id)
-        budget_commitment_map = self._get_budget_commitments(budget_template.id)
         for template_line in budget_template.line_ids:
             budget_appropriations = budget_appropriation_map.get(template_line.code, [])
-            budget_commitments = budget_commitment_map.get(template_line.code, [])
             prepare_line = self._prepare_line(
                 template_line,
                 budget_appropriations=budget_appropriations,
-                budget_commitments=budget_commitments,
                 budget_reserveds=[],
                 budget_obligated=[],
             )
@@ -44,28 +41,10 @@ class BudgetExpenditureReport(models.AbstractModel):
 
         return line_map
 
-    def _get_budget_commitments(self, budget_template_id):
-        line_map = {}
-        lines = self.env["budget.commitment.line"].search_read(
-            [
-                "&",
-                ["template_id", "=", budget_template_id],
-                ["parent_state", "=", "submitted"],
-            ]
-        )
-
-        for line in lines:
-            if not line_map.get(line["code"]):
-                line_map[line["code"]] = []
-            line_map[line["code"]].append(line)
-
-        return line_map
-
     def _prepare_line(
         self,
         template_line,
         budget_appropriations,
-        budget_commitments,
         budget_reserveds,
         budget_obligated,
     ):
@@ -73,7 +52,7 @@ class BudgetExpenditureReport(models.AbstractModel):
         # (a)
         line["a"] = sum([x["amount"] for x in budget_appropriations])
         # (b)
-        line["b"] = sum([x["amount"] for x in budget_commitments])
+        line["b"] = 0
         # (c)
         line["c"] = sum([x["amount"] for x in budget_reserveds])
         # (d)

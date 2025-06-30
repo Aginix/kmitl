@@ -164,6 +164,7 @@ class BudgetMove(models.Model):
         selection=[
             ("entry", "Budget Entry"),
             ("appropriation", "Budget Appropriation"),
+            ("consume", "Budget Consumption"),
         ],
         string="Type",
         required=True,
@@ -199,6 +200,15 @@ class BudgetMove(models.Model):
         domain=[("is_virtual_line", "=", False)],
         readonly=False,
         copy=False,
+    )
+
+    # Link to budget commitment
+    commitment_id = fields.Many2one(
+        comodel_name="budget.commitment",
+        string="Related Commitment",
+        help="Budget commitment that this move is consuming from",
+        index=True,
+        ondelete="set null",
     )
 
     @api.depends("journal_id", "move_type")
