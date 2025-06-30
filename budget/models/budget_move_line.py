@@ -82,8 +82,8 @@ class BudgetMoveLine(models.Model):
         copy=False,
     )
     company_id = fields.Many2one(related="move_id.company_id", store=True)
-    currency_id = fields.Many2one(related="company_id.currency_id", store=True)
-    company_currency_id = fields.Many2one(related="company_id.currency_id", store=True)
+    currency_id = fields.Many2one(string="Currency", related="company_id.currency_id", store=True)
+    company_currency_id = fields.Many2one(string="Company Currency", related="company_id.currency_id", store=True)
     fund_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="กองทุน",
