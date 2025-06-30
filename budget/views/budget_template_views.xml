@@ -4,10 +4,7 @@
     <record id="action_budget_template_structure" model="ir.actions.client">
         <field name="name">Budget Template Structure</field>
         <field name="tag">budget_template_structure</field>
-        <field
-            name="context"
-            eval="{'model': 'report.budget.budget_template_structure'}"
-        />
+        <field name="context" eval="{'model': 'report.budget.budget_template_structure'}" />
     </record>
 
     <!-- View budget.template View Tree -->
@@ -31,13 +28,7 @@
             <form string="Budget Template">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button
-                            name="%(action_budget_template_structure)d"
-                            type="action"
-                            class="oe_stat_button"
-                            icon="fa-bars"
-                            string="Structure"
-                        />
+                        <button name="%(action_budget_template_structure)d" type="action" class="oe_stat_button" icon="fa-bars" string="Structure" />
                     </div>
                     <group>
                         <group>
@@ -49,21 +40,16 @@
                     </group>
                     <notebook>
                         <page name="line_ids" string="รหัสงบประมาณ">
-                            <field
-                                name="line_ids"
-                                widget='budget_template_line'
-                                style="max-width: 100%; display: block;"
-                            >
+                            <field name="line_ids">
                                 <tree limit="2000">
                                     <field name="code" />
                                     <field name="name" />
                                     <field name="parent_id" />
                                     <field name="budget_type" invisible="1" />
-                                    <field
-                                        name="fund_analytic_ids"
-                                        widget="many2many_tags"
-                                    />
-                                    <field name="budgetable" />
+                                    <field name="fund_analytic_ids" widget="many2many_tags" />
+                                    <field name="budgetable" attrs="{
+                                        'invisible': [('budget_type', '!=', 'expense')],
+                                    }" />
                                 </tree>
                             </field>
                         </page>
@@ -83,12 +69,7 @@
         <field name="arch" type="xml">
             <search>
                 <group expand="1" string="Group By">
-                    <filter
-                        string="Name"
-                        name="name"
-                        domain="[]"
-                        context="{'group_by':'name'}"
-                    />
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}" />
                 </group>
             </search>
         </field>
@@ -106,10 +87,7 @@
                             <field name="code" />
                             <field name="name" />
                             <field name="sequence" />
-                            <field
-                                name="budgetable"
-                                attrs="{'invisible': [('budget_type', '!=', 'expense')]}"
-                            />
+                            <field name="budgetable" attrs="{'invisible': [('budget_type', '!=', 'expense')]}" />
                         </group>
                         <group>
                             <field name="parent_id" />

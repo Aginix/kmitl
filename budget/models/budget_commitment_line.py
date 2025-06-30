@@ -5,6 +5,7 @@ from odoo import api, fields, models
 _logger = logging.getLogger(__name__)
 
 
+
 class BudgetCommitmentLine(models.Model):
     _name = "budget.commitment.line"
     _description = "Budget Commitment Line"
@@ -44,7 +45,7 @@ class BudgetCommitmentLine(models.Model):
         readonly=True,
         digits="Budget Precision",
     )
-    note = fields.Text()
+    note = fields.Text(tracking=True)
 
     # === Parent fields === #
     name = fields.Char(
