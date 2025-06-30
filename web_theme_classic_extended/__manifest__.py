@@ -1,8 +1,8 @@
 {
-    "name": "web_theme_classic_extended",
+    "name": "Web Theme Classic Extended",
     "version": "16.0.1.0.0",
-    "summary": """ web_theme_classic_extended Summary """,
-    "author": "Aginix",
+    "summary": """ Web Theme Classic Extended Summary """,
+    "author": "Aginix Technologies",
     "website": "https://github.com/Aginix/kmitl",
     "category": "Extra Tools",
     "depends": ["web", "web_theme_classic"],

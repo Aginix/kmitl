@@ -1,14 +1,16 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 {
-    "name": "Web Kmitl",
-    "category": "Hidden",
-    "version": "1.0",
+    "name": "Web KMITL",
+    "category": "KMITL",
+    "version": "16.0.1.0.0",
+    "author": "Aginix Technologies",
+    "website": "https://github.com/Aginix/kmitl",
     "description": """
 Odoo KMITL Web Client.
 ===========================
 
-This module modifies the web addon to provide Enterprise andKMITL design and responsiveness.
+This module modifies the web addon to provide KMITL design and responsiveness.
         """,
     "depends": ["web"],
     "auto_install": False,
@@ -40,14 +42,6 @@ This module modifies the web addon to provide Enterprise andKMITL design and res
                 "web_kmitl/static/src/scss/bootstrap_overridden.scss",
             ),
         ],
-        "web.assets_common": [
-            "web_kmitl/static/src/webclient/home_menu/home_menu_background.scss",
-            "web_kmitl/static/src/webclient/navbar/navbar.scss",
-        ],
-        "web.assets_frontend": [
-            "web_kmitl/static/src/webclient/home_menu/home_menu_background.scss",
-            "web_kmitl/static/src/webclient/navbar/navbar.scss",
-        ],
         "web.assets_backend": [
             (
                 "replace",
@@ -70,12 +64,6 @@ This module modifies the web addon to provide Enterprise andKMITL design and res
             "web_kmitl/static/src/legacy/scss/touch_device.scss",
             "web_kmitl/static/src/legacy/scss/form_view_mobile.scss",
             "web_kmitl/static/src/legacy/scss/modal_mobile.scss",
-            "web_kmitl/static/src/webclient/**/*.scss",
-            (
-                "remove",
-                "web_kmitl/static/src/webclient/home_menu/home_menu_background.scss",
-            ),
-            ("remove", "web_kmitl/static/src/webclient/navbar/navbar.scss"),
             "web_kmitl/static/src/views/**/*.scss",
         ],
     },
