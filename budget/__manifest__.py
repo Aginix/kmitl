@@ -22,6 +22,7 @@
         "views/budget_menus.xml",
         "views/budget_expenditure_report_views.xml",
         "views/budget_procurement_views.xml",
+        "views/budget_appropriation_overview_views.xml",
         "report/budget_appropriation_report_templates.xml"
     ],
     "assets": {
