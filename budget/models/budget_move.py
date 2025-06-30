@@ -138,6 +138,12 @@ class BudgetMove(models.Model):
         check_company=True,
         tracking=True,
     )
+    budget_type = fields.Selection(
+        related='journal_id.default_budget_type',
+        string='Budget Type',
+        store=True,
+        readonly=True,
+    )
     company_id = fields.Many2one(
         comodel_name="res.company",
         string="Company",
@@ -305,10 +311,10 @@ class BudgetMove(models.Model):
     def action_open_preview(self):
         """Open the budget appropriation preview in full screen"""
         self.ensure_one()
-        
+
         if self.move_type != 'appropriation':
             raise UserError(_("Preview is only available for appropriation moves."))
-        
+
         return {
             'name': _('Budget Appropriation Preview'),
             'type': 'ir.actions.client',
@@ -321,22 +327,22 @@ class BudgetMove(models.Model):
                 'active_model': 'budget.move',
             }
         }
-    
+
     def _get_report_lines(self):
         """Get hierarchical lines for PDF report"""
         self.ensure_one()
-        
+
         if self.move_type != 'appropriation':
             return []
-        
+
         lines = []
         # Get non-virtual lines only
         move_lines = self.line_ids.filtered(lambda l: not l.is_virtual_line)
-        
+
         # Build hierarchy data
         report_obj = self.env['budget.appropriation.report']
         hierarchy_data = report_obj.get_hierarchical_data(self.id)
-        
+
         if 'hierarchy' in hierarchy_data:
             def add_hierarchy_lines(nodes, level=0):
                 for node in nodes:
@@ -349,7 +355,7 @@ class BudgetMove(models.Model):
                         'is_total': node.get('type') in ['activity', 'department', 'fund'],
                         'type': node.get('type', ''),
                     }
-                    
+
                     # Add account details for line type (now includes account_info)
                     if node.get('type') == 'line':
                         if node.get('account_info'):
@@ -367,15 +373,15 @@ class BudgetMove(models.Model):
                                 'account_name': line_info.get('account', {}).get('name', ''),
                                 'note': line_info.get('note', ''),
                             })
-                    
+
                     lines.append(line_data)
-                    
+
                     # Add children
                     if node.get('children'):
                         add_hierarchy_lines(node['children'], level + 1)
-            
+
             add_hierarchy_lines(hierarchy_data['hierarchy'])
-        
+
         return lines
 
     @contextmanager

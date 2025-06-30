@@ -22,7 +22,7 @@
                         </span>
                     </div>
                 </t>
-                <span t-if="record.data.unallocated_amount > 0">- จำนวนเงินไม่ระบุ <t t-esc="formattedAmount(record.data.unallocated_amount)"/> บาท</span>
+                <span t-if="record.data.unallocated_balance > 0">- จำนวนเงินไม่ระบุ <t t-esc="formattedAmount(record.data.unallocated_balance)"/> บาท</span>
             </div>
             <div t-if="column.name == 'template_line_id' and record.data.note" style="width: 100%;" class="o_note_textarea">
                 <t t-out="record.data.note"/>

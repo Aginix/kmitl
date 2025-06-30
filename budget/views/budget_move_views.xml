@@ -38,6 +38,7 @@
                 <field name="hide_post_button" invisible="1" />
                 <field name="state" invisible="1" />
                 <field name="company_id" invisible="1" />
+                <field name="budget_type" invisible="1"/>
                 <sheet>
                     <div class="oe_title">
                         <span class="o_form_label">
@@ -256,6 +257,7 @@
                 <field name="hide_post_button" invisible="1" />
                 <field name="state" invisible="1" />
                 <field name="company_id" invisible="1" />
+                <field name="budget_type" invisible="1"/>
                 <sheet>
                     <div class="oe_title">
                         <span class="o_form_label">
@@ -283,8 +285,6 @@
                     </group>
                     <notebook>
                         <page string="Budget Allocation Lines" name="appropriation_lines">
-                            <!-- <field name="line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}" context="{'default_move_type': 'appropriation',
-                                            'hide_virtual_lines': True}"> -->
                             <field name="appropriation_line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}">
                                 <tree decoration-muted="is_virtual_line == True">
                                     <field name="budget_type" invisible="1"/>
