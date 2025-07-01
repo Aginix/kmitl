@@ -5,12 +5,4 @@
         <field name="tag">budget_execution_report_interactive</field>
         <field name="target">main</field>
     </record>
-    
-    <menuitem
-        id="menu_budget_execution_report_interactive"
-        name="Budget Execution Report (Interactive)"
-        parent="budget_reporting_menu"
-        action="action_budget_execution_report_interactive"
-        sequence="25"
-    />
 </odoo>
