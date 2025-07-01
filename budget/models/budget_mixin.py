@@ -7,18 +7,159 @@ _logger = logging.getLogger(__name__)
 
 class BudgetMixin(models.AbstractModel):
     """
-    Mixin for models that need budget integration functionality.
+    Budget Mixin - Integration framework for external modules with budget system.
     
-    This mixin provides:
-    - Fields for linking to budget commitments and moves
-    - Methods for creating and managing budget commitments
-    - Methods for consuming budget amounts
-    - Standard integration patterns with budget system
+    Business Purpose:
+        Provides a standardized, reusable integration pattern for any Odoo module
+        that needs to create budget commitments, track budget consumption, and
+        maintain budget control throughout their business processes.
     
-    Usage:
+    Integration Architecture:
+        The mixin implements a complete lifecycle integration pattern:
+        
+        **Standard Lifecycle Integration:**
+        1. **Creation**: External record created → Optional budget commitment
+        2. **Confirmation**: External record confirmed → Create/reserve budget commitment  
+        3. **Processing**: External record processed → Consume budget via moves
+        4. **Cancellation**: External record cancelled → Cancel budget integration
+        
+        **Flexible Integration Patterns:**
+        • **Automatic Integration**: _auto_* methods for seamless lifecycle hooks
+        • **Manual Integration**: Direct method calls for custom workflows
+        • **Selective Integration**: has_budget_integration flag for optional control
+        • **Service Integration**: Uses budget.controller for optimized operations
+    
+    Integration Examples:
+        **Purchase Request Integration:**
+        ```python
         class PurchaseRequest(models.Model):
             _name = 'purchase.request'
             _inherit = ['purchase.request', 'budget.mixin']
+            
+            def action_confirm(self):
+                result = super().action_confirm()
+                if self.has_budget_integration:
+                    self._auto_create_budget_commitment()
+                    self._auto_reserve_budget_commitment()
+                return result
+            
+            def _prepare_default_budget_lines(self):
+                return [{
+                    'account_id': self.budget_account_id.id,
+                    'activity_analytic_id': self.activity_id.id,
+                    'fund_analytic_id': self.fund_id.id,
+                    'amount': self.estimated_cost,
+                    'name': f'Purchase request: {self.name}'
+                }]
+        ```
+        
+        **Expense Claim Integration:**
+        ```python
+        class HrExpense(models.Model):
+            _name = 'hr.expense'
+            _inherit = ['hr.expense', 'budget.mixin']
+            
+            def action_submit_expenses(self):
+                result = super().action_submit_expenses()
+                self._auto_create_budget_commitment()
+                return result
+                
+            def action_approve_expense_sheets(self):
+                result = super().action_approve_expense_sheets()
+                self._auto_consume_budget_commitment()
+                return result
+        ```
+        
+        **Asset Purchase Integration:**
+        ```python
+        class AccountAsset(models.Model):
+            _name = 'account.asset'
+            _inherit = ['account.asset', 'budget.mixin']
+            
+            def validate(self):
+                result = super().validate()
+                if self.has_budget_integration:
+                    commitment = self.create_budget_commitment()
+                    commitment.action_confirm()
+                    commitment.action_reserve()
+                    self.consume_budget_commitment()
+                return result
+        ```
+    
+    Required Method Overrides:
+        External modules must implement these methods for proper integration:
+        
+        **_prepare_default_budget_lines()** - REQUIRED
+        Define the budget line structure for commitments:
+        ```python
+        def _prepare_default_budget_lines(self):
+            return [{
+                'account_id': # Budget account ID
+                'activity_analytic_id': # Activity analytic ID
+                'fund_analytic_id': # Fund analytic ID  
+                'amount': # Commitment amount
+                'name': # Line description
+            }]
+        ```
+        
+        **_get_department_analytic_id()** - REQUIRED
+        Map to organizational department:
+        ```python
+        def _get_department_analytic_id(self):
+            return self.department_id.analytic_account_id.id
+        ```
+        
+        **_get_source_analytic_id()** - REQUIRED  
+        Map to funding source:
+        ```python
+        def _get_source_analytic_id(self):
+            return self.funding_source_id.analytic_account_id.id
+        ```
+    
+    Budget Integration Fields:
+        • **budget_commitment_id**: Link to created budget commitment
+        • **budget_move_id**: Link to consumption move (when consumed)
+        • **budget_amount**: Total budget amount (computed from commitment)
+        • **budget_state**: Current integration status
+        • **has_budget_integration**: Toggle for optional budget control
+    
+    Lifecycle Hook Methods:
+        **Automatic Integration Hooks:**
+        • **_auto_create_budget_commitment()**: Create commitment automatically
+        • **_auto_reserve_budget_commitment()**: Reserve budget automatically  
+        • **_auto_consume_budget_commitment()**: Consume budget automatically
+        
+        **Manual Integration Methods:**
+        • **create_budget_commitment()**: Create commitment with validation
+        • **reserve_budget_commitment()**: Reserve with availability checking
+        • **consume_budget_commitment()**: Create consumption moves
+        • **cancel_budget_integration()**: Handle cancellation cleanup
+    
+    Error Handling & Validation:
+        • **Budget Availability**: Automatic checking before reservation
+        • **Data Validation**: Required field validation with helpful messages
+        • **State Management**: Proper state transitions and constraints
+        • **Transaction Safety**: Atomic operations with rollback support
+        
+    Performance Features:
+        • **Lazy Loading**: Budget calculations only when needed
+        • **Bulk Operations**: Efficient handling of multiple records
+        • **Smart Dependencies**: Optimized computed field triggers
+        • **Controller Integration**: Leverages optimized budget service
+    
+    Thai Localization Support:
+        • **Multi-level Analytics**: Supports complex Thai organizational hierarchies
+        • **Government Standards**: Aligned with Thai accounting requirements
+        • **Fiscal Year Integration**: Thai fiscal calendar support
+        • **Multi-currency**: Thai Baht and foreign currency handling
+    
+    Integration Best Practices:
+        1. **Optional Control**: Use has_budget_integration for flexible adoption
+        2. **Proper Mapping**: Implement required override methods correctly
+        3. **State Alignment**: Align budget states with business process states
+        4. **Error Handling**: Provide user-friendly error messages
+        5. **Testing**: Test budget integration scenarios thoroughly
+        6. **Documentation**: Document integration patterns for maintainers
     """
     _name = 'budget.mixin'
     _description = 'Budget Integration Mixin'

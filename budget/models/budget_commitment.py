@@ -7,6 +7,60 @@ _logger = logging.getLogger(__name__)
 
 
 class BudgetCommitment(models.Model):
+    """
+    Budget Commitment - Reserve budget amounts before consumption.
+    
+    Business Purpose:
+        Budget commitments prevent over-allocation by reserving budget amounts before actual 
+        spending occurs. This provides financial control and ensures budget availability 
+        before making purchasing or spending commitments.
+    
+    Key Features:
+        • 4D Analytic Distribution (Activities, Departments, Funds, Sources)
+        • Hierarchical budget checking (parent appropriations can cover child commitments)
+        • Real-time budget availability calculation and validation
+        • Integration framework for external modules via budget.mixin
+        • Fiscal year isolation and company separation
+        • Multi-line commitments with detailed analytic breakdown
+    
+    State Lifecycle:
+        draft → confirmed → reserved → consumed → done
+        │        │          │         │         │
+        │        │          │         │         └── Fully processed, no more changes
+        │        │          │         └─────────── Budget consumed via budget moves
+        │        │          └───────────────────── Budget reserved, prevents over-commitment
+        │        └──────────────────────────────── Validated, ready for reservation
+        └───────────────────────────────────────── Editable, no budget impact
+    
+    Integration Points:
+        • Purchase Requests (via budget.mixin inheritance)
+        • Procurement Planning (via budget.mixin inheritance)
+        • Budget Moves (consumption tracking via commitment_id link)
+        • Budget Controller (availability checking service)
+        • External modules can inherit budget.mixin for automatic integration
+    
+    Data Flow Example:
+        1. Create commitment with multiple lines and analytic dimensions
+        2. System calculates and displays real-time budget availability
+        3. User confirms commitment (validates data integrity)
+        4. User reserves budget (validates availability, locks amounts)
+        5. External system consumes budget (creates budget.move entries)
+        6. System tracks consumption and calculates remaining amounts
+    
+    Thai Localization Context:
+        • Supports Thai government accounting standards and hierarchy
+        • Multi-level analytic structure for Thai educational institutions
+        • Fiscal year aligned with Thai government calendar (October - September)
+        • Department structure follows Thai university organization patterns
+        • Fund structure supports Thai government funding categories
+    
+    Technical Notes:
+        • Uses budget.controller service for optimized availability calculations
+        • Supports hierarchical analytic matching via parent_path traversal
+        • Implements double-entry budget accounting principles
+        • Provides audit trail through mail.thread integration
+        • Thread-safe reservation system prevents race conditions
+    """
     _name = "budget.commitment"
     _description = "Budget Commitment"
     _inherit = ["mail.thread", "mail.activity.mixin"]
@@ -330,7 +384,27 @@ class BudgetCommitment(models.Model):
         self.message_post(body=_("Commitment reset to draft."))
     
     def _validate_commitment(self):
-        """Validate commitment data before confirmation"""
+        """
+        Validate commitment data before confirmation.
+        
+        Business Rules:
+            • Must have at least one commitment line
+            • Total amount must be positive (prevents negative commitments)
+            • All individual line amounts must be positive
+            • Fiscal year must be set and valid
+        
+        Validation Context:
+            Called during action_confirm() to ensure data integrity before
+            the commitment becomes immutable and affects budget calculations.
+        
+        Performance Notes:
+            • Lightweight validation suitable for real-time checking
+            • Should not perform complex budget calculations here
+            • Use _check_budget_availability() for budget-specific validation
+        
+        Raises:
+            ValidationError: With user-friendly message describing the issue
+        """
         if not self.line_ids:
             raise ValidationError(_("Commitment must have at least one line."))
         
@@ -342,7 +416,71 @@ class BudgetCommitment(models.Model):
                 raise ValidationError(_("All commitment line amounts must be positive."))
     
     def _check_budget_availability(self):
-        """Check if sufficient budget is available for this commitment"""
+        """
+        Check if sufficient budget is available for this commitment.
+        
+        This method implements the core budget control logic with hierarchical 
+        budget checking where parent-level appropriations can cover child-level 
+        commitments across the 4D analytic structure.
+        
+        Algorithm Overview:
+            1. For each commitment line:
+               • Calculate appropriated amount (from budget moves type='appropriation')
+               • Calculate reserved amount (from other commitments in 'reserved' state)  
+               • Calculate consumed amount (from budget moves type='consume')
+               • Available = Appropriated - Reserved - Consumed
+            
+            2. Apply hierarchical analytic matching:
+               • Exact match required: Budget Account, Source
+               • Hierarchical match allowed: Activity, Department, Fund
+               • Uses parent_path field for efficient hierarchy traversal
+            
+            3. Validate requested amounts:
+               • Requested ≤ Available (or raise detailed ValidationError)
+               • Provide specific analytic breakdown in error message
+        
+        Business Context:
+            This is the critical budget control point that prevents over-allocation.
+            Called during action_reserve() before budget amounts are locked.
+            
+        Hierarchical Budget Logic:
+            Thai organizations have complex hierarchies like:
+            • กิจกรรม > กิจกรรมย่อย > กิจกรรมรอง (Activities)
+            • ส่วนงาน > งาน > หน่วยงาน (Departments)  
+            • กองทุน > ประเภทเงิน > แหล่งเงิน (Funds)
+            
+            Parent appropriations can cover child commitments, allowing flexible
+            budget management while maintaining strict control.
+        
+        Performance Optimizations:
+            • Uses budget.controller service for optimized calculations
+            • Excludes current commitment from reserved amount calculation
+            • Caches fiscal year queries within transaction
+            • Efficient parent_path traversal for hierarchy matching
+        
+        Error Handling:
+            Provides detailed error messages showing:
+            • Which specific line has insufficient budget
+            • Current analytic dimension breakdown
+            • Available vs requested amounts
+            • Exact shortage amount for user guidance
+        
+        Example Error Output:
+            "Insufficient budget for line 'Office Supplies':
+             - Budget Account: 62010 - วัสดุสำนักงาน
+             - Activity: งานบริหารทั่วไป > งานสำนักงาน
+             - Department: สำนักงานอธิการบดี > งานบุคคล
+             - Fund: เงินรายได้ > เงินค่าบำรุง
+             - Available: 45,000.00
+             - Requested: 50,000.00  
+             - Shortage: 5,000.00"
+        
+        Returns:
+            bool: True if sufficient budget is available for all lines
+            
+        Raises:
+            ValidationError: When insufficient budget with detailed breakdown
+        """
         self.ensure_one()
         _logger.info("Checking budget availability for commitment %s", self.name)
         
@@ -476,17 +614,51 @@ class BudgetCommitment(models.Model):
     
     def _analytic_accounts_match_hierarchical(self, move_account, commitment_account):
         """
-        Check if analytic accounts match hierarchically.
+        Check if analytic accounts match hierarchically for budget appropriation coverage.
         
-        For appropriations: move_account (parent) can provide budget for commitment_account (child)
-        For commitments/consumption: exact match required
+        Business Logic:
+            This method enables flexible budget management by allowing parent-level 
+            appropriations to cover child-level commitments. This is essential for 
+            Thai organizational structures where budget is often allocated at high
+            levels but consumed at detailed operational levels.
+        
+        Hierarchy Examples:
+            ✅ Appropriation at "งานบริหารทั่วไป" covers commitment at "งานบริหารทั่วไป > งานธุรการ"
+            ✅ Appropriation at "เงินรายได้" covers commitment at "เงินรายได้ > เงินค่าบำรุง"
+            ✅ Appropriation at "สำนักงานอธิการบดี" covers commitment at "สำนักงานอธิการบดี > งานบุคคล"
+            ❌ Appropriation at "งานธุรการ" cannot cover commitment at "งานบริหารทั่วไป"
+        
+        Technical Implementation:
+            1. Handle None cases (both None = match, one None = no match)
+            2. Check exact ID match first (performance optimization)
+            3. Extract all parent IDs from commitment_account.parent_path field
+            4. Check if move_account.id exists in the parent hierarchy
+            
+        Parent Path Format:
+            • parent_path stores complete hierarchy as "1/2/3/" format
+            • Each number represents an analytic account ID in the path
+            • Path includes the account itself plus all parents up to root
+            
+        Performance Notes:
+            • Uses parent_path for O(1) hierarchy checking vs recursive queries
+            • Leverages database indexing on parent_path field
+            • Minimal memory overhead with integer list operations
         
         Args:
-            move_account: Analytic account from move line (could be parent providing budget)
-            commitment_account: Analytic account from commitment line (could be child needing budget)
+            move_account (account.analytic.account): Account from budget move line
+                - For appropriations: Could be parent account providing budget
+                - For commitments/consumption: Should match exactly
+            commitment_account (account.analytic.account): Account from commitment line
+                - Could be child account needing budget from parent appropriation
         
         Returns:
-            bool: True if accounts match hierarchically
+            bool: True if hierarchical relationship allows budget usage
+            
+        Example Usage:
+            # Check if เงินรายได้ appropriation can cover เงินรายได้ > เงินค่าบำรุง commitment
+            parent = revenue_fund  # เงินรายได้ (ID: 100)  
+            child = maintenance_fund  # เงินรายได้ > เงินค่าบำรุง (ID: 150, parent_path: "100/150/")
+            result = self._analytic_accounts_match_hierarchical(parent, child)  # Returns True
         """
         # Handle None cases
         if not move_account and not commitment_account:

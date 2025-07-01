@@ -7,6 +7,30 @@ _logger = logging.getLogger(__name__)
 
 
 class BudgetAccount(models.Model):
+    """
+    Budget Account - Chart of accounts structure for budget management.
+    
+    Business Purpose:
+        Defines the budget chart of accounts with hierarchical structure,
+        supporting both revenue and expense budget categories aligned with
+        Thai government accounting standards.
+    
+    Key Features:
+        • Hierarchical account structure with parent-child relationships
+        • Revenue/Expense budget type classification
+        • Fund-specific account restrictions for validation
+        • Integration with Thai government chart of accounts
+        • Sequence-based ordering for reporting consistency
+    
+    Account Types:
+        • **Revenue Accounts**: Income and funding sources
+        • **Expense Accounts**: Operational and capital expenditures
+        
+    Thai Government Integration:
+        • Aligned with Thai government accounting codes
+        • Support for government budget classification standards
+        • Compatible with ministry and university accounting structures
+    """
     _name = "budget.account"
     _description = "Budget Account"
     _parent_store = True

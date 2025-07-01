@@ -6,6 +6,75 @@ _logger = logging.getLogger(__name__)
 
 
 class BudgetCommitmentLine(models.Model):
+    """
+    Budget Commitment Line - Individual budget allocation within a commitment.
+    
+    Business Purpose:
+        Represents a single budget allocation within a multi-line commitment.
+        Each line specifies exactly which budget account and analytic dimensions
+        will be used, along with the amount to be committed.
+    
+    4D Analytic Distribution System:
+        Each line implements the complete 4-dimensional analytic structure used
+        throughout the KMITL budget system:
+        
+        1. Activities (กิจกรรม) - activity_analytic_id
+           • แผนงาน/โครงการ/กิจกรรม hierarchy
+           • Examples: งานบริหารทั่วไป > งานสำนักงาน > งานธุรการ
+           
+        2. Departments (ส่วนงาน) - department_analytic_id  
+           • Organizational structure hierarchy
+           • Examples: สำนักงานอธิการบดี > งานบุคคล > งานสรรหา
+           • Inherited from parent commitment header
+           
+        3. Funds (กองทุน) - fund_analytic_id
+           • Funding source hierarchy  
+           • Examples: เงินรายได้ > เงินค่าบำรุง > เงินค่าสาธารณูปโภค
+           
+        4. Sources (แหล่งเงิน) - source_analytic_id
+           • Money source classification
+           • Examples: เงินแผ่นดิน, เงินนอกงบประมาณ, เงินบริจาค
+           • Inherited from parent commitment header
+    
+    Real-time Budget Availability:
+        Each line continuously calculates and displays:
+        • Available budget amount (available_budget_amount)
+        • Budget availability status (sufficient/warning/insufficient)
+        • Percentage of available budget being requested
+        • Color-coded visual feedback in the user interface
+    
+    Key Features:
+        • Real-time budget availability checking with hierarchical matching
+        • Automatic analytic validation and fund restrictions  
+        • Consumption tracking through linked budget moves
+        • Multi-currency support with proper currency handling
+        • OnChange validations with user-friendly warnings
+        • Integration with budget.controller for optimized calculations
+    
+    Data Relationships:
+        • Parent: budget.commitment (header with department/source analytics)
+        • References: budget.account (specific account being used)
+        • Analytics: account.analytic.account (4D analytic dimensions)
+        • Consumption: budget.move.line (via analytic matching)
+    
+    Calculation Logic:
+        • Available Budget = Appropriated - Reserved - Consumed
+        • Uses hierarchical matching for appropriation coverage
+        • Excludes parent commitment from reserved calculation  
+        • Real-time updates when analytic dimensions change
+    
+    Thai Localization:
+        • Supports Thai government chart of accounts structure
+        • Multi-level analytic hierarchies for Thai institutions
+        • Currency handling for Thai Baht and foreign currencies
+        • Validation rules aligned with Thai accounting practices
+    
+    Performance Features:
+        • Computed fields with smart dependencies
+        • Efficient parent_path hierarchy traversal
+        • Optimized budget controller service integration
+        • Minimal database queries through strategic caching
+    """
     _name = "budget.commitment.line"
     _description = "Budget Commitment Line"
     _inherit = ["analytic.distribution.mixin", "mail.thread"]
@@ -234,7 +303,57 @@ class BudgetCommitmentLine(models.Model):
         "commitment_id.state",
     )
     def _compute_available_budget(self):
-        """Calculate available budget for this analytic combination"""
+        """
+        Calculate real-time budget availability for this commitment line.
+        
+        This method provides the core functionality for real-time budget visibility,
+        allowing users to see budget availability immediately as they create 
+        commitment lines, rather than waiting until reservation time.
+        
+        Calculation Algorithm:
+            1. Validate required fields (account, activity, fund, fiscal year)
+            2. Prepare 4D analytic data structure for budget controller
+            3. Call budget.controller.get_available_budget() for hierarchical calculation
+            4. Adjust for self-reservation (if commitment already reserved)
+            5. Calculate status and percentage indicators
+        
+        Budget Status Logic:
+            • sufficient: Available >= Requested amount
+            • warning: Available >= 50% of Requested amount  
+            • insufficient: Available < 50% of Requested amount
+            
+        Real-time Triggers:
+            This method is automatically called when:
+            • Account selection changes (@api.onchange)
+            • Activity analytic changes (@api.onchange) 
+            • Fund analytic changes (@api.onchange)
+            • Amount changes (@api.onchange)
+            • Commitment state changes (via compute dependencies)
+        
+        Performance Optimizations:
+            • Early validation skip for incomplete data
+            • Leverages budget.controller optimized calculations
+            • Smart dependency tracking prevents unnecessary recalculations
+            • Graceful error handling with fallback values
+        
+        User Experience Features:
+            • Color-coded visual feedback in tree view
+            • Detailed warning messages for insufficient budget
+            • Percentage indicators for budget utilization
+            • Sum totals for multi-line commitments
+        
+        Error Handling:
+            Gracefully handles calculation errors and provides fallback values:
+            • available_budget_amount = 0.0
+            • budget_availability_status = 'insufficient'  
+            • budget_availability_percentage = 0.0
+            
+        Integration Points:
+            • budget.controller: Centralized calculation service
+            • Budget tree view: Real-time visual feedback
+            • OnChange warnings: User guidance for insufficient budget
+            • Budget execution reports: Consistent calculation methodology
+        """
         budget_controller = self.env['budget.controller']
         
         for line in self:

@@ -11,6 +11,95 @@ _logger = logging.getLogger(__name__)
 
 
 class BudgetMove(models.Model):
+    """
+    Budget Move - Double-entry budget accounting system for all budget transactions.
+    
+    Business Purpose:
+        Budget moves serve as the accounting ledger for all budget transactions,
+        implementing double-entry principles to ensure accurate budget tracking
+        and maintain fiscal accountability across the organization.
+    
+    Move Types and Their Purposes:
+        1. **appropriation** - Budget Appropriation
+           • Records initial budget allocations and adjustments
+           • Creates budget availability for commitments and consumption
+           • Uses virtual accounts for double-entry balance
+           • Examples: Annual budget allocation, mid-year adjustments
+        
+        2. **consume** - Budget Consumption  
+           • Records actual budget usage from commitments
+           • Links to budget.commitment via commitment_id
+           • Reduces available budget for future commitments
+           • Examples: Purchase orders, expense claims, payments
+        
+        3. **entry** - Budget Entry
+           • General budget adjustments and corrections
+           • Manual budget transfers between accounts
+           • Year-end adjustments and corrections
+           • Examples: Budget transfers, error corrections
+    
+    Double-Entry System:
+        Budget moves implement accounting principles with:
+        • Debit/Credit balance tracking via budget.move.line
+        • Virtual accounts for appropriation balancing
+        • Automatic journal entry generation
+        • Audit trail through complete transaction history
+    
+    State Lifecycle:
+        draft → review → posted → cancel
+        │       │        │        │
+        │       │        │        └── Cancelled, no budget impact
+        │       │        └─────────── Final, affects all budget calculations
+        │       └──────────────────── Under approval, locked from changes
+        └──────────────────────────── Editable, no budget impact
+    
+    Key Features:
+        • 4D Analytic Distribution (Activities, Departments, Funds, Sources)
+        • Fiscal year enforcement and company isolation
+        • Multi-line structure with detailed analytic breakdown
+        • Integration with budget commitments for consumption tracking
+        • Virtual account system for appropriation double-entry
+        • Hierarchical analytic matching for budget availability
+    
+    Integration Architecture:
+        • Budget Commitments: Consumption tracking via commitment_id
+        • Budget Controller: Source data for availability calculations
+        • Budget Reports: Foundation for all budget reporting
+        • External Systems: Can create consumption moves via budget.mixin
+    
+    Data Flow Examples:
+        **Appropriation Flow:**
+        1. Create appropriation move with budget allocation
+        2. System creates virtual account entries for balance
+        3. Post move to make budget available
+        4. Budget becomes available for commitments
+        
+        **Consumption Flow:**
+        1. Budget commitment reserved in system
+        2. External action (purchase, payment) triggers consumption
+        3. Create consume move linked to commitment
+        4. Budget availability reduced, commitment tracked as consumed
+    
+    Thai Localization:
+        • Fiscal year aligned with Thai government calendar
+        • Support for Thai government accounting standards
+        • Multi-level analytic structure for Thai institutions
+        • Integration with Thai chart of accounts
+        • Currency support for Thai Baht and foreign currencies
+    
+    Performance Features:
+        • Indexed fields for fast querying (date, state, move_type)
+        • Efficient fiscal year filtering
+        • Optimized analytic distribution queries
+        • Strategic field dependencies for computed values
+    
+    Technical Notes:
+        • Thread-safe posting process prevents double-posting
+        • Automatic sequence generation for move numbers
+        • Complete audit trail via mail.thread integration
+        • Robust error handling with transaction rollback
+        • Support for bulk operations and batch processing
+    """
     _name = "budget.move"
     _description = "Budget Move"
     _inherit = ["mail.thread", "mail.activity.mixin"]

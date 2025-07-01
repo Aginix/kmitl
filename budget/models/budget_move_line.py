@@ -7,6 +7,45 @@ _logger = logging.getLogger(__name__)
 
 
 class BudgetMoveLine(models.Model):
+    """
+    Budget Move Line - Individual line item within budget moves for detailed accounting.
+    
+    Business Purpose:
+        Represents individual accounting entries within budget moves, implementing
+        double-entry bookkeeping with detailed analytic distribution for precise
+        budget tracking and reporting.
+    
+    Key Features:
+        • Double-entry accounting with debit/credit balance tracking
+        • Complete 4D analytic distribution (Activities, Departments, Funds, Sources)
+        • Virtual line support for appropriation balancing entries
+        • Hierarchical analytic matching for budget availability calculations
+        • Integration with budget commitments through analytic matching
+    
+    Line Types by Move Type:
+        **Appropriation Lines:**
+        • Regular lines: Actual budget allocation amounts
+        • Virtual lines: Balancing entries for double-entry system
+        • Positive balance: Increases budget availability
+        
+        **Consumption Lines:**
+        • Track actual budget usage from commitments
+        • Negative balance: Reduces budget availability
+        • Links to specific budget commitments
+        
+        **Entry Lines:**
+        • Manual adjustments and corrections
+        • Budget transfers between accounts
+        • Can be positive or negative based on operation
+    
+    Analytic Distribution:
+        Each line maintains complete 4D analytic breakdown:
+        • Budget Account: Specific chart of accounts item
+        • Activity: งานบริหาร > งานสำนักงาน > งานธุรการ
+        • Department: สำนักงานอธิการบดี > งานบุคคล 
+        • Fund: เงินรายได้ > เงินค่าบำรุง
+        • Source: เงินแผ่นดิน, เงินนอกงบประมาณ
+    """
     _name = "budget.move.line"
     _description = "Budget Move Line"
     _inherit = ["analytic.distribution.mixin", "mail.thread"]

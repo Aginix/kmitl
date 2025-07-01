@@ -8,18 +8,112 @@ _logger = logging.getLogger(__name__)
 
 class BudgetController(models.AbstractModel):
     """
-    Centralized service for budget operations and availability checking.
+    Budget Controller - Centralized service for budget operations and availability checking.
     
-    This service provides:
-    - Budget availability checking across the system
-    - Centralized budget calculation methods
-    - Budget reservation and consumption coordination
-    - Standardized budget validation logic
+    Architecture Purpose:
+        The Budget Controller implements a service-oriented architecture pattern,
+        providing a centralized, optimized, and consistent interface for all
+        budget-related calculations across the KMITL budget system.
     
-    Usage:
+    Core Responsibilities:
+        • **Budget Availability Checking**: Hierarchical calculation across 4D analytics
+        • **Budget Calculation Service**: Optimized queries for appropriated/reserved/consumed amounts
+        • **Budget Reservation Coordination**: Service-level budget commitment creation
+        • **Budget Consumption Management**: Centralized consumption move creation
+        • **Multi-line Bulk Operations**: Efficient batch processing for large datasets
+    
+    Service Architecture Benefits:
+        • **Consistency**: Same calculation logic used across all modules
+        • **Performance**: Optimized queries with strategic caching
+        • **Maintainability**: Single source of truth for budget algorithms
+        • **Extensibility**: Easy to add new budget operations
+        • **Integration**: Clean API for external module integration
+    
+    Hierarchical Budget Algorithm:
+        The controller implements sophisticated hierarchical budget matching:
+        
+        1. **Appropriation Matching** (Flexible):
+           • Parent appropriations can cover child commitments
+           • Uses parent_path traversal for efficient hierarchy checking
+           • Supports complex Thai organizational structures
+           
+        2. **Commitment/Consumption Matching** (Exact):
+           • Exact analytic matching for precise tracking
+           • Prevents budget leakage between different allocations
+           • Maintains strict audit trail
+    
+    4D Analytic Integration:
+        • **Activities**: งานบริหาร > งานสำนักงาน > งานธุรการ (hierarchical)
+        • **Departments**: สำนักงานอธิการบดี > งานบุคคล > งานสรรหา (hierarchical)
+        • **Funds**: เงินรายได้ > เงินค่าบำรุง > เงินค่าสาธารณูปโภค (hierarchical)
+        • **Sources**: เงินแผ่นดิน, เงินนอกงบประมาณ, เงินบริจาค (exact match)
+        • **Budget Accounts**: 62010 - วัสดุสำนักงาน (exact match)
+    
+    Performance Optimizations:
+        • **Strategic Queries**: Minimal database hits with optimized domains
+        • **Bulk Operations**: Batch processing for multiple budget lines
+        • **Caching Strategy**: Fiscal year and company-level query optimization
+        • **Efficient Hierarchies**: parent_path traversal vs recursive queries
+        • **Smart Filtering**: Early validation and data filtering
+    
+    Integration Patterns:
+        **Direct Usage:**
+        ```python
         budget_controller = self.env['budget.controller']
-        available = budget_controller.get_available_budget(analytic_data, fiscal_year)
-        budget_controller.check_budget_availability(analytic_data, amount, fiscal_year)
+        available = budget_controller.get_available_budget(analytic_data, fy_id)
+        ```
+        
+        **Via Budget Commitments:**
+        ```python
+        commitment._check_budget_availability()  # Uses controller internally
+        ```
+        
+        **Via Budget Mixin:**
+        ```python
+        purchase_request._auto_create_budget_commitment()  # Uses controller
+        ```
+        
+        **Bulk Operations:**
+        ```python
+        statuses = budget_controller.get_multi_line_budget_status(lines, fy_id)
+        ```
+    
+    Error Handling Strategy:
+        • **Graceful Degradation**: Continue operation with partial failures
+        • **Detailed Error Messages**: User-friendly validation feedback
+        • **Logging Integration**: Comprehensive audit trail
+        • **Transaction Safety**: Atomic operations with rollback support
+    
+    Thai Localization Features:
+        • **Government Standards**: Aligned with Thai government accounting
+        • **Fiscal Year Support**: October-September Thai fiscal calendar
+        • **Multi-level Hierarchies**: Supports complex Thai organizational charts
+        • **Currency Handling**: Thai Baht primary with multi-currency support
+        • **Compliance Reporting**: Government-required budget execution formats
+    
+    Usage Examples:
+        **Check Single Budget Line:**
+        ```python
+        analytic_data = {
+            'account_id': 12345,
+            'activity_analytic_id': 100,
+            'department_analytic_id': 200,
+            'fund_analytic_id': 300,
+            'source_analytic_id': 400
+        }
+        controller.check_budget_availability(analytic_data, 50000, fiscal_year.id)
+        ```
+        
+        **Get Detailed Budget Status:**
+        ```python
+        status = controller.get_budget_status(analytic_data, fiscal_year.id)
+        # Returns: appropriated, reserved, consumed, available, utilization %
+        ```
+        
+        **Service-Level Reservation:**
+        ```python
+        commitment = controller.reserve_budget(analytic_data, 25000, fiscal_year.id, source_record)
+        ```
     """
     _name = 'budget.controller'
     _description = 'Budget Controller Service'
