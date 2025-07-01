@@ -25,24 +25,28 @@
                 <field name="budget_account_id" options="{'no_open': True}" />
             </xpath>
             <xpath expr="//field[@name='activity_analytic_id']" position="attributes">
-                <attribute name="readonly">False</attribute>
-                <!-- <attribute name="readonly">context.get('from_budget_line', False)</attribute> -->
+                <attribute name="readonly">True</attribute>
+                <attribute name="force_save">1</attribute>
             </xpath>
             <xpath expr="//field[@name='department_analytic_id']" position="attributes">
-                <attribute name="readonly">False</attribute>
-                <!-- <attribute name="readonly">context.get('from_budget_line', False)</attribute> -->
+                <attribute name="readonly">True</attribute>
+                <attribute name="force_save">1</attribute>
             </xpath>
             <xpath expr="//field[@name='source_analytic_id']" position="attributes">
-                <attribute name="readonly">False</attribute>
-                <!-- <attribute name="readonly">context.get('from_budget_line', False)</attribute> -->
+                <attribute name="readonly">True</attribute>
+                <attribute name="force_save">1</attribute>
             </xpath>
             <xpath expr="//field[@name='fund_analytic_id']" position="attributes">
-                <attribute name="readonly">False</attribute>
-                <!-- <attribute name="readonly">context.get('from_budget_line', False)</attribute> -->
+                <attribute name="readonly">True</attribute>
+                <attribute name="force_save">1</attribute>
             </xpath>
             <xpath expr="//field[@name='date_range_fy_id']" position="attributes">
-                <attribute name="readonly">False</attribute>
-                <!-- <attribute name="readonly">context.get('from_budget_line', False)</attribute> -->
+                <attribute name="readonly">True</attribute>
+                <attribute name="force_save">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='budget_account_id']" position="attributes">
+                <attribute name="readonly">True</attribute>
+                <attribute name="force_save">1</attribute>
             </xpath>
             <xpath expr="//header" position="attributes">
                 <attribute name="invisible">context.get('from_budget_line', False)</attribute>
