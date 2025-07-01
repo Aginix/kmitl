@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Client Action for Budget Appropriation Preview -->
-    <record id="action_budget_appropriation_preview" model="ir.actions.client">
-        <field name="name">Budget Appropriation Preview</field>
-        <field name="tag">budget_appropriation_preview</field>
+    <!-- Client Action for Budget Appropriation Revenue F4 -->
+    <record id="action_budget_appropriation_revenue_f4" model="ir.actions.client">
+        <field name="name">Budget Appropriation Revenue F4</field>
+        <field name="tag">budget_appropriation_revenue_f4</field>
         <field name="res_model">budget.move</field>
     </record>
     
-    <!-- Report Action for PDF Export -->
-    <record id="action_report_budget_appropriation" model="ir.actions.report">
-        <field name="name">Budget Appropriation Report</field>
+    <!-- Report Action for PDF Export Revenue F4 -->
+    <record id="action_report_budget_appropriation_revenue_f4" model="ir.actions.report">
+        <field name="name">Budget Appropriation Revenue F4 Report</field>
         <field name="model">budget.move</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">budget.report_budget_appropriation</field>

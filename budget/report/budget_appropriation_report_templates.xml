@@ -104,7 +104,7 @@
                     .amount-cell {
                         text-align: right;
                         font-variant-numeric: tabular-nums;
-                        border-bottom: 1px solid black;
+                        border-bottom: 1px solid black !important;
                     }
 
                     .code-cell {
@@ -155,17 +155,14 @@
                         font-size: 11pt;
                     }
 
-                    table, td {
-                        border: 0px;
-                    }
-
             </style>
 
 
             <div class="page budget-appropriation-report">
                 <div class="report-header">
                     <div class="document-ref">
-                        <div>F5-P-วง-003</div>
+                        <div t-if="o.budget_type == 'revenue'">F4-P-วง-003</div>
+                        <div t-else="">F5-P-วง-003</div>
                     </div>
 
                     <div class="institution-info">
@@ -176,7 +173,7 @@
                         <h3>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
                         <h3 t-esc="o.department_analytic_id.complete_name" />
                         <div style="margin: 0 auto;">
-                            <table style="margin: 0 auto;">
+                            <table class="table-borderless" border="0" style="margin: 0 auto;">
                                 <tbody>
                                     <tr>
                                         <td align="right">วงเงิน</td>
@@ -190,11 +187,14 @@
                 </div>
 
                 <!-- Main Table -->
-                <table class="report-table">
+                <table class="report-table table-borderless">
                     <thead>
                         <tr>
-                            <th class="items-column" rowspan="2"></th>
-                            <th class="code-column" rowspan="2"></th>
+                            <th class="items-column" rowspan="2">
+                                <t t-if="o.budget_type == 'revenue'">รหัสงบประมาณ</t>
+                                <t t-else="">รายการ</t>
+                            </th>
+                            <th class="code-column" rowspan="2">รหัส</th>
                             <th style="text-align: text-center" colspan="2">แหล่งเงิน (หน่วย : บาท)</th>
                         </tr>
                         <tr>
@@ -204,12 +204,14 @@
                     </thead>
                     <tbody>
                         <t t-set="report_obj" t-value="o.env['budget.appropriation.report']"/>
-                        <t t-set="hierarchy_data" t-value="report_obj.get_hierarchical_data(o.id, {'hide_department': True})"/>
+                        <t t-set="hierarchy_options" t-value="{'accounts_only': True} if o.budget_type == 'revenue' else {'hide_department': True}"/>
+                        <t t-set="hierarchy_data" t-value="report_obj.get_hierarchical_data(o.id, hierarchy_options)"/>
 
                         <t t-if="hierarchy_data.get('hierarchy')">
                             <t t-call="budget.report_hierarchy_rows">
                                 <t t-set="nodes" t-value="hierarchy_data['hierarchy']"/>
                                 <t t-set="level" t-value="0"/>
+                                <t t-set="hierarchy_options" t-value="hierarchy_options"/>
                             </t>
                         </t>
                     </tbody>
@@ -224,9 +226,12 @@
         <t t-foreach="nodes" t-as="node">
             <tr class="hierarchy-row">
                 <td>
-                    <div t-att-style="'margin-left: ' + str(12 * (level - 4)) + 'px;' if node.get('type') == 'account' else ''" class="account-indent">
+                    <t t-set="indent_level" t-value="level - 1 if hierarchy_options.get('accounts_only') else level - 4"/>
+                    <div t-att-style="'margin-left: ' + str(12 * indent_level) + 'px;' if node.get('type') == 'account' and indent_level > 0 else ''" class="account-indent">
                         <t t-if="node.get('type') == 'account'">
-                            <span class="account-content" t-esc="node.get('name', '')"/>
+                            <span class="account-content">
+                                <t t-esc="node.get('name', '')"/>
+                            </span>
                             <t t-if="node.get('line_details')">
                                 <t t-foreach="node.get('line_details', [])" t-as="detail">
                                     <t t-if="detail.get('note')">
@@ -262,6 +267,7 @@
                 <t t-call="budget.report_hierarchy_rows">
                     <t t-set="nodes" t-value="node.get('children', [])"/>
                     <t t-set="level" t-value="level + 1"/>
+                    <t t-set="hierarchy_options" t-value="hierarchy_options"/>
                 </t>
             </t>
         </t>

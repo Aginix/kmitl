@@ -7,7 +7,8 @@
     "website": "https://github.com/aginix/kmitl",
     "depends": ["account", "account_analytic_kmitl", "account_fiscal_year", "mail", "l10n_th_base_sequence"],
     "data": [
-        "data/budget_appropriation_preview_action.xml",
+        "data/budget_appropriation_expense_f5_action.xml",
+        "data/budget_appropriation_revenue_f4_action.xml",
         "data/budget_execution_report_interactive_action.xml",
         "data/budget_journal.xml",
         "data/budget_move_data.xml",
@@ -24,6 +25,7 @@
         "views/budget_menus.xml",
         "views/budget_report_views.xml",
         "views/budget_execution_status_report_views.xml",
+        "views/budget_execution_report_interactive_views.xml",
         "views/budget_expenditure_report_views.xml",
         "views/budget_appropriation_overview_views.xml",
         "report/budget_appropriation_report_templates.xml",

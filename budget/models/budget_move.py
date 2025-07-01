@@ -407,17 +407,37 @@ class BudgetMove(models.Model):
     def button_draft(self):
         self.write({"state": "draft"})
 
-    def action_open_preview(self):
-        """Open the budget appropriation preview in full screen"""
+    def action_open_expense_f5_preview(self):
+        """Open the budget appropriation expense F5 preview in full screen"""
         self.ensure_one()
 
         if self.move_type != 'appropriation':
-            raise UserError(_("Preview is only available for appropriation moves."))
+            raise UserError(_("Expense F5 preview is only available for appropriation moves."))
 
         return {
-            'name': _('Budget Appropriation Preview'),
+            'name': _('Budget Appropriation Expense F5'),
             'type': 'ir.actions.client',
-            'tag': 'budget_appropriation_preview',
+            'tag': 'budget_appropriation_expense_f5',
+            'target': 'current',
+            'res_id': self.id,
+            'res_model': 'budget.move',
+            'context': {
+                'active_id': self.id,
+                'active_model': 'budget.move',
+            }
+        }
+
+    def action_open_revenue_f4_preview(self):
+        """Open the budget appropriation revenue F4 preview in full screen"""
+        self.ensure_one()
+
+        if self.move_type != 'appropriation':
+            raise UserError(_("Revenue F4 preview is only available for appropriation moves."))
+
+        return {
+            'name': _('Budget Appropriation Revenue F4'),
+            'type': 'ir.actions.client',
+            'tag': 'budget_appropriation_revenue_f4',
             'target': 'current',
             'res_id': self.id,
             'res_model': 'budget.move',

@@ -27,11 +27,6 @@
                     name="รายการจองงบประมาณ"
                     action="action_budget_commitment"
                 />
-                <!-- <menuitem
-                    id="action_budget_commitment_line_menu_action"
-                    name="รายการจองงบประมาณ (แบบแจกแจง)"
-                    action="action_budget_commitment_line"
-                /> -->
             </menuitem>
         </menuitem>
 
@@ -61,11 +56,6 @@
                 id="action_budget_journal_menu_action"
                 name="ประเภทสมุดบัญชีงบประมาณ"
                 action="action_budget_journal"
-            />
-            <menuitem
-                id="action_budget_template_menu_action"
-                name="โครงสร้างรหัสงบประมาณ"
-                action="action_budget_template"
             />
         </menuitem>
     </menuitem>

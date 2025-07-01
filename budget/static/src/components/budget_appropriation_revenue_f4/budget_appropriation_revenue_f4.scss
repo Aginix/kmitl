@@ -1,0 +1,184 @@
+// Budget Appropriation Revenue F4 - Accounting Report Style
+
+.budget_appropriation_revenue_f4 {
+    background-color: #f5f5f5;
+
+    .budget_appropriation_content {
+        padding: 1rem;
+        min-height: 100vh;
+    }
+
+    // Summary Card (kept for context info)
+    .budget-summary-card {
+        margin-bottom: 2rem;
+    }
+
+    // Report Container
+    .budget-report-container {
+        background: white;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+        .report-header {
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+
+            h3 {
+                margin: 0;
+                font-size: 1.375rem;
+                font-weight: 500;
+                color: #424242;
+                line-height: 1.5;
+            }
+
+            h4 {
+                margin: 0.5rem 0 0 0;
+                font-size: 1.2rem;
+                font-weight: normal;
+                color: #666;
+            }
+        }
+    }
+
+    // Report Table
+    .budget-report-table {
+        font-size: 1.175rem;
+
+        thead {
+            tr {
+                background-color: #f8f9fa;
+
+                th {
+                    font-weight: 600;
+                    padding: 0.75rem 0.5rem;
+                    border-bottom: 2px solid #dee2e6;
+                    vertical-align: middle;
+                }
+            }
+        }
+
+        tbody {
+            tr {
+                &.activity {
+                    background-color: #f0f2ff;
+                    td:first-child {
+                        font-weight: bold;
+                    }
+                }
+
+                &.department {
+                    background-color: #f5f9ff;
+                }
+
+                &.fund {
+                    background-color: #fafbff;
+                }
+
+                &.account {
+                    background-color: #fcfcfc;
+                }
+
+                &.line {
+                    font-weight: normal;
+
+                    &:hover {
+                        background-color: #f8f9fa;
+                    }
+                }
+
+                td {
+                    padding: 0.5rem;
+                    vertical-align: middle;
+                    border-color: #e9ecef;
+                }
+            }
+        }
+
+        tfoot {
+            tr {
+                background-color: #f8f9fa;
+                font-weight: bold;
+
+                td {
+                    padding: 0.75rem 0.5rem;
+                    border-top: 2px solid #dee2e6;
+                }
+            }
+        }
+
+        // Expand/collapse button
+        .btn-link {
+            color: #333;
+            text-decoration: none;
+
+            &:hover {
+                color: #007bff;
+            }
+        }
+    }
+}
+
+// Print Styles
+@media print {
+    .budget_appropriation_revenue_f4 {
+        .o_control_panel,
+        .budget-summary-card {
+            display: none !important;
+        }
+
+        .budget_appropriation_content {
+            padding: 0 !important;
+            background-color: white !important;
+            min-height: auto !important;
+        }
+
+        .budget-report-container {
+            box-shadow: none !important;
+            padding: 0 !important;
+
+            .report-header {
+                page-break-after: avoid;
+            }
+        }
+
+        .budget-report-table {
+            font-size: 10pt !important;
+
+            thead {
+                display: table-header-group;
+            }
+
+            tbody {
+                tr {
+                    page-break-inside: avoid;
+
+                    &.activity,
+                    &.department,
+                    &.fund,
+                    &.account {
+                        background-color: white !important;
+                    }
+
+                    &.activity td:first-child {
+                        font-weight: bold !important;
+                    }
+                }
+            }
+
+            td, th {
+                border: 1px solid #000 !important;
+                padding: 4px 8px !important;
+            }
+
+            // Hide expand/collapse buttons
+            button {
+                display: none !important;
+            }
+        }
+
+        // Force all rows to be visible for printing
+        tr {
+            display: table-row !important;
+        }
+    }
+}

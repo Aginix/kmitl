@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates xml:space="preserve">
-    <div t-name="budget.SummaryCard" class="budget-summary-card" owl="1">
+    <div t-name="budget.ExpenseF5SummaryCard" class="budget-summary-card" owl="1">
         <div class="card budget-summary">
             <div class="card-header bg-primary text-white">
                 <div class="d-flex justify-content-between align-items-center">

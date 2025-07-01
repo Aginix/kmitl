@@ -294,7 +294,7 @@
                                     <field name="fund_analytic_id" options='{"no_create": True, "no_create_edit": True}' attrs="{'invisible': [('is_virtual_line', '=', True)],
                                                    'required': [('is_virtual_line', '=', False)]}"/>
                                     <field name="account_id" options='{"no_create": True, "no_create_edit": True}' attrs="{'invisible': [('is_virtual_line', '=', True)],
-                                                   'required': [('is_virtual_line', '=', False)]}"/>
+                                                   'required': [('is_virtual_line', '=', False)]}" domain="[('budgetable', '=', True)]"/>
                                     <field name="balance" attrs="{'invisible': [('is_virtual_line', '=', True)]}"/>
                                     <field name="note" attrs="{'invisible': [('is_virtual_line', '=', True)]}"/>
                                 </tree>
@@ -306,8 +306,11 @@
                         <page string="Preview" name="preview" attrs="{'invisible': [('id', '=', False)]}">
                             <div class="o_budget_preview_container">
                                 <div class="text-center p-3">
-                                    <button type="object" name="action_open_preview" class="btn btn-primary btn-lg">
-                                        <i class="fa fa-eye"/> เปิดดูตัวอย่างแบบละเอียด
+                                    <button type="object" name="action_open_expense_f5_preview" class="btn btn-primary btn-lg" attrs="{'invisible': [('budget_type', '!=', 'expense')]}">
+                                        <i class="fa fa-eye"/> เปิดดูตัวอย่างแบบละเอียด (F5)
+                                    </button>
+                                    <button type="object" name="action_open_revenue_f4_preview" class="btn btn-primary btn-lg" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}">
+                                        <i class="fa fa-eye"/> เปิดดูตัวอย่างแบบละเอียด (F4)
                                     </button>
                                     <p class="text-muted mt-2">
                                         ดูโครงสร้างการจัดสรรงบประมาณในรูปแบบ Hierarchy Tree

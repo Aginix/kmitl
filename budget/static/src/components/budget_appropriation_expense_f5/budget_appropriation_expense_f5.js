@@ -5,7 +5,7 @@ import { ControlPanel } from "@web/search/control_panel/control_panel";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 
-export class BudgetAppropriationPreview extends Component {
+export class BudgetAppropriationExpenseF5 extends Component {
     setup() {
         this.controlPanelDisplay = {
             "top-right": false,
@@ -259,9 +259,9 @@ export class BudgetAppropriationPreview extends Component {
     }
 }
 
-BudgetAppropriationPreview.template = "budget.BudgetAppropriationPreview";
-BudgetAppropriationPreview.components = { 
+BudgetAppropriationExpenseF5.template = "budget.BudgetAppropriationExpenseF5";
+BudgetAppropriationExpenseF5.components = { 
     ControlPanel
 };
 
-registry.category("actions").add("budget_appropriation_preview", BudgetAppropriationPreview);
+registry.category("actions").add("budget_appropriation_expense_f5", BudgetAppropriationExpenseF5);

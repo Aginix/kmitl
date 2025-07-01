@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates xml:space="preserve">
-    <div t-name="budget.TreeNode" t-att-class="nodeClass" owl="1">
+    <div t-name="budget.ExpenseF5TreeNode" t-att-class="nodeClass" owl="1">
         <div class="node-content d-flex align-items-center py-2 px-3" t-att-style="indentStyle">
             <!-- Expand/Collapse Button -->
             <button 

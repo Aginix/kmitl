@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Client Action for Budget Appropriation Expense F5 -->
+    <record id="action_budget_appropriation_expense_f5" model="ir.actions.client">
+        <field name="name">Budget Appropriation Expense F5</field>
+        <field name="tag">budget_appropriation_expense_f5</field>
+        <field name="res_model">budget.move</field>
+    </record>
+    
+    <!-- Report Action for PDF Export Expense F5 -->
+    <record id="action_report_budget_appropriation_expense_f5" model="ir.actions.report">
+        <field name="name">Budget Appropriation Expense F5 Report</field>
+        <field name="model">budget.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget.report_budget_appropriation</field>
+        <field name="report_file">budget.report_budget_appropriation</field>
+        <field name="print_report_name">'Budget Appropriation - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_budget_move"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+</odoo>

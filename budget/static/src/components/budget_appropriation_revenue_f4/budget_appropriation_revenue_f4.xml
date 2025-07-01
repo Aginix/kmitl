@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates xml:space="preserve">
-    <div t-name="budget.BudgetAppropriationPreview" class="o_action budget_appropriation_preview" owl="1">
+    <div t-name="budget.BudgetAppropriationRevenueF4" class="o_action budget_appropriation_revenue_f4" owl="1">
 
         <!-- Control Panel -->
         <ControlPanel display="controlPanelDisplay">
@@ -104,14 +104,14 @@
                                 <table class="table table-bordered table-sm budget-report-table">
                                     <thead>
                                         <tr class="table-active">
-                                            <th width="80%">รายการ</th>
+                                            <th width="80%">รหัสงบประมาณ</th>
                                             <th width="20%" class="text-end">จำนวนเงิน</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <t t-if="hierarchy.length > 0">
                                             <t t-foreach="hierarchy" t-as="rootNode" t-key="rootNode.key">
-                                                <t t-call="budget.TableRow">
+                                                <t t-call="budget.RevenueF4TableRow">
                                                     <t t-set="node" t-value="rootNode"/>
                                                     <t t-set="level" t-value="0"/>
                                                 </t>
@@ -149,10 +149,10 @@
     </div>
 
     <!-- Recursive Table Row Template -->
-    <t t-name="budget.TableRow" owl="1">
+    <t t-name="budget.RevenueF4TableRow" owl="1">
         <tr t-attf-class="{{node.type}} {{node.type !== 'line' ? 'font-weight-bold' : ''}}">
             <td>
-                <div t-att-style="node.type === 'account' ? 'margin-left: ' + ((node.level - 5) * 8) + 'px;' : ''">
+                <div t-att-style="'margin-left: ' + ((node.level - 1) * 20) + 'px;'">
                     <div class="d-flex align-items-center">
                         <button
                             t-if="node.children and node.children.length > 0"
@@ -164,20 +164,12 @@
                         </button>
                         <div t-else="" style="width: 20px; display: inline-block;" class="me-2"></div>
                         <span>
-                            <t t-if="node.type === 'account'">
-                                <t t-esc="node.code"/> - <t t-esc="node.name"/>
-                                <t t-if="node.line_details and node.line_details.length > 0">
-                                    <t t-foreach="node.line_details" t-as="detail" t-key="detail.id">
-                                        <t t-if="detail.note">
-                                            <div class="text-muted"><t t-esc="detail.note"/></div>
-                                        </t>
+                            <t t-esc="node.code"/> - <t t-esc="node.name"/>
+                            <t t-if="node.line_details and node.line_details.length > 0">
+                                <t t-foreach="node.line_details" t-as="detail" t-key="detail.id">
+                                    <t t-if="detail.note">
+                                        <div class="text-muted small"><t t-esc="detail.note"/></div>
                                     </t>
-                                </t>
-                            </t>
-                            <t t-else="">
-                                <t t-esc="node.name"/>
-                                <t t-if="node.code">
-                                    <span class="text-muted"> (<t t-esc="node.code"/>)</span>
                                 </t>
                             </t>
                         </span>
@@ -194,7 +186,7 @@
         <!-- Children Rows -->
         <t t-if="isNodeExpanded(node.key) and node.children and node.children.length > 0">
             <t t-foreach="node.children" t-as="childNode" t-key="childNode.key">
-                <t t-call="budget.TableRow">
+                <t t-call="budget.RevenueF4TableRow">
                     <t t-set="node" t-value="childNode"/>
                     <t t-set="level" t-value="level + 1"/>
                 </t>

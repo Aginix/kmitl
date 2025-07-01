@@ -112,7 +112,7 @@ export class TreeNode extends Component {
     }
 }
 
-TreeNode.template = "budget.TreeNode";
+TreeNode.template = "budget.ExpenseF5TreeNode";
 TreeNode.props = {
     node: Object,
     isExpanded: { type: Boolean, optional: true },

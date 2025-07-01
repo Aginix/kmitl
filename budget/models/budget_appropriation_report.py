@@ -27,7 +27,11 @@ class BudgetAppropriationReport(models.TransientModel):
         lines = move.line_ids.filtered(lambda l: not l.is_virtual_line)
         
         # Build hierarchy: Activities → [Departments] → Funds → Budget Accounts → Lines
-        hierarchy = self._build_hierarchy(lines, hide_department=options.get('hide_department', False))
+        # For F4 revenue, show only budget accounts hierarchy
+        if options.get('accounts_only', False):
+            hierarchy = self._build_accounts_only_hierarchy(lines)
+        else:
+            hierarchy = self._build_hierarchy(lines, hide_department=options.get('hide_department', False))
         
         # Calculate totals
         total_amount = sum(line.balance for line in lines)
@@ -69,6 +73,90 @@ class BudgetAppropriationReport(models.TransientModel):
                 "activities_count": len(hierarchy),
             }
         }
+
+    def _build_accounts_only_hierarchy(self, lines):
+        """Build hierarchy showing only budget accounts structure"""
+        # Group lines by budget account hierarchy
+        account_groups = defaultdict(list)
+        
+        for line in lines:
+            if line.account_id:
+                # Use account code as key, but we'll build full hierarchy
+                account_groups[line.account_id.id].append({
+                    "id": line.id,
+                    "account": {
+                        "id": line.account_id.id,
+                        "name": line.account_id.name,
+                        "code": line.account_id.code,
+                        "parent_path": line.account_id.parent_path or '',
+                    },
+                    "balance": line.balance,
+                    "note": line.note or "",
+                })
+        
+        # Get all account IDs including parents
+        all_account_ids = set()
+        for account_id, group_lines in account_groups.items():
+            account = self.env['budget.account'].browse(account_id)
+            if account.parent_path:
+                path_ids = [int(id_str) for id_str in account.parent_path.strip('/').split('/') if id_str]
+                all_account_ids.update(path_ids)
+            else:
+                all_account_ids.add(account_id)
+        
+        # Get all accounts for hierarchy building
+        all_accounts = self.env['budget.account'].browse(list(all_account_ids))
+        account_map = {acc.id: acc for acc in all_accounts}
+        
+        # Build tree structure
+        root_nodes = {}
+        
+        for account_id, group_lines in account_groups.items():
+            account = account_map.get(account_id)
+            if not account:
+                continue
+            
+            # Build path from root to this account
+            path = []
+            if account.parent_path:
+                path_ids = [int(id_str) for id_str in account.parent_path.strip('/').split('/') if id_str]
+                path = [account_map[pid] for pid in path_ids if pid in account_map]
+            else:
+                path = [account]
+            
+            # Navigate/create tree structure
+            current_level = root_nodes
+            for i, path_account in enumerate(path):
+                node_key = f"account_{path_account.code}"
+                
+                if node_key not in current_level:
+                    current_level[node_key] = {
+                        "key": node_key,
+                        "type": "account",
+                        "level": i + 1,
+                        "name": path_account.name,
+                        "code": path_account.code,
+                        "children": {},
+                        "total_amount": 0,
+                        "line_count": 0,
+                        "line_details": [],
+                    }
+                
+                # If this is the final account (has actual lines), add line details
+                if i == len(path) - 1:
+                    for line_data in group_lines:
+                        current_level[node_key]["line_details"].append({
+                            "id": line_data["id"],
+                            "balance": line_data["balance"],
+                            "note": line_data["note"],
+                        })
+                        current_level[node_key]["total_amount"] += line_data["balance"]
+                        current_level[node_key]["line_count"] += 1
+                
+                current_level = current_level[node_key]["children"]
+        
+        # Convert to list and calculate totals
+        return self._convert_dict_to_list_and_calculate_totals(root_nodes)
 
     def _build_hierarchy(self, lines, hide_department=False):
         """Build complete hierarchical structure using parent_path for full hierarchy"""

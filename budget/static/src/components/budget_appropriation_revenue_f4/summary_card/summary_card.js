@@ -81,7 +81,7 @@ export class SummaryCard extends Component {
     }
 }
 
-SummaryCard.template = "budget.SummaryCard";
+SummaryCard.template = "budget.RevenueF4SummaryCard";
 SummaryCard.props = {
     move: { type: Object, optional: true },
     summary: { type: Object, optional: true },
