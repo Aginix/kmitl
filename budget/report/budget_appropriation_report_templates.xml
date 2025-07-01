@@ -142,23 +142,23 @@
                     }
 
                     /* Print styles */
-                    @media print {
-                        .budget-appropriation-report {
-                            font-size: 8pt;
-                        }
 
-                        .document-ref {
-                            font-size: 9pt;
-                        }
-
-                        .institution-info h4 {
-                            font-size: 11pt;
-                        }
-
-                        table, td {
-                            border: 0px;
-                        }
+                    .budget-appropriation-report {
+                        font-size: 8pt;
                     }
+
+                    .document-ref {
+                        font-size: 9pt;
+                    }
+
+                    .institution-info h4 {
+                        font-size: 11pt;
+                    }
+
+                    table, td {
+                        border: 0px;
+                    }
+
             </style>
 
 
