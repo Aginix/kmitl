@@ -36,13 +36,13 @@ class ProcurementPlan(models.Model):
     date_range_fy_id = fields.Many2one(
         comodel_name="account.fiscal.year", string="Fiscal year", states=READONLY_STATES
     )
-    name = fields.Char(required=True, tracking=True, states=READONLY_STATES)
-    amount = fields.Integer(required=True, tracking=True, states=READONLY_STATES)
+    name = fields.Char(required=True, tracking=True)
+    amount = fields.Integer(required=True, tracking=True)
     unit = fields.Char(
-        "Unit of Measure", required=True, tracking=True, states=READONLY_STATES
+        "Unit of Measure", required=True, tracking=True
     )
     price_per_unit = fields.Float(
-        "Price per unit", required=True, tracking=True, states=READONLY_STATES
+        "Price per unit", required=True, tracking=True
     )
     total_price = fields.Float(
         "Total price",
@@ -56,7 +56,6 @@ class ProcurementPlan(models.Model):
         string="Procurement Method",
         required=True,
         tracking=True,
-        states=READONLY_STATES,
     )
     state = fields.Selection(
         [
