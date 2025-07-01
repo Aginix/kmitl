@@ -89,7 +89,7 @@
                                     <field name="fund_analytic_id" options="{'no_create': True}"/>
                                     <field name="amount" sum="Total Amount"/>
                                     <field name="available_budget_amount" sum="Total Available" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                                    <field name="budget_availability_status" widget="badge" 
+                                    <field name="budget_availability_status" widget="badge"
                                            decoration-danger="budget_availability_status == 'insufficient'"
                                            decoration-warning="budget_availability_status == 'warning'"
                                            decoration-success="budget_availability_status == 'sufficient'"/>
@@ -125,7 +125,7 @@
                                 </group>
                             </group>
                         </page>
-                        
+
                         <page string="Budget Analysis" attrs="{'invisible': [('state', '=', 'draft')]}">
                             <group string="Budget Availability by Line">
                                 <div class="alert alert-info" role="status">
