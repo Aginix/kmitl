@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- View budget.account View Tree -->
+    <record id="view_budget_account_tree" model="ir.ui.view">
+        <field name="name">view.budget.account.tree</field>
+        <field name="model">budget.account</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="code" />
+                <field name="name" />
+                <field name="budget_type" />
+                <field name="parent_id" />
+                <field name="fund_analytic_ids" widget="many2many_tags" />
+                <field name="budgetable" />
+                <field name="deprecated"/>
+                <field name="children_count"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- View budget.account form -->
+    <record id="view_budget_account_form" model="ir.ui.view">
+        <field name="name">view.budget.account.form</field>
+        <field name="model">budget.account</field>
+        <field name="arch" type="xml">
+            <form string="Budget Account">
+                <sheet>
+                    <div name="button_box" class="oe_button_box">
+                        <button name="action_view_children_accounts" type="object" class="oe_stat_button" icon="fa-bars">
+                            <field string="Sub Accounts" name="children_count" widget="statinfo"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <group>
+                        <group>
+                            <field name="active" invisible="1"/>
+                            <field name="code" />
+                            <field name="name" />
+                            <field name="budget_type" />
+                            <field name="parent_id" />
+                            <field name="fund_analytic_ids" widget="many2many_tags" />
+                            <field name="budgetable" />
+                            <field name="deprecated"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_ids" widget="mail_thread" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- View budget.account search -->
+    <record id="view_budget_account_search" model="ir.ui.view">
+        <field name="name">view.budget.account.search</field>
+        <field name="model">budget.account</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action budget.account -->
+    <record id="action_budget_account" model="ir.actions.act_window">
+        <field name="name">รหัสงบประมาณ</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">budget.account</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                ไม่มีข้อมูลรหัสงบประมาณ คลิกที่นี่เพื่อสร้างข้อมูลใหม่
+            </p>
+        </field>
+    </record>
+
+
+</odoo>

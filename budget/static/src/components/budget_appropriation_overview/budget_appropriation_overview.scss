@@ -1,0 +1,79 @@
+// Budget Appropriation Overview - Simple styling
+
+.budget_appropriation_overview {
+    .o_content {
+        background-color: #f9f9f9;
+    }
+
+    .budget-overview-table {
+        background: white;
+        
+        .hierarchy-row {
+            &.activity {
+                background-color: #f8f9ff;
+            }
+            
+            &.department {
+                background-color: #f0f5ff;
+            }
+            
+            &.fund {
+                background-color: #fafbff;
+            }
+            
+            &.account {
+                background-color: #fcfcfc;
+            }
+            
+            .btn-link {
+                color: #333;
+                text-decoration: none;
+                
+                &:hover {
+                    color: #007bff;
+                }
+            }
+        }
+    }
+    
+    .o_searchview_input {
+        min-width: 150px;
+        
+        .form-select,
+        .form-control {
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+        }
+    }
+}
+
+// Print styles
+@media print {
+    .budget_appropriation_overview {
+        .o_control_panel {
+            display: none !important;
+        }
+        
+        .o_content {
+            background-color: white !important;
+            padding: 0 !important;
+        }
+        
+        .budget-overview-table {
+            font-size: 10pt !important;
+            
+            .hierarchy-row {
+                &.activity,
+                &.department,
+                &.fund,
+                &.account {
+                    background-color: white !important;
+                }
+            }
+            
+            .btn-link {
+                display: none !important;
+            }
+        }
+    }
+}

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mass_edit_budget_account_budgetable" model="ir.actions.server">
+        <field name="name">Mass Edit</field>
+        <field name="model_id" ref="budget.model_budget_account" />
+        <field name="state">mass_edit</field>
+    </record>
+
+    <record id="mass_editing_budget_account_budgetable_1" model="ir.actions.server.mass.edit.line">
+        <field name="server_action_id" ref="mass_edit_budget_account_budgetable" />
+        <field name="field_id" ref="budget.field_budget_account__budgetable" />
+    </record>
+
+    <record id="mass_editing_budget_account_budgetable_2" model="ir.actions.server.mass.edit.line">
+        <field name="server_action_id" ref="mass_edit_budget_account_budgetable" />
+        <field name="field_id" ref="budget.field_budget_account__fund_analytic_ids" />
+        <field name="widget_option">many2many_tags</field>
+    </record>
+
+    <!-- Add context actions -->
+    <function model="ir.actions.server" name="create_action">
+        <value eval="[ref('mass_edit_budget_account_budgetable')]" />
+    </function>
+</odoo>

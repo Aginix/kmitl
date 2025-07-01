@@ -25,7 +25,7 @@
         </xpath>
         <xpath expr="//t[@t-foreach='getColumns(record)']/t/td" position="inside">
             <div
-                t-if="column.name == 'template_line_id' and record.data.note"
+                t-if="column.name == 'account_id' and record.data.note"
                 style="width: 100%;"
                 class="o_note_textarea"
             >
