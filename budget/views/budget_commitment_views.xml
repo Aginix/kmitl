@@ -100,7 +100,7 @@
                                 </tree>
                             </field>
                             <group class="oe_subtotal_footer">
-                                <div class="alert alert-info" role="alert">
+                                <div class="alert alert-info" role="status">
                                     <strong>Budget Availability Guide:</strong>
                                     <ul class="mb-0">
                                         <li><span class="badge badge-success">Sufficient</span> - Budget is available for this commitment</li>
@@ -128,7 +128,7 @@
                         
                         <page string="Budget Analysis" attrs="{'invisible': [('state', '=', 'draft')]}">
                             <group string="Budget Availability by Line">
-                                <div class="alert alert-info">
+                                <div class="alert alert-info" role="status">
                                     <p class="mb-0">
                                         This page shows budget availability analysis for each commitment line.
                                         The analysis includes appropriated amounts, reservations, consumptions, and available balances.
