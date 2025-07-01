@@ -1,5 +1,0 @@
-id,name,background_color,background_color_inherit,divider_inherit,color_inherit,indent_level_inherit,indent_level,hide_empty_inherit,hide_empty,hide_always_inherit,hide_always,font_weight_inherit,font_weight,font_style_inherit,font_style,font_size_inherit,font_size,divider,dp_inherit
-mis_report_style_f3_p_003_heading_1,F3-P-วง-003 Heading 1,#FFFFFF,TRUE,TRUE,TRUE,FALSE,0,TRUE,FALSE,TRUE,FALSE,FALSE,Bold,FALSE,Normal,TRUE,medium,1,TRUE
-mis_report_style_f3_p_003_heading_2,F3-P-วง-003 Heading 2,#FFFFFF,TRUE,TRUE,TRUE,FALSE,2,TRUE,FALSE,TRUE,FALSE,TRUE,,TRUE,,TRUE,,1,TRUE
-mis_report_style_f3_p_003_heading_3,F3-P-วง-003 Heading 3 แผนงาน,#FFFFFF,TRUE,TRUE,TRUE,FALSE,4,FALSE,TRUE,TRUE,FALSE,TRUE,,TRUE,,TRUE,,1,TRUE
-mis_report_style_f3_p_003_heading_4,F3-P-วง-003 Heading 4 กองทุน,#FFFFFF,TRUE,TRUE,TRUE,FALSE,6,FALSE,TRUE,TRUE,FALSE,TRUE,,TRUE,,TRUE,,1,TRUE

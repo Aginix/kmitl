@@ -24,7 +24,6 @@
         "views/budget_report_views.xml",
         "views/budget_execution_status_report_views.xml",
         "views/budget_execution_report_interactive_views.xml",
-        "views/budget_expenditure_report_views.xml",
         "views/budget_appropriation_overview_views.xml",
         "report/budget_appropriation_report_templates.xml",
         "report/budget_execution_status_report_templates.xml"
