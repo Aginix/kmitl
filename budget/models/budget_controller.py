@@ -1,0 +1,601 @@
+import logging
+from collections import defaultdict
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError, ValidationError
+
+_logger = logging.getLogger(__name__)
+
+
+class BudgetController(models.AbstractModel):
+    """
+    Centralized service for budget operations and availability checking.
+    
+    This service provides:
+    - Budget availability checking across the system
+    - Centralized budget calculation methods
+    - Budget reservation and consumption coordination
+    - Standardized budget validation logic
+    
+    Usage:
+        budget_controller = self.env['budget.controller']
+        available = budget_controller.get_available_budget(analytic_data, fiscal_year)
+        budget_controller.check_budget_availability(analytic_data, amount, fiscal_year)
+    """
+    _name = 'budget.controller'
+    _description = 'Budget Controller Service'
+
+    @api.model
+    def check_budget_availability(self, analytic_data, amount, fiscal_year_id, company_id=None):
+        """
+        Check if sufficient budget is available for the given analytic combination
+        
+        Args:
+            analytic_data (dict): Analytic dimensions data
+                - account_id: Budget account ID
+                - activity_analytic_id: Activity analytic account ID  
+                - department_analytic_id: Department analytic account ID
+                - fund_analytic_id: Fund analytic account ID
+                - source_analytic_id: Source analytic account ID
+            amount (float): Amount to check availability for
+            fiscal_year_id (int): Fiscal year ID
+            company_id (int): Company ID (defaults to current company)
+        
+        Returns:
+            bool: True if budget is available
+            
+        Raises:
+            ValidationError: If insufficient budget is available
+        """
+        if not company_id:
+            company_id = self.env.company.id
+        
+        available_amount = self.get_available_budget(analytic_data, fiscal_year_id, company_id)
+        
+        if amount > available_amount:
+            error_msg = self._format_budget_shortage_message(analytic_data, available_amount, amount)
+            raise ValidationError(error_msg)
+        
+        return True
+    
+    @api.model
+    def get_available_budget(self, analytic_data, fiscal_year_id, company_id=None):
+        """
+        Get available budget amount for the given analytic combination
+        
+        Args:
+            analytic_data (dict): Analytic dimensions data
+            fiscal_year_id (int): Fiscal year ID
+            company_id (int): Company ID (defaults to current company)
+        
+        Returns:
+            float: Available budget amount
+        """
+        if not company_id:
+            company_id = self.env.company.id
+        
+        # Calculate: Appropriated - Reserved - Consumed
+        appropriated = self._calculate_appropriated_amount(analytic_data, fiscal_year_id, company_id)
+        reserved = self._calculate_reserved_amount(analytic_data, fiscal_year_id, company_id)
+        consumed = self._calculate_consumed_amount(analytic_data, fiscal_year_id, company_id)
+        
+        available = appropriated - reserved - consumed
+        return max(0.0, available)  # Never return negative
+    
+    @api.model
+    def reserve_budget(self, analytic_data, amount, fiscal_year_id, source_record=None, company_id=None):
+        """
+        Reserve budget amount by creating and reserving a commitment
+        
+        Args:
+            analytic_data (dict): Analytic dimensions data
+            amount (float): Amount to reserve
+            fiscal_year_id (int): Fiscal year ID
+            source_record (record): Source record requesting the reservation
+            company_id (int): Company ID (defaults to current company)
+        
+        Returns:
+            budget.commitment: Created and reserved commitment
+        """
+        if not company_id:
+            company_id = self.env.company.id
+        
+        # Check availability first
+        self.check_budget_availability(analytic_data, amount, fiscal_year_id, company_id)
+        
+        # Create commitment
+        commitment_data = self._prepare_service_commitment_data(
+            analytic_data, amount, fiscal_year_id, source_record, company_id
+        )
+        
+        commitment = self.env['budget.commitment'].create(commitment_data)
+        
+        # Confirm and reserve
+        commitment.action_confirm()
+        commitment.action_reserve()
+        
+        _logger.info('Reserved budget amount %s via service for %s', 
+                    amount, source_record._name if source_record else 'service')
+        
+        return commitment
+    
+    @api.model
+    def get_budget_breakdown(self, analytic_data, fiscal_year_id=None, company_id=None):
+        """
+        Get detailed budget breakdown for the given analytic combination
+        
+        Args:
+            analytic_data (dict): Analytic dimensions data
+            fiscal_year_id (int): Fiscal year ID (optional)
+            company_id (int): Company ID (defaults to current company)
+        
+        Returns:
+            dict: Budget breakdown with appropriated, reserved, consumed, and available amounts
+        """
+        if not company_id:
+            company_id = self.env.company.id
+            
+        if not fiscal_year_id:
+            # Try to get current fiscal year
+            today = fields.Date.today()
+            fiscal_year = self.env['account.fiscal.year'].search([
+                ('date_from', '<=', today),
+                ('date_to', '>=', today),
+                ('company_id', '=', company_id),
+            ], limit=1)
+            fiscal_year_id = fiscal_year.id if fiscal_year else False
+        
+        if not fiscal_year_id:
+            return {
+                'appropriated': 0.0,
+                'reserved': 0.0,
+                'consumed': 0.0,
+                'available': 0.0,
+                'details': [],
+            }
+        
+        appropriated = self._calculate_appropriated_amount(analytic_data, fiscal_year_id, company_id)
+        reserved = self._calculate_reserved_amount(analytic_data, fiscal_year_id, company_id)
+        consumed = self._calculate_consumed_amount(analytic_data, fiscal_year_id, company_id)
+        available = appropriated - reserved - consumed
+        
+        # Get recent transaction details (optional)
+        details = self._get_budget_transaction_details(analytic_data, fiscal_year_id, company_id)
+        
+        return {
+            'appropriated': appropriated,
+            'reserved': reserved,
+            'consumed': consumed,
+            'available': max(0.0, available),
+            'details': details[:10],  # Return only last 10 transactions
+        }
+    
+    @api.model
+    def _get_budget_transaction_details(self, analytic_data, fiscal_year_id, company_id):
+        """Get recent budget transactions for the given analytic combination"""
+        details = []
+        
+        # Get appropriation moves
+        BudgetMove = self.env['budget.move']
+        domain = [
+            ('state', '=', 'posted'),
+            ('move_type', '=', 'appropriation'),
+            ('date_range_fy_id', '=', fiscal_year_id),
+            ('company_id', '=', company_id),
+        ]
+        
+        moves = BudgetMove.search(domain, order='date desc', limit=50)
+        for move in moves:
+            for line in move.line_ids.filtered(lambda l: not l.is_virtual_line):
+                if self._line_matches_analytic_data(line, analytic_data):
+                    details.append({
+                        'id': line.id,
+                        'date': move.date,
+                        'type': 'appropriation',
+                        'reference': move.name,
+                        'amount': abs(line.balance),
+                    })
+        
+        # Get consumption moves
+        domain[1] = ('move_type', '=', 'consume')
+        moves = BudgetMove.search(domain, order='date desc', limit=50)
+        for move in moves:
+            for line in move.line_ids.filtered(lambda l: not l.is_virtual_line):
+                if self._line_matches_analytic_data(line, analytic_data):
+                    details.append({
+                        'id': line.id,
+                        'date': move.date,
+                        'type': 'consumed',
+                        'reference': move.name,
+                        'amount': -abs(line.balance),
+                    })
+        
+        # Get reserved commitments
+        BudgetCommitment = self.env['budget.commitment']
+        domain = [
+            ('state', '=', 'reserved'),
+            ('date_range_fy_id', '=', fiscal_year_id),
+            ('company_id', '=', company_id),
+        ]
+        
+        commitments = BudgetCommitment.search(domain, order='date desc', limit=50)
+        for commitment in commitments:
+            for line in commitment.line_ids:
+                if self._commitment_line_matches_analytic_data(line, analytic_data):
+                    details.append({
+                        'id': line.id,
+                        'date': commitment.date,
+                        'type': 'reserved',
+                        'reference': commitment.name,
+                        'amount': -line.remaining_amount,
+                    })
+        
+        # Sort by date descending
+        details.sort(key=lambda x: x['date'], reverse=True)
+        
+        return details
+    
+    @api.model
+    def consume_budget(self, commitment_id, amount=None, source_record=None):
+        """
+        Consume budget from an existing commitment
+        
+        Args:
+            commitment_id (int): Budget commitment ID
+            amount (float): Amount to consume (defaults to remaining amount)
+            source_record (record): Source record requesting the consumption
+        
+        Returns:
+            budget.move: Created consumption move
+        """
+        commitment = self.env['budget.commitment'].browse(commitment_id)
+        
+        if not commitment.exists():
+            raise UserError(_('Budget commitment not found.'))
+        
+        if commitment.state != 'reserved':
+            raise UserError(_('Budget commitment must be in reserved state to consume.'))
+        
+        consumption_move = commitment.create_consumption_move(amount)
+        
+        _logger.info('Consumed budget amount %s from commitment %s via service for %s',
+                    consumption_move.total_amount, commitment.name,
+                    source_record._name if source_record else 'service')
+        
+        return consumption_move
+    
+    @api.model
+    def get_budget_status(self, analytic_data, fiscal_year_id, company_id=None):
+        """
+        Get comprehensive budget status for the given analytic combination
+        
+        Args:
+            analytic_data (dict): Analytic dimensions data
+            fiscal_year_id (int): Fiscal year ID
+            company_id (int): Company ID (defaults to current company)
+        
+        Returns:
+            dict: Budget status with all amounts and percentages
+        """
+        if not company_id:
+            company_id = self.env.company.id
+        
+        appropriated = self._calculate_appropriated_amount(analytic_data, fiscal_year_id, company_id)
+        reserved = self._calculate_reserved_amount(analytic_data, fiscal_year_id, company_id)
+        consumed = self._calculate_consumed_amount(analytic_data, fiscal_year_id, company_id)
+        available = max(0.0, appropriated - reserved - consumed)
+        
+        total_used = reserved + consumed
+        utilization = (total_used / appropriated * 100) if appropriated > 0 else 0
+        
+        return {
+            'appropriated_amount': appropriated,
+            'reserved_amount': reserved,
+            'consumed_amount': consumed,
+            'available_amount': available,
+            'total_used': total_used,
+            'utilization_percentage': utilization,
+            'is_over_budget': total_used > appropriated,
+            'shortage_amount': max(0.0, total_used - appropriated),
+        }
+    
+    @api.model
+    def _calculate_appropriated_amount(self, analytic_data, fiscal_year_id, company_id):
+        """Calculate total appropriated budget for the analytic combination"""
+        domain = [
+            ('state', '=', 'posted'),
+            ('move_type', '=', 'appropriation'),
+            ('date_range_fy_id', '=', fiscal_year_id),
+            ('company_id', '=', company_id),
+        ]
+        
+        moves = self.env['budget.move'].search(domain)
+        total = 0.0
+        
+        for move in moves:
+            for line in move.line_ids.filtered(lambda l: not l.is_virtual_line):
+                if self._line_matches_analytic_data(line, analytic_data):
+                    total += abs(line.balance)
+        
+        return total
+    
+    @api.model
+    def _calculate_reserved_amount(self, analytic_data, fiscal_year_id, company_id):
+        """Calculate total reserved amount from commitments"""
+        domain = [
+            ('state', '=', 'reserved'),
+            ('date_range_fy_id', '=', fiscal_year_id),
+            ('company_id', '=', company_id),
+        ]
+        
+        commitments = self.env['budget.commitment'].search(domain)
+        total = 0.0
+        
+        for commitment in commitments:
+            for line in commitment.line_ids:
+                if self._commitment_line_matches_analytic_data(line, analytic_data):
+                    total += line.remaining_amount
+        
+        return total
+    
+    @api.model
+    def _calculate_consumed_amount(self, analytic_data, fiscal_year_id, company_id):
+        """Calculate total consumed amount from budget moves"""
+        domain = [
+            ('state', '=', 'posted'),
+            ('move_type', '=', 'consume'),
+            ('date_range_fy_id', '=', fiscal_year_id),
+            ('company_id', '=', company_id),
+        ]
+        
+        moves = self.env['budget.move'].search(domain)
+        total = 0.0
+        
+        for move in moves:
+            for line in move.line_ids.filtered(lambda l: not l.is_virtual_line):
+                if self._line_matches_analytic_data(line, analytic_data):
+                    total += abs(line.balance)
+        
+        return total
+    
+    @api.model
+    def _line_matches_analytic_data(self, line, analytic_data):
+        """Check if budget move line matches analytic data hierarchically"""
+        # Exact match for budget account and source (no hierarchy)
+        if (line.account_id.id != analytic_data.get('account_id') or
+            (line.source_analytic_id.id if line.source_analytic_id else False) != analytic_data.get('source_analytic_id')):
+            return False
+        
+        # For activities, departments, and funds, check hierarchical relationships
+        activity_match = self._analytic_accounts_match_hierarchical(
+            line.activity_analytic_id, 
+            self.env['account.analytic.account'].browse(analytic_data.get('activity_analytic_id')) if analytic_data.get('activity_analytic_id') else False
+        )
+        department_match = self._analytic_accounts_match_hierarchical(
+            line.department_analytic_id,
+            self.env['account.analytic.account'].browse(analytic_data.get('department_analytic_id')) if analytic_data.get('department_analytic_id') else False
+        )
+        fund_match = self._analytic_accounts_match_hierarchical(
+            line.fund_analytic_id,
+            self.env['account.analytic.account'].browse(analytic_data.get('fund_analytic_id')) if analytic_data.get('fund_analytic_id') else False
+        )
+        
+        return activity_match and department_match and fund_match
+    
+    @api.model
+    def _analytic_accounts_match_hierarchical(self, move_account, commitment_account):
+        """
+        Check if analytic accounts match hierarchically.
+        
+        For appropriations: move_account (parent) can provide budget for commitment_account (child)
+        
+        Args:
+            move_account: Analytic account from move line (could be parent providing budget)
+            commitment_account: Analytic account needed for commitment (could be child needing budget)
+        
+        Returns:
+            bool: True if accounts match hierarchically
+        """
+        # Handle None cases
+        if not move_account and not commitment_account:
+            return True
+        if not move_account or not commitment_account:
+            return False
+        
+        # Exact match
+        if move_account.id == commitment_account.id:
+            return True
+        
+        # Check if move_account is a parent of commitment_account
+        # This allows parent-level appropriations to cover child-level commitments
+        if commitment_account.parent_path and move_account.id:
+            # Extract parent IDs from commitment_account's parent_path
+            parent_ids = self._get_parent_ids_from_path(commitment_account.parent_path)
+            return move_account.id in parent_ids
+        
+        return False
+    
+    @api.model
+    def _get_parent_ids_from_path(self, parent_path):
+        """Extract parent IDs from parent_path field"""
+        if not parent_path:
+            return []
+        
+        # parent_path format: "1/2/3/" - extract all IDs
+        path_parts = parent_path.strip('/').split('/')
+        return [int(id_str) for id_str in path_parts if id_str.isdigit()]
+    
+    @api.model
+    def _commitment_line_matches_analytic_data(self, line, analytic_data):
+        """Check if commitment line matches analytic data (exact match for commitments)"""
+        # For commitments, we use exact matching since they represent specific allocations
+        return (
+            line.account_id.id == analytic_data.get('account_id') and
+            (line.activity_analytic_id.id if line.activity_analytic_id else False) == analytic_data.get('activity_analytic_id') and
+            (line.department_analytic_id.id if line.department_analytic_id else False) == analytic_data.get('department_analytic_id') and
+            (line.fund_analytic_id.id if line.fund_analytic_id else False) == analytic_data.get('fund_analytic_id') and
+            (line.source_analytic_id.id if line.source_analytic_id else False) == analytic_data.get('source_analytic_id')
+        )
+    
+    @api.model
+    def _line_matches_analytic_data(self, line, analytic_data):
+        """Check if budget move line matches the given analytic data"""
+        # Exact match for budget account and source
+        if line.account_id.id != analytic_data.get('account_id'):
+            return False
+        if line.source_analytic_id.id != analytic_data.get('source_analytic_id', False):
+            return False
+        
+        # Hierarchical match for other dimensions
+        if not self._analytic_matches_hierarchical(
+            line.activity_analytic_id.id if line.activity_analytic_id else False,
+            analytic_data.get('activity_analytic_id', False)
+        ):
+            return False
+            
+        if not self._analytic_matches_hierarchical(
+            line.department_analytic_id.id if line.department_analytic_id else False,
+            analytic_data.get('department_analytic_id', False)
+        ):
+            return False
+            
+        if not self._analytic_matches_hierarchical(
+            line.fund_analytic_id.id if line.fund_analytic_id else False,
+            analytic_data.get('fund_analytic_id', False)
+        ):
+            return False
+        
+        return True
+    
+    def _commitment_line_matches_analytic_data(self, line, analytic_data):
+        """Check if commitment line matches the given analytic data"""
+        # Same logic as budget move lines
+        return self._line_matches_analytic_data(line, analytic_data)
+    
+    def _analytic_matches_hierarchical(self, parent_id, child_id):
+        """Check if analytic accounts match hierarchically"""
+        # Handle None cases
+        if not parent_id and not child_id:
+            return True
+        if not parent_id or not child_id:
+            return False
+        
+        # Exact match
+        if parent_id == child_id:
+            return True
+        
+        # Check if parent_id is an ancestor of child_id
+        child_account = self.env['account.analytic.account'].browse(child_id)
+        if child_account.exists() and child_account.parent_path:
+            parent_ids = [int(id_str) for id_str in child_account.parent_path.strip('/').split('/') if id_str.isdigit()]
+            return parent_id in parent_ids
+        
+        return False
+    
+    def _format_budget_shortage_message(self, analytic_data, available_amount, requested_amount):
+        """Format detailed budget shortage error message"""
+        # Get record names for better error messages
+        account = self.env['budget.account'].browse(analytic_data.get('account_id'))
+        activity = self.env['account.analytic.account'].browse(analytic_data.get('activity_analytic_id'))
+        department = self.env['account.analytic.account'].browse(analytic_data.get('department_analytic_id'))
+        fund = self.env['account.analytic.account'].browse(analytic_data.get('fund_analytic_id'))
+        source = self.env['account.analytic.account'].browse(analytic_data.get('source_analytic_id'))
+        
+        error_msg = _(
+            "Insufficient budget available:\n"
+            "- Budget Account: %(account)s\n"
+            "- Activity: %(activity)s\n"
+            "- Department: %(department)s\n"
+            "- Fund: %(fund)s\n"
+            "- Source: %(source)s\n"
+            "- Available: %(available).2f\n"
+            "- Requested: %(requested).2f\n"
+            "- Shortage: %(shortage).2f"
+        ) % {
+            'account': account.display_name if account else 'N/A',
+            'activity': activity.display_name if activity else 'N/A',
+            'department': department.display_name if department else 'N/A',
+            'fund': fund.display_name if fund else 'N/A',
+            'source': source.display_name if source else 'N/A',
+            'available': available_amount,
+            'requested': requested_amount,
+            'shortage': requested_amount - available_amount,
+        }
+        
+        return error_msg
+    
+    @api.model
+    def _prepare_service_commitment_data(self, analytic_data, amount, fiscal_year_id, source_record, company_id):
+        """Prepare commitment data for service-created commitments"""
+        commitment_name = _('Service Commitment')
+        if source_record:
+            commitment_name = _('Commitment for %s') % (
+                getattr(source_record, 'name', None) or 
+                f"{source_record._description} #{source_record.id}"
+            )
+        
+        line_data = {
+            'account_id': analytic_data.get('account_id'),
+            'activity_analytic_id': analytic_data.get('activity_analytic_id'),
+            'fund_analytic_id': analytic_data.get('fund_analytic_id'),
+            'amount': amount,
+            'name': _('Service reservation for %s') % (source_record._name if source_record else 'system'),
+        }
+        
+        return {
+            'name': commitment_name,
+            'date': fields.Date.today(),
+            'department_analytic_id': analytic_data.get('department_analytic_id'),
+            'source_analytic_id': analytic_data.get('source_analytic_id'),
+            'date_range_fy_id': fiscal_year_id,
+            'company_id': company_id,
+            'currency_id': self.env.company.currency_id.id,
+            'state': 'draft',
+            'line_ids': [(0, 0, line_data)],
+        }
+    
+    @api.model
+    def get_multi_line_budget_status(self, line_data_list, fiscal_year_id, company_id=None):
+        """
+        Get budget status for multiple budget lines at once (optimized for bulk operations)
+        
+        Args:
+            line_data_list (list): List of analytic data dicts
+            fiscal_year_id (int): Fiscal year ID
+            company_id (int): Company ID (defaults to current company)
+        
+        Returns:
+            dict: Mapping of line keys to budget status
+        """
+        if not company_id:
+            company_id = self.env.company.id
+        
+        # Group lines by analytic combination for efficient calculation
+        grouped_lines = defaultdict(list)
+        for idx, line_data in enumerate(line_data_list):
+            key = self._get_analytic_key(line_data)
+            grouped_lines[key].append((idx, line_data))
+        
+        results = {}
+        
+        # Calculate budget status for each unique combination
+        for key, lines in grouped_lines.items():
+            # Use the first line's analytic data for calculation
+            analytic_data = lines[0][1]
+            budget_status = self.get_budget_status(analytic_data, fiscal_year_id, company_id)
+            
+            # Apply status to all lines with this combination
+            for idx, line_data in lines:
+                results[idx] = budget_status.copy()
+        
+        return results
+    
+    @api.model
+    def _get_analytic_key(self, analytic_data):
+        """Get unique key for analytic combination"""
+        return (
+            analytic_data.get('account_id'),
+            analytic_data.get('activity_analytic_id'),
+            analytic_data.get('department_analytic_id'),
+            analytic_data.get('fund_analytic_id'),
+            analytic_data.get('source_analytic_id'),
+        )

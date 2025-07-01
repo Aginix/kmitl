@@ -343,16 +343,178 @@ class BudgetCommitment(models.Model):
     
     def _check_budget_availability(self):
         """Check if sufficient budget is available for this commitment"""
-        # This would implement budget availability checking logic
-        # For now, we'll add a placeholder that can be extended
+        self.ensure_one()
         _logger.info("Checking budget availability for commitment %s", self.name)
         
-        # TODO: Implement actual budget checking logic
-        # - Check against budget.move entries
-        # - Consider existing commitments
-        # - Validate against budget allocations
+        validation_errors = []
+        
+        for line in self.line_ids:
+            available_amount = self._get_available_budget_amount(line)
+            requested_amount = line.amount
+            
+            if requested_amount > available_amount:
+                error_msg = _(
+                    "Insufficient budget for line '%(line_name)s':\n"
+                    "- Budget Account: %(account)s\n"
+                    "- Activity: %(activity)s\n"
+                    "- Department: %(department)s\n"
+                    "- Fund: %(fund)s\n"
+                    "- Source: %(source)s\n"
+                    "- Available: %(available).2f\n"
+                    "- Requested: %(requested).2f\n"
+                    "- Shortage: %(shortage).2f"
+                ) % {
+                    'line_name': line.name,
+                    'account': line.account_id.display_name,
+                    'activity': line.activity_analytic_id.display_name,
+                    'department': line.department_analytic_id.display_name,
+                    'fund': line.fund_analytic_id.display_name,
+                    'source': line.source_analytic_id.display_name,
+                    'available': available_amount,
+                    'requested': requested_amount,
+                    'shortage': requested_amount - available_amount,
+                }
+                validation_errors.append(error_msg)
+        
+        if validation_errors:
+            raise ValidationError("\n\n".join(validation_errors))
         
         return True
+    
+    def _get_available_budget_amount(self, line):
+        """Get available budget amount for a commitment line"""
+        # Calculate: Appropriated - Reserved - Consumed
+        appropriated = self._calculate_appropriated_amount(line)
+        reserved = self._calculate_reserved_amount(line)
+        consumed = self._calculate_consumed_amount(line)
+        
+        available = appropriated - reserved - consumed
+        return max(0.0, available)  # Never return negative
+    
+    def _calculate_appropriated_amount(self, line):
+        """Calculate total appropriated budget for this line's analytic combination"""
+        BudgetMove = self.env['budget.move']
+        
+        domain = [
+            ('state', '=', 'posted'),
+            ('move_type', '=', 'appropriation'),
+            ('date_range_fy_id', '=', self.date_range_fy_id.id),
+            ('company_id', '=', self.company_id.id),
+        ]
+        
+        moves = BudgetMove.search(domain)
+        total = 0.0
+        
+        for move in moves:
+            for move_line in move.line_ids.filtered(lambda l: not l.is_virtual_line):
+                if self._line_matches_analytic_combination(move_line, line):
+                    total += abs(move_line.balance)
+        
+        return total
+    
+    def _calculate_reserved_amount(self, line):
+        """Calculate total reserved amount from other commitments"""
+        BudgetCommitment = self.env['budget.commitment']
+        
+        domain = [
+            ('state', '=', 'reserved'),
+            ('date_range_fy_id', '=', self.date_range_fy_id.id),
+            ('company_id', '=', self.company_id.id),
+            ('id', '!=', self.id),  # Exclude current commitment
+        ]
+        
+        commitments = BudgetCommitment.search(domain)
+        total = 0.0
+        
+        for commitment in commitments:
+            for commitment_line in commitment.line_ids:
+                if self._line_matches_analytic_combination(commitment_line, line):
+                    total += commitment_line.remaining_amount
+        
+        return total
+    
+    def _calculate_consumed_amount(self, line):
+        """Calculate total consumed amount from budget moves"""
+        BudgetMove = self.env['budget.move']
+        
+        domain = [
+            ('state', '=', 'posted'),
+            ('move_type', '=', 'consume'),
+            ('date_range_fy_id', '=', self.date_range_fy_id.id),
+            ('company_id', '=', self.company_id.id),
+        ]
+        
+        moves = BudgetMove.search(domain)
+        total = 0.0
+        
+        for move in moves:
+            for move_line in move.line_ids.filtered(lambda l: not l.is_virtual_line):
+                if self._line_matches_analytic_combination(move_line, line):
+                    total += abs(move_line.balance)
+        
+        return total
+    
+    def _line_matches_analytic_combination(self, move_line, commitment_line):
+        """Check if move line matches commitment line's analytic combination"""
+        # Exact match for budget account and source (no hierarchy)
+        if (move_line.account_id != commitment_line.account_id or
+            move_line.source_analytic_id != commitment_line.source_analytic_id):
+            return False
+        
+        # For activities, departments, and funds, check hierarchical relationships
+        activity_match = self._analytic_accounts_match_hierarchical(
+            move_line.activity_analytic_id, commitment_line.activity_analytic_id
+        )
+        department_match = self._analytic_accounts_match_hierarchical(
+            move_line.department_analytic_id, commitment_line.department_analytic_id
+        )
+        fund_match = self._analytic_accounts_match_hierarchical(
+            move_line.fund_analytic_id, commitment_line.fund_analytic_id
+        )
+        
+        return activity_match and department_match and fund_match
+    
+    def _analytic_accounts_match_hierarchical(self, move_account, commitment_account):
+        """
+        Check if analytic accounts match hierarchically.
+        
+        For appropriations: move_account (parent) can provide budget for commitment_account (child)
+        For commitments/consumption: exact match required
+        
+        Args:
+            move_account: Analytic account from move line (could be parent providing budget)
+            commitment_account: Analytic account from commitment line (could be child needing budget)
+        
+        Returns:
+            bool: True if accounts match hierarchically
+        """
+        # Handle None cases
+        if not move_account and not commitment_account:
+            return True
+        if not move_account or not commitment_account:
+            return False
+        
+        # Exact match
+        if move_account.id == commitment_account.id:
+            return True
+        
+        # Check if move_account is a parent of commitment_account
+        # This allows parent-level appropriations to cover child-level commitments
+        if commitment_account.parent_path and move_account.id:
+            # Extract parent IDs from commitment_account's parent_path
+            parent_ids = self._get_parent_ids_from_path(commitment_account.parent_path)
+            return move_account.id in parent_ids
+        
+        return False
+    
+    def _get_parent_ids_from_path(self, parent_path):
+        """Extract parent IDs from parent_path field"""
+        if not parent_path:
+            return []
+        
+        # parent_path format: "1/2/3/" - extract all IDs
+        path_parts = parent_path.strip('/').split('/')
+        return [int(id_str) for id_str in path_parts if id_str.isdigit()]
     
     @api.constrains("date", "date_range_fy_id")
     def _check_date_in_fiscal_year(self):
@@ -382,3 +544,59 @@ class BudgetCommitment(models.Model):
             }
         }
         return action
+    
+    def action_check_budget_availability(self):
+        """Check budget availability for all lines and show results"""
+        self.ensure_one()
+        
+        # Force recomputation of availability
+        self.line_ids._compute_available_budget()
+        
+        insufficient_lines = self.line_ids.filtered(lambda l: l.budget_availability_status == 'insufficient')
+        warning_lines = self.line_ids.filtered(lambda l: l.budget_availability_status == 'warning')
+        
+        if insufficient_lines:
+            message = _("Budget Check Failed!\n\nThe following lines have insufficient budget:\n\n")
+            for line in insufficient_lines:
+                message += _("• %(account)s - %(activity)s - %(fund)s\n"
+                           "  Requested: %(requested)s, Available: %(available)s\n\n") % {
+                    'account': line.account_id.display_name,
+                    'activity': line.activity_analytic_id.display_name,
+                    'fund': line.fund_analytic_id.display_name,
+                    'requested': "{:,.2f}".format(line.amount),
+                    'available': "{:,.2f}".format(line.available_budget_amount),
+                }
+            
+            raise UserError(message)
+        
+        elif warning_lines:
+            message = _("Budget Check - Warnings Found\n\n")
+            message += _("All lines have sufficient budget, but the following lines will use more than 50%% of available budget:\n\n")
+            for line in warning_lines:
+                message += _("• %(account)s - %(percentage).1f%% of available budget\n") % {
+                    'account': line.account_id.display_name,
+                    'percentage': line.budget_availability_percentage,
+                }
+            
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Budget Check - Warnings'),
+                    'message': message,
+                    'type': 'warning',
+                    'sticky': True,
+                }
+            }
+        
+        else:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Budget Check Passed'),
+                    'message': _('All commitment lines have sufficient budget available.'),
+                    'type': 'success',
+                    'sticky': False,
+                }
+            }

@@ -32,6 +32,9 @@
         <field name="arch" type="xml">
             <form string="Budget Commitment">
                 <header>
+                    <button name="action_check_budget_availability" string="Check Budget" type="object"
+                            class="btn-info" attrs="{'invisible': [('state', 'not in', ['draft', 'confirmed'])]}"
+                            help="Check budget availability for all commitment lines"/>
                     <button name="action_confirm" string="Confirm" type="object"
                             class="oe_highlight" attrs="{'invisible': ['|', ('show_confirm_button', '=', False), ('state', '!=', 'draft')]}"/>
                     <button name="action_reserve" string="Reserve Budget" type="object"
@@ -78,18 +81,34 @@
                     <notebook>
                         <page string="Commitment Lines">
                             <field name="line_ids">
-                                <tree editable="bottom">
+                                <tree editable="bottom" decoration-danger="budget_availability_status == 'insufficient'" decoration-warning="budget_availability_status == 'warning'" decoration-success="budget_availability_status == 'sufficient'">
                                     <field name="sequence" widget="handle"/>
                                     <field name="account_id" options="{'no_create': True}"/>
                                     <field name="name"/>
                                     <field name="activity_analytic_id" options="{'no_create': True}"/>
                                     <field name="fund_analytic_id" options="{'no_create': True}"/>
                                     <field name="amount" sum="Total Amount"/>
+                                    <field name="available_budget_amount" sum="Total Available" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="budget_availability_status" widget="badge" 
+                                           decoration-danger="budget_availability_status == 'insufficient'"
+                                           decoration-warning="budget_availability_status == 'warning'"
+                                           decoration-success="budget_availability_status == 'sufficient'"/>
                                     <field name="consumed_amount" sum="Consumed Amount"/>
-                                    <field name="remaining_amount" sum="Remaining Amount"/>
-                                    <field name="notes"/>
+                                    <field name="remaining_amount" sum="Remaining Amount" optional="show"/>
+                                    <field name="notes" optional="hide"/>
+                                    <field name="currency_id" invisible="1"/>
                                 </tree>
                             </field>
+                            <group class="oe_subtotal_footer">
+                                <div class="alert alert-info" role="alert">
+                                    <strong>Budget Availability Guide:</strong>
+                                    <ul class="mb-0">
+                                        <li><span class="badge badge-success">Sufficient</span> - Budget is available for this commitment</li>
+                                        <li><span class="badge badge-warning">Warning</span> - Less than 50% of commitment amount is available</li>
+                                        <li><span class="badge badge-danger">Insufficient</span> - Not enough budget available</li>
+                                    </ul>
+                                </div>
+                            </group>
                         </page>
 
                         <page string="Summary">
@@ -105,6 +124,29 @@
                                     <field name="show_reset_to_draft_button" invisible="1"/>
                                 </group>
                             </group>
+                        </page>
+                        
+                        <page string="Budget Analysis" attrs="{'invisible': [('state', '=', 'draft')]}">
+                            <group string="Budget Availability by Line">
+                                <div class="alert alert-info">
+                                    <p class="mb-0">
+                                        This page shows budget availability analysis for each commitment line.
+                                        The analysis includes appropriated amounts, reservations, consumptions, and available balances.
+                                    </p>
+                                </div>
+                            </group>
+                            <field name="line_ids" mode="tree" readonly="1">
+                                <tree>
+                                    <field name="account_id"/>
+                                    <field name="activity_analytic_id"/>
+                                    <field name="fund_analytic_id"/>
+                                    <field name="amount" sum="Total"/>
+                                    <field name="available_budget_amount" sum="Total Available" widget="monetary"/>
+                                    <field name="budget_availability_status" widget="badge"/>
+                                    <field name="consumed_amount" sum="Total Consumed" widget="monetary"/>
+                                    <field name="remaining_amount" sum="Total Remaining" widget="monetary"/>
+                                </tree>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>
