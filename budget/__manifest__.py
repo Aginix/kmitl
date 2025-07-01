@@ -8,6 +8,7 @@
     "depends": ["account", "account_analytic_kmitl", "account_fiscal_year", "mail", "l10n_th_base_sequence"],
     "data": [
         "data/budget_appropriation_preview_action.xml",
+        "data/budget_execution_report_interactive_action.xml",
         "data/budget_journal.xml",
         "data/budget_move_data.xml",
         "data/budget.account.csv",

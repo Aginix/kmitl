@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="budget.BudgetExecutionReportInteractive" owl="1">
+        <div class="o_action budget_execution_report">
+            <!-- Control Panel -->
+            <div class="o_control_panel d-flex justify-content-between align-items-center p-3 border-bottom bg-light">
+                <!-- Left: Action Buttons -->
+                <div class="d-flex gap-2">
+                    <div class="btn-group me-2">
+                        <button class="btn btn-secondary btn-sm" 
+                                t-on-click="expandAll"
+                                title="ขยายทั้งหมด">
+                            <i class="fa fa-expand"/> ขยายทั้งหมด
+                        </button>
+                        <button class="btn btn-secondary btn-sm" 
+                                t-on-click="collapseAll"
+                                title="ย่อทั้งหมด">
+                            <i class="fa fa-compress"/> ย่อทั้งหมด
+                        </button>
+                    </div>
+                    <button class="btn btn-primary btn-sm" 
+                            t-on-click="onRefresh"
+                            title="รีเฟรชข้อมูล">
+                        <i class="fa fa-refresh"/> รีเฟรช
+                    </button>
+                    <button class="btn btn-success btn-sm" 
+                            t-on-click="onExport"
+                            title="ส่งออก Excel">
+                        <i class="fa fa-file-excel-o"/> Excel
+                    </button>
+                    <button class="btn btn-info btn-sm" 
+                            t-on-click="onPrint"
+                            title="พิมพ์รายงาน">
+                        <i class="fa fa-print"/> พิมพ์
+                    </button>
+                </div>
+                
+                <!-- Right: Search -->
+                <div class="d-flex align-items-center gap-2">
+                    <div class="input-group input-group-sm" style="width: 250px;">
+                        <span class="input-group-text">
+                            <i class="fa fa-search"/>
+                        </span>
+                        <input type="text" 
+                               class="form-control" 
+                               placeholder="ค้นหา..."
+                               t-att-value="state.searchTerm"
+                               t-on-input="onSearch"/>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content Area -->
+            <div class="o_content">
+                <!-- Loading State -->
+                <div t-if="state.loading" class="d-flex justify-content-center align-items-center p-5">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">กำลังโหลด...</span>
+                        </div>
+                        <div>กำลังโหลดข้อมูล...</div>
+                    </div>
+                </div>
+                
+                <!-- Error State -->
+                <div t-elif="state.error" class="alert alert-danger m-3">
+                    <h5 class="alert-heading">เกิดข้อผิดพลาด</h5>
+                    <p t-esc="state.error"/>
+                    <hr/>
+                    <button class="btn btn-outline-danger btn-sm" t-on-click="onRefresh">
+                        <i class="fa fa-refresh"/> ลองใหม่
+                    </button>
+                </div>
+                
+                <!-- Data Table -->
+                <div t-else="" class="container-fluid p-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered table-hover mb-0">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th width="35%">รายการ</th>
+                                    <th width="11%" class="text-end">งบประมาณ</th>
+                                    <th width="9%" class="text-end">จองเงิน</th>
+                                    <th width="9%" class="text-end">ผูกพัน</th>
+                                    <th width="9%" class="text-end">เบิกจ่าย</th>
+                                    <th width="9%" class="text-end">รวมใช้</th>
+                                    <th width="10%" class="text-end">คงเหลือ</th>
+                                    <th width="8%" class="text-center">%</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.displayData" t-as="row" t-key="row.key">
+                                    <tr t-att-class="row.rowClass">
+                                        <td>
+                                            <div t-att-style="'padding-left: ' + (row.level * 20) + 'px'" 
+                                                 class="d-flex align-items-center">
+                                                <!-- Expand/Collapse Button -->
+                                                <button t-if="row.hasChildren"
+                                                        type="button"
+                                                        class="btn btn-link btn-sm p-0 me-2"
+                                                        style="width: 20px;"
+                                                        t-on-click="() => toggleNode(row.key)">
+                                                    <i t-att-class="state.expandedNodes.has(row.key) ? 
+                                                                   'fa fa-minus-square-o' : 
+                                                                   'fa fa-plus-square-o'"/>
+                                                </button>
+                                                <div t-else="" class="me-2" style="width: 20px;"/>
+                                                
+                                                <!-- Node Content -->
+                                                <span t-att-class="{
+                                                    'fw-bold': row.type === 'activity',
+                                                    'text-primary': row.type === 'activity' and row.level === 0,
+                                                    'text-secondary': row.type === 'fund'
+                                                }">
+                                                    <t t-esc="row.displayName"/>
+                                                    <small t-if="row.hasChildren" class="text-muted ms-1">
+                                                        (<t t-esc="row.childCount"/>)
+                                                    </small>
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-esc="formatCurrency(row.totals.current_budget)"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-esc="formatCurrency(row.totals.reserved_amount)"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-esc="formatCurrency(row.totals.obligated_amount)"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-esc="formatCurrency(row.totals.disbursed_amount)"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-esc="formatCurrency(row.totals.total_used)"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <span t-att-class="{
+                                                'text-danger fw-bold': row.totals.remaining_budget &lt; 0,
+                                                'text-warning': row.utilization > 90 and row.totals.remaining_budget >= 0
+                                            }">
+                                                <t t-esc="formatCurrency(row.totals.remaining_budget)"/>
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="d-flex align-items-center justify-content-center">
+                                                <span t-att-class="{
+                                                    'text-danger fw-bold': row.utilization > 100,
+                                                    'text-warning': row.utilization > 90 and row.utilization &lt;= 100,
+                                                    'text-info': row.utilization &lt; 25
+                                                }">
+                                                    <t t-esc="formatPercentage(row.utilization)"/>
+                                                </span>
+                                                <!-- Status Icon -->
+                                                <t t-if="row.totals.remaining_budget &lt; 0">
+                                                    <i class="fa fa-exclamation-triangle text-danger ms-1" 
+                                                       title="เกินงบประมาณ"/>
+                                                </t>
+                                                <t t-elif="row.utilization > 90">
+                                                    <i class="fa fa-exclamation-circle text-warning ms-1" 
+                                                       title="ใกล้เกินงบประมาณ"/>
+                                                </t>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </t>
+                                
+                                <!-- Empty State -->
+                                <tr t-if="!state.displayData.length and !state.loading">
+                                    <td colspan="8" class="text-center py-5">
+                                        <div>
+                                            <i class="fa fa-folder-open fa-3x mb-3 text-muted"/>
+                                            <h6>ไม่พบข้อมูล</h6>
+                                            <p class="text-muted">ไม่พบข้อมูลรายงานตามเงื่อนไขที่กำหนด</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            
+                            <!-- Footer Totals -->
+                            <tfoot t-if="state.displayData.length > 0" class="table-light">
+                                <tr class="fw-bold">
+                                    <td>รวมทั้งหมด</td>
+                                    <td class="text-end">
+                                        <t t-esc="formatCurrency(state.totals.current_budget)"/>
+                                    </td>
+                                    <td class="text-end">
+                                        <t t-esc="formatCurrency(state.totals.reserved_amount)"/>
+                                    </td>
+                                    <td class="text-end">
+                                        <t t-esc="formatCurrency(state.totals.obligated_amount)"/>
+                                    </td>
+                                    <td class="text-end">
+                                        <t t-esc="formatCurrency(state.totals.disbursed_amount)"/>
+                                    </td>
+                                    <td class="text-end">
+                                        <t t-esc="formatCurrency(state.totals.total_used)"/>
+                                    </td>
+                                    <td class="text-end">
+                                        <span t-att-class="{
+                                            'text-danger': state.totals.remaining_budget &lt; 0,
+                                            'text-success': state.totals.remaining_budget > 0
+                                        }">
+                                            <t t-esc="formatCurrency(state.totals.remaining_budget)"/>
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-att-class="{
+                                            'text-danger': state.totals.utilization > 100,
+                                            'text-warning': state.totals.utilization > 90 and state.totals.utilization &lt;= 100
+                                        }">
+                                            <t t-esc="formatPercentage(state.totals.utilization)"/>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    <!-- Report Info -->
+                    <div t-if="state.displayData.length > 0" class="px-3 py-2 bg-light border-top small text-muted">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <span>วันที่: <t t-esc="state.filters.date_from"/> ถึง <t t-esc="state.filters.date_to"/></span>
+                                <span class="ms-3">จำนวน: <t t-esc="state.displayData.length"/> รายการ</span>
+                            </div>
+                            <div>
+                                <span>หน่วย: บาท</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

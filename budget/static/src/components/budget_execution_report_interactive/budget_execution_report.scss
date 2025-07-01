@@ -1,0 +1,97 @@
+.budget_execution_report {
+    // Use mostly default Odoo/Bootstrap styles
+    
+    .table {
+        // Subtle hierarchy visual hints using light backgrounds
+        .hierarchy-row {
+            &.activity {
+                // Light blue for activities
+                background-color: rgba(13, 110, 253, 0.03); // Bootstrap primary with low opacity
+            }
+            
+            &.fund {
+                // Light purple for funds  
+                background-color: rgba(111, 66, 193, 0.03); // Bootstrap indigo with low opacity
+            }
+            
+            &.account {
+                // Very light gray for budget accounts
+                background-color: rgba(108, 117, 125, 0.02); // Bootstrap secondary with very low opacity
+            }
+        }
+        
+        // Hover effect
+        tbody tr:hover {
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+        
+        // Expand/collapse button styling
+        .btn-link {
+            color: #6c757d;
+            text-decoration: none;
+            
+            &:hover {
+                color: #0d6efd;
+            }
+            
+            &:focus {
+                box-shadow: none;
+            }
+        }
+    }
+    
+    // Sticky header for long tables
+    thead.sticky-top {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background-color: #f8f9fa;
+        box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    // Control panel styling
+    .o_control_panel {
+        background-color: #f8f9fa;
+        
+        .btn-group {
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+    }
+    
+    // Print styles
+    @media print {
+        .o_control_panel {
+            display: none !important;
+        }
+        
+        .btn-link {
+            display: none !important;
+        }
+        
+        .table {
+            font-size: 10pt;
+            
+            // Remove background colors in print
+            .hierarchy-row {
+                &.activity,
+                &.fund,
+                &.account {
+                    background-color: transparent !important;
+                }
+            }
+            
+            // Add borders for better print readability
+            td, th {
+                border: 1px solid #dee2e6 !important;
+            }
+        }
+        
+        // Hide interactive elements
+        .fa-minus-square-o,
+        .fa-plus-square-o,
+        .fa-exclamation-triangle,
+        .fa-exclamation-circle {
+            display: none !important;
+        }
+    }
+}
