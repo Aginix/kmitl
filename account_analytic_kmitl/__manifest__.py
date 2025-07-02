@@ -1,6 +1,6 @@
 {
     "name": "KMITL Account Analytic",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "summary": """ KMITL Account Analytic""",
     "category": "KMITL/Accounting",
     "author": "Aginix Technologies",
