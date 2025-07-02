@@ -1,11 +1,17 @@
 {
     "name": "KMITL Budgeting",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "summary": """ KMITL Budgeting""",
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["account", "account_analytic_kmitl", "account_fiscal_year", "mail", "l10n_th_base_sequence"],
+    "depends": [
+        "account",
+        "account_analytic_kmitl",
+        "account_fiscal_year",
+        "mail",
+        "l10n_th_base_sequence",
+    ],
     "data": [
         "data/budget_appropriation_expense_f5_action.xml",
         "data/budget_appropriation_revenue_f4_action.xml",
@@ -26,7 +32,7 @@
         "views/budget_execution_report_interactive_views.xml",
         "views/budget_appropriation_overview_views.xml",
         "report/budget_appropriation_report_templates.xml",
-        "report/budget_execution_status_report_templates.xml"
+        "report/budget_execution_status_report_templates.xml",
     ],
     "assets": {
         "web.assets_backend": ["budget/static/src/**/*"],
