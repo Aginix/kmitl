@@ -129,7 +129,7 @@
                         <field name="department_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                         <field name="activity_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' attrs="{'required': [('budget_type', '=', 'expense')]}" />
                         <field name="fund_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
-                        <field name="account_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
+                        <field name="account_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" domain="[('budgetable', '=', True)]" />
                         <field name="balance" />
                         <field name="debit" invisible="1"/>
                         <field name="credit" invisible="1"/>
@@ -294,7 +294,7 @@
                                     <field name="fund_analytic_id" options='{"no_create": True, "no_create_edit": True}' attrs="{'invisible': [('is_virtual_line', '=', True)],
                                                    'required': [('is_virtual_line', '=', False)]}"/>
                                     <field name="account_id" options='{"no_create": True, "no_create_edit": True}' attrs="{'invisible': [('is_virtual_line', '=', True)],
-                                                   'required': [('is_virtual_line', '=', False)]}" domain="[('budgetable', '=', True)]"/>
+                                                   'required': [('is_virtual_line', '=', False)]}" />
                                     <field name="balance" attrs="{'invisible': [('is_virtual_line', '=', True)]}"/>
                                     <field name="note" attrs="{'invisible': [('is_virtual_line', '=', True)]}"/>
                                 </tree>
