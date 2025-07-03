@@ -169,7 +169,7 @@
                                 <t t-if="node.line_details and node.line_details.length > 0">
                                     <t t-foreach="node.line_details" t-as="detail" t-key="detail.id">
                                         <t t-if="detail.note">
-                                            <div class="text-muted"><t t-esc="detail.note"/></div>
+                                            <div class="text-muted" style="white-space: pre-line;"><t t-esc="detail.note"/></div>
                                         </t>
                                     </t>
                                 </t>
