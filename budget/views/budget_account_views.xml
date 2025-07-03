@@ -60,6 +60,8 @@
                 <group expand="1" string="Group By">
                     <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}" />
                 </group>
+                <field name="name" />
+                <field name="code" />
             </search>
         </field>
     </record>

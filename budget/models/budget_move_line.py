@@ -146,7 +146,6 @@ class BudgetMoveLine(models.Model):
                     'department_analytic_id': last_line.department_analytic_id.id,
                     'activity_analytic_id': last_line.activity_analytic_id.id,
                     'fund_analytic_id': last_line.fund_analytic_id.id,
-                    'account_id': last_line.account_id.id,
                 })
         return defaults
 
