@@ -1,4 +1,5 @@
 id,code,name,plan_id/id,parent_id/id,line_seq
+fund_0000,0000,ไม่ระบุกองทุน,analytic_plan_funds,,0
 fund_0100,0100,กองทุนทั่วไป,analytic_plan_funds,,1
 fund_0200,0200,กองทุนเพื่อการศึกษา,analytic_plan_funds,,2
 fund_0300,0300,กองทุนวิจัย,analytic_plan_funds,,3
@@ -11,6 +12,7 @@ fund_0702,0702,กองทุนสำรอง,analytic_plan_funds,fund_0700,9
 fund_0703,0703,กองทุนพัฒนาบุคลากร,analytic_plan_funds,fund_0700,10
 fund_0704,0704,กองทุนบูรณาการ,analytic_plan_funds,fund_0700,11
 fund_0705,0705,กองทุนยุทธศาสตร์,analytic_plan_funds,fund_0700,12
+"activity_00","00",ไม่ระบุด้าน,analytic_plan_activities,,
 "activity_09","09",ด้านการพัฒนาประชากร,analytic_plan_activities,,
 "activity_09007","09007",แผนงานจัดการศึกษาอุดมศึกษา,analytic_plan_activities,activity_09,
 "activity_090070101","090070101",กิจกรรมหลัก งานสนับสนุนการจัดการศึกษา,analytic_plan_activities,activity_09007,
