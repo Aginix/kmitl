@@ -9,28 +9,29 @@ _logger = logging.getLogger(__name__)
 class BudgetAccount(models.Model):
     """
     Budget Account - Chart of accounts structure for budget management.
-    
+
     Business Purpose:
         Defines the budget chart of accounts with hierarchical structure,
         supporting both revenue and expense budget categories aligned with
         Thai government accounting standards.
-    
+
     Key Features:
         • Hierarchical account structure with parent-child relationships
         • Revenue/Expense budget type classification
         • Fund-specific account restrictions for validation
         • Integration with Thai government chart of accounts
         • Sequence-based ordering for reporting consistency
-    
+
     Account Types:
         • **Revenue Accounts**: Income and funding sources
         • **Expense Accounts**: Operational and capital expenditures
-        
+
     Thai Government Integration:
         • Aligned with Thai government accounting codes
         • Support for government budget classification standards
         • Compatible with ministry and university accounting structures
     """
+
     _name = "budget.account"
     _description = "Budget Account"
     _parent_store = True
@@ -50,7 +51,7 @@ class BudgetAccount(models.Model):
     complete_name = fields.Char(
         compute="_compute_complete_name", recursive=True, store=True
     )
-    note = fields.Text('Internal Notes', tracking=True)
+    note = fields.Text("Internal Notes", tracking=True)
     parent_id = fields.Many2one(
         "budget.account",
         string="Parent",
@@ -95,8 +96,16 @@ class BudgetAccount(models.Model):
         compute="_compute_children_count",
     )
 
-    deprecated = fields.Boolean(default=False, tracking=True, help="Set deprecated to true to mark the Budget Account that has been outdated, that you should no longer use it.")
-    active = fields.Boolean(default=True, tracking=True, help="Set active to false to hide the Budget Account without removing it.")
+    deprecated = fields.Boolean(
+        default=False,
+        tracking=True,
+        help="Set deprecated to true to mark the Budget Account that has been outdated, that you should no longer use it.",
+    )
+    active = fields.Boolean(
+        default=True,
+        tracking=True,
+        help="Set active to false to hide the Budget Account without removing it.",
+    )
 
     _sql_constraints = [
         (
@@ -161,9 +170,8 @@ class BudgetAccount(models.Model):
             if record.code:
                 name = ("[%(code)s] %(name)s") % {"code": record.code, "name": name}
             if record.parent_id:
-                name = _("%(name)s - %(parent_id)s") % {
+                name = _("%(name)s") % {
                     "name": name,
-                    "parent_id": record.parent_id.name,
                 }
             res.append((record.id, name))
         return res
