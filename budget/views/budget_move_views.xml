@@ -126,10 +126,10 @@
                         <field name="move_id" readonly="1" invisible="1" />
                         <field name="source_analytic_id" readonly="1" invisible="1" />
                         <field name="budget_type" invisible="1" />
-                        <field name="department_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
-                        <field name="activity_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' attrs="{'required': [('budget_type', '=', 'expense')]}" />
+                        <field name="department_analytic_id" widget="helper_field" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
+                        <field name="activity_analytic_id" widget="helper_field" options='{"no_create": True, "no_create_edit": True,"no_open": True}' attrs="{'required': [('budget_type', '=', 'expense')]}" />
                         <field name="fund_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
-                        <field name="account_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" domain="[('budget_type', '=', budget_type), ('budgetable', '=', True)]" />
+                        <field name="account_id" widget="helper_field" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" domain="[('budget_type', '=', budget_type), ('budgetable', '=', True)]" />
                         <field name="balance" />
                         <field name="debit" invisible="1"/>
                         <field name="credit" invisible="1"/>
