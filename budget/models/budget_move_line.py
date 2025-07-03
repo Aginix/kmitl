@@ -1,7 +1,7 @@
 import logging
-
 from contextlib import ExitStack, contextmanager
-from odoo import api, fields, models, _
+
+from odoo import _, api, fields, models
 
 _logger = logging.getLogger(__name__)
 
@@ -133,6 +133,23 @@ class BudgetMoveLine(models.Model):
         default=False,
         help='Line created automatically for double-entry'
     )
+
+    @api.model
+    def default_get(self, fields_list):
+        defaults = super().default_get(fields_list)
+
+        move_id = self.env.context.get('default_move_id')
+        if move_id:
+            last_line = self.search([('move_id', '=', move_id), ('is_virtual_line', '=', False)], order="id desc", limit=1)
+            if last_line:
+                defaults.update({
+                    'department_analytic_id': last_line.department_analytic_id.id,
+                    'activity_analytic_id': last_line.activity_analytic_id.id,
+                    'fund_analytic_id': last_line.fund_analytic_id.id,
+                    'account_id': last_line.account_id.id,
+                })
+        return defaults
+
 
     @api.depends('move_id', 'move_id.department_analytic_id', 'move_id.move_type')
     def _compute_department_analytic(self):

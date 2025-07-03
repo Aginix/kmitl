@@ -62,8 +62,8 @@
                 </page>
             </xpath>
             <xpath expr="//field[@name='appropriation_line_ids']" position="replace">
-                <field name="appropriation_line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}" widget="custom_budget_line" style="max-width: 100%; display: block;">
-                    <tree decoration-muted="is_virtual_line == True">
+                <field name="appropriation_line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}" widget="custom_budget_line" style="max-width: 100%; display: block;" context="{'default_move_id': id}">
+                    <tree decoration-muted="is_virtual_line == True" limit="1000">
                         <field name="budget_type" invisible="1"/>
                         <field name="is_virtual_line" invisible="1"/>
                         <field name="procurement_plan_ids" invisible="1" />

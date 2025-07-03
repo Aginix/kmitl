@@ -232,7 +232,7 @@
                 <field name="move_type" />
                 <field name="department_analytic_id" />
                 <field name="source_analytic_id" />
-                <field name="total_amount"/>
+                <field name="total_amount" sum="Total" />
                 <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'review'" decoration-success="state == 'posted'" />
             </tree>
         </field>
@@ -285,8 +285,8 @@
                     </group>
                     <notebook>
                         <page string="Budget Allocation Lines" name="appropriation_lines">
-                            <field name="appropriation_line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}" widget="budget_line" style="max-width: 100%; display: block;">
-                                <tree decoration-muted="is_virtual_line == True">
+                            <field name="appropriation_line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}" widget="budget_line" style="max-width: 100%; display: block;" context="{'default_move_id': id}">
+                                <tree decoration-muted="is_virtual_line == True" limit="1000">
                                     <field name="budget_type" invisible="1"/>
                                     <field name="is_virtual_line" invisible="1"/>
                                     <field name="department_analytic_id" options='{"no_create": True, "no_create_edit": True}' invisible="1"/>
