@@ -1,11 +1,9 @@
 import logging
-
 from contextlib import ExitStack, contextmanager
-from odoo import Command, api, fields, models, _
-from odoo.exceptions import UserError
-from odoo.osv import expression
-from odoo.tools import format_amount
 
+from odoo import Command, _, api, fields, models
+from odoo.exceptions import UserError
+from odoo.tools import format_amount
 
 _logger = logging.getLogger(__name__)
 
@@ -100,6 +98,7 @@ class BudgetMove(models.Model):
         • Robust error handling with transaction rollback
         • Support for bulk operations and batch processing
     """
+
     _name = "budget.move"
     _description = "Budget Move"
     _inherit = ["mail.thread", "mail.activity.mixin"]
@@ -228,8 +227,8 @@ class BudgetMove(models.Model):
         tracking=True,
     )
     budget_type = fields.Selection(
-        related='journal_id.default_budget_type',
-        string='Budget Type',
+        related="journal_id.default_budget_type",
+        string="Budget Type",
         store=True,
         readonly=True,
     )
@@ -305,7 +304,7 @@ class BudgetMove(models.Model):
         for move in self:
             if move.move_type == "appropriation" and move.journal_id:
                 # หา virtual account จาก journal หรือสร้างใหม่
-                move.appropriation_account_id = self._get_virtual_budget_account()
+                move.appropriation_account_id = move._get_virtual_budget_account()
             else:
                 move.appropriation_account_id = False
 
@@ -338,7 +337,7 @@ class BudgetMove(models.Model):
         for move in self:
             if move.move_type == "appropriation":
                 # สำหรับการจัดสรรงบประมาณ นับเฉพาะ non-virtual lines
-                lines = move.line_ids.filtered(lambda l: not l.is_virtual_line)
+                lines = move.line_ids.filtered(lambda line: not line.is_virtual_line)
                 total = sum(lines.mapped("balance"))
             else:
                 # สำหรับ entry ปกติ นับทุก line
@@ -381,19 +380,19 @@ class BudgetMove(models.Model):
                 "cancel",
             )
 
-    @api.onchange('appropriation_line_ids')
+    @api.onchange("appropriation_line_ids")
     def _onchange_appropriation_lines(self):
         """Update total amount when appropriation lines change"""
-        if self.move_type == 'appropriation':
+        if self.move_type == "appropriation":
             # คำนวณยอดรวมจาก appropriation_line_ids
-            self.total_amount = sum(self.appropriation_line_ids.mapped('balance'))
+            self.total_amount = sum(self.appropriation_line_ids.mapped("balance"))
 
-    @api.onchange('line_ids')
+    @api.onchange("line_ids")
     def _onchange_line_ids(self):
         """Update total amount when any line changes"""
-        if self.move_type != 'appropriation':
+        if self.move_type != "appropriation":
             # สำหรับ entry ปกติ
-            self.total_amount = sum(self.line_ids.mapped('balance'))
+            self.total_amount = sum(self.line_ids.mapped("balance"))
 
     def action_review(self):
         self.write({"state": "review"})
@@ -411,95 +410,115 @@ class BudgetMove(models.Model):
         """Open the budget appropriation expense F5 preview in full screen"""
         self.ensure_one()
 
-        if self.move_type != 'appropriation':
-            raise UserError(_("Expense F5 preview is only available for appropriation moves."))
+        if self.move_type != "appropriation":
+            raise UserError(
+                _("Expense F5 preview is only available for appropriation moves.")
+            )
 
         return {
-            'name': _('Budget Appropriation Expense F5'),
-            'type': 'ir.actions.client',
-            'tag': 'budget_appropriation_expense_f5',
-            'target': 'current',
-            'res_id': self.id,
-            'res_model': 'budget.move',
-            'context': {
-                'active_id': self.id,
-                'active_model': 'budget.move',
-            }
+            "name": _("Budget Appropriation Expense F5"),
+            "type": "ir.actions.client",
+            "tag": "budget_appropriation_expense_f5",
+            "target": "current",
+            "res_id": self.id,
+            "res_model": "budget.move",
+            "context": {
+                "active_id": self.id,
+                "active_model": "budget.move",
+            },
         }
 
     def action_open_revenue_f4_preview(self):
         """Open the budget appropriation revenue F4 preview in full screen"""
         self.ensure_one()
 
-        if self.move_type != 'appropriation':
-            raise UserError(_("Revenue F4 preview is only available for appropriation moves."))
+        if self.move_type != "appropriation":
+            raise UserError(
+                _("Revenue F4 preview is only available for appropriation moves.")
+            )
 
         return {
-            'name': _('Budget Appropriation Revenue F4'),
-            'type': 'ir.actions.client',
-            'tag': 'budget_appropriation_revenue_f4',
-            'target': 'current',
-            'res_id': self.id,
-            'res_model': 'budget.move',
-            'context': {
-                'active_id': self.id,
-                'active_model': 'budget.move',
-            }
+            "name": _("Budget Appropriation Revenue F4"),
+            "type": "ir.actions.client",
+            "tag": "budget_appropriation_revenue_f4",
+            "target": "current",
+            "res_id": self.id,
+            "res_model": "budget.move",
+            "context": {
+                "active_id": self.id,
+                "active_model": "budget.move",
+            },
         }
 
     def _get_report_lines(self):
         """Get hierarchical lines for PDF report"""
         self.ensure_one()
 
-        if self.move_type != 'appropriation':
+        if self.move_type != "appropriation":
             return []
 
         lines = []
         # Get non-virtual lines only
-        move_lines = self.line_ids.filtered(lambda l: not l.is_virtual_line)
+        # Get non-virtual lines only (unused variable removed)
 
         # Build hierarchy data
-        report_obj = self.env['budget.appropriation.report']
+        report_obj = self.env["budget.appropriation.report"]
         hierarchy_data = report_obj.get_hierarchical_data(self.id)
 
-        if 'hierarchy' in hierarchy_data:
+        if "hierarchy" in hierarchy_data:
+
             def add_hierarchy_lines(nodes, level=0):
                 for node in nodes:
                     # Add node line
                     line_data = {
-                        'name': node.get('name', ''),
-                        'code': node.get('code', ''),
-                        'level': level,
-                        'amount': node.get('total_amount', 0),
-                        'is_total': node.get('type') in ['activity', 'department', 'fund'],
-                        'type': node.get('type', ''),
+                        "name": node.get("name", ""),
+                        "code": node.get("code", ""),
+                        "level": level,
+                        "amount": node.get("total_amount", 0),
+                        "is_total": node.get("type")
+                        in ["activity", "department", "fund"],
+                        "type": node.get("type", ""),
                     }
 
                     # Add account details for line type (now includes account_info)
-                    if node.get('type') == 'line':
-                        if node.get('account_info'):
+                    if node.get("type") == "line":
+                        if node.get("account_info"):
                             # New flattened structure with account_info
-                            line_data.update({
-                                'account_code': node['account_info'].get('code', ''),
-                                'account_name': node['account_info'].get('name', ''),
-                                'note': node.get('line_data', {}).get('note', '') if node.get('line_data') else '',
-                            })
-                        elif node.get('line_data'):
+                            line_data.update(
+                                {
+                                    "account_code": node["account_info"].get(
+                                        "code", ""
+                                    ),
+                                    "account_name": node["account_info"].get(
+                                        "name", ""
+                                    ),
+                                    "note": node.get("line_data", {}).get("note", "")
+                                    if node.get("line_data")
+                                    else "",
+                                }
+                            )
+                        elif node.get("line_data"):
                             # Fallback for old structure
-                            line_info = node['line_data']
-                            line_data.update({
-                                'account_code': line_info.get('account', {}).get('code', ''),
-                                'account_name': line_info.get('account', {}).get('name', ''),
-                                'note': line_info.get('note', ''),
-                            })
+                            line_info = node["line_data"]
+                            line_data.update(
+                                {
+                                    "account_code": line_info.get("account", {}).get(
+                                        "code", ""
+                                    ),
+                                    "account_name": line_info.get("account", {}).get(
+                                        "name", ""
+                                    ),
+                                    "note": line_info.get("note", ""),
+                                }
+                            )
 
                     lines.append(line_data)
 
                     # Add children
-                    if node.get('children'):
-                        add_hierarchy_lines(node['children'], level + 1)
+                    if node.get("children"):
+                        add_hierarchy_lines(node["children"], level + 1)
 
-            add_hierarchy_lines(hierarchy_data['hierarchy'])
+            add_hierarchy_lines(hierarchy_data["hierarchy"])
 
         return lines
 
