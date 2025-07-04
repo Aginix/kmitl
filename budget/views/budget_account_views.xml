@@ -84,7 +84,7 @@
                                     t-if="record.children_count.raw_value > 0"
                                     class="o_kanban_record_subtitle"
                                 >
-                                    <i class="fa fa-sitemap" /> <field
+                                    <i class="fa fa-sitemap" title="Sub-accounts" /> <field
                                         name="children_count"
                                     /> sub-accounts
                                 </div>
