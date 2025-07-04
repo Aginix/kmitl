@@ -1,17 +1,17 @@
 /** @odoo-module */
 
-import { Component, onWillStart, useState } from "@odoo/owl";
-import { useService } from "@web/core/utils/hooks";
-import { Dropdown } from "@web/core/dropdown/dropdown";
-import { DropdownItem } from "@web/core/dropdown/dropdown_item";
-import { registry } from "@web/core/registry";
+import {Component, onWillStart, useState} from "@odoo/owl";
+import {useService} from "@web/core/utils/hooks";
+import {Dropdown} from "@web/core/dropdown/dropdown";
+import {DropdownItem} from "@web/core/dropdown/dropdown_item";
+import {DepartmentFilterSidebar} from "../department_filter_sidebar/department_filter_sidebar";
+import {registry} from "@web/core/registry";
 
 export class BudgetAppropriationOverview extends Component {
-
     setup() {
         this.orm = useService("orm");
         this.actionService = useService("action");
-        
+
         this.state = useState({
             loading: false,
             error: null,
@@ -20,19 +20,21 @@ export class BudgetAppropriationOverview extends Component {
                 department_ids: [],
                 date_from: null,
                 date_to: null,
-                state: 'all'
+                state: "all",
             },
             filterOptions: {
                 fiscal_years: [],
                 departments: [],
-                states: []
+                departments_flat: [],
+                states: [],
             },
             hierarchy: [],
             expandedNodes: new Set(),
             totalAmount: 0,
             moveCount: 0,
             lineCount: 0,
-            fiscalYears: ""
+            fiscalYears: "",
+            showDepartmentSidebar: false,
         });
 
         // No complex control panel configuration needed
@@ -51,7 +53,7 @@ export class BudgetAppropriationOverview extends Component {
                 []
             );
             this.state.filterOptions = options;
-            
+
             // Set default fiscal year if available
             if (options.fiscal_years.length > 0) {
                 this.state.filters.fiscal_year_id = options.fiscal_years[0].id;
@@ -65,14 +67,14 @@ export class BudgetAppropriationOverview extends Component {
     async loadData() {
         this.state.loading = true;
         this.state.error = null;
-        
+
         try {
             const data = await this.orm.call(
                 "budget.appropriation.overview.report",
                 "get_hierarchical_overview_data",
                 [this.state.filters]
             );
-            
+
             this.state.hierarchy = data.hierarchy || [];
             this.state.totalAmount = data.summary.total_amount;
             this.state.moveCount = data.summary.move_count;
@@ -93,27 +95,30 @@ export class BudgetAppropriationOverview extends Component {
 
     async onFiscalYearChange(fiscalYearId) {
         this.state.filters.fiscal_year_id = fiscalYearId;
-        
+
         // Auto-fill date range based on fiscal year
-        const fiscalYear = this.state.filterOptions.fiscal_years.find(fy => fy.id === fiscalYearId);
+        const fiscalYear = this.state.filterOptions.fiscal_years.find(
+            (fy) => fy.id === fiscalYearId
+        );
         if (fiscalYear) {
             this.state.filters.date_from = fiscalYear.date_start;
             this.state.filters.date_to = fiscalYear.date_end;
         }
-        
+
         await this.onFilterChange();
     }
 
-    async onDepartmentChange(departmentId, checked) {
-        if (checked) {
-            this.state.filters.department_ids.push(departmentId);
-        } else {
-            const index = this.state.filters.department_ids.indexOf(departmentId);
-            if (index > -1) {
-                this.state.filters.department_ids.splice(index, 1);
-            }
-        }
+    async onDepartmentChange(departmentIds) {
+        this.state.filters.department_ids = departmentIds;
         await this.onFilterChange();
+    }
+
+    toggleDepartmentSidebar() {
+        this.state.showDepartmentSidebar = !this.state.showDepartmentSidebar;
+    }
+
+    closeDepartmentSidebar() {
+        this.state.showDepartmentSidebar = false;
     }
 
     async onStateChange(stateValue) {
@@ -175,7 +180,7 @@ export class BudgetAppropriationOverview extends Component {
                     move_count: this.state.moveCount,
                     line_count: this.state.lineCount,
                     fiscal_years: this.state.fiscalYears,
-                }
+                },
             },
             context: this.env.context,
         });
@@ -187,9 +192,9 @@ export class BudgetAppropriationOverview extends Component {
     }
 
     formatCurrency(amount) {
-        return new Intl.NumberFormat('th-TH', {
+        return new Intl.NumberFormat("th-TH", {
             minimumFractionDigits: 0,
-            maximumFractionDigits: 0
+            maximumFractionDigits: 0,
         }).format(amount);
     }
 
@@ -197,21 +202,24 @@ export class BudgetAppropriationOverview extends Component {
     get selectedFiscalYear() {
         if (!this.state.filters.fiscal_year_id) return null;
         return this.state.filterOptions.fiscal_years.find(
-            fy => fy.id === this.state.filters.fiscal_year_id
+            (fy) => fy.id === this.state.filters.fiscal_year_id
         );
     }
 
     get selectedDepartments() {
-        return this.state.filterOptions.departments.filter(
-            dept => this.state.filters.department_ids.includes(dept.id)
-        );
+        if (this.state.filterOptions.departments_flat) {
+            return this.state.filterOptions.departments_flat.filter((dept) =>
+                this.state.filters.department_ids.includes(dept.id)
+            );
+        }
+        return [];
     }
 
     get selectedState() {
         const state = this.state.filterOptions.states.find(
-            s => s.value === this.state.filters.state
+            (s) => s.value === this.state.filters.state
         );
-        return state ? state.label : 'All';
+        return state ? state.label : "All";
     }
 }
 
@@ -219,6 +227,9 @@ BudgetAppropriationOverview.template = "budget.BudgetAppropriationOverview";
 BudgetAppropriationOverview.components = {
     Dropdown,
     DropdownItem,
+    DepartmentFilterSidebar,
 };
 
-registry.category("actions").add("budget_appropriation_overview", BudgetAppropriationOverview);
+registry
+    .category("actions")
+    .add("budget_appropriation_overview", BudgetAppropriationOverview);

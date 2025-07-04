@@ -5,40 +5,72 @@
         background-color: #f9f9f9;
     }
 
+    .department-sidebar-wrapper {
+        width: 0;
+        overflow: hidden;
+        transition: width 0.3s ease-in-out;
+
+        &.show {
+            width: 320px;
+        }
+
+        .department-sidebar-container {
+            width: 320px;
+            height: calc(100vh - 48px);
+        }
+
+        @media (max-width: 768px) {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 1040;
+
+            &.show {
+                box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            }
+
+            .department-sidebar-container {
+                background-color: white;
+                height: 100vh;
+            }
+        }
+    }
+
     .budget-overview-table {
         background: white;
-        
+
         .hierarchy-row {
             &.activity {
                 background-color: #f8f9ff;
             }
-            
+
             &.department {
                 background-color: #f0f5ff;
             }
-            
+
             &.fund {
                 background-color: #fafbff;
             }
-            
+
             &.account {
                 background-color: #fcfcfc;
             }
-            
+
             .btn-link {
                 color: #333;
                 text-decoration: none;
-                
+
                 &:hover {
                     color: #007bff;
                 }
             }
         }
     }
-    
+
     .o_searchview_input {
         min-width: 150px;
-        
+
         .form-select,
         .form-control {
             border-radius: 4px;
@@ -53,15 +85,15 @@
         .o_control_panel {
             display: none !important;
         }
-        
+
         .o_content {
             background-color: white !important;
             padding: 0 !important;
         }
-        
+
         .budget-overview-table {
             font-size: 10pt !important;
-            
+
             .hierarchy-row {
                 &.activity,
                 &.department,
@@ -70,7 +102,7 @@
                     background-color: white !important;
                 }
             }
-            
+
             .btn-link {
                 display: none !important;
             }

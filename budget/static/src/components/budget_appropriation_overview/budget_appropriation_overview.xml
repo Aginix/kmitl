@@ -1,8 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <templates xml:space="preserve">
-    <div t-name="budget.BudgetAppropriationOverview" class="o_action budget_appropriation_overview" owl="1">
+    <div
+        t-name="budget.BudgetAppropriationOverview"
+        class="o_action budget_appropriation_overview"
+        owl="1"
+    >
         <!-- Custom Control Panel -->
-        <div class="o_control_panel d-flex flex-wrap justify-content-between align-items-center p-3 border-bottom">
+        <div
+            class="o_control_panel d-flex flex-wrap justify-content-between align-items-center p-3 border-bottom"
+        >
             <!-- Left Side - Action Buttons -->
             <div class="d-flex gap-2">
                 <div class="btn-group me-2">
@@ -10,15 +16,17 @@
                         type="button"
                         class="btn btn-secondary btn-sm"
                         t-on-click="onExpandAll"
-                        title="ขยายทั้งหมด">
-                        <i class="fa fa-expand"/> ขยายทั้งหมด
+                        title="ขยายทั้งหมด"
+                    >
+                        <i class="fa fa-expand" /> ขยายทั้งหมด
                     </button>
                     <button
                         type="button"
                         class="btn btn-secondary btn-sm"
                         t-on-click="onCollapseAll"
-                        title="ย่อทั้งหมด">
-                        <i class="fa fa-compress"/> ย่อทั้งหมด
+                        title="ย่อทั้งหมด"
+                    >
+                        <i class="fa fa-compress" /> ย่อทั้งหมด
                     </button>
                 </div>
                 <div class="btn-group">
@@ -26,19 +34,21 @@
                         type="button"
                         class="btn btn-primary btn-sm"
                         t-on-click="onPrint"
-                        title="พิมพ์">
-                        <i class="fa fa-print"/> พิมพ์
+                        title="พิมพ์"
+                    >
+                        <i class="fa fa-print" /> พิมพ์
                     </button>
                     <button
                         type="button"
                         class="btn btn-success btn-sm"
                         t-on-click="onExport"
-                        title="ส่งออก">
-                        <i class="fa fa-download"/> ส่งออก
+                        title="ส่งออก"
+                    >
+                        <i class="fa fa-download" /> ส่งออก
                     </button>
                 </div>
             </div>
-            
+
             <!-- Right Side - Filters -->
             <div class="d-flex flex-wrap gap-2 align-items-center">
                 <!-- Fiscal Year Filter -->
@@ -46,10 +56,15 @@
                     <select
                         class="form-select form-select-sm"
                         t-model="state.filters.fiscal_year_id"
-                        t-on-change="(e) => this.onFiscalYearChange(parseInt(e.target.value) || null)">
+                        t-on-change="(e) => this.onFiscalYearChange(parseInt(e.target.value) || null)"
+                    >
                         <option value="">ทุกปีงบประมาณ</option>
-                        <t t-foreach="state.filterOptions.fiscal_years" t-as="fy" t-key="fy.id">
-                            <option t-att-value="fy.id" t-esc="fy.name"/>
+                        <t
+                            t-foreach="state.filterOptions.fiscal_years"
+                            t-as="fy"
+                            t-key="fy.id"
+                        >
+                            <option t-att-value="fy.id" t-esc="fy.name" />
                         </t>
                     </select>
                 </div>
@@ -59,42 +74,28 @@
                     <select
                         class="form-select form-select-sm"
                         t-model="state.filters.state"
-                        t-on-change="(e) => this.onStateChange(e.target.value)">
+                        t-on-change="(e) => this.onStateChange(e.target.value)"
+                    >
                         <option value="all">ทุกสถานะ</option>
                         <option value="draft">ร่าง</option>
                         <option value="posted">ลงบัญชีแล้ว</option>
                     </select>
                 </div>
 
-                <!-- Department Filter -->
+                <!-- Department Filter Button -->
                 <div>
-                    <Dropdown
-                        class="'btn-group'"
-                        togglerClass="'btn btn-outline-secondary btn-sm dropdown-toggle'"
-                        menuClass="'dropdown-menu'">
-                        <t t-set-slot="toggler">
-                            <i class="fa fa-building"/> ส่วนงาน
-                            <t t-if="selectedDepartments.length > 0">
-                                (<t t-esc="selectedDepartments.length"/>)
-                            </t>
+                    <button
+                        type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        t-on-click="toggleDepartmentSidebar"
+                    >
+                        <i class="fa fa-building" /> ส่วนงาน
+                        <t t-if="selectedDepartments.length > 0">
+                            <span class="badge bg-primary ms-1">
+                                <t t-esc="selectedDepartments.length" />
+                            </span>
                         </t>
-                        <t t-foreach="state.filterOptions.departments" t-as="dept" t-key="dept.id">
-                            <DropdownItem
-                                class="'px-3'"
-                                onSelected="() => this.onDepartmentChange(dept.id, !state.filters.department_ids.includes(dept.id))">
-                                <div class="form-check">
-                                    <input
-                                        type="checkbox"
-                                        class="form-check-input"
-                                        t-att-checked="state.filters.department_ids.includes(dept.id)"
-                                        t-att-id="'dept_' + dept.id"/>
-                                    <label class="form-check-label" t-att-for="'dept_' + dept.id">
-                                        <t t-esc="dept.name"/>
-                                    </label>
-                                </div>
-                            </DropdownItem>
-                        </t>
-                    </Dropdown>
+                    </button>
                 </div>
 
                 <!-- Date Range Filters -->
@@ -104,7 +105,8 @@
                         class="form-control form-control-sm"
                         placeholder="วันที่เริ่มต้น"
                         t-att-value="state.filters.date_from || ''"
-                        t-on-change="(e) => this.onDateFromChange(e.target.value)"/>
+                        t-on-change="(e) => this.onDateFromChange(e.target.value)"
+                    />
                 </div>
                 <div>
                     <input
@@ -112,14 +114,35 @@
                         class="form-control form-control-sm"
                         placeholder="วันที่สิ้นสุด"
                         t-att-value="state.filters.date_to || ''"
-                        t-on-change="(e) => this.onDateToChange(e.target.value)"/>
+                        t-on-change="(e) => this.onDateToChange(e.target.value)"
+                    />
                 </div>
             </div>
         </div>
 
-        <div class="o_content">
+        <div class="o_content d-flex">
+            <!-- Department Filter Sidebar -->
+            <div
+                class="department-sidebar-wrapper"
+                t-att-class="{'show': state.showDepartmentSidebar}"
+            >
+                <div class="department-sidebar-container border-end">
+                    <DepartmentFilterSidebar
+                        selectedIds="state.filters.department_ids"
+                        departments="state.filterOptions.departments"
+                        onSelectionChange="(ids) => this.onDepartmentChange(ids)"
+                        onClose="() => this.closeDepartmentSidebar()"
+                    />
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="flex-grow-1">
             <!-- Loading State -->
-            <div t-if="state.loading" class="d-flex justify-content-center align-items-center p-5">
+            <div
+                    t-if="state.loading"
+                    class="d-flex justify-content-center align-items-center p-5"
+                >
                 <div class="text-center">
                     <div class="spinner-border text-primary mb-3" role="status">
                         <span class="sr-only">กำลังโหลด...</span>
@@ -131,10 +154,10 @@
             <!-- Error State -->
             <div t-if="state.error and !state.loading" class="alert alert-danger m-3">
                 <h4 class="alert-heading">เกิดข้อผิดพลาด</h4>
-                <p t-esc="state.error"/>
-                <hr/>
+                <p t-esc="state.error" />
+                <hr />
                 <button class="btn btn-outline-danger" t-on-click="loadData">
-                    <i class="fa fa-refresh"/> ลองใหม่
+                    <i class="fa fa-refresh" /> ลองใหม่
                 </button>
             </div>
 
@@ -144,10 +167,14 @@
                 <div class="mb-3">
                     <h4>ภาพรวมการจัดสรรงบประมาณ</h4>
                     <div class="text-muted">
-                        <span>ปีงบประมาณ: <t t-esc="state.fiscalYears || 'ทั้งหมด'"/></span> |
-                        <span>รายการ: <t t-esc="state.moveCount"/> รายการ</span> |
-                        <span>บรรทัด: <t t-esc="state.lineCount"/> บรรทัด</span> |
-                        <span>ยอดรวม: <strong><t t-esc="formatCurrency(state.totalAmount)"/> บาท</strong></span>
+                        <span>ปีงบประมาณ: <t
+                                    t-esc="state.fiscalYears || 'ทั้งหมด'"
+                                /></span> |
+                        <span>รายการ: <t t-esc="state.moveCount" /> รายการ</span> |
+                        <span>บรรทัด: <t t-esc="state.lineCount" /> บรรทัด</span> |
+                        <span>ยอดรวม: <strong><t
+                                        t-esc="formatCurrency(state.totalAmount)"
+                                    /> บาท</strong></span>
                     </div>
                 </div>
 
@@ -162,17 +189,21 @@
                         </thead>
                         <tbody>
                             <t t-if="state.hierarchy.length > 0">
-                                <t t-foreach="state.hierarchy" t-as="rootNode" t-key="rootNode.key">
+                                <t
+                                        t-foreach="state.hierarchy"
+                                        t-as="rootNode"
+                                        t-key="rootNode.key"
+                                    >
                                     <t t-call="budget.OverviewHierarchyRow">
-                                        <t t-set="node" t-value="rootNode"/>
-                                        <t t-set="level" t-value="0"/>
+                                        <t t-set="node" t-value="rootNode" />
+                                        <t t-set="level" t-value="0" />
                                     </t>
                                 </t>
                             </t>
                             <t t-else="">
                                 <tr>
                                     <td colspan="2" class="text-center text-muted py-4">
-                                        <i class="fa fa-folder-open fa-2x mb-2"/>
+                                        <i class="fa fa-folder-open fa-2x mb-2" />
                                         <div>ไม่พบข้อมูลที่ตรงกับเงื่อนไขการค้นหา</div>
                                     </td>
                                 </tr>
@@ -182,12 +213,13 @@
                             <tr class="fw-bold">
                                 <td class="text-end">รวมทั้งหมด</td>
                                 <td class="text-end">
-                                    <t t-esc="formatCurrency(state.totalAmount)"/>
+                                    <t t-esc="formatCurrency(state.totalAmount)" />
                                 </td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
+            </div>
             </div>
         </div>
     </div>
@@ -196,28 +228,44 @@
     <t t-name="budget.OverviewHierarchyRow" owl="1">
         <tr t-attf-class="hierarchy-row {{node.type}}">
             <td>
-                <div t-att-style="'margin-left: ' + (level * 20) + 'px;'" class="d-flex align-items-center">
+                <div
+                    t-att-style="'margin-left: ' + (level * 20) + 'px;'"
+                    class="d-flex align-items-center"
+                >
                     <button
                         t-if="node.children and node.children.length > 0"
                         type="button"
                         class="btn btn-sm btn-link p-0 me-2"
                         t-on-click="() => this.onToggleNode(node.key)"
-                        style="width: 20px;">
-                        <i t-att-class="isNodeExpanded(node.key) ? 'fa fa-minus-square-o' : 'fa fa-plus-square-o'"/>
+                        style="width: 20px;"
+                    >
+                        <i
+                            t-att-class="isNodeExpanded(node.key) ? 'fa fa-minus-square-o' : 'fa fa-plus-square-o'"
+                        />
                     </button>
-                    <div t-else="" style="width: 20px; display: inline-block;" class="me-2"></div>
+                    <div
+                        t-else=""
+                        style="width: 20px; display: inline-block;"
+                        class="me-2"
+                    />
                     <span t-att-class="node.type === 'account' ? '' : 'fw-bold'">
                         <t t-if="node.code">
-                            <t t-esc="node.code"/> - 
+                            <t t-esc="node.code" /> -
                         </t>
-                        <t t-esc="node.name"/>
-                        
+                        <t t-esc="node.name" />
+
                         <!-- Show line details for account nodes -->
-                        <t t-if="node.type === 'account' and node.line_details and node.line_details.length > 0">
-                            <t t-foreach="node.line_details" t-as="detail" t-key="detail.id">
+                        <t
+                            t-if="node.type === 'account' and node.line_details and node.line_details.length > 0"
+                        >
+                            <t
+                                t-foreach="node.line_details"
+                                t-as="detail"
+                                t-key="detail.id"
+                            >
                                 <t t-if="detail.note">
                                     <div class="text-muted small ms-3">
-                                        <t t-esc="detail.note"/>
+                                        <t t-esc="detail.note" />
                                     </div>
                                 </t>
                             </t>
@@ -227,17 +275,19 @@
             </td>
             <td class="text-end">
                 <t t-if="node.total_amount != 0 or node.type !== 'line'">
-                    <t t-esc="formatCurrency(node.total_amount)"/>
+                    <t t-esc="formatCurrency(node.total_amount)" />
                 </t>
             </td>
         </tr>
 
         <!-- Children Rows -->
-        <t t-if="isNodeExpanded(node.key) and node.children and node.children.length > 0">
+        <t
+            t-if="isNodeExpanded(node.key) and node.children and node.children.length > 0"
+        >
             <t t-foreach="node.children" t-as="childNode" t-key="childNode.key">
                 <t t-call="budget.OverviewHierarchyRow">
-                    <t t-set="node" t-value="childNode"/>
-                    <t t-set="level" t-value="level + 1"/>
+                    <t t-set="node" t-value="childNode" />
+                    <t t-set="level" t-value="level + 1" />
                 </t>
             </t>
         </t>
