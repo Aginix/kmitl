@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates xml:space="preserve">
-    <t t-name="project_proposal.Table_output" owl="1">
+    <t t-name="project_kmitl.Table_output" owl="1">
         <div t-attf-class="o_field_x2many o_field_x2many_{{viewMode}}">
             <div class="o_x2m_control_panel">
                 <t t-if="displayAddButton">
@@ -16,7 +16,7 @@
                     <Pager t-if="props.value.count > props.value.limit" t-props="pagerProps"/>
                 </div>
             </div>
-            <List_renderer_output t-if="viewMode === 'list'" t-props="this.rendererProps" />
+            <ListRendererOutput t-if="viewMode === 'list'" t-props="this.rendererProps" />
         </div>
     </t>
 </templates>

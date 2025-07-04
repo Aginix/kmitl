@@ -2,7 +2,7 @@
 
 import { ListRenderer } from "@web/views/list/list_renderer";
 
-export class List_renderer_output extends ListRenderer {
+export class ListRendererOutput extends ListRenderer {
   setup() {
     super.setup();
   }
@@ -10,13 +10,13 @@ export class List_renderer_output extends ListRenderer {
   }
 }
 
-List_renderer_output.template = "project_proposal.List_render_output";
+ListRendererOutput.template = "project_kmitl.List_render_output";
 
-List_renderer_output.rowsTemplate = "project_proposal.ListRenderer.Rows";
-List_renderer_output.recordRowTemplate =
-  "project_proposal.ListRenderer.RecordRow";
+ListRendererOutput.rowsTemplate = "project_kmitl.ListRenderer.Rows";
+ListRendererOutput.recordRowTemplate =
+  "project_kmitl.ListRenderer.RecordRow";
 
-  List_renderer_output.props = [
+  ListRendererOutput.props = [
   "activeActions?",
   "list",
   "archInfo",

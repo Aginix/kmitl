@@ -5,7 +5,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL/Project",
-    "depends": ["base", "web", "base_revision", "project", "project_kmitl"],
+    "depends": ["base_revision", "project_kmitl"],
     "data": [
         "security/ir.model.access.csv",
         "views/project_project_views.xml",

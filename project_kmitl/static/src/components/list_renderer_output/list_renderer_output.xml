@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates xml:space="preserve">
-    <t t-name="project_proposal.List_render_output" owl="1">
+    <t t-name="project_kmitl.List_render_output" owl="1">
         <div
             class="o_list_renderer o_renderer table-responsive"
             t-attf-class="{{ props.archInfo.className or '' }}"
@@ -43,7 +43,7 @@
         </div>
     </t>
 
-    <t t-name="project_proposal.ListRenderer.Rows" owl="1">
+    <t t-name="project_kmitl.ListRenderer.Rows" owl="1">
         <t t-if="!list.isGrouped">
             <tr class="o_data_row fw-bold">
                 <td>ผลผลิต (Output)</td>
@@ -111,7 +111,7 @@
         </t>
     </t>
 
-    <t t-name="project_proposal.ListRenderer.RecordRow" owl="1">
+    <t t-name="project_kmitl.ListRenderer.RecordRow" owl="1">
 
         <tr class="o_data_row"
             t-att-class="getRowClass(record)"

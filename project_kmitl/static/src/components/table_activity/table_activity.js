@@ -36,18 +36,18 @@ export class TableActivityRenderer extends ListRenderer {
         return new Intl.NumberFormat("th-TH", {}).format(total);
     }
 }
-TableActivityRenderer.template = "project_proposal.ListRenderer";
-TableActivityRenderer.rowsTemplate = "project_proposal.ListRendererActivity.Rows";
+TableActivityRenderer.template = "project_kmitl.ListRenderer";
+TableActivityRenderer.rowsTemplate = "project_kmitl.ListRendererActivity.Rows";
 
-export class Table_activity extends SectionAndNoteFieldOne2Many {
+export class TableActivity extends SectionAndNoteFieldOne2Many {
     setup() {
         super.setup();
     }
 }
 
-Table_activity.components = {
+TableActivity.components = {
     ...X2ManyField.components,
     ListRenderer: TableActivityRenderer,
 };
 
-registry.category("fields").add("table_activity", Table_activity);
+registry.category("fields").add("table_activity", TableActivity);

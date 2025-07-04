@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <templates xml:space="preserve">
     <t
-        t-name="project_proposal.ListRenderer"
+        t-name="project_kmitl.ListRenderer"
         t-inherit="web.ListRenderer"
         t-inherit-mode="primary"
         owl="1"
@@ -58,7 +58,7 @@
     </t>
 
     <t
-        t-name="project_proposal.ListRendererActivity.Rows"
+        t-name="project_kmitl.ListRendererActivity.Rows"
         t-inherit="web.ListRenderer.Rows"
         t-inherit-mode="primary"
         owl="1"

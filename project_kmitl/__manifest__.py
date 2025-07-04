@@ -4,7 +4,7 @@
     "summary": """ Project KMITL """,
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "category": "KMITL/Project",
+    "category": "KMITL",
     "depends": [
         "base",
         "web",
