@@ -263,9 +263,11 @@ class BudgetMoveLine(models.Model):
 
         # Copy analytic distribution
         if "analytic_distribution" in original_vals:
-            virtual_vals["analytic_distribution"] = original_vals[
-                "analytic_distribution"
-            ].copy()
+            analytic_dist = original_vals["analytic_distribution"]
+            if isinstance(analytic_dist, dict):
+                virtual_vals["analytic_distribution"] = analytic_dist.copy()
+            else:
+                virtual_vals["analytic_distribution"] = analytic_dist
 
         return virtual_vals
 
@@ -396,7 +398,9 @@ class BudgetMoveLine(models.Model):
 
         if not self.env.context.get("tracking_disable", False):
             for move_id, initial_values in move_initial_values.items():
-                for line in self.filtered(lambda budget_line: budget_line.move_id.id == move_id):
+                for line in self.filtered(
+                    lambda budget_line: budget_line.move_id.id == move_id
+                ):
                     tracking_value_ids = line._mail_track(ref_fields, initial_values)[1]
                     if tracking_value_ids:
                         msg = _(
