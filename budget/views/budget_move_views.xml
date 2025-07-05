@@ -13,7 +13,13 @@
                 <field name="journal_id" />
                 <field name="move_type" />
                 <field name="source_analytic_id" />
-                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'review'" decoration-success="state == 'posted'" />
+                <field
+                    name="state"
+                    widget="badge"
+                    decoration-info="state == 'draft'"
+                    decoration-warning="state == 'review'"
+                    decoration-success="state == 'posted'"
+                />
             </tree>
         </field>
     </record>
@@ -25,12 +31,43 @@
         <field name="arch" type="xml">
             <form string="Budget Move">
                 <header>
-                    <button name="action_review" string="Submit for review" class="oe_highlight" type="object" data-hotkey="r" attrs="{'invisible': [('hide_review_button', '=', True)]}" />
-                    <button name="action_post" string="Post" class="oe_highlight" type="object" data-hotkey="v" attrs="{'invisible': [('hide_post_button', '=', True)]}" />
-                    <button name="button_draft" string="Reset to Draft" type="object" attrs="{'invisible' : [('show_reset_to_draft_button', '=', False)]}" data-hotkey="q" />
-                    <button name="button_cancel" string="Cancel" type="object" data-hotkey="w" attrs="{'invisible' : ['|', ('id', '=', False), ('state', '!=', 'draft')]}" />
+                    <button
+                        name="action_review"
+                        string="Submit for review"
+                        class="oe_highlight"
+                        type="object"
+                        data-hotkey="r"
+                        attrs="{'invisible': [('hide_review_button', '=', True)]}"
+                    />
+                    <button
+                        name="action_post"
+                        string="Post"
+                        class="oe_highlight"
+                        type="object"
+                        data-hotkey="v"
+                        attrs="{'invisible': [('hide_post_button', '=', True)]}"
+                    />
+                    <button
+                        name="button_draft"
+                        string="Reset to Draft"
+                        type="object"
+                        attrs="{'invisible' : [('show_reset_to_draft_button', '=', False)]}"
+                        data-hotkey="q"
+                    />
+                    <button
+                        name="button_cancel"
+                        string="Cancel"
+                        type="object"
+                        data-hotkey="w"
+                        attrs="{'invisible' : ['|', ('id', '=', False), ('state', '!=', 'draft')]}"
+                    />
 
-                    <field name="state" widget="statusbar" statusbar_visible="draft,review,posted" readonly="1" />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,review,posted"
+                        readonly="1"
+                    />
                 </header>
                 <!-- Invisible Fields -->
                 <field name="show_reset_to_draft_button" invisible="1" />
@@ -38,7 +75,7 @@
                 <field name="hide_post_button" invisible="1" />
                 <field name="state" invisible="1" />
                 <field name="company_id" invisible="1" />
-                <field name="budget_type" invisible="1"/>
+                <field name="budget_type" invisible="1" />
                 <sheet>
                     <div class="oe_title">
                         <span class="o_form_label">
@@ -52,28 +89,59 @@
                         <group string="ข้อมูลทั่วไป">
                             <field name="date" required="1" />
 
-                            <field name="user_id" widget="many2one_avatar_user" required="1" />
+                            <field
+                                name="user_id"
+                                widget="many2one_avatar_user"
+                                required="1"
+                            />
                             <field name="ref" />
                             <field name="note" />
                         </group>
                         <group string="มิติบัญชี">
-                            <field name="date_range_fy_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
+                            <field
+                                name="date_range_fy_id"
+                                options='{"no_create": True, "no_create_edit": True,"no_open": True}'
+                                required="1"
+                            />
                             <!-- <field name="department_analytic_id" options='{"no_open": True}' attrs='{"invisible": [("move_type", "not in", ("appropriation"))]}' /> -->
-                            <field name="source_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
-                            <field name="journal_id" required="1" attrs="{'readonly': [('id', '!=', False)]}" />
+                            <field
+                                name="source_analytic_id"
+                                options='{"no_create": True, "no_create_edit": True,"no_open": True}'
+                                required="1"
+                            />
+                            <field
+                                name="journal_id"
+                                required="1"
+                                attrs="{'readonly': [('id', '!=', False)]}"
+                            />
                             <field name="move_type" required="1" />
                         </group>
                     </group>
                     <notebook>
                         <page name="line_ids" string="Budget Move Lines">
-                            <field name="line_ids" style="max-width: 100%; display: block;">
+                            <field
+                                name="line_ids"
+                                style="max-width: 100%; display: block;"
+                            >
                                 <tree>
                                     <field name="date_range_fy_id" invisible="1" />
                                     <field name="move_id" invisible="1" />
-                                    <field name="department_analytic_id" options='{"no_open": True}' />
-                                    <field name="activity_analytic_id" options='{"no_open": True}' />
-                                    <field name="fund_analytic_id" options='{"no_open": True}' />
-                                    <field name="account_id" options='{"no_open": True}' />
+                                    <field
+                                        name="department_analytic_id"
+                                        options='{"no_open": True}'
+                                    />
+                                    <field
+                                        name="activity_analytic_id"
+                                        options='{"no_open": True}'
+                                    />
+                                    <field
+                                        name="fund_analytic_id"
+                                        options='{"no_open": True}'
+                                    />
+                                    <field
+                                        name="account_id"
+                                        options='{"no_open": True}'
+                                    />
                                     <field name="balance" />
                                     <field name="debit" sum="Debit" />
                                     <field name="credit" sum="Credit" />
@@ -95,9 +163,15 @@
         <field name="name">view.budget.move.line.tree</field>
         <field name="model">budget.move.line</field>
         <field name="arch" type="xml">
-            <tree create="false" edit="false" delete="false" expand="context.get('expand', False)" sample="1">
-                <field name="debit" invisible="1"/>
-                <field name="credit" invisible="1"/>
+            <tree
+                create="false"
+                edit="false"
+                delete="false"
+                expand="context.get('expand', False)"
+                sample="1"
+            >
+                <field name="debit" invisible="1" />
+                <field name="credit" invisible="1" />
                 <field name="budget_type" />
                 <field name="move_id" widget="many2onebutton" />
                 <field name="date_range_fy_id" />
@@ -109,7 +183,13 @@
                 <field name="balance" sum="Total" />
                 <field name="debit" sum="Debit" />
                 <field name="credit" sum="Credit" />
-                <field name="parent_state" widget="badge" decoration-info="parent_state == 'draft'" decoration-warning="parent_state == 'review'" decoration-success="parent_state == 'posted'" />
+                <field
+                    name="parent_state"
+                    widget="badge"
+                    decoration-info="parent_state == 'draft'"
+                    decoration-warning="parent_state == 'review'"
+                    decoration-success="parent_state == 'posted'"
+                />
             </tree>
         </field>
     </record>
@@ -126,13 +206,30 @@
                         <field name="move_id" readonly="1" invisible="1" />
                         <field name="source_analytic_id" readonly="1" invisible="1" />
                         <field name="budget_type" invisible="1" />
-                        <field name="department_analytic_id" widget="helper_field" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
-                        <field name="activity_analytic_id" widget="helper_field" options='{"no_create": True, "no_create_edit": True,"no_open": True}' attrs="{'required': [('budget_type', '=', 'expense')]}" />
-                        <field name="fund_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
-                        <field name="account_id" widget="helper_field" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" domain="[('budget_type', '=', budget_type), ('budgetable', '=', True)]" />
+                        <field
+                            name="department_analytic_id"
+                            options='{"no_create": True, "no_create_edit": True,"no_open": True}'
+                            required="1"
+                        />
+                        <field
+                            name="activity_analytic_id"
+                            options='{"no_create": True, "no_create_edit": True,"no_open": True}'
+                            attrs="{'required': [('budget_type', '=', 'expense')]}"
+                        />
+                        <field
+                            name="fund_analytic_id"
+                            options='{"no_create": True, "no_create_edit": True,"no_open": True}'
+                            required="1"
+                        />
+                        <field
+                            name="account_id"
+                            options='{"no_create": True, "no_create_edit": True,"no_open": True}'
+                            required="1"
+                            domain="[('budget_type', '=', budget_type), ('budgetable', '=', True), '|', ('fund_analytic_ids', '=', False), ('fund_analytic_ids', 'in', [fund_analytic_id])]"
+                        />
                         <field name="balance" />
-                        <field name="debit" invisible="1"/>
-                        <field name="credit" invisible="1"/>
+                        <field name="debit" invisible="1" />
+                        <field name="credit" invisible="1" />
                         <field name="note" />
                     </group>
                 </sheet>
@@ -146,10 +243,18 @@
         <field name="model">budget.move</field>
         <field name="arch" type="xml">
             <search>
-                <field name="source_analytic_id" domain="[('root_plan_id.code', '=', 'sources')]" />
+                <field
+                    name="source_analytic_id"
+                    domain="[('root_plan_id.code', '=', 'sources')]"
+                />
                 <separator />
                 <group expand="1" string="Group By">
-                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}" />
+                    <filter
+                        string="Name"
+                        name="name"
+                        domain="[]"
+                        context="{'group_by':'name'}"
+                    />
                 </group>
             </search>
         </field>
@@ -163,16 +268,50 @@
             <search>
                 <field name="code" />
                 <field name="name" />
-                <field name="department_analytic_id" domain="[('root_plan_id.code', '=', 'departments')]" />
-                <field name="fund_analytic_id" domain="[('root_plan_id.code', '=', 'funds')]" />
-                <field name="source_analytic_id" domain="[('root_plan_id.code', '=', 'sources')]" />
+                <field
+                    name="department_analytic_id"
+                    domain="[('root_plan_id.code', '=', 'departments')]"
+                />
+                <field
+                    name="fund_analytic_id"
+                    domain="[('root_plan_id.code', '=', 'funds')]"
+                />
+                <field
+                    name="source_analytic_id"
+                    domain="[('root_plan_id.code', '=', 'sources')]"
+                />
                 <separator />
                 <group expand="1" string="Group By">
-                    <filter string="Fiscal Year" name="date_range_fy_id" domain="[]" context="{'group_by':'date_range_fy_id'}" />
-                    <filter string="Department" name="department_analytic_id" domain="[]" context="{'group_by':'department_analytic_id'}" />
-                    <filter string="Activity" name="activity_analytic_id" domain="[]" context="{'group_by':'activity_analytic_id'}" />
-                    <filter string="Fund" name="fund_analytic_id" domain="[]" context="{'group_by':'fund_analytic_id'}" />
-                    <filter string="Source" name="source_analytic_id" domain="[]" context="{'group_by':'source_analytic_id'}" />
+                    <filter
+                        string="Fiscal Year"
+                        name="date_range_fy_id"
+                        domain="[]"
+                        context="{'group_by':'date_range_fy_id'}"
+                    />
+                    <filter
+                        string="Department"
+                        name="department_analytic_id"
+                        domain="[]"
+                        context="{'group_by':'department_analytic_id'}"
+                    />
+                    <filter
+                        string="Activity"
+                        name="activity_analytic_id"
+                        domain="[]"
+                        context="{'group_by':'activity_analytic_id'}"
+                    />
+                    <filter
+                        string="Fund"
+                        name="fund_analytic_id"
+                        domain="[]"
+                        context="{'group_by':'fund_analytic_id'}"
+                    />
+                    <filter
+                        string="Source"
+                        name="source_analytic_id"
+                        domain="[]"
+                        context="{'group_by':'source_analytic_id'}"
+                    />
                 </group>
             </search>
         </field>
@@ -193,14 +332,14 @@
         </field>
     </record>
     <record id="action_budget_move_tree" model="ir.actions.act_window.view">
-        <field name="sequence" eval="1"/>
-        <field name="view_id" ref="view_budget_move_tree"/>
+        <field name="sequence" eval="1" />
+        <field name="view_id" ref="view_budget_move_tree" />
         <field name="view_mode">tree</field>
         <field name="act_window_id" ref="action_budget_move" />
     </record>
     <record id="action_budget_move_form" model="ir.actions.act_window.view">
-        <field name="sequence" eval="2"/>
-        <field name="view_id" ref="view_budget_move_form"/>
+        <field name="sequence" eval="2" />
+        <field name="view_id" ref="view_budget_move_form" />
         <field name="view_mode">form</field>
         <field name="act_window_id" ref="action_budget_move" />
     </record>
@@ -224,15 +363,15 @@
         <field name="name">view.budget.app.tree</field>
         <field name="model">budget.move</field>
         <field name="arch" type="xml">
-            <tree string="Budget Appropriation" decoration-info="state == 'draft'" decoration-muted="state == 'cancel'">
+            <tree
+                string="Budget Appropriation"
+                decoration-info="state == 'draft'"
+                decoration-muted="state == 'cancel'"
+            >
                 <field name="date_range_fy_id" />
-                <field name="date" />
-                <field name="name" />
-                <field name="journal_id" />
-                <field name="move_type" />
                 <field name="department_analytic_id" />
                 <field name="source_analytic_id" />
-                <field name="total_amount" sum="Total" />
+                <field name="total_amount"/>
                 <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'review'" decoration-success="state == 'posted'" />
             </tree>
         </field>
@@ -244,12 +383,43 @@
         <field name="arch" type="xml">
             <form string="Budget Move">
                 <header>
-                    <button name="action_review" string="Submit for review" class="oe_highlight" type="object" data-hotkey="r" attrs="{'invisible': [('hide_review_button', '=', True)]}" />
-                    <button name="action_post" string="Post" class="oe_highlight" type="object" data-hotkey="v" attrs="{'invisible': [('hide_post_button', '=', True)]}" />
-                    <button name="button_draft" string="Reset to Draft" type="object" attrs="{'invisible' : [('show_reset_to_draft_button', '=', False)]}" data-hotkey="q" />
-                    <button name="button_cancel" string="Cancel" type="object" data-hotkey="w" attrs="{'invisible' : ['|', ('id', '=', False), ('state', '!=', 'draft')]}" />
+                    <button
+                        name="action_review"
+                        string="Submit for review"
+                        class="oe_highlight"
+                        type="object"
+                        data-hotkey="r"
+                        attrs="{'invisible': [('hide_review_button', '=', True)]}"
+                    />
+                    <button
+                        name="action_post"
+                        string="Post"
+                        class="oe_highlight"
+                        type="object"
+                        data-hotkey="v"
+                        attrs="{'invisible': [('hide_post_button', '=', True)]}"
+                    />
+                    <button
+                        name="button_draft"
+                        string="Reset to Draft"
+                        type="object"
+                        attrs="{'invisible' : [('show_reset_to_draft_button', '=', False)]}"
+                        data-hotkey="q"
+                    />
+                    <button
+                        name="button_cancel"
+                        string="Cancel"
+                        type="object"
+                        data-hotkey="w"
+                        attrs="{'invisible' : ['|', ('id', '=', False), ('state', '!=', 'draft')]}"
+                    />
 
-                    <field name="state" widget="statusbar" statusbar_visible="draft,review,posted" readonly="1" />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,review,posted"
+                        readonly="1"
+                    />
                 </header>
                 <!-- Invisible Fields -->
                 <field name="show_reset_to_draft_button" invisible="1" />
@@ -257,11 +427,16 @@
                 <field name="hide_post_button" invisible="1" />
                 <field name="state" invisible="1" />
                 <field name="company_id" invisible="1" />
-                <field name="budget_type" invisible="1"/>
+                <field name="budget_type" invisible="1" />
                 <sheet>
                     <div class="oe_title">
                         <span class="o_form_label">
-                            <field name="move_type" attrs="{'invisible': [('move_type', '=', 'entry')]}" readonly="1" nolabel="1"/>
+                            <field
+                                name="move_type"
+                                attrs="{'invisible': [('move_type', '=', 'entry')]}"
+                                readonly="1"
+                                nolabel="1"
+                            />
                         </span>
                         <h1>
                             <field name="name" readonly="1" />
@@ -269,24 +444,57 @@
                     </div>
                     <group>
                         <group string="General Information">
-                            <field name="date" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="date_range_fy_id" required="1" options='{"no_create": True, "no_create_edit": True}' attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="user_id" widget="many2one_avatar_user" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="ref" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field
+                                name="date"
+                                required="1"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                            <field
+                                name="date_range_fy_id"
+                                required="1"
+                                options='{"no_create": True, "no_create_edit": True}'
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                            <field
+                                name="user_id"
+                                widget="many2one_avatar_user"
+                                required="1"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                            <field
+                                name="ref"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
                         </group>
                         <group string="Accounting">
-                            <field name="journal_id" required="1" domain="[('default_budget_type', '!=', False)]" attrs="{'readonly': [('id', '!=', False)]}"/>
-                            <field name="source_analytic_id" required="1" options='{"no_create": True, "no_create_edit": True}' domain="[('root_plan_id.code', '=', 'sources')]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="department_analytic_id" options='{"no_create": True, "no_create_edit": True}' domain="[('root_plan_id.code', '=', 'departments')]" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="total_amount" readonly="1"/>
-                            <field name="move_type" invisible="1"/>
-                            <field name="appropriation_account_id" invisible="1"/>
+                            <field
+                                name="journal_id"
+                                required="1"
+                                domain="[('default_budget_type', '!=', False)]"
+                                attrs="{'readonly': [('id', '!=', False)]}"
+                            />
+                            <field
+                                name="source_analytic_id"
+                                required="1"
+                                options='{"no_create": True, "no_create_edit": True}'
+                                domain="[('root_plan_id.code', '=', 'sources')]"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                            <field
+                                name="department_analytic_id"
+                                options='{"no_create": True, "no_create_edit": True}'
+                                domain="[('root_plan_id.code', '=', 'departments')]"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                            <field name="total_amount" readonly="1" />
+                            <field name="move_type" invisible="1" />
+                            <field name="appropriation_account_id" invisible="1" />
                         </group>
                     </group>
                     <notebook>
                         <page string="Budget Allocation Lines" name="appropriation_lines">
-                            <field name="appropriation_line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}" widget="budget_line" style="max-width: 100%; display: block;" context="{'default_move_id': id}">
-                                <tree decoration-muted="is_virtual_line == True" limit="1000">
+                            <field name="appropriation_line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}" widget="budget_line" style="max-width: 100%; display: block;">
+                                <tree decoration-muted="is_virtual_line == True">
                                     <field name="budget_type" invisible="1"/>
                                     <field name="is_virtual_line" invisible="1"/>
                                     <field name="department_analytic_id" options='{"no_create": True, "no_create_edit": True}' invisible="1"/>
@@ -300,18 +508,32 @@
                                 </tree>
                             </field>
                             <group class="oe_subtotal_footer">
-                                <field name="total_amount" readonly="1"/>
+                                <field name="total_amount" readonly="1" />
                             </group>
                         </page>
-                        <page string="Preview" name="preview" attrs="{'invisible': [('id', '=', False)]}">
+                        <page
+                            string="Preview"
+                            name="preview"
+                            attrs="{'invisible': [('id', '=', False)]}"
+                        >
                             <div class="o_budget_preview_container">
                                 <div class="text-center p-3">
-                                    <button type="object" name="action_open_expense_f5_preview" class="btn btn-primary btn-lg" attrs="{'invisible': [('budget_type', '!=', 'expense')]}">
-                                        <i class="fa fa-eye"/>
+                                    <button
+                                        type="object"
+                                        name="action_open_expense_f5_preview"
+                                        class="btn btn-primary btn-lg"
+                                        attrs="{'invisible': [('budget_type', '!=', 'expense')]}"
+                                    >
+                                        <i class="fa fa-eye" />
  เปิดดูตัวอย่างแบบละเอียด (F5)
                                     </button>
-                                    <button type="object" name="action_open_revenue_f4_preview" class="btn btn-primary btn-lg" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}">
-                                        <i class="fa fa-eye"/>
+                                    <button
+                                        type="object"
+                                        name="action_open_revenue_f4_preview"
+                                        class="btn btn-primary btn-lg"
+                                        attrs="{'invisible': [('budget_type', '!=', 'revenue')]}"
+                                    >
+                                        <i class="fa fa-eye" />
  เปิดดูตัวอย่างแบบละเอียด (F4)
                                     </button>
                                     <p class="text-muted mt-2">
@@ -322,7 +544,11 @@
                         </page>
                         <page string="Other Info" name="other_info">
                             <group>
-                                <field name="note" placeholder="Additional notes..." attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field
+                                    name="note"
+                                    placeholder="Additional notes..."
+                                    attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                />
                             </group>
                         </page>
                     </notebook>
@@ -339,7 +565,7 @@
         <field name="model">budget.move</field>
         <field name="arch" type="xml">
             <search string="Search Budget Appropriation">
-                <field name="name" string="Budget Appropriation"></field>
+                <field name="name" string="Budget Appropriation" />
             </search>
         </field>
     </record>
@@ -350,40 +576,110 @@
         <field name="model">budget.move</field>
         <field name="arch" type="xml">
             <search string="Search Budget Appropriation">
-                <field name="name" string="Name" filter_domain="['|', ('name', 'ilike', self), ('ref', 'ilike', self)]"/>
-                <field name="journal_id" string="Journal"/>
-                <field name="department_analytic_id" string="Department" domain="[('root_plan_id.code', '=', 'departments')]"/>
-                <field name="source_analytic_id" string="Source" domain="[('root_plan_id.code', '=', 'sources')]"/>
-                <field name="user_id" string="User"/>
-                <separator/>
-                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
-                <filter string="Under Review" name="review" domain="[('state', '=', 'review')]"/>
-                <filter string="Posted" name="posted" domain="[('state', '=', 'posted')]"/>
-                <separator/>
-                <filter string="This Month" name="this_month" domain="[('date', '&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')), ('date', '&lt;', (context_today() + relativedelta(months=1, day=1)).strftime('%Y-%m-%d'))]"/>
-                <filter string="This Year" name="this_year" domain="[('date', '&gt;=', (context_today() + relativedelta(month=1, day=1)).strftime('%Y-%m-%d')), ('date', '&lt;=', (context_today() + relativedelta(month=12, day=31)).strftime('%Y-%m-%d'))]"/>
-                <separator/>
+                <field
+                    name="name"
+                    string="Name"
+                    filter_domain="['|', ('name', 'ilike', self), ('ref', 'ilike', self)]"
+                />
+                <field name="journal_id" string="Journal" />
+                <field
+                    name="department_analytic_id"
+                    string="Department"
+                    domain="[('root_plan_id.code', '=', 'departments')]"
+                />
+                <field
+                    name="source_analytic_id"
+                    string="Source"
+                    domain="[('root_plan_id.code', '=', 'sources')]"
+                />
+                <field name="user_id" string="User" />
+                <separator />
+                <filter
+                    string="Draft"
+                    name="draft"
+                    domain="[('state', '=', 'draft')]"
+                />
+                <filter
+                    string="Under Review"
+                    name="review"
+                    domain="[('state', '=', 'review')]"
+                />
+                <filter
+                    string="Posted"
+                    name="posted"
+                    domain="[('state', '=', 'posted')]"
+                />
+                <separator />
+                <filter
+                    string="This Month"
+                    name="this_month"
+                    domain="[('date', '&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')), ('date', '&lt;', (context_today() + relativedelta(months=1, day=1)).strftime('%Y-%m-%d'))]"
+                />
+                <filter
+                    string="This Year"
+                    name="this_year"
+                    domain="[('date', '&gt;=', (context_today() + relativedelta(month=1, day=1)).strftime('%Y-%m-%d')), ('date', '&lt;=', (context_today() + relativedelta(month=12, day=31)).strftime('%Y-%m-%d'))]"
+                />
+                <separator />
                 <group expand="0" string="Group By">
-                    <filter string="Journal" name="group_journal" domain="[]" context="{'group_by': 'journal_id'}"/>
-                    <filter string="Department" name="group_department" domain="[]" context="{'group_by': 'department_analytic_id'}"/>
-                    <filter string="Source" name="group_source" domain="[]" context="{'group_by': 'source_analytic_id'}"/>
-                    <filter string="Fiscal Year" name="group_fy" domain="[]" context="{'group_by': 'date_range_fy_id'}"/>
-                    <filter string="Status" name="group_status" domain="[]" context="{'group_by': 'state'}"/>
-                    <filter string="User" name="group_user" domain="[]" context="{'group_by': 'user_id'}"/>
+                    <filter
+                        string="Journal"
+                        name="group_journal"
+                        domain="[]"
+                        context="{'group_by': 'journal_id'}"
+                    />
+                    <filter
+                        string="Department"
+                        name="group_department"
+                        domain="[]"
+                        context="{'group_by': 'department_analytic_id'}"
+                    />
+                    <filter
+                        string="Source"
+                        name="group_source"
+                        domain="[]"
+                        context="{'group_by': 'source_analytic_id'}"
+                    />
+                    <filter
+                        string="Fiscal Year"
+                        name="group_fy"
+                        domain="[]"
+                        context="{'group_by': 'date_range_fy_id'}"
+                    />
+                    <filter
+                        string="Status"
+                        name="group_status"
+                        domain="[]"
+                        context="{'group_by': 'state'}"
+                    />
+                    <filter
+                        string="User"
+                        name="group_user"
+                        domain="[]"
+                        context="{'group_by': 'user_id'}"
+                    />
                 </group>
                 <searchpanel>
-                    <field name="journal_id" icon="fa-book" enable_counters="1"/>
-                    <field name="department_analytic_id" icon="fa-users" enable_counters="1" order="code asc"/>
+                    <field name="journal_id" icon="fa-book" enable_counters="1" />
+                    <field
+                        name="department_analytic_id"
+                        icon="fa-users"
+                        enable_counters="1"
+                        order="code asc"
+                    />
                 </searchpanel>
             </search>
         </field>
     </record>
 
-    <record id="action_view_move_budget_appropriation_type" model="ir.actions.act_window">
+    <record
+        id="action_view_move_budget_appropriation_type"
+        model="ir.actions.act_window"
+    >
         <field name="name">Budget Appropriations</field>
         <field name="res_model">budget.move</field>
         <field name="view_mode">tree,form</field>
-        <field name="search_view_id" ref="view_budget_app_search"/>
+        <field name="search_view_id" ref="view_budget_app_search" />
         <field name="domain">[('move_type', '=', 'appropriation')]</field>
         <field name="context">{'default_move_type': 'appropriation'}</field>
         <field name="help" type="html">
@@ -392,15 +688,21 @@
             </p>
         </field>
     </record>
-    <record id="action_view_move_budget_appropriation_type_tree" model="ir.actions.act_window.view">
-        <field name="sequence" eval="1"/>
-        <field name="view_id" ref="view_budget_app_tree"/>
+    <record
+        id="action_view_move_budget_appropriation_type_tree"
+        model="ir.actions.act_window.view"
+    >
+        <field name="sequence" eval="1" />
+        <field name="view_id" ref="view_budget_app_tree" />
         <field name="view_mode">tree</field>
         <field name="act_window_id" ref="action_view_move_budget_appropriation_type" />
     </record>
-    <record id="action_view_move_budget_appropriation_type_form" model="ir.actions.act_window.view">
-        <field name="sequence" eval="2"/>
-        <field name="view_id" ref="view_budget_app_form"/>
+    <record
+        id="action_view_move_budget_appropriation_type_form"
+        model="ir.actions.act_window.view"
+    >
+        <field name="sequence" eval="2" />
+        <field name="view_id" ref="view_budget_app_form" />
         <field name="view_mode">form</field>
         <field name="act_window_id" ref="action_view_move_budget_appropriation_type" />
     </record>
