@@ -60,8 +60,11 @@
                 <group expand="1" string="Group By">
                     <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}" />
                 </group>
-                <field name="name" />
-                <field name="code" />
+                <!-- Search Panel for Account Code Filtering -->
+                <searchpanel class="budget_account_root">
+                    <field name="budget_type" string="Budget Type" icon="fa-tags" select="multi"/>
+                    <field name="parent_id" string="Parent Account" icon="fa-sitemap" limit="0"/>
+                </searchpanel>
             </search>
         </field>
     </record>
