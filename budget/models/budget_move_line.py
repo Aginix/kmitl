@@ -149,7 +149,22 @@ class BudgetMoveLine(models.Model):
         index=True,
     )
 
-    @api.depends("move_id", "move_id.department_analytic_id", "move_id.move_type")
+    @api.model
+    def default_get(self, fields_list):
+        defaults = super().default_get(fields_list)
+
+        move_id = self.env.context.get('default_move_id')
+        if move_id:
+            last_line = self.search([('move_id', '=', move_id), ('is_virtual_line', '=', False)], order="write_date desc", limit=1)
+            if last_line:
+                defaults.update({
+                    'department_analytic_id': last_line.department_analytic_id.id,
+                    'activity_analytic_id': last_line.activity_analytic_id.id,
+                    'fund_analytic_id': last_line.fund_analytic_id.id,
+                })
+        return defaults
+
+    @api.depends('move_id', 'move_id.department_analytic_id', 'move_id.move_type')
     def _compute_department_analytic(self):
         for line in self:
             if line.move_id and line.move_id.move_type == "appropriation":

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="budget.Helper_field" t-inherit="web.Many2OneField" owl="1">
+        <xpath expr="//div[@class='o_field_many2one_selection']" position="after">
+            <div  style="white-space: normal; word-break: break-word;" class="o_m2o_helper_text mt-2 text-muted small">
+                <t t-esc="props.value[1]"/>
+            </div>
+        </xpath>
+    </t>
+</templates>
