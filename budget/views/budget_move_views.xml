@@ -210,11 +210,13 @@
                             name="department_analytic_id"
                             options='{"no_create": True, "no_create_edit": True,"no_open": True}'
                             required="1"
+                            widget="helper_field"
                         />
                         <field
                             name="activity_analytic_id"
                             options='{"no_create": True, "no_create_edit": True,"no_open": True}'
                             attrs="{'required': [('budget_type', '=', 'expense')]}"
+                            widget="helper_field"
                         />
                         <field
                             name="fund_analytic_id"
@@ -225,6 +227,7 @@
                             name="account_id"
                             options='{"no_create": True, "no_create_edit": True,"no_open": True}'
                             required="1"
+                            widget="helper_field"
                             domain="[('budget_type', '=', budget_type), ('budgetable', '=', True), '|', ('fund_analytic_ids', '=', False), ('fund_analytic_ids', 'in', [fund_analytic_id])]"
                         />
                         <field name="balance" />
