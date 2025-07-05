@@ -148,7 +148,7 @@ class BudgetMoveLine(models.Model):
 
         move_id = self.env.context.get('default_move_id')
         if move_id:
-            last_line = self.search([('move_id', '=', move_id), ('is_virtual_line', '=', False)], order="id desc", limit=1)
+            last_line = self.search([('move_id', '=', move_id), ('is_virtual_line', '=', False)], order="write_date desc", limit=1)
             if last_line:
                 defaults.update({
                     'department_analytic_id': last_line.department_analytic_id.id,
