@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Update accounts where parent code is 53100 -->
+    <function model="budget.account" name="write">
+        <value model="budget.account" eval="obj().env['budget.account'].search([('parent_id.code', '=', '53100')]).ids"/>
+        <value eval="{'procurement_plan': True}"/>
+    </function>
+    <function model="budget.account" name="write">
+        <value model="budget.account" eval="obj().env['budget.account'].search([('parent_id.parent_id.code', '=', '53100')]).ids"/>
+        <value eval="{'procurement_plan': True}"/>
+    </function>
+    <function model="budget.account" name="write">
+        <value model="budget.account" eval="obj().env['budget.account'].search([('parent_id.parent_id.parent_id.code', '=', '53100')]).ids"/>
+        <value eval="{'procurement_plan': True}"/>
+    </function>
+
+    <!-- Update account with specific xml_id -->
+    <function model="budget.account" name="write">
+        <value eval="[ref('budget.budget_account_53100')]"/>
+        <value eval="{'procurement_plan': True}"/>
+    </function>
+</odoo>

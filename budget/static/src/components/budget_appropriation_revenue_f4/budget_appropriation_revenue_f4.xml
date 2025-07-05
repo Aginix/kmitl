@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <div t-name="budget.BudgetAppropriationRevenueF4" class="o_action budget_appropriation_revenue_f4" owl="1">
+
+        <!-- Control Panel -->
+        <ControlPanel display="controlPanelDisplay">
+            <t t-set-slot="control-panel-bottom-left-buttons">
+                <div class="o_cp_buttons">
+                    <div class="btn-group me-2">
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            t-on-click="onRefresh"
+                            title="รีเฟรช">
+                            <i class="fa fa-refresh"/>
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            t-on-click="onExpandAll"
+                            title="ขยายทั้งหมด">
+                            <i class="fa fa-expand"/>
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            t-on-click="onCollapseAll"
+                            title="ย่อทั้งหมด">
+                            <i class="fa fa-compress"/>
+                        </button>
+                    </div>
+                    <div class="btn-group">
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            t-on-click="onPrint"
+                            title="พิมพ์">
+                            <i class="fa fa-print"/> พิมพ์
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-success"
+                            t-on-click="onExport"
+                            title="ส่งออก">
+                            <i class="fa fa-download"/> ส่งออก
+                        </button>
+                    </div>
+                </div>
+            </t>
+            <t t-set-slot="control-panel-bottom-right">
+                <div class="o_cp_searchview">
+                    <div class="input-group">
+                        <input
+                            type="text"
+                            class="form-control"
+                            placeholder="ค้นหา..."
+                            t-on-input="onSearch"
+                            t-att-value="state.searchTerm"/>
+                        <span class="input-group-text">
+                            <i class="fa fa-search"/>
+                        </span>
+                    </div>
+                </div>
+            </t>
+        </ControlPanel>
+
+        <div class="o_content">
+            <!-- Loading State -->
+            <div t-if="state.loading" class="d-flex justify-content-center align-items-center p-5">
+                <div class="text-center">
+                    <div class="spinner-border text-primary mb-3" role="status">
+                        <span class="sr-only">กำลังโหลด...</span>
+                    </div>
+                    <div>กำลังโหลดข้อมูล...</div>
+                </div>
+            </div>
+
+            <!-- Error State -->
+            <div t-if="state.error and !state.loading" class="alert alert-danger m-3">
+                <h4 class="alert-heading">เกิดข้อผิดพลาด</h4>
+                <p t-esc="state.error"/>
+                <hr/>
+                <button class="btn btn-outline-danger" t-on-click="onRefresh">
+                    <i class="fa fa-refresh"/> ลองใหม่
+                </button>
+            </div>
+
+            <!-- Main Content -->
+            <div t-if="!state.loading and !state.error" class="budget_appropriation_content">
+                <!-- Budget Report Table -->
+                <div class="row justify-content-center">
+                    <div class="col-12" style="max-width: 960px;">
+                        <div class="budget-report-container">
+                            <div class="report-header text-center mb-4">
+                                <h3 t-esc="move.source_analytic_id.name" />
+                                <h3>ประมาณการ<t t-esc="move.journal_id.name" /> ประจำปีงบประมาณ พ.ศ. <t t-esc="move.date_range_fy_id.name" /></h3>
+                                <h3>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
+                                <h3 t-esc="move.department_analytic_id.complete_name" />
+                                <h3>วงเงิน <t t-esc="formatCurrency(totalAmount)"/> บาท</h3>
+                            </div>
+
+                            <!-- Report Table -->
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-sm budget-report-table">
+                                    <thead>
+                                        <tr class="table-active">
+                                            <th width="80%">รหัสงบประมาณ</th>
+                                            <th width="20%" class="text-end">จำนวนเงิน</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-if="hierarchy.length > 0">
+                                            <t t-foreach="hierarchy" t-as="rootNode" t-key="rootNode.key">
+                                                <t t-call="budget.RevenueF4TableRow">
+                                                    <t t-set="node" t-value="rootNode"/>
+                                                    <t t-set="level" t-value="0"/>
+                                                </t>
+                                            </t>
+                                        </t>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="table-active fw-bold">
+                                            <td class="text-end">
+                                                <strong>ยอดรวมทั้งหมด</strong>
+                                            </td>
+                                            <td class="text-end">
+                                                <strong>
+                                                    <t t-esc="formatCurrency(totalAmount)"/> บาท
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                            <!-- Empty State -->
+                            <div t-if="hierarchy.length === 0" class="text-center py-5">
+                                <div class="text-muted">
+                                    <i class="fa fa-folder-open fa-3x mb-3"/>
+                                    <h4>ไม่มีข้อมูล</h4>
+                                    <p>ไม่พบรายการจัดสรรงบประมาณ</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recursive Table Row Template -->
+    <t t-name="budget.RevenueF4TableRow" owl="1">
+        <tr t-attf-class="{{node.type}} {{node.type !== 'line' ? 'font-weight-bold' : ''}}">
+            <td>
+                <div t-att-style="'margin-left: ' + ((node.level - 1) * 20) + 'px;'">
+                    <div class="d-flex align-items-center">
+                        <button
+                            t-if="node.children and node.children.length > 0"
+                            type="button"
+                            class="btn btn-sm btn-link p-0 me-2"
+                            t-on-click="() => this.onToggleNode(node.key)"
+                            style="width: 20px;">
+                            <i t-att-class="isNodeExpanded(node.key) ? 'fa fa-minus-square-o' : 'fa fa-plus-square-o'"/>
+                        </button>
+                        <div t-else="" style="width: 20px; display: inline-block;" class="me-2"></div>
+                        <span>
+                            <t t-esc="node.code"/> - <t t-esc="node.name"/>
+                            <t t-if="node.line_details and node.line_details.length > 0">
+                                <t t-foreach="node.line_details" t-as="detail" t-key="detail.id">
+                                    <t t-if="detail.note">
+                                        <div class="text-muted small"><t t-esc="detail.note"/></div>
+                                    </t>
+                                </t>
+                            </t>
+                        </span>
+                    </div>
+                </div>
+            </td>
+            <td class="text-end">
+                <t t-if="node.total_amount != 0 or node.type !== 'line'">
+                    <t t-esc="formatCurrency(node.total_amount)"/>
+                </t>
+            </td>
+        </tr>
+
+        <!-- Children Rows -->
+        <t t-if="isNodeExpanded(node.key) and node.children and node.children.length > 0">
+            <t t-foreach="node.children" t-as="childNode" t-key="childNode.key">
+                <t t-call="budget.RevenueF4TableRow">
+                    <t t-set="node" t-value="childNode"/>
+                    <t t-set="level" t-value="level + 1"/>
+                </t>
+            </t>
+        </t>
+    </t>
+</templates>

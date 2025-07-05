@@ -2,13 +2,6 @@
 <odoo>
     <menuitem id="budget_root_menu" name="Budgeting" sequence="10">
 
-        <!-- <menuitem id="budget_move_menu" name="Budget Moves" sequence="30">
-            <menuitem
-                id="action_budget_move_menu_action"
-                name="Budget Moves"
-                action="action_budget_move"
-            />
-        </menuitem> -->
         <menuitem
             id="budget_appropriation_management"
             name="จัดสรรงบประมาณ"
@@ -20,17 +13,13 @@
                 sequence="1"
             >
                 <menuitem
-                    id="action_budget_appropriation_menu_action"
+                    id="action_view_move_budget_appropriation_type_menu_action"
                     name="รายการจัดการ"
-                    action="action_budget_appropriation"
-                />
-                <menuitem
-                    id="action_budget_appropriation_line_menu_action"
-                    name="รายการจัดสรร​ (แบบแจกแจง)"
-                    action="action_budget_appropriation_line"
+                    action="action_view_move_budget_appropriation_type"
                 />
             </menuitem>
         </menuitem>
+
         <menuitem id="budget_commitment_management" name="จองงบประมาณ" sequence="30">
             <menuitem id="budget_commitment_menu" name="จองงบประมาณ" sequence="1">
                 <menuitem
@@ -38,19 +27,35 @@
                     name="รายการจองงบประมาณ"
                     action="action_budget_commitment"
                 />
+            </menuitem>
+        </menuitem>
+
+        <menuitem id="budget_move" name="บัญชีงบประมาณ" sequence="40">
+            <menuitem id="budget_move_menu" name="บัญชีงบประมาณ" sequence="1">
                 <menuitem
-                    id="action_budget_commitment_line_menu_action"
-                    name="รายการจองงบประมาณ (แบบแจกแจง)"
-                    action="action_budget_commitment_line"
+                    id="action_budget_move_menu_action"
+                    name="รายการบันทึกสมุดบัญชีงบประมาณ"
+                    action="action_budget_move"
+                />
+                <menuitem
+                    id="action_budget_move_line_menu_action"
+                    name="รายการบันทึกสมุดบัญชีงบประมาณ (แบบแจกแจง)"
+                    action="action_budget_move_line"
                 />
             </menuitem>
         </menuitem>
+
         <menuitem id="budget_reporting_menu" name="รายงาน" sequence="90" />
         <menuitem id="budget_config_menu" name="ตั้งค่า" sequence="99">
             <menuitem
-                id="action_budget_template_menu_action"
-                name="โครงสร้างรหัสงบประมาณ"
-                action="action_budget_template"
+                id="action_budget_account_menu_action"
+                name="รหัสงบประมาณ"
+                action="action_budget_account"
+            />
+            <menuitem
+                id="action_budget_journal_menu_action"
+                name="ประเภทสมุดบัญชีงบประมาณ"
+                action="action_budget_journal"
             />
         </menuitem>
     </menuitem>

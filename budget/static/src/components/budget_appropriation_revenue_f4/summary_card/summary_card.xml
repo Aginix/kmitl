@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <div t-name="budget.RevenueF4SummaryCard" class="budget-summary-card" owl="1">
+        <div class="card budget-summary">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="fa fa-calculator me-2"/>
+                        การจัดสรรงบประมาณ
+                    </h4>
+                    <span t-att-class="'badge ' + stateBadgeClass" t-esc="stateLabel"/>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Left Column: Basic Info -->
+                    <div class="col-md-6">
+                        <div class="summary-section">
+                            <h6 class="text-muted mb-3">ข้อมูลทั่วไป</h6>
+                            
+                            <div class="info-row mb-2">
+                                <strong>เลขที่เอกสาร:</strong>
+                                <span t-esc="move.name or 'รอสร้างหมายเลข'"/>
+                            </div>
+                            
+                            <div class="info-row mb-2">
+                                <strong>วันที่:</strong>
+                                <span t-esc="formatDate(move.date)"/>
+                            </div>
+                            
+                            <div t-if="sourceAnalytic" class="info-row mb-2">
+                                <strong>แหล่งเงิน:</strong>
+                                <span class="badge badge-info">
+                                    <t t-esc="sourceAnalytic.code"/> - <t t-esc="sourceAnalytic.name"/>
+                                </span>
+                            </div>
+                            
+                            <div t-if="departmentAnalytic" class="info-row mb-2">
+                                <strong>ส่วนงาน:</strong>
+                                <span class="badge badge-secondary">
+                                    <t t-esc="departmentAnalytic.code"/> - <t t-esc="departmentAnalytic.name"/>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Financial Summary -->
+                    <div class="col-md-6">
+                        <div class="summary-section">
+                            <h6 class="text-muted mb-3">สรุปทางการเงิน</h6>
+                            
+                            <!-- Total Amount -->
+                            <div class="amount-display text-center p-3 bg-light rounded mb-3">
+                                <div class="amount-label text-muted small">ยอดรวมทั้งหมด</div>
+                                <div class="amount-value h3 mb-0" t-attf-class="text-{{totalAmount >= 0 ? 'success' : 'danger'}}">
+                                    <t t-esc="formatCurrency(totalAmount)"/>
+                                    <span class="currency-symbol ms-1" t-esc="currencySymbol"/>
+                                </div>
+                            </div>
+                            
+                            <!-- Statistics -->
+                            <div class="stats-grid">
+                                <div class="stat-item d-flex justify-content-between">
+                                    <span class="stat-label">จำนวนรายการ:</span>
+                                    <span class="stat-value badge badge-primary">
+                                        <t t-esc="summary.total_lines or 0"/>
+                                    </span>
+                                </div>
+                                
+                                <div class="stat-item d-flex justify-content-between">
+                                    <span class="stat-label">จำนวนกิจกรรม:</span>
+                                    <span class="stat-value badge badge-info">
+                                        <t t-esc="summary.activities_count or 0"/>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</templates>
