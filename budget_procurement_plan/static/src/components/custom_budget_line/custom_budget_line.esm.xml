@@ -12,12 +12,26 @@
         </xpath>
         <xpath expr="//t[@t-foreach='getColumns(record)']/t/td" position="inside">
             <div t-if="column.name == 'account_id'">
-                <t t-foreach="record.data.procurement_plan_ids.records" t-as="procurement" t-key="procurement.id">
+                <t t-if="record.data.procurement_plan_ids.records.some(r => r.data.id)">
+                    <t t-foreach="record.data.procurement_plan_ids.records" t-as="procurement" t-key="procurement.id">
+                        <t t-if="procurement.data.id">
+                            <div>
+                                <span>
+                                    - <t t-esc="procurementData[procurement.data.id]?.name"/>
+                                    จำนวนเงิน
+                                    <t t-esc="formattedAmount(procurementData[procurement.data.id]?.total_price)"/>
+                                    บาท
+                                </span>
+                            </div>
+                        </t>
+                    </t>
+                </t>
+                <t t-foreach="Array.from(procurementData.draftMap.values())" t-as="plan" t-key="plan.id">
                     <div>
                         <span>
-                            - <t t-esc="procurementData[procurement.data.id]?.name"/>
+                            - <t t-esc="plan.data.name"/>
                             จำนวนเงิน
-                            <t t-esc="formattedAmount(procurementData[procurement.data.id]?.total_price)"/>
+                            <t t-esc="formattedAmount(plan.data.total_price)"/>
                             บาท
                         </span>
                     </div>
