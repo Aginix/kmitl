@@ -12,29 +12,21 @@
         </xpath>
         <xpath expr="//t[@t-foreach='getColumns(record)']/t/td" position="inside">
             <div t-if="column.name == 'account_id'">
-                <t t-if="record.data.procurement_plan_ids.records.some(r => r.data.id)">
-                    <t t-foreach="record.data.procurement_plan_ids.records" t-as="procurement" t-key="procurement.id">
-                        <t t-if="procurement.data.id">
+                <t t-foreach="Array.from(procurementData.records.entries())" t-as="pair" t-key="pair[0]">
+                    <t t-set="key" t-value="pair[0]"/>
+                    <t t-set="rec" t-value="pair[1]"/>
+                    <t t-if="record.data.id == key">
+                        <t t-foreach="rec" t-as="procurement" t-key="procurement.id">
                             <div>
                                 <span>
-                                    - <t t-esc="procurementData[procurement.data.id]?.name"/>
+                                    - <t t-esc="procurement.name" />
                                     จำนวนเงิน
-                                    <t t-esc="formattedAmount(procurementData[procurement.data.id]?.total_price)"/>
+                                    <t t-esc="formattedAmount(procurement.total_price)"/>
                                     บาท
                                 </span>
                             </div>
                         </t>
                     </t>
-                </t>
-                <t t-foreach="Array.from(procurementData.draftMap.values())" t-as="plan" t-key="plan.id">
-                    <div>
-                        <span>
-                            - <t t-esc="plan.data.name"/>
-                            จำนวนเงิน
-                            <t t-esc="formattedAmount(plan.data.total_price)"/>
-                            บาท
-                        </span>
-                    </div>
                 </t>
                 <span t-if="record.data.unallocated_balance > 0 and record.data.procurement_plan">- จำนวนเงินไม่ระบุ <t t-esc="formattedAmount(record.data.unallocated_balance)"/> บาท</span>
             </div>

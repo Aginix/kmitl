@@ -11,41 +11,72 @@ export class CustomeNoteLineRenderer extends NoteLineRenderer {
         super.setup();
         this.orm = useService("orm");
         this.procurementData = useState({
-            draftPlans: [],
-            draftMap: new Map(),
+            records: new Map(),
+            plan: [],
         });
         onWillStart(() => this._loadProcurementPlans());
         onWillUpdateProps((nextProps) => this.updateProp(nextProps));
     }
-    updateProp(props) {
-        const records = props.list.records[1].data.procurement_plan_ids.records; // ยังทำให้ทำทีละ record ไม่ได้
-        const draftPlans = records.filter((r) => r.data.state === "draft");
-        const draftMap = new Map();
-        for (const rec of draftPlans) {
-            const planId = rec.data.id;
-            if (this.procurementData.hasOwnProperty(planId)) {
-                this.procurementData[rec.data.id] = rec.data;
-                console.log("เข้าเงื่อนไข draftMap", rec.data.id);
-            } else {
-                console.log("ไม่เข้าเงื่อนไข draftMap", rec.data.id);
-                draftMap.set(rec.data.id, rec);
+
+    async updateProp(props) {
+        const records = props.list.records;
+        // search all records in appropiration_lines
+        for (const record of records) {
+            const procurementPlanIds = record.data.procurement_plan_ids.records;
+            // check if procurement_plan_ids state change to draft
+            const draftPlans = procurementPlanIds.filter(
+                (r) => r.data.state === "draft"
+            );
+
+            // check if form save
+            if (draftPlans.length === 0) {
+                const plans = await this.orm.searchRead(
+                    "procurement.plan",
+                    [["budget_move_line_id", "=", record.data.id]],
+                    []
+                );
+                for (const plan of plans) {
+                    this.procurementData[plan.id] = plan;
+                }
             }
-        }
-        this.procurementData.draftPlans = draftPlans;
-        this.procurementData.draftMap = draftMap;
-        console.log("testttt =====>", props)
-        if(draftPlans.length === 0) {
-            this._loadProcurementPlans();
+
+            for (const plan of procurementPlanIds) {
+                if (plan.data.state === "draft") {
+                    this.procurementData.plan.push(plan.data);
+                } else {
+                    this.procurementData.plan.push(this.procurementData[plan.data.id]);
+                }
+            }
+            this.procurementData.records.set(record.data.id, this.procurementData.plan);
+            this.procurementData.plan = [];
         }
     }
 
     formattedAmount(value) {
         return new Intl.NumberFormat("en-US").format(value);
     }
+
+    // loading ครั้งแรก
     async _loadProcurementPlans() {
         const plans = await this.orm.searchRead("procurement.plan", [], []);
         for (const plan of plans) {
             this.procurementData[plan.id] = plan;
+        }
+
+        const records = this.props.list.records;
+        for (const record of records) {
+            const procurementPlanIds = record.data.procurement_plan_ids.records;
+
+            for (const plan of procurementPlanIds) {
+                if (plan.data.state === "draft") {
+                    this.procurementData.plan.push(plan.data);
+                } else {
+                    this.procurementData.plan.push(this.procurementData[plan.data.id]);
+                }
+            }
+
+            this.procurementData.records.set(record.data.id, this.procurementData.plan);
+            this.procurementData.plan = [];
         }
     }
 }
