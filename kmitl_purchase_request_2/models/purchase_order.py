@@ -27,10 +27,6 @@ class PurchaseOrder(models.Model):
         selection_add=[
             ('egp', 'EGP'),
         ],
-        selection_replace=[
-            ("draft", "PR2"),
-            ("sent", "PR2 Sent"),
-        ]
     )
 
     department_id = fields.Many2one(
