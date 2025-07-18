@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+
+    <record id="inherit_view_purchase_request_line_make_purchase_order" model="ir.ui.view">
+        <field name="name">Inherit Purchase Request Line Make Purchase Order</field>
+        <field name="model">purchase.request.line.make.purchase.order</field>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_line_make_purchase_order"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="(//separator)[1]" position="replace">
+                <separator style="display:none;" />
+            </xpath>
+
+            <xpath expr="(//separator)[2]" position="replace">
+                <separator style="display:none;" />
+            </xpath>
+
+            <xpath expr="//field[@name='purchase_order_id']" position="replace">
+                <div style="display:none;" />
+            </xpath>
+
+            <xpath expr="//field[@name='sync_data_planned']" position="replace">
+                <div style="display:none;" />
+            </xpath>
+
+            <xpath expr="//field[@name='supplier_id']" position="after">
+                <field name="vendor" />
+                <field name="start_date" />
+                <field name="end_date" />
+                <field name="purchase_request_number" />
+                <field name="purchase_type" />
+                <field name="purchase_request_name" />
+                <field name="request_ids" />
+            </xpath>
+
+            <xpath expr="//tree[@name='Details']" position="attributes">
+                <attribute name="create">true</attribute>
+            </xpath>
+            <xpath expr="//button[@name='make_purchase_order']" position="attributes">
+                <attribute name="string">สร้าง PR2</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+
+  </odoo>
