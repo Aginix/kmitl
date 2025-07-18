@@ -24,21 +24,13 @@ class PurchaseOrder(models.Model):
     )
 
     state = fields.Selection(
-        [
+        selection_add=[
+            ('egp', 'EGP'),
+        ],
+        selection_replace=[
             ("draft", "PR2"),
             ("sent", "PR2 Sent"),
-            ("egp", "egp"),
-            ("to approve", "To Approve"),
-            ("purchase", "Purchase Order"),
-            ("done", "Locked"),
-            ("cancel", "Cancelled"),
-        ],
-        string="Status",
-        readonly=True,
-        index=True,
-        copy=False,
-        default="draft",
-        tracking=True,
+        ]
     )
 
     department_id = fields.Many2one(
