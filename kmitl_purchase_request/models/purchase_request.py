@@ -8,6 +8,7 @@ _logger = logging.getLogger(__name__)
 
 
 class Purchase_request(models.Model):
+    _name = 'purchase.request'
     _inherit = 'purchase.request'
 
     procurement_type_id = fields.Many2one(

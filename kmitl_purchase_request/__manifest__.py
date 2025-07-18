@@ -6,15 +6,11 @@
     'author': '',
     'website': '',
     'category': '',
-    'depends': ['base', 'web', 'purchase_request', 'hr'],
+    'depends': ['base', 'web', 'purchase_request', 'hr', 'l10n_th_kmitl_procurement'],
     "data": [
-        "data/procurement_method.xml",
-        "data/procurement_type.xml",
-        "data/purchase_type.xml",
         "security/ir.model.access.csv",
         "views/purchase_request_attachment_views.xml",
         "views/purchase_request_views.xml",
-        "views/purchase_type_views.xml"
     ],
     'assets': {
               'web.assets_backend': [

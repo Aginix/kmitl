@@ -1,6 +1,3 @@
 id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
-access_procurement_type_manager,procurement_type_manager,model_procurement_type,,1,1,1,1
-access_procurement_method_manager,procurement_method_manager,model_procurement_method,,1,1,1,1
-access_purchase_type_manager,purchase_type_manager,model_purchase_type,,1,1,1,1
 access_procurement_comittee_manager,procurement_comittee_manager,model_procurement_committee,,1,1,1,1
 access_purchase_request_attachment_manager,purchase_request_attachment_manager,model_purchase_request_attachment,,1,1,1,1
