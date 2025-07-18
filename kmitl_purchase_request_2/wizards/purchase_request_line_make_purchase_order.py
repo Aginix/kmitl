@@ -1,43 +1,42 @@
-# -*- coding: utf-8 -*-
 import logging
 
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo import _, fields, models
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
 
 class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
-    _inherit = 'purchase.request.line.make.purchase.order'
+    _inherit = "purchase.request.line.make.purchase.order"
 
     vendor = fields.Many2one(
-        'res.partner',
-        string='Vendor',
-        help="Select a vendor to create a purchase order for the selected request lines."
+        "res.partner",
+        string="Vendor",
+        help="Select a vendor to create a purchase order for the selected request lines.",
     )
     start_date = fields.Date(
-        string='วันที่เริ่มสัญญา',
-        help="The start date for the purchase order. If not set, the current date will be used."
+        string="วันที่เริ่มสัญญา",
+        help="The start date for the purchase order. If not set, the current date will be used.",
     )
     end_date = fields.Date(
-        string='วันที่สิ้นสุดสัญญา',
-        help="The end date for the purchase order. If not set, the start date will be used."
+        string="วันที่สิ้นสุดสัญญา",
+        help="The end date for the purchase order. If not set, the start date will be used.",
     )
     purchase_request_number = fields.Char(
-        string='หมายเลขคำสั่งซื้อ',
+        string="หมายเลขคำสั่งซื้อ",
         required=True,
-        help="The number of the purchase request associated with the selected lines."
+        help="The number of the purchase request associated with the selected lines.",
     )
     purchase_type = fields.Selection(
-        [('standard', 'Standard'), ('urgent', 'Urgent')],
-        string='ประเภทสัญญา',
+        [("standard", "Standard"), ("urgent", "Urgent")],
+        string="ประเภทสัญญา",
         required=True,
-        help="Select the type of purchase order to create. Standard for regular orders, Urgent for expedited orders."
+        help="Select the type of purchase order to create. Standard for regular orders, Urgent for expedited orders.",
     )
     purchase_request_name = fields.Char(
-        string='ชื่อใบสั่งซื้อ/จ้าง',
+        string="ชื่อใบสั่งซื้อ/จ้าง",
         required=True,
-        help="The name of the purchase request associated with the selected lines."
+        help="The name of the purchase request associated with the selected lines.",
     )
 
     request_ids = fields.Many2many(
@@ -77,7 +76,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
 
             if not line.product_uom_id:
                 line.product_uom_id = item.product_uom_id
-                
+
             alloc_uom = line.product_uom_id
             wizard_uom = item.product_uom_id
             if (
