@@ -2,7 +2,6 @@
     "name": "Kmitl_purchase_request_2",
     "version": "16.0.1.0.0",
     "summary": """ Kmitl_purchase_request_2 Summary """,
-    "author": "",
     "depends": ["base", "web", "kmitl_purchase_request"],
     "data": [
         "views/purchase_order_views.xml",
