@@ -1,15 +1,13 @@
-# -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
+from odoo import api, fields, models
 
 _logger = logging.getLogger(__name__)
 
 
 class Purchase_request(models.Model):
-    _name = 'purchase.request'
-    _inherit = 'purchase.request'
+    _name = "purchase.request"
+    _inherit = "purchase.request"
 
     procurement_type_id = fields.Many2one(
         comodel_name="procurement.type",
@@ -58,25 +56,28 @@ class Purchase_request(models.Model):
     )
 
     tor_document_ids = fields.One2many(
-        'purchase.request.attachment', 'request_id',
+        "purchase.request.attachment",
+        "request_id",
         string="ข้อกำหนดคุณลักษณะ (TOR)",
-        domain=[('attachment_type', '=', 'tor')]
+        domain=[("attachment_type", "=", "tor")],
     )
     rfq_attachment_ids = fields.One2many(
-        'purchase.request.attachment', 'request_id',
+        "purchase.request.attachment",
+        "request_id",
         string="ใบเสนอราคา",
-        domain=[('attachment_type', '=', 'rfq')]
+        domain=[("attachment_type", "=", "rfq")],
     )
     etc_document_ids = fields.One2many(
-        'purchase.request.attachment', 'request_id',
+        "purchase.request.attachment",
+        "request_id",
         string="อื่นๆ",
-        domain=[('attachment_type', '=', 'etc')]
+        domain=[("attachment_type", "=", "etc")],
     )
 
     title = fields.Text(string="ชื่อเรื่อง")
 
     source_of_fund = fields.Char(string="แหล่งเงิน")
-    
+
     plan = fields.Char(string="แผน/งาน/กิจกรรมหลัก/กิจกรรมรอง/ย่อย")
 
     fund = fields.Char(string="กองทุน")
@@ -84,7 +85,6 @@ class Purchase_request(models.Model):
     budget_type = fields.Char(string="ประเภทงบประมาณ")
 
     expense_code = fields.Char(string="รหัสค่าใช้จ่าย")
-
 
     # substate_sequence = fields.Integer(related="substate_id.sequence")
 

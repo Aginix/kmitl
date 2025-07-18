@@ -1,11 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-  <odoo>
-      
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
     <!-- View purchase.request form -->
     <record id="view_purchase_request_form" model="ir.ui.view">
         <field name="name">view.purchase.request.form</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request.view_purchase_request_form"/>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='picking_type_id']" position="attributes">
               <attribute name="invisible">1</attribute>
@@ -34,7 +33,7 @@
             <xpath expr="//button[@name='action_show_details']" position="attributes">
               <attribute name="invisible">1</attribute>
             </xpath>
-            
+
             <xpath expr="//field[@name='origin']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
@@ -65,14 +64,12 @@
             </field>
 
             <field name="description" position="before">
-                <field 
-                    name="title"
-                />
+                <field name="title" />
             </field>
-            
+
             <xpath expr="//form/sheet/notebook" position="inside">
                 <page name="committee" string="Committee">
-                    <separator string="Work Acceptance Committee"/>
+                    <separator string="Work Acceptance Committee" />
                     <field
                         name="work_acceptance_committee_ids"
                         nolabel="1"
@@ -86,14 +83,18 @@
                                 string="Employee"
                                 options="{'no_create': True, 'no_open': True}"
                             />
-                            <field name="name" string="Committee Name" readonly="1"/>
-                            <field name="approve_role" string="Role"/>
-                            <field name="department_id" string="Department" readonly="1"/>
-                            <field name="email" string="Work Email" readonly="1"/>
-                            <field name="phone" string="Work Phone" readonly="1"/>
+                            <field name="name" string="Committee Name" readonly="1" />
+                            <field name="approve_role" string="Role" />
+                            <field
+                                name="department_id"
+                                string="Department"
+                                readonly="1"
+                            />
+                            <field name="email" string="Work Email" readonly="1" />
+                            <field name="phone" string="Work Phone" readonly="1" />
                         </tree>
                     </field>
-                    <separator string="Procurement Committee"/>
+                    <separator string="Procurement Committee" />
                     <field
                         name="procurement_committee_ids"
                         nolabel="1"
@@ -107,12 +108,12 @@
                                 string="Employee"
                                 options="{'no_create': True, 'no_open': True}"
                             />
-                            <field name="name" string="Committee Name"/>
-                            <field name="approve_role" string="Role"/>
-                            <field name="department_id" string="Department"/>
-                            <field name="email" string="Work Email"/>
-                            <field name="phone" string="Work Phone"/>
-                            <field name="note" string="Note"/>
+                            <field name="name" string="Committee Name" />
+                            <field name="approve_role" string="Role" />
+                            <field name="department_id" string="Department" />
+                            <field name="email" string="Work Email" />
+                            <field name="phone" string="Work Phone" />
+                            <field name="note" string="Note" />
                         </tree>
                     </field>
                 </page>
@@ -121,25 +122,25 @@
                   <group>
                       <field name="tor_document_ids">
                           <tree editable="bottom">
-                              <field name="file" filename="file_name"/>
-                              <field name="file_name" readonly="1"/>
-                              <field name="description"/>
+                              <field name="file" filename="file_name" />
+                              <field name="file_name" readonly="1" />
+                              <field name="description" />
                           </tree>
                       </field>
 
                       <field name="rfq_attachment_ids">
                           <tree editable="bottom">
-                              <field name="file" filename="file_name"/>
-                              <field name="file_name" readonly="1"/>
-                              <field name="description"/>
+                              <field name="file" filename="file_name" />
+                              <field name="file_name" readonly="1" />
+                              <field name="description" />
                           </tree>
                       </field>
 
                       <field name="etc_document_ids">
                           <tree editable="bottom">
-                              <field name="file" filename="file_name"/>
-                              <field name="file_name" readonly="1"/>
-                              <field name="description"/>
+                              <field name="file" filename="file_name" />
+                              <field name="file_name" readonly="1" />
+                              <field name="description" />
                           </tree>
                       </field>
                   </group>
@@ -147,16 +148,16 @@
 
                 <page name="budget" string="งบประมาณ">
                     <group name="budget" string="ข้อมูลมิติทางบัญชี">
-                        <field name="source_of_fund"></field>
-                        <field name="plan"></field>
-                        <field name="fund"></field>
-                        <field name="budget_type"></field>
-                        <field name="expense_code" string="รหัสค่าใช้จ่าย"></field>    
+                        <field name="source_of_fund" />
+                        <field name="plan" />
+                        <field name="fund" />
+                        <field name="budget_type" />
+                        <field name="expense_code" string="รหัสค่าใช้จ่าย" />
                     </group>
-                    
+
                 </page>
             </xpath>
-            
+
         </field>
     </record>
 

@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
+from odoo import api, fields, models
 
 _logger = logging.getLogger(__name__)
 
 
 class PurchaseRequestLine(models.Model):
-    _inherit = 'purchase.request.line'
+    _inherit = "purchase.request.line"
 
     product_id = fields.Many2one(
         compute="_compute_default_product_id",
