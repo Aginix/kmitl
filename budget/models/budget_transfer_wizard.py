@@ -178,18 +178,20 @@ class BudgetTransferWizard(models.TransientModel):
     def _compute_step_visibility(self):
         """Control which step is visible"""
         for wizard in self:
-            wizard.show_step_1 = (wizard.current_step == 1)
-            wizard.show_step_2 = (wizard.current_step == 2)
-            wizard.show_step_3 = (wizard.current_step == 3)
-            wizard.show_step_4 = (wizard.current_step == 4)
+            current_step = wizard.current_step or 1  # Default to step 1 if not set
+            wizard.show_step_1 = (current_step == 1)
+            wizard.show_step_2 = (current_step == 2)
+            wizard.show_step_3 = (current_step == 3)
+            wizard.show_step_4 = (current_step == 4)
     
     @api.depends("current_step")
     def _compute_button_visibility(self):
         """Control button visibility"""
         for wizard in self:
-            wizard.show_next_button = wizard.current_step < 4
-            wizard.show_previous_button = wizard.current_step > 1
-            wizard.show_create_button = wizard.current_step == 4
+            current_step = wizard.current_step or 1  # Default to step 1 if not set
+            wizard.show_next_button = current_step < 4
+            wizard.show_previous_button = current_step > 1
+            wizard.show_create_button = current_step == 4
     
     @api.depends("transfer_date", "company_id")
     def _compute_fiscal_year(self):
@@ -254,15 +256,16 @@ class BudgetTransferWizard(models.TransientModel):
         """Generate validation messages for current step"""
         for wizard in self:
             messages = []
+            current_step = wizard.current_step or 1  # Default to step 1 if not set
             
-            if wizard.current_step == 1:
+            if current_step == 1:
                 # Basic info validation
                 if not wizard.amount or wizard.amount <= 0:
                     messages.append("⚠️ Please enter a transfer amount greater than zero")
                 if not wizard.transfer_reason:
                     messages.append("⚠️ Please provide a reason for this transfer")
                 
-            elif wizard.current_step == 2:
+            elif current_step == 2:
                 # Source validation
                 if not wizard.from_budget_account_id:
                     messages.append("⚠️ Please select source budget account")
@@ -282,7 +285,7 @@ class BudgetTransferWizard(models.TransientModel):
                         f"Remaining: {wizard.available_budget_from - wizard.amount:,.2f}"
                     )
                 
-            elif wizard.current_step == 3:
+            elif current_step == 3:
                 # Destination validation
                 if not wizard.to_budget_account_id:
                     messages.append("⚠️ Please select destination budget account")
@@ -295,7 +298,7 @@ class BudgetTransferWizard(models.TransientModel):
                     wizard.from_source_id == wizard.to_source_id):
                     messages.append("❌ Source and destination cannot be the same")
                 
-            elif wizard.current_step == 4:
+            elif current_step == 4:
                 # Final review
                 if wizard.budget_sufficient_from:
                     messages.append("✅ Ready to create budget transfer")

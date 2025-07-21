@@ -9,45 +9,45 @@
             <form string="Create Budget Transfer">
                 
                 <!-- Progress Bar -->
-                <div class="o_form_sheet_bg">
-                    <div class="o_form_sheet" style="padding: 0;">
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="progress mb-3" style="height: 6px;">
-                                            <div class="progress-bar" role="progressbar" 
-                                                 t-attf-style="width: #{record.current_step.raw_value * 25}%"/>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row text-center">
+                                    <div class="col-3">
+                                        <div class="step-indicator">
+                                            <span class="badge badge-pill badge-primary" 
+                                                  attrs="{'invisible': [('current_step', '&lt;', 1)]}">1</span>
+                                            <span class="badge badge-pill badge-secondary" 
+                                                  attrs="{'invisible': [('current_step', '>=', 1)]}">1</span>
+                                            <br/><small>Basic Info</small>
                                         </div>
-                                        <div class="row text-center">
-                                            <div class="col-3">
-                                                <div t-attf-class="step-indicator #{record.current_step.raw_value >= 1 and 'active' or ''}">
-                                                    <span class="badge badge-pill" 
-                                                          t-attf-class="badge-#{record.current_step.raw_value >= 1 and 'primary' or 'secondary'}">1</span>
-                                                    <br/><small>Basic Info</small>
-                                                </div>
-                                            </div>
-                                            <div class="col-3">
-                                                <div t-attf-class="step-indicator #{record.current_step.raw_value >= 2 and 'active' or ''}">
-                                                    <span class="badge badge-pill" 
-                                                          t-attf-class="badge-#{record.current_step.raw_value >= 2 and 'primary' or 'secondary'}">2</span>
-                                                    <br/><small>Source</small>
-                                                </div>
-                                            </div>
-                                            <div class="col-3">
-                                                <div t-attf-class="step-indicator #{record.current_step.raw_value >= 3 and 'active' or ''}">
-                                                    <span class="badge badge-pill" 
-                                                          t-attf-class="badge-#{record.current_step.raw_value >= 3 and 'primary' or 'secondary'}">3</span>
-                                                    <br/><small>Destination</small>
-                                                </div>
-                                            </div>
-                                            <div class="col-3">
-                                                <div t-attf-class="step-indicator #{record.current_step.raw_value >= 4 and 'active' or ''}">
-                                                    <span class="badge badge-pill" 
-                                                          t-attf-class="badge-#{record.current_step.raw_value >= 4 and 'primary' or 'secondary'}">4</span>
-                                                    <br/><small>Review</small>
-                                                </div>
-                                            </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="step-indicator">
+                                            <span class="badge badge-pill badge-primary" 
+                                                  attrs="{'invisible': [('current_step', '&lt;', 2)]}">2</span>
+                                            <span class="badge badge-pill badge-secondary" 
+                                                  attrs="{'invisible': [('current_step', '>=', 2)]}">2</span>
+                                            <br/><small>Source</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="step-indicator">
+                                            <span class="badge badge-pill badge-primary" 
+                                                  attrs="{'invisible': [('current_step', '&lt;', 3)]}">3</span>
+                                            <span class="badge badge-pill badge-secondary" 
+                                                  attrs="{'invisible': [('current_step', '>=', 3)]}">3</span>
+                                            <br/><small>Destination</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="step-indicator">
+                                            <span class="badge badge-pill badge-primary" 
+                                                  attrs="{'invisible': [('current_step', '&lt;', 4)]}">4</span>
+                                            <span class="badge badge-pill badge-secondary" 
+                                                  attrs="{'invisible': [('current_step', '>=', 4)]}">4</span>
+                                            <br/><small>Review</small>
                                         </div>
                                     </div>
                                 </div>
@@ -66,8 +66,7 @@
                         
                         <group>
                             <group>
-                                <field name="amount" widget="monetary" 
-                                       options="{'currency_field': 'company_id'}"
+                                <field name="amount" 
                                        class="oe_inline"
                                        placeholder="Enter transfer amount..."/>
                                 <field name="transfer_date"/>
@@ -200,7 +199,7 @@
                                             </tr>
                                             <tr>
                                                 <td><strong>Available:</strong></td>
-                                                <td><field name="available_budget_from" widget="monetary" readonly="1" nolabel="1"/></td>
+                                                <td><field name="available_budget_from" readonly="1" nolabel="1"/></td>
                                             </tr>
                                         </table>
                                     </div>
@@ -251,7 +250,7 @@
                                             <div class="col-md-4">
                                                 <strong>Amount:</strong><br/>
                                                 <span class="h4 text-primary">
-                                                    <field name="amount" widget="monetary" readonly="1" nolabel="1"/>
+                                                    <field name="amount" readonly="1" nolabel="1"/>
                                                 </span>
                                             </div>
                                             <div class="col-md-4">
