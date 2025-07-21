@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    
+
     <!-- Budget Transfer Form View -->
     <record id="view_budget_transfer_form" model="ir.ui.view">
         <field name="name">budget.transfer.form</field>
@@ -8,39 +8,39 @@
         <field name="arch" type="xml">
             <form string="Budget Transfer">
                 <header>
-                    <button name="action_submit" type="object" string="Submit for Approval" 
+                    <button name="action_submit" type="object" string="Submit for Approval"
                             class="btn-primary" attrs="{'invisible': [('show_submit_button', '=', False)]}"/>
-                    <button name="action_approve" type="object" string="Approve" 
+                    <button name="action_approve" type="object" string="Approve"
                             class="btn-success" attrs="{'invisible': [('show_approve_button', '=', False)]}"/>
-                    <button name="action_reject" type="object" string="Reject" 
+                    <button name="action_reject" type="object" string="Reject"
                             class="btn-warning" attrs="{'invisible': [('show_reject_button', '=', False)]}"/>
-                    <button name="action_post" type="object" string="Post Transfer" 
+                    <button name="action_post" type="object" string="Post Transfer"
                             class="btn-primary" attrs="{'invisible': [('show_post_button', '=', False)]}"/>
-                    <button name="action_cancel" type="object" string="Cancel" 
+                    <button name="action_cancel" type="object" string="Cancel"
                             attrs="{'invisible': [('show_cancel_button', '=', False)]}"/>
-                    <button name="action_reset_to_draft" type="object" string="Reset to Draft" 
+                    <button name="action_reset_to_draft" type="object" string="Reset to Draft"
                             attrs="{'invisible': [('show_reset_button', '=', False)]}"/>
-                    
-                    <field name="state" widget="statusbar" 
+
+                    <field name="state" widget="statusbar"
                            statusbar_visible="draft,submitted,approved,posted"/>
                 </header>
-                
+
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="%(action_budget_move_list)d" type="action" 
+                        <button name="%(action_budget_move)d" type="action"
                                 class="oe_stat_button" icon="fa-exchange"
                                 attrs="{'invisible': [('budget_move_ids', '=', [])]}"
                                 context="{'search_default_transfer_id': id}">
                             <field name="budget_move_ids" widget="statinfo" string="Budget Moves"/>
                         </button>
                     </div>
-                    
+
                     <div class="oe_title">
                         <h1>
                             <field name="name" class="o_text_overflow" readonly="1"/>
                         </h1>
                     </div>
-                    
+
                     <group>
                         <group name="transfer_info">
                             <field name="date" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
@@ -57,43 +57,43 @@
                             <field name="approval_date" attrs="{'invisible': [('approval_date', '=', False)]}"/>
                         </group>
                     </group>
-                    
+
                     <!-- Budget Validation Alert -->
-                    <div class="alert alert-warning" role="alert" 
+                    <div class="alert alert-warning" role="alert"
                          attrs="{'invisible': [('has_sufficient_budget', '=', True)]}"
                          style="margin: 10px 0;">
                         <strong>Budget Validation Warning:</strong>
                         <field name="budget_validation_message" nolabel="1"/>
                     </div>
-                    
-                    <div class="alert alert-success" role="alert" 
+
+                    <div class="alert alert-success" role="alert"
                          attrs="{'invisible': [('has_sufficient_budget', '=', False)]}"
                          style="margin: 10px 0;">
                         <strong>✅ Budget Validation Passed</strong>
                     </div>
-                    
+
                     <group name="transfer_reason">
                         <field name="reason" nolabel="1" placeholder="Please provide detailed justification for this budget transfer..."
                                attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                     </group>
-                    
+
                     <!-- Transfer Lines -->
                     <notebook>
                         <page name="transfer_lines" string="Transfer Details">
-                            <field name="line_ids" nolabel="1" 
+                            <field name="line_ids" nolabel="1"
                                    attrs="{'readonly': [('state', 'not in', ['draft'])]}">
-                                <tree editable="bottom" decoration-info="transfer_direction == 'from'" 
+                                <tree editable="bottom" decoration-info="transfer_direction == 'from'"
                                       decoration-success="transfer_direction == 'to'">
                                     <field name="sequence" widget="handle"/>
                                     <field name="transfer_direction" readonly="1"/>
-                                    <field name="budget_account_id" 
+                                    <field name="budget_account_id"
                                            domain="[('budget_type', '=', parent.transfer_type == 'between_accounts' and 'expense' or 'expense')]"/>
                                     <field name="activity_analytic_id"/>
                                     <field name="department_analytic_id"/>
                                     <field name="fund_analytic_id"/>
                                     <field name="source_analytic_id"/>
                                     <field name="amount" widget="monetary" sum="Total"/>
-                                    <field name="available_budget" widget="monetary" 
+                                    <field name="available_budget" widget="monetary"
                                            attrs="{'column_invisible': [('parent.state', '=', 'draft')]}"/>
                                     <field name="budget_sufficient" widget="boolean_toggle"
                                            attrs="{'column_invisible': [('parent.state', '=', 'draft')]}"/>
@@ -109,9 +109,9 @@
                                             <field name="currency_id" invisible="1"/>
                                         </group>
                                         <group>
-                                            <field name="available_budget" widget="monetary" 
+                                            <field name="available_budget" widget="monetary"
                                                    attrs="{'invisible': [('transfer_direction', '!=', 'from')]}"/>
-                                            <field name="budget_sufficient" 
+                                            <field name="budget_sufficient"
                                                    attrs="{'invisible': [('transfer_direction', '!=', 'from')]}"/>
                                         </group>
                                     </group>
@@ -127,16 +127,16 @@
                                 </form>
                             </field>
                         </page>
-                        
-                        <page name="approval_info" string="Approval Information" 
+
+                        <page name="approval_info" string="Approval Information"
                               attrs="{'invisible': [('state', 'in', ['draft'])]}">
                             <group>
-                                <field name="rejection_reason" 
+                                <field name="rejection_reason"
                                        attrs="{'invisible': [('state', '!=', 'rejected')]}"/>
                             </group>
                         </page>
-                        
-                        <page name="generated_moves" string="Generated Budget Moves" 
+
+                        <page name="generated_moves" string="Generated Budget Moves"
                               attrs="{'invisible': [('budget_move_ids', '=', [])]}">
                             <field name="budget_move_ids" nolabel="1" readonly="1">
                                 <tree>
@@ -150,14 +150,14 @@
                         </page>
                     </notebook>
                 </sheet>
-                
+
                 <!-- Chatter -->
                 <div class="oe_chatter">
                     <field name="message_follower_ids" groups="base.group_user"/>
                     <field name="activity_ids"/>
                     <field name="message_ids"/>
                 </div>
-                
+
                 <!-- Hidden fields for computations -->
                 <field name="show_submit_button" invisible="1"/>
                 <field name="show_approve_button" invisible="1"/>
@@ -169,13 +169,13 @@
             </form>
         </field>
     </record>
-    
+
     <!-- Budget Transfer Tree View -->
     <record id="view_budget_transfer_tree" model="ir.ui.view">
         <field name="name">budget.transfer.tree</field>
         <field name="model">budget.transfer</field>
         <field name="arch" type="xml">
-            <tree string="Budget Transfers" decoration-info="state == 'draft'" 
+            <tree string="Budget Transfers" decoration-info="state == 'draft'"
                   decoration-warning="state == 'submitted'" decoration-success="state == 'posted'">
                 <field name="name"/>
                 <field name="date"/>
@@ -184,7 +184,7 @@
                 <field name="amount" widget="monetary" sum="Total"/>
                 <field name="currency_id" invisible="1"/>
                 <field name="approver_id"/>
-                <field name="state" widget="badge" 
+                <field name="state" widget="badge"
                        decoration-info="state == 'draft'"
                        decoration-warning="state == 'submitted'"
                        decoration-success="state in ['approved', 'posted']"
@@ -193,7 +193,7 @@
             </tree>
         </field>
     </record>
-    
+
     <!-- Budget Transfer Search View -->
     <record id="view_budget_transfer_search" model="ir.ui.view">
         <field name="name">budget.transfer.search</field>
@@ -204,24 +204,24 @@
                 <field name="user_id" string="Requested by"/>
                 <field name="approver_id" string="Approved by"/>
                 <field name="reason" string="Reason"/>
-                
-                <filter name="my_transfers" string="My Transfers" 
+
+                <filter name="my_transfers" string="My Transfers"
                         domain="[('user_id', '=', uid)]"/>
-                <filter name="pending_approval" string="Pending Approval" 
+                <filter name="pending_approval" string="Pending Approval"
                         domain="[('state', '=', 'submitted')]"/>
-                <filter name="approved" string="Approved" 
+                <filter name="approved" string="Approved"
                         domain="[('state', '=', 'approved')]"/>
-                <filter name="posted" string="Posted" 
+                <filter name="posted" string="Posted"
                         domain="[('state', '=', 'posted')]"/>
-                
+
                 <separator/>
-                <filter name="this_month" string="This Month" 
+                <filter name="this_month" string="This Month"
                         domain="[('date', '>=', (context_today() - relativedelta(day=1)).strftime('%Y-%m-%d')),
                                 ('date', '&lt;', (context_today() + relativedelta(months=1, day=1)).strftime('%Y-%m-%d'))]"/>
-                <filter name="this_year" string="This Year" 
+                <filter name="this_year" string="This Year"
                         domain="[('date', '>=', (context_today() - relativedelta(month=1, day=1)).strftime('%Y-%m-%d')),
                                 ('date', '&lt;', (context_today() + relativedelta(years=1, month=1, day=1)).strftime('%Y-%m-%d'))]"/>
-                
+
                 <group expand="0" string="Group By">
                     <filter name="group_by_state" string="Status" domain="[]" context="{'group_by': 'state'}"/>
                     <filter name="group_by_user" string="Requested by" domain="[]" context="{'group_by': 'user_id'}"/>
@@ -231,7 +231,7 @@
             </search>
         </field>
     </record>
-    
+
     <!-- Budget Transfer Kanban View -->
     <record id="view_budget_transfer_kanban" model="ir.ui.view">
         <field name="name">budget.transfer.kanban</field>
@@ -294,7 +294,7 @@
             </kanban>
         </field>
     </record>
-    
+
     <!-- Budget Transfer Actions -->
     <record id="action_budget_transfer" model="ir.actions.act_window">
         <field name="name">Budget Transfers</field>
@@ -312,7 +312,7 @@
             </p>
         </field>
     </record>
-    
+
     <!-- My Transfers Action -->
     <record id="action_my_budget_transfers" model="ir.actions.act_window">
         <field name="name">My Budget Transfers</field>
@@ -321,7 +321,7 @@
         <field name="domain">[('user_id', '=', uid)]</field>
         <field name="context">{'search_default_my_transfers': 1}</field>
     </record>
-    
+
     <!-- Pending Approvals Action -->
     <record id="action_budget_transfers_pending" model="ir.actions.act_window">
         <field name="name">Pending Approvals</field>
