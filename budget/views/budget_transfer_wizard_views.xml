@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Budget Transfer Creation Wizard -->
+    <record id="view_budget_transfer_wizard_form" model="ir.ui.view">
+        <field name="name">budget.transfer.wizard.form</field>
+        <field name="model">budget.transfer.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create Budget Transfer">
+                
+                <!-- Progress Bar -->
+                <div class="o_form_sheet_bg">
+                    <div class="o_form_sheet" style="padding: 0;">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="progress mb-3" style="height: 6px;">
+                                            <div class="progress-bar" role="progressbar" 
+                                                 t-attf-style="width: #{record.current_step.raw_value * 25}%"/>
+                                        </div>
+                                        <div class="row text-center">
+                                            <div class="col-3">
+                                                <div t-attf-class="step-indicator #{record.current_step.raw_value >= 1 and 'active' or ''}">
+                                                    <span class="badge badge-pill" 
+                                                          t-attf-class="badge-#{record.current_step.raw_value >= 1 and 'primary' or 'secondary'}">1</span>
+                                                    <br/><small>Basic Info</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-3">
+                                                <div t-attf-class="step-indicator #{record.current_step.raw_value >= 2 and 'active' or ''}">
+                                                    <span class="badge badge-pill" 
+                                                          t-attf-class="badge-#{record.current_step.raw_value >= 2 and 'primary' or 'secondary'}">2</span>
+                                                    <br/><small>Source</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-3">
+                                                <div t-attf-class="step-indicator #{record.current_step.raw_value >= 3 and 'active' or ''}">
+                                                    <span class="badge badge-pill" 
+                                                          t-attf-class="badge-#{record.current_step.raw_value >= 3 and 'primary' or 'secondary'}">3</span>
+                                                    <br/><small>Destination</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-3">
+                                                <div t-attf-class="step-indicator #{record.current_step.raw_value >= 4 and 'active' or ''}">
+                                                    <span class="badge badge-pill" 
+                                                          t-attf-class="badge-#{record.current_step.raw_value >= 4 and 'primary' or 'secondary'}">4</span>
+                                                    <br/><small>Review</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <sheet>
+                    <!-- Step 1: Basic Information -->
+                    <div attrs="{'invisible': [('show_step_1', '=', False)]}">
+                        <div class="oe_title">
+                            <h2>Step 1: Basic Transfer Information</h2>
+                            <p class="text-muted">Enter the basic details for your budget transfer</p>
+                        </div>
+                        
+                        <group>
+                            <group>
+                                <field name="amount" widget="monetary" 
+                                       options="{'currency_field': 'company_id'}"
+                                       class="oe_inline"
+                                       placeholder="Enter transfer amount..."/>
+                                <field name="transfer_date"/>
+                                <field name="transfer_type"/>
+                            </group>
+                            <group>
+                                <field name="fiscal_year_id" readonly="1"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                        </group>
+                        
+                        <group>
+                            <field name="transfer_reason" nolabel="1" 
+                                   placeholder="Please explain why this budget transfer is needed..." 
+                                   class="oe_inline"/>
+                        </group>
+                    </div>
+                    
+                    <!-- Step 2: Source Selection -->
+                    <div attrs="{'invisible': [('show_step_2', '=', False)]}">
+                        <div class="oe_title">
+                            <h2>Step 2: Select Source (Transfer FROM)</h2>
+                            <p class="text-muted">Choose where to transfer the budget FROM</p>
+                        </div>
+                        
+                        <group>
+                            <group string="Source Budget Account">
+                                <field name="from_budget_account_id" 
+                                       options="{'no_create': True, 'no_create_edit': True}"
+                                       placeholder="Select budget account..."/>
+                            </group>
+                            <group string="Available Budget">
+                                <field name="available_budget_from" widget="monetary" readonly="1"
+                                       attrs="{'invisible': [('from_budget_account_id', '=', False)]}"/>
+                                <field name="budget_sufficient_from" readonly="1"
+                                       attrs="{'invisible': [('from_budget_account_id', '=', False)]}"/>
+                            </group>
+                        </group>
+                        
+                        <group string="Analytics (Optional - specify source details)">
+                            <group>
+                                <field name="from_activity_id" 
+                                       options="{'no_create': True, 'no_create_edit': True}"
+                                       placeholder="Select activity..."/>
+                                <field name="from_department_id" 
+                                       options="{'no_create': True, 'no_create_edit': True}"
+                                       placeholder="Select department..."/>
+                            </group>
+                            <group>
+                                <field name="from_fund_id" 
+                                       options="{'no_create': True, 'no_create_edit': True}"
+                                       placeholder="Select fund..."/>
+                                <field name="from_source_id" 
+                                       options="{'no_create': True, 'no_create_edit': True}"
+                                       placeholder="Select source..."/>
+                            </group>
+                        </group>
+                    </div>
+                    
+                    <!-- Step 3: Destination Selection -->
+                    <div attrs="{'invisible': [('show_step_3', '=', False)]}">
+                        <div class="oe_title">
+                            <h2>Step 3: Select Destination (Transfer TO)</h2>
+                            <p class="text-muted">Choose where to transfer the budget TO</p>
+                        </div>
+                        
+                        <group>
+                            <group string="Destination Budget Account">
+                                <field name="to_budget_account_id" 
+                                       options="{'no_create': True, 'no_create_edit': True}"
+                                       placeholder="Select budget account..."/>
+                            </group>
+                        </group>
+                        
+                        <group string="Analytics (Optional - specify destination details)">
+                            <group>
+                                <field name="to_activity_id" 
+                                       options="{'no_create': True, 'no_create_edit': True}"
+                                       placeholder="Select activity..."/>
+                                <field name="to_department_id" 
+                                       options="{'no_create': True, 'no_create_edit': True}"
+                                       placeholder="Select department..."/>
+                            </group>
+                            <group>
+                                <field name="to_fund_id" 
+                                       options="{'no_create': True, 'no_create_edit': True}"
+                                       placeholder="Select fund..."/>
+                                <field name="to_source_id" 
+                                       options="{'no_create': True, 'no_create_edit': True}"
+                                       placeholder="Select source..."/>
+                            </group>
+                        </group>
+                    </div>
+                    
+                    <!-- Step 4: Review and Create -->
+                    <div attrs="{'invisible': [('show_step_4', '=', False)]}">
+                        <div class="oe_title">
+                            <h2>Step 4: Review and Create Transfer</h2>
+                            <p class="text-muted">Please review the transfer details before creating</p>
+                        </div>
+                        
+                        <!-- Transfer Summary -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header bg-info text-white">
+                                        <h5 class="mb-0">📤 Transfer FROM</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-sm table-borderless">
+                                            <tr>
+                                                <td><strong>Account:</strong></td>
+                                                <td><field name="from_budget_account_id" readonly="1" nolabel="1"/></td>
+                                            </tr>
+                                            <tr attrs="{'invisible': [('from_activity_id', '=', False)]}">
+                                                <td><strong>Activity:</strong></td>
+                                                <td><field name="from_activity_id" readonly="1" nolabel="1"/></td>
+                                            </tr>
+                                            <tr attrs="{'invisible': [('from_department_id', '=', False)]}">
+                                                <td><strong>Department:</strong></td>
+                                                <td><field name="from_department_id" readonly="1" nolabel="1"/></td>
+                                            </tr>
+                                            <tr attrs="{'invisible': [('from_fund_id', '=', False)]}">
+                                                <td><strong>Fund:</strong></td>
+                                                <td><field name="from_fund_id" readonly="1" nolabel="1"/></td>
+                                            </tr>
+                                            <tr attrs="{'invisible': [('from_source_id', '=', False)]}">
+                                                <td><strong>Source:</strong></td>
+                                                <td><field name="from_source_id" readonly="1" nolabel="1"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Available:</strong></td>
+                                                <td><field name="available_budget_from" widget="monetary" readonly="1" nolabel="1"/></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header bg-success text-white">
+                                        <h5 class="mb-0">📥 Transfer TO</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-sm table-borderless">
+                                            <tr>
+                                                <td><strong>Account:</strong></td>
+                                                <td><field name="to_budget_account_id" readonly="1" nolabel="1"/></td>
+                                            </tr>
+                                            <tr attrs="{'invisible': [('to_activity_id', '=', False)]}">
+                                                <td><strong>Activity:</strong></td>
+                                                <td><field name="to_activity_id" readonly="1" nolabel="1"/></td>
+                                            </tr>
+                                            <tr attrs="{'invisible': [('to_department_id', '=', False)]}">
+                                                <td><strong>Department:</strong></td>
+                                                <td><field name="to_department_id" readonly="1" nolabel="1"/></td>
+                                            </tr>
+                                            <tr attrs="{'invisible': [('to_fund_id', '=', False)]}">
+                                                <td><strong>Fund:</strong></td>
+                                                <td><field name="to_fund_id" readonly="1" nolabel="1"/></td>
+                                            </tr>
+                                            <tr attrs="{'invisible': [('to_source_id', '=', False)]}">
+                                                <td><strong>Source:</strong></td>
+                                                <td><field name="to_source_id" readonly="1" nolabel="1"/></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Transfer Details -->
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Transfer Details</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <strong>Amount:</strong><br/>
+                                                <span class="h4 text-primary">
+                                                    <field name="amount" widget="monetary" readonly="1" nolabel="1"/>
+                                                </span>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <strong>Date:</strong><br/>
+                                                <field name="transfer_date" readonly="1" nolabel="1"/>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <strong>Type:</strong><br/>
+                                                <field name="transfer_type" readonly="1" nolabel="1"/>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-md-12">
+                                                <strong>Reason:</strong><br/>
+                                                <field name="transfer_reason" readonly="1" nolabel="1"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Validation Messages -->
+                    <div class="mt-3" attrs="{'invisible': [('validation_message', '=', '')]}">
+                        <field name="validation_message" nolabel="1" widget="html"/>
+                    </div>
+                    
+                </sheet>
+                
+                <footer>
+                    <button name="action_previous_step" string="← Previous" 
+                            type="object" class="btn-secondary" 
+                            attrs="{'invisible': [('show_previous_button', '=', False)]}"/>
+                    <button name="action_next_step" string="Next →" 
+                            type="object" class="btn-primary" 
+                            attrs="{'invisible': [('show_next_button', '=', False)]}"/>
+                    <button name="action_create_transfer" string="🚀 Create Transfer" 
+                            type="object" class="btn-primary" 
+                            attrs="{'invisible': [('show_create_button', '=', False)]}"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+                
+                <!-- Hidden fields for computations -->
+                <field name="current_step" invisible="1"/>
+                <field name="show_step_1" invisible="1"/>
+                <field name="show_step_2" invisible="1"/>
+                <field name="show_step_3" invisible="1"/>
+                <field name="show_step_4" invisible="1"/>
+                <field name="show_next_button" invisible="1"/>
+                <field name="show_previous_button" invisible="1"/>
+                <field name="show_create_button" invisible="1"/>
+                
+            </form>
+        </field>
+    </record>
+    
+    <!-- Budget Transfer Rejection Wizard -->
+    <record id="view_budget_transfer_reject_wizard_form" model="ir.ui.view">
+        <field name="name">budget.transfer.reject.wizard.form</field>
+        <field name="model">budget.transfer.reject.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Reject Budget Transfer">
+                <sheet>
+                    <div class="oe_title">
+                        <h2>Reject Budget Transfer</h2>
+                        <p class="text-muted">
+                            Please provide a detailed reason for rejecting transfer: 
+                            <field name="transfer_id" readonly="1" nolabel="1"/>
+                        </p>
+                    </div>
+                    
+                    <group>
+                        <field name="rejection_reason" nolabel="1" 
+                               placeholder="Please explain why this budget transfer is being rejected..." 
+                               widget="text"/>
+                    </group>
+                </sheet>
+                
+                <footer>
+                    <button name="action_reject" string="Reject Transfer" 
+                            type="object" class="btn-danger"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Wizard Actions -->
+    <record id="action_budget_transfer_wizard" model="ir.actions.act_window">
+        <field name="name">Create Budget Transfer</field>
+        <field name="res_model">budget.transfer.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{}</field>
+    </record>
+
+</odoo>
