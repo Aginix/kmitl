@@ -2,6 +2,7 @@ import logging
 from contextlib import ExitStack
 
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -276,7 +277,16 @@ class BudgetMoveLine(models.Model):
         # สลับเครื่องหมายของ balance
         virtual_vals["balance"] = -original_vals.get("balance", 0.0)
 
-        # ใช้ virtual account
+        # ใช้ virtual account - ensure it's computed first
+        if not move.appropriation_account_id:
+            move._compute_appropriation_account()
+        
+        if not move.appropriation_account_id:
+            raise UserError(
+                _("Cannot create virtual line: No appropriation account found for journal '%s' with type '%s'") 
+                % (move.journal_id.name, move.journal_id.default_budget_type)
+            )
+        
         virtual_vals["account_id"] = move.appropriation_account_id.id
 
         # Mark as virtual line
