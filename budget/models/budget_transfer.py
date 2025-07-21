@@ -216,6 +216,29 @@ class BudgetTransfer(models.Model):
         states=READONLY_STATES,
     )
     
+    # Separate FROM and TO lines for better UX
+    from_line_ids = fields.One2many(
+        comodel_name="budget.transfer.line",
+        inverse_name="transfer_id",
+        string="Transfer FROM Lines",
+        domain=[("transfer_direction", "=", "from")],
+        context={"default_transfer_direction": "from"},
+        copy=True,
+        readonly=False,
+        states=READONLY_STATES,
+    )
+    
+    to_line_ids = fields.One2many(
+        comodel_name="budget.transfer.line",
+        inverse_name="transfer_id",
+        string="Transfer TO Lines",
+        domain=[("transfer_direction", "=", "to")],
+        context={"default_transfer_direction": "to"},
+        copy=True,
+        readonly=False,
+        states=READONLY_STATES,
+    )
+    
     # Generated Budget Moves
     budget_move_ids = fields.One2many(
         comodel_name="budget.move",
@@ -314,7 +337,17 @@ class BudgetTransfer(models.Model):
     
     @api.depends("line_ids.amount")
     def _compute_amount(self):
-        """Compute total amount from transfer lines"""
+        """
+        Compute total transfer amount from FROM lines.
+        
+        The transfer amount is based on the total amount being transferred FROM
+        source accounts. This should match the total TO amount for a balanced transfer.
+        
+        Business Logic:
+        - Only count 'from' direction lines to avoid double counting
+        - This represents the total budget being moved
+        - TO lines should sum to the same amount for validation
+        """
         for transfer in self:
             from_amount = sum(transfer.line_ids.filtered(
                 lambda l: l.transfer_direction == "from"
@@ -323,7 +356,24 @@ class BudgetTransfer(models.Model):
     
     @api.depends("line_ids", "amount", "state")
     def _compute_budget_validation(self):
-        """Validate budget availability for transfer"""
+        """
+        Validate budget availability for transfer lines.
+        
+        This method checks if there's sufficient budget available in all source
+        accounts before allowing the transfer to proceed.
+        
+        Validation Process:
+        1. Skip validation for posted/cancelled transfers
+        2. For each FROM line, check available budget using BudgetController
+        3. Compare available vs required amounts
+        4. Generate detailed validation messages
+        5. Set overall validation status
+        
+        Integration with BudgetController:
+        - Uses analytic_data format expected by budget.controller
+        - Includes all analytic dimensions (activity, department, fund, source, account)
+        - Considers fiscal year and company context
+        """
         for transfer in self:
             if not transfer.line_ids or transfer.state in ("posted", "cancelled"):
                 transfer.has_sufficient_budget = True
@@ -337,10 +387,25 @@ class BudgetTransfer(models.Model):
                 for line in transfer.line_ids.filtered(lambda l: l.transfer_direction == "from"):
                     # Check budget availability using budget controller
                     budget_controller = self.env["budget.controller"]
+                    
+                    # Build analytic data for budget controller
+                    # Note: BudgetController expects analytic_data dict with specific keys
+                    analytic_data = {}
+                    if line.activity_analytic_id:
+                        analytic_data['activity_id'] = line.activity_analytic_id.id
+                    if line.department_analytic_id:
+                        analytic_data['department_id'] = line.department_analytic_id.id
+                    if line.fund_analytic_id:
+                        analytic_data['fund_id'] = line.fund_analytic_id.id
+                    if line.source_analytic_id:
+                        analytic_data['source_id'] = line.source_analytic_id.id
+                    if line.budget_account_id:
+                        analytic_data['account_id'] = line.budget_account_id.id
+                    
                     available_budget = budget_controller.get_available_budget(
-                        budget_account_id=line.budget_account_id.id,
-                        analytic_distribution=line.analytic_distribution or {},
-                        fiscal_year_id=transfer.date_range_fy_id.id
+                        analytic_data=analytic_data,
+                        fiscal_year_id=transfer.date_range_fy_id.id if transfer.date_range_fy_id else False,
+                        company_id=transfer.company_id.id
                     )
                     
                     if available_budget < line.amount:

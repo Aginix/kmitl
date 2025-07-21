@@ -130,38 +130,64 @@ class BudgetTransferLine(models.Model):
         help="True if available budget is sufficient for this transfer"
     )
     
-    @api.depends("analytic_distribution")
+    @api.depends("analytic_distribution", "transfer_id.department_analytic_id", "transfer_id.source_analytic_id", "transfer_direction")
     def _compute_analytic_fields(self):
-        """Compute individual analytic fields from JSON distribution"""
+        """
+        Compute individual analytic fields with automatic inheritance from transfer level.
+        
+        Analytics Inheritance Logic:
+        - FROM lines: Inherit both department_analytic_id and source_analytic_id from transfer
+        - TO lines: Inherit only source_analytic_id from transfer (same funding source)
+        - Both: Can be overridden by specific analytic_distribution JSON
+        
+        This ensures:
+        1. Consistent department/source tracking at transfer level
+        2. Flexibility for line-specific analytics (activity, fund)
+        3. Proper double-entry with matching analytics where needed
+        """
         for line in self:
-            if not line.analytic_distribution:
-                line.activity_analytic_id = False
-                line.department_analytic_id = False
-                line.fund_analytic_id = False
-                line.source_analytic_id = False
-                continue
+            # Initialize all fields
+            line.activity_analytic_id = False
+            line.department_analytic_id = False
+            line.fund_analytic_id = False
+            line.source_analytic_id = False
             
-            # Extract analytic account IDs from distribution
-            # Distribution format: {analytic_account_id: percentage}
-            distribution = line.analytic_distribution or {}
+            # First, inherit from transfer level based on direction
+            if line.transfer_id:
+                if line.transfer_direction == "from":
+                    # FROM lines inherit both department and source
+                    line.department_analytic_id = line.transfer_id.department_analytic_id
+                    line.source_analytic_id = line.transfer_id.source_analytic_id
+                elif line.transfer_direction == "to":
+                    # TO lines inherit only source
+                    line.source_analytic_id = line.transfer_id.source_analytic_id
             
-            # Get all analytic accounts in distribution
-            analytic_ids = [int(aid) for aid in distribution.keys() if aid.isdigit()]
-            analytics = self.env["account.analytic.account"].browse(analytic_ids)
-            
-            # Map to appropriate fields based on plan code
-            line.activity_analytic_id = analytics.filtered(
-                lambda a: a.root_plan_id.code == "activities"
-            )[:1]
-            line.department_analytic_id = analytics.filtered(
-                lambda a: a.root_plan_id.code == "departments" 
-            )[:1]
-            line.fund_analytic_id = analytics.filtered(
-                lambda a: a.root_plan_id.code == "funds"
-            )[:1]
-            line.source_analytic_id = analytics.filtered(
-                lambda a: a.root_plan_id.code == "sources"
-            )[:1]
+            # Then override with any specific distribution
+            if line.analytic_distribution:
+                # Extract analytic account IDs from distribution
+                # Distribution format: {analytic_account_id: percentage}
+                distribution = line.analytic_distribution or {}
+                
+                # Get all analytic accounts in distribution
+                analytic_ids = [int(aid) for aid in distribution.keys() if aid.isdigit()]
+                analytics = self.env["account.analytic.account"].browse(analytic_ids)
+                
+                # Map to appropriate fields based on plan code (override inherited values)
+                activity = analytics.filtered(lambda a: a.root_plan_id.code == "activities")[:1]
+                if activity:
+                    line.activity_analytic_id = activity
+                
+                department = analytics.filtered(lambda a: a.root_plan_id.code == "departments")[:1]
+                if department:
+                    line.department_analytic_id = department
+                
+                fund = analytics.filtered(lambda a: a.root_plan_id.code == "funds")[:1]
+                if fund:
+                    line.fund_analytic_id = fund
+                
+                source = analytics.filtered(lambda a: a.root_plan_id.code == "sources")[:1]
+                if source:
+                    line.source_analytic_id = source
     
     def _update_analytic_distribution(self):
         """Update analytic distribution JSON from individual fields"""
@@ -222,16 +248,30 @@ class BudgetTransferLine(models.Model):
                 budget_controller = self.env["budget.controller"]
                 fiscal_year_id = line.transfer_id.date_range_fy_id.id if line.transfer_id.date_range_fy_id else False
                 
+                # Build analytic data for budget controller
+                # Note: BudgetController.get_available_budget() expects analytic_data dict
+                analytic_data = {}
+                if line.activity_analytic_id:
+                    analytic_data['activity_id'] = line.activity_analytic_id.id
+                if line.department_analytic_id:
+                    analytic_data['department_id'] = line.department_analytic_id.id
+                if line.fund_analytic_id:
+                    analytic_data['fund_id'] = line.fund_analytic_id.id
+                if line.source_analytic_id:
+                    analytic_data['source_id'] = line.source_analytic_id.id
+                if line.budget_account_id:
+                    analytic_data['account_id'] = line.budget_account_id.id
+                
                 available = budget_controller.get_available_budget(
-                    budget_account_id=line.budget_account_id.id,
-                    analytic_distribution=line.analytic_distribution or {},
-                    fiscal_year_id=fiscal_year_id
+                    analytic_data=analytic_data,
+                    fiscal_year_id=fiscal_year_id,
+                    company_id=line.company_id.id
                 )
                 
                 line.available_budget = available
                 line.budget_sufficient = available >= line.amount
                 
-            except Exception:
+            except Exception as e:
                 # If budget controller fails, assume no budget available
                 line.available_budget = 0.0
                 line.budget_sufficient = False

@@ -82,46 +82,57 @@
                     <notebook>
                         <page name="transfer_lines" string="Transfer Details">
                             <!-- FROM Section -->
-                            <group string="📤 Transfer FROM (Source)" 
-                                   attrs="{'invisible': [('state', 'not in', ['draft'])]}">
-                                <field name="line_ids" nolabel="1" 
-                                       domain="[('transfer_direction', '=', 'from')]"
-                                       context="{'default_transfer_direction': 'from'}"
-                                       attrs="{'readonly': [('state', 'not in', ['draft'])]}">
-                                    <tree editable="bottom" decoration-info="1" create="1" delete="1">
-                                        <field name="sequence" widget="handle"/>
-                                        <field name="transfer_direction" invisible="1"/>
-                                        <field name="budget_account_id" required="1"/>
-                                        <field name="activity_analytic_id"/>
-                                        <field name="fund_analytic_id"/>
-                                        <field name="amount" widget="monetary" sum="Total Source"/>
-                                        <field name="available_budget" widget="monetary"/>
-                                        <field name="budget_sufficient" widget="boolean_toggle"/>
-                                        <field name="description"/>
-                                        <field name="currency_id" invisible="1"/>
-                                    </tree>
-                                </field>
-                            </group>
-                            
-                            <!-- TO Section -->
-                            <group string="📥 Transfer TO (Destination)" 
-                                   attrs="{'invisible': [('state', 'not in', ['draft'])]}">
-                                <field name="line_ids" nolabel="1" 
-                                       domain="[('transfer_direction', '=', 'to')]"
-                                       context="{'default_transfer_direction': 'to'}"
-                                       attrs="{'readonly': [('state', 'not in', ['draft'])]}">
-                                    <tree editable="bottom" decoration-success="1" create="1" delete="1">
-                                        <field name="sequence" widget="handle"/>
-                                        <field name="transfer_direction" invisible="1"/>
-                                        <field name="budget_account_id" required="1"/>
-                                        <field name="activity_analytic_id"/>
-                                        <field name="fund_analytic_id"/>
-                                        <field name="amount" widget="monetary" sum="Total Destination"/>
-                                        <field name="description"/>
-                                        <field name="currency_id" invisible="1"/>
-                                    </tree>
-                                </field>
-                            </group>
+                            <div class="row" attrs="{'invisible': [('state', 'not in', ['draft'])]}">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header bg-info text-white">
+                                            <h5 class="mb-0">📤 Transfer FROM (Source)</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <field name="from_line_ids" nolabel="1" 
+                                                   attrs="{'readonly': [('state', 'not in', ['draft'])]}">
+                                                <tree editable="bottom" decoration-info="1" create="1" delete="1">
+                                                    <field name="sequence" widget="handle"/>
+                                                    <field name="budget_account_id" required="1"/>
+                                                    <field name="activity_analytic_id"/>
+                                                    <field name="fund_analytic_id"/>
+                                                    <field name="department_analytic_id" readonly="1"/>
+                                                    <field name="source_analytic_id" readonly="1"/>
+                                                    <field name="amount" widget="monetary" sum="Total Source"/>
+                                                    <field name="available_budget" widget="monetary"/>
+                                                    <field name="budget_sufficient" widget="boolean_toggle"/>
+                                                    <field name="description"/>
+                                                    <field name="currency_id" invisible="1"/>
+                                                </tree>
+                                            </field>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- TO Section -->
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header bg-success text-white">
+                                            <h5 class="mb-0">📥 Transfer TO (Destination)</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <field name="to_line_ids" nolabel="1" 
+                                                   attrs="{'readonly': [('state', 'not in', ['draft'])]}">
+                                                <tree editable="bottom" decoration-success="1" create="1" delete="1">
+                                                    <field name="sequence" widget="handle"/>
+                                                    <field name="budget_account_id" required="1"/>
+                                                    <field name="activity_analytic_id"/>
+                                                    <field name="fund_analytic_id"/>
+                                                    <field name="source_analytic_id" readonly="1"/>
+                                                    <field name="amount" widget="monetary" sum="Total Destination"/>
+                                                    <field name="description"/>
+                                                    <field name="currency_id" invisible="1"/>
+                                                </tree>
+                                            </field>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             
                             <!-- All Lines View (when not in draft) -->
                             <group string="Transfer Lines Summary" 
