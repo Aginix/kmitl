@@ -23,4 +23,3 @@ from . import budget_controller
 from . import budget_transfer
 from . import budget_transfer_line
 from . import budget_transfer_reject_wizard
-from . import budget_transfer_wizard

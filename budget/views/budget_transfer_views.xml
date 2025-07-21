@@ -45,14 +45,14 @@
                         <group name="transfer_info">
                             <field name="date" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                             <field name="transfer_type"/>
-                            <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            <field name="currency_id" invisible="1"/>
+                            <field name="department_analytic_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
+                            <field name="source_analytic_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                         </group>
                         <group name="meta_info">
                             <field name="user_id"/>
                             <field name="date_range_fy_id"/>
-                            <field name="department_analytic_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
-                            <field name="source_analytic_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
+                            <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="currency_id" invisible="1"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                             <field name="approver_id" attrs="{'invisible': [('approver_id', '=', False)]}"/>
                             <field name="approval_date" attrs="{'invisible': [('approval_date', '=', False)]}"/>
@@ -81,47 +81,66 @@
                     <!-- Transfer Lines -->
                     <notebook>
                         <page name="transfer_lines" string="Transfer Details">
-                            <field name="line_ids" nolabel="1"
-                                   attrs="{'readonly': [('state', 'not in', ['draft'])]}">
-                                <tree editable="bottom" decoration-info="transfer_direction == 'from'"
-                                      decoration-success="transfer_direction == 'to'">
-                                    <field name="sequence" widget="handle"/>
-                                    <field name="transfer_direction"/>
-                                    <field name="budget_account_id"/>
-                                    <field name="activity_analytic_id"/>
-                                    <field name="fund_analytic_id"/>
-                                    <field name="amount" widget="monetary" sum="Total"/>
-                                    <field name="available_budget" widget="monetary"
-                                           attrs="{'column_invisible': [('parent.state', '=', 'draft')]}"/>
-                                    <field name="budget_sufficient" widget="boolean_toggle"
-                                           attrs="{'column_invisible': [('parent.state', '=', 'draft')]}"/>
-                                    <field name="description"/>
-                                    <field name="currency_id" invisible="1"/>
-                                </tree>
-                                <form string="Transfer Line">
-                                    <group>
-                                        <group>
-                                            <field name="transfer_direction"/>
-                                            <field name="budget_account_id"/>
-                                            <field name="amount" widget="monetary"/>
-                                            <field name="currency_id" invisible="1"/>
-                                        </group>
-                                        <group>
-                                            <field name="available_budget" widget="monetary"
-                                                   attrs="{'invisible': [('transfer_direction', '!=', 'from')]}"/>
-                                            <field name="budget_sufficient"
-                                                   attrs="{'invisible': [('transfer_direction', '!=', 'from')]}"/>
-                                        </group>
-                                    </group>
-                                    <group string="Analytics Distribution">
+                            <!-- FROM Section -->
+                            <group string="📤 Transfer FROM (Source)" 
+                                   attrs="{'invisible': [('state', 'not in', ['draft'])]}">
+                                <field name="line_ids" nolabel="1" 
+                                       domain="[('transfer_direction', '=', 'from')]"
+                                       context="{'default_transfer_direction': 'from'}"
+                                       attrs="{'readonly': [('state', 'not in', ['draft'])]}">
+                                    <tree editable="bottom" decoration-info="1" create="1" delete="1">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="transfer_direction" invisible="1"/>
+                                        <field name="budget_account_id" required="1"/>
                                         <field name="activity_analytic_id"/>
                                         <field name="fund_analytic_id"/>
-                                    </group>
-                                    <group>
+                                        <field name="amount" widget="monetary" sum="Total Source"/>
+                                        <field name="available_budget" widget="monetary"/>
+                                        <field name="budget_sufficient" widget="boolean_toggle"/>
                                         <field name="description"/>
-                                    </group>
-                                </form>
-                            </field>
+                                        <field name="currency_id" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            
+                            <!-- TO Section -->
+                            <group string="📥 Transfer TO (Destination)" 
+                                   attrs="{'invisible': [('state', 'not in', ['draft'])]}">
+                                <field name="line_ids" nolabel="1" 
+                                       domain="[('transfer_direction', '=', 'to')]"
+                                       context="{'default_transfer_direction': 'to'}"
+                                       attrs="{'readonly': [('state', 'not in', ['draft'])]}">
+                                    <tree editable="bottom" decoration-success="1" create="1" delete="1">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="transfer_direction" invisible="1"/>
+                                        <field name="budget_account_id" required="1"/>
+                                        <field name="activity_analytic_id"/>
+                                        <field name="fund_analytic_id"/>
+                                        <field name="amount" widget="monetary" sum="Total Destination"/>
+                                        <field name="description"/>
+                                        <field name="currency_id" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            
+                            <!-- All Lines View (when not in draft) -->
+                            <group string="Transfer Lines Summary" 
+                                   attrs="{'invisible': [('state', 'in', ['draft'])]}">
+                                <field name="line_ids" nolabel="1" readonly="1">
+                                    <tree decoration-info="transfer_direction == 'from'"
+                                          decoration-success="transfer_direction == 'to'">
+                                        <field name="transfer_direction"/>
+                                        <field name="budget_account_id"/>
+                                        <field name="activity_analytic_id"/>
+                                        <field name="fund_analytic_id"/>
+                                        <field name="amount" widget="monetary" sum="Total"/>
+                                        <field name="available_budget" widget="monetary"
+                                               attrs="{'column_invisible': [('transfer_direction', '!=', 'from')]}"/>
+                                        <field name="description"/>
+                                        <field name="currency_id" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </group>
                         </page>
 
                         <page name="approval_info" string="Approval Information"

@@ -30,7 +30,6 @@
         "views/budget_journal_views.xml",
         "views/budget_move_views.xml",
         "views/budget_transfer_views.xml",
-        "views/budget_transfer_wizard_views.xml",
         "views/budget_menus.xml",
         "views/budget_report_views.xml",
         "views/budget_execution_status_report_views.xml",

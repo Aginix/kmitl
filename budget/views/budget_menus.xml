@@ -48,30 +48,24 @@
         <menuitem id="budget_transfer_management" name="โอนงบประมาณ" sequence="50">
             <menuitem id="budget_transfer_menu" name="โอนงบประมาณ" sequence="1">
                 <menuitem
-                    id="action_budget_transfer_wizard_menu"
-                    name="สร้างคำขอโอนงบประมาณ"
-                    action="action_budget_transfer_wizard"
-                    sequence="1"
-                />
-                <menuitem
                     id="action_my_budget_transfers_menu"
                     name="คำขอโอนงบประมาณของฉัน"
                     action="action_my_budget_transfers"
-                    sequence="2"
+                    sequence="1"
                 />
                 <menuitem
                     id="action_budget_transfers_pending_menu"
                     name="รอการอนุมัติ"
                     action="action_budget_transfers_pending"
                     groups="budget.group_budget_transfer_approver"
-                    sequence="3"
+                    sequence="2"
                 />
                 <menuitem
                     id="action_budget_transfer_menu"
                     name="คำขอโอนงบประมาณทั้งหมด"
                     action="action_budget_transfer"
                     groups="budget.group_budget_transfer_approver"
-                    sequence="4"
+                    sequence="3"
                 />
             </menuitem>
         </menuitem>

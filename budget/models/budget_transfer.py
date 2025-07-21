@@ -396,6 +396,27 @@ class BudgetTransfer(models.Model):
             if fiscal_year:
                 self.date_range_fy_id = fiscal_year
     
+    @api.onchange("line_ids")
+    def _onchange_line_ids(self):
+        """Validate balance when lines change"""
+        if self.line_ids:
+            from_lines = self.line_ids.filtered(lambda l: l.transfer_direction == "from")
+            to_lines = self.line_ids.filtered(lambda l: l.transfer_direction == "to")
+            
+            from_amount = sum(from_lines.mapped("amount"))
+            to_amount = sum(to_lines.mapped("amount"))
+            
+            if from_amount > 0 and to_amount > 0 and abs(from_amount - to_amount) > 0.01:
+                return {
+                    "warning": {
+                        "title": _("Unbalanced Transfer"),
+                        "message": _(
+                            "From amount ({:,.2f}) doesn't match To amount ({:,.2f}). "
+                            "Please ensure the transfer is balanced."
+                        ).format(from_amount, to_amount)
+                    }
+                }
+    
     # Workflow Actions
     def action_submit(self):
         """Submit transfer for approval"""
@@ -495,19 +516,27 @@ class BudgetTransfer(models.Model):
         if not self.line_ids:
             raise ValidationError(_("Please add transfer lines"))
         
+        # Check for both FROM and TO lines
+        from_lines = self.line_ids.filtered(lambda l: l.transfer_direction == "from")
+        to_lines = self.line_ids.filtered(lambda l: l.transfer_direction == "to")
+        
+        if not from_lines:
+            raise ValidationError(_("Please add at least one source line (Transfer FROM)"))
+        
+        if not to_lines:
+            raise ValidationError(_("Please add at least one destination line (Transfer TO)"))
+        
         # Validate balanced transfer
-        from_amount = sum(self.line_ids.filtered(lambda l: l.transfer_direction == "from").mapped("amount"))
-        to_amount = sum(self.line_ids.filtered(lambda l: l.transfer_direction == "to").mapped("amount"))
+        from_amount = sum(from_lines.mapped("amount"))
+        to_amount = sum(to_lines.mapped("amount"))
         
         if abs(from_amount - to_amount) > 0.01:  # Allow small rounding differences
             raise ValidationError(_(
-                "Transfer must be balanced. From amount: {}, To amount: {}"
+                "Transfer must be balanced. From amount: {:,.2f}, To amount: {:,.2f}"
             ).format(from_amount, to_amount))
         
-        if from_amount != self.amount:
-            raise ValidationError(_(
-                "Transfer amount ({}) doesn't match line totals ({})"
-            ).format(self.amount, from_amount))
+        if from_amount <= 0:
+            raise ValidationError(_("Transfer amount must be greater than zero"))
     
     def _validate_budget_availability(self):
         """Validate budget availability for all source accounts"""
