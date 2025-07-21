@@ -12,10 +12,12 @@ class BudgetAppropriationOverviewReport(models.TransientModel):
     # Filter fields
     date_from = fields.Date(string="Date From")
     date_to = fields.Date(string="Date To")
-    fiscal_year_id = fields.Many2one(
-        "date.range",
-        string="Fiscal Year",
-        domain="[('type_id.fiscal_year', '=', True)]",
+    date_range_fy_id = fields.Many2one(
+        comodel_name="account.fiscal.year",
+        string="Fiscal year",
+        tracking=True,
+        readonly=True,
+        states={"draft": [("readonly", False)]},
     )
     department_ids = fields.Many2many(
         "account.analytic.account",
@@ -88,8 +90,8 @@ class BudgetAppropriationOverviewReport(models.TransientModel):
             domain.append(("date", "<=", filters["date_to"]))
 
         # Fiscal year filter
-        if filters.get("fiscal_year_id"):
-            domain.append(("date_range_fy_id", "=", filters["fiscal_year_id"]))
+        if filters.get("date_range_fy_id"):
+            domain.append(("date_range_fy_id", "=", filters["date_range_fy_id"]))
 
         # Department filter with hierarchy support
         if filters.get("department_ids"):
