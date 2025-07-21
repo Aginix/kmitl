@@ -17,7 +17,7 @@ class BudgetTransferLine(models.Model):
     # Basic Fields
     transfer_id = fields.Many2one(
         comodel_name="budget.transfer",
-        string="Budget Transfer",
+        string="โอนงบประมาณ",
         required=True,
         ondelete="cascade",
     )
@@ -42,14 +42,14 @@ class BudgetTransferLine(models.Model):
     # Budget Account
     budget_account_id = fields.Many2one(
         comodel_name="budget.account",
-        string="Budget Account",
+        string="รหัสงบประมาณ",
         required=True,
         help="Budget account for this transfer line"
     )
 
     # Amount
     amount = fields.Float(
-        string="Amount",
+        string="จำนวนเงิน",
         required=True,
         digits="Budget Precision",
         help="Transfer amount for this line"
@@ -119,7 +119,7 @@ class BudgetTransferLine(models.Model):
 
     # Budget Availability Check
     available_budget = fields.Float(
-        string="Available Budget",
+        string="งบประมาณคงเหลือ",
         compute="_compute_available_budget",
         help="Available budget for this account and analytics"
     )
