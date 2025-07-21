@@ -35,6 +35,7 @@ class BudgetTransferLine(models.Model):
         ],
         string="Direction",
         required=True,
+        default="from",
         help="Direction of this transfer line"
     )
     

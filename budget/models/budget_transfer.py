@@ -95,24 +95,21 @@ class BudgetTransfer(models.Model):
     # Transfer Details
     transfer_type = fields.Selection(
         selection=[
-            ("between_accounts", "Between Budget Accounts"),
-            ("between_departments", "Between Departments"),
-            ("between_sources", "Between Funding Sources"),
+            ("entry", "ทั่วไป"),
         ],
         string="Transfer Type",
         required=True,
-        default="between_accounts",
-        readonly=False,
-        states=READONLY_STATES,
+        default="entry",
+        readonly=True,
         tracking=True,
     )
     
     amount = fields.Float(
         string="Transfer Amount",
-        required=True,
+        compute="_compute_amount",
+        store=True,
         digits="Budget Precision",
-        readonly=False,
-        states=READONLY_STATES,
+        readonly=True,
         tracking=True,
     )
     
@@ -151,6 +148,27 @@ class BudgetTransfer(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
         tracking=True,
+    )
+    
+    # Analytics at transfer level
+    department_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="ส่วนงาน",
+        domain=[("root_plan_id.code", "=", "departments")],
+        readonly=False,
+        states=READONLY_STATES,
+        tracking=True,
+        help="Department for this transfer"
+    )
+    
+    source_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="แหล่งเงิน", 
+        domain=[("root_plan_id.code", "=", "sources")],
+        readonly=False,
+        states=READONLY_STATES,
+        tracking=True,
+        help="Source of funds for this transfer"
     )
     
     # User Management
@@ -293,6 +311,15 @@ class BudgetTransfer(models.Model):
                 transfer.state != "draft" and 
                 can_manage
             )
+    
+    @api.depends("line_ids.amount")
+    def _compute_amount(self):
+        """Compute total amount from transfer lines"""
+        for transfer in self:
+            from_amount = sum(transfer.line_ids.filtered(
+                lambda l: l.transfer_direction == "from"
+            ).mapped("amount"))
+            transfer.amount = from_amount
     
     @api.depends("line_ids", "amount", "state")
     def _compute_budget_validation(self):

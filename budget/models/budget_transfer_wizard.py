@@ -42,13 +42,12 @@ class BudgetTransferWizard(models.TransientModel):
     
     transfer_type = fields.Selection(
         selection=[
-            ("between_accounts", "Between Budget Accounts"),
-            ("between_departments", "Between Departments"),
-            ("between_sources", "Between Funding Sources"),
+            ("entry", "ทั่วไป"),
         ],
         string="Transfer Type",
         required=True,
-        default="between_accounts",
+        default="entry",
+        readonly=True,
         help="Type of budget transfer"
     )
     
@@ -57,6 +56,21 @@ class BudgetTransferWizard(models.TransientModel):
         required=True,
         default=lambda self: fields.Date.context_today(self),
         help="Date of the transfer"
+    )
+    
+    # Transfer-level analytics
+    department_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="ส่วนงาน",
+        domain=[("root_plan_id.code", "=", "departments")],
+        help="Department for this transfer"
+    )
+    
+    source_analytic_id = fields.Many2one(
+        "account.analytic.account", 
+        string="แหล่งเงิน",
+        domain=[("root_plan_id.code", "=", "sources")],
+        help="Source of funds for this transfer"
     )
     
     # Source Information (Step 2)
@@ -73,25 +87,11 @@ class BudgetTransferWizard(models.TransientModel):
         help="Activity to transfer from"
     )
     
-    from_department_id = fields.Many2one(
-        "account.analytic.account",
-        string="FROM ส่วนงาน",
-        domain=[("root_plan_id.code", "=", "departments")],
-        help="Department to transfer from"
-    )
-    
     from_fund_id = fields.Many2one(
         "account.analytic.account",
         string="FROM กองทุน",
         domain=[("root_plan_id.code", "=", "funds")],
         help="Fund to transfer from"
-    )
-    
-    from_source_id = fields.Many2one(
-        "account.analytic.account",
-        string="FROM แหล่งเงิน",
-        domain=[("root_plan_id.code", "=", "sources")],
-        help="Source to transfer from"
     )
     
     # Available budget for source
@@ -121,25 +121,11 @@ class BudgetTransferWizard(models.TransientModel):
         help="Activity to transfer to"
     )
     
-    to_department_id = fields.Many2one(
-        "account.analytic.account",
-        string="TO ส่วนงาน", 
-        domain=[("root_plan_id.code", "=", "departments")],
-        help="Department to transfer to"
-    )
-    
     to_fund_id = fields.Many2one(
         "account.analytic.account",
         string="TO กองทุน",
         domain=[("root_plan_id.code", "=", "funds")],
         help="Fund to transfer to"
-    )
-    
-    to_source_id = fields.Many2one(
-        "account.analytic.account",
-        string="TO แหล่งเงิน",
-        domain=[("root_plan_id.code", "=", "sources")],
-        help="Source to transfer to"
     )
     
     # Company and fiscal year
@@ -208,8 +194,8 @@ class BudgetTransferWizard(models.TransientModel):
                 wizard.fiscal_year_id = False
     
     @api.depends(
-        "from_budget_account_id", "from_activity_id", "from_department_id",
-        "from_fund_id", "from_source_id", "amount", "fiscal_year_id"
+        "from_budget_account_id", "from_activity_id", 
+        "from_fund_id", "department_analytic_id", "source_analytic_id", "amount", "fiscal_year_id"
     )
     def _compute_available_budget(self):
         """Compute available budget for source"""
@@ -224,9 +210,9 @@ class BudgetTransferWizard(models.TransientModel):
                 distribution = {}
                 analytics = [
                     wizard.from_activity_id,
-                    wizard.from_department_id,
+                    wizard.department_analytic_id,  # From transfer level
                     wizard.from_fund_id,
-                    wizard.from_source_id
+                    wizard.source_analytic_id,     # From transfer level
                 ]
                 
                 for analytic in analytics:
@@ -293,9 +279,7 @@ class BudgetTransferWizard(models.TransientModel):
                 # Check for same source and destination
                 if (wizard.from_budget_account_id == wizard.to_budget_account_id and
                     wizard.from_activity_id == wizard.to_activity_id and
-                    wizard.from_department_id == wizard.to_department_id and
-                    wizard.from_fund_id == wizard.to_fund_id and
-                    wizard.from_source_id == wizard.to_source_id):
+                    wizard.from_fund_id == wizard.to_fund_id):
                     messages.append("❌ Source and destination cannot be the same")
                 
             elif current_step == 4:
@@ -365,13 +349,14 @@ class BudgetTransferWizard(models.TransientModel):
         
         # Create transfer
         transfer_vals = {
-            "amount": self.amount,
             "reason": self.transfer_reason,
             "transfer_type": self.transfer_type,
             "date": self.transfer_date,
             "company_id": self.company_id.id,
             "date_range_fy_id": self.fiscal_year_id.id,
             "user_id": self.env.user.id,
+            "department_analytic_id": self.department_analytic_id.id if self.department_analytic_id else False,
+            "source_analytic_id": self.source_analytic_id.id if self.source_analytic_id else False,
         }
         
         transfer = self.env["budget.transfer"].create(transfer_vals)
@@ -408,9 +393,7 @@ class BudgetTransferWizard(models.TransientModel):
         # Check if same source and destination
         if (self.from_budget_account_id == self.to_budget_account_id and
             self.from_activity_id == self.to_activity_id and
-            self.from_department_id == self.to_department_id and
-            self.from_fund_id == self.to_fund_id and
-            self.from_source_id == self.to_source_id):
+            self.from_fund_id == self.to_fund_id):
             errors.append(_("Source and destination cannot be the same"))
         
         if errors:
@@ -424,12 +407,12 @@ class BudgetTransferWizard(models.TransientModel):
         from_distribution = {}
         to_distribution = {}
         
-        # From analytics
+        # From analytics  
         from_analytics = [
             self.from_activity_id,
-            self.from_department_id,
+            self.department_analytic_id,  # From transfer level
             self.from_fund_id,
-            self.from_source_id
+            self.source_analytic_id,     # From transfer level
         ]
         
         for analytic in from_analytics:
@@ -439,9 +422,9 @@ class BudgetTransferWizard(models.TransientModel):
         # To analytics
         to_analytics = [
             self.to_activity_id,
-            self.to_department_id,
+            self.department_analytic_id,  # From transfer level
             self.to_fund_id,
-            self.to_source_id
+            self.source_analytic_id,     # From transfer level
         ]
         
         for analytic in to_analytics:

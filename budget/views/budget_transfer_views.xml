@@ -44,14 +44,15 @@
                     <group>
                         <group name="transfer_info">
                             <field name="date" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
-                            <field name="transfer_type" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
-                            <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"
-                                   attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
+                            <field name="transfer_type"/>
+                            <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="currency_id" invisible="1"/>
                         </group>
                         <group name="meta_info">
                             <field name="user_id"/>
                             <field name="date_range_fy_id"/>
+                            <field name="department_analytic_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
+                            <field name="source_analytic_id" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                             <field name="approver_id" attrs="{'invisible': [('approver_id', '=', False)]}"/>
                             <field name="approval_date" attrs="{'invisible': [('approval_date', '=', False)]}"/>
@@ -85,13 +86,10 @@
                                 <tree editable="bottom" decoration-info="transfer_direction == 'from'"
                                       decoration-success="transfer_direction == 'to'">
                                     <field name="sequence" widget="handle"/>
-                                    <field name="transfer_direction" readonly="1"/>
-                                    <field name="budget_account_id"
-                                           domain="[('budget_type', '=', parent.transfer_type == 'between_accounts' and 'expense' or 'expense')]"/>
+                                    <field name="transfer_direction"/>
+                                    <field name="budget_account_id"/>
                                     <field name="activity_analytic_id"/>
-                                    <field name="department_analytic_id"/>
                                     <field name="fund_analytic_id"/>
-                                    <field name="source_analytic_id"/>
                                     <field name="amount" widget="monetary" sum="Total"/>
                                     <field name="available_budget" widget="monetary"
                                            attrs="{'column_invisible': [('parent.state', '=', 'draft')]}"/>
@@ -117,9 +115,7 @@
                                     </group>
                                     <group string="Analytics Distribution">
                                         <field name="activity_analytic_id"/>
-                                        <field name="department_analytic_id"/>
                                         <field name="fund_analytic_id"/>
-                                        <field name="source_analytic_id"/>
                                     </group>
                                     <group>
                                         <field name="description"/>

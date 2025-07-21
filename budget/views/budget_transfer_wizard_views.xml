@@ -66,11 +66,10 @@
                         
                         <group>
                             <group>
-                                <field name="amount" 
-                                       class="oe_inline"
-                                       placeholder="Enter transfer amount..."/>
                                 <field name="transfer_date"/>
                                 <field name="transfer_type"/>
+                                <field name="department_analytic_id"/>
+                                <field name="source_analytic_id"/>
                             </group>
                             <group>
                                 <field name="fiscal_year_id" readonly="1"/>
@@ -111,17 +110,9 @@
                                 <field name="from_activity_id" 
                                        options="{'no_create': True, 'no_create_edit': True}"
                                        placeholder="Select activity..."/>
-                                <field name="from_department_id" 
-                                       options="{'no_create': True, 'no_create_edit': True}"
-                                       placeholder="Select department..."/>
-                            </group>
-                            <group>
                                 <field name="from_fund_id" 
                                        options="{'no_create': True, 'no_create_edit': True}"
                                        placeholder="Select fund..."/>
-                                <field name="from_source_id" 
-                                       options="{'no_create': True, 'no_create_edit': True}"
-                                       placeholder="Select source..."/>
                             </group>
                         </group>
                     </div>
@@ -146,17 +137,9 @@
                                 <field name="to_activity_id" 
                                        options="{'no_create': True, 'no_create_edit': True}"
                                        placeholder="Select activity..."/>
-                                <field name="to_department_id" 
-                                       options="{'no_create': True, 'no_create_edit': True}"
-                                       placeholder="Select department..."/>
-                            </group>
-                            <group>
                                 <field name="to_fund_id" 
                                        options="{'no_create': True, 'no_create_edit': True}"
                                        placeholder="Select fund..."/>
-                                <field name="to_source_id" 
-                                       options="{'no_create': True, 'no_create_edit': True}"
-                                       placeholder="Select source..."/>
                             </group>
                         </group>
                     </div>
@@ -185,17 +168,9 @@
                                                 <td><strong>Activity:</strong></td>
                                                 <td><field name="from_activity_id" readonly="1" nolabel="1"/></td>
                                             </tr>
-                                            <tr attrs="{'invisible': [('from_department_id', '=', False)]}">
-                                                <td><strong>Department:</strong></td>
-                                                <td><field name="from_department_id" readonly="1" nolabel="1"/></td>
-                                            </tr>
                                             <tr attrs="{'invisible': [('from_fund_id', '=', False)]}">
                                                 <td><strong>Fund:</strong></td>
                                                 <td><field name="from_fund_id" readonly="1" nolabel="1"/></td>
-                                            </tr>
-                                            <tr attrs="{'invisible': [('from_source_id', '=', False)]}">
-                                                <td><strong>Source:</strong></td>
-                                                <td><field name="from_source_id" readonly="1" nolabel="1"/></td>
                                             </tr>
                                             <tr>
                                                 <td><strong>Available:</strong></td>
@@ -220,17 +195,9 @@
                                                 <td><strong>Activity:</strong></td>
                                                 <td><field name="to_activity_id" readonly="1" nolabel="1"/></td>
                                             </tr>
-                                            <tr attrs="{'invisible': [('to_department_id', '=', False)]}">
-                                                <td><strong>Department:</strong></td>
-                                                <td><field name="to_department_id" readonly="1" nolabel="1"/></td>
-                                            </tr>
                                             <tr attrs="{'invisible': [('to_fund_id', '=', False)]}">
                                                 <td><strong>Fund:</strong></td>
                                                 <td><field name="to_fund_id" readonly="1" nolabel="1"/></td>
-                                            </tr>
-                                            <tr attrs="{'invisible': [('to_source_id', '=', False)]}">
-                                                <td><strong>Source:</strong></td>
-                                                <td><field name="to_source_id" readonly="1" nolabel="1"/></td>
                                             </tr>
                                         </table>
                                     </div>
@@ -247,19 +214,21 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="row">
-                                            <div class="col-md-4">
-                                                <strong>Amount:</strong><br/>
-                                                <span class="h4 text-primary">
-                                                    <field name="amount" readonly="1" nolabel="1"/>
-                                                </span>
-                                            </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-3">
                                                 <strong>Date:</strong><br/>
                                                 <field name="transfer_date" readonly="1" nolabel="1"/>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-3">
                                                 <strong>Type:</strong><br/>
                                                 <field name="transfer_type" readonly="1" nolabel="1"/>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <strong>Department:</strong><br/>
+                                                <field name="department_analytic_id" readonly="1" nolabel="1"/>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <strong>Source:</strong><br/>
+                                                <field name="source_analytic_id" readonly="1" nolabel="1"/>
                                             </div>
                                         </div>
                                         <div class="row mt-3">
