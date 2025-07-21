@@ -20,16 +20,17 @@ export class CustomeNoteLineRenderer extends NoteLineRenderer {
 
     async updateProp(props) {
         const records = props.list.records;
-        // search all records in appropiration_lines
-        for (const record of records) {
-            const procurementPlanIds = record.data.procurement_plan_ids.records;
-            // check if procurement_plan_ids state change to draft
-            const draftPlans = procurementPlanIds.filter(
-                (r) => r.data.state === "draft"
-            );
 
-            // check if form save
-            if (draftPlans.length === 0) {
+        for (const record of records) {
+            if (!record.data.id) {
+                record.data._visual_id = `${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+            }
+
+            const recKey = record.data.id || record.data._visual_id;
+            const procurementPlanIds = record.data.procurement_plan_ids.records;
+            const draftPlans = procurementPlanIds.filter(r => r.data.state === "draft");
+
+            if (draftPlans.length === 0 && record.data.id) {
                 const plans = await this.orm.searchRead(
                     "procurement.plan",
                     [["budget_move_line_id", "=", record.data.id]],
@@ -42,15 +43,18 @@ export class CustomeNoteLineRenderer extends NoteLineRenderer {
 
             for (const plan of procurementPlanIds) {
                 if (plan.data.state === "draft") {
+                    plan.data.id = `${recKey}-draft-${Math.random().toString(36).substring(2, 6)}`;
                     this.procurementData.plan.push(plan.data);
                 } else {
                     this.procurementData.plan.push(this.procurementData[plan.data.id]);
                 }
             }
-            this.procurementData.records.set(record.data.id, this.procurementData.plan);
+
+            this.procurementData.records.set(recKey, this.procurementData.plan);
             this.procurementData.plan = [];
         }
     }
+
 
     formattedAmount(value) {
         return new Intl.NumberFormat("en-US").format(value);
