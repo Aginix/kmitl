@@ -237,7 +237,7 @@ class BudgetMoveLine(models.Model):
                 all_vals.append(vals)
                 move = self.env["budget.move"].browse(vals["move_id"])
                 if move.move_type == "appropriation":
-                    # Prepare virtual line vals now
+                    # Prepare virtual line vals now (source_line_id will be set after creation)
                     virtual_vals = self._prepare_virtual_line_vals(vals, move)
                     all_vals.append(virtual_vals)
                     # Store the mapping (regular line index -> virtual line index)
@@ -275,11 +275,36 @@ class BudgetMoveLine(models.Model):
         return lines
 
     def _prepare_virtual_line_vals(self, original_vals, move, source_line_id=None):
-        """Prepare values for virtual line (opposite entry)"""
+        """
+        Prepare values for virtual line (opposite entry)
+        
+        Creates the balancing entry for appropriation lines to maintain double-entry bookkeeping:
+        - Flips balance sign (positive → negative, negative → positive)
+        - Swaps credit/debit if explicitly provided in original values
+        - Uses virtual appropriation account
+        - Sets source_line_id for 1-1 relationship tracking
+        - Copies analytic distribution from original line
+        
+        Args:
+            original_vals (dict): Values from the regular appropriation line
+            move (budget.move): The budget move record
+            source_line_id (int, optional): ID of the regular line this virtual line balances
+            
+        Returns:
+            dict: Values for creating the virtual line
+        """
         virtual_vals = original_vals.copy()
 
         # สลับเครื่องหมายของ balance
         virtual_vals["balance"] = -original_vals.get("balance", 0.0)
+
+        # สลับ credit/debit ถ้ามีการกำหนดไว้ใน original_vals
+        if "credit" in original_vals or "debit" in original_vals:
+            original_credit = original_vals.get("credit", 0.0)
+            original_debit = original_vals.get("debit", 0.0)
+            # Flip credit and debit
+            virtual_vals["credit"] = original_debit
+            virtual_vals["debit"] = original_credit
 
         # ใช้ virtual account
         virtual_vals["account_id"] = move.appropriation_account_id.id
