@@ -285,7 +285,6 @@ class BudgetDemo(models.AbstractModel):
                 'source_analytic_id': refs['source_2'].id,
                 'balance': 5000000.0,
                 'name': 'Demo: Base salary allocation',
-                'is_virtual_line': False,
             })
         
         # Benefits line
@@ -298,7 +297,6 @@ class BudgetDemo(models.AbstractModel):
                 'source_analytic_id': refs['source_2'].id,
                 'balance': 1500000.0,
                 'name': 'Demo: Employee benefits allocation',
-                'is_virtual_line': False,
             })
         
         return lines
@@ -318,7 +316,6 @@ class BudgetDemo(models.AbstractModel):
                 'source_analytic_id': refs['source_2'].id,
                 'balance': 800000.0,
                 'name': 'Demo: Utilities and operating expenses',
-                'is_virtual_line': False,
             })
         
         return lines
@@ -338,7 +335,6 @@ class BudgetDemo(models.AbstractModel):
                 'source_analytic_id': refs['source_2'].id,
                 'balance': 2000000.0,
                 'name': 'Demo: IT equipment and software',
-                'is_virtual_line': False,
             })
         
         return lines
@@ -358,7 +354,6 @@ class BudgetDemo(models.AbstractModel):
                 'source_analytic_id': refs['source_2'].id,
                 'balance': 500000.0,
                 'name': 'Demo: Academic travel and training',
-                'is_virtual_line': False,
             })
         
         return lines
@@ -378,7 +373,6 @@ class BudgetDemo(models.AbstractModel):
                 'source_analytic_id': refs['source_2'].id,
                 'balance': 1000000.0,
                 'name': 'Demo: Special faculty development activities',
-                'is_virtual_line': False,
             })
         
         return lines
@@ -420,8 +414,7 @@ class BudgetDemo(models.AbstractModel):
                     'source_analytic_id': refs['source_2'].id,
                     'balance': 3000000.0,
                     'name': 'Demo: Revenue budget allocation',
-                    'is_virtual_line': False,
-                })
+                    })
             
             move_vals['line_ids'] = [(0, 0, line) for line in lines]
             
@@ -473,8 +466,7 @@ class BudgetDemo(models.AbstractModel):
                                 'source_analytic_id': refs['source_2'].id,
                                 'balance': 750000.0 * (i + 1),
                                 'name': f'Demo: Multi-activity allocation {i+1}',
-                                'is_virtual_line': False,
-                            })
+                                            })
             
             if lines:
                 move_vals['line_ids'] = [(0, 0, line) for line in lines]
@@ -706,8 +698,7 @@ class BudgetDemo(models.AbstractModel):
                     'source_analytic_id': refs['source_2'].id,
                     'balance': amount,
                     'name': f"CSV Demo: {account.name}" + (f" - {note}" if note else ""),
-                    'is_virtual_line': False,
-                })
+                    })
             else:
                 missing = []
                 if not account: missing.append(f"account({account_ref})")
@@ -753,8 +744,7 @@ class BudgetDemo(models.AbstractModel):
                     'source_analytic_id': refs['source_2'].id,
                     'balance': 5000000.0,  # 5M THB revenue allocation
                     'name': 'CSV Demo: Revenue budget allocation',
-                    'is_virtual_line': False,
-                })
+                    })
             
             if lines:
                 move_vals['line_ids'] = [(0, 0, line) for line in lines]
