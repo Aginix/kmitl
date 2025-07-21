@@ -15,9 +15,6 @@ class BudgetAppropriationOverviewReport(models.TransientModel):
     date_range_fy_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="Fiscal year",
-        tracking=True,
-        readonly=True,
-        states={"draft": [("readonly", False)]},
     )
     department_ids = fields.Many2many(
         "account.analytic.account",
@@ -133,21 +130,27 @@ class BudgetAppropriationOverviewReport(models.TransientModel):
 
         for line in lines:
             paths = {
-                "activity": report_model._get_path_hierarchy(
-                    line.activity_analytic_id, hierarchy_paths
-                )
-                if line.activity_analytic_id
-                else [],
-                "department": report_model._get_path_hierarchy(
-                    line.department_analytic_id, hierarchy_paths
-                )
-                if line.department_analytic_id
-                else [],
-                "fund": report_model._get_path_hierarchy(
-                    line.fund_analytic_id, hierarchy_paths
-                )
-                if line.fund_analytic_id
-                else [],
+                "activity": (
+                    report_model._get_path_hierarchy(
+                        line.activity_analytic_id, hierarchy_paths
+                    )
+                    if line.activity_analytic_id
+                    else []
+                ),
+                "department": (
+                    report_model._get_path_hierarchy(
+                        line.department_analytic_id, hierarchy_paths
+                    )
+                    if line.department_analytic_id
+                    else []
+                ),
+                "fund": (
+                    report_model._get_path_hierarchy(
+                        line.fund_analytic_id, hierarchy_paths
+                    )
+                    if line.fund_analytic_id
+                    else []
+                ),
             }
 
             budget_account_path = []
