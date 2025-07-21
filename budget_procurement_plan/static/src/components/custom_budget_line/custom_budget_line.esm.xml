@@ -16,7 +16,7 @@
                     <t t-set="key" t-value="pair[0]"/>
                     <t t-set="rec" t-value="pair[1]"/>
                     <t t-if="record.data.id == key">
-                        <t t-foreach="rec" t-as="procurement" t-key="procurement.id">
+                        <t t-foreach="rec" t-as="procurement" t-key="generateId(procurement)">
                             <div>
                                 <span>
                                     - <t t-esc="procurement.name" />

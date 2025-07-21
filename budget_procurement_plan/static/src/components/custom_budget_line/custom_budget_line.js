@@ -56,6 +56,13 @@ export class CustomeNoteLineRenderer extends NoteLineRenderer {
         return new Intl.NumberFormat("en-US").format(value);
     }
 
+    generateId(obj) {
+        return (
+            (obj && obj.id) ||
+            `${Date.now()}-${Math.random().toString(36).substring(2, 10)}`
+        );
+    }
+
     // loading ครั้งแรก
     async _loadProcurementPlans() {
         const plans = await this.orm.searchRead("procurement.plan", [], []);
