@@ -376,9 +376,13 @@ class BudgetTransfer(models.Model):
                     # Note: BudgetController expects analytic_data dict with specific keys
                     analytic_data = {}
                     if line.activity_analytic_id:
-                        analytic_data["activity_analytic_id"] = line.activity_analytic_id.id
+                        analytic_data["activity_analytic_id"] = (
+                            line.activity_analytic_id.id
+                        )
                     if line.department_analytic_id:
-                        analytic_data["department_analytic_id"] = line.department_analytic_id.id
+                        analytic_data["department_analytic_id"] = (
+                            line.department_analytic_id.id
+                        )
                     if line.fund_analytic_id:
                         analytic_data["fund_analytic_id"] = line.fund_analytic_id.id
                     if line.source_analytic_id:
@@ -626,6 +630,25 @@ class BudgetTransfer(models.Model):
         """Create budget moves for the transfer"""
         self.ensure_one()
 
+        # Validate that we have balanced lines before creating moves
+        from_total = sum(
+            self.line_ids.filtered(lambda l: l.transfer_direction == "from").mapped(
+                "amount"
+            )
+        )
+        to_total = sum(
+            self.line_ids.filtered(lambda l: l.transfer_direction == "to").mapped(
+                "amount"
+            )
+        )
+
+        if abs(from_total - to_total) > 0.01:
+            raise ValidationError(
+                _("Transfer lines are not balanced. FROM: {:,.2f}, TO: {:,.2f}").format(
+                    from_total, to_total
+                )
+            )
+
         # Create a single budget move for the transfer
         move_vals = {
             "move_type": "entry",
@@ -635,25 +658,56 @@ class BudgetTransfer(models.Model):
             "currency_id": self.currency_id.id,
             "journal_id": self._get_transfer_journal().id,
             "transfer_id": self.id,
+            "date_range_fy_id": self.date_range_fy_id.id,
+
         }
 
         budget_move = self.env["budget.move"].create(move_vals)
 
-        # Create move lines for each transfer line
+        # Collect all move line data first, then create in batch
+        move_lines_data = []
+        total_debits = 0.0
+        total_credits = 0.0
+
         for line in self.line_ids:
+            # In budget accounting: FROM (source) = Credit, TO (destination) = Debit
+            # This represents money flowing FROM source accounts TO destination accounts
+            debit_amount = line.amount if line.transfer_direction == "to" else 0.0
+            credit_amount = line.amount if line.transfer_direction == "from" else 0.0
+            balance_amount = (
+                line.amount if line.transfer_direction == "to" else -line.amount
+            )
+
+            total_debits += debit_amount
+            total_credits += credit_amount
+
             line_vals = {
                 "move_id": budget_move.id,
                 "account_id": line.budget_account_id.id,
                 "analytic_distribution": line.analytic_distribution,
-                "name": line.description or f"Transfer {line.transfer_direction}",
-                "debit": line.amount if line.transfer_direction == "to" else 0,
-                "credit": line.amount if line.transfer_direction == "from" else 0,
-                "balance": (
-                    line.amount if line.transfer_direction == "to" else -line.amount
-                ),
+                "activity_analytic_id": line.activity_analytic_id.id,
+                "department_analytic_id": line.department_analytic_id.id,
+                "fund_analytic_id": line.fund_analytic_id.id,
+                "source_analytic_id": line.source_analytic_id.id,
+                "name": line.description
+                or f"Transfer {line.transfer_direction.upper()}",
+                "debit": debit_amount,
+                "credit": credit_amount,
+                "balance": balance_amount,
             }
 
-            self.env["budget.move.line"].create(line_vals)
+            move_lines_data.append(line_vals)
+
+        # Validate the move is balanced before creating lines
+        if abs(total_debits - total_credits) > 0.01:
+            raise ValidationError(
+                _(
+                    "Budget move is not balanced. Total debits: {:,.2f}, Total credits: {:,.2f}"
+                ).format(total_debits, total_credits)
+            )
+
+        # Create all move lines in a single batch transaction
+        self.env["budget.move.line"].create(move_lines_data)
 
         # Post the budget move immediately
         budget_move.action_review()

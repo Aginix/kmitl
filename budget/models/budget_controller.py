@@ -408,7 +408,7 @@ class BudgetController(models.AbstractModel):
         for move in moves:
             for line in move.line_ids.filtered(lambda l: not l.is_virtual_line):
                 if self._line_matches_analytic_data(line, analytic_data):
-                    total += abs(line.balance)
+                    total += line.balance
 
         return total
 
