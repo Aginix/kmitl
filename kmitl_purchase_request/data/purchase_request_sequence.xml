@@ -1,0 +1,6 @@
+<odoo noupdate="0">
+    <record id="seq_purchase_request" model="ir.sequence">
+        <field name="name">Purchase Request</field>
+        <field name="padding">4</field>
+    </record>
+</odoo>

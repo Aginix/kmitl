@@ -8,6 +8,7 @@
     'category': '',
     'depends': ['base', 'web', 'purchase_request', 'hr', 'l10n_th_kmitl_procurement'],
     "data": [
+        "data/purchase_request_sequence.xml",
         "security/ir.model.access.csv",
         "views/purchase_request_attachment_views.xml",
         "views/purchase_request_views.xml",
