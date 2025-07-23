@@ -153,18 +153,24 @@ class BudgetMoveLine(models.Model):
     def default_get(self, fields_list):
         defaults = super().default_get(fields_list)
 
-        move_id = self.env.context.get('default_move_id')
+        move_id = self.env.context.get("default_move_id")
         if move_id:
-            last_line = self.search([('move_id', '=', move_id), ('is_virtual_line', '=', False)], order="write_date desc", limit=1)
+            last_line = self.search(
+                [("move_id", "=", move_id), ("is_virtual_line", "=", False)],
+                order="write_date desc",
+                limit=1,
+            )
             if last_line:
-                defaults.update({
-                    'department_analytic_id': last_line.department_analytic_id.id,
-                    'activity_analytic_id': last_line.activity_analytic_id.id,
-                    'fund_analytic_id': last_line.fund_analytic_id.id,
-                })
+                defaults.update(
+                    {
+                        "department_analytic_id": last_line.department_analytic_id.id,
+                        "activity_analytic_id": last_line.activity_analytic_id.id,
+                        "fund_analytic_id": last_line.fund_analytic_id.id,
+                    }
+                )
         return defaults
 
-    @api.depends('move_id', 'move_id.department_analytic_id', 'move_id.move_type')
+    @api.depends("move_id", "move_id.department_analytic_id", "move_id.move_type")
     def _compute_department_analytic(self):
         for line in self:
             if line.move_id and line.move_id.move_type == "appropriation":
@@ -211,54 +217,53 @@ class BudgetMoveLine(models.Model):
         For appropriation moves, this method automatically creates balancing entries (virtual lines)
         to maintain double-entry bookkeeping. The process:
 
-        1. For each appropriation line, create one corresponding virtual line
-        2. Virtual line has same analytic distribution but opposite balance
-        3. Virtual line uses the appropriation virtual account
+        1. Create regular appropriation lines first
+        2. For each regular line, create corresponding virtual line with source_line_id
+        3. Virtual line has same analytic distribution but opposite balance
+        4. Virtual line uses the appropriation virtual account
 
-        This ensures: Total Debits = Total Credits with 1-1 line relationship
+        This ensures: Total Debits = Total Credits with proper 1-1 line relationships
         """
         moves = self.env["budget.move"].browse({vals["move_id"] for vals in vals_list})
         container = {"records": self}
         move_container = {"records": moves}
 
-        # กรองเฉพาะ appropriation moves
-        appropriation_moves = moves.filtered(lambda m: m.move_type == "appropriation")
+        # Prepare all lines (regular + virtual) before creation
+        all_vals = []
+        regular_to_virtual = {}  # Track which regular line index maps to virtual line
+        
+        for vals in vals_list:
+            if not vals.get("is_virtual_line"):
+                all_vals.append(vals)
+                move = self.env["budget.move"].browse(vals["move_id"])
+                if move.move_type == "appropriation":
+                    # Prepare virtual line vals now (source_line_id will be set after creation)
+                    virtual_vals = self._prepare_virtual_line_vals(vals, move)
+                    all_vals.append(virtual_vals)
+                    # Store the mapping (regular line index -> virtual line index)
+                    regular_to_virtual[len(all_vals) - 2] = len(all_vals) - 1
+            else:
+                all_vals.append(vals)
 
         with moves._check_balanced(move_container), ExitStack() as exit_stack:
-            lines = super().create([self._sanitize_vals(vals) for vals in vals_list])
-
-            # Create virtual lines for appropriation moves after main lines are created
-            if appropriation_moves:
-                virtual_lines_to_create = []
-                for line in lines:
-                    if (
-                        line.move_id.move_type == "appropriation"
-                        and not line.is_virtual_line
-                    ):
-                        # Create virtual line for this appropriation line
-                        virtual_vals = self._prepare_virtual_line_vals(
-                            {
-                                "balance": line.balance,
-                                "analytic_distribution": line.analytic_distribution,
-                                "move_id": line.move_id.id,
-                            },
-                            line.move_id,
-                            source_line_id=line.id,
-                        )
-                        virtual_lines_to_create.append(virtual_vals)
-
-                # Create all virtual lines at once
-                if virtual_lines_to_create:
-                    virtual_lines = self.with_context(skip_virtual_update=True).create(
-                        virtual_lines_to_create
-                    )
-                    lines = lines + virtual_lines
+            # Create all lines at once
+            lines = super().create([self._sanitize_vals(vals) for vals in all_vals])
+            
+            # Set source_line_id for virtual lines after creation
+            for regular_idx, virtual_idx in regular_to_virtual.items():
+                if regular_idx < len(lines) and virtual_idx < len(lines):
+                    regular_line = lines[regular_idx]
+                    virtual_line = lines[virtual_idx]
+                    # Set the source_line_id relationship
+                    virtual_line.with_context(skip_virtual_update=True).write({
+                        'source_line_id': regular_line.id
+                    })
 
             exit_stack.enter_context(
                 self.env.protecting(
                     [
                         protected
-                        for vals, line in zip(vals_list, lines)
+                        for vals, line in zip(all_vals, lines)
                         for protected in self.env["budget.move"]._get_protected_vals(
                             vals, line
                         )
@@ -270,11 +275,36 @@ class BudgetMoveLine(models.Model):
         return lines
 
     def _prepare_virtual_line_vals(self, original_vals, move, source_line_id=None):
-        """Prepare values for virtual line (opposite entry)"""
+        """
+        Prepare values for virtual line (opposite entry)
+        
+        Creates the balancing entry for appropriation lines to maintain double-entry bookkeeping:
+        - Flips balance sign (positive → negative, negative → positive)
+        - Swaps credit/debit if explicitly provided in original values
+        - Uses virtual appropriation account
+        - Sets source_line_id for 1-1 relationship tracking
+        - Copies analytic distribution from original line
+        
+        Args:
+            original_vals (dict): Values from the regular appropriation line
+            move (budget.move): The budget move record
+            source_line_id (int, optional): ID of the regular line this virtual line balances
+            
+        Returns:
+            dict: Values for creating the virtual line
+        """
         virtual_vals = original_vals.copy()
 
         # สลับเครื่องหมายของ balance
         virtual_vals["balance"] = -original_vals.get("balance", 0.0)
+
+        # สลับ credit/debit ถ้ามีการกำหนดไว้ใน original_vals
+        if "credit" in original_vals or "debit" in original_vals:
+            original_credit = original_vals.get("credit", 0.0)
+            original_debit = original_vals.get("debit", 0.0)
+            # Flip credit and debit
+            virtual_vals["credit"] = original_debit
+            virtual_vals["debit"] = original_credit
 
         # ใช้ virtual account
         virtual_vals["account_id"] = move.appropriation_account_id.id
@@ -282,7 +312,7 @@ class BudgetMoveLine(models.Model):
         # Mark as virtual line
         virtual_vals["is_virtual_line"] = True
 
-        # Set source line reference for pairing
+        # Set source_line_id for 1-1 relationship
         if source_line_id:
             virtual_vals["source_line_id"] = source_line_id
 
@@ -350,55 +380,41 @@ class BudgetMoveLine(models.Model):
                                 },
                             }
 
-                # Technical Note: Pre-write Virtual Line Update
-                # Update virtual lines before applying the write to ensure balance check passes
-
-                # Store updated values to apply to virtual lines
-                virtual_updates = {}
-                for line in appropriation_lines:
-                    # Calculate new balance (what the line will have after write)
-                    new_balance = vals.get("balance", line.balance)
-                    new_analytic = vals.get(
-                        "analytic_distribution", line.analytic_distribution
-                    )
-
-                    # Find existing virtual line for this source line
-                    virtual_line = self.search(
-                        [
-                            ("source_line_id", "=", line.id),
-                            ("is_virtual_line", "=", True),
-                        ],
-                        limit=1,
-                    )
-
-                    if virtual_line:
-                        # Update virtual line before main write
-                        virtual_line.with_context(skip_virtual_update=True).write(
-                            {
-                                "balance": -new_balance,
-                                "analytic_distribution": new_analytic,
-                            }
-                        )
-                    else:
-                        # Store info to create virtual line after main write
-                        virtual_updates[line.id] = (new_balance, new_analytic)
-
-                # Apply the write to main lines
+                # Apply the write
                 result = super().write(vals)
 
-                # Create any missing virtual lines after the write
-                for line_id, (balance, analytic_dist) in virtual_updates.items():
-                    line = self.browse(line_id)
-                    virtual_vals = self._prepare_virtual_line_vals(
-                        {
-                            "balance": balance,
-                            "analytic_distribution": analytic_dist,
-                            "move_id": line.move_id.id,
-                        },
-                        line.move_id,
-                        source_line_id=line.id,
-                    )
-                    self.with_context(skip_virtual_update=True).create(virtual_vals)
+                # Technical Note: Virtual Line Update Process
+                # For each updated appropriation line, find and update its corresponding virtual line
+                # using source_line_id to maintain 1-1 relationships
+                for line in appropriation_lines:
+                    # Find the virtual line linked to this regular line
+                    virtual_line = self.search([
+                        ('source_line_id', '=', line.id),
+                        ('is_virtual_line', '=', True)
+                    ], limit=1)
+                    
+                    if virtual_line:
+                        # Update existing virtual line
+                        virtual_update_vals = {}
+                        if balance_update:
+                            virtual_update_vals['balance'] = -line.balance
+                        if analytic_update:
+                            virtual_update_vals['analytic_distribution'] = line.analytic_distribution
+                        
+                        if virtual_update_vals:
+                            virtual_line.with_context(skip_virtual_update=True).write(virtual_update_vals)
+                    else:
+                        # Create missing virtual line (shouldn't happen in normal flow)
+                        virtual_vals = self._prepare_virtual_line_vals(
+                            {
+                                "balance": line.balance,
+                                "analytic_distribution": line.analytic_distribution,
+                                "move_id": line.move_id.id,
+                            },
+                            line.move_id,
+                            line.id,
+                        )
+                        self.with_context(skip_virtual_update=True).create(virtual_vals)
 
                 # Handle tracking
                 if tracking_info and not self.env.context.get(
@@ -470,32 +486,35 @@ class BudgetMoveLine(models.Model):
         """
         Technical Note: Virtual Line Management on Deletion
 
-        When deleting appropriation lines, virtual lines must be recreated to
-        maintain the accounting balance. This method:
+        When deleting appropriation lines, use source_line_id to find and delete
+        corresponding virtual lines. This method:
 
-        1. Identifies affected appropriation moves before deletion
-        2. Deletes the requested lines
-        3. Recreates virtual lines for remaining regular lines
+        1. For regular lines: Find and delete linked virtual lines via source_line_id
+        2. For virtual lines: Allow normal deletion (they cascade from regular lines)
+        3. Maintains proper 1-1 relationships without unnecessary recreation
 
-        This prevents "move is not balanced" errors when deleting lines.
+        This prevents "move is not balanced" errors while preserving line relationships.
         """
-        # Technical Note: Source Line ID Deletion Approach
-        # Delete paired virtual lines using source_line_id relationship
-        virtual_lines_to_delete = self.env["budget.move.line"]
+        # Technical Note: Cascade Deletion via source_line_id
+        # Find virtual lines that should be deleted along with regular lines
+        virtual_lines_to_delete = self.env['budget.move.line']
+        
         for line in self:
             if line.move_id.move_type == "appropriation" and not line.is_virtual_line:
-                # Find and collect virtual lines paired with this source line
-                paired_virtual_lines = self.search(
-                    [("source_line_id", "=", line.id), ("is_virtual_line", "=", True)]
-                )
-                virtual_lines_to_delete |= paired_virtual_lines
+                # Find virtual line linked to this regular line
+                virtual_line = self.search([
+                    ('source_line_id', '=', line.id),
+                    ('is_virtual_line', '=', True)
+                ], limit=1)
+                if virtual_line:
+                    virtual_lines_to_delete |= virtual_line
 
-        # Delete the main lines
+        # Delete regular lines first
         result = super().unlink()
-
-        # Delete paired virtual lines after main deletion
+        
+        # Delete corresponding virtual lines
         if virtual_lines_to_delete.exists():
-            virtual_lines_to_delete.unlink()
+            virtual_lines_to_delete.with_context(skip_virtual_update=True).unlink()
 
         return result
 
