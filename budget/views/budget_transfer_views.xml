@@ -59,8 +59,8 @@
                         <strong>✅ Budget Validation Passed</strong>
                     </div>
 
-                    <group name="transfer_reason">
-                        <field name="reason" nolabel="1" placeholder="Please provide detailed justification for this budget transfer..." attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
+                    <group name="transfer_reason" colspan="8">
+                        <field name="reason" placeholder="Please provide detailed justification for this budget transfer..." attrs="{'readonly': [('state', 'not in', ['draft'])]}" colspan="2"/>
                     </group>
 
                     <!-- Transfer Lines -->
