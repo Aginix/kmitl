@@ -6,6 +6,7 @@
     "category": "KMITL",
     "depends": [
         "base",
+        "web",
         "account_analytic_kmitl",
         "account_fiscal_year",
         "l10n_th_kmitl_procurement",
@@ -14,6 +15,8 @@
         "security/ir.model.access.csv",
         "views/procurement_plan_views.xml",
         "views/procurement_plan_menus.xml",
+        "report/report_procurement_plan.xml",
+
     ],
     "application": False,
     "installable": True,
