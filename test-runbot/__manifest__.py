@@ -8,6 +8,6 @@
     "license": "AGPL-3",
     "installable": True,
     "application": False,
-    "summary": "Test module for Runbot",
+    "summary": "Test module for Runbot.",
     "depends": [],
 }
