@@ -18,6 +18,9 @@
         "report/report_procurement_plan.xml",
 
     ],
+    "assets": {
+        "web.assets_backend": ["procurement_plan/static/src/**/*"],
+    },
     "application": False,
     "installable": True,
     "auto_install": False,

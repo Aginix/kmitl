@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates xml:space="preserve">
+    <div t-name="procurement_plan.ProcurementPlanReport" class="o_action budget_appropriation_overview" owl="1">
+        <!-- Custom Control Panel -->
+        <div class="o_control_panel d-flex flex-wrap justify-content-between align-items-center p-3 border-bottom">
+            <!-- Left Side - Action Buttons -->
+            <div class="d-flex">
+                <div class="btn-group gap-2">
+                    <button type="button" class="btn btn-primary btn-sm" title="พิมพ์">
+                        <i class="fa fa-print" />
+ พิมพ์
+                    </button>
+                    <button type="button" class="btn btn-success btn-sm" title="ส่งออก">
+                        <i class="fa fa-download" />
+ส่งออก
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Side - Filters -->
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <!-- Fiscal Year Filter -->
+                <div>
+                    <select class="form-select form-select-sm" t-model="state.filters.date_range_fy_id" t-on-change="onFiscalYearChange">
+                        <option value="">ทุกปีงบประมาณ</option>
+                        <t t-foreach="state.filterOptions.fiscal_years" t-as="fy" t-key="fy.id">
+                            <option t-att-value="fy.id" t-esc="fy.name" />
+                        </t>
+                    </select>
+                </div>
+
+                <div>
+                    <select class="form-select form-select-sm" t-model="state.filters.department_analytic_id" t-on-change="onDepartmentChange">
+                        <option value="">ทุกหน่วยงาน</option>
+                        <t t-foreach="state.filterOptions.departments" t-as="dept" t-key="dept.id">
+                            <option t-att-value="dept.id" t-esc="dept.name" />
+                        </t>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="o_content d-flex">
+            <!-- Main Content Area -->
+            <div class="flex-grow-1">
+                <!-- Loading State -->
+                <div t-if="state.loading" class="d-flex justify-content-center align-items-center p-5">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="sr-only">กำลังโหลด...</span>
+                        </div>
+                        <div>กำลังโหลดข้อมูล...</div>
+                    </div>
+                </div>
+
+                <!-- Error State -->
+                <div t-if="state.error and !state.loading" class="alert alert-danger m-3">
+                    <h4 class="alert-heading">เกิดข้อผิดพลาด</h4>
+                    <p t-esc="state.error" />
+                    <hr />
+                    <button class="btn btn-outline-danger" t-on-click="loadData">
+                        <i class="fa fa-refresh" />
+ ลองใหม่
+                    </button>
+                </div>
+
+                <!-- Main Content -->
+                <div t-if="!state.loading and !state.error" class="container-fluid p-3">
+
+                    <!-- Table -->
+                    <div class="table-responsive" style="overflow-x: auto; width: 100%;">
+                        <table class="table table-sm table-bordered budget-overview-table" style="min-width: 1900px;">
+                            <thead class="table-light text-center align-middle">
+                                <tr>
+                                    <th rowspan="2">แผน/ผล</th>
+                                    <th rowspan="2">รายการ</th>
+                                    <th colspan="3">รายละเอียดงบประมาณ</th>
+                                    <th rowspan="2">วิธีการจัดซื้อจัดจ้าง</th>
+                                    <th rowspan="2">จัดทำ พ.1</th>
+                                    <th colspan="3">การจัดซื้อจัดจ้าง</th>
+                                    <th rowspan="2">เริ่มดำเนินการ</th>
+                                    <th rowspan="2">แล้วเสร็จ</th>
+                                    <th colspan="4">การเบิกจ่ายเงิน</th>
+                                    <th colspan="2">หมายเหตุ</th>
+                                    <th rowspan="2">เหตุผล</th>
+                                </tr>
+                                <tr>
+                                    <th>จำนวน</th>
+                                    <th>หน่วยนับ</th>
+                                    <th>วงเงินรวม</th>
+                                    <th>ประกาศ/ประกวด</th>
+                                    <th>อนุมัติผล</th>
+                                    <th>ลงนามสัญญา</th>
+                                    <th>งวดงาน</th>
+                                    <th>จำนวนวัน</th>
+                                    <th>วันส่งมอบงาน</th>
+                                    <th>จำนวนเงิน</th>
+                                    <th>เลขที่สัญญา</th>
+                                    <th>เลขที่เบิกจ่าย</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t>
+                                    <t t-foreach="state.record" t-as="record" t-key="record.id">
+                                        <t t-set="has_payments" t-value="record.payments.length > 0"/>
+
+                                        <t t-if="has_payments">
+                                            <t t-set="i" t-value="0"/>
+                                            <t t-foreach="record.payments" t-as="payment" t-index="i" t-key="payment.id">
+                                                <tr>
+                                                    <t t-if="i === 0">
+                                                        <td>
+                                                            <t t-esc="i"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="record.name"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="record.amount"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="record.unit"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="formatCurrency(record.total_price)"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="record.procurement_method"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="getThaiMonthName(record.purchase_request_eta)"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="getThaiMonthName(record.procurement_announcement_eta)"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="getThaiMonthName(record.approval_signing_eta)"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="getThaiMonthName(record.contract_order_signing_eta)"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="getThaiMonthName(record.acceptance_eta)"/>
+                                                        </td>
+                                                        <td>
+                                                            <t t-esc="getThaiMonthName(record.acceptance_eta)"/>
+                                                        </td>
+                                                    </t>
+                                                    <t t-if="i !== 0">
+
+                                                        <td colspan="12"></td>
+                                                    </t>
+                                                    <!-- ข้อมูล payment -->
+                                                    <td>
+                                                        <t t-esc="payment.number"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="payment.number_of_days"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="getThaiMonthName(payment.month)"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="formatCurrency(payment.amount)"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="record.note"/>
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                                <t t-set="i" t-value="i + 1"/>
+                                            </t>
+                                        </t>
+                                        <t t-if="!has_payments">
+                                            <tr>
+                                                <td></td>
+                                                <td>
+                                                    <t t-esc="record.name"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="record.amount"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="record.unit"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="formatCurrency(record.total_price)"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="record.procurement_method"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="getThaiMonthName(record.purchase_request_eta)"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="getThaiMonthName(record.procurement_announcement_eta)"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="getThaiMonthName(record.approval_signing_eta)"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="getThaiMonthName(record.contract_order_signing_eta)"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="getThaiMonthName(record.acceptance_eta)"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="getThaiMonthName(record.acceptance_eta)"/>
+                                                </td>
+
+                                                <td>-</td>
+                                                <td>-</td>
+                                                <td>-</td>
+                                                <td>-</td>
+
+                                                <td>
+                                                    <t t-esc="record.note"/>
+                                                </td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        </t>
+                                    </t>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</templates>
