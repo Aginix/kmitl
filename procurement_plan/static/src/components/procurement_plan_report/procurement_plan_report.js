@@ -12,6 +12,8 @@ export class ProcurementPlanReport extends Component {
         this.actionService = useService("action");
 
         this.state = useState({
+            selected_year: "ทั้งหมด",
+            selected_department: "ทั้งหมด",
             loading: false,
             error: null,
             filters: {
@@ -73,10 +75,12 @@ export class ProcurementPlanReport extends Component {
         const fiscalYearId = parseInt(ev.target.value) || null;
         this.state.filters.fiscal_year_id = fiscalYearId;
 
+
         const fiscalYear = this.state.filterOptions.fiscal_years.find(
             (fy) => fy.id === fiscalYearId
         );
         if (fiscalYear) {
+            this.state.selected_year = fiscalYear.name;
             this.state.filters.date_from = fiscalYear.date_start;
             this.state.filters.date_to = fiscalYear.date_end;
         }
@@ -87,6 +91,10 @@ export class ProcurementPlanReport extends Component {
     async onDepartmentChange(ev) {
         const deptId = parseInt(ev.target.value) || null;
         this.state.filters.department_analytic_id = deptId;
+        const departmentAnalytic = this.state.filterOptions.departments.find(
+            (fy) => fy.id === deptId
+        );
+        this.state.selected_department = departmentAnalytic.name;
         await this.onFilterChange();
     }
 

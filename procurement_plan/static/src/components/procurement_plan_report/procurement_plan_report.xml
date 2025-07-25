@@ -66,6 +66,54 @@
 
                 <!-- Main Content -->
                 <div t-if="!state.loading and !state.error" class="container-fluid p-3">
+                    <div class="mb-4 fs-5 border rounded p-3 shadow-sm bg-white">
+                        <div class="mb-3 border-bottom pb-2">
+                            <div class="fw-bold">แผนการดำเนินการจัดซื้อ/จัดจ้าง</div>
+                            <div>
+            ประจำปีงบประมาณ พ.ศ.
+                                <span class="text-primary fw-semibold">
+                                    <t t-esc="state.selected_year"/>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="mb-2">
+                            <span class="fw-bold">ประเภทงบประมาณ:</span>
+                            <span class="text-muted">เงินงบประมาณแผ่นดิน</span>
+                        </div>
+
+                        <div class="mb-2">
+                            <span class="fw-bold">ประเภทค่าใช้จ่าย:</span>
+                            <span class="text-muted">ค่าที่ดินและสิ่งก่อสร้าง/ค่าออกแบบ/ค่าควบคุมงาน (เลือกอย่างใดอย่างหนึ่ง)</span>
+                        </div>
+
+                        <div class="mb-2">
+                            <span class="fw-bold">หน่วยงาน:</span>
+                            <span class="text-muted">สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</span>
+                        </div>
+
+                        <div class="mb-2">
+                            <span class="fw-bold">หน่วยงานย่อย:</span>
+                            <span class="text-primary fw-semibold">
+                                <t t-esc="state.selected_department"/>
+                            </span>
+                        </div>
+
+                        <div class="mb-2">
+                            <span class="fw-bold">แผนงานยุทธศาสตร์:</span>
+                            <span class="text-muted">พัฒนาศักยภาพคนตลอดช่วงชีวิต (แผนงานจัดการศึกษาอุดมศึกษา)</span>
+                        </div>
+
+                        <div class="mb-2">
+                            <span class="fw-bold">ผลผลิต:</span>
+                            <span class="text-muted">ผู้สำเร็จการศึกษาด้านวิทยาศาสตร์และเทคโนโลยี</span>
+                        </div>
+
+                        <div class="mb-2">
+                            <span class="fw-bold">กิจกรรม:</span>
+                            <span class="text-muted">จัดการเรียนการสอน (งานจัดการศึกษาด้านวิทยาศาสตร์และเทคโนโลยี กิจกรรมสาขาวิทยาศาสตร์)</span>
+                        </div>
+                    </div>
 
                     <!-- Table -->
                     <div class="table-responsive" style="overflow-x: auto; width: 100%;">
