@@ -117,6 +117,7 @@ class ProcurementPlan(models.Model):
             [], order="date_from desc"
         )
         departments = self.env["account.analytic.account"].search([("root_plan_id.code", "=", "departments")], order="name")
+        sources = self.env["account.analytic.account"].search([("root_plan_id.code", "=", "sources")], order="name")
         return {
             "fiscal_years": [
                 {
@@ -134,6 +135,13 @@ class ProcurementPlan(models.Model):
                 }
             for dept in departments
         ],
+            "sources": [
+                {
+                    "id": source.id,
+                    "name": source.name
+                }
+            for source in sources
+        ],
         }
     @api.model
     def get_procurement_plan_data(self, filters):
@@ -142,6 +150,8 @@ class ProcurementPlan(models.Model):
             domain.append(("date_range_fy_id", "=", filters["fiscal_year_id"]))
         if filters.get("department_analytic_id"):
             domain.append(("department_analytic_id", "=", filters["department_analytic_id"]))
+        if filters.get("source_analytic_id"):
+            domain.append(("source_analytic_id", "=", filters["source_analytic_id"]))
         plans = self.search(domain)
 
         data = []

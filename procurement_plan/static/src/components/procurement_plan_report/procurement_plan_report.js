@@ -14,16 +14,19 @@ export class ProcurementPlanReport extends Component {
         this.state = useState({
             selected_year: "ทั้งหมด",
             selected_department: "ทั้งหมด",
+            selected_source: "ทั้งหมด",
             loading: false,
             error: null,
             filters: {
                 fiscal_year_id: null,
                 department_analytic_id: null,
                 department_ids: [],
+                source_analytic_id: null,
             },
             filterOptions: {
                 fiscal_years: [],
                 departments: [],
+                sources: [],
                 departments_flat: [],
                 states: [],
             },
@@ -52,6 +55,7 @@ export class ProcurementPlanReport extends Component {
     async loadData() {
         this.state.loading = true;
         this.state.error = null;
+        console.log("Selected Source:", this.state.filters);
         try {
             const data = await this.orm.call(
                 "procurement.plan",
@@ -95,6 +99,16 @@ export class ProcurementPlanReport extends Component {
             (fy) => fy.id === deptId
         );
         this.state.selected_department = departmentAnalytic.name;
+        await this.onFilterChange();
+    }
+
+    async onSourceChange(ev) {
+        const sourceId = parseInt(ev.target.value) || null;
+        this.state.filters.source_analytic_id = sourceId;
+        const sourceAnalytic = this.state.filterOptions.sources.find(
+            (fy) => fy.id === sourceId
+        );
+        this.state.selected_source = sourceAnalytic.name;
         await this.onFilterChange();
     }
 

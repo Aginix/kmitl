@@ -30,6 +30,15 @@
                 </div>
 
                 <div>
+                    <select class="form-select form-select-sm" t-model="state.filters.source_analytic_id" t-on-change="onSourceChange">
+                        <option value="">ทุกแหล่งเงิน</option>
+                        <t t-foreach="state.filterOptions.sources" t-as="source" t-key="source.id">
+                            <option t-att-value="source.id" t-esc="source.name" />
+                        </t>
+                    </select>
+                </div>
+
+                <div>
                     <select class="form-select form-select-sm" t-model="state.filters.department_analytic_id" t-on-change="onDepartmentChange">
                         <option value="">ทุกหน่วยงาน</option>
                         <t t-foreach="state.filterOptions.departments" t-as="dept" t-key="dept.id">
@@ -79,7 +88,9 @@
 
                         <div class="mb-2">
                             <span class="fw-bold">ประเภทงบประมาณ:</span>
-                            <span class="text-muted">เงินงบประมาณแผ่นดิน</span>
+                            <span class="text-primary fw-semibold">
+                                <t t-esc="state.selected_source"/>
+                            </span>
                         </div>
 
                         <div class="mb-2">
