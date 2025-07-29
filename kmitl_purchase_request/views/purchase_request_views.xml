@@ -69,7 +69,7 @@
 
             <xpath expr="//form/sheet/notebook" position="inside">
                 <page name="committee" string="Committee">
-                    <separator string="Work Acceptance Committee" />
+                    <separator string="คณะกรรมการตรวจรับพัสดุ" />
                     <field
                         name="work_acceptance_committee_ids"
                         nolabel="1"
@@ -94,11 +94,55 @@
                             <field name="phone" string="Work Phone" readonly="1" />
                         </tree>
                     </field>
-                    <separator string="Procurement Committee" />
+                    <separator string="คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน" />
                     <field
-                        name="procurement_committee_ids"
+                        name="tor_committee_ids"
                         nolabel="1"
-                        context="{'default_committee_type': 'procurement'}"
+                        context="{'default_committee_type': 'tor_committee'}"
+                        attrs="{'readonly': [('is_editable', '=', False)]}"
+                    >
+                        <tree editable="bottom">
+                            <field name="committee_type" invisible="1" />
+                            <field
+                                name="employee_id"
+                                string="Employee"
+                                options="{'no_create': True, 'no_open': True}"
+                            />
+                            <field name="name" string="Committee Name" />
+                            <field name="approve_role" string="Role" />
+                            <field name="department_id" string="Department" />
+                            <field name="email" string="Work Email" />
+                            <field name="phone" string="Work Phone" />
+                            <field name="note" string="Note" />
+                        </tree>
+                    </field>
+                    <separator string="คณะกรรมการกำหนดราคากลาง" />
+                    <field
+                        name="price_determine_committee_ids"
+                        nolabel="1"
+                        context="{'default_committee_type': 'price_determine'}"
+                        attrs="{'readonly': [('is_editable', '=', False)]}"
+                    >
+                        <tree editable="bottom">
+                            <field name="committee_type" invisible="1" />
+                            <field
+                                name="employee_id"
+                                string="Employee"
+                                options="{'no_create': True, 'no_open': True}"
+                            />
+                            <field name="name" string="Committee Name" />
+                            <field name="approve_role" string="Role" />
+                            <field name="department_id" string="Department" />
+                            <field name="email" string="Work Email" />
+                            <field name="phone" string="Work Phone" />
+                            <field name="note" string="Note" />
+                        </tree>
+                    </field>
+                    <separator string="คณะกรรมการพิจารณาผล" />
+                    <field
+                        name="evaluation_committee_ids"
+                        nolabel="1"
+                        context="{'default_committee_type': 'evalutation'}"
                         attrs="{'readonly': [('is_editable', '=', False)]}"
                     >
                         <tree editable="bottom">

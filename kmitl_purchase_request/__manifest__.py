@@ -9,9 +9,11 @@
     'depends': ['base', 'web', 'purchase_request', 'hr', 'l10n_th_kmitl_procurement'],
     "data": [
         "data/purchase_request_sequence.xml",
+        "security/security.xml",
         "security/ir.model.access.csv",
+        "views/hr_employee_views.xml",
         "views/purchase_request_attachment_views.xml",
-        "views/purchase_request_views.xml",
+        "views/purchase_request_views.xml"
     ],
     'assets': {
               'web.assets_backend': [

@@ -48,8 +48,29 @@ class Purchase_request(models.Model):
     work_acceptance_committee_ids = fields.One2many(
         comodel_name="procurement.committee",
         inverse_name="request_id",
-        string="Work Acceptance Committees",
+        string="คณะกรรมการตรวจรับพัสดุ",
         domain=[("committee_type", "=", "work_acceptance")],
+        copy=True,
+    )
+    tor_committee_ids = fields.One2many(
+        comodel_name="procurement.committee",
+        inverse_name="request_id",
+        string="คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน",
+        domain=[("committee_type", "=", "tor_committee")],
+        copy=True,
+    )
+    price_determine_committee_ids = fields.One2many(
+        comodel_name="procurement.committee",
+        inverse_name="request_id",
+        string="คณะกรรมการกำหนดราคากลาง",
+        domain=[("committee_type", "=", "price_determine")],
+        copy=True,
+    )
+    evaluation_committee_ids = fields.One2many(
+        comodel_name="procurement.committee",
+        inverse_name="request_id",
+        string="คณะกรรมการพิจารณาผล",
+        domain=[("committee_type", "=", "evalutation")],
         copy=True,
     )
     assigned_to = fields.Many2one(
