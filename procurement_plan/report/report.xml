@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <report
+        id="report_procurement_xlsx"
+        string="Procurement Excel"
+        model="procurement.plan"
+        report_type="xlsx"
+        name="procurement_plan.report_procurement_xls"
+        file="procurement_plan.report_procurement_xls"
+    />
+
+</odoo>
