@@ -63,7 +63,6 @@ export class ProcurementPlanReport extends Component {
                 [this.state.filters]
             );
             this.state.record = data.records || [];
-            console.log("data ===>", data.records)
         } catch (error) {
             this.state.error = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
         } finally {
