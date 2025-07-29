@@ -22,7 +22,45 @@ KMITL - Budgeting
 
 |badge1| |badge2| |badge3|
 
-KMITL Budgeting
+Comprehensive budget management system designed for Thai government and educational institutions, providing 
+double-entry budget accounting, hierarchical budget control, and real-time availability checking with 
+sophisticated 4-dimensional analytic distribution.
+
+Key Features
+============
+
+Budget Management Core
+~~~~~~~~~~~~~~~~~~~~~~
+
+* **Double-Entry Budget Accounting**: Complete budget transaction system with appropriation, consumption, and adjustment moves
+* **Hierarchical Budget Control**: Parent appropriations automatically cover child commitments across organizational levels
+* **Real-Time Budget Availability**: Dynamic budget checking prevents over-allocation with sophisticated matching algorithms
+* **4D Analytic Distribution**: Activities, Departments, Funds, and Sources for comprehensive budget categorization
+* **Budget Commitment System**: Reserve budget amounts before consumption to maintain accurate availability tracking
+
+Thai Government Compliance
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* **Government Chart of Accounts**: Hierarchical budget account structure aligned with Thai ministry standards
+* **Fiscal Year Integration**: Full Thai fiscal year support with proper period management
+* **F4/F5 Reporting**: Standard Thai government revenue and expense report formats
+* **Budget Execution Tracking**: Complete lifecycle from appropriation through disbursement
+
+Advanced Reporting & Analytics
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* **Interactive Budget Reports**: Real-time budget execution status with hierarchical data visualization
+* **Budget Appropriation Reports**: Multi-level organizational reports with automatic hierarchy building
+* **Budget Execution Analysis**: Comprehensive tracking of initial, current, requested, reserved, and disbursed amounts
+* **Client-Side Components**: Modern JavaScript components for budget exploration and analysis
+
+Technical Architecture
+~~~~~~~~~~~~~~~~~~~~~~
+
+* **Virtual Account System**: Automatic appropriation balancing with virtual budget accounts
+* **State-Based Workflows**: Controlled budget move and commitment lifecycles (draft → review → posted)
+* **Hierarchical Data Management**: Optimized parent_path implementation for efficient tree operations
+* **Multi-Company Support**: Complete isolation and management across multiple organizational entities
 
 **Table of contents**
 

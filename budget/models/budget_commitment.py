@@ -163,7 +163,7 @@ class BudgetCommitment(models.Model):
     )
 
     user_id = fields.Many2one(
-        string="Responsible User",
+        string="User",
         comodel_name="res.users",
         copy=False,
         default=lambda self: self.env.user,
