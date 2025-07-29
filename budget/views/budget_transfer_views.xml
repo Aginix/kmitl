@@ -119,20 +119,19 @@
                             </div>
 
                             <!-- All Lines View (when not in draft) -->
-                            <group string="Transfer Lines Summary" attrs="{'invisible': [('state', 'in', ['draft'])]}">
-                                <field name="line_ids" nolabel="1" readonly="1">
-                                    <tree decoration-info="transfer_direction == 'from'" decoration-success="transfer_direction == 'to'">
-                                        <field name="transfer_direction"/>
-                                        <field name="budget_account_id"/>
-                                        <field name="activity_analytic_id"/>
-                                        <field name="fund_analytic_id"/>
-                                        <field name="amount" widget="monetary" sum="Total"/>
-                                        <field name="available_budget" widget="monetary" attrs="{'column_invisible': [('transfer_direction', '!=', 'from')]}"/>
-                                        <field name="description"/>
-                                        <field name="currency_id" invisible="1"/>
-                                    </tree>
-                                </field>
-                            </group>
+                            <separator string="Transfer Lines Summary" attrs="{'invisible': [('state', 'in', ['draft'])]}"/>
+                            <field name="line_ids" nolabel="1" readonly="1" attrs="{'invisible': [('state', 'in', ['draft'])]}">
+                                <tree decoration-info="transfer_direction == 'from'" decoration-success="transfer_direction == 'to'">
+                                    <field name="transfer_direction"/>
+                                    <field name="budget_account_id"/>
+                                    <field name="activity_analytic_id"/>
+                                    <field name="fund_analytic_id"/>
+                                    <field name="amount" widget="monetary" sum="Total"/>
+                                    <field name="available_budget" widget="monetary" attrs="{'column_invisible': [('transfer_direction', '!=', 'from')]}"/>
+                                    <field name="description"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </tree>
+                            </field>
                         </page>
 
                         <page name="approval_info" string="Approval Information" attrs="{'invisible': [('state', 'in', ['draft'])]}">
@@ -322,7 +321,7 @@
                         </div>
                     </div>
 
-                    <group name="description" string="Description"  colspan="8">
+                    <group name="description" string="Description" colspan="8">
                         <field name="description" placeholder="Optional description for this transfer line..." nolabel="1" colspan="2" />
                     </group>
                 </sheet>
