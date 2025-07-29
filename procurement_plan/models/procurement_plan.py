@@ -157,6 +157,8 @@ class ProcurementPlan(models.Model):
         data = []
         for plan in plans:
             payment_list = []
+            total_number_of_days = 0
+            total_payment_amount = 0.0
             for payment in plan.payment_ids:
                 payment_list.append({
                     "id": payment.id,
@@ -166,6 +168,8 @@ class ProcurementPlan(models.Model):
                     "amount": payment.amount,
                     "state": payment.state,
                 })
+                total_number_of_days += payment.number_of_days or 0
+                total_payment_amount += payment.amount or 0.0
             data.append({
                 "id": plan.id,
                 "name": plan.name,
@@ -187,6 +191,8 @@ class ProcurementPlan(models.Model):
                 "contract_order_signing_eta": plan.contract_order_signing_eta,
                 "acceptance_eta": plan.acceptance_eta,
                 "payments": payment_list,
+                "total_number_of_days": total_number_of_days,
+                "total_payment_amount": total_payment_amount,
             })
 
         # ส่งกลับพร้อมสรุป

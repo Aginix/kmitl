@@ -230,6 +230,18 @@
                                                 </tr>
                                                 <t t-set="i" t-value="i + 1"/>
                                             </t>
+                                            <tr>
+                                                <td colspan="13">รวม</td>
+
+                                                <td>
+                                                    <t t-esc="formatCurrency(record.total_number_of_days)"/>
+                                                </td>
+                                                <td></td>
+                                                <td>
+                                                    <t t-esc="formatCurrency(record.total_payment_amount)"/>
+                                                </td>
+                                                <td colspan="3"></td>
+                                            </tr>
                                         </t>
                                         <t t-if="!has_payments">
                                             <tr>
