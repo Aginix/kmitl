@@ -8,6 +8,7 @@
     'category': '',
     'depends': ['base', 'web', 'base_tier_validation', 'kmitl_purchase_request'],
     "data": [
+        "security/security.xml",
         "views/purchase_request_views.xml"
     ],
     'assets': {
