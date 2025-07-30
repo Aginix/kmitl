@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- KMITL Accounting Staff Group -->
+        <record id="group_kmitl_accounting_staff" model="res.groups">
+            <field name="name">KMITL Accounting Staff</field>
+            <field name="category_id" ref="base.module_category_accounting_accounting"/>
+            <field name="implied_ids" eval="[(4, ref('account.group_account_user'))]"/>
+            <field name="comment">Staff responsible for validating journal entries at KMITL</field>
+        </record>
+
+        <!-- KMITL Finance Director Group -->
+        <record id="group_kmitl_finance_director" model="res.groups">
+            <field name="name">KMITL Finance Director</field>
+            <field name="category_id" ref="base.module_category_accounting_accounting"/>
+            <field name="implied_ids" eval="[(4, ref('account.group_account_manager')), (4, ref('accounting_kmitl.group_kmitl_accounting_staff'))]"/>
+            <field name="comment">Finance director responsible for final approval of journal entries at KMITL</field>
+        </record>
+
+        <!-- KMITL Accounting Admin Group -->
+        <record id="group_kmitl_accounting_admin" model="res.groups">
+            <field name="name">KMITL Accounting Administrator</field>
+            <field name="category_id" ref="base.module_category_accounting_accounting"/>
+            <field name="implied_ids" eval="[(4, ref('account.group_account_manager')), (4, ref('accounting_kmitl.group_kmitl_finance_director'))]"/>
+            <field name="comment">Administrator with full access to KMITL accounting features</field>
+        </record>
+
+    </data>
+</odoo>

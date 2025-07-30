@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    
+    <!-- Tier 1: Accounting Staff Validation -->
+    <record id="tier_definition_account_move_accounting_staff" model="tier.definition">
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="name">KMITL Accounting Staff Validation</field>
+        <field name="sequence">10</field>
+        <field name="definition_type">domain</field>
+        <field name="definition_domain"/>
+        <field name="review_type">group</field>
+        <field name="reviewer_group_id" ref="accounting_kmitl.group_kmitl_accounting_staff"/>
+        <field name="company_id"/>
+    </record>
+
+    <!-- Tier 2: Finance Director Approval -->
+    <record id="tier_definition_account_move_finance_director" model="tier.definition">
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="name">KMITL Finance Director Approval</field>
+        <field name="sequence">20</field>
+        <field name="definition_type">domain</field>
+        <field name="definition_domain"/>
+        <field name="review_type">group</field>
+        <field name="reviewer_group_id" ref="accounting_kmitl.group_kmitl_finance_director"/>
+        <field name="company_id"/>
+    </record>
+
+</odoo>

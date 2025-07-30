@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Inherit tier validation buttons to fix Request Validation button visibility -->
+    <template id="tier_validation_buttons_kmitl" inherit_id="base_tier_validation.tier_validation_buttons">
+        <button name="request_validation" position="attributes">
+            <attribute name="t-attf-attrs">{'invisible': ['|', '|', '|', '|',
+                ('need_validation', '!=', True),
+                ('validation_status', '=', 'pending'),
+                ('rejected','=',True),
+                ('review_ids', '!=', []),
+                ('#{state_field}', '#{state_operator}', #{state_value})]}</attribute>
+        </button>
+    </template>
+    
+</odoo>

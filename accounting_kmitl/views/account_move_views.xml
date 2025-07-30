@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+
+        <!-- Simple Search Filter for KMITL Reviews -->
+        <record id="view_account_move_filter_tier_validation" model="ir.ui.view">
+            <field name="name">account.move.search.tier.validation</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_account_move_filter"/>
+            <field name="arch" type="xml">
+                <filter name="posted" position="after">
+                    <separator/>
+                    <filter string="Needs My Review" name="my_reviews"
+                            domain="[('can_review', '=', True)]"
+                            groups="accounting_kmitl.group_kmitl_accounting_staff,accounting_kmitl.group_kmitl_finance_director"/>
+                    <filter string="Validated" name="validated"
+                            domain="[('validated', '=', True)]"/>
+                </filter>
+            </field>
+        </record>
+
+    </data>
+</odoo>
