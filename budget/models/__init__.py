@@ -18,3 +18,8 @@ from . import budget_execution_status_line
 # Budget integration components
 from . import budget_mixin
 from . import budget_controller
+
+# Budget transfer models
+from . import budget_transfer
+from . import budget_transfer_line
+from . import budget_transfer_reject_wizard
