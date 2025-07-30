@@ -7,7 +7,7 @@
 KMITL Accounting Module
 =======================
 
-This module provides accounting customizations specific to 
+This module provides accounting customizations specific to
 King Mongkut's Institute of Technology Ladkrabang (KMITL).
 
 This is a blank addon ready for customization.
@@ -16,7 +16,7 @@ This is a blank addon ready for customization.
     'website': 'https://www.kmitl.ac.th',
     'depends': [
         'base',
-        'account',
+        'account_usability',
         'base_tier_validation',
     ],
     'data': [
