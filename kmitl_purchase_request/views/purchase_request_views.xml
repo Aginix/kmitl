@@ -94,12 +94,12 @@
                             <field name="phone" string="Work Phone" readonly="1" />
                         </tree>
                     </field>
-                    <separator string="คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน" />
+                    <separator string="คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"/>
                     <field
                         name="tor_committee_ids"
                         nolabel="1"
                         context="{'default_committee_type': 'tor_committee'}"
-                        attrs="{'readonly': [('is_editable', '=', False)]}"
+                        attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     >
                         <tree editable="bottom">
                             <field name="committee_type" invisible="1" />
@@ -116,12 +116,12 @@
                             <field name="note" string="Note" />
                         </tree>
                     </field>
-                    <separator string="คณะกรรมการกำหนดราคากลาง" />
+                    <separator string="คณะกรรมการกำหนดราคากลาง" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"/>
                     <field
                         name="price_determine_committee_ids"
                         nolabel="1"
                         context="{'default_committee_type': 'price_determine'}"
-                        attrs="{'readonly': [('is_editable', '=', False)]}"
+                        attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     >
                         <tree editable="bottom">
                             <field name="committee_type" invisible="1" />
@@ -138,12 +138,12 @@
                             <field name="note" string="Note" />
                         </tree>
                     </field>
-                    <separator string="คณะกรรมการพิจารณาผล" />
+                    <separator string="คณะกรรมการพิจารณาผล" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"/>
                     <field
                         name="evaluation_committee_ids"
                         nolabel="1"
-                        context="{'default_committee_type': 'evalutation'}"
-                        attrs="{'readonly': [('is_editable', '=', False)]}"
+                        context="{'default_committee_type': 'evaluation'}"
+                        attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}"
                     >
                         <tree editable="bottom">
                             <field name="committee_type" invisible="1" />

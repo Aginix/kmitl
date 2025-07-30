@@ -6,9 +6,10 @@
     'author': '',
     'website': '',
     'category': '',
-    'depends': ['base', 'web', 'purchase_request', 'hr', 'l10n_th_kmitl_procurement'],
+    'depends': ['base', 'web', 'purchase_request', 'hr', 'l10n_th_kmitl_procurement', 'purchase_request_exception'],
     "data": [
         "data/purchase_request_sequence.xml",
+        "data/purchase_request_exception.xml",
         "security/security.xml",
         "security/ir.model.access.csv",
         "views/hr_employee_views.xml",

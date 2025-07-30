@@ -42,7 +42,7 @@ class ProcurementCommittee(models.Model):
             ("work_acceptance", "Work Acceptance Committee"),
             ("tor_committee", "TOR Committee"),
             ("price_determine", "Price Determination Committee"),
-            ("evalutation", "Evaluation Committee")
+            ("evaluation", "Evaluation Committee")
         ],
     )
     approve_role = fields.Selection(
@@ -63,10 +63,10 @@ class ProcurementCommittee(models.Model):
         ),
     ]
 
-    # @api.depends("employee_id")
-    # def _compute_default_name(self):
-    #     for rec in self:
-    #         rec.name = rec.employee_id.display_name if rec.employee_id else ""
+    @api.depends("employee_id")
+    def _compute_default_name(self):
+        for rec in self:
+            rec.name = rec.employee_id.display_name if rec.employee_id else ""
 
     @api.onchange('committee_type')
     def _onchange_committee_type_filter_employee(self):
@@ -76,7 +76,7 @@ class ProcurementCommittee(models.Model):
             'work_acceptance': 'kmitl_purchase_request.group_committee_work_acceptance',
             'tor_committee': 'kmitl_purchase_request.group_committee_tor',
             'price_determine': 'kmitl_purchase_request.group_committee_price',
-            'evalutation': 'kmitl_purchase_request.group_committee_eval',
+            'evaluation': 'kmitl_purchase_request.group_committee_eval',
         }
         group_ref = group_map.get(self.committee_type)
         if group_ref:

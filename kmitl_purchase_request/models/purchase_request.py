@@ -8,8 +8,8 @@ _logger = logging.getLogger(__name__)
 
 
 class Purchase_request(models.Model):
-    _name = "purchase.request"
-    _inherit = "purchase.request"
+    _name = 'purchase.request'
+    _inherit = ['purchase.request', 'base.exception']
 
     procurement_type_id = fields.Many2one(
         comodel_name="procurement.type",
@@ -70,7 +70,7 @@ class Purchase_request(models.Model):
         comodel_name="procurement.committee",
         inverse_name="request_id",
         string="คณะกรรมการพิจารณาผล",
-        domain=[("committee_type", "=", "evalutation")],
+        domain=[("committee_type", "=", "evaluation")],
         copy=True,
     )
     assigned_to = fields.Many2one(
@@ -140,3 +140,30 @@ class Purchase_request(models.Model):
         for request in self:
             if not request.line_ids:
                 raise ValidationError("You must add at least one product line to the Purchase Request.")
+    
+    @api.constrains('work_acceptance_committee_ids', 'tor_committee_ids', 
+                    'price_determine_committee_ids', 'evaluation_committee_ids', 
+                    'estimated_cost')
+    def _check_committee_minimum_members(self):
+        for record in self:
+            if record.estimated_cost < 100000:
+                if len(record.work_acceptance_committee_ids) < 3:
+                    raise ValidationError(
+                        f"โครงการมูลค่าต่ำกว่า 100,000: คณะกรรมการตรวจรับพัสดุต้องมีอย่างน้อย 3 คน "
+                        f"(ปัจจุบันมี {len(record.work_acceptance_committee_ids)} คน)"
+                    )
+            
+            elif record.estimated_cost >= 100000:
+                committees = [
+                    (record.work_acceptance_committee_ids, 'คณะกรรมการตรวจรับพัสดุ'),
+                    (record.tor_committee_ids, 'คณะกรรมการกำหนดคุณลักษณะเฉพาะฯ'),
+                    (record.price_determine_committee_ids, 'คณะกรรมการกำหนดราคากลาง'),
+                    (record.evaluation_committee_ids, 'คณะกรรมการพิจารณาผล')
+                ]
+                
+                for committee, name in committees:
+                    if len(committee) < 3:
+                        raise ValidationError(
+                            f"โครงการมูลค่า 100,000 ขึ้นไป: {name}ต้องมีอย่างน้อย 3 คน "
+                            f"(ปัจจุบันมี {len(committee)} คน)"
+                        )
