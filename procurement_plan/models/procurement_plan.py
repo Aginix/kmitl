@@ -112,7 +112,6 @@ class ProcurementPlan(models.Model):
     @api.model
     def get_filter_options(self):
         """Get available options for filters"""
-        # Get fiscal years that have budget appropriations
         fiscal_years = self.env["account.fiscal.year"].search(
             [], order="date_from desc"
         )
@@ -195,7 +194,6 @@ class ProcurementPlan(models.Model):
                 "total_payment_amount": total_payment_amount,
             })
 
-        # ส่งกลับพร้อมสรุป
         return {
             "filters": filters,
             "records": data,
