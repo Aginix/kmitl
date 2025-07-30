@@ -11,7 +11,12 @@
             name="inherit_id"
             ref="purchase_request.view_purchase_request_line_make_purchase_order"
         />
+        <field name="priority" eval="99"/>
         <field name="arch" type="xml">
+
+            <xpath expr="//form" position="attributes">
+                <attribute name="string">Create PR2</attribute>
+            </xpath>
 
             <xpath expr="(//separator)[1]" position="replace">
                 <separator style="display:none;" />

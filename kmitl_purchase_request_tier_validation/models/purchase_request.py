@@ -68,7 +68,9 @@ class PurchaseRequest(models.Model):
         ('submit', 'Submitted'),
         ('commit', 'Committed'),
         ('validate', 'Validated'),
+        ('to_approve', 'To Approve'),
         ('approved', 'Approved'),
+        ('in_progress', 'In Progress'),
         ('done', 'Done'),
         ('rejected', 'Rejected'),
     ], string='Status', readonly=True, index=True, copy=False, tracking=True, default='draft')

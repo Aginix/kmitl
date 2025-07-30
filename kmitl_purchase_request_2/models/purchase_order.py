@@ -55,6 +55,56 @@ class PurchaseOrder(models.Model):
     )
     show_egp_button = fields.Boolean(compute="_compute_show_egp_button", store=True)
 
+    contract_start_date = fields.Date(
+        string="วันที่เริ่มสัญญา",
+        help="The start date for the purchase order. If not set, the current date will be used.",
+    )
+    contract_end_date = fields.Date(
+        string="วันที่สิ้นสุดสัญญา",
+        help="The end date for the purchase order. If not set, the start date will be used.",
+    )
+
+    contract_type = fields.Selection([
+        ('order', 'ใบสั่งซื้อ/จ้าง'),
+        ('procurement', 'สัญญาซื้อข้าย'),
+        ('construction', 'สัญญาจ้างก่อสร้าง'),
+    ], require=True)
+
+    work_start_date = fields.Date(
+        string="วันที่เริ่มงาน",
+        help="The start date for the purchase order. If not set, the current date will be used.",
+    )
+    work_end_date = fields.Date(
+        string="วันที่สิ้นสุดงาน",
+        help="The end date for the purchase order. If not set, the start date will be used.",
+    )
+
+    purchase_request_name = fields.Char(
+        string="ชื่อใบสั่งซื้อ/จ้าง",
+        required=True,
+        help="The name of the purchase request associated with the selected lines.",
+    )
+
+    fee = fields.Char(
+        string="ค่าปรับต่อวัน"
+    )
+
+    ref_pr1 = fields.Char(
+        string="Ref PR1 (พ.1)"
+    )
+
+    ref_pr2 = fields.Char(
+        string="Ref PR2 (พจ.1)"
+    )
+
+    bid_line_ids = fields.One2many('purchase.order.bidder.line', 'order_id', string='รายการผู้เสนอราคา')
+
+    document_ids = fields.One2many(
+        "purchase.order.attachment",
+        "request_id",
+        string="แนบเอกสาร",
+    )
+
     @api.depends("total_estimated_cost")
     def _compute_show_egp_button(self):
         for order in self:
