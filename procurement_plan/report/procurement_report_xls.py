@@ -6,8 +6,6 @@ class ProcurementXlsx(models.AbstractModel):
     _name = 'report.procurement_plan.report_procurement_xls'
     _inherit = 'report.report_xlsx.abstract'
 
-
-
     def generate_xlsx_report(self, workbook, data, lines):
         thai_months = {
         '1': 'มกราคม', '2': 'กุมภาพันธ์', '3': 'มีนาคม', '4': 'เมษายน',
