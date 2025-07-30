@@ -46,10 +46,28 @@ class PurchaseRequest(models.Model):
         compute="_compute_validation_info"
     )
 
+    committed_by = fields.Many2one(
+        'res.users', 
+        string='Committed by', 
+        readonly=True)
+    date_committed = fields.Datetime(
+        string='Committed Date', 
+        readonly=True)
+    
+    validate_by = fields.Many2one(
+        'res.users', 
+        string='Validate by', 
+        readonly=True)
+    date_validate = fields.Datetime(
+        string='Validate Date', 
+        readonly=True)
+
+
     state = fields.Selection([
         ('draft', 'Draft'),
         ('submit', 'Submitted'),
         ('commit', 'Committed'),
+        ('validate', 'Validated'),
         ('approved', 'Approved'),
         ('done', 'Done'),
         ('rejected', 'Rejected'),
@@ -62,6 +80,23 @@ class PurchaseRequest(models.Model):
     def action_commit(self):
         for rec in self:
             rec.state = 'commit'
+            rec.committed_by = self.env.user
+            rec.date_committed = fields.Datetime.now()
+
+    def action_validate(self):
+        for rec in self:
+            rec.state = 'validate'
+            rec.validate_by = self.env.user
+            rec.date_validate = fields.Datetime.now()
+
+    def button_draft(self):
+        res = super().button_draft()
+        for rec in self:
+            rec.committed_by = False
+            rec.date_committed = False
+            rec.validate_by = False
+            rec.date_validate = False
+        return res
 
     is_finance_user = fields.Boolean(
         string='Is Finance User',
@@ -113,6 +148,7 @@ class PurchaseRequest(models.Model):
             if rec.state in (
                 "submit",
                 "commit",
+                "validate",
                 "to_approve",
                 "approved",
                 "rejected",

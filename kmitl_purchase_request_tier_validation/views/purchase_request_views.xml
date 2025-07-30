@@ -10,7 +10,6 @@
                 <field name="is_finance_user" invisible="1"/>
             </field>
             
-            <!-- กำหนด readonly สำหรับทุก field ใน budget group ในครั้งเดียว -->
             <xpath expr="//page[@name='budget']//group[@name='budget']" position="attributes">
                 <attribute name="attrs">
                     {
@@ -27,7 +26,7 @@
                 <attribute name="string">Confirm</attribute>
                 <attribute
                     name="attrs"
-                >{'invisible':['|', ('validation_status', 'in', ('pending', 'rejected')),('state', '!=', 'commit')]}</attribute>
+                >{'invisible':['|', ('validation_status', 'in', ('pending', 'rejected')),('state', '!=', 'validate')]}</attribute>
             </button>
             <field name="state" position="after">
                 <field name="validation_status" invisible="1" />
@@ -38,12 +37,14 @@
             <field name="state" position="attributes">
                 <attribute
                     name="statusbar_visible"
-                >draft,submit,commit,approved,done,rejected</attribute>
+                >draft,submit,commit,validate,approved,done,rejected</attribute>
             </field>
 
             <field name="assigned_to" position="after">
-                <field name="verified_by" readonly="1" string="Validate by"/>
-                <field name="date_verified" readonly="1" string="Validate Date"/>
+                <field name="committed_by" readonly="1" string="การเงินตรวจ โดย"/>
+                <field name="date_committed" readonly="1" string="การเงินตรวจ เมื่อ"/>
+                <field name="validate_by" readonly="1" string="พัสดุตรวจ โดย"/>
+                <field name="date_validate" readonly="1" string="พัสดุตรวจ เมื่อ"/>
                 <field name="approved_by" readonly="1" />
                 <field name="date_approved" readonly="1" />
             </field>
@@ -51,11 +52,12 @@
             <xpath expr="//button[@name='button_draft']" position="before">
                 <button name="action_submit" string="Submit" type="object" states="draft"></button>
                 <button name="action_commit" string="Commit" type="object" states="submit"></button>
+                <button name="action_validate" string="Validate" type="object" states="commit"></button>
             </xpath>
 
             <xpath expr="//button[@name='button_done']" position="attributes">
                 <attribute name="string">
-                    ส่งขออณุมัติ
+                    Done
                 </attribute>
                 <attribute name="groups">
                     purchase_request.group_purchase_request_manager,purchase_request.group_purchase_request_user
@@ -66,7 +68,15 @@
                 <attribute name="groups">
                     purchase_request.group_purchase_request_manager,purchase_request.group_purchase_request_user
                 </attribute>
+                <attribute name="states">
+                    draft,submit,commit,validate,approved,rejected,done,rejected
+                </attribute>
             </xpath>
+
+            <xpath expr="//button[@name='button_rejected']" position="attributes">
+                <attribute name="states">to_approve,submit,commit,validate,approved,in_progress</attribute>
+            </xpath>
+
         </field>
     </record>
 
