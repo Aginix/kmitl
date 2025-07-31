@@ -81,7 +81,6 @@ class PurchaseOrder(models.Model):
 
     purchase_request_name = fields.Char(
         string="ชื่อใบสั่งซื้อ/จ้าง",
-        required=True,
         help="The name of the purchase request associated with the selected lines.",
     )
 
