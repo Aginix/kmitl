@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit form view -->
+    <record id="view_res_users_role_form_inherit_color" model="ir.ui.view">
+        <field name="name">res.users.role.form.inherit.color</field>
+        <field name="model">res.users.role</field>
+        <field name="inherit_id" ref="base_user_role.view_res_users_role_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="color" widget="color_picker"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Inherit tree view -->
+    <record id="view_res_users_role_tree_inherit_color" model="ir.ui.view">
+        <field name="name">res.users.role.tree.inherit.color</field>
+        <field name="model">res.users.role</field>
+        <field name="inherit_id" ref="base_user_role.view_res_users_role_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="color" widget="color_picker" options="{'readonly_mode': 'square'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Inherit kanban view if exists -->
+    <record id="view_res_users_role_kanban_inherit_color" model="ir.ui.view">
+        <field name="name">res.users.role.kanban.inherit.color</field>
+        <field name="model">res.users.role</field>
+        <field name="inherit_id" ref="base_user_role.view_res_users_role_kanban" />
+        <field name="arch" type="xml">
+            <xpath expr="//kanban" position="attributes">
+                <attribute name="default_group_by">color</attribute>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="color"/>
+            </xpath>
+            <xpath expr="//templates" position="inside">
+                <t t-name="kanban-box">
+                    <div t-attf-class="oe_kanban_global_click o_kanban_record_has_image_fill o_res_users_role_kanban_record oe_kanban_color_#{kanban_getcolor(record.color.raw_value)}">
+                        <div class="o_kanban_record_top">
+                            <div class="o_kanban_record_headings">
+                                <strong class="o_kanban_record_title">
+                                    <field name="name"/>
+                                </strong>
+                            </div>
+                        </div>
+                        <div class="o_kanban_record_bottom">
+                            <div class="oe_kanban_bottom_left">
+                                <field name="user_ids" widget="many2many_avatars"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add search view with color grouping -->
+    <record id="view_res_users_role_search_inherit_color" model="ir.ui.view">
+        <field name="name">res.users.role.search.inherit.color</field>
+        <field name="model">res.users.role</field>
+        <field name="inherit_id" ref="base_user_role.view_res_users_role_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <filter string="Color" name="group_by_color" context="{'group_by': 'color'}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
