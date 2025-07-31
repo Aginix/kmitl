@@ -24,16 +24,6 @@ msgid "Color index for the role"
 msgstr ""
 
 #. module: base_user_role_color
-#: model:ir.model.fields,field_description:base_user_role_color.field_res_users_role_line__role_color
-msgid "Role Color"
-msgstr ""
-
-#. module: base_user_role_color
 #: model:ir.model,name:base_user_role_color.model_res_users_role
 msgid "User role"
-msgstr ""
-
-#. module: base_user_role_color
-#: model:ir.model,name:base_user_role_color.model_res_users_role_line
-msgid "Users associated to a role"
 msgstr ""

@@ -36,25 +36,4 @@
         </field>
     </record>
 
-    <!-- Inherit user form view to show role colors in role_line_ids -->
-    <record id="view_users_form_inherit_role_color" model="ir.ui.view">
-        <field name="name">res.users.form.inherit.role.color</field>
-        <field name="model">res.users</field>
-        <field name="inherit_id" ref="base_user_role.view_res_users_form_inherit"/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='role_line_ids']//tree//field[@name='role_id']" position="after">
-                <field name="role_color" invisible="1"/>
-            </xpath>
-            <xpath expr="//field[@name='role_line_ids']//tree" position="attributes">
-                <attribute name="decoration-danger">role_color == 1</attribute>
-                <attribute name="decoration-warning">role_color == 2</attribute>
-                <attribute name="decoration-success">role_color == 3</attribute>
-                <attribute name="decoration-primary">role_color == 4</attribute>
-                <attribute name="decoration-info">role_color == 5</attribute>
-                <attribute name="decoration-muted">role_color == 6</attribute>
-                <attribute name="decoration-bf">role_color == 7</attribute>
-                <attribute name="decoration-it">role_color == 8</attribute>
-            </xpath>
-        </field>
-    </record>
 </odoo>
