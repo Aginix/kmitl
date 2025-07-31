@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="witsawa_operating_unit" model="operating.unit">
+        <field name="name">วิศวะ</field>
+        <field name="code">OU0001</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+</odoo>
