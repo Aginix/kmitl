@@ -97,7 +97,12 @@ class Purchase_request(models.Model):
         domain=[("attachment_type", "=", "etc")],
     )
 
-    title = fields.Text(string="ชื่อเรื่อง")
+    title = fields.Text(
+        string="ชื่อเรื่อง",
+        required=True
+    )
+
+    description = fields.Text(string="เหตุผล/ความจำเป็น", required=True)
 
     source_of_fund = fields.Char(string="แหล่งเงิน")
 
@@ -108,6 +113,20 @@ class Purchase_request(models.Model):
     budget_type = fields.Char(string="ประเภทงบประมาณ")
 
     expense_code = fields.Char(string="รหัสค่าใช้จ่าย")
+
+    payment_type = fields.Selection([
+        ("direct", "จ่ายตรง"),
+        ("loan", "เงินยืม"),
+        ("prepaid", "สำรองจ่าย")
+    ])
+
+    department_id = fields.Many2one(
+        comodel_name="hr.department",
+        string="Department",
+        related="requested_by.employee_ids.department_id",
+        store=True,
+        readonly=True,
+    )
 
     def _get_domain_purchase_type(self):
         return [("visible_on_purchase_request", "=", True)]
