@@ -122,7 +122,7 @@
             </field>
             <xpath expr="//form/sheet/notebook" position="inside">
                 <page name="committee" string="Committee">
-                    <group name="wa_committee" string="Work Acceptance Committee">
+                    <separator string="Work Acceptance Committee" />
                         <field
                             name="work_acceptance_committee_ids"
                             nolabel="1"
@@ -143,8 +143,8 @@
                                 <field name="note" />
                             </tree>
                         </field>
-                    </group>
-                    <group name="procure_committee" string="Procurement Committee">
+
+                    <separator string="Procurement Committee" />
                         <field
                             name="procurement_committee_ids"
                             nolabel="1"
@@ -165,7 +165,6 @@
                                 <field name="note" />
                             </tree>
                         </field>
-                    </group>
                 </page>
             </xpath>
         </field>
