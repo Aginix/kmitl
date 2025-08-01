@@ -1,0 +1,118 @@
+# -*- coding: utf-8 -*-
+import logging
+
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError, ValidationError
+
+_logger = logging.getLogger(__name__)
+
+
+class PurchaseRequestTwo(models.Model):
+    _name = 'purchase.request.two'
+    _description = 'PurchaseRequestTwo'
+
+    name = fields.Char(
+        string='Reference', 
+        required=True, 
+        copy=False, 
+        readonly=True, 
+        default='New')
+
+    pr1_ref = fields.Char(string='รหัส PR1')
+
+    vendor = fields.Many2one(
+        "res.partner",
+        string="Vendor",
+        help="Select a vendor to create a purchase order for the selected request lines.",
+    )
+    start_date = fields.Date(
+        string="วันที่เริ่มสัญญา",
+        help="The start date for the purchase order. If not set, the current date will be used.",
+    )
+    end_date = fields.Date(
+        string="วันที่สิ้นสุดสัญญา",
+        help="The end date for the purchase order. If not set, the start date will be used.",
+    )
+    purchase_request_number = fields.Char(
+        string="หมายเลขคำสั่งซื้อ",
+        required=True,
+        help="The number of the purchase request associated with the selected lines.",
+    )
+    purchase_type = fields.Selection(
+        [("standard", "Standard"), ("urgent", "Urgent")],
+        string="ประเภทสัญญา",
+        help="Select the type of purchase order to create. Standard for regular orders, Urgent for expedited orders.",
+    )
+    payment_type = fields.Selection([
+        ("direct", "จ่ายตรง"),
+        ("loan", "เงินยืม"),
+        ("prepaid", "สำรองจ่าย")
+    ], string="ประเภทการจ่ายเงิน", readonly=True)
+
+    purchase_request_name = fields.Char(
+        string="ชื่อใบสั่งซื้อ/จ้าง",
+        help="The name of the purchase request associated with the selected lines.",
+    )
+
+    line_ids = fields.One2many('purchase.request.two.line', 'pr2_id', string='Products')
+
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('submitted', 'Submitted'),
+    ], string='Status', default='draft')
+
+    currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.company.currency_id)
+    
+    amount_untaxed = fields.Monetary(string='รวมเป็นเงิน', compute='_compute_amount', store=True)
+    amount_tax = fields.Monetary(string='ภาษีมูลค่าเพื่ม', compute='_compute_amount', store=True)
+    amount_total = fields.Monetary(string='รวมเป็นเงินทั้งสิ้น', compute='_compute_amount', store=True)
+    
+    submitted_id = fields.Many2one('purchase.request.two.submitted', string='Included in Submitted', readonly=True)
+    
+    def action_submit(self):
+        self.write({'state': 'submitted'})
+
+    @api.depends('line_ids.quantity', 'line_ids.unit_price', 'line_ids.taxes')
+    def _compute_amount(self):
+        for rec in self:
+            untaxed = 0.0
+            taxes = 0.0
+            currency = rec.currency_id
+            for line in rec.line_ids:
+                subtotal = line.quantity * line.unit_price
+                tax_amount = sum(
+                    tax._compute_amount(subtotal, 1, product=line.product_id, partner=rec.vendor)
+                    for tax in line.taxes
+                )
+                untaxed += subtotal
+                taxes += tax_amount
+            rec.amount_untaxed = untaxed
+            rec.amount_tax = taxes
+            rec.amount_total = untaxed + taxes
+
+    @api.model
+    def create(self, vals):
+        if vals.get('name', 'New') == 'New':
+            vals['name'] = self.env['ir.sequence'].next_by_code('purchase.request.two.form') or _('New')
+        return super().create(vals)
+
+    def action_merge_to_submitted(self):
+        self.ensure_one()
+
+        submitted = self.env['purchase.request.two.submitted'].create({
+            'name': self.env['ir.sequence'].next_by_code('purchase.request.two.submitted'),
+        })
+
+        self.submitted_id = submitted.id
+        self.env['purchase.request.two.submitted.line'].create({
+            'submitted_id': submitted.id,
+            'pr2_form_id': self.id,
+        })
+
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'purchase.request.two.submitted',
+            'view_mode': 'form',
+            'res_id': submitted.id,
+            'target': 'current',
+        }

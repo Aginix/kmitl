@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View purchase.request.two View Tree -->
+    <record id="view_purchase_request_two_tree" model="ir.ui.view">
+        <field name="name">view.purchase.request.two.tree</field>
+        <field name="model">purchase.request.two</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="pr1_ref"/>
+                <field name="vendor" />
+                <field name="payment_type" />
+                <field name="amount_total" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- View purchase.request.two form -->
+    <record id="view_purchase_request_two_form" model="ir.ui.view">
+        <field name="name">view.purchase.request.two.form</field>
+        <field name="model">purchase.request.two</field>
+        <field name="arch" type="xml">
+            <form string="Purchase Request Two">
+                <header>
+                    <button name="action_merge_to_submitted"
+                            type="object"
+                            string="สร้าง PR2"
+                            class="btn-secondary"
+                            />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Name..."/>
+                        </h1>
+                        <label for="pr1_ref"/>
+                        <h2>
+                            <field name="pr1_ref" />
+                        </h2>
+                    </div>
+                    
+                    <group>
+                        <field name="vendor"/>
+                        <field name="start_date" />
+                        <field name="end_date" />
+                        <field name="purchase_type" />
+                        <field name="payment_type" />
+                        <field name="purchase_request_name" />
+                    </group>
+
+                    <notebook>
+                        <page string="Product Lines">
+                            <field name="line_ids">
+                                <tree editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="description"/>
+                                    <field name="quantity"/>
+                                    <field name="unit_price"/>
+                                    <field name="taxes"/>
+                                    <field name="subtotal"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                    <group class="oe_subtotal_footer oe_right">
+                        <field name="amount_untaxed" readonly="1"/>
+                        <field name="amount_tax" readonly="1"/>
+                        <field name="amount_total" readonly="1"/>
+                    </group>
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+    <!-- View purchase.request.two search -->
+    <record id="view_purchase_request_two_search" model="ir.ui.view">
+        <field name="name">view.purchase.request.two.search</field>
+        <field name="model">purchase.request.two</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action purchase.request.two -->
+    <record id="action_purchase_request_two" model="ir.actions.act_window">
+        <field name="name">Purchase Request Two</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.request.two</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Purchase Request Two.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_purchase_request_two_root" name="Purchase Request 2"
+              parent="purchase.menu_procurement_management"
+              action="action_purchase_request_two"
+              sequence="20"/>
+
+</odoo>
