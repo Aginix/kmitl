@@ -4,7 +4,7 @@
 {
     "name": "Purchase Request to Purchase Agreement",
     "version": "16.0.0.0.0",
-    "author": "Eficent,Acsone SA/NV,Odoo Community Association (OCA)",
+    "author": "Eficent,Acsone SA/NV,Odoo Community Association (OCA).",
     "website": "https://github.com/OCA/purchase-workflow",
     "category": "Purchase Management",
     "depends": [
