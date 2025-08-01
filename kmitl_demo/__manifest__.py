@@ -14,7 +14,7 @@
         "hr_department_code",
         "account_fiscal_year",
         "account_analytic_kmitl",
-        "l10n_th_kmitl_procurement",
+        "l10n_th_gov_purchase_request",
         "procurement_plan",
     ],
     "data": [
