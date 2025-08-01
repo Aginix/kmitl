@@ -9,7 +9,7 @@
         <field name="price_per_unit">1500000</field>
         <field
             name="procurement_method_id"
-            ref="l10n_th_kmitl_procurement.procurement_general"
+            ref="l10n_th_gov_purchase_request.procurement_general"
         />
         <field name="state">draft</field>
         <field name="note">ผู้รับเหมาจะดำเนินงานในวันหยุดพิเศษต่าง ๆ ด้วย</field>
@@ -73,7 +73,7 @@
         <field name="price_per_unit">750000</field>
         <field
             name="procurement_method_id"
-            ref="l10n_th_kmitl_procurement.procurement_general"
+            ref="l10n_th_gov_purchase_request.procurement_general"
         />
         <field name="state">done</field>
         <field name="purchase_request_eta">4</field>
@@ -120,7 +120,7 @@
         <field name="price_per_unit">2360700</field>
         <field
             name="procurement_method_id"
-            ref="l10n_th_kmitl_procurement.procurement_specific"
+            ref="l10n_th_gov_purchase_request.procurement_specific"
         />
         <field name="state">procurement</field>
         <field name="note">รับประกันสินค้าทั้งหมด 1.5 ปี</field>
@@ -154,7 +154,7 @@
         <field name="price_per_unit">17540000</field>
         <field
             name="procurement_method_id"
-            ref="l10n_th_kmitl_procurement.procurement_select"
+            ref="l10n_th_gov_purchase_request.procurement_select"
         />
         <field name="state">pending</field>
         <field name="note">-</field>
@@ -209,7 +209,7 @@
         <field name="price_per_unit">4498300</field>
         <field
             name="procurement_method_id"
-            ref="l10n_th_kmitl_procurement.procurement_general"
+            ref="l10n_th_gov_purchase_request.procurement_general"
         />
         <field name="state">cancel</field>
         <field name="note" />
@@ -250,7 +250,7 @@
         <field name="price_per_unit">19500000</field>
         <field
             name="procurement_method_id"
-            ref="l10n_th_kmitl_procurement.procurement_bidding"
+            ref="l10n_th_gov_purchase_request.procurement_bidding"
         />
         <field name="state">done</field>
         <field name="note" />
