@@ -1,8 +1,170 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo noupdate="1">
-    <record id="witsawa_operating_unit" model="operating.unit">
-        <field name="name">วิศวะ</field>
-        <field name="code">OU0001</field>
+    <record id="operating_unit_01" model="operating.unit">
+        <field name="name">คณะวิศวกรรมศาสตร์</field>
+        <field name="code">01</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_02" model="operating.unit">
+        <field name="name">คณะสถาปัตยกรรม ศิลปะและการออกแบบ</field>
+        <field name="code">02</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_03" model="operating.unit">
+        <field name="name">คณะครุศาสตร์อุตสาหกรรมและเทคโนโลยี</field>
+        <field name="code">03</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_05" model="operating.unit">
+        <field name="name">คณะวิทยาศาสตร์</field>
+        <field name="code">05</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_04" model="operating.unit">
+        <field name="name">คณะเทคโนโลยีการเกษตร</field>
+        <field name="code">04</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_06" model="operating.unit">
+        <field name="name">คณะเทคโนโลยีสารสนเทศ</field>
+        <field name="code">06</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_17" model="operating.unit">
+        <field name="name">คณะอุตสาหกรรมอาหาร</field>
+        <field name="code">17</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_08" model="operating.unit">
+        <field name="name">สำนักทะเบียนและบริการการศึกษา</field>
+        <field name="code">08</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_09" model="operating.unit">
+        <field name="name">สำนักบริหารข้อมูลดิจิทัลพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</field>
+        <field name="code">09</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_10" model="operating.unit">
+        <field name="name">สำนักการเรียนรู้ตลอดชีวิตพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</field>
+        <field name="code">10</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_11" model="operating.unit">
+        <field name="name">วิทยาเขตชุมพรเขตรอุดมศักดิ์</field>
+        <field name="code">11</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_89" model="operating.unit">
+        <field name="name">สำนักงานอธิการบดี</field>
+        <field name="code">89</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_99" model="operating.unit">
+        <field name="name">สำนักบริหารงานวิจัยและนวัตกรรมพระจอมเกล้าลาดกระบัง</field>
+        <field name="code">99</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_31" model="operating.unit">
+        <field name="name">วิทยาลัยเทคโนโลยีและนวัตกรรมวัสดุ</field>
+        <field name="code">31</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_32" model="operating.unit">
+        <field name="name">วิทยาลัยนวัตกรรมการผลิตขั้นสูง</field>
+        <field name="code">32</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_33" model="operating.unit">
+        <field name="name">สำนักงานสภาสถาบัน</field>
+        <field name="code">33</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_36" model="operating.unit">
+        <field name="name">คณะบริหารธุรกิจ</field>
+        <field name="code">36</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_37" model="operating.unit">
+        <field name="name">สำนักวิชาศึกษาทั่วไป</field>
+        <field name="code">37</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_38" model="operating.unit">
+        <field name="name">คณะแพทยศาสตร์</field>
+        <field name="code">38</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_39" model="operating.unit">
+        <field name="name">วิทยาลัยการจัดการนวัตกรรมและอุตสาหกรรม</field>
+        <field name="code">39</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_40" model="operating.unit">
+        <field name="name">วิทยาลัยอุตสาหกรรมการบินนานาชาติ</field>
+        <field name="code">40</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_41" model="operating.unit">
+        <field name="name">คณะศิลปศาสตร์</field>
+        <field name="code">41</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_42" model="operating.unit">
+        <field name="name">วิทยาลัยวิศวกรรมสังคีต</field>
+        <field name="code">42</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_43" model="operating.unit">
+        <field name="name">สำนักวิจัยนวัตกรรมเมืองอัจฉริยะ</field>
+        <field name="code">43</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_44" model="operating.unit">
+        <field name="name">โรงพยาบาลพระจอมเกล้าเจ้าคุณทหาร</field>
+        <field name="code">44</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_45" model="operating.unit">
+        <field name="name">คณะทันตแพทยศาสตร์</field>
+        <field name="code">45</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_46" model="operating.unit">
+        <field name="name">42 บางกอก</field>
+        <field name="code">46</field>
+        <field name="partner_id" ref="base.main_partner" />
+    </record>
+
+    <record id="operating_unit_47" model="operating.unit">
+        <field name="name">คณะพยาบาลศาสตร์</field>
+        <field name="code">47</field>
         <field name="partner_id" ref="base.main_partner" />
     </record>
 </odoo>
