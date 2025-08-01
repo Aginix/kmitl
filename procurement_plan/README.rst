@@ -1,5 +1,5 @@
 ================
-procurement_plan
+procurement_plan.
 ================
 
 Procurement Plan
