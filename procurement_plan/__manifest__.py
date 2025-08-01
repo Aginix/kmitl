@@ -8,7 +8,7 @@
         "base",
         "account_analytic_kmitl",
         "account_fiscal_year",
-        "l10n_th_kmitl_procurement",
+        "l10n_th_gov_purchase_request",
     ],
     "data": [
         "security/ir.model.access.csv",
