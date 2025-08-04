@@ -7,7 +7,7 @@
         <field name="inherit_id" ref="base_user_role.view_res_users_role_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
-                <field name="color" widget="color_picker"/>
+                <field name="color"/>
             </xpath>
         </field>
     </record>
