@@ -1,0 +1,2 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_purchase_request_two_submitted_manager,purchase_request_two_submitted_manager,model_purchase_request_two_submitted,,1,1,1,1
