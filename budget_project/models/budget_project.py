@@ -5,7 +5,7 @@ from odoo.exceptions import ValidationError
 class BudgetProject(models.Model):
     _name = "budget.project"
     _description = "Budget Project/Activity"
-    _inherit = ["mail.thread", "mail.activity.mixin", "account.analytic.distribution.mixin"]
+    _inherit = ["mail.thread", "mail.activity.mixin", "analytic.distribution.mixin"]
     _order = "create_date desc, id desc"
     _rec_name = "name"
 
