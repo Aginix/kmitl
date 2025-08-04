@@ -3,24 +3,11 @@
 import { Component, onWillStart, onMounted, useState, useRef } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { registry } from "@web/core/registry";
-import { ControlPanel } from "@web/search/control_panel/control_panel";
-import { SearchBar } from "@web/search/search_bar/search_bar";
-import { useSearchModel } from "@web/search/search_model";
-import { standardActionServiceProps } from "@web/webclient/actions/action_service";
-import { SearchModel } from "@web/search/search_model";
-import { session } from "@web/session";
 
 export class BudgetExecutionStatusV2 extends Component {
-    static template = "budget.BudgetExecutionStatusV2";
-    static components = { ControlPanel };
-    static props = {
-        ...standardActionServiceProps,
-        context: { type: Object, optional: true },
-    };
-
     setup() {
         this.orm = useService("orm");
-        this.action = useService("action");
+        this.actionService = useService("action");
         this.notification = useService("notification");
         this.user = useService("user");
         this.rpc = useService("rpc");
@@ -28,30 +15,6 @@ export class BudgetExecutionStatusV2 extends Component {
         // Refs for DOM elements
         this.tableContainerRef = useRef("tableContainer");
         
-        // Initialize search model
-        this.searchModel = useSearchModel({
-            context: this.props.context || {},
-            defaultFilters: [
-                {
-                    description: "Current Fiscal Year",
-                    domain: [],
-                    groupBy: [],
-                    isDefault: true,
-                },
-            ],
-            fields: {
-                date_from: { type: "date", string: "Date From" },
-                date_to: { type: "date", string: "Date To" },
-                budget_type: { 
-                    type: "selection", 
-                    string: "Budget Type",
-                    selection: [["expense", "Expense"], ["revenue", "Revenue"]]
-                },
-            },
-            searchMenuTypes: ["filter", "groupBy", "favorite"],
-            activateDefaultFavorite: true,
-        });
-
         // Component state
         this.state = useState({
             // Loading states
@@ -65,7 +28,7 @@ export class BudgetExecutionStatusV2 extends Component {
             flatData: [],
             displayData: [],
             
-            // Filters from control panel
+            // Filters 
             filters: {
                 date_from: null,
                 date_to: null,
@@ -76,6 +39,16 @@ export class BudgetExecutionStatusV2 extends Component {
                 fund_analytic_ids: [],
                 source_analytic_ids: [],
                 budget_account_ids: [],
+            },
+            
+            // Filter options
+            filterOptions: {
+                fiscal_years: [],
+                activities: [],
+                departments: [],
+                funds: [],
+                sources: [],
+                budget_accounts: []
             },
             
             // UI state
@@ -115,13 +88,13 @@ export class BudgetExecutionStatusV2 extends Component {
             currentPage: 1,
             pageSize: 100,
             totalRecords: 0,
+            
+            // Filter panel visibility
+            showFilterPanel: false,
         });
         
         // Auto-refresh timer
         this.refreshTimer = null;
-        
-        // Subscribe to search model changes
-        this.searchModel.addEventListener("update", this.onSearchModelUpdate.bind(this));
         
         onWillStart(async () => {
             await this.loadInitialData();
@@ -170,7 +143,10 @@ export class BudgetExecutionStatusV2 extends Component {
             []
         );
         
-        // Update search model with dynamic options
+        // Update state with options
+        this.state.filterOptions = options;
+        
+        // Set default fiscal year
         if (options.fiscal_years && options.fiscal_years.length > 0) {
             const currentFY = options.fiscal_years.find(fy => fy.is_current);
             if (currentFY) {
@@ -179,9 +155,6 @@ export class BudgetExecutionStatusV2 extends Component {
                 this.state.filters.date_to = currentFY.date_end;
             }
         }
-        
-        // Store options for use in control panel
-        this.filterOptions = options;
     }
     
     async setDefaultFilters() {
@@ -370,44 +343,25 @@ export class BudgetExecutionStatusV2 extends Component {
         this.state.displayData = this.state.displayData.slice(startIdx, endIdx);
     }
     
-    // Event handlers
-    onSearchModelUpdate() {
-        // Extract filters from search model
-        const domain = this.searchModel.domain;
-        const context = this.searchModel.context;
-        
-        // Update component filters based on search model
-        this.updateFiltersFromSearchModel(domain, context);
-        
-        // Reload data
-        this.loadReportData();
+    // Filter handling
+    toggleFilterPanel() {
+        this.state.showFilterPanel = !this.state.showFilterPanel;
     }
     
-    updateFiltersFromSearchModel(domain, context) {
-        // Parse domain to extract filter values
-        for (const condition of domain) {
-            if (Array.isArray(condition) && condition.length === 3) {
-                const [field, operator, value] = condition;
-                
-                switch (field) {
-                    case 'date':
-                        if (operator === '>=') {
-                            this.state.filters.date_from = value;
-                        } else if (operator === '<=') {
-                            this.state.filters.date_to = value;
-                        }
-                        break;
-                    case 'budget_type':
-                        this.state.filters.budget_type = value;
-                        break;
-                    // Add more field mappings as needed
-                }
+    async onFilterChange() {
+        await this.loadReportData();
+    }
+    
+    onFiscalYearChange(event) {
+        const fyId = parseInt(event.target.value);
+        if (fyId) {
+            const fy = this.state.filterOptions.fiscal_years.find(f => f.id === fyId);
+            if (fy) {
+                this.state.filters.date_range_fy_id = fyId;
+                this.state.filters.date_from = fy.date_start;
+                this.state.filters.date_to = fy.date_end;
+                this.onFilterChange();
             }
-        }
-        
-        // Extract from context
-        if (context.default_date_range_fy_id) {
-            this.state.filters.date_range_fy_id = context.default_date_range_fy_id;
         }
     }
     
@@ -522,7 +476,7 @@ export class BudgetExecutionStatusV2 extends Component {
     }
     
     async onPrint() {
-        await this.action.doAction({
+        await this.actionService.doAction({
             type: "ir.actions.report",
             report_type: "qweb-pdf",
             report_name: "budget.budget_execution_status_report_document",
@@ -602,20 +556,10 @@ export class BudgetExecutionStatusV2 extends Component {
             utilization_percentage: 0,
         };
     }
-    
-    // Control panel configuration
-    getControlPanelProps() {
-        return {
-            cp_content: {
-                searchModel: this.searchModel,
-            },
-            display: {
-                layoutActions: false,
-            },
-            searchMenuTypes: ["filter", "groupBy", "favorite"],
-        };
-    }
 }
+
+BudgetExecutionStatusV2.template = "budget.BudgetExecutionStatusV2";
+BudgetExecutionStatusV2.props = {};
 
 // Register the component
 registry.category("actions").add("budget_execution_status_v2", BudgetExecutionStatusV2);

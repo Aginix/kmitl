@@ -2,10 +2,62 @@
 <templates xml:space="preserve">
     <t t-name="budget.BudgetExecutionStatusV2" owl="1">
         <div class="o_budget_execution_status_v2 h-100 d-flex flex-column">
-            <!-- Control Panel with integrated filters -->
-            <ControlPanel 
-                display="display"
-                cp_content="getControlPanelProps()" />
+            <!-- Custom Filter Panel -->
+            <div t-if="state.showFilterPanel" class="o_budget_filter_panel bg-white border-bottom p-3">
+                <div class="row g-3">
+                    <!-- Fiscal Year -->
+                    <div class="col-md-3">
+                        <label class="form-label">Fiscal Year</label>
+                        <select class="form-select form-select-sm" 
+                                t-on-change="onFiscalYearChange"
+                                t-att-value="state.filters.date_range_fy_id">
+                            <option value="">All Years</option>
+                            <t t-foreach="state.filterOptions.fiscal_years" t-as="fy" t-key="fy.id">
+                                <option t-att-value="fy.id" 
+                                        t-att-selected="fy.id === state.filters.date_range_fy_id">
+                                    <t t-esc="fy.name"/>
+                                </option>
+                            </t>
+                        </select>
+                    </div>
+                    
+                    <!-- Date Range -->
+                    <div class="col-md-2">
+                        <label class="form-label">Date From</label>
+                        <input type="date" 
+                               class="form-control form-control-sm"
+                               t-att-value="state.filters.date_from"
+                               t-on-change="(e) => { state.filters.date_from = e.target.value; onFilterChange(); }"/>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Date To</label>
+                        <input type="date" 
+                               class="form-control form-control-sm"
+                               t-att-value="state.filters.date_to"
+                               t-on-change="(e) => { state.filters.date_to = e.target.value; onFilterChange(); }"/>
+                    </div>
+                    
+                    <!-- Budget Type -->
+                    <div class="col-md-2">
+                        <label class="form-label">Budget Type</label>
+                        <select class="form-select form-select-sm"
+                                t-att-value="state.filters.budget_type"
+                                t-on-change="(e) => { state.filters.budget_type = e.target.value; onFilterChange(); }">
+                            <option value="expense">Expense</option>
+                            <option value="revenue">Revenue</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Apply Button -->
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button class="btn btn-primary btn-sm w-100" 
+                                t-on-click="onFilterChange"
+                                t-att-disabled="state.isRefreshing">
+                            <i class="fa fa-filter"/> Apply Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
             
             <!-- Main Content Area -->
             <div class="o_content flex-grow-1 d-flex flex-column">
@@ -13,6 +65,13 @@
                 <div class="o_budget_action_bar d-flex justify-content-between align-items-center p-2 bg-white border-bottom">
                     <!-- Left: View Controls -->
                     <div class="d-flex align-items-center gap-2">
+                        <!-- Filter Toggle -->
+                        <button class="btn btn-outline-secondary btn-sm"
+                                t-on-click="toggleFilterPanel"
+                                t-att-class="{'active': state.showFilterPanel}">
+                            <i class="fa fa-filter"/> Filters
+                        </button>
+                        
                         <!-- View Mode Toggle -->
                         <div class="btn-group btn-group-sm">
                             <button class="btn btn-outline-primary"
