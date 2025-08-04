@@ -7,4 +7,6 @@ class ResUsersRole(models.Model):
     color = fields.Integer(
         string="Color",
         help="Color index for the role",
+        default=0,
+        store=True,
     )

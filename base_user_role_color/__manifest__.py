@@ -8,6 +8,7 @@
     "license": "AGPL-3",
     "depends": [
         "base_user_role",
+        "web",
     ],
     "data": [
         "views/res_users_role_views.xml",
