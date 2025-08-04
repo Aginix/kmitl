@@ -16,7 +16,7 @@ class ProcurementCommittee(models.Model):
         ],
     )
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals_list):
         if isinstance(vals_list, dict):
             vals_list = [vals_list]
