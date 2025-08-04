@@ -11,6 +11,7 @@
         "web",
     ],
     "data": [
+        "security/ir.model.access.csv",
         "views/res_users_role_views.xml",
     ],
     "installable": True,
