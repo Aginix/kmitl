@@ -14,6 +14,7 @@ from . import budget_report_line
 # Budget execution status report
 from . import budget_execution_status_report
 from . import budget_execution_status_line
+from . import budget_execution_status_report_v2
 
 # Budget integration components
 from . import budget_mixin
