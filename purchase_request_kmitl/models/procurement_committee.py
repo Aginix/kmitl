@@ -1,6 +1,6 @@
 import logging
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 _logger = logging.getLogger(__name__)
 
@@ -15,3 +15,10 @@ class ProcurementCommittee(models.Model):
             ("evaluation", "Evaluation Committee"),
         ],
     )
+
+    @api.model
+    def create(self, vals):
+        if not vals.get('name') and vals.get('employee_id'):
+            employee = self.env['hr.employee'].browse(vals['employee_id'])
+            vals['name'] = employee.display_name
+        return super().create(vals)

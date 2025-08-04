@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <!-- View purchase.request form -->
     <record id="view_purchase_request_form" model="ir.ui.view">
         <field name="name">view.purchase.request.form</field>
         <field name="model">purchase.request</field>
-        <field
-            name="inherit_id"
-            ref="l10n_th_gov_purchase_request.view_purchase_request_form"
-        />
+        <field name="inherit_id" ref="l10n_th_gov_purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='purchase_type_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
@@ -30,6 +26,10 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
+            <xpath expr="//field[@name='state']" position="attributes">
+                <attribute name="statusbar_visible">draft,to_approve,validation,approved,done</attribute>
+            </xpath>
+
             <xpath expr="//form/sheet/notebook" position="inside">
                 <page name="budget" string="งบประมาณ">
                     <group name="budget" string="ข้อมูลมิติทางบัญชี">
@@ -42,85 +42,45 @@
                 </page>
             </xpath>
 
-            <xpath
-                expr="//field[@name='line_ids']/tree/field[@name='date_required']"
-                position="attributes"
-            >
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='date_required']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
 
-            <xpath
-                expr="//field[@name='line_ids']/tree/field[@name='purchased_qty']"
-                position="attributes"
-            >
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='purchased_qty']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
 
-            <xpath
-                expr="//field[@name='line_ids']/tree/field[@name='purchase_state']"
-                position="attributes"
-            >
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='purchase_state']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
 
-            <xpath
-                expr="//field[@name='line_ids']/tree/field[@name='requisition_qty']"
-                position="attributes"
-            >
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='requisition_qty']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
 
-            <xpath
-                expr="//field[@name='line_ids']/tree/field[@name='requisition_state']"
-                position="attributes"
-            >
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='requisition_state']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
 
             <xpath expr="//page[@name='committee']" position="replace">
                 <page name="committee" string="Committee">
                     <separator string="คณะกรรมการตรวจรับพัสดุ" />
-                    <field
-                        name="work_acceptance_committee_ids"
-                        nolabel="1"
-                        context="{'default_committee_type': 'work_acceptance'}"
-                        attrs="{'readonly': [('is_editable', '=', False)]}"
-                    >
+                    <field name="work_acceptance_committee_ids" nolabel="1" context="{'default_committee_type': 'work_acceptance'}" attrs="{'readonly': [('is_editable', '=', False)]}">
                         <tree editable="bottom">
                             <field name="committee_type" invisible="1" />
-                            <field
-                                name="employee_id"
-                                string="Employee"
-                                options="{'no_create': True, 'no_open': True}"
-                            />
+                            <field name="employee_id" string="Employee" options="{'no_create': True, 'no_open': True}" />
                             <field name="name" string="Committee Name" readonly="1" />
                             <field name="approve_role" string="Role" />
-                            <field
-                                name="department_id"
-                                string="Department"
-                                readonly="1"
-                            />
+                            <field name="department_id" string="Department" readonly="1" />
                             <field name="email" string="Work Email" readonly="1" />
                             <field name="phone" string="Work Phone" readonly="1" />
                         </tree>
                     </field>
-                    <separator
-                        string="คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน"
-                        attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"
-                    />
-                    <field
-                        name="tor_committee_ids"
-                        nolabel="1"
-                        context="{'default_committee_type': 'tor_committee'}"
-                        attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}"
-                    >
+                    <separator string="คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}" />
+                    <field name="tor_committee_ids" nolabel="1" context="{'default_committee_type': 'tor_committee'}" attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}">
                         <tree editable="bottom">
                             <field name="committee_type" invisible="1" />
-                            <field
-                                name="employee_id"
-                                string="Employee"
-                                options="{'no_create': True, 'no_open': True}"
-                            />
+                            <field name="employee_id" string="Employee" options="{'no_create': True, 'no_open': True}" />
                             <field name="name" string="Committee Name" />
                             <field name="approve_role" string="Role" />
                             <field name="department_id" string="Department" />
@@ -129,23 +89,11 @@
                             <field name="note" string="Note" />
                         </tree>
                     </field>
-                    <separator
-                        string="คณะกรรมการกำหนดราคากลาง"
-                        attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"
-                    />
-                    <field
-                        name="price_determine_committee_ids"
-                        nolabel="1"
-                        context="{'default_committee_type': 'price_determine'}"
-                        attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}"
-                    >
+                    <separator string="คณะกรรมการกำหนดราคากลาง" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}" />
+                    <field name="price_determine_committee_ids" nolabel="1" context="{'default_committee_type': 'price_determine'}" attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}">
                         <tree editable="bottom">
                             <field name="committee_type" invisible="1" />
-                            <field
-                                name="employee_id"
-                                string="Employee"
-                                options="{'no_create': True, 'no_open': True}"
-                            />
+                            <field name="employee_id" string="Employee" options="{'no_create': True, 'no_open': True}" />
                             <field name="name" string="Committee Name" />
                             <field name="approve_role" string="Role" />
                             <field name="department_id" string="Department" />
@@ -154,23 +102,11 @@
                             <field name="note" string="Note" />
                         </tree>
                     </field>
-                    <separator
-                        string="คณะกรรมการพิจารณาผล"
-                        attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"
-                    />
-                    <field
-                        name="evaluation_committee_ids"
-                        nolabel="1"
-                        context="{'default_committee_type': 'evaluation'}"
-                        attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}"
-                    >
+                    <separator string="คณะกรรมการพิจารณาผล" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}" />
+                    <field name="evaluation_committee_ids" nolabel="1" context="{'default_committee_type': 'evaluation'}" attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}">
                         <tree editable="bottom">
                             <field name="committee_type" invisible="1" />
-                            <field
-                                name="employee_id"
-                                string="Employee"
-                                options="{'no_create': True, 'no_open': True}"
-                            />
+                            <field name="employee_id" string="Employee" options="{'no_create': True, 'no_open': True}" />
                             <field name="name" string="Committee Name" />
                             <field name="approve_role" string="Role" />
                             <field name="department_id" string="Department" />

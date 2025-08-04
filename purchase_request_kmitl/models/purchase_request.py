@@ -8,6 +8,25 @@ _logger = logging.getLogger(__name__)
 class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
+    _STATES = [
+    ("draft", "Draft"),
+    ("to_approve", "To be approved"),
+    ("validation", "validation"),
+    ("approved", "Approved"),
+    ("done", "Done"),
+    ("rejected", "Rejected"),
+]
+
+    state = fields.Selection(
+        selection=_STATES,
+        string="Status",
+        index=True,
+        tracking=True,
+        required=True,
+        copy=False,
+        default="draft",
+    )
+
     tor_committee_ids = fields.One2many(
         comodel_name="procurement.committee",
         inverse_name="request_id",

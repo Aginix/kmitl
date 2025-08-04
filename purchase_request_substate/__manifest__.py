@@ -10,6 +10,7 @@
     "license": "AGPL-3",
     "depends": ["base_substate", "purchase_request"],
     "data": [
+        "security/purchase_request_substate.xml",
         "views/purchase_request_views.xml",
         "data/purchase_substate_mail_template_data.xml",
         "data/purchase_request_substate_data.xml",
