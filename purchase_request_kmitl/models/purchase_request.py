@@ -64,3 +64,6 @@ class PurchaseRequest(models.Model):
                 or False,
             }
         )
+
+    def button_validation(self):
+        return self.write({"state": "validation"})

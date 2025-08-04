@@ -16,4 +16,9 @@
         <field name="base_substate_type_id" ref="base_substate_type_purchase_request" />
         <field name="target_state_value">approved</field>
     </record>
+    <record id="target_state_value_validation" model="target.state.value">
+        <field name="name">Validation</field>
+        <field name="base_substate_type_id" ref="base_substate_type_purchase_request" />
+        <field name="target_state_value">validation</field>
+    </record>
 </odoo>

@@ -18,6 +18,22 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
+            <xpath expr="//button[@name='button_in_progress']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//button[@type='action']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_approved']" position="after">
+                <button name="button_validation" states="to_approve" attrs="{'invisible': ['|',('substate_sequence','!=',20)]}" string="Validate" type="object" class="oe_highlight" groups="purchase_request.group_purchase_request_manager"/>
+            </xpath>
+
+            <xpath expr="//button[@name='button_approved']" position="attributes">
+                <attribute name="attrs">{'invisible': [('state','!=','validation')]}</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='group_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>

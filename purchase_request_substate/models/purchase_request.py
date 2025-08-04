@@ -34,7 +34,7 @@ class PurchaseRequest(models.Model):
                 ('model', '=', self._name),
                 ('sequence', '>', current.sequence)
             ], order='sequence ASC', limit=1)
-
+            print("test ========>", rec.substate_id.name)
             if next_substate:
                 rec.substate_id = next_substate.id
                 rec.substate_updated = True
