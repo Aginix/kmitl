@@ -39,7 +39,7 @@
                         <field name="purchase_type" required="1" />
                         <field name="purchase_request_name" required="1" />
                         <field name="payment_type" />
-                        <field name="purchase_request_id" />
+                        <field name="purchase_request_id" readonly="1" />
                     </group>
                     <notebook>
                         <page string="Product Lines">
