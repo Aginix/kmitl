@@ -13,4 +13,16 @@
         </field>
     </record>
 
+    <menuitem
+        id="menu_purchase_request_2_form"
+        name="Purchase Requests Form"
+        parent="purchase_request.parent_menu_purchase_request"
+    />
+    <menuitem
+        id="menu_purchase_request_2_form_act"
+        sequence="10"
+        parent="menu_purchase_request_2_form"
+        action="purchase_request_kmitl_form.action_purchase_request_form"
+    />
+
   </odoo>
