@@ -15,7 +15,7 @@
         <!-- Menu Item -->
         <menuitem id="menu_budget_execution_status_v2"
                   name="Execution Status (V2)"
-                  parent="budget.menu_budget_reports"
+                  parent="budget.budget_reporting_menu"
                   action="action_budget_execution_status_v2"
                   sequence="15"/>
                   
