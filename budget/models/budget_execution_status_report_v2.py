@@ -1,4 +1,5 @@
 import logging
+import base64
 from collections import defaultdict
 from datetime import datetime, timedelta
 from odoo import api, fields, models, _
@@ -10,9 +11,7 @@ _logger = logging.getLogger(__name__)
 
 class BudgetExecutionStatusReportV2(models.TransientModel):
     """Enhanced Budget Execution Status Report with real-time capabilities"""
-    _name = "budget.execution.status.report"
     _inherit = "budget.execution.status.report"
-    _description = "Budget Execution Status Report V2"
 
     @api.model
     def get_real_time_data(self, filters):

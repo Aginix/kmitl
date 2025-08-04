@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem
+        id="menu_budget_execution_status_v2"
+        name="Budget Execution Status V2"
+        parent="budget_reporting_menu"
+        action="action_budget_execution_status_v2"
+        sequence="15"
+    />
+</odoo>
