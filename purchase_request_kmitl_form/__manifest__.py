@@ -6,7 +6,7 @@
     'author': '',
     'website': '',
     'category': '',
-    'depends': ['base', 'web'],
+    'depends': ['purchase_request_kmitl'],
     "data": [
         "views/purchase_request_views.xml"
     ],

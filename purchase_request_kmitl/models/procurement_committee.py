@@ -17,8 +17,16 @@ class ProcurementCommittee(models.Model):
     )
 
     @api.model
-    def create(self, vals):
-        if not vals.get('name') and vals.get('employee_id'):
-            employee = self.env['hr.employee'].browse(vals['employee_id'])
-            vals['name'] = employee.display_name
-        return super().create(vals)
+    def create(self, vals_list):
+        if isinstance(vals_list, dict):
+            vals_list = [vals_list]
+
+        emp_ids = [vals['employee_id'] for vals in vals_list if vals.get('employee_id') and not vals.get('name')]
+        emp_map = {e.id: e.display_name for e in self.env['hr.employee'].browse(emp_ids)}
+
+        for vals in vals_list:
+            if not vals.get('name') and vals.get('employee_id') in emp_map:
+                vals['name'] = emp_map[vals['employee_id']]
+
+        return super().create(vals_list)
+
