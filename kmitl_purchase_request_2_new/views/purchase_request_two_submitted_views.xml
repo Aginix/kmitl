@@ -19,14 +19,22 @@
         <field name="arch" type="xml">
             <form string="PR2 Submitted">
                 <header>
-                    <button name="action_submit" type="object" string="Submit" class="btn-primary"/>
+                    <button name="button_draft" type="object" string="Reset" attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                    <button name="button_approved" type="object" string="Submit" class="btn-primary" states="draft"/>
+                    <button name="button_rejected" type="object" string="Rejected" states="draft"/>
+                    <button name="action_submit_po" type="object" string="สร้าง PO" class="btn-primary" states="approved"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,approved,rejected"/>
                 </header>
                 <sheet>
                     
                     <group>
                         <field name="name"/>
-                        <field name="generate_po"/>
+                        <field name="department_id" />
+                        <field name="request_by" />
                         <field name="payment_type_ref" string="ประเภทการจ่ายเงิน"/>
+                        <field name="approval_date" />
+                        <field name="approval_by" />
+                        <field name="generate_po"/>
                         <field name="purchase_order_id" readonly="1" invisible="1"/>
                     </group>
 
