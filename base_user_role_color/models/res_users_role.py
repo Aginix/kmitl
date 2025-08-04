@@ -8,14 +8,22 @@ class ResUsersRole(models.Model):
         string="Color",
         help="Color index for the role",
         default=0,
+        compute="_compute_color",
+        inverse="_set_color",
+        store=True,
+    )
+    color_stored = fields.Integer(
+        string="Color Stored",
+        default=0,
         store=True,
     )
 
-    def write(self, vals):
-        # Handle the color field specifically
-        if 'color' in vals:
-            color_val = vals.get('color')
-            # Use the same sudo logic as the base module
-            recs = self.sudo() if self._bypass_rules() else self
-            return super(ResUsersRole, recs).write(vals)
-        return super(ResUsersRole, self).write(vals)
+    @api.depends('color_stored')
+    def _compute_color(self):
+        for record in self:
+            record.color = record.color_stored
+
+    def _set_color(self):
+        for record in self:
+            # Use sudo to ensure we can write
+            record.sudo().color_stored = record.color
