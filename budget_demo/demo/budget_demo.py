@@ -56,7 +56,8 @@ class BudgetDemo(models.AbstractModel):
         """Check if demo data already exists"""
         demo_moves = self.env['budget.move'].search([
             ('name', 'like', 'DEMO_%'),
-            ('move_type', '=', 'appropriation')
+            ('move_type', '=', 'appropriation'),
+            ('is_initial_appropriation', '=', True)
         ])
         
         # Check if we have the expected demo moves
@@ -225,6 +226,8 @@ class BudgetDemo(models.AbstractModel):
             move_vals = {
                 'name': 'DEMO_DEPT02_APPROPRIATION_2568',
                 'move_type': 'appropriation',
+                'is_initial_appropriation': True,
+                'is_initial_appropriation': True,
                 'date': date(2024, 10, 1),
                 'date_range_fy_id': refs['fiscal_year'].id,
                 'department_analytic_id': refs['dept_02'].id,
@@ -388,6 +391,7 @@ class BudgetDemo(models.AbstractModel):
             move_vals = {
                 'name': 'DEMO_DEPT03_REVENUE_2568',
                 'move_type': 'appropriation',
+                'is_initial_appropriation': True,
                 'date': date(2024, 10, 1),
                 'date_range_fy_id': refs['fiscal_year'].id,
                 'department_analytic_id': refs['dept_01'].id,
@@ -434,6 +438,7 @@ class BudgetDemo(models.AbstractModel):
             move_vals = {
                 'name': 'DEMO_MULTI_ACTIVITY_2568',
                 'move_type': 'appropriation',
+                'is_initial_appropriation': True,
                 'date': date(2024, 10, 15),
                 'date_range_fy_id': refs['fiscal_year'].id,
                 'department_analytic_id': refs['dept_02'].id,
@@ -511,6 +516,7 @@ class BudgetDemo(models.AbstractModel):
             move_vals = {
                 'name': 'DEMO_CSV_DEPT02_COMPREHENSIVE_2568',
                 'move_type': 'appropriation',
+                'is_initial_appropriation': True,
                 'date': date(2024, 10, 1),
                 'date_range_fy_id': refs['fiscal_year'].id,
                 'department_analytic_id': refs['dept_02'].id,
@@ -718,6 +724,7 @@ class BudgetDemo(models.AbstractModel):
             move_vals = {
                 'name': 'DEMO_CSV_DEPT03_REVENUE_2568',
                 'move_type': 'appropriation',
+                'is_initial_appropriation': True,
                 'date': date(2024, 10, 1),
                 'date_range_fy_id': refs['fiscal_year'].id,
                 'department_analytic_id': refs['dept_01'].id,
@@ -768,7 +775,8 @@ class BudgetDemo(models.AbstractModel):
         try:
             demo_moves = self.env['budget.move'].search([
                 ('name', 'like', 'DEMO_%'),
-                ('move_type', '=', 'appropriation')
+                ('move_type', '=', 'appropriation'),
+            ('is_initial_appropriation', '=', True)
             ])
             
             if demo_moves:
@@ -792,7 +800,8 @@ class BudgetDemo(models.AbstractModel):
         """Get information about existing demo data"""
         demo_moves = self.env['budget.move'].search([
             ('name', 'like', 'DEMO_%'),
-            ('move_type', '=', 'appropriation')
+            ('move_type', '=', 'appropriation'),
+            ('is_initial_appropriation', '=', True)
         ])
         
         if not demo_moves:

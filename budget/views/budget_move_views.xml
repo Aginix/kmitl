@@ -12,6 +12,7 @@
                 <field name="name" />
                 <field name="journal_id" />
                 <field name="move_type" />
+                <field name="is_initial_appropriation" />
                 <field name="source_analytic_id" />
                 <field
                     name="state"
@@ -115,6 +116,8 @@
                                 attrs="{'readonly': [('id', '!=', False)]}"
                             />
                             <field name="move_type" required="1" />
+                            <field name="is_initial_appropriation" 
+                                   attrs="{'invisible': [('move_type', '!=', 'appropriation')]}" />
                         </group>
                     </group>
                     <notebook>
@@ -688,6 +691,42 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a budget appropriation
+            </p>
+        </field>
+    </record>
+
+    <!-- Initial Appropriation Action for Beginning of Year Budget -->
+    <record
+        id="action_view_move_budget_initial_appropriation"
+        model="ir.actions.act_window"
+    >
+        <field name="name">Initial Budget Appropriations</field>
+        <field name="res_model">budget.move</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_budget_app_search" />
+        <field name="domain">[('move_type', '=', 'appropriation'), ('is_initial_appropriation', '=', True)]</field>
+        <field name="context">{'default_move_type': 'appropriation', 'default_is_initial_appropriation': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create an initial budget appropriation
+            </p>
+        </field>
+    </record>
+
+    <!-- Regular Appropriation Action for Mid-Year Budget -->
+    <record
+        id="action_view_move_budget_regular_appropriation"
+        model="ir.actions.act_window"
+    >
+        <field name="name">Regular Budget Appropriations</field>
+        <field name="res_model">budget.move</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_budget_app_search" />
+        <field name="domain">[('move_type', '=', 'appropriation'), ('is_initial_appropriation', '=', False)]</field>
+        <field name="context">{'default_move_type': 'appropriation', 'default_is_initial_appropriation': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a regular budget appropriation
             </p>
         </field>
     </record>

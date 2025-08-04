@@ -262,6 +262,12 @@ class BudgetMove(models.Model):
         index=True,
         default="entry",
     )
+    is_initial_appropriation = fields.Boolean(
+        string="Initial Appropriation",
+        default=False,
+        tracking=True,
+        help="Check this box if this is an initial budget appropriation at the beginning of the fiscal year"
+    )
 
     total_amount = fields.Float(
         string="Total Amount",
