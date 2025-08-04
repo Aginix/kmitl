@@ -24,7 +24,7 @@ Usage
 Bug Tracker
 ===========
 
-Bugs are tracked on `GitHub Issues <https://github.com/KMITL/odoo/issues>`_.
+Bugs are tracked on `GitHub Issues <https://github.com/aginix/kmitl/issues>`_.
 
 Credits
 =======
@@ -32,9 +32,9 @@ Credits
 Authors
 ~~~~~~~
 
-* KMITL
+* Aginix
 
 Maintainers
 ~~~~~~~~~~~
 
-This module is maintained by KMITL.
+This module is maintained by Aginix.

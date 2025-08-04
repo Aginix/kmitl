@@ -4,7 +4,7 @@
     "version": "16.0.1.0.0",
     "category": "Tools",
     "author": "KMITL",
-    "website": "https://github.com/KMITL/odoo",
+    "website": "https://github.com/aginix/kmitl",
     "license": "AGPL-3",
     "depends": [
         "base_user_role",
