@@ -9,9 +9,12 @@
     'depends': ['purchase_request_kmitl'],
     "data": [
         "data/purchase_request_kmitl_form_sequence.xml",
+        "data/purchase_request_kmitl_submit_sequence.xml",
         "security/ir.model.access.csv",
         "views/purchase_request_form_line_views.xml",
         "views/purchase_request_form_views.xml",
+        "views/purchase_request_submit_line_views.xml",
+        "views/purchase_request_submit_views.xml",
         "views/purchase_request_views.xml"
     ],
     'assets': {

@@ -24,6 +24,7 @@
                 <header>
                     <button name="button_submit" string="submit" states="draft" type="object" class="btn-primary" />
                     <button name="button_approve" string="approve" states="submit" type="object" class="btn-primary" />
+                    <button name="button_create" string="ส่งคำขออนุมัติ" states="submit" type="object" class="btn-secondary" />
                     <button name="button_reject" string="reject" states="submit" type="object" class="btn-secondary" />
                     <button name="button_reset" string="reset" states="submit,approve,reject" type="object" class="btn-secondary" />
                     <field name="state" widget="statusbar" />
@@ -43,6 +44,8 @@
                         <field name="purchase_request_name" required="1" />
                         <field name="payment_type" />
                         <field name="purchase_request_id" readonly="1" />
+                        <field name="approve_by" readonly="1" />
+                        <field name="approve_date" readonly="1" />
                     </group>
                     <notebook>
                         <page string="Product Lines">

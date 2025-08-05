@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View purchase.request.submit View Tree -->
+    <record id="view_purchase_request_submit_tree" model="ir.ui.view">
+        <field name="name">view.purchase.request.submit.tree</field>
+        <field name="model">purchase.request.submit</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="ref"/>
+                <field name="state" />
+                <field name="request_by" />
+                <field name="approve_by" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- View purchase.request.submit form -->
+    <record id="view_purchase_request_submit_form" model="ir.ui.view">
+        <field name="name">view.purchase.request.submit.form</field>
+        <field name="model">purchase.request.submit</field>
+        <field name="arch" type="xml">
+            <form string="Purchase Request Submit">
+                <header>
+                    <button name="button_submit" string="submit" states="draft" type="object" class="btn-primary" />
+                    <button name="button_approve" string="approve" states="submit" type="object" class="btn-primary" />
+                    <button name="button_reject" string="reject" states="submit" type="object" class="btn-secondary" />
+                    <button name="button_reset" string="reset" states="submit,approve,reject" type="object" class="btn-secondary" />
+                    <field name="state" widget="statusbar" />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="ref"/>
+                        <h1>
+                            <field name="ref" placeholder="ref" readonly="1" />
+                        </h1>
+                    </div>
+                    <group>
+                        <field name="request_by" />
+                        <field name="approve_by" readonly="1" />
+                        <field name="approve_date" readonly="1" />
+                        <field name="payment_type" />
+                    </group>
+                    <notebook>
+                        <page string="PR2">
+                            <field name="line_ids">
+                                <tree editable="bottom">
+                                    <field name="pr2_form_id" widget="many2one" domain="[('payment_type', '=', payment_type_ref)]"/>
+                                    <field name="vendor"/>
+                                    <field name="payment_type"/>
+                                    <field name="payment_type_ref" invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- <record id="view_purchase_request_submit_search" model="ir.ui.view">
+        <field name="name">view.purchase.request.submit.search</field>
+        <field name="model">purchase.request.submit</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record> -->
+
+    <!-- Action purchase.request.submit -->
+    <record id="action_purchase_request_submit" model="ir.actions.act_window">
+        <field name="name">Purchase Request Submit</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.request.submit</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Purchase Request Submit.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_purchase_request_2_submit_act" sequence="20" parent="menu_purchase_request_2_form" action="purchase_request_kmitl_form.action_purchase_request_submit" />
+
+</odoo>
