@@ -120,12 +120,11 @@ class BudgetProject(models.Model):
             if project.budget_amount < 0:
                 raise ValidationError(_("Budget amount cannot be negative."))
 
-    @api.constrains("date_from", "date_to")
-    def _check_dates(self):
+    @api.constrains("budget_move_line_id")
+    def _check_virtual_line(self):
         for project in self:
-            if project.date_from and project.date_to:
-                if project.date_from > project.date_to:
-                    raise ValidationError(_("Start date must be before end date."))
+            if project.budget_move_line_id and project.budget_move_line_id.is_virtual_line:
+                raise ValidationError(_("Cannot create projects on virtual budget lines."))
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -133,6 +132,9 @@ class BudgetProject(models.Model):
         for vals in vals_list:
             if vals.get("budget_move_line_id"):
                 line = self.env["budget.move.line"].browse(vals["budget_move_line_id"])
+                # Check if line is virtual
+                if line.is_virtual_line:
+                    raise ValidationError(_("Cannot create projects on virtual budget lines."))
                 # Set default analytic dimensions from budget move line
                 if not vals.get("department_analytic_id") and line.department_analytic_id:
                     vals["department_analytic_id"] = line.department_analytic_id.id
