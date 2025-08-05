@@ -1,0 +1,36 @@
+th {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.table th,
+.table td {
+    vertical-align: middle;
+    font-size: 13px;
+    padding: 8px 10px;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f9f9f9;
+}
+
+.budget-overview-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.budget-overview-table thead th {
+    background-color: #f0f0f0;
+    font-weight: 600;
+}
+
+.table thead th {
+    position: sticky;
+    top: 0;
+    background: #f8f9fa;
+    z-index: 1;
+}
+
+.o_sum_record{
+    background-color: darkgray;
+}
