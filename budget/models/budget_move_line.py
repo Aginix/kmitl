@@ -150,25 +150,13 @@ class BudgetMoveLine(models.Model):
     )
 
     @api.model
-    def default_get(self, fields_list):
-        defaults = super().default_get(fields_list)
-
-        move_id = self.env.context.get("default_move_id")
-        if move_id:
-            last_line = self.search(
-                [("move_id", "=", move_id), ("is_virtual_line", "=", False)],
-                order="write_date desc",
-                limit=1,
-            )
-            if last_line:
-                defaults.update(
-                    {
-                        "department_analytic_id": last_line.department_analytic_id.id,
-                        "activity_analytic_id": last_line.activity_analytic_id.id,
-                        "fund_analytic_id": last_line.fund_analytic_id.id,
-                    }
-                )
-        return defaults
+    def default_get(self, fields):
+        res = super().default_get(fields)
+        if 'default_activity_analytic_id' in self.env.context:
+            res['activity_analytic_id'] = self.env.context['default_activity_analytic_id']
+        if 'default_fund_analytic_id' in self.env.context:
+            res['fund_analytic_id'] = self.env.context['default_fund_analytic_id']
+        return res
 
     @api.depends("move_id", "move_id.department_analytic_id", "move_id.move_type")
     def _compute_department_analytic(self):
@@ -231,7 +219,7 @@ class BudgetMoveLine(models.Model):
         # Prepare all lines (regular + virtual) before creation
         all_vals = []
         regular_to_virtual = {}  # Track which regular line index maps to virtual line
-        
+
         for vals in vals_list:
             if not vals.get("is_virtual_line"):
                 all_vals.append(vals)
@@ -248,7 +236,7 @@ class BudgetMoveLine(models.Model):
         with moves._check_balanced(move_container), ExitStack() as exit_stack:
             # Create all lines at once
             lines = super().create([self._sanitize_vals(vals) for vals in all_vals])
-            
+
             # Set source_line_id for virtual lines after creation
             for regular_idx, virtual_idx in regular_to_virtual.items():
                 if regular_idx < len(lines) and virtual_idx < len(lines):
@@ -277,19 +265,19 @@ class BudgetMoveLine(models.Model):
     def _prepare_virtual_line_vals(self, original_vals, move, source_line_id=None):
         """
         Prepare values for virtual line (opposite entry)
-        
+
         Creates the balancing entry for appropriation lines to maintain double-entry bookkeeping:
         - Flips balance sign (positive → negative, negative → positive)
         - Swaps credit/debit if explicitly provided in original values
         - Uses virtual appropriation account
         - Sets source_line_id for 1-1 relationship tracking
         - Copies analytic distribution from original line
-        
+
         Args:
             original_vals (dict): Values from the regular appropriation line
             move (budget.move): The budget move record
             source_line_id (int, optional): ID of the regular line this virtual line balances
-            
+
         Returns:
             dict: Values for creating the virtual line
         """
@@ -392,7 +380,7 @@ class BudgetMoveLine(models.Model):
                         ('source_line_id', '=', line.id),
                         ('is_virtual_line', '=', True)
                     ], limit=1)
-                    
+
                     if virtual_line:
                         # Update existing virtual line
                         virtual_update_vals = {}
@@ -400,7 +388,7 @@ class BudgetMoveLine(models.Model):
                             virtual_update_vals['balance'] = -line.balance
                         if analytic_update:
                             virtual_update_vals['analytic_distribution'] = line.analytic_distribution
-                        
+
                         if virtual_update_vals:
                             virtual_line.with_context(skip_virtual_update=True).write(virtual_update_vals)
                     else:
@@ -498,7 +486,7 @@ class BudgetMoveLine(models.Model):
         # Technical Note: Cascade Deletion via source_line_id
         # Find virtual lines that should be deleted along with regular lines
         virtual_lines_to_delete = self.env['budget.move.line']
-        
+
         for line in self:
             if line.move_id.move_type == "appropriation" and not line.is_virtual_line:
                 # Find virtual line linked to this regular line
@@ -511,7 +499,7 @@ class BudgetMoveLine(models.Model):
 
         # Delete regular lines first
         result = super().unlink()
-        
+
         # Delete corresponding virtual lines
         if virtual_lines_to_delete.exists():
             virtual_lines_to_delete.with_context(skip_virtual_update=True).unlink()

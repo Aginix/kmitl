@@ -1,10 +1,27 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <record id="action_procurement_plan_report" model="ir.actions.client">
+        <field name="name">ภาพรวมแผนจัดซื้อจัดจ้าง</field>
+        <field name="res_model">procurement.plan</field>
+        <field name="tag">procurement_plan_report</field>
+    </record>
+
     <menuitem id="procurement_plan_root_menu" name="Procurement Plan" sequence="10">
         <menuitem
             id="action_procurement_plan_menu_action"
             name="Procurement Plan"
             action="action_procurement_plan"
         />
+        <menuitem
+            id="action_procurement_plan_report_menu"
+            name="รายงาน"
+        >
+        <menuitem
+            id="action_procurement_plan_report_menu_action"
+            name="ภาพรวมแผนจัดซื้อจัดจ้าง"
+            action="action_procurement_plan_report"
+            sequence="10"/>
+        </menuitem>
+
     </menuitem>
 </odoo>

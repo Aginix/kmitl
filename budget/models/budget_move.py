@@ -299,6 +299,43 @@ class BudgetMove(models.Model):
         ondelete="set null",
     )
 
+    first_account_id = fields.Many2one(
+        'budget.account',
+        string='First Account Used',
+        compute='_compute_first_account_id',
+        store=False
+    )
+
+    compute_fund_analytic_id = fields.Many2one(
+        'account.analytic.account',
+        string='compute fund Used',
+        compute='_compute_fund_analytic_id',
+        store=False
+    )
+
+    compute_activity_analytic_id = fields.Many2one(
+        'account.analytic.account',
+        string='compute fund Used',
+        compute='_compute_activity_analytic_id',
+        store=False
+    )
+
+    @api.depends('appropriation_line_ids')
+    def _compute_fund_analytic_id(self):
+        for record in self:
+            if record.appropriation_line_ids:
+                record.compute_fund_analytic_id = record.appropriation_line_ids[-1].fund_analytic_id
+            else:
+                record.compute_fund_analytic_id = False
+
+    @api.depends('appropriation_line_ids')
+    def _compute_activity_analytic_id(self):
+        for record in self:
+            if record.appropriation_line_ids:
+                record.compute_activity_analytic_id = record.appropriation_line_ids[-1].activity_analytic_id
+            else:
+                record.compute_activity_analytic_id = False
+
     @api.depends("journal_id", "move_type")
     def _compute_appropriation_account(self):
         for move in self:
