@@ -401,7 +401,6 @@
                         type="object"
                         data-hotkey="v"
                         attrs="{'invisible': [('hide_post_button', '=', True)]}"
-                        groups="budget.group_budget_manager"
                     />
                     <button
                         name="button_draft"
