@@ -32,7 +32,6 @@
                             <field name="budget_amount"/>
                             <field name="allocated_amount" readonly="1"/>
                             <field name="remaining_amount" readonly="1"/>
-                            <field name="responsible_user_id"/>
                         </group>
                         <group>
                             <field name="budget_move_line_id" invisible="1"/>
@@ -85,7 +84,6 @@
                 <field name="budget_amount" sum="Total Budget"/>
                 <field name="allocated_amount" sum="Total Allocated"/>
                 <field name="remaining_amount" sum="Total Remaining"/>
-                <field name="responsible_user_id"/>
                 <field name="state" widget="badge" decoration-success="state == 'done'" decoration-warning="state == 'confirmed'" decoration-info="state == 'draft'"/>
                 <field name="department_analytic_id" optional="hide"/>
                 <field name="activity_analytic_id" optional="hide"/>
@@ -103,7 +101,6 @@
             <search string="Search Budget Projects">
                 <field name="name"/>
                 <field name="budget_account_id"/>
-                <field name="responsible_user_id"/>
                 <field name="department_analytic_id"/>
                 <field name="activity_analytic_id"/>
                 <field name="fund_analytic_id"/>
@@ -113,12 +110,9 @@
                 <filter string="Confirmed" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
                 <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
                 <separator/>
-                <filter string="My Projects" name="my_projects" domain="[('responsible_user_id', '=', uid)]"/>
-                <separator/>
                 <filter string="Current Year" name="current_year" domain="[('date_range_fy_id.name', 'ilike', time.strftime('%%Y'))]"/>
                 <group expand="0" string="Group By">
                     <filter string="Budget Account" name="group_account" context="{'group_by': 'budget_account_id'}"/>
-                    <filter string="Responsible" name="group_responsible" context="{'group_by': 'responsible_user_id'}"/>
                     <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
                     <filter string="Department" name="group_department" context="{'group_by': 'department_analytic_id'}"/>
                     <filter string="Activity" name="group_activity" context="{'group_by': 'activity_analytic_id'}"/>

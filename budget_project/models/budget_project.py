@@ -75,12 +75,6 @@ class BudgetProject(models.Model):
         required=True,
         tracking=True,
     )
-    responsible_user_id = fields.Many2one(
-        "res.users",
-        string="Responsible",
-        default=lambda self: self.env.user,
-        tracking=True,
-    )
     company_id = fields.Many2one(
         "res.company",
         string="Company",
