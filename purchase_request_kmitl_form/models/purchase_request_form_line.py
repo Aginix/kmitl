@@ -15,7 +15,16 @@ class PurchaseRequestFormLine(models.Model):
     product_id = fields.Many2one('product.product', string='Product', required=True)
     quantity = fields.Float(string='Quantity')
     description = fields.Text(string='Description')
-
+    product_uom = fields.Many2one(
+        'uom.uom',
+        string='Unit of Measure',
+        domain="[('category_id', '=', product_uom_category_id)]",
+    )
+    product_uom_category_id = fields.Many2one(
+        related='product_id.uom_id.category_id',
+        store=True,
+        readonly=True,
+    )
     unit_price = fields.Float(string='Unit Price')
     taxes = fields.Many2many('account.tax', string='Taxes')
 
@@ -26,3 +35,8 @@ class PurchaseRequestFormLine(models.Model):
     def _compute_subtotal(self):
         for line in self:
             line.subtotal = line.quantity * line.unit_price
+
+    @api.onchange('product_id')
+    def _onchange_product_id(self):
+        if self.product_id:
+            self.product_uom = self.product_id.uom_id

@@ -23,6 +23,14 @@
                         <label for="pr2_id"/>
                         <h1>
                             <field name="pr2_id" placeholder="Name..."/>
+                            <field name="product_id"/>
+                            <field name="description"/>
+                            <field name="quantity"/>
+                            <field name="unit_price"/>
+                            <field name="taxes"/>
+                            <field name="subtotal"/>
+                            <field name="product_uom_category_id" invisible="1"/>
+                            <field name="product_uom" domain="[('category_id', '=', product_uom_category_id)]"/>
                         </h1>
                     </div>
                 </sheet>

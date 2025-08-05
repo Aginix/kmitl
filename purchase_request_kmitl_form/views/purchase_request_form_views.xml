@@ -24,7 +24,7 @@
                 <header>
                     <button name="button_submit" string="submit" states="draft" type="object" class="btn-primary" />
                     <button name="button_approve" string="approve" states="submit" type="object" class="btn-primary" />
-                    <button name="action_create_purchase_order" string="สร้าง PO" states="approve" type="object" class="btn-secondary" />
+                    <button name="button_create_po" string="สร้าง PO" states="approve" type="object" class="btn-secondary" />
                     <button name="button_create" string="ส่งคำขออนุมัติ" states="submit" type="object" class="btn-secondary" />
                     <button name="button_reject" string="reject" states="submit" type="object" class="btn-secondary" />
                     <button name="button_reset" string="reset" states="submit,approve,reject" type="object" class="btn-secondary" />
@@ -58,6 +58,8 @@
                                     <field name="unit_price"/>
                                     <field name="taxes"/>
                                     <field name="subtotal"/>
+                                    <field name="product_uom_category_id" invisible="1"/>
+                                    <field name="product_uom" domain="[('category_id', '=', product_uom_category_id)]"/>
                                 </tree>
                             </field>
                         </page>

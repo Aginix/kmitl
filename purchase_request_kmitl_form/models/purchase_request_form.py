@@ -157,3 +157,37 @@ class PurchaseRequestForm(models.Model):
             rec.amount_untaxed = untaxed
             rec.amount_tax = taxes
             rec.amount_total = untaxed + taxes
+
+    def button_create_po(self):
+        self.ensure_one()
+
+        order_lines = []
+        for line in self.line_ids:
+            if not line.product_id or not line.product_uom:
+                raise UserError("Please fill in product and UOM for all lines.")
+
+            order_lines.append((0, 0, {
+                'product_id': line.product_id.id,
+                # 'product_uom': product_uom,
+                'product_qty': line.quantity,
+                'price_unit': line.unit_price,
+                'name': line.product_id.name,
+                'date_planned': self.start_date or fields.Datetime.now(),
+            }))
+
+        po = self.env['purchase.order'].create({
+            'partner_id': self.vendor.id,
+            'order_line': order_lines,
+            'currency_id': self.currency_id.id,
+            'date_order': fields.Datetime.now(),
+            'origin': self.ref,
+        })
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Purchase Order',
+            'res_model': 'purchase.order',
+            'res_id': po.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
