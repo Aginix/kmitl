@@ -44,3 +44,8 @@ class BudgetMoveLine(models.Model):
                 raise ValidationError(
                     _("Total project amounts cannot exceed the allocated budget amount.")
                 )
+
+    def _prepare_virtual_line_vals(self, original_vals, move, source_line_id=None):
+        vals = super()._prepare_virtual_line_vals(original_vals, move, source_line_id=source_line_id)
+        del vals["budget_project_ids"]
+        return vals
