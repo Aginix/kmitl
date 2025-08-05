@@ -93,7 +93,7 @@
                         </tree>
                     </field>
                     <separator string="คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}" />
-                    <field name="tor_committee_ids" nolabel="1" context="{'default_committee_type': 'tor_committee'}" attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}">
+                    <field name="tor_committee_ids" string="คณะกรรมการกำหนดคุณลักษณะเฉพาะ" context="{'default_committee_type': 'tor_committee'}" attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}">
                         <tree editable="bottom">
                             <field name="committee_type" invisible="1" />
                             <field name="employee_id" string="Employee" options="{'no_create': True, 'no_open': True}" />

@@ -85,6 +85,6 @@
         </field>
     </record>
 
-    <menuitem id="menu_purchase_request_2_submit_act" sequence="20" parent="menu_purchase_request_2_form" action="purchase_request_kmitl_form.action_purchase_request_submit" />
+    <menuitem id="menu_purchase_request_2_submit_act" sequence="20" parent="purchase_request_kmitl_form.menu_purchase_request_2_form" action="purchase_request_kmitl_form.action_purchase_request_submit" />
 
 </odoo>

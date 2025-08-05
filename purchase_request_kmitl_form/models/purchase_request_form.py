@@ -50,7 +50,11 @@ class PurchaseRequestForm(models.Model):
         help="The end date for the purchase order. If not set, the start date will be used.",
     )
     purchase_type = fields.Selection(
-        [("standard", "Standard"), ("urgent", "Urgent")],
+        selection=[
+            ('order', 'ใบสั่งซื้อ/จ้าง'),
+            ('contract_buy', 'สัญญาซื้อขาย'),
+            ('contract_construction', 'สัญญาจ้างก่อสร้าง'),
+        ],
         string="ประเภทสัญญา",
         states={"submit": [("readonly", True)],
         "approve": [("readonly", True)]},
@@ -181,6 +185,11 @@ class PurchaseRequestForm(models.Model):
             'currency_id': self.currency_id.id,
             'date_order': fields.Datetime.now(),
             'origin': self.ref,
+            'pr1_id': self.id,
+            'pr2_id': self.purchase_request_id.id,
+            'purchase_title': self.purchase_request_name,
+            'purchase_type': self.purchase_type,
+
         })
 
         return {

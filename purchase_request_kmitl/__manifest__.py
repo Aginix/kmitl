@@ -5,7 +5,7 @@
     "author": "",
     "website": "",
     "category": "",
-    "depends": ["l10n_th_gov_purchase_request", "l10n_th_base_sequence"],
+    "depends": ["l10n_th_gov_purchase_request", "l10n_th_base_sequence", "purchase_request"],
     "data": [
         "data/purchase_request_kmitl_sequence.xml",
         "views/purchase_request_views.xml",

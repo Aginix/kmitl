@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+
+    <!-- View purchase.order form -->
+    <record id="view_purchase_order_form" model="ir.ui.view">
+        <field name="name">view.purchase.order.form</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_ref']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='requisition_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_order']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_planned']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='alternative_pos']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//div[@name='date_planned_div']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//div[@name='reminder']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="contractor_name" />
+                <field name="contract_start_date" />
+                <field name="contract_end_date" />
+                <field name="po_custom_number" />
+                <field name="purchase_type" />
+                <field name="work_start_date" />
+                <field name="work_end_date" />
+                <field name="purchase_title" />
+                <field name="penalty_per_day" />
+                <field name="pr1_id" />
+                <field name="pr2_id" />
+            </xpath>
+        </field>
+    </record>
+
+  </odoo>
