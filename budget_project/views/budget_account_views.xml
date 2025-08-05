@@ -19,7 +19,7 @@
         <field name="model">budget.account</field>
         <field name="inherit_id" ref="budget.view_budget_account_tree"/>
         <field name="arch" type="xml">
-            <field name="type" position="after">
+            <field name="deprecated" position="after">
                 <field name="project_enabled" optional="show"/>
             </field>
         </field>
