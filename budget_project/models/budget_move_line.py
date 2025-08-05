@@ -29,14 +29,14 @@ class BudgetMoveLine(models.Model):
         digits="Budget",
     )
 
-    @api.depends("budget_project_ids", "budget_project_ids.budget_amount", "allocated")
+    @api.depends("budget_project_ids", "budget_project_ids.budget_amount", "balance")
     def _compute_project_amounts(self):
         for line in self:
             total = sum(line.budget_project_ids.mapped("budget_amount"))
             line.total_project_amount = total
-            line.unallocated_project_amount = line.allocated - total
+            line.unallocated_project_amount = line.balance - total
 
-    @api.constrains("budget_project_ids", "allocated")
+    @api.constrains("budget_project_ids", "balance")
     def _check_project_amounts(self):
         for line in self:
             if line.project_enabled and line.unallocated_project_amount < 0:
