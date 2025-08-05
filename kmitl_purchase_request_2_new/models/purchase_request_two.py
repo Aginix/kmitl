@@ -18,7 +18,10 @@ class PurchaseRequestTwo(models.Model):
         readonly=True, 
         default='New')
 
-    pr1_ref = fields.Char(string='รหัส PR1')
+    pr1_ref = fields.Many2one(
+        'purchase.request',
+        string='อ้างอิง PR1'
+    )
 
     vendor = fields.Many2one(
         "res.partner",
@@ -155,6 +158,11 @@ class PurchaseRequestTwo(models.Model):
             'partner_id': self.vendor.id,
             'order_line': order_lines,
             'origin': self.name,
+            'contract_start_date': self.start_date,
+            'contract_end_date': self.end_date,
+            'purchase_request_name': self.purchase_request_name,
+            'pr1_ref': self.pr1_ref.id,
+            'pr2_ref': self.id,
         })
 
         self.state = 'po_created'

@@ -50,7 +50,7 @@
                         </h1>
                         <label for="pr1_ref"/>
                         <h2>
-                            <field name="pr1_ref" />
+                            <field name="pr1_ref" options="{'no_create': True}" context="{}"/>
                         </h2>
                     </div>
                     
