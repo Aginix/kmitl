@@ -12,6 +12,7 @@
                 <field name="vendor" />
                 <field name="payment_type" />
                 <field name="amount_total" />
+                <field name="state" />
             </tree>
         </field>
     </record>
@@ -26,8 +27,20 @@
                     <button name="action_merge_to_submitted"
                             type="object"
                             string="สร้าง PR2"
+                            class="btn-primary"
+                            states="draft"
+                            />
+                    <button name="make_purchase_order"
+                            string="สร้าง PO"
+                            type="object"
+                            class="btn-primary"
+                            states="approved"/>
+                    <button name="button_draft"
+                            type="object"
+                            string="Reset"
                             class="btn-secondary"
                             />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved,po_created,rejected"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -48,6 +61,7 @@
                         <field name="purchase_type" />
                         <field name="payment_type" />
                         <field name="purchase_request_name" />
+                        <field name="generate_po"/>
                     </group>
 
                     <notebook>

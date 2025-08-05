@@ -59,7 +59,10 @@ class PurchaseRequestTwo(models.Model):
     state = fields.Selection([
         ('draft', 'Draft'),
         ('submitted', 'Submitted'),
-    ], string='Status', default='draft')
+        ('approved', 'Approved'),
+        ('po_created', 'PO Created'),
+        ('rejected', 'Rejected')
+    ], default='draft', string='Status', tracking=True)
 
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.company.currency_id)
     
@@ -68,6 +71,8 @@ class PurchaseRequestTwo(models.Model):
     amount_total = fields.Monetary(string='รวมเป็นเงินทั้งสิ้น', compute='_compute_amount', store=True)
     
     submitted_id = fields.Many2one('purchase.request.two.submitted', string='Included in Submitted', readonly=True)
+
+    generate_po = fields.Boolean(string='Generate Purchase Order?', default=True)
     
     def action_submit(self):
         self.write({'state': 'submitted'})
@@ -97,6 +102,7 @@ class PurchaseRequestTwo(models.Model):
         return super().create(vals)
 
     def action_merge_to_submitted(self):
+        self.write({'state': 'submitted'})
         self.ensure_one()
 
         submitted = self.env['purchase.request.two.submitted'].create({
@@ -114,5 +120,49 @@ class PurchaseRequestTwo(models.Model):
             'res_model': 'purchase.request.two.submitted',
             'view_mode': 'form',
             'res_id': submitted.id,
+            'target': 'current',
+        }
+
+    def button_draft(self):
+        self.write({'state': 'draft'})
+
+    def make_purchase_order(self):
+        self.ensure_one()
+
+        if not self.generate_po:
+            return
+
+        if self.state != 'approved':
+            raise UserError("This PR2 is not ready for PO. Please approve first.")
+
+        if not self.vendor:
+            raise UserError("Vendor is required.")
+
+        order_lines = []
+        for line in self.line_ids:
+            if not line.product_id or not line.quantity:
+                raise UserError("Please fill all required line data.")
+            order_lines.append((0, 0, {
+                'product_id': line.product_id.id,
+                'name': line.description or line.product_id.display_name,
+                'product_qty': line.quantity,
+                'price_unit': line.unit_price,
+                'taxes_id': [(6, 0, line.taxes.ids)],
+                'product_uom': line.product_id.uom_po_id.id,
+            }))
+
+        po = self.env['purchase.order'].create({
+            'partner_id': self.vendor.id,
+            'order_line': order_lines,
+            'origin': self.name,
+        })
+
+        self.state = 'po_created'
+
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'purchase.order',
+            'res_id': po.id,
+            'view_mode': 'form',
             'target': 'current',
         }
