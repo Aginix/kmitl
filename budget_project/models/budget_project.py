@@ -36,7 +36,7 @@ class BudgetProject(models.Model):
         store=True,
         digits="Budget",
     )
-    
+
     # Budget integration
     budget_move_line_id = fields.Many2one(
         "budget.move.line",
@@ -58,10 +58,10 @@ class BudgetProject(models.Model):
         domain="[('project_enabled', '=', True)]",
         tracking=True,
     )
-    
+
     # Financial dimensions - inherited from AnalyticDistributionMixin
     # department_analytic_id, activity_analytic_id, fund_analytic_id, source_analytic_id
-    
+
     # Additional fields
     state = fields.Selection(
         [
@@ -104,7 +104,7 @@ class BudgetProject(models.Model):
     note = fields.Text(
         string="Notes",
     )
-    
+
     # Related fields for reporting
     date_range_fy_id = fields.Many2one(
         "account.fiscal.year",
@@ -114,12 +114,12 @@ class BudgetProject(models.Model):
         readonly=True,
     )
 
-    @api.depends("budget_move_line_id", "budget_move_line_id.allocated")
+    @api.depends("budget_move_line_id", "budget_move_line_id.balance")
     def _compute_allocated_amount(self):
         for project in self:
             if project.budget_move_line_id:
                 # Get allocated amount from related budget move line
-                project.allocated_amount = project.budget_move_line_id.allocated
+                project.allocated_amount = project.budget_move_line_id.balance
             else:
                 project.allocated_amount = 0.0
 
