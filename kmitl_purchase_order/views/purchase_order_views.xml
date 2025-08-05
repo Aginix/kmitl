@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+      
+    <!-- View purchase.order form -->
+    <record id="view_purchase_order_form" model="ir.ui.view">
+        <field name="name">view.purchase.order.form</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='button_confirm']" position="before">
+                <field name="show_egp_button" invisible="1" />
+                <button
+                    name="egp"
+                    string="EGP"
+                    class="btn btn-primary"
+                    type="object"
+                    attrs="{'invisible': ['|',('show_egp_button', '=', False), ('state', 'not in', ('draft','sent'))]}"
+                />
+                <button
+                    name="egp_comfirm"
+                    type="object"
+                    states="egp"
+                    context="{'validate_analytic': True}"
+                    string="Confirm Order"
+                    id="draft_confirm"
+                />
+            </xpath>
+            <xpath expr="//field[@name='currency_id']/../.." position="after">
+                <group>
+                    <field name="department_id" />
+                    <field name="request_by" />
+                    <field name="contract_start_date" />
+                    <field name="contract_end_date" />
+                    <field name="contract_type" string="ประเภทสัญญา/ใบสั่งซื้อ/จ้าง" />
+                    <field name="work_start_date" />
+                    <field name="work_end_date" />
+                    <field name="purchase_request_name" />
+                    <field name="fee" />
+                    <field name="pr1_ref" />
+                    <field name="pr2_ref" />
+
+                    <!-- <field name="approval_date" attrs="{'invisible': [('state','not in',('draft','sent'))]}"/>
+                    <field name="approval_by" attrs="{'invisible': [('state','not in',('draft','sent'))]}"/>
+                    <field name="payment_type" attrs="{'invisible': [('state','not in',('draft','sent'))]}"/> -->
+                    <!-- <field name="request_ids" options="{'no_create': True}" attrs="{'invisible': [('state','not in',('draft','sent'))]}"/> -->
+                </group>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="attributes">
+                <attribute name="statusbar_visible">draft,sent,egp,purchase</attribute>
+            </xpath>
+            <!-- <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': [('state', 'in', ['draft','sent'])]}</attribute>
+            </xpath> -->
+            <xpath expr="//field[@name='currency_id']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': [('state', 'in', ['draft','sent','purchase'])]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_ref']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': [('state', 'in', ['draft','sent','purchase'])]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_order']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': [('state', 'in', ['draft','sent','purchase'])]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_planned']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': [('state', 'in', ['draft','sent','purchase'])]}</attribute>
+            </xpath>
+            <xpath expr="//label[@for='date_planned']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': [('state', 'in', ['draft','sent','purchase'])]}</attribute>
+            </xpath>
+            <xpath expr="//div[@name='date_planned_div']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': [('state', 'in', ['draft','sent'])]}</attribute>
+            </xpath>
+            <xpath expr="//div[@name='date_approve']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//div[@name='reminder']" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': [('state', 'in', ['draft','sent','purchase'])]}</attribute>
+            </xpath>
+            
+            <!-- <xpath expr="//notebook" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible': [('state', 'in', ['draft','sent'])]}</attribute>
+            </xpath> -->
+
+            <xpath expr="//page[@name='purchase_delivery_invoice']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//notebook" position="inside">
+                <page name="bidders" string="รายชื่อผู้เสนอราคา">
+                    <field name="bid_line_ids">
+                        <tree editable="bottom">
+                            <field name="bidder_id"/>
+                            <field name="price_offer"/>
+                        </tree>
+                    </field>
+                </page>
+
+                <page name="document" string="เอกสารแนบ">
+                    <field name="document_ids">
+                          <tree editable="bottom">
+                              <field name="file" filename="file_name" />
+                              <field name="file_name" readonly="1" />
+                              <field name="description" />
+                          </tree>
+                      </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+  </odoo>
