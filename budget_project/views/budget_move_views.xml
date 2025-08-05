@@ -37,9 +37,6 @@
                     </tree>
                 </field>
             </xpath>
-            <xpath expr="//field[@name='procurement_plan_ids']" position="after">
-                <field name="unallocated_balance" attrs="{'invisible': [('procurement_plan', '=', False)], 'readonly': True}" />
-            </xpath>
         </field>
     </record>
 
