@@ -35,8 +35,6 @@
                             <field name="responsible_user_id"/>
                         </group>
                         <group>
-                            <field name="date_from"/>
-                            <field name="date_to"/>
                             <field name="budget_move_line_id" invisible="1"/>
                             <field name="budget_move_id" readonly="1" attrs="{'invisible': [('budget_move_id', '=', False)]}"/>
                             <field name="date_range_fy_id" readonly="1" attrs="{'invisible': [('date_range_fy_id', '=', False)]}"/>
@@ -48,7 +46,7 @@
                         <page string="Financial Dimensions" name="financial_dimensions">
                             <group>
                                 <group string="Dimensions">
-                                    <field name="department_analytic_id" options="{'no_create': True}" 
+                                    <field name="department_analytic_id" options="{'no_create': True}"
                                            domain="[('root_plan_id.code', '=', 'departments')]"/>
                                     <field name="activity_analytic_id" options="{'no_create': True}"
                                            domain="[('root_plan_id.code', '=', 'activities')]"/>
@@ -88,8 +86,6 @@
                 <field name="allocated_amount" sum="Total Allocated"/>
                 <field name="remaining_amount" sum="Total Remaining"/>
                 <field name="responsible_user_id"/>
-                <field name="date_from" optional="show"/>
-                <field name="date_to" optional="show"/>
                 <field name="state" widget="badge" decoration-success="state == 'done'" decoration-warning="state == 'confirmed'" decoration-info="state == 'draft'"/>
                 <field name="department_analytic_id" optional="hide"/>
                 <field name="activity_analytic_id" optional="hide"/>

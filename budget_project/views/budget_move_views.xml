@@ -28,8 +28,6 @@
                     <tree editable="bottom">
                         <field name="name"/>
                         <field name="budget_amount" sum="Total Budget"/>
-                        <field name="date_from" optional="show"/>
-                        <field name="date_to" optional="show"/>
                         <field name="responsible_user_id"/>
                         <field name="state" widget="badge" decoration-success="state == 'done'" decoration-warning="state == 'confirmed'" decoration-info="state == 'draft'"/>
                         <field name="description" optional="hide"/>

@@ -75,14 +75,6 @@ class BudgetProject(models.Model):
         required=True,
         tracking=True,
     )
-    date_from = fields.Date(
-        string="Start Date",
-        tracking=True,
-    )
-    date_to = fields.Date(
-        string="End Date",
-        tracking=True,
-    )
     responsible_user_id = fields.Many2one(
         "res.users",
         string="Responsible",
