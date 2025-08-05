@@ -24,18 +24,6 @@ class BudgetProject(models.Model):
         tracking=True,
         digits="Budget",
     )
-    allocated_amount = fields.Float(
-        string="Allocated Amount",
-        compute="_compute_allocated_amount",
-        store=True,
-        digits="Budget",
-    )
-    remaining_amount = fields.Float(
-        string="Remaining Amount",
-        compute="_compute_remaining_amount",
-        store=True,
-        digits="Budget",
-    )
 
     # Budget integration
     budget_move_line_id = fields.Many2one(
@@ -100,20 +88,6 @@ class BudgetProject(models.Model):
         readonly=True,
     )
 
-    @api.depends("budget_move_line_id", "budget_move_line_id.balance")
-    def _compute_allocated_amount(self):
-        for project in self:
-            if project.budget_move_line_id:
-                # Get allocated amount from related budget move line
-                project.allocated_amount = project.budget_move_line_id.balance
-            else:
-                project.allocated_amount = 0.0
-
-    @api.depends("budget_amount", "allocated_amount")
-    def _compute_remaining_amount(self):
-        for project in self:
-            project.remaining_amount = project.budget_amount - project.allocated_amount
-
     @api.constrains("budget_amount")
     def _check_budget_amount(self):
         for project in self:
@@ -123,8 +97,13 @@ class BudgetProject(models.Model):
     @api.constrains("budget_move_line_id")
     def _check_virtual_line(self):
         for project in self:
-            if project.budget_move_line_id and project.budget_move_line_id.is_virtual_line:
-                raise ValidationError(_("Cannot create projects on virtual budget lines."))
+            if (
+                project.budget_move_line_id
+                and project.budget_move_line_id.is_virtual_line
+            ):
+                raise ValidationError(
+                    _("Cannot create projects on virtual budget lines.")
+                )
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -134,9 +113,14 @@ class BudgetProject(models.Model):
                 line = self.env["budget.move.line"].browse(vals["budget_move_line_id"])
                 # Check if line is virtual
                 if line.is_virtual_line:
-                    raise ValidationError(_("Cannot create projects on virtual budget lines."))
+                    raise ValidationError(
+                        _("Cannot create projects on virtual budget lines.")
+                    )
                 # Set default analytic dimensions from budget move line
-                if not vals.get("department_analytic_id") and line.department_analytic_id:
+                if (
+                    not vals.get("department_analytic_id")
+                    and line.department_analytic_id
+                ):
                     vals["department_analytic_id"] = line.department_analytic_id.id
                 if not vals.get("activity_analytic_id") and line.activity_analytic_id:
                     vals["activity_analytic_id"] = line.activity_analytic_id.id

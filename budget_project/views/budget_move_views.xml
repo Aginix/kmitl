@@ -48,6 +48,22 @@
                 <field name="total_project_amount" optional="hide"/>
                 <field name="unallocated_project_amount" optional="hide"/>
             </xpath>
+
+            <xpath expr="//notebook" position="inside">
+                <page name="procurement_plan" string="แผนการจัดซื้อจัดจ้าง" attrs="{'invisible': [('budget_type', '!=', 'expense')]}">
+                    <field name="procurement_plan_ids">
+                        <tree>
+                            <field name="budget_account_id"/>
+                            <field name="name"/>
+                            <field name="amount" />
+                            <field name="unit" />
+                            <field name="price_per_unit" />
+                            <field name="total_price"/>
+                            <field name="procurement_method_id" />
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
         </field>
     </record>
 
