@@ -107,7 +107,7 @@ class BudgetProject(models.Model):
     
     # Related fields for reporting
     date_range_fy_id = fields.Many2one(
-        "date.range",
+        "account.fiscal.year",
         string="Fiscal Year",
         related="budget_move_line_id.date_range_fy_id",
         store=True,
