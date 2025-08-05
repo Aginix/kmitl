@@ -495,11 +495,13 @@
                             <field name="total_amount" readonly="1" />
                             <field name="move_type" invisible="1" />
                             <field name="appropriation_account_id" invisible="1" />
+                            <field name="compute_fund_analytic_id" invisible="1" />
+                            <field name="compute_activity_analytic_id" invisible="1" />
                         </group>
                     </group>
                     <notebook>
                         <page string="Budget Allocation Lines" name="appropriation_lines">
-                            <field name="appropriation_line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}" widget="budget_line" style="max-width: 100%; display: block;">
+                            <field name="appropriation_line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}" widget="budget_line" style="max-width: 100%; display: block;" context="{'default_fund_analytic_id': compute_fund_analytic_id, 'default_activity_analytic_id': compute_activity_analytic_id}">
                                 <tree decoration-muted="is_virtual_line == True">
                                     <field name="budget_type" invisible="1"/>
                                     <field name="is_virtual_line" invisible="1"/>

@@ -30,6 +30,13 @@ class BudgetAppropriationOverviewReport(models.TransientModel):
         default="all",
     )
 
+    def _sort_key(self, node):
+        custom_order = ['09', '06', '00']
+        try:
+            return custom_order.index(node.get('code', ''))
+        except ValueError:
+            return len(custom_order)
+
     @api.model
     def get_hierarchical_overview_data(self, filters):
         """Generate hierarchical data from multiple budget moves"""
@@ -55,7 +62,7 @@ class BudgetAppropriationOverviewReport(models.TransientModel):
 
         # Build hierarchy using the existing logic from budget_appropriation_report
         hierarchy = self._build_aggregated_hierarchy(all_lines)
-
+        hierarchy.sort(key=self._sort_key)
         # Get unique fiscal years
         fiscal_years = moves.mapped("date_range_fy_id")
         fiscal_year_names = ", ".join(fiscal_years.mapped("name"))

@@ -28,6 +28,11 @@
                     name="รายการจัดการ"
                     action="action_view_move_budget_regular_appropriation"
                 />
+                <menuitem
+                    id="action_view_move_budget_appropriation_year_menu_action"
+                    name="จัดสรรต้นปี"
+                    action="action_view_move_budget_appropriation_type"
+                />
             </menuitem>
         </menuitem>
 
