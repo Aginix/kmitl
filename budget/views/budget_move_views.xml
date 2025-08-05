@@ -116,7 +116,7 @@
                                 attrs="{'readonly': [('id', '!=', False)]}"
                             />
                             <field name="move_type" required="1" />
-                            <field name="is_initial_appropriation" 
+                            <field name="is_initial_appropriation"
                                    attrs="{'invisible': [('move_type', '!=', 'appropriation')]}" />
                         </group>
                     </group>
@@ -550,6 +550,7 @@
                         </page>
                         <page string="Other Info" name="other_info">
                             <group>
+                                <field name="is_initial_appropriation" />
                                 <field
                                     name="note"
                                     placeholder="Additional notes..."
