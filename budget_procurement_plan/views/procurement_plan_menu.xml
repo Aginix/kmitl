@@ -7,4 +7,12 @@
             parent="budget.budget_root_menu"
             action="procurement_plan.action_procurement_plan"
         />
+
+        <menuitem
+            id="budget_procurement_plan_report_menu"
+            name="ภาพรวมแผนจัดซื้อจัดจ้าง"
+            sequence="2"
+            parent="budget.budget_reporting_menu"
+            action="procurement_plan.action_procurement_plan_report"
+        />
 </odoo>
