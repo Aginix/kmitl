@@ -121,3 +121,9 @@ class PurchaseOrder(models.Model):
     def egp_comfirm(self):
         for order in self:
             order.state = "purchase"
+
+    @api.model
+    def create(self, vals):
+        if vals.get('name', 'New') in ('New', '/'):
+            vals['name'] = self.env['ir.sequence'].next_by_code('purchase.order.custom') or '/'
+        return super(PurchaseOrder, self).create(vals)

@@ -8,6 +8,7 @@
     'category': '',
     'depends': ['base', 'web', 'kmitl_purchase_request', 'kmitl_purchase_request_2_new', 'purchase_invoice_plan', 'purchase_no_rfq'],
     "data": [
+        "data/purchase_order_sequence.xml",
         "security/ir.model.access.csv",
         "views/purchase_invoice_inherit_views.xml",
         "views/purchase_create_invoice_plan_views.xml",

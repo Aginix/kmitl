@@ -20,7 +20,8 @@ class PurchaseRequestTwo(models.Model):
 
     pr1_ref = fields.Many2one(
         'purchase.request',
-        string='อ้างอิง PR1'
+        string='อ้างอิง PR1',
+        readonly=True
     )
 
     vendor = fields.Many2one(
@@ -42,7 +43,7 @@ class PurchaseRequestTwo(models.Model):
         help="The number of the purchase request associated with the selected lines.",
     )
     purchase_type = fields.Selection(
-        [("standard", "Standard"), ("urgent", "Urgent")],
+        [("order", "ใบสั่งซื้อ/จ้าง"), ("procurement", "สัญญาซื้อข้าย"), ("construction", "สัญญาจ้างก่อสร้าง")],
         string="ประเภทสัญญา",
         help="Select the type of purchase order to create. Standard for regular orders, Urgent for expedited orders.",
     )
@@ -158,6 +159,7 @@ class PurchaseRequestTwo(models.Model):
             'partner_id': self.vendor.id,
             'order_line': order_lines,
             'origin': self.name,
+            'contract_type' : self.purchase_type,
             'contract_start_date': self.start_date,
             'contract_end_date': self.end_date,
             'purchase_request_name': self.purchase_request_name,
