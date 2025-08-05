@@ -50,16 +50,16 @@
             </xpath>
 
             <xpath expr="//notebook" position="inside">
-                <page name="procurement_plan" string="แผนการจัดซื้อจัดจ้าง" attrs="{'invisible': [('budget_type', '!=', 'expense')]}">
-                    <field name="procurement_plan_ids">
+                <page name="budget_project" string="โครงการ/กิจกรรม" attrs="{'invisible': [('budget_type', '!=', 'expense')]}">
+                    <field name="budget_project_ids">
                         <tree>
                             <field name="budget_account_id"/>
                             <field name="name"/>
-                            <field name="amount" />
-                            <field name="unit" />
-                            <field name="price_per_unit" />
-                            <field name="total_price"/>
-                            <field name="procurement_method_id" />
+                            <field name="budget_amount" sum="Total Budget"/>
+                            <field name="department_analytic_id" options="{'no_create': True}" domain="[('root_plan_id.code', '=', 'departments')]"/>
+                            <field name="activity_analytic_id" options="{'no_create': True}" domain="[('root_plan_id.code', '=', 'activities')]"/>
+                            <field name="fund_analytic_id" options="{'no_create': True}" domain="[('root_plan_id.code', '=', 'funds')]"/>
+                            <field name="source_analytic_id" options="{'no_create': True}" domain="[('root_plan_id.code', '=', 'sources')]"/>
                         </tree>
                     </field>
                 </page>
