@@ -16,6 +16,7 @@ class PurchaseRequestForm(models.Model):
         ("draft", "Draft"),
         ("submit", "Submit"),
         ("approve", "approved"),
+        ("reject", "reject"),
     ]
 
     ref = fields.Char(string="reference")
@@ -79,6 +80,15 @@ class PurchaseRequestForm(models.Model):
 
     def button_submit(self):
         return self.write({"state": "submit"})
+
+    def button_approve(self):
+        return self.write({"state": "approve"})
+
+    def button_reject(self):
+        return self.write({"state": "reject"})
+
+    def button_reset(self):
+        return self.write({"state": "draft"})
 
     @api.model_create_multi
     def create(self, vals_list):
