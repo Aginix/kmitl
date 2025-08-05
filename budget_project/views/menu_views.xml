@@ -4,7 +4,7 @@
     <!-- Menu item for Budget Projects -->
     <menuitem id="menu_budget_project"
               name="Projects/Activities"
-              parent="budget.budget_menu_main"
+              parent="budget.budget_root_menu"
               action="action_budget_project"
               sequence="50"/>
 
