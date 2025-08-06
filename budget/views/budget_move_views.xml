@@ -231,6 +231,7 @@
                             domain="[('budget_type', '=', budget_type), ('budgetable', '=', True), '|', ('fund_analytic_ids', '=', False), ('fund_analytic_ids', 'in', [fund_analytic_id])]"
                         />
                         <field name="balance" />
+                        <field name="unallocated_balance" attrs="{'invisible': [('hide_unallocated_balance', '=', True)]}" />
                         <field name="debit" invisible="1" />
                         <field name="credit" invisible="1" />
                         <field name="note" />

@@ -90,6 +90,13 @@ class BudgetMoveLine(models.Model):
         readonly=False,
         tracking=True,
     )
+    unallocated_balance = fields.Float(
+        string="ยังไม่ระบุรายการ",
+        help="จำนวนเงินที่ยังไม่มีการวางแผนการใช้งาน แต่ต้องการจองจำนวนเงินไว้ก่อน",
+        store=True,
+        required=False,
+        digits="Budget",
+    )
     credit = fields.Float(
         readonly=False,
         digits="Budget Precision",
@@ -141,6 +148,9 @@ class BudgetMoveLine(models.Model):
         default=False,
         help="Line created automatically for double-entry",
     )
+    hide_unallocated_balance = fields.Boolean(
+        compute="_compute_hide_unallocated_balance", readonly=True
+    )
     source_line_id = fields.Many2one(
         comodel_name="budget.move.line",
         string="Source Line",
@@ -152,10 +162,12 @@ class BudgetMoveLine(models.Model):
     @api.model
     def default_get(self, fields):
         res = super().default_get(fields)
-        if 'default_activity_analytic_id' in self.env.context:
-            res['activity_analytic_id'] = self.env.context['default_activity_analytic_id']
-        if 'default_fund_analytic_id' in self.env.context:
-            res['fund_analytic_id'] = self.env.context['default_fund_analytic_id']
+        if "default_activity_analytic_id" in self.env.context:
+            res["activity_analytic_id"] = self.env.context[
+                "default_activity_analytic_id"
+            ]
+        if "default_fund_analytic_id" in self.env.context:
+            res["fund_analytic_id"] = self.env.context["default_fund_analytic_id"]
         return res
 
     @api.depends("move_id", "move_id.department_analytic_id", "move_id.move_type")
@@ -186,6 +198,9 @@ class BudgetMoveLine(models.Model):
             else:
                 line.credit = -line.balance
                 line.debit = 0
+
+    def _compute_hide_unallocated_balance(self):
+        return True
 
     @api.onchange("balance")
     def _inverse_balance(self):
@@ -243,9 +258,9 @@ class BudgetMoveLine(models.Model):
                     regular_line = lines[regular_idx]
                     virtual_line = lines[virtual_idx]
                     # Set the source_line_id relationship
-                    virtual_line.with_context(skip_virtual_update=True).write({
-                        'source_line_id': regular_line.id
-                    })
+                    virtual_line.with_context(skip_virtual_update=True).write(
+                        {"source_line_id": regular_line.id}
+                    )
 
             exit_stack.enter_context(
                 self.env.protecting(
@@ -376,21 +391,28 @@ class BudgetMoveLine(models.Model):
                 # using source_line_id to maintain 1-1 relationships
                 for line in appropriation_lines:
                     # Find the virtual line linked to this regular line
-                    virtual_line = self.search([
-                        ('source_line_id', '=', line.id),
-                        ('is_virtual_line', '=', True)
-                    ], limit=1)
+                    virtual_line = self.search(
+                        [
+                            ("source_line_id", "=", line.id),
+                            ("is_virtual_line", "=", True),
+                        ],
+                        limit=1,
+                    )
 
                     if virtual_line:
                         # Update existing virtual line
                         virtual_update_vals = {}
                         if balance_update:
-                            virtual_update_vals['balance'] = -line.balance
+                            virtual_update_vals["balance"] = -line.balance
                         if analytic_update:
-                            virtual_update_vals['analytic_distribution'] = line.analytic_distribution
+                            virtual_update_vals["analytic_distribution"] = (
+                                line.analytic_distribution
+                            )
 
                         if virtual_update_vals:
-                            virtual_line.with_context(skip_virtual_update=True).write(virtual_update_vals)
+                            virtual_line.with_context(skip_virtual_update=True).write(
+                                virtual_update_vals
+                            )
                     else:
                         # Create missing virtual line (shouldn't happen in normal flow)
                         virtual_vals = self._prepare_virtual_line_vals(
@@ -485,15 +507,15 @@ class BudgetMoveLine(models.Model):
         """
         # Technical Note: Cascade Deletion via source_line_id
         # Find virtual lines that should be deleted along with regular lines
-        virtual_lines_to_delete = self.env['budget.move.line']
+        virtual_lines_to_delete = self.env["budget.move.line"]
 
         for line in self:
             if line.move_id.move_type == "appropriation" and not line.is_virtual_line:
                 # Find virtual line linked to this regular line
-                virtual_line = self.search([
-                    ('source_line_id', '=', line.id),
-                    ('is_virtual_line', '=', True)
-                ], limit=1)
+                virtual_line = self.search(
+                    [("source_line_id", "=", line.id), ("is_virtual_line", "=", True)],
+                    limit=1,
+                )
                 if virtual_line:
                     virtual_lines_to_delete |= virtual_line
 
