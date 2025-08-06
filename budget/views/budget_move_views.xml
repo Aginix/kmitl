@@ -716,22 +716,4 @@
             </p>
         </field>
     </record>
-    <record
-        id="action_view_move_budget_appropriation_type_tree"
-        model="ir.actions.act_window.view"
-    >
-        <field name="sequence" eval="1" />
-        <field name="view_id" ref="view_budget_app_tree" />
-        <field name="view_mode">tree</field>
-        <field name="act_window_id" ref="action_view_move_budget_appropriation_type" />
-    </record>
-    <record
-        id="action_view_move_budget_appropriation_type_form"
-        model="ir.actions.act_window.view"
-    >
-        <field name="sequence" eval="2" />
-        <field name="view_id" ref="view_budget_app_form" />
-        <field name="view_mode">form</field>
-        <field name="act_window_id" ref="action_view_move_budget_appropriation_type" />
-    </record>
 </odoo>
