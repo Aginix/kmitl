@@ -30,7 +30,6 @@
                         <field name="note" optional="hide"/>
                     </tree>
                 </field>
-                <field name="unallocated_balance" readonly="1"/>
             </xpath>
         </field>
     </record>
@@ -44,7 +43,6 @@
             <!-- Add project fields to appropriation lines tree -->
             <xpath expr="//field[@name='appropriation_line_ids']/tree" position="inside">
                 <field name="project_enabled" invisible="1"/>
-                <field name="unallocated_balance" optional="hide"/>
             </xpath>
 
             <xpath expr="//notebook" position="inside">
