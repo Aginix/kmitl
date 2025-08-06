@@ -205,6 +205,7 @@
                         <field name="date_range_fy_id" readonly="1" invisible="1" />
                         <field name="move_id" readonly="1" invisible="1" />
                         <field name="source_analytic_id" readonly="1" invisible="1" />
+                        <field name="hide_unallocated_balance" readonly="1" invisible="1" />
                         <field name="budget_type" invisible="1" />
                         <field
                             name="department_analytic_id"
