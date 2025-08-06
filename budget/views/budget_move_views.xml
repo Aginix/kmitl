@@ -472,7 +472,7 @@
                                 attrs="{'readonly': [('state', '!=', 'draft')]}"
                             />
                         </group>
-                        <group string="Accounting">
+                        <group string="Financial Dimensions">
                             <field
                                 name="journal_id"
                                 required="1"

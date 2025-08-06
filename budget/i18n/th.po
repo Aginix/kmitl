@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-08-06 10:15+0000\n"
-"PO-Revision-Date: 2025-08-06 17:21+0700\n"
+"PO-Revision-Date: 2025-08-06 18:08+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -976,12 +976,12 @@ msgstr "รหัสงบประมาณ"
 #. module: budget
 #: model_terms:ir.ui.view,arch_db:budget.budget_execution_status_line_form_view
 msgid "Budget Allocation"
-msgstr ""
+msgstr "จัดสรรงบประมาณ"
 
 #. module: budget
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_app_form
 msgid "Budget Allocation Lines"
-msgstr ""
+msgstr "รายการจัดสรรงบประมาณ"
 
 #. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_mixin__budget_amount
@@ -1042,7 +1042,7 @@ msgstr "ประมาณการรายรับ F4"
 #. module: budget
 #: model:ir.actions.act_window,name:budget.action_view_move_budget_appropriation
 msgid "Budget Appropriations"
-msgstr ""
+msgstr "การจัดสรรงบประมาณ"
 
 #. module: budget
 #. odoo-python
@@ -1624,7 +1624,7 @@ msgstr "ยกเลิก"
 #: model:ir.model.fields.selection,name:budget.selection__budget_move__state__cancel
 #: model:ir.model.fields.selection,name:budget.selection__budget_transfer__state__cancelled
 msgid "Cancelled"
-msgstr ""
+msgstr "ยกเลิก"
 
 #. module: budget
 #. odoo-python
@@ -1713,7 +1713,7 @@ msgstr ""
 #. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_report_line__code
 msgid "Code"
-msgstr ""
+msgstr "รหัส"
 
 #. module: budget
 #: model:ir.model.fields,help:budget.field_budget_report_line__code
@@ -1894,12 +1894,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:budget.field_budget_account__complete_name
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_account_search
 msgid "Complete Name"
-msgstr ""
+msgstr "ชื่อเต็ม"
 
 #. module: budget
 #: model_terms:ir.ui.view,arch_db:budget.budget_commitment_form_view
 msgid "Confirm"
-msgstr ""
+msgstr "ยืนยัน"
 
 #. module: budget
 #: model:ir.model.fields.selection,name:budget.selection__budget_commitment__state__confirmed
@@ -2028,7 +2028,7 @@ msgstr ""
 #. module: budget
 #: model_terms:ir.ui.view,arch_db:budget.budget_execution_status_report_search_view
 msgid "Current Fiscal Year"
-msgstr ""
+msgstr "ปีงบประมาณ"
 
 #. module: budget
 #: model:ir.model.fields,help:budget.field_budget_execution_status_line__current_budget
@@ -2084,7 +2084,7 @@ msgstr "ประเภทงบประมาณ"
 #: model_terms:ir.ui.view,arch_db:budget.budget_commitment_search_view model_terms:ir.ui.view,arch_db:budget.view_budget_app_search
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_move_line_search
 msgid "Department"
-msgstr ""
+msgstr "ส่วนงาน"
 
 #. module: budget
 #: model:ir.model.fields.selection,name:budget.selection__budget_report__report_type__department_analysis
@@ -2094,12 +2094,12 @@ msgstr ""
 #. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_execution_status_line__department_code
 msgid "Department Code"
-msgstr ""
+msgstr "รหัส"
 
 #. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_execution_status_line__department_name
 msgid "Department Name"
-msgstr ""
+msgstr "ชื่อสังกัด"
 
 #. module: budget
 #: model:ir.model.fields,help:budget.field_budget_transfer_line__department_analytic_id
@@ -2128,7 +2128,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_account_kanban model_terms:ir.ui.view,arch_db:budget.view_budget_account_search
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_account_tree
 msgid "Deprecated"
-msgstr ""
+msgstr "ยกเลิกการใช้งาน"
 
 #. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__description
@@ -2229,7 +2229,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:budget.selection__budget_commitment__state__done
 #: model_terms:ir.ui.view,arch_db:budget.budget_commitment_search_view
 msgid "Done"
-msgstr ""
+msgstr "เสร็จสิ้น"
 
 #. module: budget
 #: model:ir.model.fields.selection,name:budget.selection__budget_appropriation_overview_report__state__draft
@@ -2238,7 +2238,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:budget.selection__budget_transfer__state__draft
 #: model_terms:ir.ui.view,arch_db:budget.budget_commitment_search_view model_terms:ir.ui.view,arch_db:budget.view_budget_app_search
 msgid "Draft"
-msgstr ""
+msgstr "แบบร่าง"
 
 #. module: budget
 #: model_terms:ir.ui.view,arch_db:budget.budget_report_form_view
@@ -2279,12 +2279,12 @@ msgstr ""
 #: model:ir.model.fields.selection,name:budget.selection__budget_journal__default_budget_type__expense
 #: model:ir.model.fields.selection,name:budget.selection__budget_report__budget_type__expense
 msgid "Expense"
-msgstr ""
+msgstr "รายจ่าย"
 
 #. module: budget
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_account_search
 msgid "Expense Accounts"
-msgstr ""
+msgstr "รหัสงบประมาณรายจ่าย"
 
 #. module: budget
 #. odoo-python
@@ -2486,14 +2486,14 @@ msgstr ""
 #. module: budget
 #: model:ir.model.fields,help:budget.field_budget_commitment_line__fund_analytic_id
 msgid "Fund dimension - กองทุน"
-msgstr ""
+msgstr "กองทุน"
 
 #. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_execution_status_report__fund_analytic_ids
 #: model:ir.model.fields,field_description:budget.field_budget_report__fund_analytic_ids
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_account_tree
 msgid "Funds"
-msgstr ""
+msgstr "กองทุน"
 
 #. module: budget
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_app_form
@@ -2700,12 +2700,12 @@ msgstr ""
 #. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_move__is_initial_appropriation
 msgid "Initial Appropriation"
-msgstr ""
+msgstr "การจัดสรรงบประมาณต้นปี"
 
 #. module: budget
 #: model:ir.actions.act_window,name:budget.action_view_move_budget_initial_appropriation
 msgid "Initial Budget Appropriations"
-msgstr ""
+msgstr "การจัดสรรงบประมาณต้นปี"
 
 #. module: budget
 #: model:ir.model.fields,help:budget.field_budget_execution_status_line__initial_appropriation
@@ -2715,14 +2715,14 @@ msgstr ""
 #. module: budget
 #: model:ir.model.fields.selection,name:budget.selection__budget_commitment_line__budget_availability_status__insufficient
 msgid "Insufficient"
-msgstr ""
+msgstr "ไม่เพียงพอ"
 
 #. module: budget
 #. odoo-python
 #: code:addons/budget/models/budget_commitment_line.py:0 code:addons/budget/models/budget_transfer_line.py:0
 #, python-format
 msgid "Insufficient Budget"
-msgstr ""
+msgstr "งบประมาณไม่เพียงพอ"
 
 #. module: budget
 #. odoo-python
@@ -2995,7 +2995,7 @@ msgstr "ชื่อ"
 #: code:addons/budget/models/budget_transfer.py:0
 #, python-format
 msgid "New"
-msgstr ""
+msgstr "สร้างใหม่"
 
 #. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__activity_calendar_event_id
@@ -3587,7 +3587,7 @@ msgstr ""
 #. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_journal__code
 msgid "Short Code"
-msgstr ""
+msgstr "ตัวย่อ"
 
 #. module: budget
 #: model:ir.model.fields,help:budget.field_budget_journal__code
@@ -3703,7 +3703,7 @@ msgstr ""
 #. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_appropriation_overview_report__state
 msgid "State"
-msgstr ""
+msgstr "สถานะ"
 
 #. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__state
@@ -3730,22 +3730,22 @@ msgstr ""
 #. module: budget
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_account_form
 msgid "Sub Accounts"
-msgstr ""
+msgstr "รหัสงบประมาณ"
 
 #. module: budget
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_account_tree
 msgid "Sub-Accounts"
-msgstr ""
+msgstr "รหัสงบประมาณ"
 
 #. module: budget
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
 msgid "Submit for Approval"
-msgstr ""
+msgstr "ยื่นขออนุมัติ"
 
 #. module: budget
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_app_form model_terms:ir.ui.view,arch_db:budget.view_budget_move_form
 msgid "Submit for review"
-msgstr ""
+msgstr "ยื่นคำขอ"
 
 #. module: budget
 #: model:ir.model.fields.selection,name:budget.selection__budget_transfer__state__submitted
@@ -3836,7 +3836,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:budget.budget_commitment_form_view model_terms:ir.ui.view,arch_db:budget.view_budget_move_line_tree
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_tree
 msgid "Total"
-msgstr ""
+msgstr "รวม"
 
 #. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_report__total_actual
@@ -3862,7 +3862,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:budget.budget_execution_status_report_tree_view
 #: model_terms:ir.ui.view,arch_db:budget.budget_report_tree_view
 msgid "Total Budget"
-msgstr ""
+msgstr "งบประมาณรวม"
 
 #. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_report__total_commitment
@@ -3982,17 +3982,17 @@ msgstr ""
 #. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_transfer__amount
 msgid "Transfer Amount"
-msgstr ""
+msgstr "จำนวน"
 
 #. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_transfer__date
 msgid "Transfer Date"
-msgstr ""
+msgstr "วันที่"
 
 #. module: budget
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
 msgid "Transfer Details"
-msgstr ""
+msgstr "รายละเอียด"
 
 #. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_transfer__from_line_ids
@@ -4007,12 +4007,12 @@ msgstr ""
 #. module: budget
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_line_form
 msgid "Transfer Line"
-msgstr ""
+msgstr "รายการโอนงบประมาณ"
 
 #. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_transfer__line_ids
 msgid "Transfer Lines"
-msgstr ""
+msgstr "รายการโอนงบประมาณ"
 
 #. module: budget
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
@@ -4044,7 +4044,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:budget.field_budget_transfer__transfer_type
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_search
 msgid "Transfer Type"
-msgstr ""
+msgstr "ประเภท"
 
 #. module: budget
 #: model:ir.model.fields,help:budget.field_budget_transfer_line__amount
@@ -4084,7 +4084,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_account_tree
 #, python-format
 msgid "Type"
-msgstr ""
+msgstr "ประเภท"
 
 #. module: budget
 #: model:ir.model.fields,help:budget.field_budget_report_line__line_type
