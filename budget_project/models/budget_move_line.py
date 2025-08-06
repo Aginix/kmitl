@@ -17,30 +17,25 @@ class BudgetMoveLine(models.Model):
         readonly=True,
         store=True,
     )
-    total_project_amount = fields.Float(
-        string="Total Project Amount",
-        compute="_compute_project_amounts",
+    unallocated_balance = fields.Float(
+        string="ยังไม่ระบุรายการ",
+        help="จำนวนเงินที่ยังไม่มีการวางแผนการใช้งาน แต่ต้องการจองจำนวนเงินไว้ก่อน",
         store=True,
-        digits="Budget",
-    )
-    unallocated_project_amount = fields.Float(
-        string="Unallocated Project Amount",
-        compute="_compute_project_amounts",
-        store=True,
+        required=False,
+        compute="_compute_unallocated_balance",
         digits="Budget",
     )
 
     @api.depends("budget_project_ids", "budget_project_ids.budget_amount", "balance")
-    def _compute_project_amounts(self):
+    def _compute_unallocated_balance(self):
         for line in self:
             total = sum(line.budget_project_ids.mapped("budget_amount"))
-            line.total_project_amount = total
-            line.unallocated_project_amount = line.balance - total
+            line.unallocated_balance = line.balance - total
 
     @api.constrains("budget_project_ids", "balance")
     def _check_project_amounts(self):
         for line in self:
-            if line.project_enabled and line.unallocated_project_amount < 0:
+            if line.project_enabled and line.unallocated_balance < 0:
                 raise ValidationError(
                     _("Total project amounts cannot exceed the allocated budget amount.")
                 )

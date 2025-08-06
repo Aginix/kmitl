@@ -10,10 +10,8 @@
             <!-- Add project fields to tree view for visibility -->
             <xpath expr="//field[@name='balance']" position="before">
                 <field name="project_enabled" invisible="1" />
-                <field name="total_project_amount" readonly="1"/>
-                <field name="unallocated_project_amount" readonly="1"/>
             </xpath>
-            <xpath expr="//field[@name='balance']" position="before">
+            <xpath expr="//field[@name='balance']" position="after">
                 <field name="budget_project_ids" attrs="{'invisible': [('project_enabled', '=', False)]}" context="{
                     'from_budget_line': True,
                     'default_date_range_fy_id': date_range_fy_id,
@@ -32,6 +30,7 @@
                         <field name="note" optional="hide"/>
                     </tree>
                 </field>
+                <field name="unallocated_balance" readonly="1"/>
             </xpath>
         </field>
     </record>
@@ -45,8 +44,7 @@
             <!-- Add project fields to appropriation lines tree -->
             <xpath expr="//field[@name='appropriation_line_ids']/tree" position="inside">
                 <field name="project_enabled" invisible="1"/>
-                <field name="total_project_amount" optional="hide"/>
-                <field name="unallocated_project_amount" optional="hide"/>
+                <field name="unallocated_balance" optional="hide"/>
             </xpath>
 
             <xpath expr="//notebook" position="inside">
