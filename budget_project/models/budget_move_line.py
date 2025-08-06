@@ -18,8 +18,6 @@ class BudgetMoveLine(models.Model):
         store=True,
     )
     unallocated_balance = fields.Float(
-        string="ยังไม่ระบุรายการ",
-        help="จำนวนเงินที่ยังไม่มีการวางแผนการใช้งาน แต่ต้องการจองจำนวนเงินไว้ก่อน",
         store=True,
         required=False,
         compute="_compute_unallocated_balance",
@@ -28,9 +26,12 @@ class BudgetMoveLine(models.Model):
 
     @api.depends("budget_project_ids", "budget_project_ids.budget_amount", "balance")
     def _compute_unallocated_balance(self):
-        for line in self:
-            total = sum(line.budget_project_ids.mapped("budget_amount"))
-            line.unallocated_balance = line.balance - total
+        for rec in self:
+            if rec.project_enabled:
+                total = sum(rec.budget_project_ids.mapped("budget_amount"))
+                rec.unallocated_balance = rec.balance - total
+            else:
+                rec.unallocated_balance = rec.balance + rec.unallocated_balance
 
     @api.constrains("budget_project_ids", "balance")
     def _check_project_amounts(self):
