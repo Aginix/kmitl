@@ -264,7 +264,7 @@
                                 t-key="detail.id"
                             >
                                 <t t-if="detail.note">
-                                    <div class="text-muted small ms-3">
+                                    <div class="text-muted small ms-3" style="white-space: pre-line;">
                                         <t t-esc="detail.note" />
                                     </div>
                                 </t>

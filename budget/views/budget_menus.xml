@@ -17,6 +17,11 @@
                     name="รายการจัดการ"
                     action="action_view_move_budget_appropriation_type"
                 />
+                <menuitem
+                    id="action_view_move_budget_appropriation_year_menu_action"
+                    name="จัดสรรต้นปี"
+                    action="action_view_move_budget_appropriation_type"
+                />
             </menuitem>
         </menuitem>
 
@@ -71,7 +76,7 @@
         </menuitem>
 
         <menuitem id="budget_reporting_menu" name="รายงาน" sequence="90" />
-        <menuitem id="budget_config_menu" name="ตั้งค่า" sequence="99">
+        <menuitem id="budget_config_menu" name="ตั้งค่า" sequence="99" groups="budget.group_budget_manager">
             <menuitem
                 id="action_budget_account_menu_action"
                 name="รหัสงบประมาณ"
