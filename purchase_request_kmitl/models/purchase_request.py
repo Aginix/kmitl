@@ -15,7 +15,7 @@ class PurchaseRequest(models.Model):
     ("approved", "Approved"),
     ("done", "Done"),
     ("rejected", "Rejected"),
-]
+    ]
 
     state = fields.Selection(
         selection=_STATES,
@@ -32,6 +32,8 @@ class PurchaseRequest(models.Model):
         inverse_name="request_id",
         string="คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน",
         domain=[("committee_type", "=", "tor_committee")],
+        states={'draft': [('readonly', False)]},
+        readonly=True,
         copy=True,
     )
     price_determine_committee_ids = fields.One2many(
@@ -39,6 +41,8 @@ class PurchaseRequest(models.Model):
         inverse_name="request_id",
         string="คณะกรรมการกำหนดราคากลาง",
         domain=[("committee_type", "=", "price_determine")],
+        states={'draft': [('readonly', False)]},
+        readonly=True,
         copy=True,
     )
     evaluation_committee_ids = fields.One2many(
@@ -46,13 +50,26 @@ class PurchaseRequest(models.Model):
         inverse_name="request_id",
         string="คณะกรรมการพิจารณาผล",
         domain=[("committee_type", "=", "evaluation")],
+        states={'draft': [('readonly', False)]},
+        readonly=True,
         copy=True,
     )
-    source_of_fund = fields.Char(string="แหล่งเงิน")
-    plan = fields.Char(string="แผน/งาน/กิจกรรมหลัก/กิจกรรมรอง/ย่อย")
-    fund = fields.Char(string="กองทุน")
-    budget_type = fields.Char(string="ประเภทงบประมาณ")
-    expense_code = fields.Char(string="รหัสค่าใช้จ่าย")
+    payment_type = fields.Selection([
+        ("direct", "จ่ายตรง"),
+        ("loan", "เงินยืม"),
+        ("prepaid", "สำรองจ่าย")
+    ], string="ประเภทการจ่ายเงิน", states={'draft': [('readonly', False)]},
+    readonly=True)
+    source_of_fund = fields.Char(string="แหล่งเงิน",states={'draft': [('readonly', False)]},
+    readonly=True)
+    plan = fields.Char(string="แผน/งาน/กิจกรรมหลัก/กิจกรรมรอง/ย่อย",states={'draft': [('readonly', False)]},
+    readonly=True)
+    fund = fields.Char(string="กองทุน",states={'draft': [('readonly', False)]},
+    readonly=True)
+    budget_type = fields.Char(string="ประเภทงบประมาณ",states={'draft': [('readonly', False)]},
+    readonly=True)
+    expense_code = fields.Char(string="รหัสค่าใช้จ่าย",states={'draft': [('readonly', False)]},
+    readonly=True)
 
     @api.onchange("purchase_type_id")
     def _onchange_purchase_type_id(self):

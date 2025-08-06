@@ -61,7 +61,9 @@
             <xpath expr="//field[@name='line_ids']/tree/field[@name='date_required']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-
+            <xpath expr="//field[@name='requested_by']" position="after">
+                <field name="payment_type" />
+            </xpath>
             <xpath expr="//field[@name='line_ids']/tree/field[@name='purchased_qty']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
