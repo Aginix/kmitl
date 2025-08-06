@@ -27,6 +27,7 @@ class BudgetMoveLine(models.Model):
         "procurement_plan_ids.price_per_unit",
         "procurement_plan_ids.total_price",
         "balance",
+        "account_id.procurement_plan",
     )
     def _compute_unallocated_balance(self):
         super()._compute_unallocated_balance()

@@ -24,7 +24,12 @@ class BudgetMoveLine(models.Model):
         digits="Budget",
     )
 
-    @api.depends("budget_project_ids", "budget_project_ids.budget_amount", "balance")
+    @api.depends(
+        "budget_project_ids",
+        "budget_project_ids.budget_amount",
+        "balance",
+        "account_id.project_enabled",
+    )
     def _compute_unallocated_balance(self):
         super()._compute_unallocated_balance()
         for rec in self:
@@ -37,11 +42,15 @@ class BudgetMoveLine(models.Model):
         for line in self:
             if line.project_enabled and line.unallocated_balance < 0:
                 raise ValidationError(
-                    _("Total project amounts cannot exceed the allocated budget amount.")
+                    _(
+                        "Total project amounts cannot exceed the allocated budget amount."
+                    )
                 )
 
     def _prepare_virtual_line_vals(self, original_vals, move, source_line_id=None):
-        vals = super()._prepare_virtual_line_vals(original_vals, move, source_line_id=source_line_id)
+        vals = super()._prepare_virtual_line_vals(
+            original_vals, move, source_line_id=source_line_id
+        )
         if "budget_project_ids" in vals:
             del vals["budget_project_ids"]
         return vals
