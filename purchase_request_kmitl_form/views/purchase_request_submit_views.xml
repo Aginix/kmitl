@@ -8,9 +8,9 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="ref"/>
-                <field name="state" />
-                <field name="request_by" />
-                <field name="approve_by" />
+                <field name="state" widget="badge" decoration-success="state in ('approve')" decoration-muted="state == 'draft'" decoration-warning="state == 'submit'" decoration-danger="state == 'rejected'" />
+                <field name="request_by" widget="many2one_avatar_user" />
+                <field name="approve_by" widget="many2one_avatar_user" />
             </tree>
         </field>
     </record>
@@ -36,9 +36,9 @@
                         </h1>
                     </div>
                     <group>
-                        <field name="request_by" />
-                        <field name="approve_by" readonly="1" />
-                        <field name="approve_date" readonly="1" />
+                        <field name="request_by" widget="many2one_avatar_user" />
+                        <field name="approve_by" readonly="1" widget="many2one_avatar_user" />
+                        <field name="approve_date" readonly="1" widget="many2one_avatar_user" />
                         <field name="payment_type" />
                     </group>
                     <notebook>
