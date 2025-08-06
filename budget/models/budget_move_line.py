@@ -96,6 +96,7 @@ class BudgetMoveLine(models.Model):
         store=True,
         required=False,
         digits="Budget",
+        compute="_compute_unallocated_balance",
     )
     credit = fields.Float(
         readonly=False,
@@ -202,6 +203,10 @@ class BudgetMoveLine(models.Model):
     def _compute_hide_unallocated_balance(self):
         for line in self:
             line.hide_unallocated_balance = True
+
+    def _compute_unallocated_balance(self):
+        for rec in self:
+            rec.unallocated_balance = 0
 
     @api.onchange("balance")
     def _inverse_balance(self):
