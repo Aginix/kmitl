@@ -1,2 +1,5 @@
 id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
-access_purchase_request_manager,purchase_request_manager,model_purchase_request,,1,1,1,1
+access_purchase_request_finance,purchase.request,purchase_request.model_purchase_request,kmitl_purchase_request_tier_validation.group_pr_finance,1,1,1,1
+access_purchase_request_supply,purchase.request,purchase_request.model_purchase_request,kmitl_purchase_request_tier_validation.group_pr_supply,1,1,1,1
+access_purchase_request_approver,purchase.request,purchase_request.model_purchase_request,kmitl_purchase_request_tier_validation.group_pr_approver,1,1,1,1
+access_purchase_request_admin,purchase.request,purchase_request.model_purchase_request,kmitl_purchase_request_tier_validation.group_pr_admin,1,1,1,1

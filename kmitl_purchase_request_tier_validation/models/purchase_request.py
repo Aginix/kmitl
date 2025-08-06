@@ -98,20 +98,7 @@ class PurchaseRequest(models.Model):
             rec.date_committed = False
             rec.validate_by = False
             rec.date_validate = False
-        return res
-
-    is_finance_user = fields.Boolean(
-        string='Is Finance User',
-        compute='_compute_is_finance_user',
-        store=False
-    )
-    
-    @api.depends_context('uid')
-    def _compute_is_finance_user(self):
-        for record in self:
-            record.is_finance_user = self.env.user.has_group(
-                'kmitl_purchase_request_tier_validation.group_finance'
-            )        
+        return res       
 
     @api.model
     def _get_under_validation_exceptions(self):

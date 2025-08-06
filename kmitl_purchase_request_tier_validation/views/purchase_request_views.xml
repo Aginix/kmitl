@@ -6,28 +6,12 @@
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
 
-            <field name="state" position="after">
-                <field name="is_finance_user" invisible="1"/>
-            </field>
-            
-            <xpath expr="//page[@name='budget']//group[@name='budget']" position="attributes">
-                <attribute name="attrs">
-                    {
-                        'readonly': [
-                            '|',
-                            ('state', '!=', 'submit'),
-                            ('is_finance_user', '=', False)
-                        ]
-                    }
-                </attribute>
+            <xpath expr="//button[@name='button_approved']" position="attributes">
+                <attribute name="string">Confirm</attribute>
+                <attribute name="states">validate</attribute>
+                <attribute name="groups">kmitl_purchase_request_tier_validation.group_pr_approver,kmitl_purchase_request_tier_validation.group_pr_admin</attribute>
             </xpath>
 
-            <button name="button_approved" position="attributes">
-                <attribute name="string">Confirm</attribute>
-                <attribute
-                    name="attrs"
-                >{'invisible':['|', ('validation_status', 'in', ('pending', 'rejected')),('state', '!=', 'validate')]}</attribute>
-            </button>
             <field name="state" position="after">
                 <field name="validation_status" invisible="1" />
             </field>
@@ -55,31 +39,62 @@
             </field>
 
             <xpath expr="//button[@name='button_draft']" position="before">
-                <button name="action_submit" string="Submit" type="object" states="draft"></button>
-                <button name="action_commit" string="Commit" type="object" states="submit"></button>
-                <button name="action_validate" string="Validate" type="object" states="commit"></button>
+                <button name="action_submit" 
+                        string="Submit" 
+                        type="object" 
+                        states="draft">
+                        </button>
+                <button name="action_commit" 
+                        string="Commit" 
+                        type="object"
+                        groups="kmitl_purchase_request_tier_validation.group_pr_finance, kmitl_purchase_request_tier_validation.group_pr_admin" 
+                        states="submit">
+                        </button>
+                <button name="action_validate" 
+                        string="Validate" 
+                        type="object" 
+                        groups="kmitl_purchase_request_tier_validation.group_pr_supply, kmitl_purchase_request_tier_validation.group_pr_admin"
+                        states="commit">
+                        </button>
             </xpath>
 
             <xpath expr="//button[@name='button_done']" position="attributes">
                 <attribute name="string">
                     Done
                 </attribute>
-                <attribute name="groups">
-                    purchase_request.group_purchase_request_manager,purchase_request.group_purchase_request_user
-                </attribute>
             </xpath>
 
             <xpath expr="//button[@name='button_draft']" position="attributes">
-                <attribute name="groups">
-                    purchase_request.group_purchase_request_manager,purchase_request.group_purchase_request_user
-                </attribute>
                 <attribute name="states">
                     draft,submit,commit,validate,approved,rejected,done,rejected
                 </attribute>
             </xpath>
 
-            <xpath expr="//button[@name='button_rejected']" position="attributes">
-                <attribute name="states">to_approve,submit,commit,validate,approved,in_progress</attribute>
+            <!-- สำหรับ Finance -->
+            <xpath expr="//button[@name='button_rejected']" position="replace">
+                <button name="button_rejected"
+                        string="Reject"
+                        type="object"
+                        states="submit"
+                        groups="kmitl_purchase_request_tier_validation.group_pr_finance,kmitl_purchase_request_tier_validation.group_pr_admin"/>
+            </xpath>
+
+            <!-- สำหรับ Supply -->
+            <xpath expr="//button[@name='button_rejected']" position="after">
+                <button name="button_rejected"
+                        string="Reject"
+                        type="object"
+                        states="commit"
+                        groups="kmitl_purchase_request_tier_validation.group_pr_supply,kmitl_purchase_request_tier_validation.group_pr_admin"/>
+            </xpath>
+
+            <!-- สำหรับ Approver -->
+            <xpath expr="//button[@name='button_rejected']" position="after">
+                <button name="button_rejected"
+                        string="Reject"
+                        type="object"
+                        states="validate"
+                        groups="kmitl_purchase_request_tier_validation.group_pr_approver,kmitl_purchase_request_tier_validation.group_pr_admin"/>
             </xpath>
 
         </field>

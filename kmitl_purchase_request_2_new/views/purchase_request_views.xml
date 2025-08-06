@@ -12,6 +12,7 @@
                       type="object"
                       string="บันทึกคู่ค้า"
                       class="btn-primary"
+                      groups=""
                       attrs="{'invisible': [('state', '!=', 'approved')]}"/>
             </xpath>
         </field>

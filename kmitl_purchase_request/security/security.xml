@@ -1,9 +1,4 @@
 <odoo>
-    <record id="group_committee_procurement" model="res.groups">
-        <field name="name">Procurement Committee</field>
-        <field name="category_id" ref="base.module_category_purchase_management"/>
-    </record>
-
     <record id="group_committee_work_acceptance" model="res.groups">
         <field name="name">Work Acceptance Committee</field>
         <field name="category_id" ref="base.module_category_purchase_management"/>

@@ -1,0 +1,53 @@
+<odoo>
+  <data noupdate="0">
+
+    <!-- Finance: เห็นได้ทุก PR แต่ edit ได้เฉพาะ state 'submit' -->
+    <record id="rule_pr_finance_read" model="ir.rule">
+        <field name="name">PR Finance - Edit Submit</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="domain_force">[('state', 'in', ['submit', 'commit'])]</field>
+        <field name="groups" eval="[(6,0, [ref('kmitl_purchase_request_tier_validation.group_pr_finance')])]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <!-- Supply: เห็นได้ทุก PR แต่ edit ได้เฉพาะ state 'commit' -->
+    <record id="rule_pr_supply_read" model="ir.rule">
+        <field name="name">PR Supply - Edit Commit</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="domain_force">[('state', 'in', ['commit', 'validate'])]</field>
+        <field name="groups" eval="[(4, ref('kmitl_purchase_request_tier_validation.group_pr_supply'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <!-- Approver: เห็นได้ทุก PR แต่ edit ได้เฉพาะ state 'validate' -->
+    <record id="rule_pr_approver_read" model="ir.rule">
+        <field name="name">PR Approver - Edit Validate</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="domain_force">[('state', 'in', ['validate', 'approved'])]</field>
+        <field name="groups" eval="[(4, ref('kmitl_purchase_request_tier_validation.group_pr_approver'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+    <!-- Admin: Full Access -->
+    <record id="rule_pr_admin" model="ir.rule">
+        <field name="name">PR - Admin (Full Access)</field>
+        <field name="model_id" ref="purchase_request.model_purchase_request"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('kmitl_purchase_request_tier_validation.group_pr_admin'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+  </data>
+</odoo>

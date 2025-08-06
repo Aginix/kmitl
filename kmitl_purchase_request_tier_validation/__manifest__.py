@@ -9,6 +9,8 @@
     'depends': ['base', 'web', 'base_tier_validation', 'kmitl_purchase_request'],
     "data": [
         "security/security.xml",
+        'security/purchase_request_rules.xml',
+        'security/ir.model.access.csv',
         "views/purchase_request_views.xml"
     ],
     'assets': {
