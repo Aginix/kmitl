@@ -200,7 +200,8 @@ class BudgetMoveLine(models.Model):
                 line.debit = 0
 
     def _compute_hide_unallocated_balance(self):
-        return True
+        for line in self:
+            line.hide_unallocated_balance = True
 
     @api.onchange("balance")
     def _inverse_balance(self):

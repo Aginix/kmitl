@@ -42,3 +42,10 @@ class BudgetMoveLine(models.Model):
                 rec.unallocated_balance = rec.balance - total_price
             else:
                 rec.unallocated_balance = rec.balance + rec.unallocated_balance
+
+    @api.depends("account_id.procurement_plan")
+    def _compute_hide_unallocated_balance(self):
+        super()._compute_hide_unallocated_balance()
+        for line in self:
+            if line.account_id.procurement_plan:
+                line.hide_unallocated_balance = False
