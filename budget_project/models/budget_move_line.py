@@ -45,3 +45,10 @@ class BudgetMoveLine(models.Model):
         if "budget_project_ids" in vals:
             del vals["budget_project_ids"]
         return vals
+
+    @api.depends("account_id.project_enabled")
+    def _compute_hide_unallocated_balance(self):
+        super()._compute_hide_unallocated_balance()
+        for line in self:
+            if line.account_id.project_enabled:
+                line.hide_unallocated_balance = False

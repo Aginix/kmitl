@@ -10,7 +10,7 @@
             <xpath expr="//field[@name='balance']" position="before">
                 <field name="procurement_plan" invisible="1" />
             </xpath>
-            <xpath expr="//field[@name='balance']" position="before">
+            <xpath expr="//field[@name='balance']" position="after">
                 <field name="procurement_plan_ids" attrs="{'invisible': [('procurement_plan', '=', False)]}" context="{
                     'from_budget_line': True,
                     'default_date_range_fy_id': date_range_fy_id,
