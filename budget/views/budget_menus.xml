@@ -14,7 +14,7 @@
             >
                 <menuitem
                     id="action_view_move_budget_initial_appropriation_menu_action"
-                    name="รายการจัดการ"
+                    name="รายการจัดสรรงบประมาณ"
                     action="action_view_move_budget_initial_appropriation"
                 />
             </menuitem>
@@ -25,13 +25,8 @@
             >
                 <menuitem
                     id="action_view_move_budget_regular_appropriation_menu_action"
-                    name="รายการจัดการ"
-                    action="action_view_move_budget_regular_appropriation"
-                />
-                <menuitem
-                    id="action_view_move_budget_appropriation_year_menu_action"
-                    name="จัดสรรต้นปี"
-                    action="action_view_move_budget_appropriation_type"
+                    name="รายการจัดสรรงบประมาณ"
+                    action="action_view_move_budget_appropriation"
                 />
             </menuitem>
         </menuitem>

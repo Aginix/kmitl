@@ -681,23 +681,6 @@
         </field>
     </record>
 
-    <record
-        id="action_view_move_budget_appropriation_type"
-        model="ir.actions.act_window"
-    >
-        <field name="name">Budget Appropriations</field>
-        <field name="res_model">budget.move</field>
-        <field name="view_mode">tree,form</field>
-        <field name="search_view_id" ref="view_budget_app_search" />
-        <field name="domain">[('move_type', '=', 'appropriation')]</field>
-        <field name="context">{'default_move_type': 'appropriation'}</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Create a budget appropriation
-            </p>
-        </field>
-    </record>
-
     <!-- Initial Appropriation Action for Beginning of Year Budget -->
     <record
         id="action_view_move_budget_initial_appropriation"
@@ -718,10 +701,10 @@
 
     <!-- Regular Appropriation Action for Mid-Year Budget -->
     <record
-        id="action_view_move_budget_regular_appropriation"
+        id="action_view_move_budget_appropriation"
         model="ir.actions.act_window"
     >
-        <field name="name">Regular Budget Appropriations</field>
+        <field name="name">Budget Appropriations</field>
         <field name="res_model">budget.move</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="view_budget_app_search" />
@@ -729,7 +712,7 @@
         <field name="context">{'default_move_type': 'appropriation', 'default_is_initial_appropriation': False}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Create a regular budget appropriation
+                Create a budget appropriation
             </p>
         </field>
     </record>
