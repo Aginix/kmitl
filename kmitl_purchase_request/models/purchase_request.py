@@ -144,6 +144,9 @@ class Purchase_request(models.Model):
         readonly=True,
     )
 
+    def button_validate(self):
+        return self.write({"state": "validation"})
+
     def _get_domain_purchase_type(self):
         return [("visible_on_purchase_request", "=", True)]
 
