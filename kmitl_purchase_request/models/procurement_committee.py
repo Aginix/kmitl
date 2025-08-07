@@ -34,7 +34,7 @@ class ProcurementCommittee(models.Model):
         related="employee_id.work_email",
     )
     phone = fields.Char(
-        related="employee_id.work_phone",
+        related="employee_id.phone",
     )
     committee_type = fields.Selection(
         selection=[

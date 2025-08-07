@@ -57,7 +57,7 @@
 
             <!-- Custom fields -->
             <field name="requested_by" position="before">
-                <field 
+                <field
                     name="payment_type"
                     required="True"
                 />
@@ -240,7 +240,7 @@
             </xpath>
 
         </field>
-    
+
     </record>
 
   </odoo>
