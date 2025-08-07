@@ -65,7 +65,7 @@
             </xpath>
 
             <xpath expr="//button[@name='button_approved']" position="after">
-                <button name='button_approved' string="Approve" states="validation" class="btn-primary" type="object" />
+                <button name='button_approved' string="Approve" states="validation" class="btn-primary o_button_approved" type="object" groups="purchase_request.group_purchase_request_manager" />
             </xpath>
 
             <xpath expr="//button[@name='button_approved']" position="after">

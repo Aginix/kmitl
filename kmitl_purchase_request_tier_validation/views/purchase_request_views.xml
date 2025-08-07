@@ -3,15 +3,17 @@
     <record id="view_purchase_request_form_inherit_tier" model="ir.ui.view">
         <field name="name">purchase.request.tier.validation.form</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
+        <field name="inherit_id" ref="kmitl_purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
-
-            <xpath expr="//button[@name='button_approved']" position="attributes">
-            </xpath>
-
             <field name="state" position="after">
                 <field name="validation_status" invisible="1" />
             </field>
+
+            <xpath expr="//button[contains(@class, 'o_button_approved')]" position="attributes">
+                <attribute
+                    name="attrs"
+                >{'invisible':['|', ('validation_status', 'in', ('pending', 'rejected')),('state', '!=', 'draft')]}</attribute>
+            </xpath>
 
         </field>
     </record>
