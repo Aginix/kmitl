@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Security Groups for Account Move Tier Validation
+
+This file defines the security groups that control access to the tier validation
+system for account moves. It creates a hierarchical permission structure with
+two distinct roles in the validation workflow.
+
+Permission Hierarchy:
+1. Account Move Validator (base level)
+   - Can perform validation reviews (first tier)
+   - Inherits standard account user permissions
+   - Cannot approve (second tier)
+
+2. Account Move Approver (higher level)  
+   - Can perform both validation and approval reviews
+   - Inherits all validator permissions automatically
+   - Has full access to tier definition management
+
+Security Design:
+- Approvers automatically include validator permissions (implied_ids)
+- Both groups are categorized under Accounting & Finance
+- Separation of duties: validators cannot approve their own validations
+- Base accounting permissions (group_account_user) are prerequisite
+-->
+<odoo>
+    <!-- 
+    Account Move Validator Group
+    
+    Users in this group can perform the first tier validation of journal entries.
+    They can review entries for accuracy and completeness but cannot give final approval.
+    This ensures separation of duties in the financial approval process.
+    
+    Permissions:
+    - Read/write access to tier.review records for validation
+    - Read-only access to tier.definition records
+    - Standard accounting user permissions (group_account_user)
+    -->
+    <record id="group_account_move_validator" model="res.groups">
+        <field name="name">Account Move Validator</field>
+        <field name="category_id" ref="base.module_category_accounting_and_finance"/>
+        <!-- Inherits basic accounting user permissions -->
+        <field name="implied_ids" eval="[(4, ref('account.group_account_user'))]"/>
+    </record>
+
+    <!--
+    Account Move Approver Group
+    
+    Users in this group can perform both validation and final approval of journal entries.
+    They have elevated privileges and can complete the entire tier validation workflow.
+    This group automatically includes all validator permissions.
+    
+    Permissions:
+    - Full CRUD access to tier.definition records
+    - Read/write access to tier.review records for both tiers
+    - All permissions from Account Move Validator group
+    - Can override or modify tier validation configurations
+    -->
+    <record id="group_account_move_approver" model="res.groups">
+        <field name="name">Account Move Approver</field>
+        <field name="category_id" ref="base.module_category_accounting_and_finance"/>
+        <!-- Automatically includes all validator permissions -->
+        <field name="implied_ids" eval="[(4, ref('group_account_move_validator'))]"/>
+    </record>
+</odoo>

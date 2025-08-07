@@ -1,0 +1,24 @@
+# Access Control Rules for Account Move Tier Validation
+#
+# This file defines the specific permissions for tier validation objects, controlling
+# who can read, write, create, or delete tier definitions and tier reviews.
+#
+# Permission Structure:
+# - Validators: Can create and modify review records but only read tier definitions
+# - Approvers: Have full control over both tier definitions and review records
+#
+# Security Model:
+# - tier.definition: Configuration records defining the validation workflow
+# - tier.review: Individual review instances created during validation process
+#
+# Permission Codes: read(1/0), write(1/0), create(1/0), unlink(1/0)
+#
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+# Validators can read tier definitions but cannot modify workflow configuration
+access_tier_definition_account_move_validator,tier.definition.account.move.validator,base_tier_validation.model_tier_definition,group_account_move_validator,1,0,0,0
+# Approvers have full control over tier definitions (can configure workflows)
+access_tier_definition_account_move_approver,tier.definition.account.move.approver,base_tier_validation.model_tier_definition,group_account_move_approver,1,1,1,1
+# Validators can create and modify their own review records during validation
+access_tier_review_account_move_validator,tier.review.account.move.validator,base_tier_validation.model_tier_review,group_account_move_validator,1,1,1,0
+# Approvers can create and modify review records for both validation and approval tiers
+access_tier_review_account_move_approver,tier.review.account.move.approver,base_tier_validation.model_tier_review,group_account_move_approver,1,1,1,0
