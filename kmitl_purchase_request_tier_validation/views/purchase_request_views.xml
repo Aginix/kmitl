@@ -12,8 +12,10 @@
             <xpath expr="//button[contains(@class, 'o_button_approved')]" position="attributes">
                 <attribute
                     name="attrs"
-                >{'invisible':['|', ('validation_status', 'in', ('pending', 'rejected')),('state', '!=', 'draft')]}</attribute>
+                >{'invisible':['|', ('validation_status', 'in', ('pending', 'rejected')),('review_ids', '!=', False)]}</attribute>
+                <attribute name="states"></attribute>
             </xpath>
+
 
         </field>
     </record>

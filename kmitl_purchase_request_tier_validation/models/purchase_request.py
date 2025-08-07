@@ -1,10 +1,4 @@
-# -*- coding: utf-8 -*-
-import logging
-
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
 
 
 class PurchaseRequest(models.Model):
@@ -21,8 +15,10 @@ class PurchaseRequest(models.Model):
         res.append("route_id")
         return res
 
-    @api.onchange('review_ids')
-    def _onchange_validation_status(self):
-        if self.validreview_idsated == False:
-            self.state = 'approved'
-
+    def _validate_tier(self, tiers=False):
+        super(PurchaseRequest, self)._validate_tier(tiers)
+        reviews = self.review_ids.filtered(
+            lambda r: r.status == "pending" and (self.env.user in r.reviewer_ids)
+        )
+        if not reviews:
+            return self.write({'state': 'approved', 'approved_by': self.env.user.id, 'date_approved': fields.Date.context_today(self)})
