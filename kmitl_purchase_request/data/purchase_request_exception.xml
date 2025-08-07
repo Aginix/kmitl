@@ -34,7 +34,7 @@ if len(self.work_acceptance_committee_ids) &lt; 3:
         <field name="model">purchase.request</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
-if record.estimated_cost &gt; 100000:
+if self.estimated_cost &gt; 100000:
    if len(self.tor_committee_ids) &lt; 3:
         failed = True
         </field>
@@ -48,7 +48,7 @@ if record.estimated_cost &gt; 100000:
         <field name="model">purchase.request</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
-if record.estimated_cost &gt; 100000:
+if self.estimated_cost &gt; 100000:
    if len(self.price_determine_committee_ids) &lt; 3:
         failed = True
         </field>
@@ -62,7 +62,7 @@ if record.estimated_cost &gt; 100000:
         <field name="model">purchase.request</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
-if record.estimated_cost &gt; 100000:
+if self.estimated_cost &gt; 100000:
    if len(self.evaluation_committee_ids) &lt; 3:
         failed = True
         </field>

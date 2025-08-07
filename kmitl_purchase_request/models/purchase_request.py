@@ -144,8 +144,19 @@ class Purchase_request(models.Model):
         readonly=True,
     )
 
+    validated_by = fields.Many2one(
+        comodel_name="res.users",
+        index=True,
+        copy=False,
+        tracking=True,
+    )
+    date_validated = fields.Date(
+        string="validate Date",
+        copy=False,
+    )
+
     def button_validate(self):
-        return self.write({"state": "validation"})
+        return self.write({"state": "validation", "validated_by": self.env.user.id, "date_validated": fields.Date.context_today(self)})
 
     def _get_domain_purchase_type(self):
         return [("visible_on_purchase_request", "=", True)]
@@ -160,6 +171,25 @@ class Purchase_request(models.Model):
                 or False,
             }
         )
+
+    @api.depends("state")
+    def _compute_is_editable(self):
+        for rec in self:
+            if rec.state in (
+                "to_approve",
+                "validation",
+                "approved",
+                "rejected",
+                "done",
+            ):
+                rec.is_editable = False
+            else:
+                rec.is_editable = True
+
+    def button_draft(self):
+        self.write({"verified_by": "", "date_verified": False, "approved_by": "", "date_approved": False, "validated_by": "", "date_validated": False})
+        return super().button_draft()
+
 
     # @api.constrains('line_ids')
     # def _check_product_lines(self):

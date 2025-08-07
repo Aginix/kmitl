@@ -19,6 +19,10 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
+            <xpath expr="//field[@name='assigned_to']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
             <xpath expr="//page[@name='committee']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
@@ -55,6 +59,11 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
+            <xpath expr="//field[@name='date_verified']" position="after">
+                <field name="validated_by" readonly="1" />
+                <field name="date_validated" readonly="1" />
+            </xpath>
+
             <xpath expr="//button[@name='button_approved']" position="after">
                 <button name='button_approved' string="Approve" states="validation" class="btn-primary" type="object" />
             </xpath>
@@ -84,7 +93,7 @@
             </xpath>
 
             <field name="requested_by" position="before">
-                <field name="payment_type" required="True" />
+                <field name="payment_type" required="True" attrs="{'readonly': [('is_editable','=', False)]}"  />
                 <field name="purchase_type_id"
                     invisible = "1" attrs="{'readonly': [('is_editable','=', False)]}" />
                 <field name="procurement_method_ids" invisible="True" />
@@ -92,7 +101,7 @@
             </field>
 
             <field name="description" position="before">
-                <field name="title" />
+                <field name="title" attrs="{'readonly': [('is_editable','=', False)]}" />
             </field>
 
             <xpath expr="//field[@name='date_start']" position="after">
@@ -164,7 +173,7 @@
 
                 <page name="document" string="เอกสารแนบ">
                     <group>
-                        <field name="tor_document_ids">
+                        <field name="tor_document_ids" attrs="{'readonly': [('is_editable','=', False)]}">
                             <tree editable="bottom">
                                 <field name="file" filename="file_name" />
                                 <field name="file_name" readonly="1" />
@@ -172,7 +181,7 @@
                             </tree>
                         </field>
 
-                        <field name="rfq_attachment_ids">
+                        <field name="rfq_attachment_ids" attrs="{'readonly': [('is_editable','=', False)]}">
                             <tree editable="bottom">
                                 <field name="file" filename="file_name" />
                                 <field name="file_name" readonly="1" />
@@ -180,7 +189,7 @@
                             </tree>
                         </field>
 
-                        <field name="etc_document_ids">
+                        <field name="etc_document_ids" attrs="{'readonly': [('is_editable','=', False)]}">
                             <tree editable="bottom">
                                 <field name="file" filename="file_name" />
                                 <field name="file_name" readonly="1" />

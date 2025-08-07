@@ -25,6 +25,8 @@ class PurchaseRequest(models.Model):
             if next_substate:
                 rec.substate_id = next_substate.id
                 rec.substate_updated = True
+                rec.verified_by = self.env.user.id
+                rec.date_verified = fields.Date.context_today(self)
 
     def action_reset_substate(self):
         for rec in self:
@@ -38,3 +40,6 @@ class PurchaseRequest(models.Model):
             if next_substate:
                 rec.substate_id = next_substate.id
                 rec.substate_updated = False
+                rec.verified_by = ''
+                rec.date_verified = ''
+
