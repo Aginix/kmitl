@@ -11,6 +11,7 @@
         "security/security.xml",
         "security/ir.model.access.csv",
         "data/purchase_request_sequence.xml",
+        "data/purchase_request_rules.xml",
         "data/purchase_request_exception.xml",
         "data/user_employee.xml",
         "views/hr_employee_views.xml",
