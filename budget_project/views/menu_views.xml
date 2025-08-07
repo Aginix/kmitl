@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Menu item for Budget Projects -->
+    <menuitem id="menu_budget_project"
+              name="Projects/Activities"
+              parent="budget.budget_root_menu"
+              action="action_budget_project"
+              sequence="50"/>
+
+</odoo>

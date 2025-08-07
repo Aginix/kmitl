@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Budget Project Form View -->
+    <record id="view_budget_project_form" model="ir.ui.view">
+        <field name="name">budget.project.form</field>
+        <field name="model">budget.project</field>
+        <field name="arch" type="xml">
+            <form string="Budget Project/Activity">
+                <header>
+                    <!-- <button name="action_confirm" string="Confirm" type="object" class="btn-primary"
+                            attrs="{'invisible': [('state', '!=', 'draft')]}"/> -->
+                    <button name="action_done" string="Mark as Done" type="object" class="btn-primary"
+                            attrs="{'invisible': [('state', '!=', 'confirmed')]}"/>
+                    <!-- <button name="action_cancel" string="Cancel" type="object"
+                            attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"/>
+                    <button name="action_draft" string="Set to Draft" type="object"
+                            attrs="{'invisible': [('state', '!=', 'cancel')]}"/> -->
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Project/Activity Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="budget_account_id"/>
+                            <field name="budget_amount"/>
+                        </group>
+                        <group>
+                            <field name="budget_move_line_id" invisible="1"/>
+                            <field name="budget_move_id" readonly="1" attrs="{'invisible': [('budget_move_id', '=', False)]}"/>
+                            <field name="date_range_fy_id" readonly="1" attrs="{'invisible': [('date_range_fy_id', '=', False)]}"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Financial Dimensions" name="financial_dimensions">
+                            <group>
+                                <group string="Dimensions">
+                                    <field name="department_analytic_id" options="{'no_create': True}"
+                                           domain="[('root_plan_id.code', '=', 'departments')]"/>
+                                    <field name="activity_analytic_id" options="{'no_create': True}"
+                                           domain="[('root_plan_id.code', '=', 'activities')]"/>
+                                    <field name="fund_analytic_id" options="{'no_create': True}"
+                                           domain="[('root_plan_id.code', '=', 'funds')]"/>
+                                    <field name="source_analytic_id" options="{'no_create': True}"
+                                           domain="[('root_plan_id.code', '=', 'sources')]"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Description" name="description">
+                            <field name="description" placeholder="Project/Activity Description..."/>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="note" placeholder="Additional notes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Budget Project Tree View -->
+    <record id="view_budget_project_tree" model="ir.ui.view">
+        <field name="name">budget.project.tree</field>
+        <field name="model">budget.project</field>
+        <field name="arch" type="xml">
+            <tree string="Budget Projects/Activities" decoration-muted="state == 'cancel'" create="false" edit="false">
+                <field name="name"/>
+                <field name="budget_account_id"/>
+                <field name="budget_amount" sum="Total Budget"/>
+                <field name="state" widget="badge" decoration-success="state == 'done'" decoration-warning="state == 'confirmed'" decoration-info="state == 'draft'"/>
+                <field name="department_analytic_id" optional="hide"/>
+                <field name="activity_analytic_id" optional="hide"/>
+                <field name="fund_analytic_id" optional="hide"/>
+                <field name="source_analytic_id" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Budget Project Search View -->
+    <record id="view_budget_project_search" model="ir.ui.view">
+        <field name="name">budget.project.search</field>
+        <field name="model">budget.project</field>
+        <field name="arch" type="xml">
+            <search string="Search Budget Projects">
+                <field name="name"/>
+                <field name="budget_account_id"/>
+                <field name="department_analytic_id"/>
+                <field name="activity_analytic_id"/>
+                <field name="fund_analytic_id"/>
+                <field name="source_analytic_id"/>
+                <separator/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Confirmed" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
+                <separator/>
+                <filter string="Current Year" name="current_year" domain="[('date_range_fy_id.name', 'ilike', time.strftime('%%Y'))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Budget Account" name="group_account" context="{'group_by': 'budget_account_id'}"/>
+                    <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Department" name="group_department" context="{'group_by': 'department_analytic_id'}"/>
+                    <filter string="Activity" name="group_activity" context="{'group_by': 'activity_analytic_id'}"/>
+                    <filter string="Fund" name="group_fund" context="{'group_by': 'fund_analytic_id'}"/>
+                    <filter string="Source" name="group_source" context="{'group_by': 'source_analytic_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Budget Project Action -->
+    <record id="action_budget_project" model="ir.actions.act_window">
+        <field name="name">Budget Projects/Activities</field>
+        <field name="res_model">budget.project</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_budget_project_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new budget project/activity
+            </p>
+            <p>
+                Manage budget projects and activities linked to specific budget accounts.
+            </p>
+        </field>
+    </record>
+
+</odoo>
