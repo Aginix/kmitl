@@ -35,6 +35,7 @@ class PurchaseOrder(models.Model):
         "hr.department",
         string="Department",
         help="The department associated with this purchase order.",
+        readonly=True,
     )
     request_by = fields.Many2one(
         "res.users",
@@ -92,6 +93,23 @@ class PurchaseOrder(models.Model):
 
     pr1_ref = fields.Many2one('purchase.request', string="Reference PR1", readonly=True)
     pr2_ref = fields.Many2one('purchase.request.two', string="Reference PR2", readonly=True)
+
+    work_acceptance_committee_ids = fields.One2many(
+        related='pr1_ref.work_acceptance_committee_ids',
+        readonly=True,
+    )
+    tor_committee_ids = fields.One2many(
+        related='pr1_ref.tor_committee_ids',
+        readonly=True,
+    )
+    price_determine_committee_ids = fields.One2many(
+        related='pr1_ref.price_determine_committee_ids',
+        readonly=True,
+    )
+    evaluation_committee_ids = fields.One2many(
+        related='pr1_ref.evaluation_committee_ids',
+        readonly=True,
+    )
 
     bid_line_ids = fields.One2many('purchase.order.bidder.line', 'order_id', string='รายการผู้เสนอราคา')
 

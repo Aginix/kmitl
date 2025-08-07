@@ -10,11 +10,14 @@
     "data": [
         "data/purchase_order_sequence.xml",
         "security/ir.model.access.csv",
-        "views/purchase_invoice_inherit_views.xml",
         "views/purchase_create_invoice_plan_views.xml",
+        "views/purchase_exception_views.xml",
+        "views/purchase_invoice_inherit_views.xml",
+        "views/purchase_invoice_plan_views.xml",
         "views/purchase_order_attachment_views.xml",
         "views/purchase_order_bidder_line_views.xml",
-        "views/purchase_order_views.xml"
+        "views/purchase_order_views.xml",
+        "views/purchase_requisition_views.xml"
     ],
     'assets': {
               'web.assets_backend': [

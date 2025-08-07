@@ -156,6 +156,7 @@ class PurchaseRequestTwo(models.Model):
             }))
 
         po = self.env['purchase.order'].create({
+            'department_id': self.env.user.employee_id.department_id.id,
             'partner_id': self.vendor.id,
             'order_line': order_lines,
             'origin': self.name,
