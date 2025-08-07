@@ -6,4 +6,9 @@
         <value eval="{'noupdate': False}" />
     </function>
 
+    <function name="write" model="ir.actions.act_window">
+        <value model="ir.actions.act_window" search="[('id', '=', ref('purchase_request.purchase_request_form_action'))]" />
+        <value eval="{'context': '{}'}"/>
+    </function>
+
 </odoo>
