@@ -6,7 +6,7 @@
     'author': '',
     'website': '',
     'category': '',
-    'depends': ['base', 'web', 'purchase_request', 'hr', 'l10n_th_kmitl_procurement', 'purchase_request_exception'],
+    'depends': ['base', 'web', 'purchase_request', 'hr', 'l10n_th_gov_purchase_request', 'purchase_request_exception'],
     "data": [
         "data/purchase_request_sequence.xml",
         "data/purchase_request_exception.xml",
