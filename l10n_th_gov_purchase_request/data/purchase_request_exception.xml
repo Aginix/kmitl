@@ -1,4 +1,4 @@
-<odoo noupdate="1">
+<odoo noupdate="0">
     <!-- Small Amount -->
     <record id="pr_exception_1" model="exception.rule">
         <field name="name">ระเบียบ วงเงินเล็กน้อย มูลค่าไม่เกิน 100,000 บาท</field>
