@@ -1,21 +1,16 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Operating_unit_kmitl',
-    'version': '16.0.1.0.0',
-    'summary': """ Operating_unit_kmitl Summary """,
-    'author': '',
-    'website': '',
-    'category': '',
+    'name': 'Operating Unit KMITL',
+    'version': '16.0.0.0.1',
+    'summary': """Operating Unit KMITL""",
+    'author': 'Aginix Technologies',
+    'website': 'https://github.com/Aginix/kmitl',
+    'category': 'KMITL/Budgeting',
     'depends': ['operating_unit'],
     'data': [
         "data/operating_unit_data.xml",
     ],
-    'assets': {
-              'web.assets_backend': [
-                  'operating_unit_kmitl/static/src/**/*'
-              ],
-          },
-    'application': True,
+    'application': False,
     'installable': True,
     'auto_install': False,
     'license': 'LGPL-3',
