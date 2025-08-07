@@ -10,13 +10,6 @@ _logger = logging.getLogger(__name__)
 class BudgetMoveLine(models.Model):
     _inherit = "budget.move.line"
 
-    unallocated_balance = fields.Float(
-        string="ยังไม่ระบุรายการ",
-        help="จำนวนเงินที่ยังไม่มีการวางแผนการใช้งาน แต่ต้องการจองจำนวนเงินไว้ก่อน",
-        store=True,
-        required=False,
-        compute="_compute_amount",
-    )
     procurement_plan_ids = fields.One2many(
         comodel_name="procurement.plan",
         inverse_name="budget_move_line_id",
@@ -34,11 +27,18 @@ class BudgetMoveLine(models.Model):
         "procurement_plan_ids.price_per_unit",
         "procurement_plan_ids.total_price",
         "balance",
+        "account_id.procurement_plan",
     )
-    def _compute_amount(self):
+    def _compute_unallocated_balance(self):
+        super()._compute_unallocated_balance()
         for rec in self:
             if rec.procurement_plan:
                 total_price = sum(rec.procurement_plan_ids.mapped("total_price"))
                 rec.unallocated_balance = rec.balance - total_price
-            else:
-                rec.unallocated_balance = rec.balance + rec.unallocated_balance
+
+    @api.depends("account_id.procurement_plan")
+    def _compute_hide_unallocated_balance(self):
+        super()._compute_hide_unallocated_balance()
+        for line in self:
+            if line.account_id.procurement_plan:
+                line.hide_unallocated_balance = False

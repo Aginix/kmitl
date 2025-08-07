@@ -24,6 +24,7 @@
         "data/budget_transfer_security.xml",
         "data/budget_transfer_sequence.xml",
         "data/budget_transfer_email_templates.xml",
+        "security/security.xml",
         "security/ir.model.access.csv",
         "views/budget_account_views.xml",
         "views/budget_commitment_views.xml",

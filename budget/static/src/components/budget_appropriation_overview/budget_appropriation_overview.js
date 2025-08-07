@@ -74,7 +74,6 @@ export class BudgetAppropriationOverview extends Component {
                 "get_hierarchical_overview_data",
                 [this.state.filters]
             );
-
             this.state.hierarchy = data.hierarchy || [];
             this.state.totalAmount = data.summary.total_amount;
             this.state.moveCount = data.summary.move_count;

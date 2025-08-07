@@ -62,7 +62,7 @@
                 </page>
             </xpath>
             <xpath expr="//field[@name='appropriation_line_ids']" position="replace">
-                <field name="appropriation_line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}" widget="custom_budget_line" style="max-width: 100%; display: block;" context="{'default_move_id': id}">
+                <field name="appropriation_line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}" widget="custom_budget_line" style="max-width: 100%; display: block;" context="{'default_move_id': id, 'default_fund_analytic_id': compute_fund_analytic_id, 'default_activity_analytic_id': compute_activity_analytic_id}">
                     <tree decoration-muted="is_virtual_line == True" limit="1000">
                         <field name="budget_type" invisible="1"/>
                         <field name="is_virtual_line" invisible="1"/>

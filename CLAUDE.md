@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Development Philosophy
+
+Think carefully and only action the specific task I have given you with the most concise and elegant solution that changes as little code as possible
+
 ## Development Commands
 
 **Note:** Do not automatically run testing or code quality commands. Only execute these when explicitly requested by the user.
