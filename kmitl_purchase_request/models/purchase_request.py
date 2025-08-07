@@ -1,15 +1,31 @@
-import logging
+from datetime import datetime
 
 from odoo import api, fields, models
-from datetime import datetime
-from odoo.exceptions import ValidationError
-
-_logger = logging.getLogger(__name__)
 
 
 class Purchase_request(models.Model):
     _name = 'purchase.request'
     _inherit = ['purchase.request', 'base.exception']
+
+
+    _STATES = [
+    ("draft", "Draft"),
+    ("to_approve", "To be approved"),
+    ("validation", "validation"),
+    ("approved", "Approved"),
+    ("done", "Done"),
+    ("rejected", "Rejected"),
+    ]
+
+    state = fields.Selection(
+        selection=_STATES,
+        string="Status",
+        index=True,
+        tracking=True,
+        required=True,
+        copy=False,
+        default="draft",
+    )
 
     procurement_type_id = fields.Many2one(
         comodel_name="procurement.type",
@@ -97,8 +113,8 @@ class Purchase_request(models.Model):
         domain=[("attachment_type", "=", "etc")],
     )
 
-    title = fields.Text(
-        string="ชื่อเรื่อง",
+    title = fields.Char(
+        string="title",
         required=True
     )
 
@@ -142,47 +158,35 @@ class Purchase_request(models.Model):
             }
         )
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            year_buddhist = datetime.today().year + 543
-            year_suffix = str(year_buddhist)[-2:]
+    # @api.constrains('line_ids')
+    # def _check_product_lines(self):
+    #     for request in self:
+    #         if not request.line_ids:
+    #             raise ValidationError("You must add at least one product line to the Purchase Request.")
 
-            seq = self.env['ir.sequence'].next_by_code('purchase.request') or '0000'
-            seq_number = seq[-4:]
+    # @api.constrains('work_acceptance_committee_ids', 'tor_committee_ids',
+    #                 'price_determine_committee_ids', 'evaluation_committee_ids',
+    #                 'estimated_cost')
+    # def _check_committee_minimum_members(self):
+    #     for record in self:
+    #         if record.estimated_cost < 100000:
+    #             if len(record.work_acceptance_committee_ids) < 3:
+    #                 raise ValidationError(
+    #                     f"โครงการมูลค่าต่ำกว่า 100,000: คณะกรรมการตรวจรับพัสดุต้องมีอย่างน้อย 3 คน "
+    #                     f"(ปัจจุบันมี {len(record.work_acceptance_committee_ids)} คน)"
+    #                 )
 
-            vals['name'] = f'PR/{year_suffix}/{seq_number}'
-        return super().create(vals)
+    #         elif record.estimated_cost >= 100000:
+    #             committees = [
+    #                 (record.work_acceptance_committee_ids, 'คณะกรรมการตรวจรับพัสดุ'),
+    #                 (record.tor_committee_ids, 'คณะกรรมการกำหนดคุณลักษณะเฉพาะฯ'),
+    #                 (record.price_determine_committee_ids, 'คณะกรรมการกำหนดราคากลาง'),
+    #                 (record.evaluation_committee_ids, 'คณะกรรมการพิจารณาผล')
+    #             ]
 
-    @api.constrains('line_ids')
-    def _check_product_lines(self):
-        for request in self:
-            if not request.line_ids:
-                raise ValidationError("You must add at least one product line to the Purchase Request.")
-    
-    @api.constrains('work_acceptance_committee_ids', 'tor_committee_ids', 
-                    'price_determine_committee_ids', 'evaluation_committee_ids', 
-                    'estimated_cost')
-    def _check_committee_minimum_members(self):
-        for record in self:
-            if record.estimated_cost < 100000:
-                if len(record.work_acceptance_committee_ids) < 3:
-                    raise ValidationError(
-                        f"โครงการมูลค่าต่ำกว่า 100,000: คณะกรรมการตรวจรับพัสดุต้องมีอย่างน้อย 3 คน "
-                        f"(ปัจจุบันมี {len(record.work_acceptance_committee_ids)} คน)"
-                    )
-            
-            elif record.estimated_cost >= 100000:
-                committees = [
-                    (record.work_acceptance_committee_ids, 'คณะกรรมการตรวจรับพัสดุ'),
-                    (record.tor_committee_ids, 'คณะกรรมการกำหนดคุณลักษณะเฉพาะฯ'),
-                    (record.price_determine_committee_ids, 'คณะกรรมการกำหนดราคากลาง'),
-                    (record.evaluation_committee_ids, 'คณะกรรมการพิจารณาผล')
-                ]
-                
-                for committee, name in committees:
-                    if len(committee) < 3:
-                        raise ValidationError(
-                            f"โครงการมูลค่า 100,000 ขึ้นไป: {name}ต้องมีอย่างน้อย 3 คน "
-                            f"(ปัจจุบันมี {len(committee)} คน)"
-                        )
+    #             for committee, name in committees:
+    #                 if len(committee) < 3:
+    #                     raise ValidationError(
+    #                         f"โครงการมูลค่า 100,000 ขึ้นไป: {name}ต้องมีอย่างน้อย 3 คน "
+    #                         f"(ปัจจุบันมี {len(committee)} คน)"
+    #                     )

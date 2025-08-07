@@ -1,0 +1,20 @@
+<odoo>
+    <record model="ir.module.category" id="module_category_purchase_request_substate">
+        <field name="name">Purchase Request Substate</field>
+        <field name="parent_id" ref="base.module_category_purchase_management" />
+        <field name="sequence">20</field>
+    </record>
+    <record id="group_purchase_request_substate_user" model="res.groups">
+        <field name="name">Purchase Request Substate User</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]" />
+        <field name="category_id" ref="module_category_purchase_request_substate" />
+    </record>
+    <record id="group_purchase_request_substate_manager" model="res.groups">
+        <field name="name">Purchase Request Substate Manager</field>
+        <field
+            name="implied_ids"
+            eval="[(4, ref('kmitl_purchase_request_substate.group_purchase_request_substate_user'))]"
+        />
+        <field name="category_id" ref="module_category_purchase_request_substate" />
+    </record>
+</odoo>
