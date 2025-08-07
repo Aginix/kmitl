@@ -120,3 +120,4 @@ class AccountMove(models.Model):
         self.restart_validation()
         # Proceed with normal draft reset
         return super().button_draft()
+
