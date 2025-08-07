@@ -2,7 +2,12 @@
 # Copyright (C) 2024 KMITL
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
-"""
+{
+    "name": "Account Move Tier Validation",
+    "version": "16.0.1.0.0",
+    "category": "Accounting",
+    "summary": "Tier validation for account moves with 2-step approval process",
+    "description": """
 Account Move Tier Validation Module
 
 This module implements a 2-step approval workflow for accounting journal entries (account.move)
@@ -26,13 +31,7 @@ Data Loading Order:
 1. security/security.xml - Creates security groups for validators and approvers
 2. security/ir.model.access.csv - Defines access rights for tier validation objects
 3. data/tier_definition_data.xml - Sets up the 2-step validation workflow
-"""
-
-{
-    "name": "Account Move Tier Validation",
-    "version": "16.0.1.0.0",
-    "category": "Accounting",
-    "summary": "Tier validation for account moves with 2-step approval process",
+    """,
     "author": "KMITL",
     "website": "",
     "license": "LGPL-3",
