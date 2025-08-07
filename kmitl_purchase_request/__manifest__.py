@@ -8,11 +8,11 @@
     "website": "https://github.com/aginix/kmitl",
     'depends': ['l10n_th_gov_purchase_request', 'l10n_th_base_sequence' , 'kmitl_purchase_request_substate'],
     "data": [
+        "security/security.xml",
+        "security/ir.model.access.csv",
         "data/purchase_request_sequence.xml",
         "data/purchase_request_exception.xml",
         "data/user_employee.xml",
-        "security/security.xml",
-        "security/ir.model.access.csv",
         "views/hr_employee_views.xml",
         "views/purchase_request_attachment_views.xml",
         "views/purchase_request_views.xml"
