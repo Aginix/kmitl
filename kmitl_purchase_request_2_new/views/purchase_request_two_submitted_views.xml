@@ -25,7 +25,7 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,approved,rejected"/>
                 </header>
                 <sheet>
-                    
+
                     <group>
                         <field name="name"/>
                         <field name="department_id" />
@@ -81,9 +81,6 @@
         </field>
     </record>
 
-    <menuitem id="menu_purchase_request_two_submitted" name="PR2 Submitted"
-              parent="purchase.menu_procurement_management"
-              action="action_purchase_request_two_submitted"
-              sequence="25"/>
+    <menuitem id="menu_purchase_request_two_submitted" name="PR2 Submitted" parent="purchase.menu_procurement_management" action="action_purchase_request_two_submitted" sequence="25"/>
 
 </odoo>

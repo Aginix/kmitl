@@ -1,10 +1,5 @@
-# -*- coding: utf-8 -*-
-import logging
-
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class PurchaseRequestTwo(models.Model):
@@ -12,10 +7,10 @@ class PurchaseRequestTwo(models.Model):
     _description = 'PurchaseRequestTwo'
 
     name = fields.Char(
-        string='Reference', 
-        required=True, 
-        copy=False, 
-        readonly=True, 
+        string='Reference',
+        required=True,
+        copy=False,
+        readonly=True,
         default='New')
 
     pr1_ref = fields.Many2one(
@@ -69,23 +64,23 @@ class PurchaseRequestTwo(models.Model):
     ], default='draft', string='Status', tracking=True)
 
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.company.currency_id)
-    
+
     amount_untaxed = fields.Monetary(string='รวมเป็นเงิน', compute='_compute_amount', store=True)
     amount_tax = fields.Monetary(string='ภาษีมูลค่าเพื่ม', compute='_compute_amount', store=True)
     amount_total = fields.Monetary(string='รวมเป็นเงินทั้งสิ้น', compute='_compute_amount', store=True)
-    
+
     submitted_id = fields.Many2one('purchase.request.two.submitted', string='Included in Submitted', readonly=True)
 
     generate_po = fields.Boolean(string='Generate Purchase Order?', default=True)
 
     estimated_cost_from_pr = fields.Monetary(
         string="ราคารวมจาก PR1",
-        related='pr1_ref.estimated_cost', 
+        related='pr1_ref.estimated_cost',
         readonly=True,
         store=True,
         currency_field="currency_id"
     )
-    
+
     def action_submit(self):
         self.write({'state': 'submitted'})
 

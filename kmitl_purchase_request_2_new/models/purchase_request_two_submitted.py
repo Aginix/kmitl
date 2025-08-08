@@ -1,10 +1,4 @@
-# -*- coding: utf-8 -*-
-import logging
-
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
+from odoo import _, api, fields, models
 
 
 class PurchaseRequestTwoSubmitted(models.Model):
@@ -60,7 +54,7 @@ class PurchaseRequestTwoSubmitted(models.Model):
         for line in self.line_ids:
             line.pr2_form_id.state = 'approved'
         self.state = 'approved'
-    
+
     def button_rejected(self):
         for line in self.line_ids:
             line.pr2_form_id.state = 'rejected'
@@ -71,53 +65,3 @@ class PurchaseRequestTwoSubmitted(models.Model):
         for rec in self:
             first_line = rec.line_ids.filtered(lambda l: l.pr2_form_id.payment_type)
             rec.payment_type_ref = first_line[0].pr2_form_id.payment_type if first_line else False
-
-    # def make_purchase_order(self):
-    #     self.ensure_one()
-
-    #     if not self.generate_po:
-    #         return
-
-    #     if not self.line_ids:
-    #         raise UserError("Please select at least one PR2 form.")
-
-    #     pr2_forms = self.line_ids.mapped('pr2_form_id')
-    #     vendor_groups = {}
-    #     for pr2 in pr2_forms:
-    #         if not pr2.vendor:
-    #             raise UserError(f"PR2 {pr2.name} has no vendor.")
-    #         vendor = pr2.vendor
-    #         vendor_groups.setdefault(vendor, []).append(pr2)
-
-    #     created_po_ids = []
-
-    #     for vendor, pr2_list in vendor_groups.items():
-    #         order_lines = []
-    #         for pr2 in pr2_list:
-    #             for line in pr2.line_ids:
-    #                 order_lines.append((0, 0, {
-    #                     'product_id': line.product_id.id,
-    #                     'name': line.description or line.product_id.display_name,
-    #                     'product_qty': line.quantity,
-    #                     'price_unit': line.unit_price,
-    #                     'taxes_id': [(6, 0, line.taxes.ids)],
-    #                     'product_uom': line.product_id.uom_po_id.id,
-    #                 }))
-
-    #         po = self.env['purchase.order'].create({
-    #             'partner_id': vendor.id,
-    #             'order_line': order_lines,
-    #             'origin': ', '.join(pr2.name for pr2 in pr2_list),
-    #         })
-
-    #         created_po_ids.append(po.id)
-
-    #     # แสดง list ของ PO ที่ถูกสร้าง
-    #     return {
-    #         'type': 'ir.actions.act_window',
-    #         'name': 'Purchase Orders',
-    #         'res_model': 'purchase.order',
-    #         'view_mode': 'tree,form',
-    #         'domain': [('id', 'in', created_po_ids)],
-    #         'target': 'current',
-    #     }

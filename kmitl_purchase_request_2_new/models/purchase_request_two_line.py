@@ -1,10 +1,4 @@
-# -*- coding: utf-8 -*-
-import logging
-
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
+from odoo import _, api, fields, models
 
 
 class PurchaseRequestTwoLine(models.Model):

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <odoo>
-      
+<odoo>
+
     <!-- View purchase.request form -->
     <record id="view_purchase_request_form_inherit" model="ir.ui.view">
         <field name="name">view.purchase.request.form.inherit</field>
@@ -8,14 +8,9 @@
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form"/>
         <field name="arch" type="xml">
             <xpath expr="//button[@name='button_done']" position="before">
-              <button name="action_create_pr2"
-                      type="object"
-                      string="บันทึกคู่ค้า"
-                      class="btn-primary"
-                      groups=""
-                      attrs="{'invisible': [('state', '!=', 'approved')]}"/>
+                <button name="action_create_pr2" type="object" string="บันทึกคู่ค้า" class="btn-primary" groups="" attrs="{'invisible': [('state', '!=', 'approved')]}"/>
             </xpath>
         </field>
     </record>
 
-  </odoo>
+</odoo>
