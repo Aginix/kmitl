@@ -9,7 +9,7 @@
     'depends': ['base_tier_validation', 'kmitl_purchase_request'],
     "data": [
         "views/purchase_request_views.xml",
-        # "templates/tier_validation_templates.xml"
+        "templates/tier_validation_templates.xml"
     ],
     'installable': True,
     'auto_install': False,

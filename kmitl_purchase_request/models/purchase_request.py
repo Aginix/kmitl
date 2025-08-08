@@ -130,6 +130,30 @@ class Purchase_request(models.Model):
 
     expense_code = fields.Char(string="รหัสค่าใช้จ่าย")
 
+    current_user = fields.Many2one(
+        'res.users',
+        string="Current User",
+        compute='_compute_current_user',
+        store=True,
+    )
+
+    is_current_user_requester = fields.Boolean(
+        string="Is Current User Requester",
+        compute="_compute_is_current_user_requester",
+        store=False,
+    )
+
+    @api.depends('requested_by')
+    def _compute_is_current_user_requester(self):
+        current_uid = self.env.uid
+        for rec in self:
+            rec.is_current_user_requester = rec.requested_by.id == current_uid
+
+    @api.depends_context('uid')
+    def _compute_current_user(self):
+        for rec in self:
+            rec.current_user = self.env.user
+
     payment_type = fields.Selection([
         ("direct", "จ่ายตรง"),
         ("loan", "เงินยืม"),
