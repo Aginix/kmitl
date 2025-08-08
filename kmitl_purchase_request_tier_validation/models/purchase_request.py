@@ -22,3 +22,13 @@ class PurchaseRequest(models.Model):
         )
         if not reviews:
             return self.write({'state': 'approved', 'approved_by': self.env.user.id, 'date_approved': fields.Date.context_today(self)})
+
+    @api.model
+    def _get_under_validation_exceptions(self):
+        exceptions = super()._get_under_validation_exceptions()
+        exceptions.append('validated_field')
+        return exceptions
+
+    def button_draft(self):
+        self.restart_validation()
+        return super().button_draft()
