@@ -77,9 +77,23 @@ class PurchaseRequestTwo(models.Model):
     submitted_id = fields.Many2one('purchase.request.two.submitted', string='Included in Submitted', readonly=True)
 
     generate_po = fields.Boolean(string='Generate Purchase Order?', default=True)
+
+    estimated_cost_from_pr = fields.Monetary(
+        string="ราคารวมจาก PR1",
+        related='pr1_ref.estimated_cost', 
+        readonly=True,
+        store=True,
+        currency_field="currency_id"
+    )
     
     def action_submit(self):
         self.write({'state': 'submitted'})
+
+    def action_egp(self):
+        for rec in self:
+            if rec.estimated_cost_from_pr < 100000:
+                raise UserError("ยอดประมาณการจาก PR1 ยังไม่ถึง 100,000 บาท")
+            rec.write({'state': 'approved'})
 
     @api.depends('line_ids.quantity', 'line_ids.unit_price', 'line_ids.taxes')
     def _compute_amount(self):

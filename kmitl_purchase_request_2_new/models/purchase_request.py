@@ -25,6 +25,7 @@ class PurchaseRequest(models.Model):
                 'product_id': line.product_id.id,
                 'description': line.name,
                 'quantity': line.product_qty,
+                'unit_price' : line.estimated_cost,
             }))
         pr2.write({'line_ids': line_vals})
 

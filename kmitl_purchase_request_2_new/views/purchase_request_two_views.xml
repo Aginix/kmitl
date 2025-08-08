@@ -28,13 +28,18 @@
                             type="object"
                             string="สร้าง PR2"
                             class="btn-primary"
-                            states="draft"
-                            />
+                            attrs="{'invisible': ['|' , ('estimated_cost_from_pr', '&gt;', 100000), ('state', '!=', 'draft')]}" />
                     <button name="make_purchase_order"
                             string="สร้าง PO"
                             type="object"
                             class="btn-primary"
-                            states="approved"/>
+                            states="approved"
+                            />
+                    <button name="action_egp"
+                            string="เข้าสู่ EGP"
+                            type="object"
+                            class="btn-primary"
+                            attrs="{'invisible': ['|' , ('estimated_cost_from_pr', '&lt;', 100000) , ('state', '!=', 'draft')]}" />
                     <button name="button_draft"
                             type="object"
                             string="Reset"
@@ -51,6 +56,10 @@
                         <label for="pr1_ref"/>
                         <h2>
                             <field name="pr1_ref" options="{'no_create': True}" context="{}"/>
+                        </h2>
+                        <label for="estimated_cost_from_pr"/>
+                        <h2>
+                            <field name="estimated_cost_from_pr"/>
                         </h2>
                     </div>
                     
