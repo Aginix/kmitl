@@ -9,6 +9,10 @@
                 <field name="validation_status" invisible="1" />
             </field>
 
+            <xpath expr="//button[contains(@class, 'o_button_approved')]" position="before">
+                <field name="review_ids" invisible="1" />
+            </xpath>
+
             <xpath expr="//button[contains(@class, 'o_button_approved')]" position="attributes">
                 <attribute
                     name="attrs"
