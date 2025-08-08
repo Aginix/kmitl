@@ -25,12 +25,6 @@ class PurchaseOrder(models.Model):
         currency_field="currency_id",
     )
 
-    state = fields.Selection(
-        selection_add=[
-            ('egp', 'EGP'),
-        ],
-    )
-
     department_id = fields.Many2one(
         "hr.department",
         string="Department",
@@ -56,7 +50,6 @@ class PurchaseOrder(models.Model):
         string="ประเภทการชำระเงิน",
         help="Select the payment type for this purchase order. Prepaid means payment is made before delivery, Postpaid means payment is made after delivery.",
     )
-    show_egp_button = fields.Boolean(compute="_compute_show_egp_button", store=True)
 
     contract_start_date = fields.Date(
         string="วันที่เริ่มสัญญา",
@@ -119,10 +112,6 @@ class PurchaseOrder(models.Model):
         string="แนบเอกสาร",
     )
 
-    @api.depends("total_estimated_cost")
-    def _compute_show_egp_button(self):
-        for order in self:
-            order.show_egp_button = order.total_estimated_cost > 100000
 
     @api.depends("request_ids.line_ids.estimated_cost")
     def _compute_total_estimated_cost(self):
@@ -131,14 +120,6 @@ class PurchaseOrder(models.Model):
             for req in order.request_ids:
                 total += sum(req.line_ids.mapped("estimated_cost"))
             order.total_estimated_cost = total
-
-    def egp(self):
-        for order in self:
-            order.state = "egp"
-
-    def egp_comfirm(self):
-        for order in self:
-            order.state = "purchase"
 
     @api.model
     def create(self, vals):

@@ -7,24 +7,6 @@
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//button[@name='button_confirm']" position="before">
-                <field name="show_egp_button" invisible="1" />
-                <button
-                    name="egp"
-                    string="EGP"
-                    class="btn btn-primary"
-                    type="object"
-                    attrs="{'invisible': ['|',('show_egp_button', '=', False), ('state', 'not in', ('draft','sent'))]}"
-                />
-                <button
-                    name="egp_comfirm"
-                    type="object"
-                    states="egp"
-                    context="{'validate_analytic': True}"
-                    string="Confirm Order"
-                    id="draft_confirm"
-                />
-            </xpath>
             <xpath expr="//field[@name='currency_id']/../.." position="after">
                 <group>
                     <field name="department_id" />
@@ -42,7 +24,7 @@
                 </group>
             </xpath>
             <xpath expr="//field[@name='state']" position="attributes">
-                <attribute name="statusbar_visible">draft,sent,egp,purchase</attribute>
+                <attribute name="statusbar_visible">draft,sent,purchase</attribute>
             </xpath>
             <!-- <xpath expr="//field[@name='partner_id']" position="attributes">
                 <attribute
