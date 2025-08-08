@@ -136,6 +136,13 @@ class Purchase_request(models.Model):
         ("prepaid", "สำรองจ่าย")
     ])
 
+    contract_type = fields.Selection([
+        ('order', 'ใบสั่งซื้อ/จ้าง'),
+        ('contract_buy', 'สัญญาซื้อข้าย'),
+        ('contract_construction', 'สัญญาจ้างก่อสร้าง'),
+    ], string="ประเภทสัญญา", required=True)
+
+
     department_id = fields.Many2one(
         comodel_name="hr.department",
         string="Department",

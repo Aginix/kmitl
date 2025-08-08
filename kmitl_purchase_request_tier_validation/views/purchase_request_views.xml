@@ -24,7 +24,8 @@
                 <attribute name="states">to_approve,validation,rejected,done</attribute>
             </xpath>
             <xpath expr="//button[@name='button_rejected']" position="attributes">
-                <attribute name="states">to_approve,validation</attribute>
+                 <attribute
+                    name="attrs">{'invisible':['|', ('validation_status', 'in', ('pending', 'rejected')),('state', 'not in', ['to_approve', 'validation'])]}</attribute>
             </xpath>
 
         </field>
