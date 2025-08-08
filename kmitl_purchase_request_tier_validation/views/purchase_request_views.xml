@@ -19,6 +19,9 @@
             </xpath>
             <xpath expr="//button[@name='button_rejected']" position="after">
                 <field name="is_current_user_requester" invisible="1" />
+                <field name="rejected" invisible="1" />
+                <field name="validation_status" invisible="1" />
+                <field name="need_validation" invisible="1" />
                 <button name="request_validation" string="Request Validation" attrs="{'invisible': ['|', '|', '|',
         ('need_validation', '!=', True),
         ('validation_status', '=', 'pending'),
