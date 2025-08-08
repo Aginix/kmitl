@@ -14,3 +14,11 @@ class PurchaseRequestTwoSubmitted(models.Model):
         res = super(PurchaseRequestTwoSubmitted, self)._get_under_validation_exceptions()
         res.append("route_id")
         return res
+
+    def _validate_tier(self, tiers=False):
+        super(PurchaseRequestTwoSubmitted, self)._validate_tier(tiers)
+        reviews = self.review_ids.filtered(
+            lambda r: r.status == "pending" and (self.env.user in r.reviewer_ids)
+        )
+        if not reviews:
+            return self.write({'state': 'approved'})

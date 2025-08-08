@@ -33,14 +33,17 @@ class PurchaseRequestTwo(models.Model):
         string="Vendor",
         help="Select a vendor to create a purchase order for the selected request lines.",
         required=True,
+        tracking=True
     )
     start_date = fields.Date(
         string="วันที่เริ่มสัญญา",
         help="The start date for the purchase order. If not set, the current date will be used.",
+        tracking=True
     )
     end_date = fields.Date(
         string="วันที่สิ้นสุดสัญญา",
         help="The end date for the purchase order. If not set, the start date will be used.",
+        tracking=True
     )
     purchase_request_number = fields.Char(
         string="หมายเลขคำสั่งซื้อ",
@@ -54,19 +57,17 @@ class PurchaseRequestTwo(models.Model):
         readonly=True
     )
 
-    payment_type = fields.Selection([
-        ("direct", "จ่ายตรง"),
-        ("loan", "เงินยืม"),
-        ("prepaid", "สำรองจ่าย")
-    ], string="ประเภทการจ่ายเงิน", readonly=True)
+    payment_type = fields.Selection(
+        related='pr1_ref.payment_type', store=True, string="ประเภทการจ่ายเงิน", readonly=True)
 
     purchase_request_name = fields.Char(
         string="ชื่อใบสั่งซื้อ/จ้าง",
         help="The name of the purchase request associated with the selected lines.",
         required=True,
+        tracking=True
     )
     is_editable = fields.Boolean(compute="_compute_is_editable", readonly=True)
-    line_ids = fields.One2many('purchase.request.two.line', 'pr2_id', string='Products')
+    line_ids = fields.One2many('purchase.request.two.line', 'pr2_id', string='Products', tracking=True)
 
     state = fields.Selection(selection=_STATES, default='draft', string='Status', tracking=True)
 
@@ -78,7 +79,7 @@ class PurchaseRequestTwo(models.Model):
 
     submitted_id = fields.Many2one('purchase.request.two.submitted', string='Included in Submitted', readonly=True)
 
-    generate_po = fields.Boolean(string='Generate Purchase Order?', default=True)
+    generate_po = fields.Boolean(string='Generate Purchase Order?', default=True, tracking=True)
 
     estimated_cost_from_pr = fields.Monetary(
         string="ราคารวมจาก PR1",

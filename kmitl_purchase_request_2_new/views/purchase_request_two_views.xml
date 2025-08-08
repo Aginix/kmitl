@@ -46,8 +46,8 @@
 
                         </group>
                         <group>
-                            <field name="contract_type" attrs="{'readonly': [('is_editable','=', False)]}" />
-                            <field name="payment_type" attrs="{'readonly': [('is_editable','=', False)]}" />
+                            <field name="contract_type" readonly="1" />
+                            <field name="payment_type" readonly="1" />
                             <field name="generate_po" attrs="{'readonly': [('is_editable','=', False)]}"/>
                         </group>
                     </group>

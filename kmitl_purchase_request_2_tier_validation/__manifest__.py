@@ -8,7 +8,6 @@
     'category': 'KMITL',
     'depends': ['base_tier_validation', 'kmitl_purchase_request_2_new'],
     "data": [
-        "security/ir.model.access.csv",
         "views/purchase_request_two_submitted_views.xml"
     ],
     'installable': True,

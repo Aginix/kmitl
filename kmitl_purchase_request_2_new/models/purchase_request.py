@@ -10,7 +10,6 @@ class PurchaseRequest(models.Model):
         pr2 = self.env['purchase.request.two'].create({
             'pr1_ref': self.id,
             'purchase_request_number': self.name,
-            'payment_type': self.payment_type,
         })
 
         line_vals = []
