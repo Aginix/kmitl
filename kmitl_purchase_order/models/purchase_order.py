@@ -60,11 +60,12 @@ class PurchaseOrder(models.Model):
         help="The end date for the purchase order. If not set, the start date will be used.",
     )
 
-    contract_type = fields.Selection([
-        ('order', 'ใบสั่งซื้อ/จ้าง'),
-        ('procurement', 'สัญญาซื้อข้าย'),
-        ('construction', 'สัญญาจ้างก่อสร้าง'),
-    ], require=True)
+    contract_type = fields.Selection(
+        related='pr2_ref.contract_type',
+        string="ประเภทสัญญา",
+        store=True,
+        readonly=True
+    )
 
     work_start_date = fields.Date(
         string="วันที่เริ่มงาน",

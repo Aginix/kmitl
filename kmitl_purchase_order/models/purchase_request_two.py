@@ -1,0 +1,59 @@
+# -*- coding: utf-8 -*-
+import logging
+
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError, ValidationError
+
+_logger = logging.getLogger(__name__)
+
+
+class PurchaseRequestTwo(models.Model):
+    _inherit = 'purchase.request.two'
+
+    def make_purchase_order(self):
+        self.ensure_one()
+
+        if not self.generate_po:
+            return
+
+        if self.state != 'approved':
+            raise UserError("This PR2 is not ready for PO. Please approve first.")
+
+        if not self.vendor:
+            raise UserError("Vendor is required.")
+
+        order_lines = []
+        for line in self.line_ids:
+            if not line.product_id or not line.quantity:
+                raise UserError("Please fill all required line data.")
+            order_lines.append((0, 0, {
+                'product_id': line.product_id.id,
+                'name': line.description or line.product_id.display_name,
+                'product_qty': line.quantity,
+                'price_unit': line.unit_price,
+                'taxes_id': [(6, 0, line.taxes.ids)],
+                'product_uom': line.product_id.uom_po_id.id,
+            }))
+
+        po = self.env['purchase.order'].create({
+            'department_id': self.env.user.employee_id.department_id.id,
+            'partner_id': self.vendor.id,
+            'order_line': order_lines,
+            'origin': self.name,
+            'contract_type' : self.contract_type,
+            'contract_start_date': self.start_date,
+            'contract_end_date': self.end_date,
+            'purchase_request_name': self.purchase_request_name,
+            'pr1_ref': self.pr1_ref.id,
+            'pr2_ref': self.id,
+        })
+
+        self.state = 'po_created'
+
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'purchase.order',
+            'res_id': po.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }

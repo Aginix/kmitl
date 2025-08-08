@@ -17,6 +17,7 @@
         "views/purchase_order_attachment_views.xml",
         "views/purchase_order_bidder_line_views.xml",
         "views/purchase_order_views.xml",
+        "views/purchase_request_two_views.xml",
         "views/purchase_requisition_views.xml"
     ],
     'assets': {
