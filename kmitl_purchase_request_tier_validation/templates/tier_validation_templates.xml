@@ -1,0 +1,21 @@
+<!-- <odoo>
+    <template
+        id="tier_validation_request_name"
+        inherit_id="base_tier_validation.tier_validation_buttons"
+    >
+        <xpath expr="//button[@name='request_validation']" position="replace">
+
+            <button
+                name="request_validation"
+                string="Request Validation"
+                t-attf-attrs="{'invisible': ['|', '|', '|', '|',
+                ('need_validation', '!=', True),
+                ('validation_status', '=', 'pending'),
+                ('requested_by', '!=', uid),
+                ('rejected','=',True),
+                ('#{state_field}', '#{state_operator}', #{state_value})]}"
+                type="object"
+            />
+        </xpath>
+    </template>
+</odoo> -->

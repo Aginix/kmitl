@@ -4,7 +4,7 @@
     <record id="rule_pr_finance_read" model="ir.rule">
         <field name="name">PR Finance - Edit Submit</field>
         <field name="model_id" ref="purchase_request.model_purchase_request"/>
-        <field name="domain_force">[('state', 'in', ['submit', 'commit'])]</field>
+        <field name="domain_force">[('substate_id.name', 'in', ['To Verify', 'Verified'])]</field>
         <field name="groups" eval="[(6,0, [ref('kmitl_purchase_request.group_pr_finance')])]"/>
         <field name="perm_read" eval="True"/>
         <field name="perm_write" eval="True"/>
@@ -16,7 +16,7 @@
     <record id="rule_pr_supply_read" model="ir.rule">
         <field name="name">PR Supply - Edit Commit</field>
         <field name="model_id" ref="purchase_request.model_purchase_request"/>
-        <field name="domain_force">[('state', 'in', ['commit', 'validate'])]</field>
+        <field name="domain_force">[('state', 'in', ['to_approve', 'validation'])]</field>
         <field name="groups" eval="[(4, ref('kmitl_purchase_request.group_pr_supply'))]"/>
         <field name="perm_read" eval="True"/>
         <field name="perm_write" eval="True"/>
