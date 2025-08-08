@@ -6,7 +6,7 @@
     'author': 'Aginix Techonologies',
     'website': 'https://github.com/aginix/kmitl',
     'category': 'KMITL',
-    'depends': ['kmitl_purchase_request'],
+    'depends': ['kmitl_purchase_request', 'l10n_th_base_sequence'],
     "data": [
         "data/purchase_request_two_sequence.xml",
         "security/ir.model.access.csv",

@@ -3,7 +3,7 @@
         <record id="seq_purchase_request_two_form" model="ir.sequence">
             <field name="name">PR2 Form</field>
             <field name="code">purchase.request.two.form</field>
-            <field name="prefix">PR2/Form/</field>
+            <field name="prefix">PR2/Form/%(y_be)s/</field>
             <field name="padding">4</field>
             <field name="number_next">1</field>
             <field name="number_increment">1</field>
@@ -13,7 +13,7 @@
         <record id="seq_purchase_request_two_submitted" model="ir.sequence">
             <field name="name">PR2 Submitted Sequence</field>
             <field name="code">purchase.request.two.submitted</field>
-            <field name="prefix">PR2/Submit/</field>
+            <field name="prefix">PR2/Submit/%(y_be)s/</field>
             <field name="padding">4</field>
             <field name="number_next">1</field>
             <field name="number_increment">1</field>
@@ -21,5 +21,4 @@
         </record>
     </data>
 
-    
 </odoo>

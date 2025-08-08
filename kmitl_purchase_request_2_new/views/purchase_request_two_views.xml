@@ -50,7 +50,7 @@
                         <field name="vendor"/>
                         <field name="start_date" />
                         <field name="end_date" />
-                        <field name="purchase_type" />
+                        <field name="contract_type" />
                         <field name="payment_type" />
                         <field name="purchase_request_name" />
                         <field name="generate_po"/>

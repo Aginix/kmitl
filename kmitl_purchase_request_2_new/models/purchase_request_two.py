@@ -37,11 +37,13 @@ class PurchaseRequestTwo(models.Model):
         required=True,
         help="The number of the purchase request associated with the selected lines.",
     )
-    purchase_type = fields.Selection(
-        [("order", "ใบสั่งซื้อ/จ้าง"), ("procurement", "สัญญาซื้อข้าย"), ("construction", "สัญญาจ้างก่อสร้าง")],
+    contract_type = fields.Selection(
+        related='pr1_ref.contract_type',
         string="ประเภทสัญญา",
-        help="Select the type of purchase order to create. Standard for regular orders, Urgent for expedited orders.",
+        store=True,
+        readonly=True
     )
+
     payment_type = fields.Selection([
         ("direct", "จ่ายตรง"),
         ("loan", "เงินยืม"),
