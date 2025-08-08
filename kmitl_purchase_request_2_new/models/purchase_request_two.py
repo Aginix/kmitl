@@ -32,7 +32,6 @@ class PurchaseRequestTwo(models.Model):
         "res.partner",
         string="Vendor",
         help="Select a vendor to create a purchase order for the selected request lines.",
-        required=True,
         tracking=True
     )
     start_date = fields.Date(
@@ -63,7 +62,6 @@ class PurchaseRequestTwo(models.Model):
     purchase_request_name = fields.Char(
         string="ชื่อใบสั่งซื้อ/จ้าง",
         help="The name of the purchase request associated with the selected lines.",
-        required=True,
         tracking=True
     )
     is_editable = fields.Boolean(compute="_compute_is_editable", readonly=True)

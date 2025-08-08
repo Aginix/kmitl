@@ -21,8 +21,9 @@ class PurchaseRequestTwoSubmitted(models.Model):
     line_ids = fields.One2many('purchase.request.two.submitted.line', 'submitted_id', string="PR2 Forms")
 
     payment_type_ref = fields.Selection(
+        [("direct", "จ่ายตรง"),("loan", "เงินยืม"),("prepaid", "สำรองจ่าย")],
         string="Reference Payment Type",
-        related='pr2_id.payment_type',
+        compute="_compute_payment_type_ref",
         store=True,
     )
 

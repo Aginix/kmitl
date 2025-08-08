@@ -21,4 +21,6 @@ class PurchaseRequestTwoSubmitted(models.Model):
             lambda r: r.status == "pending" and (self.env.user in r.reviewer_ids)
         )
         if not reviews:
-            return self.write({'state': 'approved'})
+            for line in self.line_ids:
+                line.pr2_form_id.state = 'approved'
+            return self.write({'state': 'approved', 'approval_by': self.env.user.id, 'approval_date': fields.Date.context_today(self)})

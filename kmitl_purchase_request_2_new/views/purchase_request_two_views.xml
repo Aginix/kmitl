@@ -39,8 +39,8 @@
                     <field name="is_editable" invisible="1" />
                     <group>
                         <group>
-                            <field name="vendor" attrs="{'readonly': [('is_editable','=', False)]}" />
-                             <field name="purchase_request_name" attrs="{'readonly': [('is_editable','=', False)]}" />
+                            <field name="vendor" required="1" attrs="{'readonly': [('is_editable','=', False)]}" />
+                             <field name="purchase_request_name" required="1" attrs="{'readonly': [('is_editable','=', False)]}" />
                             <field name="start_date" attrs="{'readonly': [('is_editable','=', False)]}" />
                             <field name="end_date" attrs="{'readonly': [('is_editable','=', False)]}" />
 
