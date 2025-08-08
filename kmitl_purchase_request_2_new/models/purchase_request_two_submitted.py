@@ -3,6 +3,7 @@ from odoo import _, api, fields, models
 
 class PurchaseRequestTwoSubmitted(models.Model):
     _name = 'purchase.request.two.submitted'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'PurchaseRequestTwoSubmitted'
 
     name = fields.Char(string='Submitted Ref', required=True, default=lambda self: _('New'))

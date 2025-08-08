@@ -4,6 +4,7 @@ from odoo.exceptions import UserError
 
 class PurchaseRequestTwo(models.Model):
     _name = 'purchase.request.two'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'PurchaseRequestTwo'
 
     name = fields.Char(
