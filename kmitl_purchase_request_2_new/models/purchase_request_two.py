@@ -7,6 +7,14 @@ class PurchaseRequestTwo(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'PurchaseRequestTwo'
 
+    _STATES = [
+    ("draft", "Draft"),
+    ("submitted", "Submitted"),
+    ("approved", "Approved"),
+    ("po_created", "PO Created"),
+    ("rejected", "Rejected"),
+    ]
+
     name = fields.Char(
         string='Reference',
         required=True,
@@ -24,6 +32,7 @@ class PurchaseRequestTwo(models.Model):
         "res.partner",
         string="Vendor",
         help="Select a vendor to create a purchase order for the selected request lines.",
+        required=True,
     )
     start_date = fields.Date(
         string="วันที่เริ่มสัญญา",
@@ -54,17 +63,12 @@ class PurchaseRequestTwo(models.Model):
     purchase_request_name = fields.Char(
         string="ชื่อใบสั่งซื้อ/จ้าง",
         help="The name of the purchase request associated with the selected lines.",
+        required=True,
     )
-
+    is_editable = fields.Boolean(compute="_compute_is_editable", readonly=True)
     line_ids = fields.One2many('purchase.request.two.line', 'pr2_id', string='Products')
 
-    state = fields.Selection([
-        ('draft', 'Draft'),
-        ('submitted', 'Submitted'),
-        ('approved', 'Approved'),
-        ('po_created', 'PO Created'),
-        ('rejected', 'Rejected')
-    ], default='draft', string='Status', tracking=True)
+    state = fields.Selection(selection=_STATES, default='draft', string='Status', tracking=True)
 
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.company.currency_id)
 
@@ -83,6 +87,19 @@ class PurchaseRequestTwo(models.Model):
         store=True,
         currency_field="currency_id"
     )
+
+    @api.depends("state")
+    def _compute_is_editable(self):
+        for rec in self:
+            if rec.state in (
+                "submitted",
+                "po_created",
+                "approved",
+                "rejected",
+            ):
+                rec.is_editable = False
+            else:
+                rec.is_editable = True
 
     def action_submit(self):
         self.write({'state': 'submitted'})
@@ -141,51 +158,3 @@ class PurchaseRequestTwo(models.Model):
 
     def button_draft(self):
         self.write({'state': 'draft'})
-
-    def make_purchase_order(self):
-        self.ensure_one()
-
-        if not self.generate_po:
-            return
-
-        if self.state != 'approved':
-            raise UserError("This PR2 is not ready for PO. Please approve first.")
-
-        if not self.vendor:
-            raise UserError("Vendor is required.")
-
-        order_lines = []
-        for line in self.line_ids:
-            if not line.product_id or not line.quantity:
-                raise UserError("Please fill all required line data.")
-            order_lines.append((0, 0, {
-                'product_id': line.product_id.id,
-                'name': line.description or line.product_id.display_name,
-                'product_qty': line.quantity,
-                'price_unit': line.unit_price,
-                'taxes_id': [(6, 0, line.taxes.ids)],
-                'product_uom': line.product_id.uom_po_id.id,
-            }))
-
-        po = self.env['purchase.order'].create({
-            'department_id': self.env.user.employee_id.department_id.id,
-            'partner_id': self.vendor.id,
-            'order_line': order_lines,
-            'origin': self.name,
-            'contract_type' : self.purchase_type,
-            'contract_start_date': self.start_date,
-            'contract_end_date': self.end_date,
-            'purchase_request_name': self.purchase_request_name,
-            'pr1_ref': self.pr1_ref.id,
-            'pr2_ref': self.id,
-        })
-
-        self.state = 'po_created'
-
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': 'purchase.order',
-            'res_id': po.id,
-            'view_mode': 'form',
-            'target': 'current',
-        }

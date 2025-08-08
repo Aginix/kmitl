@@ -10,10 +10,10 @@
     "data": [
         "data/purchase_request_two_sequence.xml",
         "security/ir.model.access.csv",
+        "views/purchase_request_two_views.xml",
         "views/purchase_request_two_line_views.xml",
         "views/purchase_request_two_submitted_line_views.xml",
         "views/purchase_request_two_submitted_views.xml",
-        "views/purchase_request_two_views.xml",
         "views/purchase_request_views.xml"
     ],
     'installable': True,

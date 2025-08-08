@@ -6,6 +6,12 @@ class PurchaseRequestTwoSubmitted(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'PurchaseRequestTwoSubmitted'
 
+    _STATES = [
+    ("draft", "Draft"),
+    ("approved", "Approved"),
+    ("rejected", "Rejected"),
+    ]
+
     name = fields.Char(string='Submitted Ref', required=True, default=lambda self: _('New'))
     generate_po = fields.Boolean(string='Generate Purchase Order?', default=False)
     pr2_id = fields.Many2one('purchase.request.two', string='Related PR2 Form')
@@ -15,9 +21,8 @@ class PurchaseRequestTwoSubmitted(models.Model):
     line_ids = fields.One2many('purchase.request.two.submitted.line', 'submitted_id', string="PR2 Forms")
 
     payment_type_ref = fields.Selection(
-        [("direct", "จ่ายตรง"),("loan", "เงินยืม"),("prepaid", "สำรองจ่าย")],
         string="Reference Payment Type",
-        compute="_compute_payment_type_ref",
+        related='pr2_id.payment_type',
         store=True,
     )
 
@@ -41,19 +46,32 @@ class PurchaseRequestTwoSubmitted(models.Model):
         string="อนุมัติโดย",
         help="The user who approved the purchase order. If not set, it will be the current user.",
     )
+    is_editable = fields.Boolean(compute="_compute_is_editable", readonly=True)
+    state = fields.Selection(selection=_STATES, default='draft', tracking=True)
 
-    state = fields.Selection([
-        ('draft', 'Draft'),
-        ('approved', 'Approved'),
-        ('rejected', 'Rejected'),
-    ], default='draft', tracking=True)
+    @api.depends("state")
+    def _compute_is_editable(self):
+        for rec in self:
+            if rec.state in (
+                "approved",
+                "rejected",
+            ):
+                rec.is_editable = False
+            else:
+                rec.is_editable = True
 
     def button_draft(self):
+        for line in self.line_ids:
+            line.pr2_form_id.state = 'submitted'
+        self.approval_by = False
+        self.approval_date = False
         self.state = 'draft'
 
     def button_approved(self):
         for line in self.line_ids:
             line.pr2_form_id.state = 'approved'
+        self.approval_by = self.env.user.id
+        self.approval_date = fields.Date.context_today(self)
         self.state = 'approved'
 
     def button_rejected(self):

@@ -25,7 +25,6 @@
             <form string="Purchase Request Two">
                 <header>
                     <button name="action_merge_to_submitted" type="object" string="สร้าง PR2" class="btn-primary" attrs="{'invisible': ['|' , ('estimated_cost_from_pr', '&gt;', 100000), ('state', '!=', 'draft')]}" />
-                    <button name="make_purchase_order" string="สร้าง PO" type="object" class="btn-primary" states="approved" />
                     <button name="action_egp" string="เข้าสู่ EGP" type="object" class="btn-primary" attrs="{'invisible': ['|' , ('estimated_cost_from_pr', '&lt;', 100000) , ('state', '!=', 'draft')]}" />
                     <button name="button_draft" type="object" string="Reset" class="btn-secondary" />
                     <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved,po_created,rejected"/>
@@ -34,31 +33,36 @@
                     <div class="oe_title">
                         <label for="name"/>
                         <h1>
-                            <field name="name" placeholder="Name..."/>
+                            <field name="name" placeholder="Name..." readonly="1" />
                         </h1>
-                        <label for="pr1_ref"/>
-                        <h2>
-                            <field name="pr1_ref" options="{'no_create': True}" context="{}"/>
-                        </h2>
-                        <label for="estimated_cost_from_pr"/>
-                        <h2>
-                            <field name="estimated_cost_from_pr"/>
-                        </h2>
                     </div>
-
+                    <field name="is_editable" invisible="1" />
                     <group>
-                        <field name="vendor"/>
-                        <field name="start_date" />
-                        <field name="end_date" />
-                        <field name="contract_type" />
-                        <field name="payment_type" />
-                        <field name="purchase_request_name" />
-                        <field name="generate_po"/>
+                        <group>
+                            <field name="vendor" attrs="{'readonly': [('is_editable','=', False)]}" />
+                             <field name="purchase_request_name" attrs="{'readonly': [('is_editable','=', False)]}" />
+                            <field name="start_date" attrs="{'readonly': [('is_editable','=', False)]}" />
+                            <field name="end_date" attrs="{'readonly': [('is_editable','=', False)]}" />
+
+                        </group>
+                        <group>
+                            <field name="contract_type" attrs="{'readonly': [('is_editable','=', False)]}" />
+                            <field name="payment_type" attrs="{'readonly': [('is_editable','=', False)]}" />
+                            <field name="generate_po" attrs="{'readonly': [('is_editable','=', False)]}"/>
+                        </group>
                     </group>
+                    <label for="pr1_ref"/>
+                    <h2>
+                        <field name="pr1_ref" options="{'no_create': True}" context="{}"/>
+                    </h2>
+                    <label for="estimated_cost_from_pr"/>
+                    <h2>
+                        <field name="estimated_cost_from_pr"/>
+                    </h2>
 
                     <notebook>
                         <page string="Product Lines">
-                            <field name="line_ids">
+                            <field name="line_ids" attrs="{'readonly': [('is_editable','=', False)]}">
                                 <tree editable="bottom">
                                     <field name="product_id"/>
                                     <field name="description"/>
@@ -113,6 +117,7 @@
         </field>
     </record>
 
+    <menuitem id="menu_purchase_request_2_form" name="Purchase Requests 2" parent="purchase_request.parent_menu_purchase_request" />
+    <menuitem id="menu_purchase_request_two_root_pr" name="Purchase Request 2 Form" parent="kmitl_purchase_request_2_new.menu_purchase_request_2_form" action="action_purchase_request_two" sequence="20"/>
     <menuitem id="menu_purchase_request_two_root" name="Purchase Request 2" parent="purchase.menu_procurement_management" action="action_purchase_request_two" sequence="20"/>
-
 </odoo>
