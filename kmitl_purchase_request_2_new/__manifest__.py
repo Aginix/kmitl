@@ -9,6 +9,7 @@
     'depends': ['kmitl_purchase_request', 'l10n_th_base_sequence'],
     "data": [
         "data/purchase_request_two_sequence.xml",
+        "data/res_partner.xml",
         "security/ir.model.access.csv",
         "views/purchase_request_two_views.xml",
         "views/purchase_request_two_line_views.xml",

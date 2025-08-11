@@ -17,6 +17,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_work_acceptance'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -37,6 +38,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_work_acceptance'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -57,6 +59,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_work_acceptance'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -77,6 +80,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_tor'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -97,6 +101,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_tor'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -117,6 +122,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_tor'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -137,6 +143,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_price'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -157,6 +164,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_price'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -177,6 +185,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_price'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -197,6 +206,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_eval'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -217,6 +227,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_eval'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -237,6 +248,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_eval'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -260,6 +272,7 @@
     ref('kmitl_purchase_request.group_committee_price'),
     ref('kmitl_purchase_request.group_committee_tor'),
     ref('kmitl_purchase_request.group_committee_work_acceptance'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -281,6 +294,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_work_acceptance'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -301,6 +315,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_work_acceptance'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -321,6 +336,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_work_acceptance'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -341,6 +357,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_tor'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -361,6 +378,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_tor'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -381,6 +399,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_tor'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -401,6 +420,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_price'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -421,6 +441,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_price'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -441,6 +462,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_price'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -461,6 +483,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_eval'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -481,6 +504,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_eval'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -501,6 +525,7 @@
     ref('base.group_user'),
     ref('purchase_request.group_purchase_request_user'),
     ref('kmitl_purchase_request.group_committee_eval'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
@@ -524,6 +549,7 @@
     ref('kmitl_purchase_request.group_committee_price'),
     ref('kmitl_purchase_request.group_committee_tor'),
     ref('kmitl_purchase_request.group_committee_work_acceptance'),
+    ref('purchase.group_purchase_manager'),
 ])]"/>
     </record>
 
