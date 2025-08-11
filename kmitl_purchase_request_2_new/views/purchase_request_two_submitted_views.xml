@@ -5,7 +5,7 @@
         <field name="name">view.purchase.request.two.submitted.tree</field>
         <field name="model">purchase.request.two.submitted</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree create='0'>
                 <field name="name"/>
                 <field name="request_by" readonly="1" />
                 <field name="payment_type_ref" string="ประเภทการจ่ายเงิน"/>
@@ -34,9 +34,9 @@
                     </div>
                     <field name="is_editable" invisible="1" />
                     <group>
-                        <field name="department_id_ref" attrs="{'readonly': [('is_editable','=', False)]}"/>
+                        <field name="department_id_ref" readonly='1' attrs="{'readonly': [('is_editable','=', False)]}"/>
                         <field name="request_by" readonly="1" />
-                        <field name="payment_type_ref" string="ประเภทการจ่ายเงิน" attrs="{'readonly': [('is_editable','=', False)]}"/>
+                        <field name="payment_type_ref" string="ประเภทการจ่ายเงิน" readonly='1' attrs="{'readonly': [('is_editable','=', False)]}"/>
                         <field name="approval_date" readonly="1" />
                         <field name="approval_by" readonly="1" />
                         <field name="purchase_order_id" readonly="1" invisible="1"/>

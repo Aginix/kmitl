@@ -288,7 +288,7 @@
         <field name="name">EMP 1 (IT)</field>
         <field name="work_email">emp1@it.com</field>
         <field name="phone">+3012323231</field>
-        <field name="user_id" ref="user_emp1_1"/>
+        <field name="user_id" ref="user_emp1_2"/>
         <field name="department_id" ref="hr_department_02"/>
     </record>
 
