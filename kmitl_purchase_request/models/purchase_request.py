@@ -11,7 +11,7 @@ class Purchase_request(models.Model):
     _STATES = [
     ("draft", "Draft"),
     ("to_approve", "To be approved"),
-    ("validation", "validation"),
+    ("validation", "Validated"),
     ("approved", "Approved"),
     ("done", "Done"),
     ("rejected", "Rejected"),
@@ -222,7 +222,7 @@ class Purchase_request(models.Model):
     def button_draft(self):
         self.write({"verified_by": "", "date_verified": False, "approved_by": "", "date_approved": False, "validated_by": "", "date_validated": False})
         return super().button_draft()
-    
+
     @api.depends_context('uid')
     def _compute_has_finance_group(self):
         allowed = self.env.user.has_group('kmitl_purchase_request_substate.group_purchase_request_substate_manager')

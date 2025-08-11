@@ -21,7 +21,7 @@
             </xpath>
         </field>
     </record>
-    
+
     <!-- View purchase.request form -->
     <record id="view_purchase_request_form" model="ir.ui.view">
         <field name="name">view.purchase.request.form</field>
@@ -86,6 +86,19 @@
                 <field name="date_validated" readonly="1" />
             </xpath>
 
+            <xpath expr="//field[@name='date_start']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='department_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='verified_by']" position="before">
+                <field name="date_start" readonly="1" string="สร้างเมื่อ" />
+                <field name="department_id" readonly="1" />
+            </xpath>
+
             <xpath expr="//button[@name='button_approved']" position="after">
                 <button name='button_approved' string="Approve" states="validation" class="btn-primary o_button_approved" type="object" groups="purchase_request.group_purchase_request_manager" />
             </xpath>
@@ -106,16 +119,53 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
+            <xpath expr="//button[@name='button_draft']" position="attributes">
+                <attribute name="string">รีเซ็ต</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_rejected']" position="attributes">
+                <attribute name="string">ยกเลิก</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_to_approve']" position="attributes">
+                <attribute name="string">ส่งคำขออนุมัติ</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='origin']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
 
             <xpath expr="//field[@name='requested_by']" position="attributes">
                 <attribute name="readonly">1</attribute>
+                <attribute name="string">ขออนุมัติโดย</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='requested_by']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='verified_by']" position="attributes">
+                <attribute name="string">จองงบประมาณโดย</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='date_verified']" position="attributes">
+                <attribute name="string">จองงบประมาณเมื่อ</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='date_approved']" position="attributes">
+                <attribute name="string">อนุมัติเมื่อ</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='approved_by']" position="attributes">
+                <attribute name="string">อนุมัติโดย</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="string">หมายเลขใบ พ.1</attribute>
             </xpath>
 
             <field name="requested_by" position="before">
-                <field name="payment_type" required="True" attrs="{'readonly': [('is_editable','=', False)]}"  />
+                <field name="payment_type" required="True" attrs="{'readonly': [('is_editable','=', False)]}" />
                 <field name="contract_type" attrs="{'readonly': [('is_editable','=', False)]}" />
                 <field name="purchase_type_id"
                     invisible = "1" attrs="{'readonly': [('is_editable','=', False)]}" />
@@ -126,10 +176,6 @@
             <field name="description" position="before">
                 <field name="title" attrs="{'readonly': [('is_editable','=', False)]}" />
             </field>
-
-            <xpath expr="//field[@name='date_start']" position="after">
-                <field name="department_id" />
-            </xpath>
 
             <xpath expr="//field[@name='date_start']" position="attributes">
                 <attribute name="readonly">1</attribute>
@@ -195,31 +241,32 @@
                 </page>
 
                 <page name="document" string="เอกสารแนบ">
-                    <group>
-                        <field name="tor_document_ids" attrs="{'readonly': [('is_editable','=', False)]}">
-                            <tree editable="bottom">
-                                <field name="file" filename="file_name" />
-                                <field name="file_name" readonly="1" />
-                                <field name="description" />
-                            </tree>
-                        </field>
+                    <separator string="ข้อกำหนดคุณลักษณะ (TOR)" />
+                    <field name="tor_document_ids" attrs="{'readonly': [('is_editable','=', False)]}">
+                        <tree editable="bottom">
+                            <field name="file" filename="file_name" />
+                            <field name="file_name" readonly="1" />
+                            <field name="description" />
+                        </tree>
+                    </field>
 
-                        <field name="rfq_attachment_ids" attrs="{'readonly': [('is_editable','=', False)]}">
-                            <tree editable="bottom">
-                                <field name="file" filename="file_name" />
-                                <field name="file_name" readonly="1" />
-                                <field name="description" />
-                            </tree>
-                        </field>
+                    <separator string="ใบเสนอราคา" />
+                    <field name="rfq_attachment_ids" attrs="{'readonly': [('is_editable','=', False)]}">
+                        <tree editable="bottom">
+                            <field name="file" filename="file_name" />
+                            <field name="file_name" readonly="1" />
+                            <field name="description" />
+                        </tree>
+                    </field>
 
-                        <field name="etc_document_ids" attrs="{'readonly': [('is_editable','=', False)]}">
-                            <tree editable="bottom">
-                                <field name="file" filename="file_name" />
-                                <field name="file_name" readonly="1" />
-                                <field name="description" />
-                            </tree>
-                        </field>
-                    </group>
+                    <separator string="อื่นๆ" />
+                    <field name="etc_document_ids" attrs="{'readonly': [('is_editable','=', False)]}">
+                        <tree editable="bottom">
+                            <field name="file" filename="file_name" />
+                            <field name="file_name" readonly="1" />
+                            <field name="description" />
+                        </tree>
+                    </field>
                 </page>
 
                 <page name="budget" string="งบประมาณ">

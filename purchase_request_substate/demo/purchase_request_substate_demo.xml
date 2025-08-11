@@ -2,7 +2,7 @@
 <odoo noupdate="1">
     <!-- to_approve -->
     <record id="base_substate_to_verify" model="base.substate">
-        <field name="name">To Verify</field>
+        <field name="name">รอการตรวจสอบ</field>
         <field name="sequence">1</field>
         <field name="target_state_value_id" ref="target_state_value_to_approve" />
         <field name="active" eval="False" />
@@ -14,7 +14,7 @@
         <field name="active" eval="False" />
     </record>
     <record id="base_substate_verified" model="base.substate">
-        <field name="name">Verified</field>
+        <field name="name">ตรวจสอบแล้ว</field>
         <field name="sequence">3</field>
         <field name="target_state_value_id" ref="target_state_value_to_approve" />
         <field
