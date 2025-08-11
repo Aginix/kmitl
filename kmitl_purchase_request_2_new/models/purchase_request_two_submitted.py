@@ -49,6 +49,17 @@ class PurchaseRequestTwoSubmitted(models.Model):
     )
     is_editable = fields.Boolean(compute="_compute_is_editable", readonly=True)
     state = fields.Selection(selection=_STATES, default='draft', tracking=True)
+    is_current_user_requester = fields.Boolean(
+        string="Is Current User Requester",
+        compute="_compute_is_current_user_requester",
+        store=False,
+    )
+
+    @api.depends('request_by')
+    def _compute_is_current_user_requester(self):
+        current_uid = self.env.uid
+        for rec in self:
+            rec.is_current_user_requester = rec.request_by.id == current_uid
 
     @api.depends("state")
     def _compute_is_editable(self):
