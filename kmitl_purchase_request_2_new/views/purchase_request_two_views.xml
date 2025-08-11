@@ -43,13 +43,18 @@
                              <field name="purchase_request_name" required="1" attrs="{'readonly': [('is_editable','=', False)]}" />
                             <field name="start_date" attrs="{'readonly': [('is_editable','=', False)]}" />
                             <field name="end_date" attrs="{'readonly': [('is_editable','=', False)]}" />
+                            
 
                         </group>
                         <group>
                             <field name="contract_type" readonly="1" />
+                            <field name="pr1_requested_by" invisible='1'/>
                             <field name="payment_type" readonly="1" />
                             <field name="department_id" readonly="1"/>
                             <field name="generate_po" attrs="{'readonly': [('is_editable','=', False)]}"/>
+                            <field name="submitted_id" readonly='1'/>
+                            <field name="submitted_state" readonly='1'/>
+                            
                         </group>
                     </group>
                     <label for="pr1_ref"/>

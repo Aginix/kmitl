@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+
+    <record id="view_purchase_request_tree" model="ir.ui.view">
+        <field name="name">view.purchase.request.tree</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_tree" />
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='date_start']" position="before">
+                <field name="title" />
+            </xpath>
+
+            <xpath expr="//field[@name='requested_by']" position="after">
+                <field name="procurement_type_id" />
+                <field name="payment_type" />
+            </xpath>
+
+            <xpath expr="//field[@name='estimated_cost']" position="attributes">
+                <attribute name="optional">show</attribute>
+            </xpath>
+        </field>
+    </record>
+    
     <!-- View purchase.request form -->
     <record id="view_purchase_request_form" model="ir.ui.view">
         <field name="name">view.purchase.request.form</field>
@@ -202,11 +224,12 @@
 
                 <page name="budget" string="งบประมาณ">
                     <group name="budget" string="ข้อมูลมิติทางบัญชี">
-                        <field name="source_of_fund" />
-                        <field name="plan" />
-                        <field name="fund" />
-                        <field name="budget_type" />
-                        <field name="expense_code" string="รหัสค่าใช้จ่าย" />
+                        <field name="has_finance_group" invisible='1'/>
+                        <field name="source_of_fund" attrs="{'readonly': [('has_finance_group', '=', False)]}"/>
+                        <field name="plan" attrs="{'readonly': [('has_finance_group', '=', False)]}"/>
+                        <field name="fund" attrs="{'readonly': [('has_finance_group', '=', False)]}"/>
+                        <field name="budget_type" attrs="{'readonly': [('has_finance_group', '=', False)]}"/>
+                        <field name="expense_code" string="รหัสค่าใช้จ่าย" attrs="{'readonly': [('has_finance_group', '=', False)]}"/>
                     </group>
 
                 </page>

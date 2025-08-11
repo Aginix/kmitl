@@ -47,11 +47,14 @@
                             <field name="line_ids" attrs="{'readonly': [('is_editable','=', False)]}">
                                 <tree editable="bottom">
                                     <field name="pr2_form_id" widget="many2one" domain="[('payment_type', '=', payment_type_ref), ('department_id', '=', department_id_ref)]"/>
+                                    <field name="pr1_requested_by" />
                                     <field name="vendor"/>
-                                    <field name="payment_type"/>
-                                    <field name="payment_type_ref" invisible="1"/>
                                     <field name="department_id" />
                                     <field name="department_id_ref" invisible="1"/>
+                                    <field name="purchase_request_name" />
+                                    <field name="payment_type"/>
+                                    <field name="payment_type_ref" invisible="1"/>
+                                    <field name="estimated_cost_from_pr" />
                                 </tree>
                             </field>
                         </page>

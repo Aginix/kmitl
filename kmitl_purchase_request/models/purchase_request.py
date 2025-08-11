@@ -186,6 +186,8 @@ class Purchase_request(models.Model):
         copy=False,
     )
 
+    has_finance_group = fields.Boolean(compute='_compute_has_finance_group')
+
     def button_validate(self):
         return self.write({"state": "validation", "validated_by": self.env.user.id, "date_validated": fields.Date.context_today(self)})
 
@@ -220,3 +222,10 @@ class Purchase_request(models.Model):
     def button_draft(self):
         self.write({"verified_by": "", "date_verified": False, "approved_by": "", "date_approved": False, "validated_by": "", "date_validated": False})
         return super().button_draft()
+    
+    @api.depends_context('uid')
+    def _compute_has_finance_group(self):
+        allowed = self.env.user.has_group('kmitl_purchase_request_substate.group_purchase_request_substate_manager')
+        print("--------------------------------------------------------------------------------------------------> ", allowed)
+        for rec in self:
+            rec.has_finance_group = allowed

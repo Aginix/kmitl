@@ -27,11 +27,12 @@ class PurchaseRequestTwo(models.Model):
         string='อ้างอิง PR1',
         readonly=True
     )
-
+    
     vendor = fields.Many2one(
         "res.partner",
         string="Vendor",
         help="Select a vendor to create a purchase order for the selected request lines.",
+        domain="[('supplier_rank', '>', 0)]",
         tracking=True
     )
     start_date = fields.Date(
@@ -75,9 +76,18 @@ class PurchaseRequestTwo(models.Model):
     amount_tax = fields.Monetary(string='ภาษีมูลค่าเพื่ม', compute='_compute_amount', store=True)
     amount_total = fields.Monetary(string='รวมเป็นเงินทั้งสิ้น', compute='_compute_amount', store=True)
 
-    submitted_id = fields.Many2one('purchase.request.two.submitted', string='Included in Submitted', readonly=True)
+    submitted_id = fields.Many2one('purchase.request.two.submitted', string='PR2 Ref', readonly=True)
+
+    submitted_state = fields.Selection(related='submitted_id.state', string='PR2 State')
 
     generate_po = fields.Boolean(string='Generate Purchase Order?', default=True, tracking=True)
+
+    pr1_requested_by = fields.Many2one(
+        'res.users',
+        related='pr1_ref.requested_by', 
+        string="ผู้จัดทำ PR1",
+        store=True,
+        readonly=True)
 
     estimated_cost_from_pr = fields.Monetary(
         string="ราคารวมจาก PR1",
