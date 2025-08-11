@@ -6,7 +6,7 @@
         <field name="name">view.purchase.request.two.tree</field>
         <field name="model">purchase.request.two</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree create='0'>
                 <field name="name" />
                 <field name="pr1_ref"/>
                 <field name="vendor" />
@@ -48,6 +48,7 @@
                         <group>
                             <field name="contract_type" readonly="1" />
                             <field name="payment_type" readonly="1" />
+                            <field name="department_id" readonly="1"/>
                             <field name="generate_po" attrs="{'readonly': [('is_editable','=', False)]}"/>
                         </group>
                     </group>

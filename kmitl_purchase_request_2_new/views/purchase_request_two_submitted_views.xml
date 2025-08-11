@@ -34,9 +34,9 @@
                     </div>
                     <field name="is_editable" invisible="1" />
                     <group>
-                        <field name="department_id" attrs="{'readonly': [('is_editable','=', False)]}" />
+                        <field name="department_id_ref" attrs="{'readonly': [('is_editable','=', False)]}"/>
                         <field name="request_by" readonly="1" />
-                        <field name="payment_type_ref" string="ประเภทการจ่ายเงิน"/>
+                        <field name="payment_type_ref" string="ประเภทการจ่ายเงิน" attrs="{'readonly': [('is_editable','=', False)]}"/>
                         <field name="approval_date" readonly="1" />
                         <field name="approval_by" readonly="1" />
                         <field name="purchase_order_id" readonly="1" invisible="1"/>
@@ -46,10 +46,12 @@
                         <page string="Select PR2 Forms">
                             <field name="line_ids" attrs="{'readonly': [('is_editable','=', False)]}">
                                 <tree editable="bottom">
-                                    <field name="pr2_form_id" widget="many2one" domain="[('payment_type', '=', payment_type_ref)]"/>
+                                    <field name="pr2_form_id" widget="many2one" domain="[('payment_type', '=', payment_type_ref), ('department_id', '=', department_id_ref)]"/>
                                     <field name="vendor"/>
                                     <field name="payment_type"/>
                                     <field name="payment_type_ref" invisible="1"/>
+                                    <field name="department_id" />
+                                    <field name="department_id_ref" invisible="1"/>
                                 </tree>
                             </field>
                         </page>

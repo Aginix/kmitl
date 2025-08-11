@@ -14,7 +14,6 @@ class PurchaseRequestTwoSubmitted(models.Model):
 
     name = fields.Char(string='Submitted Ref', required=True, default=lambda self: _('New'))
     generate_po = fields.Boolean(string='Generate Purchase Order?', default=False)
-    pr2_id = fields.Many2one('purchase.request.two', string='Related PR2 Form')
 
     purchase_order_id = fields.Many2one('purchase.order', string='Linked Purchase Order', readonly=True)
 
@@ -27,10 +26,11 @@ class PurchaseRequestTwoSubmitted(models.Model):
         store=True,
     )
 
-    department_id = fields.Many2one(
-        "hr.department",
-        string="Department",
-        help="The department associated with this purchase order.",
+    department_id_ref = fields.Many2one(
+        'hr.department',
+        string='Department from PR2',
+        compute='_compute_payment_type_ref',
+        store=True
     )
     request_by = fields.Many2one(
         "res.users",
@@ -83,5 +83,6 @@ class PurchaseRequestTwoSubmitted(models.Model):
     @api.depends('line_ids.pr2_form_id.payment_type')
     def _compute_payment_type_ref(self):
         for rec in self:
-            first_line = rec.line_ids.filtered(lambda l: l.pr2_form_id.payment_type)
+            first_line = rec.line_ids.filtered(lambda l: l.pr2_form_id.payment_type and l.pr2_form_id.department_id)
             rec.payment_type_ref = first_line[0].pr2_form_id.payment_type if first_line else False
+            rec.department_id_ref = first_line[0].pr2_form_id.department_id if first_line else False

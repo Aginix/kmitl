@@ -87,6 +87,14 @@ class PurchaseRequestTwo(models.Model):
         currency_field="currency_id"
     )
 
+    department_id = fields.Many2one(
+        'hr.department',
+        string='Department (from PR1)',
+        related='pr1_ref.department_id',
+        store=True,
+        readonly=True,
+    )
+
     @api.depends("state")
     def _compute_is_editable(self):
         for rec in self:
