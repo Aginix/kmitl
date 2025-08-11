@@ -3,6 +3,11 @@
         <field name="name">Purchase Master</field>
     </record>
 
+    <record id="hr_department_02" model="hr.department">
+        <field name="name">Information Technology</field>
+    </record>
+
+    <!-- department 1 -->
     <record id="user_emp1" model="res.users">
         <field name="name">EMP 1 Work Acceptance Committee</field>
         <field name="login">emp1</field>
@@ -264,5 +269,269 @@
         <field name="phone">+663123123125</field>
         <field name="user_id" ref="user_emp13"/>
         <field name="department_id" ref="hr_department_01"/>
+    </record>
+
+    <!-- department 2 -->
+     <record id="user_emp1_2" model="res.users">
+        <field name="name">EMP 1 (IT) Work Acceptance Committee</field>
+        <field name="login">emp1it</field>
+        <field name="email">emp1@it.com</field>
+        <field name="password">emp1it</field>
+        <field name="groups_id" eval="[(6, 0, [
+    ref('base.group_user'),
+    ref('purchase_request.group_purchase_request_user'),
+    ref('kmitl_purchase_request.group_committee_work_acceptance'),
+])]"/>
+    </record>
+
+    <record id="employee_user_1_2" model="hr.employee">
+        <field name="name">EMP 1 (IT)</field>
+        <field name="work_email">emp1@it.com</field>
+        <field name="phone">+3012323231</field>
+        <field name="user_id" ref="user_emp1_1"/>
+        <field name="department_id" ref="hr_department_02"/>
+    </record>
+
+    <record id="user_emp2_2" model="res.users">
+        <field name="name">EMP 2 (IT) Work Acceptance Committee</field>
+        <field name="login">emp2it</field>
+        <field name="email">emp2@it.com</field>
+        <field name="password">emp2it</field>
+        <field name="groups_id" eval="[(6, 0, [
+    ref('base.group_user'),
+    ref('purchase_request.group_purchase_request_user'),
+    ref('kmitl_purchase_request.group_committee_work_acceptance'),
+])]"/>
+    </record>
+
+    <record id="employee_user_2_2" model="hr.employee">
+        <field name="name">EMP 2 (IT)</field>
+        <field name="work_email">emp2@it.com</field>
+        <field name="phone">+2132112321</field>
+        <field name="user_id" ref="user_emp2_2"/>
+        <field name="department_id" ref="hr_department_02"/>
+    </record>
+
+    <record id="user_emp3_2" model="res.users">
+        <field name="name">EMP 3 (IT) Work Acceptance Committee</field>
+        <field name="login">emp3it</field>
+        <field name="email">emp3@it.com</field>
+        <field name="password">emp3it</field>
+        <field name="groups_id" eval="[(6, 0, [
+    ref('base.group_user'),
+    ref('purchase_request.group_purchase_request_user'),
+    ref('kmitl_purchase_request.group_committee_work_acceptance'),
+])]"/>
+    </record>
+
+    <record id="employee_user_3_2" model="hr.employee">
+        <field name="name">EMP 3 (IT)</field>
+        <field name="work_email">emp3@it.com</field>
+        <field name="phone">+91308518931</field>
+        <field name="user_id" ref="user_emp3_2"/>
+        <field name="department_id" ref="hr_department_02"/>
+    </record>
+
+    <record id="user_emp4_2" model="res.users">
+        <field name="name">EMP 4 (IT) TOR Committee</field>
+        <field name="login">emp4it</field>
+        <field name="email">emp4@it.com</field>
+        <field name="password">emp4it</field>
+        <field name="groups_id" eval="[(6, 0, [
+    ref('base.group_user'),
+    ref('purchase_request.group_purchase_request_user'),
+    ref('kmitl_purchase_request.group_committee_tor'),
+])]"/>
+    </record>
+
+    <record id="employee_user_4_2" model="hr.employee">
+        <field name="name">EMP 4 (IT)</field>
+        <field name="work_email">emp4@it.com</field>
+        <field name="phone">+05819981233</field>
+        <field name="user_id" ref="user_emp4_2"/>
+        <field name="department_id" ref="hr_department_02"/>
+    </record>
+
+    <record id="user_emp5_2" model="res.users">
+        <field name="name">EMP 5 (IT) TOR Committee</field>
+        <field name="login">emp5it</field>
+        <field name="email">emp5@it.com</field>
+        <field name="password">emp5it</field>
+        <field name="groups_id" eval="[(6, 0, [
+    ref('base.group_user'),
+    ref('purchase_request.group_purchase_request_user'),
+    ref('kmitl_purchase_request.group_committee_tor'),
+])]"/>
+    </record>
+
+    <record id="employee_user_5_2" model="hr.employee">
+        <field name="name">EMP 5 (IT)</field>
+        <field name="work_email">emp5@it.com</field>
+        <field name="phone">+6631515213</field>
+        <field name="user_id" ref="user_emp5_2"/>
+        <field name="department_id" ref="hr_department_02"/>
+    </record>
+
+    <record id="user_emp6_2" model="res.users">
+        <field name="name">EMP 6 (IT) TOR Committee</field>
+        <field name="login">emp6it</field>
+        <field name="email">emp6@it.com</field>
+        <field name="password">emp6it</field>
+        <field name="groups_id" eval="[(6, 0, [
+    ref('base.group_user'),
+    ref('purchase_request.group_purchase_request_user'),
+    ref('kmitl_purchase_request.group_committee_tor'),
+])]"/>
+    </record>
+
+    <record id="employee_user_6" model="hr.employee">
+        <field name="name">EMP 6 (IT)</field>
+        <field name="work_email">emp6@it.com</field>
+        <field name="phone">+321902149214</field>
+        <field name="user_id" ref="user_emp6_2"/>
+        <field name="department_id" ref="hr_department_02"/>
+    </record>
+
+    <record id="user_emp7_2" model="res.users">
+        <field name="name">EMP 7 (IT) Price Determination Committee</field>
+        <field name="login">emp7it</field>
+        <field name="email">emp7@it.com</field>
+        <field name="password">emp7it</field>
+        <field name="groups_id" eval="[(6, 0, [
+    ref('base.group_user'),
+    ref('purchase_request.group_purchase_request_user'),
+    ref('kmitl_purchase_request.group_committee_price'),
+])]"/>
+    </record>
+
+    <record id="employee_user_7_1" model="hr.employee">
+        <field name="name">EMP 7 (IT)</field>
+        <field name="work_email">emp7@it.com</field>
+        <field name="phone">+98732785318</field>
+        <field name="user_id" ref="user_emp7_2"/>
+        <field name="department_id" ref="hr_department_02"/>
+    </record>
+
+    <record id="user_emp8_2" model="res.users">
+        <field name="name">EMP 8 (IT) Price Determination Committee</field>
+        <field name="login">emp8it</field>
+        <field name="email">emp8@it.com</field>
+        <field name="password">emp8it</field>
+        <field name="groups_id" eval="[(6, 0, [
+    ref('base.group_user'),
+    ref('purchase_request.group_purchase_request_user'),
+    ref('kmitl_purchase_request.group_committee_price'),
+])]"/>
+    </record>
+
+    <record id="employee_user_8_2" model="hr.employee">
+        <field name="name">EMP 8 (IT)</field>
+        <field name="work_email">emp8@it.com</field>
+        <field name="phone">+9724891243</field>
+        <field name="user_id" ref="user_emp8_2"/>
+        <field name="department_id" ref="hr_department_02"/>
+    </record>
+
+    <record id="user_emp9_2" model="res.users">
+        <field name="name">EMP 9 (IT) Price Determination Committee</field>
+        <field name="login">emp9it</field>
+        <field name="email">emp9@it.com</field>
+        <field name="password">emp9it</field>
+        <field name="groups_id" eval="[(6, 0, [
+    ref('base.group_user'),
+    ref('purchase_request.group_purchase_request_user'),
+    ref('kmitl_purchase_request.group_committee_price'),
+])]"/>
+    </record>
+
+    <record id="employee_user_9_2" model="hr.employee">
+        <field name="name">EMP 9 (IT)</field>
+        <field name="work_email">emp9@it.com</field>
+        <field name="phone">+98517892371</field>
+        <field name="user_id" ref="user_emp9_2"/>
+        <field name="department_id" ref="hr_department_02"/>
+    </record>
+
+    <record id="user_emp10_2" model="res.users">
+        <field name="name">EMP 10 (IT) Evaluation Committee</field>
+        <field name="login">emp10it</field>
+        <field name="email">emp10@it.com</field>
+        <field name="password">emp10it</field>
+        <field name="groups_id" eval="[(6, 0, [
+    ref('base.group_user'),
+    ref('purchase_request.group_purchase_request_user'),
+    ref('kmitl_purchase_request.group_committee_eval'),
+])]"/>
+    </record>
+
+    <record id="employee_user_10_2" model="hr.employee">
+        <field name="name">EMP 10 (IT)</field>
+        <field name="work_email">emp10@it.com</field>
+        <field name="phone">+93721937213</field>
+        <field name="user_id" ref="user_emp10_2"/>
+        <field name="department_id" ref="hr_department_02"/>
+    </record>
+
+    <record id="user_emp11_2" model="res.users">
+        <field name="name">EMP 11 (IT) Evaluation Committee</field>
+        <field name="login">emp11it</field>
+        <field name="email">emp11@it.com</field>
+        <field name="password">emp11it</field>
+        <field name="groups_id" eval="[(6, 0, [
+    ref('base.group_user'),
+    ref('purchase_request.group_purchase_request_user'),
+    ref('kmitl_purchase_request.group_committee_eval'),
+])]"/>
+    </record>
+
+    <record id="employee_user_11_2" model="hr.employee">
+        <field name="name">EMP 11 (IT)</field>
+        <field name="work_email">emp11@it.com</field>
+        <field name="phone">+93091248</field>
+        <field name="user_id" ref="user_emp11_2"/>
+        <field name="department_id" ref="hr_department_02"/>
+    </record>
+
+    <record id="user_emp12_2" model="res.users">
+        <field name="name">EMP 12 (IT) Evaluation Committee</field>
+        <field name="login">emp12it</field>
+        <field name="email">emp12@it.com</field>
+        <field name="password">emp12it</field>
+        <field name="groups_id" eval="[(6, 0, [
+    ref('base.group_user'),
+    ref('purchase_request.group_purchase_request_user'),
+    ref('kmitl_purchase_request.group_committee_eval'),
+])]"/>
+    </record>
+
+    <record id="employee_user_12_2" model="hr.employee">
+        <field name="name">EMP 12 (IT)</field>
+        <field name="work_email">emp12@it.com</field>
+        <field name="phone">+03129389213</field>
+        <field name="user_id" ref="user_emp12_2"/>
+        <field name="department_id" ref="hr_department_02"/>
+    </record>
+
+    <record id="user_emp13_2" model="res.users">
+        <field name="name">EMP 13 (IT) ALL</field>
+        <field name="login">emp13it</field>
+        <field name="email">emp13@it.com</field>
+        <field name="password">emp13it</field>
+        <field name="groups_id" eval="[(6, 0, [
+    ref('base.group_user'),
+    ref('purchase_request.group_purchase_request_user'),
+    ref('kmitl_purchase_request.group_committee_eval'),
+    ref('kmitl_purchase_request.group_committee_price'),
+    ref('kmitl_purchase_request.group_committee_tor'),
+    ref('kmitl_purchase_request.group_committee_work_acceptance'),
+])]"/>
+    </record>
+
+    <record id="employee_user_13_2" model="hr.employee">
+        <field name="name">EMP 13 (IT) ALL</field>
+        <field name="work_email">emp13@it.com</field>
+        <field name="phone">+03128993812</field>
+        <field name="user_id" ref="user_emp13_2"/>
+        <field name="department_id" ref="hr_department_02"/>
     </record>
 </odoo>
