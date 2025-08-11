@@ -10,9 +10,9 @@ class PurchaseRequestAttachment(models.Model):
     request_id = fields.Many2one("purchase.request", string="Purchase Request")
     attachment_type = fields.Selection(
         [
-            ("tor", "ข้อกำหนดคุณลักษณะ (TOR)"),
-            ("rfq", "ใบเสนอราคา"),
-            ("etc", "อื่นๆ"),
+            ("tor", "Specification (TOR)"),
+            ("rfq", "quotation"),
+            ("etc", "etc"),
         ]
     )
     file_name = fields.Char(string="Filename")

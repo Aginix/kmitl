@@ -43,8 +43,8 @@ class ProcurementCommittee(models.Model):
     )
     approve_role = fields.Selection(
         selection=[
-            ("chairman", "ประธาน"),
-            ("committee", "คณะกรรมการ"),
+            ("chairman", "Chairman"),
+            ("committee", "Committee"),
         ],
         string="Role",
         required=True,

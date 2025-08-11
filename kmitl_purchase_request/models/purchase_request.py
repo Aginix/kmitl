@@ -64,28 +64,28 @@ class Purchase_request(models.Model):
     work_acceptance_committee_ids = fields.One2many(
         comodel_name="procurement.committee",
         inverse_name="request_id",
-        string="คณะกรรมการตรวจรับพัสดุ",
+        string="Work Acceptance Committees",
         domain=[("committee_type", "=", "work_acceptance")],
         copy=True,
     )
     tor_committee_ids = fields.One2many(
         comodel_name="procurement.committee",
         inverse_name="request_id",
-        string="คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน",
+        string="TOR Committees",
         domain=[("committee_type", "=", "tor_committee")],
         copy=True,
     )
     price_determine_committee_ids = fields.One2many(
         comodel_name="procurement.committee",
         inverse_name="request_id",
-        string="คณะกรรมการกำหนดราคากลาง",
+        string="Price Determine Committees",
         domain=[("committee_type", "=", "price_determine")],
         copy=True,
     )
     evaluation_committee_ids = fields.One2many(
         comodel_name="procurement.committee",
         inverse_name="request_id",
-        string="คณะกรรมการพิจารณาผล",
+        string="Evaluation Committees",
         domain=[("committee_type", "=", "evaluation")],
         copy=True,
     )
@@ -97,19 +97,19 @@ class Purchase_request(models.Model):
     tor_document_ids = fields.One2many(
         "purchase.request.attachment",
         "request_id",
-        string="ข้อกำหนดคุณลักษณะ (TOR)",
+        string="TOR",
         domain=[("attachment_type", "=", "tor")],
     )
     rfq_attachment_ids = fields.One2many(
         "purchase.request.attachment",
         "request_id",
-        string="ใบเสนอราคา",
+        string="RFQ",
         domain=[("attachment_type", "=", "rfq")],
     )
     etc_document_ids = fields.One2many(
         "purchase.request.attachment",
         "request_id",
-        string="อื่นๆ",
+        string="ETC",
         domain=[("attachment_type", "=", "etc")],
     )
 
@@ -118,17 +118,17 @@ class Purchase_request(models.Model):
         required=True
     )
 
-    description = fields.Text(string="เหตุผล/ความจำเป็น", required=True)
+    description = fields.Text(string="reason", required=True)
 
-    source_of_fund = fields.Char(string="แหล่งเงิน")
+    source_of_fund = fields.Char(string="Source of fund")
 
-    plan = fields.Char(string="แผน/งาน/กิจกรรมหลัก/กิจกรรมรอง/ย่อย")
+    plan = fields.Char(string="Plan")
 
-    fund = fields.Char(string="กองทุน")
+    fund = fields.Char(string="Fund")
 
-    budget_type = fields.Char(string="ประเภทงบประมาณ")
+    budget_type = fields.Char(string="Budget Type")
 
-    expense_code = fields.Char(string="รหัสค่าใช้จ่าย")
+    expense_code = fields.Char(string="Expense code")
 
     current_user = fields.Many2one(
         'res.users',
@@ -155,16 +155,16 @@ class Purchase_request(models.Model):
             rec.current_user = self.env.user
 
     payment_type = fields.Selection([
-        ("direct", "จ่ายตรง"),
-        ("loan", "เงินยืม"),
-        ("prepaid", "สำรองจ่าย")
+        ("direct", "Direct paid"),
+        ("loan", "Loan"),
+        ("prepaid", "Prepaid")
     ])
 
     contract_type = fields.Selection([
-        ('order', 'ใบสั่งซื้อ/จ้าง'),
-        ('contract_buy', 'สัญญาซื้อข้าย'),
-        ('contract_construction', 'สัญญาจ้างก่อสร้าง'),
-    ], string="ประเภทสัญญา", required=True)
+        ('order', 'Purchase/Hire Order'),
+        ('contract_buy', 'Contract buy'),
+        ('contract_construction', 'Contract construction'),
+    ], string="Contract type", required=True)
 
 
     department_id = fields.Many2one(
@@ -226,6 +226,5 @@ class Purchase_request(models.Model):
     @api.depends_context('uid')
     def _compute_has_finance_group(self):
         allowed = self.env.user.has_group('kmitl_purchase_request_substate.group_purchase_request_substate_manager')
-        print("--------------------------------------------------------------------------------------------------> ", allowed)
         for rec in self:
             rec.has_finance_group = allowed

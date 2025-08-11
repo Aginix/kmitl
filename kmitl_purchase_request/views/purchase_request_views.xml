@@ -229,7 +229,7 @@
                         <field name="plan" attrs="{'readonly': [('has_finance_group', '=', False)]}"/>
                         <field name="fund" attrs="{'readonly': [('has_finance_group', '=', False)]}"/>
                         <field name="budget_type" attrs="{'readonly': [('has_finance_group', '=', False)]}"/>
-                        <field name="expense_code" string="รหัสค่าใช้จ่าย" attrs="{'readonly': [('has_finance_group', '=', False)]}"/>
+                        <field name="expense_code" attrs="{'readonly': [('has_finance_group', '=', False)]}"/>
                     </group>
 
                 </page>
