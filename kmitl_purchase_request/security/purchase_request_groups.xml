@@ -1,10 +1,4 @@
 <odoo>
-
-  <record id="group_pr_finance" model="res.groups">
-    <field name="name">Purchase Request Finance</field>
-    <field name="implied_ids" eval="[(4, ref('purchase_request.group_purchase_request_user'))]"/>
-  </record>
-
   <record id="group_pr_supply" model="res.groups">
       <field name="name">Purchase Request Supply</field>
       <field name="implied_ids" eval="[(4, ref('purchase_request.group_purchase_request_user'))]"/>
@@ -13,10 +7,5 @@
   <record id="group_pr_approver" model="res.groups">
       <field name="name">Purchase Request Approver</field>
       <field name="implied_ids" eval="[(4, ref('purchase_request.group_purchase_request_user'))]"/>
-  </record>
-
-  <record id="group_pr_admin" model="res.groups">
-    <field name="name">Purchase Request Admin</field>
-    <field name="implied_ids" eval="[(4, ref('purchase_request.group_purchase_request_manager'))]"/>
   </record>
 </odoo>
