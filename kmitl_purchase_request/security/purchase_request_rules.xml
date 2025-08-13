@@ -50,7 +50,7 @@
         <record id="rule_pr_substate_read" model="ir.rule">
             <field name="name">PR Supply - Lines Access</field>
             <field name="model_id" ref="purchase_request.model_purchase_request"/>
-            <field name="domain_force">[('state', 'in', ['to_approve'])]</field>
+            <field name="domain_force">[('state', 'in', ['to_approve', 'validation', 'approved'])]</field>
             <field name="groups" eval="[(4, ref('kmitl_purchase_request_substate.group_purchase_request_substate_manager'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
