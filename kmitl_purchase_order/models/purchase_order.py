@@ -37,12 +37,12 @@ class PurchaseOrder(models.Model):
         default=lambda self: self.env.user,
     )
     approval_date = fields.Date(
-        string="อนุมัติวันที่",
+        string="Approve date",
         help="The date when the purchase order was approved. If not set, it will be the current date.",
     )
     approval_by = fields.Many2one(
         "res.users",
-        string="อนุมัติโดย",
+        string="Approve by",
         help="The user who approved the purchase order. If not set, it will be the current user.",
     )
     payment_type = fields.Selection(
@@ -52,37 +52,37 @@ class PurchaseOrder(models.Model):
     )
 
     contract_start_date = fields.Date(
-        string="วันที่เริ่มสัญญา",
+        string="Contract start date",
         help="The start date for the purchase order. If not set, the current date will be used.",
     )
     contract_end_date = fields.Date(
-        string="วันที่สิ้นสุดสัญญา",
+        string="Contract End date",
         help="The end date for the purchase order. If not set, the start date will be used.",
     )
 
     contract_type = fields.Selection(
         related='pr2_ref.contract_type',
-        string="ประเภทสัญญา",
+        string="Contract type",
         store=True,
         readonly=True
     )
 
     work_start_date = fields.Date(
-        string="วันที่เริ่มงาน",
+        string="Work start date",
         help="The start date for the purchase order. If not set, the current date will be used.",
     )
     work_end_date = fields.Date(
-        string="วันที่สิ้นสุดงาน",
+        string="Work end date",
         help="The end date for the purchase order. If not set, the start date will be used.",
     )
 
     purchase_request_name = fields.Char(
-        string="ชื่อใบสั่งซื้อ/จ้าง",
+        string="Purchase request name",
         help="The name of the purchase request associated with the selected lines.",
     )
 
     fee = fields.Char(
-        string="ค่าปรับต่อวัน"
+        string="Fee per day"
     )
 
     pr1_ref = fields.Many2one('purchase.request', string="Reference PR1", readonly=True)
@@ -105,12 +105,12 @@ class PurchaseOrder(models.Model):
         readonly=True,
     )
 
-    bid_line_ids = fields.One2many('purchase.order.bidder.line', 'order_id', string='รายการผู้เสนอราคา')
+    bid_line_ids = fields.One2many('purchase.order.bidder.line', 'order_id', string='Bidder line')
 
     document_ids = fields.One2many(
         "purchase.order.attachment",
         "request_id",
-        string="แนบเอกสาร",
+        string="Attachment",
     )
 
 

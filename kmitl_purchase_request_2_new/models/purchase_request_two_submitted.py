@@ -20,7 +20,7 @@ class PurchaseRequestTwoSubmitted(models.Model):
     line_ids = fields.One2many('purchase.request.two.submitted.line', 'submitted_id', string="PR2 Forms")
 
     payment_type_ref = fields.Selection(
-        [("direct", "จ่ายตรง"),("loan", "เงินยืม"),("prepaid", "สำรองจ่าย")],
+        [("direct", "Direct paid"),("loan", "Loan"),("prepaid", "Prepaid")],
         string="Reference Payment Type",
         compute="_compute_payment_type_ref",
         store=True,
@@ -39,12 +39,12 @@ class PurchaseRequestTwoSubmitted(models.Model):
     )
 
     approval_date = fields.Date(
-        string="อนุมัติวันที่",
+        string="Approve date",
         help="The date when the purchase order was approved. If not set, it will be the current date.",
     )
     approval_by = fields.Many2one(
         "res.users",
-        string="อนุมัติโดย",
+        string="Approve by",
         help="The user who approved the purchase order. If not set, it will be the current user.",
     )
     is_editable = fields.Boolean(compute="_compute_is_editable", readonly=True)

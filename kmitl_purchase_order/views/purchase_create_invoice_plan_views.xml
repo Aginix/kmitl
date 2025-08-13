@@ -8,11 +8,11 @@
         <field name="inherit_id" ref="purchase_invoice_plan.view_purchase_create_invoice_plan"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='num_installment']" position="attributes">
-              <attribute name="string">จำนวนงวดงาน</attribute>
+              <attribute name="string">Number of installment</attribute>
             </xpath>
 
             <xpath expr="//field[@name='installment_date']" position="attributes">
-              <attribute name="string">วันที่เริ่มต้นสัญญา</attribute>
+              <attribute name="string">Installment date</attribute>
             </xpath>
 
             <xpath expr="//field[@name='interval']" position="attributes">

@@ -16,8 +16,8 @@ class PurchaseOrderBidderLine(models.Model):
     order_id = fields.Many2one('purchase.order', string='Purchase Order', ondelete='cascade')
     bidder_id = fields.Many2one(
     'res.partner',
-    string='ผู้เสนอราคา',
+    string='Bidder',
     required=True,
     domain="[('supplier_rank', '>', 0)]"
 )
-    price_offer = fields.Float(string='ราคาที่เสนอ', required=True)
+    price_offer = fields.Float(string='Offer price', required=True)

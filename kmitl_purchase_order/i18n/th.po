@@ -1,0 +1,367 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* kmitl_purchase_order
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-13 05:08+0000\n"
+"PO-Revision-Date: 2025-08-13 14:23+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.6\n"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order__approval_by
+msgid "Approve by"
+msgstr "อนุมัติโดย"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order__approval_date
+msgid "Approve date"
+msgstr "วันที่อนุมัติ"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order__document_ids
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_order.view_purchase_order_form
+msgid "Attachment"
+msgstr "แนบเอกสาร"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_bidder_line__bidder_id
+msgid "Bidder"
+msgstr "ผู้เสนอราคา"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order__bid_line_ids
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_order.view_purchase_order_form
+msgid "Bidder line"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_order.view_purchase_order_form
+msgid "Committee"
+msgstr "คณะกรรมการ"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order__contract_end_date
+msgid "Contract End date"
+msgstr "วันสิ้นสุดสัญญา"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order__contract_start_date
+msgid "Contract start date"
+msgstr "วันที่เริ่มสัญญา"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order__contract_type
+msgid "Contract type"
+msgstr "ประเภทสัญญา"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_attachment__create_uid
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_bidder_line__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_attachment__create_date
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_bidder_line__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order__department_id
+msgid "Department"
+msgstr "หน่วยงาน"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_attachment__description
+msgid "Description"
+msgstr "รายละเอียด"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_attachment__display_name
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_bidder_line__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order__evaluation_committee_ids
+msgid "Evaluation Committees"
+msgstr "คณะกรรมการพิจารณาผล"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order__fee
+msgid "Fee per day"
+msgstr "ค่าปรับ"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_attachment__file
+msgid "File"
+msgstr "ไฟล์"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_attachment__file_name
+msgid "Filename"
+msgstr "ชื่อไฟล์"
+
+#. module: kmitl_purchase_order
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_order.view_purchase_order_attachment_search
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_order.view_purchase_order_bidder_line_search
+msgid "Group By"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_attachment__id
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_bidder_line__id
+msgid "ID"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_order.view_purchase_create_invoice_plan_form
+msgid "Installment date"
+msgstr "วันที่เริ่มต้นสัญญา"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_attachment____last_update
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_bidder_line____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_attachment__write_uid
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_bidder_line__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_attachment__write_date
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_bidder_line__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_attachment__name
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_bidder_line__name
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_order.view_purchase_order_attachment_search
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_order.view_purchase_order_bidder_line_search
+msgid "Name"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_order.view_purchase_order_attachment_form
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_order.view_purchase_order_bidder_line_form
+msgid "Name..."
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_order.view_purchase_create_invoice_plan_form
+msgid "Number of installment"
+msgstr "จำนวนงวดงาน"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_bidder_line__price_offer
+msgid "Offer price"
+msgstr "ราคาที่เสนอ"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields.selection,name:kmitl_purchase_order.selection__purchase_order__payment_type__postpaid
+msgid "Postpaid"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields.selection,name:kmitl_purchase_order.selection__purchase_order__payment_type__prepaid
+msgid "Prepaid"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order__price_determine_committee_ids
+msgid "Price Determine Committees"
+msgstr "คณะกรรมการกำหนดราคากลาง"
+
+#. module: kmitl_purchase_order
+#: model:ir.model,name:kmitl_purchase_order.model_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_bidder_line__order_id
+msgid "Purchase Order"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.actions.act_window,name:kmitl_purchase_order.action_purchase_order_attachment
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_order.view_purchase_order_attachment_form
+msgid "Purchase Order Attachment"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.actions.act_window,name:kmitl_purchase_order.action_purchase_order_bidder_line
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_order.view_purchase_order_bidder_line_form
+msgid "Purchase Order Bidder Line"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order_attachment__request_id
+msgid "Purchase Request"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order__request_ids
+msgid "Purchase Requests"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order__purchase_request_name
+msgid "Purchase request name"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model,name:kmitl_purchase_order.model_purchase_order_attachment
+msgid "PurchaseOrderAttachment"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model,name:kmitl_purchase_order.model_purchase_order_bidder_line
+msgid "PurchaseOrderBidderLine"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model,name:kmitl_purchase_order.model_purchase_request_two
+msgid "PurchaseRequestTwo"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order__pr1_ref
+msgid "Reference PR1"
+msgstr "อ้างอิง PR1"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order__pr2_ref
+msgid "Reference PR2"
+msgstr "อ้างอิง PR2"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order__request_by
+msgid "Requested By"
+msgstr "ผู้สร้าง"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,help:kmitl_purchase_order.field_purchase_order__payment_type
+msgid ""
+"Select the payment type for this purchase order. Prepaid means payment is "
+"made before delivery, Postpaid means payment is made after delivery."
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order__tor_committee_ids
+msgid "TOR Committees"
+msgstr "คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,help:kmitl_purchase_order.field_purchase_order__approval_date
+msgid ""
+"The date when the purchase order was approved. If not set, it will be the "
+"current date."
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,help:kmitl_purchase_order.field_purchase_order__department_id
+msgid "The department associated with this purchase order."
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,help:kmitl_purchase_order.field_purchase_order__contract_end_date
+#: model:ir.model.fields,help:kmitl_purchase_order.field_purchase_order__work_end_date
+msgid ""
+"The end date for the purchase order. If not set, the start date will be "
+"used."
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,help:kmitl_purchase_order.field_purchase_order__purchase_request_name
+msgid "The name of the purchase request associated with the selected lines."
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,help:kmitl_purchase_order.field_purchase_order__contract_start_date
+#: model:ir.model.fields,help:kmitl_purchase_order.field_purchase_order__work_start_date
+msgid ""
+"The start date for the purchase order. If not set, the current date will be "
+"used."
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,help:kmitl_purchase_order.field_purchase_order__approval_by
+msgid ""
+"The user who approved the purchase order. If not set, it will be the "
+"current user."
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model_terms:ir.actions.act_window,help:kmitl_purchase_order.action_purchase_order_attachment
+msgid "There is no examples click here to add new Purchase Order Attachment."
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model_terms:ir.actions.act_window,help:kmitl_purchase_order.action_purchase_order_bidder_line
+msgid "There is no examples click here to add new Purchase Order Bidder Line."
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order__total_estimated_cost
+msgid "Total Estimated Cost from Requests"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_order.view_purchase_order_purchase_invoice_form
+msgid "Use invoice plan"
+msgstr "มีการแบ่งงวดงาน"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order__work_acceptance_committee_ids
+msgid "Work Acceptance Committees"
+msgstr "คณะกรรมการตรวจรับพัสดุ"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order__work_end_date
+msgid "Work end date"
+msgstr "วันสิ้นสุดทำงาน"
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order__work_start_date
+msgid "Work start date"
+msgstr "วันที่เริ่มทำงาน"
+
+#. module: kmitl_purchase_order
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_order.view_purchase_order_form
+msgid "คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_order.view_purchase_order_form
+msgid "คณะกรรมการกำหนดราคากลาง"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_order.view_purchase_order_form
+msgid "คณะกรรมการตรวจรับพัสดุ"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_order.view_purchase_order_form
+msgid "คณะกรรมการพิจารณาผล"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model:ir.model.fields,field_description:kmitl_purchase_order.field_purchase_order__payment_type
+msgid "ประเภทการชำระเงิน"
+msgstr ""
+
+#. module: kmitl_purchase_order
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_order.view_purchase_request_two_form
+msgid "สร้าง PO"
+msgstr ""

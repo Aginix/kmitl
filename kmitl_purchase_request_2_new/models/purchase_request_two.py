@@ -24,7 +24,7 @@ class PurchaseRequestTwo(models.Model):
 
     pr1_ref = fields.Many2one(
         'purchase.request',
-        string='อ้างอิง PR1',
+        string='PR1 Reference',
         readonly=True
     )
     
@@ -36,32 +36,32 @@ class PurchaseRequestTwo(models.Model):
         tracking=True
     )
     start_date = fields.Date(
-        string="วันที่เริ่มสัญญา",
+        string="Start date",
         help="The start date for the purchase order. If not set, the current date will be used.",
         tracking=True
     )
     end_date = fields.Date(
-        string="วันที่สิ้นสุดสัญญา",
+        string="End date",
         help="The end date for the purchase order. If not set, the start date will be used.",
         tracking=True
     )
     purchase_request_number = fields.Char(
-        string="หมายเลขคำสั่งซื้อ",
+        string="Purchase request number",
         required=True,
         help="The number of the purchase request associated with the selected lines.",
     )
     contract_type = fields.Selection(
         related='pr1_ref.contract_type',
-        string="ประเภทสัญญา",
+        string="Contract type",
         store=True,
         readonly=True
     )
 
     payment_type = fields.Selection(
-        related='pr1_ref.payment_type', store=True, string="ประเภทการจ่ายเงิน", readonly=True)
+        related='pr1_ref.payment_type', store=True, string="Payment type", readonly=True)
 
     purchase_request_name = fields.Char(
-        string="ชื่อใบสั่งซื้อ/จ้าง",
+        string="Purchase request name",
         help="The name of the purchase request associated with the selected lines.",
         tracking=True
     )
@@ -72,9 +72,9 @@ class PurchaseRequestTwo(models.Model):
 
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.company.currency_id)
 
-    amount_untaxed = fields.Monetary(string='รวมเป็นเงิน', compute='_compute_amount', store=True)
-    amount_tax = fields.Monetary(string='ภาษีมูลค่าเพื่ม', compute='_compute_amount', store=True)
-    amount_total = fields.Monetary(string='รวมเป็นเงินทั้งสิ้น', compute='_compute_amount', store=True)
+    amount_untaxed = fields.Monetary(string='Untaxed Amount', compute='_compute_amount', store=True)
+    amount_tax = fields.Monetary(string='Tax', compute='_compute_amount', store=True)
+    amount_total = fields.Monetary(string='Total', compute='_compute_amount', store=True)
 
     submitted_id = fields.Many2one('purchase.request.two.submitted', string='PR2 Ref', readonly=True)
 
@@ -85,12 +85,12 @@ class PurchaseRequestTwo(models.Model):
     pr1_requested_by = fields.Many2one(
         'res.users',
         related='pr1_ref.requested_by', 
-        string="ผู้จัดทำ PR1",
+        string="PR1 Requester",
         store=True,
         readonly=True)
 
     estimated_cost_from_pr = fields.Monetary(
-        string="ราคารวมจาก PR1",
+        string="PR1 Total price",
         related='pr1_ref.estimated_cost',
         readonly=True,
         store=True,

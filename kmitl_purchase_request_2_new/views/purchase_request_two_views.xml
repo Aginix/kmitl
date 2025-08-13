@@ -24,8 +24,8 @@
         <field name="arch" type="xml">
             <form string="Purchase Request Two">
                 <header>
-                    <button name="action_merge_to_submitted" type="object" string="สร้าง PR2" class="btn-primary" attrs="{'invisible': ['|' , ('estimated_cost_from_pr', '&gt;', 100000), ('state', '!=', 'draft')]}" />
-                    <button name="action_egp" string="เข้าสู่ EGP" type="object" class="btn-primary" attrs="{'invisible': ['|' , ('estimated_cost_from_pr', '&lt;', 100000) , ('state', '!=', 'draft')]}" />
+                    <button name="action_merge_to_submitted" type="object" string="Create PR2" class="btn-primary" attrs="{'invisible': ['|' , ('estimated_cost_from_pr', '&gt;', 100000), ('state', '!=', 'draft')]}" />
+                    <button name="action_egp" string="Submit EGP" type="object" class="btn-primary" attrs="{'invisible': ['|' , ('estimated_cost_from_pr', '&lt;', 100000) , ('state', '!=', 'draft')]}" />
                     <button name="button_draft" type="object" string="Reset" class="btn-secondary" />
                     <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved,po_created,rejected"/>
                 </header>

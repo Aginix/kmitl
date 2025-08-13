@@ -15,11 +15,11 @@ class PurchaseRequestTwoSubmittedLine(models.Model):
 
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.company.currency_id)
 
-    purchase_request_name = fields.Char(related='pr2_form_id.purchase_request_name', string='ชื่อใบสั่งซื้อ/จ้าง', store=True, readonly=True)
+    purchase_request_name = fields.Char(related='pr2_form_id.purchase_request_name', string='Purchase request name', store=True, readonly=True)
 
-    estimated_cost_from_pr = fields.Monetary(related='pr2_form_id.estimated_cost_from_pr', string="ราคารวมจาก PR1", store=True, readonly=True, currency_field="currency_id")
+    estimated_cost_from_pr = fields.Monetary(related='pr2_form_id.estimated_cost_from_pr', string="PR1 Total price", store=True, readonly=True, currency_field="currency_id")
 
-    pr1_requested_by = fields.Many2one('res.users', related='pr2_form_id.pr1_requested_by', string='ผู้จัดทำ PR1', readonly=True, store=True)
+    pr1_requested_by = fields.Many2one('res.users', related='pr2_form_id.pr1_requested_by', string='PR1 Requester', readonly=True, store=True)
 
     line_count = fields.Integer(
         string="Total Lines in Submitted",

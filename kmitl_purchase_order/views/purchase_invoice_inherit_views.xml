@@ -7,11 +7,11 @@
         <field name="inherit_id" ref="purchase_invoice_plan.purchase_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='use_invoice_plan']" position='attributes'>
-                <attribute name="string">มีการแบ่งงวดงาน</attribute>
+                <attribute name="string">Use invoice plan</attribute>
             </xpath>
 
             <xpath expr="//button[@name='remove_invoice_plan']/.." position='attributes'>
-                <attribute name="string">มีการแบ่งงวดงาน</attribute>
+                <attribute name="string">Use invoice plan</attribute>
             </xpath>
         </field>
     </record>
