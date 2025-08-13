@@ -14,66 +14,120 @@ class AnalyticDistributionMixin(models.AbstractModel):
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="ด้าน/แผนงาน/กิจกรรม",
-        compute="_compute_analytic_distribution",
-        store=True,
-        readonly=False,
         domain=[("root_plan_id.code", "=", "activities")],
     )
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="ส่วนงาน",
-        compute="_compute_analytic_distribution",
-        store=True,
-        readonly=False,
         domain=[("root_plan_id.code", "=", "departments")],
     )
     fund_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="กองทุน",
-        compute="_compute_analytic_distribution",
-        store=True,
-        readonly=False,
         domain=[("root_plan_id.code", "=", "funds")],
     )
     source_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="แหล่งเงิน",
-        compute="_compute_analytic_distribution",
-        store=True,
-        readonly=False,
         domain=[("root_plan_id.code", "=", "sources")],
     )
 
-    @api.depends("analytic_distribution")
-    def _compute_analytic_distribution(self):
+    @api.onchange("activity_analytic_id", "department_analytic_id", "fund_analytic_id", "source_analytic_id")
+    def _onchange_analytic_dimensions(self):
+        """Update analytic_distribution when individual fields change, preserving other plans."""
+        # Start with existing distribution
+        distribution = dict(self.analytic_distribution or {})
+        
+        # Get all existing accounts and their plans
+        existing_accounts = {}
+        if distribution:
+            account_ids = []
+            for aid in distribution.keys():
+                try:
+                    account_ids.append(int(aid))
+                except (ValueError, TypeError):
+                    continue
+                    
+            if account_ids:
+                accounts = self.env["account.analytic.account"].browse(account_ids).exists()
+                for acc in accounts:
+                    if acc.root_plan_id:
+                        existing_accounts[acc.root_plan_id.code] = str(acc.id)
+        
+        # Remove accounts from plans that we're managing
+        managed_plans = {
+            "activities": self.activity_analytic_id,
+            "departments": self.department_analytic_id,
+            "funds": self.fund_analytic_id,
+            "sources": self.source_analytic_id
+        }
+        
+        # Remove old accounts from managed plans
+        for plan_code, old_acc_id in existing_accounts.items():
+            if plan_code in managed_plans:
+                distribution.pop(old_acc_id, None)
+        
+        # Add new accounts from managed plans with 100%
+        for plan_code, account in managed_plans.items():
+            if account:
+                distribution[str(account.id)] = 100.0
+        
+        # Update the analytic_distribution field
+        self.analytic_distribution = distribution if distribution else False
+
+    @api.model
+    def create(self, vals):
+        """Sync analytic_distribution on create."""
+        record = super().create(vals)
+        record._sync_analytic_distribution()
+        return record
+
+    def write(self, vals):
+        """Sync analytic_distribution on write."""
+        res = super().write(vals)
+        if any(f in vals for f in ["activity_analytic_id", "department_analytic_id", "fund_analytic_id", "source_analytic_id"]):
+            self._sync_analytic_distribution()
+        return res
+
+    def _sync_analytic_distribution(self):
+        """Sync individual fields to analytic_distribution, preserving other plans."""
         for record in self:
-            # Reset fields in case distribution keys are missing or change
-            record.activity_analytic_id = False
-            record.department_analytic_id = False
-            record.fund_analytic_id = False
-            record.source_analytic_id = False
-
-            # Extract the JSON data from 'analytic_distribution'
-            distribution = record.analytic_distribution or {}
-
-            _logger.info(distribution)
-
-            # Iterate over the JSON data to find and assign analytic accounts
-            for analytic_id_str, _percent in distribution.items():
-                # Convert the string ID to integer
-                analytic_id = int(analytic_id_str)
-                analytic_account = self.env["account.analytic.account"].browse(
-                    analytic_id
-                )
-
-                _logger.info(analytic_id)
-
-                # Check analytic plan or dimension type to assign to correct field
-                if analytic_account.plan_id.code == "activities":
-                    record.activity_analytic_id = analytic_account
-                elif analytic_account.plan_id.code == "departments":
-                    record.department_analytic_id = analytic_account
-                elif analytic_account.plan_id.code == "funds":
-                    record.fund_analytic_id = analytic_account
-                elif analytic_account.plan_id.code == "sources":
-                    record.source_analytic_id = analytic_account
+            # Start with existing distribution
+            distribution = dict(record.analytic_distribution or {})
+            
+            # Get all existing accounts and their plans
+            existing_accounts = {}
+            if distribution:
+                account_ids = []
+                for aid in distribution.keys():
+                    try:
+                        account_ids.append(int(aid))
+                    except (ValueError, TypeError):
+                        continue
+                        
+                if account_ids:
+                    accounts = self.env["account.analytic.account"].browse(account_ids).exists()
+                    for acc in accounts:
+                        if acc.root_plan_id:
+                            existing_accounts[acc.root_plan_id.code] = str(acc.id)
+            
+            # Remove accounts from plans that we're managing
+            managed_plans = {
+                "activities": record.activity_analytic_id,
+                "departments": record.department_analytic_id,
+                "funds": record.fund_analytic_id,
+                "sources": record.source_analytic_id
+            }
+            
+            # Remove old accounts from managed plans
+            for plan_code, old_acc_id in existing_accounts.items():
+                if plan_code in managed_plans:
+                    distribution.pop(old_acc_id, None)
+            
+            # Add new accounts from managed plans with 100%
+            for plan_code, account in managed_plans.items():
+                if account:
+                    distribution[str(account.id)] = 100.0
+            
+            # Update the analytic_distribution field
+            record.analytic_distribution = distribution if distribution else False
