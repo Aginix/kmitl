@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+      
+    <!-- View agreement form -->
+    <record id="view_agreement_form" model="ir.ui.view">
+        <field name="name">view.agreement.form</field>
+        <field name="model">agreement</field>
+        <field name="inherit_id" ref="agreement_legal.partner_agreement_form_view"/>
+        <field name="arch" type="xml">
+    
+            <xpath expr="//field[@name='description']" position="before">
+                <label for="description" string="Description"/>
+            </xpath>
+
+            <xpath expr="//group[field[@name='field_id']]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//p[contains(text(), 'add dynamic fields')]" position="replace">
+                <p invisible="1"/>
+            </xpath>
+
+            <xpath expr="//group[@name='parties']" position="attributes">
+                <attribute name="string"></attribute>
+            </xpath>
+
+            <xpath expr="//group[@name='cust_parties']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//group[@name='parties']//p" position="replace">
+                <p invisible="1"/>
+            </xpath>
+
+            <xpath expr="//group[@name='partner_left']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//group[@name='contact_right']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='signature_date']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='to_review_date']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='change_notice']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='notification_address_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='termination_requested']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='termination_date']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//page[@name='structure']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//page[@name='signature']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//page[@name='child_agreements']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//page[@name='performance']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//notebook" position="inside">
+                <page name="invoice" string="Invoice">
+                    
+                </page>
+
+                <page name="committee" string="Committee">
+                    
+                </page>
+
+                <page name="document" string="Attachment">
+                    <field name="document_ids">
+                        <tree editable="bottom">
+                            <field name="file" filename="file_name" />
+                            <field name="file_name" readonly="1" />
+                            <field name="description" />
+                        </tree>
+                    </field>
+                </page>
+
+                <page name="fee" string="Fee">
+                    
+                </page>
+
+                <page name="extended_history" string="Extended history">
+                    
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+
+    <!-- View agreement tree -->
+    <!-- <record id="view_agreement_tree" model="ir.ui.view">
+        <field name="name">view.agreement.tree</field>
+        <field name="model">agreement</field>
+        <field name="inherit_id" ref=""/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='']">
+            </xpath>
+        </field>
+    </record> -->
+
+  </odoo>
