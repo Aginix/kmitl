@@ -43,7 +43,7 @@
                              <field name="purchase_request_name" required="1" attrs="{'readonly': [('is_editable','=', False)]}" />
                             <field name="start_date" attrs="{'readonly': [('is_editable','=', False)]}" />
                             <field name="end_date" attrs="{'readonly': [('is_editable','=', False)]}" />
-                            
+
 
                         </group>
                         <group>
@@ -54,7 +54,7 @@
                             <field name="generate_po" attrs="{'readonly': [('is_editable','=', False)]}"/>
                             <field name="submitted_id" readonly='1'/>
                             <field name="submitted_state" readonly='1'/>
-                            
+
                         </group>
                     </group>
                     <label for="pr1_ref"/>
@@ -124,6 +124,6 @@
     </record>
 
     <menuitem id="menu_purchase_request_2_form" name="Purchase Requests 2" parent="purchase_request.parent_menu_purchase_request" />
-    <menuitem id="menu_purchase_request_two_root_pr" name="Purchase Request 2 Form" parent="kmitl_purchase_request_2_new.menu_purchase_request_2_form" action="action_purchase_request_two" sequence="20"/>
+    <menuitem id="menu_purchase_request_two_root_pr" name="Purchase Request 2 Form" parent="kmitl_purchase_request_2.menu_purchase_request_2_form" action="action_purchase_request_two" sequence="20"/>
     <menuitem id="menu_purchase_request_two_root" name="Purchase Request 2" parent="purchase.menu_procurement_management" action="action_purchase_request_two" sequence="20"/>
 </odoo>

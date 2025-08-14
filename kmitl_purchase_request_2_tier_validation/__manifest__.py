@@ -6,7 +6,7 @@
     'author': 'Aginix Techonologies',
     'website': 'https://github.com/aginix/kmitl',
     'category': 'KMITL',
-    'depends': ['base_tier_validation', 'kmitl_purchase_request_2_new'],
+    'depends': ['base_tier_validation', 'kmitl_purchase_request_2'],
     "data": [
         "demo/tier_definition.xml",
         "views/purchase_request_two_submitted_views.xml"

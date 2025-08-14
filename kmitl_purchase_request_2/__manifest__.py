@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Kmitl Purchase Request 2 new',
+    'name': 'Kmitl Purchase Request 2',
     'version': '16.0.1.0.0',
-    'summary': """ Kmitl Purchase Request 2 New """,
+    'summary': """ Kmitl Purchase Request 2""",
     'author': 'Aginix Techonologies',
     'website': 'https://github.com/aginix/kmitl',
     'category': 'KMITL',
