@@ -107,6 +107,14 @@ class BudgetAccount(models.Model):
         help="Set active to false to hide the Budget Account without removing it.",
     )
 
+    company_id = fields.Many2one(
+        comodel_name="res.company",
+        string="Company",
+        required=True,
+        default=lambda self: self.env.company,
+        tracking=True,
+    )
+
     _sql_constraints = [
         (
             "unique_budget_account_line",
