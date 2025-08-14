@@ -18,4 +18,9 @@
         <field name="name">Evaluation Committee</field>
         <field name="category_id" ref="base.module_category_purchase_management"/>
     </record>
+
+    <record id="group_committee_secretary" model="res.groups">
+        <field name="name">Secretary Committee</field>
+        <field name="category_id" ref="base.module_category_purchase_management"/>
+    </record>
 </odoo>
