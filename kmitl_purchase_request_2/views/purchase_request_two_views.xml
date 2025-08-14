@@ -6,13 +6,13 @@
         <field name="name">view.purchase.request.two.tree</field>
         <field name="model">purchase.request.two</field>
         <field name="arch" type="xml">
-            <tree create='0'>
+            <tree create='0' decoration-success="state == 'approved'" decoration-info="state in ('submitted', 'po_created')" decoration-warning="state == 'draft'" decoration-danger="state == 'rejected'">
                 <field name="name" />
                 <field name="pr1_ref"/>
                 <field name="vendor" />
                 <field name="payment_type" />
                 <field name="amount_total" />
-                <field name="state" />
+                <field name="state" widget="badge" decoration-success="state == 'approved'" decoration-info="state in ('submitted', 'po_created')" decoration-warning="state == 'draft'" decoration-danger="state == 'rejected'" />
             </tree>
         </field>
     </record>
@@ -41,8 +41,8 @@
                         <group>
                             <field name="vendor" required="1" attrs="{'readonly': [('is_editable','=', False)]}" />
                              <field name="purchase_request_name" required="1" attrs="{'readonly': [('is_editable','=', False)]}" />
-                            <field name="start_date" attrs="{'readonly': [('is_editable','=', False)]}" />
-                            <field name="end_date" attrs="{'readonly': [('is_editable','=', False)]}" />
+                            <field name="start_date" widget="remaining_days"  attrs="{'readonly': [('is_editable','=', False)]}" />
+                            <field name="end_date" widget="remaining_days" attrs="{'readonly': [('is_editable','=', False)]}" />
 
 
                         </group>

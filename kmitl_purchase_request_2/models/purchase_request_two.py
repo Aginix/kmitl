@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import ValidationError
 
 
 class PurchaseRequestTwo(models.Model):
@@ -27,7 +27,7 @@ class PurchaseRequestTwo(models.Model):
         string='PR1 Reference',
         readonly=True
     )
-    
+
     vendor = fields.Many2one(
         "res.partner",
         string="Vendor",
@@ -84,7 +84,7 @@ class PurchaseRequestTwo(models.Model):
 
     pr1_requested_by = fields.Many2one(
         'res.users',
-        related='pr1_ref.requested_by', 
+        related='pr1_ref.requested_by',
         string="PR1 Requester",
         store=True,
         readonly=True)
@@ -104,6 +104,16 @@ class PurchaseRequestTwo(models.Model):
         store=True,
         readonly=True,
     )
+
+    @api.constrains('start_date', 'end_date')
+    def _check_end_date_within_30_days(self):
+        for record in self:
+            if record.start_date and record.end_date:
+                diff_days = (record.end_date - record.start_date).days
+                if diff_days > 30:
+                    raise ValidationError(
+                        "วันเริ่มและวันสิ้นสุดสัญญาต้องไม่เกิน 30 วัน"
+                    )
 
     @api.depends("state")
     def _compute_is_editable(self):
