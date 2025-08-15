@@ -53,22 +53,23 @@
             </xpath>
 
             <xpath expr="//notebook" position="inside">
+                <field name="pr1_total" invisible='1'/>
                 <page string="Committee">
-                    <group>
-                        <separator string="คณะกรรมการตรวจรับพัสดุ" />
-                        <field name="work_acceptance_committee_ids" readonly="1">
-                            <tree>
-                                <field name="employee_id"/>
-                                <field name="name"/>
-                                <field name="approve_role"/>
-                                <field name="department_id"/>
-                                <field name="email"/>
-                                <field name="phone"/>
-                            </tree>
-                        </field>
+                    <separator string="คณะกรรมการตรวจรับพัสดุ"/>
+                    <field name="work_acceptance_committee_ids" readonly="1">
+                        <tree>
+                            <field name="employee_id"/>
+                            <field name="name"/>
+                            <field name="approve_role"/>
+                            <field name="department_id"/>
+                            <field name="email"/>
+                            <field name="phone"/>
+                        </tree>
+                    </field>
 
+                    <div attrs="{'invisible': [('pr1_total', '&lt;', 100000)]}">
                         <separator string="คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน" />
-                        <field name="tor_committee_ids" readonly="1">
+                        <field name="tor_committee_ids" readonly="1" >
                             <tree>
                                 <field name="employee_id"/>
                                 <field name="name"/>
@@ -81,7 +82,7 @@
                         </field>
 
                         <separator string="คณะกรรมการกำหนดราคากลาง" />
-                        <field name="price_determine_committee_ids" readonly="1">
+                        <field name="price_determine_committee_ids" readonly="1" >
                             <tree>
                                 <field name="employee_id"/>
                                 <field name="name"/>
@@ -94,7 +95,7 @@
                         </field>
 
                         <separator string="คณะกรรมการพิจารณาผล" />
-                        <field name="evaluation_committee_ids" readonly="1">
+                        <field name="evaluation_committee_ids" readonly="1" >
                             <tree>
                                 <field name="employee_id"/>
                                 <field name="name"/>
@@ -105,7 +106,7 @@
                                 <field name="note"/>
                             </tree>
                         </field>
-                    </group>
+                    </div>
                 </page>
 
                 <page name="bidders" string="Bidder line">

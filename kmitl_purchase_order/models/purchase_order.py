@@ -113,6 +113,7 @@ class PurchaseOrder(models.Model):
         string="Attachment",
     )
 
+    pr1_total = fields.Monetary(related='pr2_ref.estimated_cost_from_pr', string="PR1 Total")
 
     @api.depends("request_ids.line_ids.estimated_cost")
     def _compute_total_estimated_cost(self):
