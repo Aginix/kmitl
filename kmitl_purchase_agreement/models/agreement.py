@@ -60,3 +60,10 @@ class Agreement(models.Model):
         related='purchase_order_id.fee',
         string='Fee Per Day',
     )
+
+    contract_type = fields.Selection(
+        related='purchase_order_id.contract_type',
+        string="Contract type",
+        store=True,
+        readonly=True
+    )

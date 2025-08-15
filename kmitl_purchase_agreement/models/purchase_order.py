@@ -43,9 +43,12 @@ class PurchaseOrder(models.Model):
         self.ensure_one()
         agreement = self.env['agreement'].create({
             'name': self.purchase_request_name,
+            'contract_type': self.contract_type,
+            'assigned_user_id': self.env.user.id,
             'partner_id': self.partner_id.id,
             'purchase_order_id': self.id,
             'company_id': self.company_id.id,
+            'expiration_notice': 30,
         })
 
         agreement_lines = []
