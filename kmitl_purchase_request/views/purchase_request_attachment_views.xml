@@ -7,7 +7,10 @@
         <field name="model">purchase.request.attachment</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="name" />
+                <field name="attachment_type" />
+                <field name="file_name" string="ชื่อไฟล์ที่แสดง" />
+                <field name="file" filename="file_name" />
+                <field name="description" string="คำอธิบาย" />
             </tree>
         </field>
     </record>
@@ -19,32 +22,14 @@
         <field name="arch" type="xml">
             <form string="Purchase Request Attachment">
                 <sheet>
-                    <div class="oe_title">
-                        <label for="name" />
-                        <h1>
-                            <field name="name" placeholder="Name..." />
-                        </h1>
-                    </div>
+                    <group name="file" string="รายละเอียดไฟล์">
+                        <field name="attachment_type" invisible="1" />
+                        <field name="file" filename="file_name" />
+                        <field name="file_name" string="ชื่อไฟล์ที่แสดง" />
+                        <field name="description" string="คำอธิบาย" />
+                    </group>
                 </sheet>
             </form>
-        </field>
-    </record>
-
-    <!-- View purchase.request.attachment search -->
-    <record id="view_purchase_request_attachment_search" model="ir.ui.view">
-        <field name="name">view.purchase.request.attachment.search</field>
-        <field name="model">purchase.request.attachment</field>
-        <field name="arch" type="xml">
-            <search>
-                <group expand="1" string="Group By">
-                    <filter
-                        string="Name"
-                        name="name"
-                        domain="[]"
-                        context="{'group_by':'name'}"
-                    />
-                </group>
-            </search>
         </field>
     </record>
 

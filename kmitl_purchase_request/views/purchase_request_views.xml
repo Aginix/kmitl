@@ -248,28 +248,25 @@
 
                 <page name="document" string="เอกสารแนบ">
                     <separator string="ข้อกำหนดคุณลักษณะ (TOR)" />
-                    <field name="tor_document_ids" attrs="{'readonly': [('is_editable','=', False)]}">
-                        <tree editable="bottom">
-                            <field name="file" filename="file_name" />
-                            <field name="file_name" readonly="1" />
+                    <field name="tor_document_ids" attrs="{'readonly': [('is_editable','=', False)]}" context="{'default_attachment_type': 'tor'}">
+                        <tree>
+                            <field name="file_name" />
                             <field name="description" />
                         </tree>
                     </field>
 
                     <separator string="ใบเสนอราคา" />
-                    <field name="rfq_attachment_ids" attrs="{'readonly': [('is_editable','=', False)]}">
-                        <tree editable="bottom">
-                            <field name="file" filename="file_name" />
-                            <field name="file_name" readonly="1" />
+                    <field name="rfq_attachment_ids" attrs="{'readonly': [('is_editable','=', False)]}" context="{'default_attachment_type': 'rfq'}">
+                        <tree>
+                            <field name="file_name" />
                             <field name="description" />
                         </tree>
                     </field>
 
                     <separator string="อื่นๆ" />
-                    <field name="etc_document_ids" attrs="{'readonly': [('is_editable','=', False)]}">
-                        <tree editable="bottom">
-                            <field name="file" filename="file_name" />
-                            <field name="file_name" readonly="1" />
+                    <field name="etc_document_ids" attrs="{'readonly': [('is_editable','=', False)]}" context="{'default_attachment_type': 'etc'}">
+                        <tree>
+                            <field name="file_name" />
                             <field name="description" />
                         </tree>
                     </field>

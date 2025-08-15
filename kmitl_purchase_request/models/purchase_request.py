@@ -95,20 +95,20 @@ class Purchase_request(models.Model):
     )
 
     tor_document_ids = fields.One2many(
-        "purchase.request.attachment",
-        "request_id",
+        comodel_name="purchase.request.attachment",
+        inverse_name="request_id",
         string="TOR",
         domain=[("attachment_type", "=", "tor")],
     )
     rfq_attachment_ids = fields.One2many(
-        "purchase.request.attachment",
-        "request_id",
+        comodel_name="purchase.request.attachment",
+        inverse_name="request_id",
         string="RFQ",
         domain=[("attachment_type", "=", "rfq")],
     )
     etc_document_ids = fields.One2many(
-        "purchase.request.attachment",
-        "request_id",
+        comodel_name="purchase.request.attachment",
+        inverse_name="request_id",
         string="ETC",
         domain=[("attachment_type", "=", "etc")],
     )
