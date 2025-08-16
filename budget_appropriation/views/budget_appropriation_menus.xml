@@ -5,7 +5,7 @@
     <menuitem
         id="menu_budget_appropriation_root"
         name="Budget Appropriation"
-        parent="budget.menu_budget_root"
+        parent="budget.budget_root_menu"
         sequence="10"
     />
 
