@@ -92,6 +92,11 @@
                                 </form>
                             </field>
                         </page>
+                        <page name="f5_preview" string="F5 Preview" 
+                              attrs="{'invisible': ['|', ('id', '=', False), ('budget_type', '!=', 'expense')]}">
+                            <field name="budget_type" invisible="1"/>
+                            <widget name="budget_appropriation_f5_widget"/>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">

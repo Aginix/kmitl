@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="budget_appropriation.F5Widget" owl="1">
+        <div class="budget_appropriation_f5_widget">
+            <!-- Loading State -->
+            <div t-if="state.loading" class="text-center p-4">
+                <i class="fa fa-spinner fa-spin fa-2x text-muted"/>
+                <p class="text-muted mt-2">กำลังโหลดข้อมูล F5...</p>
+            </div>
+
+            <!-- Error State -->
+            <div t-elif="state.error" class="alert alert-warning text-center">
+                <i class="fa fa-exclamation-triangle"/>
+                <p class="mb-0"><t t-esc="state.error"/></p>
+            </div>
+
+            <!-- No Data State -->
+            <div t-elif="!hasData" class="text-center p-4">
+                <i class="fa fa-file-o fa-2x text-muted"/>
+                <p class="text-muted mt-2">ไม่มีข้อมูลการจัดสรรงบประมาณ</p>
+            </div>
+
+            <!-- Main Content -->
+            <div t-else="" class="budget_f5_report">
+                <!-- Header Information -->
+                <div class="budget_f5_header mb-3">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4 class="mb-1">
+                                <i class="fa fa-file-text-o"/>
+                                รายงาน F5: <t t-esc="appropriation.name"/>
+                            </h4>
+                            <div class="text-muted small">
+                                <span t-if="appropriation.date">วันที่: <t t-esc="appropriation.date"/></span>
+                                <span t-if="appropriation.fiscal_year" class="ml-3">
+                                    ปีงบประมาณ: <t t-esc="appropriation.fiscal_year.name"/>
+                                </span>
+                            </div>
+                            <div class="text-muted small">
+                                <span t-if="appropriation.department">
+                                    หน่วยงาน: <t t-esc="appropriation.department.complete_name"/>
+                                </span>
+                            </div>
+                            <div class="text-muted small">
+                                <span t-if="appropriation.source">
+                                    แหล่งเงิน: <t t-esc="appropriation.source.name"/>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-right">
+                            <div class="budget_f5_summary_card">
+                                <div class="h5 mb-1 text-primary">
+                                    <t t-esc="formatCurrency(appropriation.total_amount)"/>
+                                </div>
+                                <div class="text-muted small">ยอดรวมทั้งหมด</div>
+                                <div class="text-muted small mt-1">
+                                    <t t-esc="summary.total_lines"/> รายการ
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="budget_f5_controls mb-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fa fa-search"/>
+                                </span>
+                                <input type="text" class="form-control" placeholder="ค้นหาในรายงาน..."
+                                       t-model="state.searchTerm" t-on-input="onSearchInput"/>
+                                <button t-if="state.searchTerm" class="btn btn-outline-secondary" 
+                                        type="button" t-on-click="clearSearch">
+                                    <i class="fa fa-times"/>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-primary" t-on-click="expandAll">
+                                    <i class="fa fa-expand"/> ขยายทั้งหมด
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" t-on-click="collapseAll">
+                                    <i class="fa fa-compress"/> ย่อทั้งหมด
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hierarchy Tree -->
+                <div class="budget_f5_tree">
+                    <t t-foreach="filteredHierarchy" t-as="node" t-key="node.id">
+                        <t t-call="budget_appropriation.F5TreeNode">
+                            <t t-set="node" t-value="node"/>
+                            <t t-set="level" t-value="0"/>
+                        </t>
+                    </t>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <!-- Tree Node Template -->
+    <t t-name="budget_appropriation.F5TreeNode" owl="1">
+        <div class="budget_f5_node" t-att-class="`level-${level} type-${node.type}`">
+            <div class="budget_f5_node_content" t-att-class="{'expandable': node.children and node.children.length > 0}">
+                <div class="budget_f5_node_header" t-on-click="() => node.children ? toggleNode(node.id) : null">
+                    <!-- Expand/Collapse Icon -->
+                    <span t-if="node.children and node.children.length > 0" class="budget_f5_toggle">
+                        <i t-if="isExpanded(node.id)" class="fa fa-chevron-down"/>
+                        <i t-else="" class="fa fa-chevron-right"/>
+                    </span>
+                    <span t-else="" class="budget_f5_toggle_spacer"/>
+
+                    <!-- Node Icon -->
+                    <span class="budget_f5_node_icon">
+                        <i t-if="node.type === 'activity'" class="fa fa-tasks text-primary"/>
+                        <i t-elif="node.type === 'fund'" class="fa fa-university text-success"/>
+                        <i t-elif="node.type === 'account'" class="fa fa-list-alt text-info"/>
+                        <i t-elif="node.type === 'line'" class="fa fa-minus text-muted"/>
+                    </span>
+
+                    <!-- Node Content -->
+                    <div class="budget_f5_node_info flex-grow-1">
+                        <div class="budget_f5_node_title">
+                            <span t-if="node.code" class="budget_f5_node_code">
+                                <t t-esc="node.code"/>
+                            </span>
+                            <span class="budget_f5_node_name">
+                                <t t-esc="node.name"/>
+                            </span>
+                            <span t-if="node.note" class="budget_f5_node_note text-muted">
+                                - <t t-esc="node.note"/>
+                            </span>
+                        </div>
+                        <div t-if="node.complete_name and node.complete_name !== node.name" 
+                             class="budget_f5_node_complete_name text-muted small">
+                            <t t-esc="node.complete_name"/>
+                        </div>
+                    </div>
+
+                    <!-- Amount -->
+                    <div class="budget_f5_node_amount">
+                        <span t-if="node.total_amount !== undefined" 
+                              class="budget_f5_amount" 
+                              t-att-class="{'text-primary': node.type === 'activity', 'text-success': node.type === 'fund', 'text-info': node.type === 'account'}">
+                            <t t-esc="formatCurrency(node.total_amount)"/>
+                        </span>
+                        <span t-elif="node.balance !== undefined" 
+                              class="budget_f5_amount text-dark">
+                            <t t-esc="formatCurrency(node.balance)"/>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Children -->
+                <div t-if="node.children and node.children.length > 0 and isExpanded(node.id)" 
+                     class="budget_f5_node_children">
+                    <t t-foreach="node.children" t-as="childNode" t-key="childNode.id">
+                        <t t-call="budget_appropriation.F5TreeNode">
+                            <t t-set="node" t-value="childNode"/>
+                            <t t-set="level" t-value="level + 1"/>
+                        </t>
+                    </t>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>

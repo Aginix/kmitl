@@ -17,6 +17,11 @@
         "views/budget_appropriation_menus.xml",
         "data/budget_appropriation_sequence.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "budget_appropriation/static/src/**/*",
+        ],
+    },
     "auto_install": False,
     "application": False,
     "installable": True,
