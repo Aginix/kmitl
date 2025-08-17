@@ -55,7 +55,7 @@
                             </thead>
                             <tbody>
                                 <t t-foreach="hierarchy" t-as="rootNode" t-key="rootNode.id">
-                                    <t t-call="budget_appropriation.F5TableRow">
+                                    <t t-call="budget_appropriation.F5WidgetTableRow">
                                         <t t-set="node" t-value="rootNode"/>
                                         <t t-set="level" t-value="0"/>
                                     </t>
@@ -90,7 +90,7 @@
     </t>
 
     <!-- Table Row Template -->
-    <t t-name="budget_appropriation.F5TableRow" owl="1">
+    <t t-name="budget_appropriation.F5WidgetTableRow" owl="1">
         <tr t-att-class="`${node.type} ${node.type !== 'line' ? 'fw-bold' : ''}`">
             <td>
                 <div t-att-style="node.type === 'account' ? `margin-left: ${level * 20}px;` : ''">
@@ -135,7 +135,7 @@
         <!-- Children Rows -->
         <t t-if="isExpanded(node.id) and node.children and node.children.length > 0">
             <t t-foreach="node.children" t-as="childNode" t-key="childNode.id">
-                <t t-call="budget_appropriation.F5TableRow">
+                <t t-call="budget_appropriation.F5WidgetTableRow">
                     <t t-set="node" t-value="childNode"/>
                     <t t-set="level" t-value="level + 1"/>
                 </t>
