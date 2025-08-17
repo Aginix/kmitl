@@ -22,7 +22,7 @@
             <!-- Main Content -->
             <div t-elif="hasData" class="budget_appropriation_content">
                 <!-- Controls -->
-                <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex justify-content-start align-items-center mb-3">
                     <div class="btn-group">
                         <button class="btn btn-sm btn-secondary" t-on-click="expandAll" title="ขยายทั้งหมด">
                             <i class="fa fa-expand"/>
@@ -30,11 +30,6 @@
                         <button class="btn btn-sm btn-secondary" t-on-click="collapseAll" title="ย่อทั้งหมด">
                             <i class="fa fa-compress"/>
                         </button>
-                    </div>
-                    <div class="d-flex">
-                        <input type="text" class="form-control form-control-sm" 
-                               placeholder="ค้นหา..." style="width: 200px;"
-                               t-model="state.searchTerm" t-on-input="onSearchInput"/>
                     </div>
                 </div>
 
@@ -59,7 +54,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <t t-foreach="filteredHierarchy" t-as="rootNode" t-key="rootNode.id">
+                                <t t-foreach="hierarchy" t-as="rootNode" t-key="rootNode.id">
                                     <t t-call="budget_appropriation.F5TableRow">
                                         <t t-set="node" t-value="rootNode"/>
                                         <t t-set="level" t-value="0"/>

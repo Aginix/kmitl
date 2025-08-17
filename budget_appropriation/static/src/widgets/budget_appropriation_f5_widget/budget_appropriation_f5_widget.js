@@ -14,7 +14,6 @@ export class BudgetAppropriationF5Widget extends Component {
             loading: true,
             error: null,
             expandedNodes: new Set(),
-            searchTerm: "",
         });
 
         onWillStart(async () => {
@@ -99,43 +98,6 @@ export class BudgetAppropriationF5Widget extends Component {
         })}`;
     }
 
-    // Search functionality
-    get filteredHierarchy() {
-        if (!this.state.searchTerm || !this.state.data.hierarchy) {
-            return this.state.data.hierarchy || [];
-        }
-        return this.filterHierarchy(this.state.data.hierarchy, this.state.searchTerm.toLowerCase());
-    }
-
-    filterHierarchy(nodes, searchTerm) {
-        const filtered = [];
-        for (const node of nodes) {
-            const nodeMatches = 
-                node.name?.toLowerCase().includes(searchTerm) ||
-                node.code?.toLowerCase().includes(searchTerm);
-            
-            let filteredChildren = [];
-            if (node.children) {
-                filteredChildren = this.filterHierarchy(node.children, searchTerm);
-            }
-            
-            if (nodeMatches || filteredChildren.length > 0) {
-                filtered.push({
-                    ...node,
-                    children: filteredChildren
-                });
-            }
-        }
-        return filtered;
-    }
-
-    onSearchInput(ev) {
-        this.state.searchTerm = ev.target.value;
-    }
-
-    clearSearch() {
-        this.state.searchTerm = "";
-    }
 
     expandAll() {
         if (this.state.data.hierarchy) {
