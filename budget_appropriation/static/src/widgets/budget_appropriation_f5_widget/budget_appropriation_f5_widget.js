@@ -164,6 +164,4 @@ export class BudgetAppropriationF5Widget extends Component {
 
 BudgetAppropriationF5Widget.template = "budget_appropriation.F5Widget";
 
-registry.category("fields").add("budget_appropriation_f5_widget", {
-    component: BudgetAppropriationF5Widget,
-});
+registry.category("view_widgets").add("budget_appropriation_f5_widget", BudgetAppropriationF5Widget);
