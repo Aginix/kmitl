@@ -122,6 +122,10 @@ export class BudgetAppropriationF5Widget extends Component {
     get hasData() {
         return this.state.data.hierarchy && this.state.data.hierarchy.length > 0;
     }
+
+    get hierarchy() {
+        return this.state.data.hierarchy || [];
+    }
 }
 
 BudgetAppropriationF5Widget.template = "budget_appropriation.F5Widget";
