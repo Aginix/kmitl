@@ -93,9 +93,9 @@ class BudgetAppropriationLine(models.Model):
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="ส่วนงาน",
-        compute="_compute_analytic_fields",
+        related="appropriation_id.department_analytic_id",
         store=True,
-        tracking=True,
+        readonly=True,
     )
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -114,20 +114,18 @@ class BudgetAppropriationLine(models.Model):
     source_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="แหล่งเงิน",
-        compute="_compute_analytic_fields",
+        related="appropriation_id.source_analytic_id",
         store=True,
-        tracking=True,
+        readonly=True,
     )
 
     @api.depends("analytic_distribution")
     def _compute_analytic_fields(self):
         """Extract analytic dimensions from distribution JSON"""
         for line in self:
-            # Reset fields
-            line.department_analytic_id = False
+            # Reset computed fields only (department and source are related fields)
             line.activity_analytic_id = False
             line.fund_analytic_id = False
-            line.source_analytic_id = False
 
             if not line.analytic_distribution:
                 continue
@@ -137,14 +135,10 @@ class BudgetAppropriationLine(models.Model):
                 account_id = int(account_id_str)
                 account = self.env["account.analytic.account"].browse(account_id)
                 
-                if account.root_plan_id.code == "departments":
-                    line.department_analytic_id = account.id
-                elif account.root_plan_id.code == "activities":
+                if account.root_plan_id.code == "activities":
                     line.activity_analytic_id = account.id
                 elif account.root_plan_id.code == "funds":
                     line.fund_analytic_id = account.id
-                elif account.root_plan_id.code == "sources":
-                    line.source_analytic_id = account.id
 
     @api.onchange("balance")
     def _onchange_balance(self):
