@@ -254,39 +254,85 @@ class BudgetAppropriationF5Report(models.TransientModel):
         return False
 
     def _build_accounts_for_fund(self, accounts_data, fund_level=0):
-        """Build account nodes for a specific fund"""
-        account_nodes = []
+        """Build account hierarchy for a specific fund"""
+        # Get all account IDs used
+        used_account_ids = set(k for k in accounts_data.keys() if k)
         
-        for account_key, line_list in accounts_data.items():
-            if account_key:
-                account = self.env['budget.account'].browse(account_key)
-                account_node = {
-                    "type": "account",
-                    "key": f"account_{account.id}",
-                    "id": account.id,
-                    "name": account.name,
-                    "code": account.code,
-                    "children": [],
-                    "total_amount": sum(line_data['balance'] for line_data in line_list),
-                    "line_details": line_list,
-                    "level": fund_level + 1,  # Account level is one level deeper than fund
-                }
-            else:
-                account_node = {
-                    "type": "account",
-                    "key": "account_no_account",
-                    "id": "no_account",
-                    "name": "ไม่ระบุรหัสงบประมาณ",
-                    "code": "",
-                    "children": [],
-                    "total_amount": sum(line_data['balance'] for line_data in line_list),
-                    "line_details": line_list,
-                    "level": fund_level + 1,
-                }
-            
-            account_nodes.append(account_node)
+        if not used_account_ids:
+            return []
+        
+        # Get root accounts that have data
+        root_accounts = self._get_root_accounts_with_data(used_account_ids)
+        
+        account_nodes = []
+        for root_account in root_accounts:
+            account_node = self._build_account_hierarchy_recursive(root_account, accounts_data, used_account_ids, fund_level)
+            if account_node:
+                account_nodes.append(account_node)
         
         return account_nodes
+
+    def _get_root_accounts_with_data(self, used_account_ids):
+        """Get root accounts that have data (directly or through descendants)"""
+        all_accounts_with_data = set()
+        
+        # Get all accounts that have data and their parents
+        for account_id in used_account_ids:
+            account = self.env['budget.account'].browse(account_id)
+            current = account
+            while current:
+                all_accounts_with_data.add(current.id)
+                current = current.parent_id
+        
+        # Get all account records
+        accounts = self.env['budget.account'].browse(list(all_accounts_with_data))
+        
+        # Return only root accounts (those without parent)
+        root_accounts = accounts.filtered(lambda a: not a.parent_id)
+        return root_accounts.sorted('code')
+
+    def _build_account_hierarchy_recursive(self, account, accounts_data, used_account_ids, fund_level):
+        """Recursively build account hierarchy with proper parent-child structure"""
+        account_level = fund_level + 1 + (len(account.parent_path.split('/')) - 2 if account.parent_path else 0)
+        
+        account_node = {
+            "type": "account",
+            "key": f"account_{account.id}",
+            "id": account.id,
+            "name": account.name,
+            "code": account.code,
+            "children": [],
+            "total_amount": 0,
+            "level": account_level,
+            "line_details": [],
+        }
+        
+        # Check if this account has direct data
+        if account.id in accounts_data:
+            line_list = accounts_data[account.id]
+            account_node["total_amount"] += sum(line_data['balance'] for line_data in line_list)
+            account_node["line_details"] = line_list
+        
+        # Add child accounts recursively
+        for child_account in account.child_ids.sorted('code'):
+            if self._account_has_data_recursive(child_account, used_account_ids):
+                child_node = self._build_account_hierarchy_recursive(child_account, accounts_data, used_account_ids, fund_level)
+                if child_node:
+                    account_node["children"].append(child_node)
+                    account_node["total_amount"] += child_node["total_amount"]
+        
+        return account_node if account_node["total_amount"] > 0 or account_node["children"] else None
+
+    def _account_has_data_recursive(self, account, used_account_ids):
+        """Check if account or any of its descendants have data"""
+        if account.id in used_account_ids:
+            return True
+        
+        for child in account.child_ids:
+            if self._account_has_data_recursive(child, used_account_ids):
+                return True
+        
+        return False
 
     def _get_complete_activities_hierarchy(self, used_activity_ids):
         """Get complete activities hierarchy including all parents"""
