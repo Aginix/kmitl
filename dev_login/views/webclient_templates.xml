@@ -3,16 +3,16 @@
     <!-- Extend the login template to add dev login button -->
     <template id="dev_login_button" inherit_id="web.login" name="Dev Login Button">
         <xpath expr="//form[@class='oe_login_form']//button[@type='submit']" position="after">
-            <div class="dev-login-container mt-3" style="display: none;">
+            <div class="dev-login-container mt-3">
                 <hr/>
                 <div class="text-center">
-                    <small class="text-muted">Development Mode</small>
+                    <small class="text-muted">Quick Access</small>
                 </div>
                 <button type="button" class="btn btn-warning btn-block mt-2" id="dev_login_admin_btn">
                     <i class="fa fa-user-secret"/> Login as Admin
                 </button>
                 <small class="text-muted d-block text-center mt-1">
-                    Quick admin access for development
+                    One-click admin access
                 </small>
             </div>
         </xpath>

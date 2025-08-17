@@ -2,19 +2,19 @@
     'name': 'Developer Login',
     'version': '16.0.1.0.0',
     'category': 'Development',
-    'summary': 'Quick admin login button for development environment',
+    'summary': 'Quick admin login button for development and testing environments',
     'description': """
 Developer Login
 ===============
 
-Adds a "Login as admin" button to the login page for development convenience.
+Adds a "Login as admin" button to the login page for development and testing convenience.
 
 Features:
-- One-click admin login for development
-- Only enabled in development mode
-- Security restrictions to prevent production use
+- One-click admin login for development and runbot environments
+- Quick access for testing and debugging
+- Simple UI integration with login form
 
-Warning: This module should NEVER be installed in production environments.
+Ideal for runbot, development instances, and testing environments.
     """,
     'author': 'KMITL',
     'website': 'https://www.kmitl.ac.th',

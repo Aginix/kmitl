@@ -4,14 +4,13 @@ odoo.define('dev_login.dev_login', function (require) {
     var core = require('web.core');
     var ajax = require('web.ajax');
 
-    // Only show dev login in development mode
+    // Show dev login on login page
     function initDevLogin() {
-        // Check if we're in debug mode and on login page
-        var isDebugMode = odoo.debug || window.location.search.indexOf('debug') !== -1;
+        // Check if we're on login page
         var isLoginPage = window.location.pathname === '/web/login' || 
                          document.querySelector('.oe_login_form') !== null;
         
-        if (!isDebugMode || !isLoginPage) {
+        if (!isLoginPage) {
             return;
         }
 

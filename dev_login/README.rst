@@ -2,41 +2,39 @@
 Developer Login
 ==============
 
-Quick admin login button for development environment to improve developer experience.
+Quick admin login button for development and testing environments to improve developer experience.
 
 Features
 ========
 
 * Adds a "Login as Admin" button to the login page
-* One-click admin authentication for development
-* Multiple security layers to prevent production use
-* Only visible in debug/development mode
+* One-click admin authentication for development and testing
+* Always available on login page for easy access
+* Perfect for runbot and development instances
 
-Security Features
-=================
+Target Environments
+====================
 
-This module implements several security measures to ensure it's only used in development:
+This module is designed for development and testing environments including:
 
-1. **Development Mode Check**: Only works when ``dev_mode`` is enabled in Odoo configuration
-2. **Debug Mode Requirement**: Button only appears when debug mode is active
-3. **Production Prevention**: Controller returns 403 Forbidden if not in development mode
-4. **Logging**: All attempts are logged for security auditing
+* Development instances
+* Runbot environments
+* Testing databases
+* Local development setups
 
 Installation
 ============
 
 1. Copy the module to your addons directory
-2. Enable developer mode in Odoo (add ``?debug=1`` to URL or use developer tools)
-3. Install the module from Apps menu
-4. Navigate to login page - you should see the "Login as Admin" button
+2. Install the module from Apps menu
+3. Navigate to login page - you should see the "Login as Admin" button
 
 Usage
 =====
 
 1. Go to the login page (``/web/login``)
-2. Ensure debug mode is enabled (``?debug=1``)
-3. Click the "Login as Admin" button
-4. You'll be automatically logged in as admin and redirected to the web client
+2. Click the "Login as Admin" button
+3. You'll be automatically logged in as admin and redirected to the web client
 
 Configuration
 =============
@@ -45,9 +43,8 @@ No additional configuration required. The module automatically detects:
 
 * Admin user by login name 'admin'
 * Falls back to superuser (ID 1) if admin user not found
-* Requires Odoo to be running with ``--dev`` flag or development configuration
 
-**WARNING**: This module should NEVER be installed in production environments!
+**Note**: This module is intended for development and testing environments.
 
 Technical Details
 =================
@@ -56,15 +53,15 @@ Backend
 -------
 
 * Controller: ``/dev_login/admin`` (POST only)
-* Security checks for development mode
 * Automatic user authentication and session management
 * Error handling and logging
+* Simple and reliable login process
 
 Frontend
 --------
 
 * JavaScript integration with Odoo web client
-* Dynamic button visibility based on debug mode
+* Always visible on login page
 * Form submission handling
 * Loading states and user feedback
 
