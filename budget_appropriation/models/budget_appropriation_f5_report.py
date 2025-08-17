@@ -228,7 +228,7 @@ class BudgetAppropriationF5Report(models.TransientModel):
         
         # Check if this fund has direct data
         if fund.id in funds_data:
-            account_nodes = self._build_accounts_for_fund(funds_data[fund.id])
+            account_nodes = self._build_accounts_for_fund(funds_data[fund.id], fund_node["level"])
             fund_node["children"].extend(account_nodes)
             fund_node["total_amount"] += sum(account["total_amount"] for account in account_nodes)
         
@@ -253,7 +253,7 @@ class BudgetAppropriationF5Report(models.TransientModel):
         
         return False
 
-    def _build_accounts_for_fund(self, accounts_data):
+    def _build_accounts_for_fund(self, accounts_data, fund_level=0):
         """Build account nodes for a specific fund"""
         account_nodes = []
         
@@ -269,7 +269,7 @@ class BudgetAppropriationF5Report(models.TransientModel):
                     "children": [],
                     "total_amount": sum(line_data['balance'] for line_data in line_list),
                     "line_details": line_list,
-                    "level": 100,  # Accounts are always at a deep level
+                    "level": fund_level + 1,  # Account level is one level deeper than fund
                 }
             else:
                 account_node = {
@@ -281,7 +281,7 @@ class BudgetAppropriationF5Report(models.TransientModel):
                     "children": [],
                     "total_amount": sum(line_data['balance'] for line_data in line_list),
                     "line_details": line_list,
-                    "level": 100,
+                    "level": fund_level + 1,
                 }
             
             account_nodes.append(account_node)
