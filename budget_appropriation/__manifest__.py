@@ -16,6 +16,7 @@
         "views/budget_appropriation_views.xml",
         "views/budget_appropriation_menus.xml",
         "data/budget_appropriation_sequence.xml",
+        "data/budget_appropriation_f5_action.xml",
     ],
     "assets": {
         "web.assets_backend": [

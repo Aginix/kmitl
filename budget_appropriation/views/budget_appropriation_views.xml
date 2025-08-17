@@ -92,10 +92,23 @@
                                 </form>
                             </field>
                         </page>
-                        <page name="f5_preview" string="F5 Preview" 
-                              attrs="{'invisible': ['|', ('id', '=', False), ('budget_type', '!=', 'expense')]}">
-                            <field name="budget_type" invisible="1"/>
-                            <widget name="budget_appropriation_f5_widget"/>
+                        <page
+                            string="Preview"
+                            name="preview"
+                            attrs="{'invisible': [('id', '=', False)]}"
+                        >
+                            <div class="o_budget_preview_container">
+                                <div class="text-center p-3">
+                                    <button
+                                        type="object"
+                                        name="action_open_f5_preview"
+                                        class="btn btn-primary btn-lg"
+                                    >
+                                        <i class="fa fa-eye" />
+                                        เปิดดูตัวอย่างแบบละเอียด (F5)
+                                    </button>
+                                </div>
+                            </div>
                         </page>
                     </notebook>
                 </sheet>

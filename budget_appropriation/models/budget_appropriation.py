@@ -295,3 +295,19 @@ class BudgetAppropriation(models.Model):
             # Auto-post the budget move
             budget_move.action_review()
             budget_move.action_post()
+
+    def action_open_f5_preview(self):
+        """Open the budget appropriation F5 preview in full screen"""
+        self.ensure_one()
+        return {
+            "name": _("Budget Appropriation F5 Preview"),
+            "type": "ir.actions.client",
+            "tag": "budget_appropriation_f5_preview",
+            "target": "current",
+            "res_id": self.id,
+            "res_model": "budget.appropriation",
+            "context": {
+                "active_id": self.id,
+                "active_model": "budget.appropriation",
+            },
+        }
