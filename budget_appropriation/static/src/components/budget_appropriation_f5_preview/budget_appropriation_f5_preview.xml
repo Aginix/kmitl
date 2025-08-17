@@ -77,10 +77,10 @@
                     <div class="col-12" style="max-width: 960px;">
                         <div class="budget-report-container">
                             <div class="report-header text-center mb-4">
-                                <h3 t-esc="appropriation.source_analytic_id.name" />
-                                <h3>ประมาณการ<t t-esc="appropriation.journal_id.name" /> ประจำปีงบประมาณ พ.ศ. <t t-esc="appropriation.date_range_fy_id.name" /></h3>
+                                <h3 t-if="appropriation.source" t-esc="appropriation.source.name" />
+                                <h3>ประมาณการ<t t-if="appropriation.journal" t-esc="appropriation.journal.name" /> ประจำปีงบประมาณ พ.ศ. <t t-if="appropriation.fiscal_year" t-esc="appropriation.fiscal_year.name" /></h3>
                                 <h3>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
-                                <h3 t-esc="appropriation.department_analytic_id.complete_name" />
+                                <h3 t-if="appropriation.department" t-esc="appropriation.department.complete_name" />
                                 <h3>วงเงิน <t t-esc="formatCurrency(totalAmount)"/> บาท</h3>
                             </div>
 
