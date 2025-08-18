@@ -32,7 +32,7 @@ export class BudgetAppropriationF5Preview extends Component {
         try {
             this.state.loading = true;
             this.state.error = null;
-            
+
             const appropriationId = this.activeId;
             if (!appropriationId) {
                 console.error("Debug info - Available props:", {
@@ -54,7 +54,7 @@ export class BudgetAppropriationF5Preview extends Component {
             }
 
             this.state.data = result;
-            
+
             // Auto-expand all nodes by default
             if (result.hierarchy && result.hierarchy.length > 0) {
                 const allKeys = this.getAllNodeKeys(result.hierarchy);
@@ -74,8 +74,8 @@ export class BudgetAppropriationF5Preview extends Component {
 
     get activeId() {
         // Try to get ID from various sources
-        return this.props.action?.res_id || 
-               this.props.action?.context?.active_id || 
+        return this.props.action?.res_id ||
+               this.props.action?.context?.active_id ||
                this.props.resId ||
                this.props.action?.params?.id;
     }
@@ -97,7 +97,7 @@ export class BudgetAppropriationF5Preview extends Component {
         if (!this.state.data.hierarchy || this.state.data.hierarchy.length === 0) {
             return 0;
         }
-        
+
         return this.state.data.hierarchy.reduce((total, node) => {
             return total + (node.total_amount || 0);
         }, 0);
@@ -126,7 +126,7 @@ export class BudgetAppropriationF5Preview extends Component {
         // Expand all nodes before printing
         const allKeys = this.getAllNodeKeys(this.state.data.hierarchy || []);
         allKeys.forEach(key => this.state.expandedNodes.add(key));
-        
+
         // Small delay to ensure DOM is updated before printing
         setTimeout(() => {
             window.print();
@@ -180,7 +180,7 @@ export class BudgetAppropriationF5Preview extends Component {
             // Tree levels: Root=0, Activity=1, Fund=2, Account=3+
             // Account level relative to fund = node.level - 2 (subtract root, activity, fund)
             // But we want first account to be level 1, so: Math.max(1, node.level - 2)
-            const accountLevel = Math.max(1, node.level - 2); // Account level starts from 1
+            const accountLevel = Math.max(1, node.level - 6); // Account level starts from 1
             const marginLeft = 16 + (16 * accountLevel);
             return `margin-left: ${marginLeft}px;`;
         }
@@ -218,7 +218,7 @@ export class BudgetAppropriationF5Preview extends Component {
 }
 
 BudgetAppropriationF5Preview.template = "budget_appropriation.BudgetAppropriationF5Preview";
-BudgetAppropriationF5Preview.components = { 
+BudgetAppropriationF5Preview.components = {
     ControlPanel
 };
 
