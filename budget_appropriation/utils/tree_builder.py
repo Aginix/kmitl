@@ -135,7 +135,7 @@ class TreeNode:
         """Convert node to dictionary representation"""
         data = {
             'type': self.node_type,
-            'key': f"{self.node_type}_{self.node_id}",
+            'key': self._get_unique_key(),
             'id': self.node_id,
             'code': self.code,
             'name': self.name,
@@ -182,6 +182,16 @@ class TreeNode:
         
         self.total_amount = total
         return total
+    
+    def _get_unique_key(self) -> str:
+        """Generate unique key based on full hierarchy path"""
+        path_parts = []
+        current = self
+        while current and current.node_type != 'root':
+            if current.node_id is not None:
+                path_parts.insert(0, f"{current.node_type}_{current.node_id}")
+            current = current.parent
+        return "_".join(path_parts) if path_parts else f"{self.node_type}_{self.node_id}"
 
 
 class BudgetTreeBuilder:
