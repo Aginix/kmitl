@@ -87,4 +87,15 @@ class BudgetAppropriationF5Report(models.TransientModel):
         
         # Export to Odoo-compatible format
         return BudgetTreeExporter.to_odoo_hierarchy(tree)
+    
+    def _get_complete_name_without_codes(self, record):
+        """Get complete name without codes - helper method for appropriation data"""
+        if not record:
+            return ""
+        
+        if hasattr(record, 'complete_name') and record.complete_name:
+            # Remove codes from complete_name
+            import re
+            return re.sub(r'\[.*?\]\s*', '', record.complete_name)
+        return record.name
 
