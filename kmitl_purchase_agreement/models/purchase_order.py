@@ -49,6 +49,8 @@ class PurchaseOrder(models.Model):
             'purchase_order_id': self.id,
             'company_id': self.company_id.id,
             'expiration_notice': 30,
+            'start_date': self.contract_start_date,
+            'end_date': self.contract_end_date,
         })
 
         agreement_lines = []

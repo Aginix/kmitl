@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 import logging
 
+import ast
+import json as simplejson
+
+from lxml import etree
+
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 
@@ -65,5 +70,53 @@ class Agreement(models.Model):
         related='purchase_order_id.contract_type',
         string="Contract type",
         store=True,
-        readonly=True
+        readonly=False
     )
+
+    work_start_date = fields.Date(related='purchase_order_id.work_start_date', string="Work start date",)
+
+    work_end_date = fields.Date(related='purchase_order_id.work_end_date', string="Work end date",)
+
+    # @api.model
+    # def get_view(self, view_id=None, view_type=False, **options):
+    #     res = super().get_view(view_id=view_id, view_type=view_type, **options)
+    #     # Readonly fields
+    #     if view_type == "form":
+    #         doc = etree.XML(res["arch"])
+    #         for node in doc.xpath("//field"):
+    #             if (
+    #                 node in doc.xpath("//tree/field")
+    #                 or node.attrib.get("name") in self._exclude_readonly_field()
+    #             ):
+    #                 continue
+    #             attrs = ast.literal_eval(node.attrib.get("attrs", "{}"))
+    #             if attrs:
+    #                 if attrs.get("readonly"):
+    #                     attrs["readonly"] = ["|", ("readonly", "=", True)] + attrs[
+    #                         "readonly"
+    #                     ]
+    #                 else:
+    #                     attrs["readonly"] = [("readonly", "=", True)]
+    #             else:
+    #                 attrs["readonly"] = [("readonly", "=", True)]
+    #             node.set("attrs", simplejson.dumps(attrs))
+    #             modifiers = ast.literal_eval(
+    #                 node.attrib.get("modifiers", "{}")
+    #                 .replace("true", "True")
+    #                 .replace("false", "False")
+    #             )
+    #             readonly = modifiers.get("readonly")
+    #             invisible = modifiers.get("invisible")
+    #             required = modifiers.get("required")
+    #             attrs = modifiers.get("attrs")
+    #             if isinstance(readonly, bool) and readonly:
+    #                 attrs["readonly"] = readonly
+    #             if isinstance(invisible, bool) and invisible:
+    #                 attrs["invisible"] = invisible
+    #             if isinstance(required, bool) and required:
+    #                 attrs["required"] = required
+    #             if isinstance(attrs, str) and attrs:
+    #                 attrs["attrs"] = attrs
+    #             node.set("modifiers", simplejson.dumps(attrs))
+    #         res["arch"] = etree.tostring(doc)
+    #     return res
