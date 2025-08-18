@@ -169,9 +169,10 @@ export class BudgetAppropriationF5Overview extends Component {
             return 'margin-left: 16px;';
         } else if (node.type === 'account') {
             // For account: 16px + (16px * account_level) where account_level starts from 1
-            // node.level gives us the total level in tree (activity=1, fund=2, account=3+)
-            // So account level = node.level - 1 (subtract activity and fund levels)
-            const accountLevel = Math.max(1, node.level - 1); // Ensure minimum level 1
+            // Tree levels: Root=0, Activity=1, Fund=2, Account=3+
+            // Account level relative to fund = node.level - 2 (subtract root, activity, fund)
+            // But we want first account to be level 1, so: Math.max(1, node.level - 2)
+            const accountLevel = Math.max(1, node.level - 2); // Account level starts from 1
             const marginLeft = 16 + (16 * accountLevel);
             return `margin-left: ${marginLeft}px;`;
         }
