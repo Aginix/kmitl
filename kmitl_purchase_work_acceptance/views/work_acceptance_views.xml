@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+      
+    <!-- View work.acceptance form -->
+    <record id="view_work_acceptance_form" model="ir.ui.view">
+        <field name="name">view.work.acceptance.form</field>
+        <field name="model">work.acceptance</field>
+        <field name="inherit_id" ref="purchase_work_acceptance.view_work_acceptance_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position='attributes'>
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='currency_id']" position='attributes'>
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='currency_id']" position="before">
+                <field name="invoice_plan" />
+            </xpath>
+
+            <xpath expr="//notebook" position="inside">
+                <page name="committee" string="Committee">
+                        <field name="work_acceptance_committee_ids" readonly="1" nolabel='1'>
+                            <tree>
+                                <field name="employee_id"/>
+                                <field name="name"/>
+                                <field name="approve_role"/>
+                                <field name="department_id"/>
+                                <field name="email"/>
+                                <field name="phone"/>
+                            </tree>
+                        </field>
+                </page>
+
+                <page name="document" string="Attachment">
+                    <field name="document_ids">
+                        <tree editable="bottom">
+                            <field name="file" filename="file_name" />
+                            <field name="file_name" readonly="1" />
+                            <field name="description" />
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- View work.acceptance tree -->
+    <!-- <record id="view_work_acceptance_tree" model="ir.ui.view">
+        <field name="name">view.work.acceptance.tree</field>
+        <field name="model">work.acceptance</field>
+        <field name="inherit_id" ref=""/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='']">
+            </xpath>
+        </field>
+    </record> -->
+
+  </odoo>

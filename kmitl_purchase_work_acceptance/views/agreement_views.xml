@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+      
+    <!-- View agreement form -->
+    <record id="view_agreement_form" model="ir.ui.view">
+        <field name="name">view.agreement.form</field>
+        <field name="model">agreement</field>
+        <field name="inherit_id" ref="agreement_legal.partner_agreement_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='create_new_version']" position='after'>
+                <button name="action_create_wa_from_agreement"
+                    type="object"
+                    string="Create WA"
+                    class="oe_highlight"/>
+            </xpath>
+
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_work_acceptances"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-clipboard"
+                        attrs="{'invisible': [('wa_count', '=', 0)]}">
+                    <field name="wa_count" widget="statinfo" string="Work Acceptances"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- View agreement tree -->
+    <!-- <record id="view_agreement_tree" model="ir.ui.view">
+        <field name="name">view.agreement.tree</field>
+        <field name="model">agreement</field>
+        <field name="inherit_id" ref=""/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='']">
+            </xpath>
+        </field>
+    </record> -->
+
+  </odoo>
