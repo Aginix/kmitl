@@ -1,8 +1,129 @@
 import logging
+import re
 
 from odoo import api, fields, models, _
 
 _logger = logging.getLogger(__name__)
+
+
+class SimpleTreeBuilder:
+    """Simple tree builder for budget hierarchies"""
+    
+    def __init__(self):
+        self.root = {'type': 'root', 'children': [], 'total_amount': 0}
+        self.node_cache = {}
+    
+    def add_line(self, line):
+        """Add a budget line to the hierarchy"""
+        current = self.root
+        
+        # Build Activity hierarchy (global scope)
+        if line.activity_analytic_id:
+            path = self._get_record_path(line.activity_analytic_id, 'activity')
+            current = self._build_dimension_path(current, 'activity', path, None)
+        
+        # Build Fund hierarchy (under current activity)
+        if line.fund_analytic_id:
+            path = self._get_record_path(line.fund_analytic_id, 'fund')
+            parent_context = current.get('id')  # Current activity ID
+            current = self._build_dimension_path(current, 'fund', path, parent_context)
+        
+        # Build Account hierarchy (under current fund)
+        if line.account_id:
+            path = self._get_record_path(line.account_id, 'account')
+            parent_context = current.get('id')  # Current fund ID
+            current = self._build_dimension_path(current, 'account', path, parent_context)
+        
+        # Add line data to leaf node
+        self._add_line_data(current, line)
+    
+    def get_hierarchy(self):
+        """Get final hierarchy with calculated totals"""
+        self._calculate_totals(self.root)
+        return self.root.get('children', [])
+    
+    def _get_record_path(self, record, dimension):
+        """Get full path for record (works for both analytic and budget accounts)"""
+        if not record:
+            return []
+        
+        path = []
+        current = record
+        while current:
+            path.insert(0, current)
+            current = current.parent_id
+        return path
+    
+    def _build_dimension_path(self, parent, dimension, records, parent_context):
+        """Build path for a dimension (activity/fund/account)"""
+        current = parent
+        
+        for record in records:
+            # Create unique cache key
+            cache_key = f"{dimension}_{record.id}"
+            if parent_context:
+                cache_key += f"_ctx_{parent_context}"
+            
+            # Find or create node
+            if cache_key in self.node_cache:
+                current = self.node_cache[cache_key]
+            else:
+                node = self._create_node(dimension, record, current)
+                current['children'].append(node)
+                self.node_cache[cache_key] = node
+                current = node
+        
+        return current
+    
+    def _create_node(self, node_type, record, parent):
+        """Create a new tree node"""
+        return {
+            'type': node_type,
+            'key': f"{node_type}_{record.id}",
+            'id': record.id,
+            'name': record.name,
+            'code': getattr(record, 'code', ''),
+            'complete_name': self._clean_name(record),
+            'children': [],
+            'amount': 0,
+            'total_amount': 0,
+            'level': parent.get('level', -1) + 1,
+            'has_data': False,
+            'expanded': True,
+            'line_details': []
+        }
+    
+    def _add_line_data(self, node, line):
+        """Add line data to leaf node"""
+        node['amount'] = node.get('amount', 0) + line.balance
+        node['has_data'] = True
+        node['line_details'].append({
+            'id': line.id,
+            'note': line.note,
+            'balance': line.balance
+        })
+    
+    def _calculate_totals(self, node):
+        """Calculate total amounts recursively"""
+        if not node.get('children'):
+            node['total_amount'] = node.get('amount', 0)
+            return node['total_amount']
+        
+        total = node.get('amount', 0)
+        for child in node['children']:
+            total += self._calculate_totals(child)
+        
+        node['total_amount'] = total
+        return total
+    
+    def _clean_name(self, record):
+        """Get clean name without codes"""
+        if not record:
+            return ""
+        
+        if hasattr(record, 'complete_name') and record.complete_name:
+            return re.sub(r'\[.*?\]\s*', '', record.complete_name)
+        return record.name
 
 
 class BudgetAppropriationF5Report(models.TransientModel):
@@ -76,169 +197,16 @@ class BudgetAppropriationF5Report(models.TransientModel):
         
         # Filter lines with non-zero balance
         lines = lines.filtered(lambda l: l.balance != 0)
+        if not lines:
+            return []
         
-        # Create root node
-        root = {
-            'type': 'root',
-            'name': 'Root',
-            'children': [],
-            'total_amount': 0
-        }
+        # Initialize tree builder
+        tree_builder = SimpleTreeBuilder()
         
-        # Cache for node lookup
-        node_cache = {}
-        
-        # Process each line
+        # Process each line and build hierarchy
         for line in lines:
-            current = root
-            
-            # 1. Build Activity hierarchy
-            activity_path = self._get_hierarchy_path(line.activity_analytic_id)
-            for activity in activity_path:
-                current = self._ensure_node(
-                    parent=current,
-                    node_type='activity',
-                    record=activity,
-                    cache=node_cache,
-                    context_key=None  # Activities are global
-                )
-            
-            # 2. Build Fund hierarchy under activity
-            fund_path = self._get_hierarchy_path(line.fund_analytic_id)
-            for fund in fund_path:
-                # Include activity context in cache key
-                context_key = f"act_{current.get('id')}"
-                current = self._ensure_node(
-                    parent=current,
-                    node_type='fund',
-                    record=fund,
-                    cache=node_cache,
-                    context_key=context_key
-                )
-            
-            # 3. Build Account hierarchy under fund
-            account_path = self._get_account_hierarchy_path(line.account_id)
-            for account in account_path:
-                # Include fund context in cache key
-                context_key = f"fund_{current.get('id')}"
-                current = self._ensure_node(
-                    parent=current,
-                    node_type='account',
-                    record=account,
-                    cache=node_cache,
-                    context_key=context_key
-                )
-            
-            # 4. Add amount to leaf node
-            current['amount'] = current.get('amount', 0) + line.balance
-            current['has_data'] = True
-            
-            # Store line details for drill-down
-            if 'line_details' not in current:
-                current['line_details'] = []
-            current['line_details'].append({
-                'id': line.id,
-                'note': line.note,
-                'balance': line.balance
-            })
+            tree_builder.add_line(line)
         
-        # Calculate rollups
-        self._calculate_rollups(root)
-        
-        # Return children (skip root)
-        return root.get('children', [])
-    def _ensure_node(self, parent, node_type, record, cache, context_key=None):
-        """Ensure node exists in tree"""
-        
-        # Build cache key
-        cache_key = (node_type, record.id)
-        if context_key:
-            cache_key = (node_type, record.id, context_key)
-        
-        # Check cache
-        if cache_key in cache:
-            return cache[cache_key]
-        
-        # Create new node
-        node = {
-            'type': node_type,
-            'key': f"{node_type}_{record.id}",
-            'id': record.id,
-            'name': record.name,
-            'code': getattr(record, 'code', ''),
-            'complete_name': self._get_complete_name_without_codes(record),
-            'children': [],
-            'amount': 0,
-            'total_amount': 0,
-            'level': parent.get('level', -1) + 1,
-            'has_data': False,
-            'expanded': True  # Default expanded
-        }
-        
-        # Add to parent
-        if 'children' not in parent:
-            parent['children'] = []
-        parent['children'].append(node)
-        
-        # Cache it
-        cache[cache_key] = node
-        
-        return node
-    
-    def _get_hierarchy_path(self, analytic_account):
-        """Get full hierarchy path for analytic account"""
-        if not analytic_account:
-            return []
-            
-        path = []
-        current = analytic_account
-        
-        while current:
-            path.insert(0, current)
-            current = current.parent_id
-            
-        return path
-    
-    def _get_account_hierarchy_path(self, budget_account):
-        """Get full hierarchy path for budget account"""
-        if not budget_account:
-            return []
-            
-        path = []
-        current = budget_account
-        
-        while current:
-            path.insert(0, current)
-            current = current.parent_id
-            
-        return path
-    
-    def _calculate_rollups(self, node):
-        """Calculate total amounts bottom-up"""
-        
-        # Leaf node - use direct amount
-        if not node.get('children'):
-            node['total_amount'] = node.get('amount', 0)
-            return node['total_amount']
-        
-        # Branch node - sum children + own amount
-        total = node.get('amount', 0)
-        for child in node['children']:
-            total += self._calculate_rollups(child)
-        
-        node['total_amount'] = total
-        return total
-    
-    def _get_complete_name_without_codes(self, record):
-        """Get complete name without codes"""
-        if not record:
-            return ""
-        
-        if hasattr(record, 'complete_name') and record.complete_name:
-            # Remove codes from complete_name
-            name = record.complete_name
-            # Remove [code] patterns
-            import re
-            return re.sub(r'\[.*?\]\s*', '', name)
-        return record.name
+        # Get completed tree and calculate totals
+        return tree_builder.get_hierarchy()
 
