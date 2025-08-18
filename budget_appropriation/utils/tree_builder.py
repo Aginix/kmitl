@@ -311,10 +311,11 @@ class BudgetTreeBuilder:
         current = parent
         
         for i, record in enumerate(records):
-            # Create cache key including parent context
+            # Create cache key with full hierarchy path to ensure uniqueness
+            parent_path = self._get_current_path_key(current)
             cache_key = f"{dimension}_{record.id}"
-            if current.node_id:
-                cache_key += f"_ctx_{current.node_id}"
+            if parent_path:
+                cache_key = f"{parent_path}_{cache_key}"
             
             # Check cache
             if cache_key in self.node_cache:
@@ -327,6 +328,16 @@ class BudgetTreeBuilder:
                 current = node
         
         return current
+    
+    def _get_current_path_key(self, node: TreeNode) -> str:
+        """Get a unique path key representing the current hierarchy position"""
+        path_parts = []
+        current = node
+        while current and current.node_type != 'root':
+            if current.node_id is not None:
+                path_parts.insert(0, f"{current.node_type}_{current.node_id}")
+            current = current.parent
+        return "_".join(path_parts)
     
     def _create_node(self, node_type: str, record, parent: TreeNode) -> TreeNode:
         """Create a new tree node from a record"""
