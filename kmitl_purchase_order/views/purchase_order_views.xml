@@ -13,8 +13,8 @@
                     <field name="contract_start_date" />
                     <field name="contract_end_date" />
                     <field name="contract_type"/>
-                    <field name="work_start_date" attrs="{'invisible': [('contract_type', '!=', 'construction')]}" />
-                    <field name="work_end_date" attrs="{'invisible': [('contract_type', '!=', 'construction')]}" />
+                    <field name="work_start_date" attrs="{'invisible': [('contract_type', '!=', 'contract_construction')]}" />
+                    <field name="work_end_date" attrs="{'invisible': [('contract_type', '!=', 'contract_construction')]}" />
                     <field name="purchase_request_name" />
                     <field name="fee" />
                     <field name="pr1_ref" />
