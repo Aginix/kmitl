@@ -7,6 +7,28 @@
         <field name="model">work.acceptance</field>
         <field name="inherit_id" ref="purchase_work_acceptance.view_work_acceptance_form"/>
         <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='state']" position="attributes">
+                <attribute name="statusbar_visible">draft,submit,approved,accept</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_accept']" position="after">
+                <button name='button_approved' string='Approve' states='submit' type='object' class="oe_highlight"></button>
+                <button name='button_submit' string='Submit' states='draft' type='object' class="oe_highlight"></button>
+            </xpath>
+
+            <xpath expr="//button[@name='button_accept']" position="attributes">
+                <attribute name="states">approved</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_draft']" position="attributes">
+                <attribute name="states">submit,accept,approved,cancel</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='button_cancel']" position="attributes">
+                <attribute name="states">draft,submit,accept,approved</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='company_id']" position='attributes'>
                 <attribute name="invisible">1</attribute>
             </xpath>

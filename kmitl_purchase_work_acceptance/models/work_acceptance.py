@@ -25,3 +25,19 @@ class WorkAcceptance(models.Model):
         related='agreement_id.work_acceptance_committee_ids',
         readonly=True,
     )
+
+    state = fields.Selection(
+        [("draft", "Draft"), ("submit", "Submit"), ("approved", "Approved"), ("accept", "Accepted"), ("cancel", "Cancelled")],
+        string="Status",
+        readonly=True,
+        index=True,
+        copy=False,
+        default="draft",
+        tracking=True,
+    )
+
+    def button_submit(self):
+        self.write({"state": "submit"})
+
+    def button_approved(self):
+        self.write({"state": "approved"})
