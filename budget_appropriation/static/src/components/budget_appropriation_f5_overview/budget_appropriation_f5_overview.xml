@@ -263,7 +263,7 @@
     <t t-name="budget_appropriation.F5OverviewTableRow" owl="1">
         <tr t-attf-class="{{node.type}} {{node.type !== 'line' ? 'font-weight-bold' : ''}}">
             <td>
-                <div t-att-style="node.type === 'account' ? 'margin-left: ' + (node.level * 15) + 'px;' : ''">
+                <div t-att-style="getMarginStyle(node)">
                     <div class="d-flex align-items-center">
                         <button
                             t-if="node.children and node.children.length > 0"

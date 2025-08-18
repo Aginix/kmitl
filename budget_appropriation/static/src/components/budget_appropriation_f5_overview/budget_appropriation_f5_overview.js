@@ -164,6 +164,20 @@ export class BudgetAppropriationF5Overview extends Component {
         }).format(amount);
     }
 
+    getMarginStyle(node) {
+        if (node.type === 'fund') {
+            return 'margin-left: 16px;';
+        } else if (node.type === 'account') {
+            // For account: 16px + (16px * account_level) where account_level starts from 1
+            // node.level gives us the total level in tree (activity=1, fund=2, account=3+)
+            // So account level = node.level - 1 (subtract activity and fund levels)
+            const accountLevel = Math.max(1, node.level - 1); // Ensure minimum level 1
+            const marginLeft = 16 + (16 * accountLevel);
+            return `margin-left: ${marginLeft}px;`;
+        }
+        return '';
+    }
+
     getAllNodeKeys() {
         const keys = new Set();
         const collectKeys = (nodes) => {
