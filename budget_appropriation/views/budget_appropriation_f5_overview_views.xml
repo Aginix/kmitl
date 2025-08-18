@@ -22,7 +22,6 @@
                         <group>
                             <group string="General Filters">
                                 <field name="fiscal_year_id" 
-                                       domain="[('type_id.fiscal_type', '=', 'fiscal_year')]"
                                        options="{'no_create': True, 'no_open': True}"/>
                                 <field name="state"/>
                                 <field name="include_zero_amounts"/>

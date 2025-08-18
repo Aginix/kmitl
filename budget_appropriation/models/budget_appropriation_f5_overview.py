@@ -14,7 +14,6 @@ class BudgetAppropriationF5Overview(models.TransientModel):
     fiscal_year_id = fields.Many2one(
         "date.range", 
         string="Fiscal Year", 
-        domain=[("type_id.fiscal_type", "=", "fiscal_year")],
         help="Filter by fiscal year"
     )
     department_ids = fields.Many2many(
@@ -269,7 +268,7 @@ class BudgetAppropriationF5Overview(models.TransientModel):
         """Get default filter values"""
         # Get current fiscal year if available
         current_fy = self.env['date.range'].search([
-            ('type_id.fiscal_type', '=', 'fiscal_year')
+            ('name', 'ilike', '2024')  # Simple fallback - can be improved later
         ], limit=1, order='date_start desc')
         
         return {
