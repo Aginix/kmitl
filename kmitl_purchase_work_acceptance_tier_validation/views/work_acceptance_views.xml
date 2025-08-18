@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+
+    <!-- View work.acceptance form -->
+    <record id="view_work_acceptance_form" model="ir.ui.view">
+        <field name="name">view.work.acceptance.form</field>
+        <field name="model">work.acceptance</field>
+        <field name="inherit_id" ref="kmitl_purchase_work_acceptance.view_work_acceptance_form"/>
+        <field name="arch" type="xml">
+            <button name="button_approved" position="attributes">
+                <attribute name="string">APPROVE</attribute>
+                <attribute
+                    name="attrs"
+                >{'invisible':['|', '|', ('validation_status', 'in', ('pending', 'rejected')),('state', 'in', ['draft', 'submit'])]}</attribute>
+            </button>
+            <field name="state" position="after">
+                <field name="validation_status" invisible="1" />
+            </field>
+        </field>
+    </record>
+  </odoo>

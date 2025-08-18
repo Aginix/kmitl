@@ -7,8 +7,8 @@
     'website': '',
     'category': '',
     'depends': ['base', 'web', 'base_tier_validation', 'kmitl_purchase_work_acceptance'],
-    'data': [
-        
+    "data": [
+        "views/work_acceptance_views.xml"
     ],
     'assets': {
               'web.assets_backend': [

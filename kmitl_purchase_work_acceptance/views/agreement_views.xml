@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
   <odoo>
-      
+
     <!-- View agreement form -->
     <record id="view_agreement_form" model="ir.ui.view">
         <field name="name">view.agreement.form</field>
         <field name="model">agreement</field>
         <field name="inherit_id" ref="agreement_legal.partner_agreement_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//button[@name='create_new_version']" position='after'>
+            <xpath expr="//button[@name='action_open_new_version_wizard']" position='after'>
                 <button name="action_create_wa_from_agreement"
                     type="object"
                     string="Create WA"

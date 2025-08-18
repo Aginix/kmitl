@@ -1,18 +1,9 @@
 # -*- coding: utf-8 -*-
-import logging
-
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
+from odoo import _, api, fields, models
 
 
 class Agreement(models.Model):
     _inherit = 'agreement'
-
-    # wa_ids = fields.One2many(
-    #     "work.acceptance", "agreement_id", string="Work Acceptances"
-    # )
 
     wa_ids = fields.One2many(
         comodel_name="work.acceptance",
@@ -39,10 +30,8 @@ class Agreement(models.Model):
             "purchase_id": self.purchase_order_id.id,
             "date_due": self.end_date,
             "user_id": self.env.uid,
-            # เพิ่ม field อื่น ๆ ถ้าจำเป็น
         })
 
-        # คัดลอก product lines จาก agreement
         line_vals = []
         for line in self.line_ids:
             line_vals.append((0, 0, {
@@ -61,12 +50,10 @@ class Agreement(models.Model):
             "res_id": wa.id,
             "target": "current",
         }
-    
+
     def action_view_work_acceptances(self):
-        """Smart button action เพื่อดู Work Acceptances ของ Agreement นี้"""
         self.ensure_one()
-        
-        # สร้าง action เพื่อดู WA ที่เกี่ยวข้องกับ agreement นี้
+
         action = {
             'name': 'Work Acceptances',
             'type': 'ir.actions.act_window',
@@ -80,13 +67,12 @@ class Agreement(models.Model):
             },
             'target': 'current',
         }
-        
-        # ถ้ามี WA เพียง 1 รายการ ให้เปิดในโหมด form view โดยตรง
+
         if self.wa_count == 1:
             action.update({
                 'view_mode': 'form',
                 'res_id': self.wa_ids[0].id,
                 'views': [(False, 'form')],
             })
-        
+
         return action

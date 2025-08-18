@@ -217,25 +217,8 @@
                         <field name="fee" />
                     </group>
                 </page>
-
-                <!-- <page name="extended_history" string="Extended history">
-
-                </page> -->
             </xpath>
 
         </field>
     </record>
-
-
-    <!-- View agreement tree -->
-    <!-- <record id="view_agreement_tree" model="ir.ui.view">
-        <field name="name">view.agreement.tree</field>
-        <field name="model">agreement</field>
-        <field name="inherit_id" ref=""/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='']">
-            </xpath>
-        </field>
-    </record> -->
-
 </odoo>

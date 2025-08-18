@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
   <odoo>
-      
+
     <!-- View work.acceptance form -->
     <record id="view_work_acceptance_form" model="ir.ui.view">
         <field name="name">view.work.acceptance.form</field>
@@ -13,6 +13,7 @@
             </xpath>
 
             <xpath expr="//button[@name='button_accept']" position="after">
+                <field name="is_editable" invisible="1" />
                 <button name='button_approved' string='Approve' states='submit' type='object' class="oe_highlight"></button>
                 <button name='button_submit' string='Submit' states='draft' type='object' class="oe_highlight"></button>
             </xpath>
@@ -33,12 +34,16 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
+            <xpath expr="//field[@name='invoice_ref']" position='attributes'>
+                <attribute name="attrs">{'readonly': [('is_editable','=', False)]}</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='currency_id']" position='attributes'>
                 <attribute name="invisible">1</attribute>
             </xpath>
 
             <xpath expr="//field[@name='currency_id']" position="before">
-                <field name="invoice_plan" />
+                <field name="invoice_plan" attrs="{'readonly': [('is_editable','=', False)]}" />
             </xpath>
 
             <xpath expr="//notebook" position="inside">
@@ -56,7 +61,7 @@
                 </page>
 
                 <page name="document" string="Attachment">
-                    <field name="document_ids">
+                    <field name="document_ids" attrs="{'readonly': [('is_editable','=', False)]}">
                         <tree editable="bottom">
                             <field name="file" filename="file_name" />
                             <field name="file_name" readonly="1" />
@@ -67,16 +72,4 @@
             </xpath>
         </field>
     </record>
-
-    <!-- View work.acceptance tree -->
-    <!-- <record id="view_work_acceptance_tree" model="ir.ui.view">
-        <field name="name">view.work.acceptance.tree</field>
-        <field name="model">work.acceptance</field>
-        <field name="inherit_id" ref=""/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='']">
-            </xpath>
-        </field>
-    </record> -->
-
   </odoo>
