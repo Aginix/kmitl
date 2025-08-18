@@ -1,15 +1,6 @@
 # -*- coding: utf-8 -*-
-import logging
-
-import ast
-import json as simplejson
-
-from lxml import etree
-
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
 
 
 class Agreement(models.Model):
@@ -23,14 +14,23 @@ class Agreement(models.Model):
     )
 
     document_ids = fields.One2many(
-        "purchase.agreement.attachment",
-        "request_id",
+        comodel_name="purchase.order.attachment",
+        inverse_name="request_id",
+        string="Attachment",
+        related="purchase_order_id.document_ids",
+        readonly=True,
+    )
+
+    reversion_document_ids = fields.One2many(
+        comodel_name="purchase.agreement.attachment",
+        inverse_name="request_id",
         string="Attachment",
     )
 
+    verify_datetime = fields.Date(string="Date of Verification")
     purchase_order_id = fields.Many2one(
-        'purchase.order', 
-        string="PO Ref", 
+        'purchase.order',
+        string="PO Ref",
         ondelete="set null",
     )
 
@@ -73,50 +73,38 @@ class Agreement(models.Model):
         readonly=False
     )
 
-    work_start_date = fields.Date(related='purchase_order_id.work_start_date', string="Work start date",)
+    work_start_date = fields.Date(related='purchase_order_id.work_start_date', string="Work start date")
+    work_end_date = fields.Date(related='purchase_order_id.work_end_date', string="Work end date")
 
-    work_end_date = fields.Date(related='purchase_order_id.work_end_date', string="Work end date",)
+    def action_open_new_version_wizard(self):
+        self.ensure_one()
+        return {
+            "name": "Create New Version",
+            "type": "ir.actions.act_window",
+            "res_model": "agreement.new.version.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "default_agreement_id": self.id,
+            },
+        }
 
-    # @api.model
-    # def get_view(self, view_id=None, view_type=False, **options):
-    #     res = super().get_view(view_id=view_id, view_type=view_type, **options)
-    #     # Readonly fields
-    #     if view_type == "form":
-    #         doc = etree.XML(res["arch"])
-    #         for node in doc.xpath("//field"):
-    #             if (
-    #                 node in doc.xpath("//tree/field")
-    #                 or node.attrib.get("name") in self._exclude_readonly_field()
-    #             ):
-    #                 continue
-    #             attrs = ast.literal_eval(node.attrib.get("attrs", "{}"))
-    #             if attrs:
-    #                 if attrs.get("readonly"):
-    #                     attrs["readonly"] = ["|", ("readonly", "=", True)] + attrs[
-    #                         "readonly"
-    #                     ]
-    #                 else:
-    #                     attrs["readonly"] = [("readonly", "=", True)]
-    #             else:
-    #                 attrs["readonly"] = [("readonly", "=", True)]
-    #             node.set("attrs", simplejson.dumps(attrs))
-    #             modifiers = ast.literal_eval(
-    #                 node.attrib.get("modifiers", "{}")
-    #                 .replace("true", "True")
-    #                 .replace("false", "False")
-    #             )
-    #             readonly = modifiers.get("readonly")
-    #             invisible = modifiers.get("invisible")
-    #             required = modifiers.get("required")
-    #             attrs = modifiers.get("attrs")
-    #             if isinstance(readonly, bool) and readonly:
-    #                 attrs["readonly"] = readonly
-    #             if isinstance(invisible, bool) and invisible:
-    #                 attrs["invisible"] = invisible
-    #             if isinstance(required, bool) and required:
-    #                 attrs["required"] = required
-    #             if isinstance(attrs, str) and attrs:
-    #                 attrs["attrs"] = attrs
-    #             node.set("modifiers", simplejson.dumps(attrs))
-    #         res["arch"] = etree.tostring(doc)
-    #     return res
+    def create_new_version(self):
+        for rec in self:
+            if not rec.state == "draft":
+                # Make sure status is draft
+                rec.state = "draft"
+            # Make a current copy and mark it as old
+            rec.copy(default=rec._get_old_version_default_vals())
+            # Update version, created by and created on
+            rec.update({"version": rec.version + 1})
+            # Reset revision to 0 since it's a new version
+        return super().write({"revision": 0})
+
+    def _exclude_readonly_field(self):
+        return [
+            "stage_id",
+            "contract_type",
+            "work_start_date",
+            "work_end_date",
+        ]

@@ -6,18 +6,13 @@
     'author': '',
     'website': '',
     'category': '',
-    'depends': ['base', 'web', 'agreement_legal', 'kmitl_purchase_order'],
+    'depends': ['agreement_legal', 'kmitl_purchase_order'],
     "data": [
         "security/ir.model.access.csv",
         "views/agreement_views.xml",
-        "views/purchase_order_views.xml"
+        "views/purchase_order_views.xml",
+        "wizards/agreement_new_version_wizard.xml"
     ],
-    'assets': {
-              'web.assets_backend': [
-                  'kmitl_purchase_agreement/static/src/**/*'
-              ],
-          },
-    'application': True,
     'installable': True,
     'auto_install': False,
     'license': 'LGPL-3',

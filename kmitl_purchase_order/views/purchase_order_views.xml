@@ -120,8 +120,7 @@
 
                 <page name="document" string="Attachment">
                     <field name="document_ids">
-                        <tree editable="bottom">
-                            <field name="file" filename="file_name" />
+                        <tree>
                             <field name="file_name" readonly="1" />
                             <field name="description" />
                         </tree>

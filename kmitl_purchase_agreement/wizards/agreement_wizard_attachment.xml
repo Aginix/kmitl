@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View agreement.new.version.wizard form -->
+    <record id="view_agreement_wizard_attachment_form" model="ir.ui.view">
+        <field name="name">view.agreement.wizard.attachment.form</field>
+        <field name="model">agreement.wizard.attachment</field>
+        <field name="arch" type="xml">
+            <form string="Agreement New Version Wizard">
+                <group string="เอกสารการแก้ไขสัญญาใหม่">
+                     <field name="name" />
+                     <field name="file" />
+                     <field name="file_name" />
+                     <field name="description" />
+                </group>
+            </form>
+        </field>
+    </record>
+
+</odoo>

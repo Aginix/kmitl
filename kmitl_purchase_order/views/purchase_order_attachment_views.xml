@@ -7,7 +7,8 @@
         <field name="model">purchase.order.attachment</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="name"/>
+                <field name="file_name"/>
+                <field name="description" />
             </tree>
         </field>
     </record>
@@ -19,27 +20,16 @@
         <field name="arch" type="xml">
             <form string="Purchase Order Attachment">
                 <sheet>
-                    <div class="oe_title">
-                        <label for="name"/>
-                        <h1>
-                            <field name="name" placeholder="Name..."/>
-                        </h1>
-                    </div>
+                    <group string="ข้อมูลเอกสารแนบ">
+                        <group>
+                            <field name="file" widget="binary" filename="file_name" required="1"/>
+                            <field name="file_name" string="Filename"/>
+                            <field name="description" />
+                        </group>
+
+                    </group>
                 </sheet>
             </form>
-        </field>
-    </record>
-
-    <!-- View purchase.order.attachment search -->
-    <record id="view_purchase_order_attachment_search" model="ir.ui.view">
-        <field name="name">view.purchase.order.attachment.search</field>
-        <field name="model">purchase.order.attachment</field>
-        <field name="arch" type="xml">
-            <search>
-                <group expand="1" string="Group By">
-                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
-                </group>
-            </search>
         </field>
     </record>
 

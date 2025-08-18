@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <odoo>
-      
+<odoo>
+
     <!-- View agreement form -->
     <record id="view_agreement_form" model="ir.ui.view">
         <field name="name">view.agreement.form</field>
@@ -15,8 +15,12 @@
                 </h2>
             </xpath>
 
+            <xpath expr="//button[@name='create_new_version']" position="attributes">
+                <attribute name="name">action_open_new_version_wizard</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='agreement_type_id']" position="after">
-                <field name="contract_type"/>
+                <field name="contract_type" readonly="1" />
             </xpath>
 
             <xpath expr="//field[@name='agreement_type_id']" position="attributes">
@@ -35,7 +39,7 @@
             <xpath expr="//field[@name='assigned_user_id']" position="after">
                 <field name="project_ids" widget="selection"/>
             </xpath>
-    
+
             <xpath expr="//field[@name='description']" position="before">
                 <label for="description" string="Description"/>
             </xpath>
@@ -109,8 +113,10 @@
             </xpath>
 
             <xpath expr="//field[@name='expiration_notice']" position="after">
-                <field name="work_start_date" attrs="{'invisible': [('contract_type', '!=', 'contract_construction')]}" readonly='False'/>
-                <field name="work_end_date" attrs="{'invisible': [('contract_type', '!=', 'contract_construction')]}" readonly='False'/>
+                <field name="contract_type" invisible="1" readonly="0" />
+                <field name="verify_datetime" />
+                <field name="work_start_date" attrs="{'invisible': [('contract_type', '!=', 'contract_construction')]}" />
+                <field name="work_end_date" attrs="{'invisible': [('contract_type', '!=', 'contract_construction')]}" />
             </xpath>
 
             <xpath expr="//field[@name='uom_id']" position="after">
@@ -129,7 +135,7 @@
                         </tree>
                     </field>
                 </page>
-                
+
                 <page name="committee" string="Committee">
 
                     <field name="pr1_total" invisible='1'/>
@@ -144,7 +150,7 @@
                             <field name="phone"/>
                         </tree>
                     </field>
- 
+
                     <div attrs="{'invisible': [('pr1_total', '&lt;', 100000)]}">
                         <separator string="TOR Committee"/>
                         <field name="tor_committee_ids" readonly="1">
@@ -172,7 +178,7 @@
                             </tree>
                         </field>
 
-                        
+
                         <separator string="Evaluation Committee"/>
                         <field name="evaluation_committee_ids" readonly="1">
                             <tree>
@@ -186,17 +192,24 @@
                             </tree>
                         </field>
                     </div>
-                    
                 </page>
 
                 <page name="document" string="Attachment">
-                    <field name="document_ids">
-                        <tree editable="bottom">
-                            <field name="file" filename="file_name" />
-                            <field name="file_name" readonly="1" />
-                            <field name="description" />
-                        </tree>
-                    </field>
+                        <separator string="Attachment"/>
+                        <field name="document_ids">
+                            <tree>
+                                <field name="file" filename="file_name" />
+                                <field name="file_name" readonly="1" />
+                                <field name="description" />
+                            </tree>
+                        </field>
+                        <separator string="Attachment Reversion"/>
+                        <field name="reversion_document_ids">
+                            <tree>
+                                <field name="file_name" readonly="1" />
+                                <field name="description" />
+                            </tree>
+                        </field>
                 </page>
 
                 <page name="fee" string="Fee">
@@ -206,7 +219,7 @@
                 </page>
 
                 <!-- <page name="extended_history" string="Extended history">
-                    
+
                 </page> -->
             </xpath>
 
@@ -225,4 +238,4 @@
         </field>
     </record> -->
 
-  </odoo>
+</odoo>
