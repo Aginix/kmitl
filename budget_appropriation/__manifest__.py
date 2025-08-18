@@ -14,7 +14,6 @@
         "security/security.xml",
         "security/ir.model.access.csv",
         "views/budget_appropriation_views.xml",
-        "views/budget_appropriation_f5_overview_views.xml",
         "views/budget_appropriation_menus.xml",
         "data/budget_appropriation_sequence.xml",
         "data/budget_appropriation_f5_action.xml",
