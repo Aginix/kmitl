@@ -25,28 +25,5 @@
         sequence="20"
     />
 
-    <!-- Reporting Section -->
-    <menuitem
-        id="menu_budget_appropriation_reporting"
-        name="Reporting"
-        parent="menu_budget_appropriation_root"
-        sequence="30"
-    />
-
-    <menuitem
-        id="menu_budget_appropriation_f5_overview"
-        name="F5 Overview Report"
-        parent="menu_budget_appropriation_reporting"
-        action="action_budget_appropriation_f5_overview"
-        sequence="10"
-    />
-
-    <menuitem
-        id="menu_budget_appropriation_f5_overview_direct"
-        name="F5 Overview (Quick View)"
-        parent="menu_budget_appropriation_reporting"
-        action="action_budget_appropriation_f5_overview_direct"
-        sequence="20"
-    />
 
 </odoo>
