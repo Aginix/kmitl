@@ -198,8 +198,8 @@
                 <group>
                     <field name="department_analytic_id" invisible="1"/>
                     <field name="source_analytic_id" invisible="1"/>
-                    <field name="name" invisible="1"/>
                     <field name="currency_id" invisible="1"/>
+                    <field name="name" placeholder="Line description"/>
                     <field name="activity_analytic_id" options="{'no_create': True}"/>
                     <field name="fund_analytic_id" options="{'no_create': True}"/>
                     <field name="account_id" options="{'no_create': True}"/>
