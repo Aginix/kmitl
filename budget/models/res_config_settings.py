@@ -10,6 +10,5 @@ class ResConfigSettings(models.TransientModel):
     budget_allow_negative = fields.Boolean(
         string="อนุญาตงบประมาณติดลบ",
         config_parameter="budget.allow_negative",
-        default=False,
         help="อนุญาตให้มีรายการที่ทำให้งบประมาณติดลบ",
     )

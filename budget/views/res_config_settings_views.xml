@@ -7,29 +7,30 @@
         <field name="priority" eval="20" />
         <field name="inherit_id" ref="base.res_config_settings_view_form" />
         <field name="arch" type="xml">
-            <xpath expr="//form" position="inside">
-                <app data-string="Budget" string="Budget" name="budget" groups="budget.group_budget_manager">
-                    <block title="การตั้งค่างบประมาณ" name="budget_settings">
-                        <setting string="อนุญาตงบประมาณติดลบ" help="อนุญาตให้มีรายการที่ทำให้งบประมาณติดลบ">
-                            <field name="budget_allow_negative" />
-                            <div class="text-warning mt8" attrs="{'invisible': [('budget_allow_negative', '=', False)]}">
-                                <i class="fa fa-warning" /> คำเตือน: การอนุญาตให้งบประมาณติดลบอาจทำให้เกิดปัญหาในการควบคุมงบประมาณ
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="Budget" data-key="budget" groups="budget.group_budget_manager">
+                    <h2>การตั้งค่างบประมาณ</h2>
+                    <div class="row mt16 o_settings_container" name="budget_settings">
+                        <div class="col-12 col-lg-6 o_setting_box" id="budget_allow_negative_setting">
+                            <div class="o_setting_left_pane">
+                                <field name="budget_allow_negative"/>
                             </div>
-                        </setting>
-                    </block>
-                </app>
+                            <div class="o_setting_right_pane">
+                                <label for="budget_allow_negative"/>
+                                <div class="text-muted">
+                                    อนุญาตให้มีรายการที่ทำให้งบประมาณติดลบ
+                                </div>
+                                <div class="content-group mt16" attrs="{'invisible': [('budget_allow_negative', '=', False)]}">
+                                    <div class="text-warning">
+                                        <i class="fa fa-warning" /> คำเตือน: การอนุญาตให้งบประมาณติดลบอาจทำให้เกิดปัญหาในการควบคุมงบประมาณ
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </xpath>
         </field>
-    </record>
-
-    <!-- Action to open Budget Configuration -->
-    <record id="action_budget_config_settings" model="ir.actions.act_window">
-        <field name="name">การตั้งค่า</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">res.config.settings</field>
-        <field name="view_mode">form</field>
-        <field name="target">inline</field>
-        <field name="context">{'module' : 'budget', 'bin_size': False}</field>
     </record>
 
     <!-- Menu item for Budget Settings -->
@@ -37,7 +38,7 @@
         id="menu_budget_config_settings"
         name="การตั้งค่า"
         parent="budget.budget_config_menu"
-        action="action_budget_config_settings"
+        action="base.action_res_config_settings"
         sequence="100"
         groups="budget.group_budget_manager"
     />
