@@ -76,7 +76,7 @@
         </menuitem>
 
         <menuitem id="budget_reporting_menu" name="รายงาน" sequence="90" />
-        <menuitem id="budget_config_menu" name="ตั้งค่า" sequence="99" groups="budget.group_budget_manager">
+        <menuitem id="budget_config_menu" name="การกำหนดค่า" sequence="99" groups="budget.group_budget_manager">
             <menuitem
                 id="action_budget_account_menu_action"
                 name="รหัสงบประมาณ"
