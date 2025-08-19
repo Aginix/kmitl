@@ -273,7 +273,6 @@ class BudgetAppropriation(models.Model):
                 "note": appropriation.note,
                 "company_id": appropriation.company_id.id,
                 "currency_id": appropriation.currency_id.id,
-                "appropriation_id": appropriation.id,
                 "line_ids": [],
             }
 

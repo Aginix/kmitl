@@ -299,15 +299,6 @@ class BudgetMove(models.Model):
         ondelete="set null",
     )
 
-    # Link back to budget appropriation
-    appropriation_id = fields.Many2one(
-        comodel_name="budget.appropriation",
-        string="Source Appropriation",
-        help="Budget appropriation that created this move",
-        index=True,
-        ondelete="set null",
-    )
-
     first_account_id = fields.Many2one(
         'budget.account',
         string='First Account Used',
