@@ -107,7 +107,8 @@ class BudgetCommitmentLine(models.Model):
 
     name = fields.Char(
         string="Description",
-        required=True,
+        compute="_compute_name",
+        store=True,
         tracking=True,
     )
 
@@ -252,6 +253,12 @@ class BudgetCommitmentLine(models.Model):
         compute="_compute_available_budget",
         help="Percentage of available budget this commitment represents",
     )
+
+    @api.depends("account_id")
+    def _compute_name(self):
+        """Name comes from the budget account"""
+        for line in self:
+            line.name = line.account_id.name if line.account_id else ""
 
     @api.depends("commitment_id.department_analytic_id")
     def _compute_department_analytic(self):
@@ -416,12 +423,6 @@ class BudgetCommitmentLine(models.Model):
                 line.budget_availability_status = 'insufficient'
                 line.budget_availability_percentage = 0.0
 
-    @api.onchange("account_id")
-    def _onchange_account_id(self):
-        """Update name when budget account changes"""
-        if self.account_id:
-            if not self.name:
-                self.name = self.account_id.name
 
     @api.onchange("fund_analytic_id", "account_id")
     def _onchange_fund_account_validation(self):
