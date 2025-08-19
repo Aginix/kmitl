@@ -122,17 +122,6 @@ export class BudgetAppropriationF5Preview extends Component {
         this.state.expandedNodes.clear();
     }
 
-    onPrint() {
-        // Expand all nodes before printing
-        const allKeys = this.getAllNodeKeys(this.state.data.hierarchy || []);
-        allKeys.forEach(key => this.state.expandedNodes.add(key));
-
-        // Small delay to ensure DOM is updated before printing
-        setTimeout(() => {
-            window.print();
-        }, 100);
-    }
-
     onExport() {
         // Export to PDF using the QWeb report
         const appropriationId = this.activeId;
