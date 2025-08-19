@@ -193,6 +193,26 @@
         </field>
     </record>
 
+    <!-- Budget Commitment Line Form View -->
+    <record id="budget_commitment_line_form_view" model="ir.ui.view">
+        <field name="name">budget.commitment.line.form</field>
+        <field name="model">budget.commitment.line</field>
+        <field name="arch" type="xml">
+            <form string="Budget Commitment Line">
+                <group>
+                    <field name="account_id" options="{'no_create': True}"/>
+                    <field name="name"/>
+                    <field name="activity_analytic_id" options="{'no_create': True}"/>
+                    <field name="department_analytic_id" readonly="1"/>
+                    <field name="fund_analytic_id" options="{'no_create': True}"/>
+                    <field name="source_analytic_id" readonly="1"/>
+                    <field name="amount" widget="monetary"/>
+                    <field name="currency_id" invisible="1"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
     <!-- Budget Commitment Action -->
     <record id="action_budget_commitment" model="ir.actions.act_window">
         <field name="name">Budget Commitments</field>
