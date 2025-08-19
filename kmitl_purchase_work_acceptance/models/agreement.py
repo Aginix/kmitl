@@ -16,10 +16,29 @@ class Agreement(models.Model):
         compute="_compute_wa_count",
     )
 
+    invoice_plan_count = fields.Integer(
+        string="Invoice Plan Count",
+        compute="_compute_invoice_plan_count",
+    )
+
+    wa_invoice_plan_equal = fields.Boolean(
+        compute="_compute_wa_invoice_plan_equal",
+        string="WA = Invoice Plan"
+)
+    @api.depends("wa_count", "invoice_plan_count")
+    def _compute_wa_invoice_plan_equal(self):
+        for rec in self:
+            rec.wa_invoice_plan_equal = rec.wa_count == rec.invoice_plan_count
+
     @api.depends("wa_ids")
     def _compute_wa_count(self):
         for rec in self:
             rec.wa_count = len(rec.wa_ids)
+
+    @api.depends("invoice_plan_ids")
+    def _compute_invoice_plan_count(self):
+        for rec in self:
+            rec.invoice_plan_count = len(rec.invoice_plan_ids)
 
     def action_view_work_acceptances(self):
         self.ensure_one()
