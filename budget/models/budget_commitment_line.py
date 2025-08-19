@@ -107,7 +107,7 @@ class BudgetCommitmentLine(models.Model):
 
     name = fields.Char(
         string="Description",
-        compute="_compute_name",
+        related="account_id.name",
         store=True,
         tracking=True,
     )
@@ -253,12 +253,6 @@ class BudgetCommitmentLine(models.Model):
         compute="_compute_available_budget",
         help="Percentage of available budget this commitment represents",
     )
-
-    @api.depends("account_id")
-    def _compute_name(self):
-        """Name comes from the budget account"""
-        for line in self:
-            line.name = line.account_id.name if line.account_id else ""
 
     @api.depends("commitment_id.department_analytic_id")
     def _compute_department_analytic(self):
