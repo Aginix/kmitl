@@ -485,15 +485,6 @@ class BudgetCommitmentLine(models.Model):
             if line.amount <= 0:
                 raise ValidationError(_("Commitment amount must be positive."))
 
-    def name_get(self):
-        """Custom name display"""
-        result = []
-        for line in self:
-            name = f"[{line.budget_account_code}] {line.name}"
-            if line.amount:
-                name += f" - {line.currency_id.symbol}{line.amount:,.2f}"
-            result.append((line.id, name))
-        return result
 
     @api.model
     def get_suggested_budget_accounts(self, activity_id, fund_id, department_id=False, source_id=False, limit=5):
