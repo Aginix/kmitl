@@ -78,7 +78,7 @@ class BudgetCommitmentLine(models.Model):
     _name = "budget.commitment.line"
     _description = "Budget Commitment Line"
     _inherit = ["analytic.distribution.mixin", "mail.thread"]
-    _order = "commitment_id, sequence, id"
+    _order = "commitment_id, budget_account_code"
 
     commitment_id = fields.Many2one(
         comodel_name="budget.commitment",
@@ -88,12 +88,6 @@ class BudgetCommitmentLine(models.Model):
         index=True,
         auto_join=True,
         ondelete="cascade",
-    )
-
-    sequence = fields.Integer(
-        string="Sequence",
-        default=10,
-        help="Sequence for ordering lines",
     )
 
     account_id = fields.Many2one(
@@ -490,17 +484,6 @@ class BudgetCommitmentLine(models.Model):
         for line in self:
             if line.amount <= 0:
                 raise ValidationError(_("Commitment amount must be positive."))
-
-    @api.constrains("activity_analytic_id", "fund_analytic_id", "account_id")
-    def _check_required_analytics(self):
-        """Ensure all required analytic dimensions are set"""
-        for line in self:
-            if not line.activity_analytic_id:
-                raise ValidationError(_("Activity analytic account is required."))
-            if not line.fund_analytic_id:
-                raise ValidationError(_("Fund analytic account is required."))
-            if not line.account_id:
-                raise ValidationError(_("Budget account is required."))
 
     def name_get(self):
         """Custom name display"""
