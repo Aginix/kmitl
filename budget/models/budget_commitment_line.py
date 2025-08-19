@@ -98,7 +98,7 @@ class BudgetCommitmentLine(models.Model):
 
     account_id = fields.Many2one(
         comodel_name="budget.account",
-        string="Budget Account",
+        string="รหัสงบประมาณ",
         required=True,
         index=True,
         tracking=True,

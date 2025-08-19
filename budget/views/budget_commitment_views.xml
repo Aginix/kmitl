@@ -48,6 +48,10 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,reserved,consumed,done"/>
                 </header>
 
+                <field name="show_confirm_button" invisible="1"/>
+                <field name="show_reserve_button" invisible="1"/>
+                <field name="show_reset_to_draft_button" invisible="1"/>
+
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" type="object" name="action_view_budget_moves" icon="fa-money">
@@ -64,18 +68,15 @@
                     <group>
                         <group>
                             <field name="date"/>
-                            <field name="date_range_fy_id" options="{'no_create': True}"/>
                             <field name="user_id"/>
+                            <field name="ref"/>
+                            <field name="description" placeholder="Commitment description..."/>
                         </group>
                         <group>
-                            <field name="ref"/>
-                            <field name="department_analytic_id" options="{'no_create': True}"/>
-                            <field name="source_analytic_id" options="{'no_create': True}"/>
+                            <field name="date_range_fy_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="department_analytic_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="source_analytic_id" options="{'no_create': True, 'no_open': True}"/>
                         </group>
-                    </group>
-
-                    <group>
-                        <field name="description" placeholder="Commitment description..."/>
                     </group>
 
                     <notebook>
@@ -83,11 +84,11 @@
                             <field name="line_ids">
                                 <tree editable="bottom" decoration-danger="budget_availability_status == 'insufficient'" decoration-warning="budget_availability_status == 'warning'" decoration-success="budget_availability_status == 'sufficient'">
                                     <field name="sequence" widget="handle"/>
-                                    <field name="account_id" options="{'no_create': True}"/>
-                                    <field name="name"/>
                                     <field name="activity_analytic_id" options="{'no_create': True}"/>
                                     <field name="fund_analytic_id" options="{'no_create': True}"/>
+                                    <field name="account_id" options="{'no_create': True}"/>
                                     <field name="amount" sum="Total Amount"/>
+                                    <field name="name" invisible="1" />
                                     <field name="available_budget_amount" sum="Total Available" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                     <field name="budget_availability_status" widget="badge"
                                            decoration-danger="budget_availability_status == 'insufficient'"
@@ -117,11 +118,6 @@
                                     <field name="total_amount"/>
                                     <field name="consumed_amount"/>
                                     <field name="remaining_amount"/>
-                                </group>
-                                <group string="Status">
-                                    <field name="show_confirm_button" invisible="1"/>
-                                    <field name="show_reserve_button" invisible="1"/>
-                                    <field name="show_reset_to_draft_button" invisible="1"/>
                                 </group>
                             </group>
                         </page>
