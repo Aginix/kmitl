@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Budget Configuration Settings Form View -->
+    <record id="res_config_settings_view_form_budget" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.budget</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="20" />
+        <field name="inherit_id" ref="base.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Budget" string="Budget" name="budget" groups="budget.group_budget_manager">
+                    <block title="การตั้งค่างบประมาณ" name="budget_settings">
+                        <!-- Settings will be added here -->
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Action to open Budget Configuration -->
+    <record id="action_budget_config_settings" model="ir.actions.act_window">
+        <field name="name">การตั้งค่า</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'budget', 'bin_size': False}</field>
+    </record>
+
+    <!-- Menu item for Budget Settings -->
+    <menuitem
+        id="menu_budget_config_settings"
+        name="การตั้งค่า"
+        parent="budget.budget_config_menu"
+        action="action_budget_config_settings"
+        sequence="100"
+        groups="budget.group_budget_manager"
+    />
+</odoo>
