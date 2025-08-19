@@ -3,23 +3,30 @@
     <template id="report_budget_appropriation_f5_document">
         <t t-call="web.basic_layout">
             <style>
+                    .page {
+                        padding-top: 0 !important;
+                        margin-top: 0 !important;
+                    }
+                    
                     .budget-appropriation-f5-report {
                         font-family: 'TH SarabunPSK', 'Sarabun', Arial, sans-serif;
                         margin-left: 24pt;
                         margin-right: 24pt;
+                        margin-top: 0;
+                        padding-top: 0;
                     }
 
                     .budget-appropriation-f5-report h3 {
                         margin: 0;
                         font-size: 10pt;
                         font-weight: 600;
-                        line-height: 1.7;
+                        line-height: 1.5;
                     }
 
                     .report-header {
                         text-align: center;
-                        padding: 15px;
-                        margin-bottom: 1rem;
+                        padding: 5px 0;
+                        margin-bottom: 10px;
                     }
 
                     .document-ref {
