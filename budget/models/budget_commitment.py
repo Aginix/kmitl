@@ -281,9 +281,15 @@ class BudgetCommitment(models.Model):
 
     def action_reserve(self):
         """Reserve budget - checks budget availability and reserves amounts"""
-        self._check_budget_availability()
+        # Skip budget validation if disabled in context
+        if not self.env.context.get('skip_budget_validation', False):
+            self._check_budget_availability()
         self.write({"state": "reserved"})
         self.message_post(body=_("Budget reserved for commitment."))
+
+    def action_reserve_without_validation(self):
+        """Reserve budget without budget validation - for testing purposes"""
+        self.with_context(skip_budget_validation=True).action_reserve()
 
     def action_consume(self):
         """Mark as consumed - when budget moves are created against this commitment"""
@@ -772,3 +778,74 @@ class BudgetCommitment(models.Model):
                     'sticky': False,
                 }
             }
+
+    @api.model
+    def create_test_commitment(self):
+        """Create a test commitment for development purposes"""
+        # Get first fiscal year
+        fiscal_year = self.env['account.fiscal.year'].search([
+            ('company_id', '=', self.env.company.id)
+        ], limit=1)
+        
+        if not fiscal_year:
+            raise UserError(_("No fiscal year found. Please create a fiscal year first."))
+        
+        # Get first department and source
+        department = self.env['account.analytic.account'].search([
+            ('root_plan_id.code', '=', 'departments')
+        ], limit=1)
+        
+        source = self.env['account.analytic.account'].search([
+            ('root_plan_id.code', '=', 'sources')
+        ], limit=1)
+        
+        if not department:
+            raise UserError(_("No department found. Please create departments first."))
+            
+        if not source:
+            raise UserError(_("No source found. Please create sources first."))
+        
+        # Create test commitment
+        commitment_data = {
+            'name': 'TEST-' + fields.Datetime.now().strftime('%Y%m%d-%H%M%S'),
+            'date': fields.Date.today(),
+            'date_range_fy_id': fiscal_year.id,
+            'department_analytic_id': department.id,
+            'source_analytic_id': source.id,
+            'description': 'Test commitment created for development',
+        }
+        
+        commitment = self.with_context(skip_budget_validation=True).create(commitment_data)
+        
+        # Create a test line
+        try:
+            self.env['budget.commitment.line'].create_test_line(commitment.id)
+        except Exception as e:
+            _logger.warning("Could not create test line: %s", str(e))
+        
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Test Commitment'),
+            'res_model': 'budget.commitment',
+            'res_id': commitment.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
+
+    def action_add_test_line(self):
+        """Add a test commitment line to this commitment"""
+        self.ensure_one()
+        try:
+            line = self.env['budget.commitment.line'].create_test_line(self.id)
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Test Line Added'),
+                    'message': _('Test commitment line has been added successfully.'),
+                    'type': 'success',
+                    'sticky': False,
+                }
+            }
+        except Exception as e:
+            raise UserError(_('Could not create test line: %s') % str(e))

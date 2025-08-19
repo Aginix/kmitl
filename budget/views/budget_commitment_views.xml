@@ -39,6 +39,9 @@
                             class="oe_highlight" attrs="{'invisible': ['|', ('show_confirm_button', '=', False), ('state', '!=', 'draft')]}"/>
                     <button name="action_reserve" string="Reserve Budget" type="object"
                             class="oe_highlight" attrs="{'invisible': ['|', ('show_reserve_button', '=', False), ('state', '!=', 'confirmed')]}"/>
+                    <button name="action_reserve_without_validation" string="Reserve (No Validation)" type="object"
+                            class="btn-warning" attrs="{'invisible': [('state', '!=', 'confirmed')]}"
+                            help="Reserve budget without validation - for testing purposes"/>
                     <button name="action_done" string="Mark as Done" type="object"
                             attrs="{'invisible': [('state', 'not in', ['consumed'])]}"/>
                     <button name="action_cancel" string="Cancel" type="object"
@@ -80,6 +83,13 @@
 
                     <notebook>
                         <page string="Commitment Lines">
+                            <div class="row mt8" attrs="{'invisible': [('state', 'not in', ['draft'])]}">
+                                <div class="col-md-12">
+                                    <button name="action_add_test_line" string="Add Test Line" type="object"
+                                            class="btn btn-secondary" icon="fa-plus"
+                                            help="Add a test commitment line for development"/>
+                                </div>
+                            </div>
                             <field name="line_ids">
                                 <tree editable="bottom" decoration-danger="budget_availability_status == 'insufficient'" decoration-warning="budget_availability_status == 'warning'" decoration-success="budget_availability_status == 'sufficient'">
                                     <field name="sequence" widget="handle"/>
@@ -207,6 +217,11 @@
             <p>
                 Budget commitments allow you to reserve budget amounts for future spending.
                 This helps with budget planning and ensures funds are available when needed.
+            </p>
+            <p>
+                <button type="object" name="create_test_commitment" class="btn btn-secondary">
+                    Create Test Commitment
+                </button>
             </p>
         </field>
     </record>

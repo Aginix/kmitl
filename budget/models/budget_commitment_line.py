@@ -357,6 +357,13 @@ class BudgetCommitmentLine(models.Model):
         budget_controller = self.env['budget.controller']
 
         for line in self:
+            # Skip calculation if validation is disabled in context
+            if line.env.context.get('skip_budget_validation', False):
+                line.available_budget_amount = 999999.0  # Large amount to indicate no validation
+                line.budget_availability_status = 'sufficient'
+                line.budget_availability_percentage = 0.0
+                continue
+                
             if not all([
                 line.account_id,
                 line.activity_analytic_id,
@@ -438,6 +445,10 @@ class BudgetCommitmentLine(models.Model):
     @api.onchange("amount", "account_id", "activity_analytic_id", "fund_analytic_id")
     def _onchange_check_budget_availability(self):
         """Check budget availability and show warning if insufficient"""
+        # Skip warnings if validation is disabled in context
+        if self.env.context.get('skip_budget_validation', False):
+            return
+            
         if self.amount and self.available_budget_amount >= 0:
             if self.budget_availability_status == 'insufficient':
                 return {
@@ -597,3 +608,42 @@ class BudgetCommitmentLine(models.Model):
         }
 
         return self.env['budget.move.line'].create(budget_move_line_vals)
+
+    @api.model
+    def create_test_line(self, commitment_id):
+        """Create a test commitment line for development purposes"""
+        # Get first budget account
+        budget_account = self.env['budget.account'].search([
+            ('budgetable', '=', True),
+            ('budget_type', '=', 'expense')
+        ], limit=1)
+        
+        if not budget_account:
+            raise ValidationError(_("No budget account found. Please create budget accounts first."))
+        
+        # Get first activity and fund
+        activity = self.env['account.analytic.account'].search([
+            ('root_plan_id.code', '=', 'activities')
+        ], limit=1)
+        
+        fund = self.env['account.analytic.account'].search([
+            ('root_plan_id.code', '=', 'funds')
+        ], limit=1)
+        
+        if not activity:
+            raise ValidationError(_("No activity found. Please create activities first."))
+            
+        if not fund:
+            raise ValidationError(_("No fund found. Please create funds first."))
+        
+        # Create test line
+        line_data = {
+            'commitment_id': commitment_id,
+            'account_id': budget_account.id,
+            'activity_analytic_id': activity.id,
+            'fund_analytic_id': fund.id,
+            'amount': 10000.0,  # Test amount
+            'name': f'Test line - {budget_account.name}',
+        }
+        
+        return self.with_context(skip_budget_validation=True).create(line_data)
