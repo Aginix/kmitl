@@ -393,10 +393,15 @@ class BudgetCommitmentLine(models.Model):
 
                 # Calculate status and percentage
                 if line.amount:
+                    # Check if negative budget is allowed
+                    allow_negative = line.env['ir.config_parameter'].sudo().get_param('budget.allow_negative', False)
+                    
                     if available >= line.amount:
                         line.budget_availability_status = 'sufficient'
-                    elif available >= line.amount * 0.5:  # 50% threshold
+                    elif available >= line.amount * 0.5 or (allow_negative and available >= 0):  # 50% threshold or allow negative
                         line.budget_availability_status = 'warning'
+                    elif allow_negative:
+                        line.budget_availability_status = 'warning'  # Allow negative but show warning
                     else:
                         line.budget_availability_status = 'insufficient'
 
@@ -439,7 +444,10 @@ class BudgetCommitmentLine(models.Model):
     def _onchange_check_budget_availability(self):
         """Check budget availability and show warning if insufficient"""
         if self.amount and self.available_budget_amount >= 0:
-            if self.budget_availability_status == 'insufficient':
+            # Check if negative budget is allowed
+            allow_negative = self.env['ir.config_parameter'].sudo().get_param('budget.allow_negative', False)
+            
+            if self.budget_availability_status == 'insufficient' and not allow_negative:
                 return {
                     'warning': {
                         'title': _('Insufficient Budget'),
@@ -459,22 +467,40 @@ class BudgetCommitmentLine(models.Model):
                     }
                 }
             elif self.budget_availability_status == 'warning':
-                return {
-                    'warning': {
-                        'title': _('Low Budget Warning'),
-                        'message': _(
-                            'This commitment will use %(percentage).1f%% of the available budget.\n\n'
-                            'Requested: %(requested)s\n'
-                            'Available: %(available)s\n'
-                            'Remaining after commitment: %(remaining)s'
-                        ) % {
-                            'percentage': self.budget_availability_percentage,
-                            'requested': "{:,.2f}".format(self.amount),
-                            'available': "{:,.2f}".format(self.available_budget_amount),
-                            'remaining': "{:,.2f}".format(self.available_budget_amount - self.amount),
+                if allow_negative and self.available_budget_amount < self.amount:
+                    return {
+                        'warning': {
+                            'title': _('Negative Budget Warning'),
+                            'message': _(
+                                'This commitment will create a negative budget balance.\n\n'
+                                'Requested: %(requested)s\n'
+                                'Available: %(available)s\n'
+                                'Remaining after commitment: %(remaining)s\n\n'
+                                'Negative budgets are allowed by system configuration.'
+                            ) % {
+                                'requested': "{:,.2f}".format(self.amount),
+                                'available': "{:,.2f}".format(self.available_budget_amount),
+                                'remaining': "{:,.2f}".format(self.available_budget_amount - self.amount),
+                            }
                         }
                     }
-                }
+                else:
+                    return {
+                        'warning': {
+                            'title': _('Low Budget Warning'),
+                            'message': _(
+                                'This commitment will use %(percentage).1f%% of the available budget.\n\n'
+                                'Requested: %(requested)s\n'
+                                'Available: %(available)s\n'
+                                'Remaining after commitment: %(remaining)s'
+                            ) % {
+                                'percentage': self.budget_availability_percentage,
+                                'requested': "{:,.2f}".format(self.amount),
+                                'available': "{:,.2f}".format(self.available_budget_amount),
+                                'remaining': "{:,.2f}".format(self.available_budget_amount - self.amount),
+                            }
+                        }
+                    }
 
     @api.constrains("amount")
     def _check_positive_amount(self):
