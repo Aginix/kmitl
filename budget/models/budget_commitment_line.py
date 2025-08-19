@@ -130,15 +130,6 @@ class BudgetCommitmentLine(models.Model):
         help="Activity dimension - แผนงาน/กิจกรรม",
     )
 
-    department_analytic_id = fields.Many2one(
-        "account.analytic.account",
-        string="ส่วนงาน",
-        compute="_compute_department_analytic",
-        store=True,
-        readonly=True,
-        help="Department from commitment header",
-    )
-
     fund_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="กองทุน",
@@ -148,16 +139,23 @@ class BudgetCommitmentLine(models.Model):
         help="Fund dimension - กองทุน",
     )
 
+    # Related fields from parent
     source_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="แหล่งเงิน",
-        compute="_compute_source_analytic",
+        related="commitment_id.source_analytic_id",
         store=True,
-        readonly=True,
         help="Source from commitment header",
     )
 
-    # Related fields from parent
+    department_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="ส่วนงาน",
+        related="commitment_id.department_analytic_id",
+        store=True,
+        help="Department from commitment header",
+    )
+
     date = fields.Date(
         related="commitment_id.date",
         store=True,
@@ -253,18 +251,6 @@ class BudgetCommitmentLine(models.Model):
         compute="_compute_available_budget",
         help="Percentage of available budget this commitment represents",
     )
-
-    @api.depends("commitment_id.department_analytic_id")
-    def _compute_department_analytic(self):
-        """Department comes from the commitment header"""
-        for line in self:
-            line.department_analytic_id = line.commitment_id.department_analytic_id
-
-    @api.depends("commitment_id.source_analytic_id")
-    def _compute_source_analytic(self):
-        """Source comes from the commitment header"""
-        for line in self:
-            line.source_analytic_id = line.commitment_id.source_analytic_id
 
     @api.depends("amount", "commitment_id.budget_move_ids.line_ids")
     def _compute_consumed_amount(self):
@@ -396,7 +382,7 @@ class BudgetCommitmentLine(models.Model):
                 if line.amount:
                     # Check if negative budget is allowed
                     allow_negative = line.env['ir.config_parameter'].sudo().get_param('budget.allow_negative', False)
-                    
+
                     if available >= line.amount:
                         line.budget_availability_status = 'sufficient'
                     elif available >= line.amount * 0.5 or (allow_negative and available >= 0):  # 50% threshold or allow negative
@@ -441,7 +427,7 @@ class BudgetCommitmentLine(models.Model):
         if self.amount and self.available_budget_amount >= 0:
             # Check if negative budget is allowed
             allow_negative = self.env['ir.config_parameter'].sudo().get_param('budget.allow_negative', False)
-            
+
             if self.budget_availability_status == 'insufficient' and not allow_negative:
                 return {
                     'warning': {
@@ -524,22 +510,6 @@ class BudgetCommitmentLine(models.Model):
                 name += f" - {line.currency_id.symbol}{line.amount:,.2f}"
             result.append((line.id, name))
         return result
-
-    @api.model
-    def get_analytic_distribution(self):
-        """Build analytic distribution dictionary for integration"""
-        distribution = {}
-
-        if self.activity_analytic_id:
-            distribution[str(self.activity_analytic_id.id)] = 100.0
-        if self.department_analytic_id:
-            distribution[str(self.department_analytic_id.id)] = 100.0
-        if self.fund_analytic_id:
-            distribution[str(self.fund_analytic_id.id)] = 100.0
-        if self.source_analytic_id:
-            distribution[str(self.source_analytic_id.id)] = 100.0
-
-        return distribution
 
     @api.model
     def get_suggested_budget_accounts(self, activity_id, fund_id, department_id=False, source_id=False, limit=5):
