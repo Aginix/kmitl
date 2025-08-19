@@ -5,8 +5,8 @@
             <style>
                     .budget-appropriation-f5-report {
                         font-family: 'TH SarabunPSK', 'Sarabun', Arial, sans-serif;
-                        margin-left: 48pt;
-                        margin-right: 48pt;
+                        margin-left: 24pt;
+                        margin-right: 24pt;
                     }
 
                     .budget-appropriation-f5-report h3 {
