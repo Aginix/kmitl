@@ -261,7 +261,7 @@ class BudgetAppropriation(models.Model):
             if appropriation.budget_move_id:
                 continue  # Already created
 
-            # Create budget move
+            # Create budget move with essential fields
             move_vals = {
                 "move_type": "appropriation",
                 "date": appropriation.date,
@@ -276,16 +276,18 @@ class BudgetAppropriation(models.Model):
                 "line_ids": [],
             }
 
-            # Create move lines
+            # Create move lines with complete analytic dimensions
             for line in appropriation.line_ids:
                 line_vals = {
                     "account_id": line.account_id.id,
                     "balance": line.balance,
                     "note": line.note,
+                    "analytic_distribution": line.analytic_distribution,
+                    "activity_analytic_id": line.activity_analytic_id.id,
+                    "fund_analytic_id": line.fund_analytic_id.id,
+                    "department_analytic_id": line.department_analytic_id.id,
+                    "source_analytic_id": line.source_analytic_id.id,
                 }
-                # Add analytic distribution
-                if line.analytic_distribution:
-                    line_vals["analytic_distribution"] = line.analytic_distribution
 
                 move_vals["line_ids"].append((0, 0, line_vals))
 
