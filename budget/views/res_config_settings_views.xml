@@ -10,7 +10,12 @@
             <xpath expr="//form" position="inside">
                 <app data-string="Budget" string="Budget" name="budget" groups="budget.group_budget_manager">
                     <block title="การตั้งค่างบประมาณ" name="budget_settings">
-                        <!-- Settings will be added here -->
+                        <setting string="อนุญาตงบประมาณติดลบ" help="อนุญาตให้มีรายการที่ทำให้งบประมาณติดลบ">
+                            <field name="budget_allow_negative" />
+                            <div class="text-warning mt8" attrs="{'invisible': [('budget_allow_negative', '=', False)]}">
+                                <i class="fa fa-warning" /> คำเตือน: การอนุญาตให้งบประมาณติดลบอาจทำให้เกิดปัญหาในการควบคุมงบประมาณ
+                            </div>
+                        </setting>
                     </block>
                 </app>
             </xpath>
