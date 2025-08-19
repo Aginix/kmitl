@@ -33,6 +33,15 @@
         </field>
     </record>
 
+    <record id="action_budget_configuration" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'budget', 'bin_size': False}</field>
+    </record>
+
     <!-- Menu item for Budget Settings -->
-    <menuitem id="menu_budget_config_settings" name="การตั้งค่า" parent="budget.budget_config_menu" action="base.action_res_config_settings" sequence="1" groups="budget.group_budget_manager" />
+    <menuitem id="menu_budget_config_settings" name="การตั้งค่า" parent="budget.budget_config_menu" action="action_budget_configuration" sequence="0" groups="budget.group_budget_manager" />
 </odoo>
