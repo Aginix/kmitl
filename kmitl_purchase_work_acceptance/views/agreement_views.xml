@@ -7,11 +7,18 @@
         <field name="model">agreement</field>
         <field name="inherit_id" ref="agreement_legal.partner_agreement_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//button[@name='action_open_new_version_wizard']" position='after'>
-                <button name="action_create_wa_from_agreement"
-                    type="object"
-                    string="Create WA"
-                    class="oe_highlight"/>
+
+            <xpath expr="//button[@name='action_open_new_version_wizard']" position="after">
+
+                <field name="purchase_order_id" />
+
+                <button
+                    name="%(purchase_work_acceptance_invoice_plan.action_view_wa_installment)d"
+                    string="Create WA by Installment"
+                    type="action"
+                    class="oe_highlight"
+                    context="{'default_order_id': purchase_order_id, 'default_agreement_id': active_id}"
+                />
             </xpath>
 
             <xpath expr="//div[@name='button_box']" position="inside">

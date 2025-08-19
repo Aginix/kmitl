@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+      
+    <!-- View select.work.acceptance.invoice.plan.wizard form -->
+    <record id="view_select_work_acceptance_invoice_plan_wizard_form" model="ir.ui.view">
+        <field name="name">view.select.work.acceptance.invoice.plan.wizard.form</field>
+        <field name="model">select.work.acceptance.invoice.plan.wizard</field>
+        <field name="inherit_id" ref="purchase_work_acceptance_invoice_plan.view_select_work_acceptance_invoice_plan_wizard"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='installment_id']" position='after'>
+              <field name="agreement_id" />
+            </xpath>
+        </field>
+    </record>
+
+  </odoo>

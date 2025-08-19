@@ -21,36 +21,6 @@ class Agreement(models.Model):
         for rec in self:
             rec.wa_count = len(rec.wa_ids)
 
-    def action_create_wa_from_agreement(self):
-        self.ensure_one()
-
-        wa = self.env["work.acceptance"].create({
-            "agreement_id": self.id,
-            "partner_id": self.partner_id.id,
-            "purchase_id": self.purchase_order_id.id,
-            "date_due": self.end_date,
-            "user_id": self.env.uid,
-        })
-
-        line_vals = []
-        for line in self.line_ids:
-            line_vals.append((0, 0, {
-                "product_id": line.product_id.id,
-                "name": line.name,
-                "product_qty": line.qty,
-                "product_uom": line.uom_id.id,
-                "price_unit": line.price_unit,
-            }))
-        wa.wa_line_ids = line_vals
-
-        return {
-            "type": "ir.actions.act_window",
-            "res_model": "work.acceptance",
-            "view_mode": "form",
-            "res_id": wa.id,
-            "target": "current",
-        }
-
     def action_view_work_acceptances(self):
         self.ensure_one()
 
