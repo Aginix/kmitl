@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Sequence for Budget Appropriation -->
+        <record id="seq_budget_appropriation" model="ir.sequence">
+            <field name="name">Budget Appropriation</field>
+            <field name="code">budget.appropriation</field>
+            <field name="prefix">APPR/%(year)s/</field>
+            <field name="suffix"></field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>
