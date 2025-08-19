@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Report for Budget Appropriation F5 PDF -->
+    <record id="action_report_budget_appropriation_f5" model="ir.actions.report">
+        <field name="name">Budget Appropriation F5 Report</field>
+        <field name="model">budget.appropriation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_appropriation.report_budget_appropriation_f5</field>
+        <field name="report_file">budget_appropriation.report_budget_appropriation_f5</field>
+        <field name="binding_model_id" ref="model_budget_appropriation"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

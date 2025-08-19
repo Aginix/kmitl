@@ -44,6 +44,13 @@
                             title="พิมพ์">
                             <i class="fa fa-print"/> พิมพ์
                         </button>
+                        <button
+                            type="button"
+                            class="btn btn-success"
+                            t-on-click="onExport"
+                            title="ส่งออก PDF">
+                            <i class="fa fa-file-pdf-o"/> ส่งออก PDF
+                        </button>
                     </div>
                 </div>
             </t>
