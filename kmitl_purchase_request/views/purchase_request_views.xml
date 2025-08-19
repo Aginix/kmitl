@@ -105,7 +105,7 @@
             </xpath>
 
             <xpath expr="//button[@name='button_approved']" position="after">
-                <button name='button_validate' string="Validate" class="btn-primary" attrs="{'invisible': ['|' ,('substate_sequence', '!=', 20), ('state', '!=', 'to_approve')]}" type="object" groups="kmitl_purchase_request.group_pr_supply, kmitl_purchase_request.group_pr_admin"/>
+                <button name='button_validate' string="Validate" class="btn-primary" attrs="{'invisible': ['|' ,('substate_sequence', '!=', 20), ('state', '!=', 'to_approve')]}" type="object" groups="kmitl_purchase_request.group_pr_supply"/>
             </xpath>
 
             <xpath expr="//button[@name='button_draft']" position="attributes">
