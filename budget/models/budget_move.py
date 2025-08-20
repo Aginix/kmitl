@@ -271,24 +271,6 @@ class BudgetMove(models.Model):
         digits="Budget Precision",
     )
 
-    # เพิ่ม field สำหรับ appropriation
-    appropriation_account_id = fields.Many2one(
-        "budget.account",
-        string="Virtual Budget Account",
-        help="Virtual account used for double-entry in appropriation",
-        compute="_compute_appropriation_account",
-        store=True,
-    )
-
-    # สร้าง computed field สำหรับแสดงเฉพาะ non-virtual lines
-    appropriation_line_ids = fields.One2many(
-        comodel_name="budget.move.line",
-        inverse_name="move_id",
-        string="Appropriation Lines",
-        domain=[("is_virtual_line", "=", False)],
-        readonly=False,
-        copy=False,
-    )
 
     # Link to budget commitment
     commitment_id = fields.Many2one(
@@ -320,66 +302,33 @@ class BudgetMove(models.Model):
         store=False
     )
 
-    @api.depends('appropriation_line_ids')
+    @api.depends('line_ids')
     def _compute_fund_analytic_id(self):
         for record in self:
-            if record.appropriation_line_ids:
-                record.compute_fund_analytic_id = record.appropriation_line_ids[-1].fund_analytic_id
+            if record.line_ids:
+                record.compute_fund_analytic_id = record.line_ids[-1].fund_analytic_id
             else:
                 record.compute_fund_analytic_id = False
 
-    @api.depends('appropriation_line_ids')
+    @api.depends('line_ids')
     def _compute_activity_analytic_id(self):
         for record in self:
-            if record.appropriation_line_ids:
-                record.compute_activity_analytic_id = record.appropriation_line_ids[-1].activity_analytic_id
+            if record.line_ids:
+                record.compute_activity_analytic_id = record.line_ids[-1].activity_analytic_id
             else:
                 record.compute_activity_analytic_id = False
 
-    @api.depends("journal_id", "move_type")
-    def _compute_appropriation_account(self):
-        for move in self:
-            if move.move_type == "appropriation" and move.journal_id:
-                # หา virtual account จาก journal หรือสร้างใหม่
-                move.appropriation_account_id = move._get_virtual_budget_account()
-            else:
-                move.appropriation_account_id = False
-
-    def _get_virtual_budget_account(self):
-        """Get virtual budget account for appropriation"""
-        self.ensure_one()
-
-        virtual_account = (
-            self.env["budget.account"]
-            .with_context(active_test=False)
-            .search(
-                [
-                    ("code", "=", "virtual_" + self.journal_id.default_budget_type),
-                    ("budget_type", "=", self.journal_id.default_budget_type),
-                ],
-                limit=1,
-            )
-        )
-
-        return virtual_account
 
     @api.depends(
         "line_ids.balance",
         "line_ids.debit",
         "line_ids.credit",
-        "line_ids.is_virtual_line",
         "move_type",
     )
     def _compute_amount(self):
         for move in self:
-            if move.move_type == "appropriation":
-                # สำหรับการจัดสรรงบประมาณ นับเฉพาะ non-virtual lines
-                lines = move.line_ids.filtered(lambda line: not line.is_virtual_line)
-                total = sum(lines.mapped("balance"))
-            else:
-                # สำหรับ entry ปกติ นับทุก line
-                total = sum(move.line_ids.mapped("balance"))
-
+            # นับทุก line เหมือนกัน ไม่ต้องแยก virtual lines
+            total = sum(move.line_ids.mapped("balance"))
             move.total_amount = total
 
     @api.depends("state", "date")
@@ -417,19 +366,11 @@ class BudgetMove(models.Model):
                 "cancel",
             )
 
-    @api.onchange("appropriation_line_ids")
-    def _onchange_appropriation_lines(self):
-        """Update total amount when appropriation lines change"""
-        if self.move_type == "appropriation":
-            # คำนวณยอดรวมจาก appropriation_line_ids
-            self.total_amount = sum(self.appropriation_line_ids.mapped("balance"))
-
     @api.onchange("line_ids")
     def _onchange_line_ids(self):
         """Update total amount when any line changes"""
-        if self.move_type != "appropriation":
-            # สำหรับ entry ปกติ
-            self.total_amount = sum(self.line_ids.mapped("balance"))
+        # คำนวณยอดรวมจากทุก line
+        self.total_amount = sum(self.line_ids.mapped("balance"))
 
     def action_review(self):
         self.write({"state": "review"})
@@ -495,8 +436,7 @@ class BudgetMove(models.Model):
             return []
 
         lines = []
-        # Get non-virtual lines only
-        # Get non-virtual lines only (unused variable removed)
+        # Get all lines
 
         # Build hierarchy data
         report_obj = self.env["budget.appropriation.report"]
@@ -561,27 +501,9 @@ class BudgetMove(models.Model):
 
     @contextmanager
     def _check_balanced(self, container):
-        """Assert the move is fully balanced debit = credit.
-        An error is raised if it's not the case.
-        """
+        """Disabled double-entry checking - no longer needed."""
         yield
-
-        unbalanced_moves = self._get_unbalanced_moves(container)
-        if unbalanced_moves:
-            error_msg = _("An error has occurred.")
-            for move_id, sum_debit, sum_credit in unbalanced_moves:
-                move = self.browse(move_id)
-                error_msg += _(
-                    "\n\n"
-                    "The move (%s) is not balanced.\n"
-                    "The total of debits equals %s and the total of credits equals %s.\n"
-                    'You might want to specify a default account on journal "%s" to automatically balance each move.',
-                    move.display_name,
-                    format_amount(self.env, sum_debit, move.company_id.currency_id),
-                    format_amount(self.env, sum_credit, move.company_id.currency_id),
-                    move.journal_id.name,
-                )
-            raise UserError(error_msg)
+        # Double-entry checking disabled
 
     def _get_unbalanced_moves(self, container):
         moves = container["records"].filtered(lambda move: move.line_ids)
