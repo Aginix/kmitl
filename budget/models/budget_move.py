@@ -494,7 +494,6 @@ class BudgetMove(models.Model):
 
         return lines
 
-
     def _stolen_move(self, vals):
         for command in vals.get("line_ids", ()):
             if command[0] == Command.LINK:
@@ -566,3 +565,19 @@ class BudgetMove(models.Model):
 
     def _sanitize_vals(self, vals):
         return vals
+
+    def action_view_commitment(self):
+        """View the related budget commitment"""
+        self.ensure_one()
+        if not self.commitment_id:
+            raise UserError(_('No commitment is linked to this budget move.'))
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Budget Commitment'),
+            'res_model': 'budget.commitment',
+            'res_id': self.commitment_id.id,
+            'view_mode': 'form',
+            'view_type': 'form',
+            'target': 'current',
+        }

@@ -153,7 +153,6 @@ class BudgetMoveLine(models.Model):
                 line.department_analytic_id = line.move_id.department_analytic_id
             # สำหรับ move types อื่น ให้ผู้ใช้เลือกเอง
 
-
     def _compute_hide_unallocated_balance(self):
         for line in self:
             line.hide_unallocated_balance = True
@@ -161,7 +160,6 @@ class BudgetMoveLine(models.Model):
     def _compute_unallocated_balance(self):
         for rec in self:
             rec.unallocated_balance = 0
-
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -190,7 +188,6 @@ class BudgetMoveLine(models.Model):
             container["records"] = lines
 
         return lines
-
 
     def write(self, vals):
         """
@@ -241,10 +238,3 @@ class BudgetMoveLine(models.Model):
 
     def _sanitize_vals(self, vals):
         return vals
-
-    def unlink(self):
-        """
-        Delete budget move lines.
-        """
-        return super().unlink()
-
