@@ -297,6 +297,7 @@ class BudgetCommitment(models.Model):
     available_budget_amount = fields.Monetary(
         string="Available Budget",
         compute="_compute_available_budget",
+        store=True,
         currency_field="currency_id",
         help="Available budget amount for this analytic combination",
     )
@@ -309,12 +310,14 @@ class BudgetCommitment(models.Model):
         ],
         string="Budget Status",
         compute="_compute_available_budget",
+        store=True,
         help="Budget availability status for this commitment",
     )
 
     budget_availability_percentage = fields.Float(
         string="% of Available",
         compute="_compute_available_budget",
+        store=True,
         help="Percentage of available budget this commitment represents",
     )
 
