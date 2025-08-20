@@ -67,7 +67,7 @@
                     <notebook>
                         <page name="line_ids" string="Appropriation Lines">
                             <field name="line_ids" style="max-width: 100%; display: block;" attrs="{'readonly': [('state', 'in', ['review', 'posted', 'cancel'])]}">
-                                <tree editable="bottom">
+                                <tree>
                                     <field name="appropriation_id" invisible="1" />
                                     <field name="budget_type" invisible="1" />
                                     <field name="department_analytic_id" invisible="1" />
@@ -79,16 +79,19 @@
                                     <field name="note" />
                                 </tree>
                                 <form>
+                                    <field name="analytic_distribution" invisible="1" />
                                     <group>
                                         <field name="appropriation_id" invisible="1" />
                                         <field name="budget_type" invisible="1" />
+                                        <field name="department_analytic_id" options='{"no_open": True}' readonly="1" />
+                                        <field name="source_analytic_id" options='{"no_open": True}' readonly="1" />
+                                        <field name="activity_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
+                                        <field name="fund_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                                         <field name="account_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
-                                        <field name="balance" />
+                                        <field name="balance" required="1" />
                                         <field name="note" />
                                     </group>
-                                    <group string="Analytic Distribution">
-                                        <field name="analytic_distribution" widget="analytic_distribution" options="{'account_field': 'account_id', 'business_domain': 'budget'}" />
-                                    </group>
+
                                 </form>
                             </field>
                         </page>
