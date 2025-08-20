@@ -493,7 +493,6 @@
                             />
                             <field name="total_amount" readonly="1" />
                             <field name="move_type" invisible="1" />
-                            <field name="appropriation_account_id" invisible="1" />
                             <field name="compute_fund_analytic_id" invisible="1" />
                             <field name="compute_activity_analytic_id" invisible="1" />
                         </group>
