@@ -12,20 +12,18 @@ class BudgetMoveLine(models.Model):
 
     Business Purpose:
         Represents individual accounting entries within budget moves, implementing
-        double-entry bookkeeping with detailed analytic distribution for precise
+        budget accounting with detailed analytic distribution for precise
         budget tracking and reporting.
 
     Key Features:
-        • Double-entry accounting with debit/credit balance tracking
+        • Budget accounting with balance tracking
         • Complete 4D analytic distribution (Activities, Departments, Funds, Sources)
-        • Virtual line support for appropriation balancing entries
         • Hierarchical analytic matching for budget availability calculations
         • Integration with budget commitments through analytic matching
 
     Line Types by Move Type:
         **Appropriation Lines:**
         • Regular lines: Actual budget allocation amounts
-        • Virtual lines: Balancing entries for double-entry system
         • Positive balance: Increases budget availability
 
         **Consumption Lines:**
@@ -98,18 +96,6 @@ class BudgetMoveLine(models.Model):
         digits="Budget",
         compute="_compute_unallocated_balance",
     )
-    credit = fields.Float(
-        readonly=False,
-        digits="Budget Precision",
-        store=True,
-        compute="_compute_balance_credit_debit",
-    )
-    debit = fields.Float(
-        readonly=False,
-        digits="Budget Precision",
-        store=True,
-        compute="_compute_balance_credit_debit",
-    )
     note = fields.Text(tracking=True)
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -167,26 +153,6 @@ class BudgetMoveLine(models.Model):
                 line.department_analytic_id = line.move_id.department_analytic_id
             # สำหรับ move types อื่น ให้ผู้ใช้เลือกเอง
 
-    @api.depends("balance")
-    def _compute_balance_credit_debit(self):
-        """
-        Technical Note: Balance to Debit/Credit Conversion
-
-        Budget moves use a single 'balance' field that gets split into:
-        - Positive balance → Debit column (increases budget)
-        - Negative balance → Credit column (decreases budget)
-
-        For appropriations:
-        - Regular lines: Positive balance (debit) = budget allocation
-        - Virtual lines: Negative balance (credit) = balancing entry
-        """
-        for line in self:
-            if line.balance >= 0:
-                line.debit = line.balance
-                line.credit = 0
-            else:
-                line.credit = -line.balance
-                line.debit = 0
 
     def _compute_hide_unallocated_balance(self):
         for line in self:
@@ -196,15 +162,6 @@ class BudgetMoveLine(models.Model):
         for rec in self:
             rec.unallocated_balance = 0
 
-    @api.onchange("balance")
-    def _inverse_balance(self):
-        for line in self:
-            if line.balance >= 0:
-                line.debit = line.balance
-                line.credit = 0
-            else:
-                line.credit = -line.balance
-                line.debit = 0
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -215,7 +172,7 @@ class BudgetMoveLine(models.Model):
         container = {"records": self}
         move_container = {"records": moves}
 
-        with moves._check_balanced(move_container), ExitStack() as exit_stack:
+        with ExitStack() as exit_stack:
             # Create all lines
             lines = super().create([self._sanitize_vals(vals) for vals in vals_list])
 

@@ -142,9 +142,7 @@
                                         name="account_id"
                                         options='{"no_open": True}'
                                     />
-                                    <field name="balance" />
-                                    <field name="debit" sum="Debit" />
-                                    <field name="credit" sum="Credit" />
+                                    <field name="balance" sum="Total" />
                                     <field name="note" />
                                 </tree>
                             </field>
@@ -170,8 +168,6 @@
                 expand="context.get('expand', False)"
                 sample="1"
             >
-                <field name="debit" invisible="1" />
-                <field name="credit" invisible="1" />
                 <field name="budget_type" />
                 <field name="move_id" widget="many2onebutton" />
                 <field name="date_range_fy_id" />
@@ -181,8 +177,6 @@
                 <field name="fund_analytic_id" />
                 <field name="account_id" />
                 <field name="balance" sum="Total" />
-                <field name="debit" sum="Debit" />
-                <field name="credit" sum="Credit" />
                 <field
                     name="parent_state"
                     widget="badge"
@@ -233,8 +227,6 @@
                         />
                         <field name="balance" />
                         <field name="unallocated_balance" attrs="{'invisible': [('hide_unallocated_balance', '=', True)]}" />
-                        <field name="debit" invisible="1" />
-                        <field name="credit" invisible="1" />
                         <field name="note" />
                     </group>
                 </sheet>

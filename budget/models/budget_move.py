@@ -1,27 +1,26 @@
 import logging
-from contextlib import ExitStack, contextmanager
+from contextlib import ExitStack
 
 from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError
-from odoo.tools import format_amount
 
 _logger = logging.getLogger(__name__)
 
 
 class BudgetMove(models.Model):
     """
-    Budget Move - Double-entry budget accounting system for all budget transactions.
+    Budget Move - Budget accounting system for all budget transactions.
 
     Business Purpose:
         Budget moves serve as the accounting ledger for all budget transactions,
-        implementing double-entry principles to ensure accurate budget tracking
+        implementing budget tracking principles for accurate accounting
         and maintain fiscal accountability across the organization.
 
     Move Types and Their Purposes:
         1. **appropriation** - Budget Appropriation
            • Records initial budget allocations and adjustments
            • Creates budget availability for commitments and consumption
-           • Uses virtual accounts for double-entry balance
+           • Records initial budget allocations
            • Examples: Annual budget allocation, mid-year adjustments
 
         2. **consume** - Budget Consumption
@@ -36,10 +35,9 @@ class BudgetMove(models.Model):
            • Year-end adjustments and corrections
            • Examples: Budget transfers, error corrections
 
-    Double-Entry System:
+    Budget System:
         Budget moves implement accounting principles with:
-        • Debit/Credit balance tracking via budget.move.line
-        • Virtual accounts for appropriation balancing
+        • Balance tracking via budget.move.line
         • Automatic journal entry generation
         • Audit trail through complete transaction history
 
@@ -56,7 +54,6 @@ class BudgetMove(models.Model):
         • Fiscal year enforcement and company isolation
         • Multi-line structure with detailed analytic breakdown
         • Integration with budget commitments for consumption tracking
-        • Virtual account system for appropriation double-entry
         • Hierarchical analytic matching for budget availability
 
     Integration Architecture:
@@ -321,8 +318,6 @@ class BudgetMove(models.Model):
 
     @api.depends(
         "line_ids.balance",
-        "line_ids.debit",
-        "line_ids.credit",
         "move_type",
     )
     def _compute_amount(self):
@@ -499,40 +494,6 @@ class BudgetMove(models.Model):
 
         return lines
 
-    @contextmanager
-    def _check_balanced(self, container):
-        """Disabled double-entry checking - no longer needed."""
-        yield
-        # Double-entry checking disabled
-
-    def _get_unbalanced_moves(self, container):
-        moves = container["records"].filtered(lambda move: move.line_ids)
-        if not moves:
-            return
-
-        # /!\ As this method is called in create / write, we can't make the assumption the computed stored fields
-        # are already done. Then, this query MUST NOT depend on computed stored fields.
-        # It happens as the ORM calls create() with the 'no_recompute' statement.
-        self.env["budget.move.line"].flush_model(
-            ["debit", "credit", "balance", "currency_id", "move_id"]
-        )
-        self._cr.execute(
-            """
-            SELECT line.move_id,
-                   ROUND(SUM(line.debit), currency.decimal_places) debit,
-                   ROUND(SUM(line.credit), currency.decimal_places) credit
-              FROM budget_move_line line
-              JOIN budget_move move ON move.id = line.move_id
-              JOIN res_company company ON company.id = move.company_id
-              JOIN res_currency currency ON currency.id = company.currency_id
-             WHERE line.move_id IN %s
-          GROUP BY line.move_id, currency.decimal_places
-            HAVING ROUND(SUM(line.balance), currency.decimal_places) != 0
-        """,
-            [tuple(moves.ids)],
-        )
-
-        return self._cr.fetchall()
 
     def _stolen_move(self, vals):
         for command in vals.get("line_ids", ()):
@@ -558,8 +519,7 @@ class BudgetMove(models.Model):
                 )
             )
         container = {"records": self}
-        with self._check_balanced(container):
-            with ExitStack() as exit_stack:
+        with ExitStack() as exit_stack:
                 for vals in vals_list:
                     self._sanitize_vals(vals)
                 stolen_moves = self.browse(
@@ -600,7 +560,7 @@ class BudgetMove(models.Model):
 
         with self.env.protecting(
             self._get_protected_vals(vals, self)
-        ), self._check_balanced(container):
+        ):
             res = super().write(vals)
         return res
 
