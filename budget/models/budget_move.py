@@ -1,27 +1,26 @@
 import logging
-from contextlib import ExitStack, contextmanager
+from contextlib import ExitStack
 
 from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError
-from odoo.tools import format_amount
 
 _logger = logging.getLogger(__name__)
 
 
 class BudgetMove(models.Model):
     """
-    Budget Move - Double-entry budget accounting system for all budget transactions.
+    Budget Move - Budget accounting system for all budget transactions.
 
     Business Purpose:
         Budget moves serve as the accounting ledger for all budget transactions,
-        implementing double-entry principles to ensure accurate budget tracking
+        implementing budget tracking principles for accurate accounting
         and maintain fiscal accountability across the organization.
 
     Move Types and Their Purposes:
         1. **appropriation** - Budget Appropriation
            • Records initial budget allocations and adjustments
            • Creates budget availability for commitments and consumption
-           • Uses virtual accounts for double-entry balance
+           • Records initial budget allocations
            • Examples: Annual budget allocation, mid-year adjustments
 
         2. **consume** - Budget Consumption
@@ -36,10 +35,9 @@ class BudgetMove(models.Model):
            • Year-end adjustments and corrections
            • Examples: Budget transfers, error corrections
 
-    Double-Entry System:
+    Budget System:
         Budget moves implement accounting principles with:
-        • Debit/Credit balance tracking via budget.move.line
-        • Virtual accounts for appropriation balancing
+        • Balance tracking via budget.move.line
         • Automatic journal entry generation
         • Audit trail through complete transaction history
 
@@ -56,7 +54,6 @@ class BudgetMove(models.Model):
         • Fiscal year enforcement and company isolation
         • Multi-line structure with detailed analytic breakdown
         • Integration with budget commitments for consumption tracking
-        • Virtual account system for appropriation double-entry
         • Hierarchical analytic matching for budget availability
 
     Integration Architecture:
@@ -209,6 +206,7 @@ class BudgetMove(models.Model):
         compute="_compute_hide_review_button", readonly=True
     )
     line_ids = fields.One2many(
+        string="รายการงบประมาณ",
         comodel_name="budget.move.line",
         inverse_name="move_id",
         copy=True,
@@ -261,6 +259,7 @@ class BudgetMove(models.Model):
         change_default=True,
         index=True,
         default="entry",
+        states=READONLY_STATES,
     )
 
     total_amount = fields.Float(
@@ -269,25 +268,6 @@ class BudgetMove(models.Model):
         readonly=True,
         store=True,
         digits="Budget Precision",
-    )
-
-    # เพิ่ม field สำหรับ appropriation
-    appropriation_account_id = fields.Many2one(
-        "budget.account",
-        string="Virtual Budget Account",
-        help="Virtual account used for double-entry in appropriation",
-        compute="_compute_appropriation_account",
-        store=True,
-    )
-
-    # สร้าง computed field สำหรับแสดงเฉพาะ non-virtual lines
-    appropriation_line_ids = fields.One2many(
-        comodel_name="budget.move.line",
-        inverse_name="move_id",
-        string="Appropriation Lines",
-        domain=[("is_virtual_line", "=", False)],
-        readonly=False,
-        copy=False,
     )
 
     # Link to budget commitment
@@ -320,66 +300,31 @@ class BudgetMove(models.Model):
         store=False
     )
 
-    @api.depends('appropriation_line_ids')
+    @api.depends('line_ids')
     def _compute_fund_analytic_id(self):
         for record in self:
-            if record.appropriation_line_ids:
-                record.compute_fund_analytic_id = record.appropriation_line_ids[-1].fund_analytic_id
+            if record.line_ids:
+                record.compute_fund_analytic_id = record.line_ids[-1].fund_analytic_id
             else:
                 record.compute_fund_analytic_id = False
 
-    @api.depends('appropriation_line_ids')
+    @api.depends('line_ids')
     def _compute_activity_analytic_id(self):
         for record in self:
-            if record.appropriation_line_ids:
-                record.compute_activity_analytic_id = record.appropriation_line_ids[-1].activity_analytic_id
+            if record.line_ids:
+                record.compute_activity_analytic_id = record.line_ids[-1].activity_analytic_id
             else:
                 record.compute_activity_analytic_id = False
 
-    @api.depends("journal_id", "move_type")
-    def _compute_appropriation_account(self):
-        for move in self:
-            if move.move_type == "appropriation" and move.journal_id:
-                # หา virtual account จาก journal หรือสร้างใหม่
-                move.appropriation_account_id = move._get_virtual_budget_account()
-            else:
-                move.appropriation_account_id = False
-
-    def _get_virtual_budget_account(self):
-        """Get virtual budget account for appropriation"""
-        self.ensure_one()
-
-        virtual_account = (
-            self.env["budget.account"]
-            .with_context(active_test=False)
-            .search(
-                [
-                    ("code", "=", "virtual_" + self.journal_id.default_budget_type),
-                    ("budget_type", "=", self.journal_id.default_budget_type),
-                ],
-                limit=1,
-            )
-        )
-
-        return virtual_account
 
     @api.depends(
         "line_ids.balance",
-        "line_ids.debit",
-        "line_ids.credit",
-        "line_ids.is_virtual_line",
         "move_type",
     )
     def _compute_amount(self):
         for move in self:
-            if move.move_type == "appropriation":
-                # สำหรับการจัดสรรงบประมาณ นับเฉพาะ non-virtual lines
-                lines = move.line_ids.filtered(lambda line: not line.is_virtual_line)
-                total = sum(lines.mapped("balance"))
-            else:
-                # สำหรับ entry ปกติ นับทุก line
-                total = sum(move.line_ids.mapped("balance"))
-
+            # นับทุก line เหมือนกัน ไม่ต้องแยก virtual lines
+            total = sum(move.line_ids.mapped("balance"))
             move.total_amount = total
 
     @api.depends("state", "date")
@@ -417,19 +362,11 @@ class BudgetMove(models.Model):
                 "cancel",
             )
 
-    @api.onchange("appropriation_line_ids")
-    def _onchange_appropriation_lines(self):
-        """Update total amount when appropriation lines change"""
-        if self.move_type == "appropriation":
-            # คำนวณยอดรวมจาก appropriation_line_ids
-            self.total_amount = sum(self.appropriation_line_ids.mapped("balance"))
-
     @api.onchange("line_ids")
     def _onchange_line_ids(self):
         """Update total amount when any line changes"""
-        if self.move_type != "appropriation":
-            # สำหรับ entry ปกติ
-            self.total_amount = sum(self.line_ids.mapped("balance"))
+        # คำนวณยอดรวมจากทุก line
+        self.total_amount = sum(self.line_ids.mapped("balance"))
 
     def action_review(self):
         self.write({"state": "review"})
@@ -443,174 +380,7 @@ class BudgetMove(models.Model):
     def button_draft(self):
         self.write({"state": "draft"})
 
-    def action_open_expense_f5_preview(self):
-        """Open the budget appropriation expense F5 preview in full screen"""
-        self.ensure_one()
 
-        if self.move_type != "appropriation":
-            raise UserError(
-                _("Expense F5 preview is only available for appropriation moves.")
-            )
-
-        return {
-            "name": _("Budget Appropriation Expense F5"),
-            "type": "ir.actions.client",
-            "tag": "budget_appropriation_expense_f5",
-            "target": "current",
-            "res_id": self.id,
-            "res_model": "budget.move",
-            "context": {
-                "active_id": self.id,
-                "active_model": "budget.move",
-            },
-        }
-
-    def action_open_revenue_f4_preview(self):
-        """Open the budget appropriation revenue F4 preview in full screen"""
-        self.ensure_one()
-
-        if self.move_type != "appropriation":
-            raise UserError(
-                _("Revenue F4 preview is only available for appropriation moves.")
-            )
-
-        return {
-            "name": _("Budget Appropriation Revenue F4"),
-            "type": "ir.actions.client",
-            "tag": "budget_appropriation_revenue_f4",
-            "target": "current",
-            "res_id": self.id,
-            "res_model": "budget.move",
-            "context": {
-                "active_id": self.id,
-                "active_model": "budget.move",
-            },
-        }
-
-    def _get_report_lines(self):
-        """Get hierarchical lines for PDF report"""
-        self.ensure_one()
-
-        if self.move_type != "appropriation":
-            return []
-
-        lines = []
-        # Get non-virtual lines only
-        # Get non-virtual lines only (unused variable removed)
-
-        # Build hierarchy data
-        report_obj = self.env["budget.appropriation.report"]
-        hierarchy_data = report_obj.get_hierarchical_data(self.id)
-
-        if "hierarchy" in hierarchy_data:
-
-            def add_hierarchy_lines(nodes, level=0):
-                for node in nodes:
-                    # Add node line
-                    line_data = {
-                        "name": node.get("name", ""),
-                        "code": node.get("code", ""),
-                        "level": level,
-                        "amount": node.get("total_amount", 0),
-                        "is_total": node.get("type")
-                        in ["activity", "department", "fund"],
-                        "type": node.get("type", ""),
-                    }
-
-                    # Add account details for line type (now includes account_info)
-                    if node.get("type") == "line":
-                        if node.get("account_info"):
-                            # New flattened structure with account_info
-                            line_data.update(
-                                {
-                                    "account_code": node["account_info"].get(
-                                        "code", ""
-                                    ),
-                                    "account_name": node["account_info"].get(
-                                        "name", ""
-                                    ),
-                                    "note": node.get("line_data", {}).get("note", "")
-                                    if node.get("line_data")
-                                    else "",
-                                }
-                            )
-                        elif node.get("line_data"):
-                            # Fallback for old structure
-                            line_info = node["line_data"]
-                            line_data.update(
-                                {
-                                    "account_code": line_info.get("account", {}).get(
-                                        "code", ""
-                                    ),
-                                    "account_name": line_info.get("account", {}).get(
-                                        "name", ""
-                                    ),
-                                    "note": line_info.get("note", ""),
-                                }
-                            )
-
-                    lines.append(line_data)
-
-                    # Add children
-                    if node.get("children"):
-                        add_hierarchy_lines(node["children"], level + 1)
-
-            add_hierarchy_lines(hierarchy_data["hierarchy"])
-
-        return lines
-
-    @contextmanager
-    def _check_balanced(self, container):
-        """Assert the move is fully balanced debit = credit.
-        An error is raised if it's not the case.
-        """
-        yield
-
-        unbalanced_moves = self._get_unbalanced_moves(container)
-        if unbalanced_moves:
-            error_msg = _("An error has occurred.")
-            for move_id, sum_debit, sum_credit in unbalanced_moves:
-                move = self.browse(move_id)
-                error_msg += _(
-                    "\n\n"
-                    "The move (%s) is not balanced.\n"
-                    "The total of debits equals %s and the total of credits equals %s.\n"
-                    'You might want to specify a default account on journal "%s" to automatically balance each move.',
-                    move.display_name,
-                    format_amount(self.env, sum_debit, move.company_id.currency_id),
-                    format_amount(self.env, sum_credit, move.company_id.currency_id),
-                    move.journal_id.name,
-                )
-            raise UserError(error_msg)
-
-    def _get_unbalanced_moves(self, container):
-        moves = container["records"].filtered(lambda move: move.line_ids)
-        if not moves:
-            return
-
-        # /!\ As this method is called in create / write, we can't make the assumption the computed stored fields
-        # are already done. Then, this query MUST NOT depend on computed stored fields.
-        # It happens as the ORM calls create() with the 'no_recompute' statement.
-        self.env["budget.move.line"].flush_model(
-            ["debit", "credit", "balance", "currency_id", "move_id"]
-        )
-        self._cr.execute(
-            """
-            SELECT line.move_id,
-                   ROUND(SUM(line.debit), currency.decimal_places) debit,
-                   ROUND(SUM(line.credit), currency.decimal_places) credit
-              FROM budget_move_line line
-              JOIN budget_move move ON move.id = line.move_id
-              JOIN res_company company ON company.id = move.company_id
-              JOIN res_currency currency ON currency.id = company.currency_id
-             WHERE line.move_id IN %s
-          GROUP BY line.move_id, currency.decimal_places
-            HAVING ROUND(SUM(line.balance), currency.decimal_places) != 0
-        """,
-            [tuple(moves.ids)],
-        )
-
-        return self._cr.fetchall()
 
     def _stolen_move(self, vals):
         for command in vals.get("line_ids", ()):
@@ -636,8 +406,7 @@ class BudgetMove(models.Model):
                 )
             )
         container = {"records": self}
-        with self._check_balanced(container):
-            with ExitStack() as exit_stack:
+        with ExitStack() as exit_stack:
                 for vals in vals_list:
                     self._sanitize_vals(vals)
                 stolen_moves = self.browse(
@@ -678,7 +447,7 @@ class BudgetMove(models.Model):
 
         with self.env.protecting(
             self._get_protected_vals(vals, self)
-        ), self._check_balanced(container):
+        ):
             res = super().write(vals)
         return res
 

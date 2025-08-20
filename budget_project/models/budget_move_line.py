@@ -9,7 +9,6 @@ class BudgetMoveLine(models.Model):
         "budget.project",
         "budget_move_line_id",
         string="Projects/Activities",
-        domain=[("budget_move_line_id.is_virtual_line", "=", False)],
     )
     project_enabled = fields.Boolean(
         string="Project Enabled",

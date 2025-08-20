@@ -544,7 +544,7 @@ class BudgetCommitment(models.Model):
         total = 0.0
 
         for move in moves:
-            for move_line in move.line_ids.filtered(lambda l: not l.is_virtual_line):
+            for move_line in move.line_ids:
                 if self._line_matches_analytic_combination(move_line, line):
                     total += abs(move_line.balance)
 
@@ -586,7 +586,7 @@ class BudgetCommitment(models.Model):
         total = 0.0
 
         for move in moves:
-            for move_line in move.line_ids.filtered(lambda l: not l.is_virtual_line):
+            for move_line in move.line_ids:
                 if self._line_matches_analytic_combination(move_line, line):
                     total += abs(move_line.balance)
 

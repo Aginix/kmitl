@@ -21,65 +21,6 @@
                     </field>
                 </page>
             </xpath>
-            <!-- <xpath expr="//field[@name='line_ids']" position="replace">
-                <field name="line_ids" widget='custom_budget_line' style="max-width: 100%; display: block;">
-                    <tree limit="1000">
-                        <field name="date_range_fy_id" invisible="1" />
-                        <field name="move_id" invisible="1" />
-                        <field name="department_analytic_id" options='{"no_open": True}' invisible="1" />
-                        <field name="procurement_plan_ids" invisible="1" />
-                        <field name="unallocated_balance" invisible="1" />
-                        <field name="activity_analytic_id" options='{"no_open": True}' />
-                        <field name="fund_analytic_id" options='{"no_open": True}' />
-                        <field name="template_id" options='{"no_open": True}' invisible="1" />
-                        <field name="template_line_id" options='{"no_open": True}' />
-                        <field name="amount" />
-                        <field name="note" />
-                    </tree>
-                </field>
-            </xpath> -->
-        </field>
-    </record>
-
-    <record id="view_budget_app_inherit_form" model="ir.ui.view">
-        <field name="name">view.budget.app.inherit.form</field>
-        <field name="model">budget.move</field>
-        <field name="inherit_id" ref="budget.view_budget_app_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//notebook" position="inside">
-                <page name="procurement_plan" string="แผนการจัดซื้อจัดจ้าง" attrs="{'invisible': [('budget_type', '!=', 'expense')]}">
-                    <field name="procurement_plan_ids">
-                        <tree>
-                            <field name="budget_account_id"/>
-                            <field name="name"/>
-                            <field name="amount" />
-                            <field name="unit" />
-                            <field name="price_per_unit" />
-                            <field name="total_price"/>
-                            <field name="procurement_method_id" />
-                        </tree>
-                    </field>
-                </page>
-            </xpath>
-            <xpath expr="//field[@name='appropriation_line_ids']" position="replace">
-                <field name="appropriation_line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}" widget="custom_budget_line" style="max-width: 100%; display: block;" context="{'default_move_id': id, 'default_fund_analytic_id': compute_fund_analytic_id, 'default_activity_analytic_id': compute_activity_analytic_id}">
-                    <tree decoration-muted="is_virtual_line == True" limit="1000">
-                        <field name="budget_type" invisible="1"/>
-                        <field name="is_virtual_line" invisible="1"/>
-                        <field name="procurement_plan_ids" invisible="1" />
-                        <field name="procurement_plan" invisible="1" />
-                        <field name="unallocated_balance" invisible="1" />
-                        <field name="department_analytic_id" options='{"no_create": True, "no_create_edit": True}' invisible="1"/>
-                        <field name="activity_analytic_id" options='{"no_create": True, "no_create_edit": True}' attrs="{'invisible': [('is_virtual_line', '=', True)]}"/>
-                        <field name="fund_analytic_id" options='{"no_create": True, "no_create_edit": True}' attrs="{'invisible': [('is_virtual_line', '=', True)],
-                                        'required': [('is_virtual_line', '=', False)]}"/>
-                        <field name="account_id" options='{"no_create": True, "no_create_edit": True}' attrs="{'invisible': [('is_virtual_line', '=', True)],
-                                        'required': [('is_virtual_line', '=', False)]}"/>
-                        <field name="balance" attrs="{'invisible': [('is_virtual_line', '=', True)]}"/>
-                        <field name="note" attrs="{'invisible': [('is_virtual_line', '=', True)]}"/>
-                    </tree>
-                </field>
-            </xpath>
         </field>
     </record>
 

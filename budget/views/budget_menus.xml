@@ -2,29 +2,6 @@
 <odoo>
     <menuitem id="budget_root_menu" name="Budgeting" sequence="10">
 
-        <menuitem
-            id="budget_appropriation_management"
-            name="จัดสรรงบประมาณ"
-            sequence="30"
-        >
-            <menuitem
-                id="budget_appropriation_menu"
-                name="การจัดสรรงบประมาณ"
-                sequence="1"
-            >
-                <menuitem
-                    id="action_view_move_budget_appropriation_type_menu_action"
-                    name="รายการจัดการ"
-                    action="action_view_move_budget_appropriation_type"
-                />
-                <menuitem
-                    id="action_view_move_budget_appropriation_year_menu_action"
-                    name="จัดสรรต้นปี"
-                    action="action_view_move_budget_appropriation_type"
-                />
-            </menuitem>
-        </menuitem>
-
         <menuitem id="budget_commitment_management" name="จองงบประมาณ" sequence="30">
             <menuitem id="budget_commitment_menu" name="จองงบประมาณ" sequence="1">
                 <menuitem

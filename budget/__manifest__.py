@@ -13,8 +13,6 @@
         "l10n_th_base_sequence",
     ],
     "data": [
-        "data/budget_appropriation_expense_f5_action.xml",
-        "data/budget_appropriation_revenue_f4_action.xml",
         "data/budget_execution_report_interactive_action.xml",
         "data/budget_journal.xml",
         "data/budget_move_data.xml",
