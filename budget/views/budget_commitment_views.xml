@@ -7,9 +7,9 @@
         <field name="model">budget.commitment</field>
         <field name="arch" type="xml">
             <tree string="Budget Commitments">
-                <field name="name"/>
-                <field name="date"/>
-                <field name="date_range_fy_id"/>
+                <field name="name" optional="show" />
+                <field name="date" optional="hide" />
+                <field name="date_range_fy_id" optional="show" />
                 <field name="source_analytic_id"/>
                 <field name="department_analytic_id"/>
                 <field name="activity_analytic_id"/>
@@ -17,14 +17,14 @@
                 <field name="account_id"/>
                 <field name="amount" sum="Total Amount"/>
 
-                <field name="consumed_amount" sum="Consumed Amount"/>
-                <field name="remaining_amount" sum="Remaining Amount"/>
+                <field name="consumed_amount" sum="Consumed Amount" optional="show" />
+                <field name="remaining_amount" sum="Remaining Amount" optional="show" />
                 <field name="state" widget="badge"
                        decoration-success="state == 'done'"
                        decoration-info="state == 'reserved'"
                        decoration-warning="state == 'draft'"
                        decoration-danger="state == 'cancel'"/>
-                <field name="user_id"/>
+                <field name="user_id" widget="many2one_avatar_user" optional="show" />
             </tree>
         </field>
     </record>
@@ -153,6 +153,14 @@
                     <filter string="Fiscal Year" name="group_fy" context="{'group_by': 'date_range_fy_id'}"/>
                     <filter string="Responsible User" name="group_user" context="{'group_by': 'user_id'}"/>
                 </group>
+                <searchpanel>
+                    <field name="account_id" icon="fa-book" enable_counters="1" />
+                    <field name="date_range_fy_id" icon="fa-calendar" enable_counters="1" />
+                    <field name="source_analytic_id" icon="fa-money" enable_counters="1" order="code asc" />
+                    <field name="department_analytic_id" icon="fa-users" enable_counters="1" order="code asc" />
+                    <field name="activity_analytic_id" icon="fa-bullseye" enable_counters="1" order="code asc" />
+                    <field name="fund_analytic_id" icon="fa-database" enable_counters="1" order="code asc" />
+                </searchpanel>
             </search>
         </field>
     </record>
@@ -161,7 +169,7 @@
     <record id="action_budget_commitment" model="ir.actions.act_window">
         <field name="name">Budget Commitments</field>
         <field name="res_model">budget.commitment</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,form,pivot</field>
         <field name="search_view_id" ref="budget_commitment_search_view"/>
         <field name="context">{}</field>
         <field name="help" type="html">
