@@ -111,6 +111,7 @@
                             />
                             <field
                                 name="journal_id"
+                                options='{"no_create": True, "no_create_edit": True,"no_open": True}'
                                 required="1"
                                 attrs="{'readonly': [('id', '!=', False)]}"
                             />
@@ -118,7 +119,7 @@
                         </group>
                     </group>
                     <notebook>
-                        <page name="line_ids" string="Budget Move Lines">
+                        <page name="line_ids">
                             <field
                                 name="line_ids"
                                 style="max-width: 100%; display: block;"

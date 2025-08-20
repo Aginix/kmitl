@@ -206,6 +206,7 @@ class BudgetMove(models.Model):
         compute="_compute_hide_review_button", readonly=True
     )
     line_ids = fields.One2many(
+        string="รายการงบประมาณ",
         comodel_name="budget.move.line",
         inverse_name="move_id",
         copy=True,
@@ -258,6 +259,7 @@ class BudgetMove(models.Model):
         change_default=True,
         index=True,
         default="entry",
+        states=READONLY_STATES,
     )
 
     total_amount = fields.Float(
@@ -267,7 +269,6 @@ class BudgetMove(models.Model):
         store=True,
         digits="Budget Precision",
     )
-
 
     # Link to budget commitment
     commitment_id = fields.Many2one(
