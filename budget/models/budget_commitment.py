@@ -518,14 +518,6 @@ class BudgetCommitment(models.Model):
             if not record.account_id:
                 raise ValidationError(_("Budget account is required."))
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        """Override create to generate sequence number"""
-        for vals in vals_list:
-            if vals.get('name', _('New')) == _('New'):
-                vals['name'] = self.env['ir.sequence'].next_by_code('budget.commitment') or _('New')
-        return super().create(vals_list)
-
     # Workflow Methods
     def action_check_budget_availability(self):
         """Check budget availability for this commitment"""
@@ -578,6 +570,11 @@ class BudgetCommitment(models.Model):
 
             # Check budget availability before reserving
             record.action_check_budget_availability()
+
+            # Generate sequence number upon successful reservation
+            if record.name == _('New'):
+                record.name = self.env['ir.sequence'].next_by_code('budget.commitment') or _('New')
+
             record.state = 'reserved'
 
     def action_done(self):
