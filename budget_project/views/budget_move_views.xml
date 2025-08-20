@@ -35,12 +35,11 @@
     </record>
 
     <!-- Inherit budget appropriation form view to show projects in move lines -->
-    <record id="view_budget_app_form_inherit_project" model="ir.ui.view">
+    <!-- <record id="view_budget_app_form_inherit_project" model="ir.ui.view">
         <field name="name">budget.app.form.inherit.project</field>
         <field name="model">budget.move</field>
         <field name="inherit_id" ref="budget.view_budget_app_form"/>
         <field name="arch" type="xml">
-            <!-- Add project fields to appropriation lines tree -->
             <xpath expr="//field[@name='appropriation_line_ids']/tree" position="inside">
                 <field name="project_enabled" invisible="1"/>
             </xpath>
@@ -61,6 +60,6 @@
                 </page>
             </xpath>
         </field>
-    </record>
+    </record> -->
 
 </odoo>

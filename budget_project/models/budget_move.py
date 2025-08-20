@@ -15,7 +15,6 @@ class BudgetMove(models.Model):
         "budget_move_line_id",
         compute='_compute_budget_project_ids',
         string="Projects/Activities",
-        domain=[("budget_move_line_id.is_virtual_line", "=", False)],
     )
 
     def _compute_budget_project_ids(self):

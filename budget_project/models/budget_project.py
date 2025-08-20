@@ -94,28 +94,12 @@ class BudgetProject(models.Model):
             if project.budget_amount < 0:
                 raise ValidationError(_("Budget amount cannot be negative."))
 
-    @api.constrains("budget_move_line_id")
-    def _check_virtual_line(self):
-        for project in self:
-            if (
-                project.budget_move_line_id
-                and project.budget_move_line_id.is_virtual_line
-            ):
-                raise ValidationError(
-                    _("Cannot create projects on virtual budget lines.")
-                )
-
     @api.model_create_multi
     def create(self, vals_list):
         """Override to set default analytic values from budget move line if created from there"""
         for vals in vals_list:
             if vals.get("budget_move_line_id"):
                 line = self.env["budget.move.line"].browse(vals["budget_move_line_id"])
-                # Check if line is virtual
-                if line.is_virtual_line:
-                    raise ValidationError(
-                        _("Cannot create projects on virtual budget lines.")
-                    )
                 # Set default analytic dimensions from budget move line
                 if (
                     not vals.get("department_analytic_id")
