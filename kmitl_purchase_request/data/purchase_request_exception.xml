@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="0">
+
     <record id="pr_exception_product_1" model="exception.rule">
         <field name="name">ต้องมีรายการสินค้าอย่างน้อย 1 อย่าง</field>
         <field
@@ -68,6 +69,7 @@ if self.estimated_cost &gt; 100000:
         </field>
     </record>
 
+    <!-- ปรับ active(exception rule) ของ l10n ให้เป็น False เพื่อไม่ให้ทำงาน -->
     <record id="l10n_th_gov_purchase_request.pr_exception_1" model="exception.rule">
         <field name="active">False</field>
     </record>
