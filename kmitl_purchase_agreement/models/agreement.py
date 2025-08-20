@@ -76,6 +76,17 @@ class Agreement(models.Model):
     work_start_date = fields.Date(related='purchase_order_id.work_start_date', string="Work start date")
     work_end_date = fields.Date(related='purchase_order_id.work_end_date', string="Work end date")
 
+    has_invoice_plan = fields.Boolean(
+        string="Has Invoice Plan",
+        compute="_compute_has_invoice_plan",
+        store=False
+    )
+    
+    @api.depends('invoice_plan_ids')
+    def _compute_has_invoice_plan(self):
+        for record in self:
+            record.has_invoice_plan = bool(record.invoice_plan_ids)
+
     def action_open_new_version_wizard(self):
         self.ensure_one()
         return {
