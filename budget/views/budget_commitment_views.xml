@@ -84,6 +84,10 @@
                     </group>
 
                     <group string="Budget Analysis" name="budget_analysis">
+                        <group>
+                            <field name="consumed_amount" widget="monetary" readonly="1"/>
+                            <field name="remaining_amount" widget="monetary" readonly="1"/>
+                        </group>
                         <group attrs="{'invisible': [('state', 'not in', ['draft', 'confirmed'])]}">
                             <field name="available_budget_amount" widget="monetary"
                                    decoration-danger="budget_availability_status == 'insufficient'"
@@ -94,10 +98,6 @@
                                    decoration-warning="budget_availability_status == 'warning'"
                                    decoration-success="budget_availability_status == 'sufficient'"/>
                             <field name="budget_availability_percentage" widget="percentage"/>
-                        </group>
-                        <group>
-                            <field name="consumed_amount" widget="monetary" readonly="1"/>
-                            <field name="remaining_amount" widget="monetary" readonly="1"/>
                         </group>
                     </group>
 
@@ -145,9 +145,6 @@
 
                 <separator/>
                 <filter string="My Commitments" name="my_commitments" domain="[('user_id', '=', uid)]"/>
-                <filter string="Insufficient Budget" name="insufficient" domain="[('budget_availability_status', '=', 'insufficient')]"/>
-                <filter string="Warning Budget" name="warning" domain="[('budget_availability_status', '=', 'warning')]"/>
-                <filter string="Sufficient Budget" name="sufficient" domain="[('budget_availability_status', '=', 'sufficient')]"/>
 
                 <group expand="0" string="Group By">
                     <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
@@ -158,7 +155,6 @@
                     <filter string="Source" name="group_source" context="{'group_by': 'source_analytic_id'}"/>
                     <filter string="Fiscal Year" name="group_fy" context="{'group_by': 'date_range_fy_id'}"/>
                     <filter string="Responsible User" name="group_user" context="{'group_by': 'user_id'}"/>
-                    <filter string="Budget Status" name="group_budget_status" context="{'group_by': 'budget_availability_status'}"/>
                 </group>
             </search>
         </field>
@@ -170,7 +166,7 @@
         <field name="res_model">budget.commitment</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="budget_commitment_search_view"/>
-        <field name="context">{'search_default_draft': 1}</field>
+        <field name="context">{}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create your first budget commitment!
