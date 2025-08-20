@@ -1,6 +1,6 @@
 import logging
 from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -523,3 +523,90 @@ class BudgetCommitment(models.Model):
                 raise ValidationError(_("Fund analytic account is required."))
             if not record.account_id:
                 raise ValidationError(_("Budget account is required."))
+
+    # Workflow Methods
+    def action_check_budget_availability(self):
+        """Check budget availability for this commitment"""
+        self.ensure_one()
+        # Trigger recomputation of budget availability
+        self._compute_available_budget()
+        
+        if self.budget_availability_status == 'insufficient':
+            raise UserError(_(
+                'Insufficient budget for this commitment.\n\n'
+                'Requested: %s\n'
+                'Available: %s\n'
+                'Budget Account: %s\n'
+                'Activity: %s\n'
+                'Fund: %s'
+            ) % (
+                "{:,.2f}".format(self.amount),
+                "{:,.2f}".format(self.available_budget_amount),
+                self.account_id.display_name,
+                self.activity_analytic_id.display_name,
+                self.fund_analytic_id.display_name,
+            ))
+        
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Budget Check Complete'),
+                'message': _('Budget availability: %s - Available: %s') % (
+                    self.budget_availability_status.title(),
+                    "{:,.2f}".format(self.available_budget_amount)
+                ),
+                'type': 'success' if self.budget_availability_status == 'sufficient' else 'warning',
+                'sticky': False,
+            }
+        }
+
+    def action_confirm(self):
+        """Confirm the commitment"""
+        for record in self:
+            if record.state != 'draft':
+                raise UserError(_('Only draft commitments can be confirmed.'))
+            record.state = 'confirmed'
+
+    def action_reserve(self):
+        """Reserve budget for this commitment"""
+        for record in self:
+            if record.state != 'confirmed':
+                raise UserError(_('Only confirmed commitments can be reserved.'))
+            
+            # Check budget availability before reserving
+            record.action_check_budget_availability()
+            record.state = 'reserved'
+
+    def action_done(self):
+        """Mark commitment as done"""
+        for record in self:
+            if record.state not in ['consumed']:
+                raise UserError(_('Only consumed commitments can be marked as done.'))
+            record.state = 'done'
+
+    def action_cancel(self):
+        """Cancel the commitment"""
+        for record in self:
+            if record.state in ['done']:
+                raise UserError(_('Done commitments cannot be cancelled.'))
+            record.state = 'cancel'
+
+    def action_reset_to_draft(self):
+        """Reset commitment to draft state"""
+        for record in self:
+            if record.state not in ['cancel']:
+                raise UserError(_('Only cancelled commitments can be reset to draft.'))
+            record.state = 'draft'
+
+    def action_view_budget_moves(self):
+        """View related budget moves"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Related Budget Moves'),
+            'res_model': 'budget.move',
+            'view_mode': 'tree,form',
+            'domain': [('commitment_id', '=', self.id)],
+            'context': {'default_commitment_id': self.id},
+        }
