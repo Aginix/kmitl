@@ -21,27 +21,10 @@
                     </field>
                 </page>
             </xpath>
-            <!-- <xpath expr="//field[@name='line_ids']" position="replace">
-                <field name="line_ids" widget='custom_budget_line' style="max-width: 100%; display: block;">
-                    <tree limit="1000">
-                        <field name="date_range_fy_id" invisible="1" />
-                        <field name="move_id" invisible="1" />
-                        <field name="department_analytic_id" options='{"no_open": True}' invisible="1" />
-                        <field name="procurement_plan_ids" invisible="1" />
-                        <field name="unallocated_balance" invisible="1" />
-                        <field name="activity_analytic_id" options='{"no_open": True}' />
-                        <field name="fund_analytic_id" options='{"no_open": True}' />
-                        <field name="template_id" options='{"no_open": True}' invisible="1" />
-                        <field name="template_line_id" options='{"no_open": True}' />
-                        <field name="amount" />
-                        <field name="note" />
-                    </tree>
-                </field>
-            </xpath> -->
         </field>
     </record>
 
-    <record id="view_budget_app_inherit_form" model="ir.ui.view">
+    <!-- <record id="view_budget_app_inherit_form" model="ir.ui.view">
         <field name="name">view.budget.app.inherit.form</field>
         <field name="model">budget.move</field>
         <field name="inherit_id" ref="budget.view_budget_app_form"/>
@@ -81,6 +64,6 @@
                 </field>
             </xpath>
         </field>
-    </record>
+    </record> -->
 
 </odoo>

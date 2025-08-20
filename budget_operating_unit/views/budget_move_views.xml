@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- View budget.move form -->
-    <record id="view_budget_move_form" model="ir.ui.view">
-        <field name="name">view.budget.move.form</field>
-        <field name="model">budget.move</field>
-        <field name="inherit_id" ref="budget.view_budget_app_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='total_amount']" position="after">
-                <field name="operating_unit_id" options="{'no_create': True}" groups="operating_unit.group_multi_operating_unit" />
-            </xpath>
-        </field>
-    </record>
-
     <record id="view_budget_move_line_form" model="ir.ui.view">
         <field name="name">view.budget.move.line.form</field>
         <field name="model">budget.move.line</field>
