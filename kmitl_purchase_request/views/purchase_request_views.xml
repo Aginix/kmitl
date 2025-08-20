@@ -6,16 +6,13 @@
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_tree" />
         <field name="arch" type="xml">
-
             <xpath expr="//field[@name='date_start']" position="before">
                 <field name="title" />
             </xpath>
-
             <xpath expr="//field[@name='requested_by']" position="after">
                 <field name="procurement_type_id" />
                 <field name="payment_type" />
             </xpath>
-
             <xpath expr="//field[@name='estimated_cost']" position="attributes">
                 <attribute name="optional">show</attribute>
             </xpath>
@@ -42,14 +39,6 @@
             </xpath>
 
             <xpath expr="//field[@name='assigned_to']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <xpath expr="//page[@name='committee']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <xpath expr="//field[@widget='selection']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
 
@@ -88,7 +77,6 @@
 
             <xpath expr="//field[@name='date_start']" position="attributes">
                 <attribute name="invisible">1</attribute>
-                <attribute name="widget">remaining_days</attribute>
             </xpath>
 
             <xpath expr="//field[@name='department_id']" position="attributes">
@@ -105,7 +93,7 @@
             </xpath>
 
             <xpath expr="//button[@name='button_approved']" position="after">
-                <button name='button_validate' string="Validate" class="btn-primary" attrs="{'invisible': ['|' ,('substate_sequence', '!=', 20), ('state', '!=', 'to_approve')]}" type="object" groups="kmitl_purchase_request.group_pr_supply"/>
+                <button name='button_validate' string="Validate" class="btn-primary" attrs="{'invisible': ['|' ,('substate_sequence', '!=', 20), ('state', '!=', 'to_approve')]}" type="object" />
             </xpath>
 
             <xpath expr="//button[@name='button_draft']" position="attributes">
@@ -191,6 +179,11 @@
                 <attribute name="invisible">0</attribute>
             </xpath>
 
+            <xpath expr="//page[@name='committee']" position="attributes">
+                <attribute name="invisible">1</attribute>
+
+            </xpath>
+
             <xpath expr="//form/sheet/notebook" position="inside">
                 <page name="committee" string="Committee">
                     <separator string="คณะกรรมการตรวจรับพัสดุ" />
@@ -249,39 +242,13 @@
                 <page name="document" string="เอกสารแนบ">
                     <separator string="ข้อกำหนดคุณลักษณะ (TOR)" />
                     <field name="tor_document_ids" attrs="{'readonly': [('is_editable','=', False)]}" context="{'default_attachment_type': 'tor'}">
-                        <tree>
-                            <field name="file_name" />
-                            <field name="description" />
-                        </tree>
                     </field>
-
                     <separator string="ใบเสนอราคา" />
                     <field name="rfq_attachment_ids" attrs="{'readonly': [('is_editable','=', False)]}" context="{'default_attachment_type': 'rfq'}">
-                        <tree>
-                            <field name="file_name" />
-                            <field name="description" />
-                        </tree>
                     </field>
-
                     <separator string="อื่นๆ" />
                     <field name="etc_document_ids" attrs="{'readonly': [('is_editable','=', False)]}" context="{'default_attachment_type': 'etc'}">
-                        <tree>
-                            <field name="file_name" />
-                            <field name="description" />
-                        </tree>
                     </field>
-                </page>
-
-                <page name="budget" string="งบประมาณ">
-                    <group name="budget" string="ข้อมูลมิติทางบัญชี">
-                        <field name="has_finance_group" invisible='1'/>
-                        <field name="source_of_fund" attrs="{'readonly': [('has_finance_group', '=', False)]}"/>
-                        <field name="plan" attrs="{'readonly': [('has_finance_group', '=', False)]}"/>
-                        <field name="fund" attrs="{'readonly': [('has_finance_group', '=', False)]}"/>
-                        <field name="budget_type" attrs="{'readonly': [('has_finance_group', '=', False)]}"/>
-                        <field name="expense_code" attrs="{'readonly': [('has_finance_group', '=', False)]}"/>
-                    </group>
-
                 </page>
             </xpath>
 
