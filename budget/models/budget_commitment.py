@@ -175,6 +175,7 @@ class BudgetCommitment(models.Model):
         index=True,
         tracking=True,
         domain="[('budgetable', '=', True), ('budget_type', '=', 'expense')]",
+        states=READONLY_STATES,
     )
 
     amount = fields.Monetary(
@@ -183,6 +184,7 @@ class BudgetCommitment(models.Model):
         currency_field="currency_id",
         tracking=True,
         help="Amount to be committed for this budget line",
+        states=READONLY_STATES,
     )
 
     activity_analytic_id = fields.Many2one(
@@ -192,6 +194,7 @@ class BudgetCommitment(models.Model):
         tracking=True,
         domain=[("root_plan_id.code", "=", "activities")],
         help="Activity dimension - แผนงาน/กิจกรรม",
+        states=READONLY_STATES,
     )
 
     department_analytic_id = fields.Many2one(
@@ -201,6 +204,7 @@ class BudgetCommitment(models.Model):
         tracking=True,
         domain=[("root_plan_id.code", "=", "departments")],
         help="Department dimension",
+        states=READONLY_STATES,
     )
 
     fund_analytic_id = fields.Many2one(
@@ -210,6 +214,7 @@ class BudgetCommitment(models.Model):
         tracking=True,
         domain=[("root_plan_id.code", "=", "funds")],
         help="Fund dimension - กองทุน",
+        states=READONLY_STATES,
     )
 
     source_analytic_id = fields.Many2one(
@@ -219,6 +224,7 @@ class BudgetCommitment(models.Model):
         tracking=True,
         domain=[("root_plan_id.code", "=", "sources")],
         help="Source dimension",
+        states=READONLY_STATES,
     )
 
     company_id = fields.Many2one(
@@ -227,6 +233,7 @@ class BudgetCommitment(models.Model):
         required=True,
         default=lambda self: self.env.company,
         tracking=True,
+        states=READONLY_STATES,
     )
 
     currency_id = fields.Many2one(

@@ -261,6 +261,7 @@ class BudgetMove(models.Model):
         change_default=True,
         index=True,
         default="entry",
+        states=READONLY_STATES,
     )
 
     total_amount = fields.Float(
@@ -297,6 +298,7 @@ class BudgetMove(models.Model):
         help="Budget commitment that this move is consuming from",
         index=True,
         ondelete="set null",
+        states=READONLY_STATES,
     )
 
     first_account_id = fields.Many2one(
@@ -684,19 +686,3 @@ class BudgetMove(models.Model):
 
     def _sanitize_vals(self, vals):
         return vals
-
-    def action_view_commitment(self):
-        """View the related budget commitment"""
-        self.ensure_one()
-        if not self.commitment_id:
-            raise UserError(_('No commitment is linked to this budget move.'))
-            
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('Budget Commitment'),
-            'res_model': 'budget.commitment',
-            'res_id': self.commitment_id.id,
-            'view_mode': 'form',
-            'view_type': 'form',
-            'target': 'current',
-        }
