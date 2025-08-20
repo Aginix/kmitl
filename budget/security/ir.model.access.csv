@@ -1,6 +1,5 @@
 id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
 access_budget_commitment_manager,budget_commitment_manager,model_budget_commitment,,1,1,1,1
-access_budget_commitment_line_manager,budget_commitment_line_manager,model_budget_commitment_line,,1,1,1,1
 access_budget_move_manager,budget_move_manager,model_budget_move,,1,1,1,1
 access_budget_move_line_manager,budget_move_line_manager,model_budget_move_line,,1,1,1,1
 access_budget_account_user,budget_account_user,model_budget_account,,1,0,0,0
