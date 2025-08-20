@@ -1,0 +1,3 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_procurement_comittee_manager,procurement_comittee_manager,model_procurement_committee,,1,1,1,1
+access_purchase_request_attachment_manager,purchase_request_attachment_manager,model_purchase_request_attachment,,1,1,1,1

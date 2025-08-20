@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_purchase_request_two_submitted_tree" model="ir.ui.view">
+        <field name="name">view.purchase.request.two.submitted.tree</field>
+        <field name="model">purchase.request.two.submitted</field>
+        <field name="arch" type="xml">
+            <tree create='0' decoration-success="state == 'approved'" decoration-warning="state == 'draft'" decoration-danger="state == 'rejected'">
+                <field name="name"/>
+                <field name="request_by" readonly="1" />
+                <field name="payment_type_ref" string="ประเภทการจ่ายเงิน"/>
+                <field name="state" widget="badge" decoration-success="state == 'approved'" decoration-warning="state == 'draft'" decoration-danger="state == 'rejected'" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_two_submitted_form" model="ir.ui.view">
+        <field name="name">view.purchase.request.two.submitted.form</field>
+        <field name="model">purchase.request.two.submitted</field>
+        <field name="arch" type="xml">
+            <form string="PR2 Submitted">
+                <header>
+                    <button name="button_draft" type="object" string="Reset" attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                    <button name="button_approved" type="object" string="Submit" class="btn-primary" states="draft"/>
+                    <button name="button_rejected" type="object" string="Reject" states="draft"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,approved,rejected"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Name..." readonly="1" />
+                        </h1>
+                    </div>
+                    <field name="is_editable" invisible="1" />
+                    <group>
+                        <field name="department_id_ref" readonly='1' attrs="{'readonly': [('is_editable','=', False)]}"/>
+                        <field name="request_by" readonly="1" widget="many2one_avatar_user" />
+                        <field name="payment_type_ref" string="ประเภทการจ่ายเงิน" readonly='1' attrs="{'readonly': [('is_editable','=', False)]}"/>
+                        <field name="approval_date" readonly="1" widget="remaining_days" />
+                        <field name="approval_by" readonly="1" widget="many2one_avatar_user" />
+                        <field name="purchase_order_id" readonly="1" invisible="1"/>
+                    </group>
+
+                    <notebook>
+                        <page string="Select PR2 Forms">
+                            <field name="line_ids" attrs="{'readonly': [('is_editable','=', False)]}">
+                                <tree editable="bottom">
+                                    <field name="pr2_form_id" widget="many2one" domain="[('payment_type', '=', payment_type_ref), ('department_id', '=', department_id_ref)]"/>
+                                    <field name="pr1_requested_by" widget="many2one_avatar_user" />
+                                    <field name="vendor"/>
+                                    <field name="department_id" />
+                                    <field name="department_id_ref" invisible="1"/>
+                                    <field name="purchase_request_name" />
+                                    <field name="payment_type"/>
+                                    <field name="payment_type_ref" invisible="1"/>
+                                    <field name="estimated_cost_from_pr" />
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_two_submitted_search" model="ir.ui.view">
+        <field name="name">view.purchase.request.two.submitted.search</field>
+        <field name="model">purchase.request.two.submitted</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_purchase_request_two_submitted" model="ir.actions.act_window">
+        <field name="name">Purchase Request Two Submitted</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.request.two.submitted</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Purchase Request Two Submitted.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_purchase_request_two_submitted" name="PR2 Submitted" parent="purchase.menu_procurement_management" action="action_purchase_request_two_submitted" sequence="25"/>
+    <menuitem id="menu_purchase_request_two_submitted_root_pr" name="Purchase Request 2 Submitted" parent="kmitl_purchase_request_2.menu_purchase_request_2_form" action="action_purchase_request_two_submitted" sequence="30"/>
+
+</odoo>

@@ -1,0 +1,62 @@
+<odoo>
+    <record id="vendor_demo_1" model="res.partner">
+        <field name="name">Vendor A Co., Ltd.</field>
+        <field name="company_type">company</field>
+        <field name="supplier_rank">1</field>
+        <field name="email">vendor_a@example.com</field>
+        <field name="phone">+6621234567</field>
+        <field name="street">123 Main Street</field>
+        <field name="city">Bangkok</field>
+        <field name="country_id" ref="base.th" />
+    </record>
+
+    <record id="vendor_demo_2" model="res.partner">
+        <field name="name">Supplier B Ltd.</field>
+        <field name="company_type">company</field>
+        <field name="supplier_rank">1</field>
+        <field name="email">supplier_b@example.com</field>
+        <field name="phone">+6629876543</field>
+        <field name="street">456 Sukhumvit Road</field>
+        <field name="city">Bangkok</field>
+        <field name="country_id" ref="base.th" />
+    </record>
+
+    <record id="vendor_demo_3" model="res.partner">
+        <field name="name">CoC Trading</field>
+        <field name="company_type">company</field>
+        <field name="supplier_rank">1</field>
+        <field name="email">cc_trading@example.com</field>
+        <field name="phone">+6622233445</field>
+        <field name="street">789 Rama IV Road</field>
+        <field name="city">Bangkok</field>
+        <field name="country_id" ref="base.th" />
+    </record>
+
+    <record id="vendor_demo_3" model="res.partner">
+        <field name="name">CoC Trading</field>
+        <field name="company_type">company</field>
+        <field name="supplier_rank">1</field>
+        <field name="email">cc_trading@example.com</field>
+        <field name="phone">+6622233445</field>
+        <field name="street">789 Rama IV Road</field>
+        <field name="city">Bangkok</field>
+        <field name="country_id" ref="base.th" />
+    </record>
+
+    <odoo>
+    <record id="vendor_aginix" model="res.partner">
+        <field name="name">บริษัท อะจินิกซ์ เทคโนโลยี จำกัด</field>
+        <field name="street">323/17 หมู่บ้าน สุขนิเวศน์ 6</field>
+        <field name="street2"></field>
+        <field name="email">nuttakit.v@aginix.tech</field>
+        <field name="phone">+662132103821</field>
+        <field name="city">กรุงเทพมหานคร</field>
+        <field name="zip"></field>
+        <field name="country_id" ref="base.th"/>
+        <field name="supplier_rank">1</field>
+        <field name="customer_rank">0</field>
+        <field name="company_type">company</field>
+    </record>
+</odoo>
+
+</odoo>
