@@ -77,9 +77,18 @@
                 <field name="company_id" invisible="1" />
                 <field name="budget_type" invisible="1" />
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_view_commitment" icon="fa-handshake-o"
+                                attrs="{'invisible': [('commitment_id', '=', False)]}">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">View</span>
+                                <span class="o_stat_text">Commitment</span>
+                            </div>
+                        </button>
+                    </div>
+
                     <div class="oe_title">
                         <span class="o_form_label">
-                            <!-- <field name="move_type" attrs="{'invisible': [('move_type', '=', 'entry')]}" readonly="1" nolabel="1"/> -->
                         </span>
                         <h1>
                             <field name="name" readonly="1" />
@@ -147,6 +156,15 @@
                                     <field name="note" />
                                 </tree>
                             </field>
+                        </page>
+                        <page name="additional_info" string="Additional Info">
+                            <group>
+                                <field
+                                    name="commitment_id"
+                                    options='{"no_create": True, "no_create_edit": True}'
+                                    domain="[('state', '=', 'reserved'), ('date_range_fy_id', '=', date_range_fy_id), ('source_analytic_id', '=', source_analytic_id)]"
+                                />
+                            </group>
                         </page>
                     </notebook>
                 </sheet>

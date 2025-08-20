@@ -7,7 +7,6 @@ from . import budget_appropriation_overview_report
 
 # Modern budget models (renamed from _new to normal)
 from . import budget_commitment
-from . import budget_commitment_line
 from . import budget_report
 from . import budget_report_line
 

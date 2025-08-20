@@ -19,6 +19,7 @@
         "data/budget.account.csv",
         "data/budget_paper_format.xml",
         "data/budget_sequence.xml",
+        "data/budget_commitment_sequence.xml",
         "data/budget_transfer_security.xml",
         "data/budget_transfer_sequence.xml",
         "data/budget_transfer_email_templates.xml",
