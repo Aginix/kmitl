@@ -6,15 +6,15 @@
         <field name="name">view.budget.appropriation.tree</field>
         <field name="model">budget.appropriation</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree decoration-info="state == 'draft'" decoration-warning="state == 'review'" decoration-muted="state == 'cancel'" decoration-success="state == 'posted'" delete="false">
                 <field name="date_range_fy_id" />
-                <field name="date" />
                 <field name="name" />
                 <field name="journal_id" />
                 <field name="source_analytic_id" />
+                <field name="department_analytic_id" />
                 <field name="total_amount" sum="Total Amount" />
                 <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'review'" decoration-success="state == 'posted'" />
-                <field name="budget_move_id" />
+                <field name="user_id" widget="many2one_avatar_user" />
             </tree>
         </field>
     </record>
@@ -92,18 +92,10 @@
                                 </form>
                             </field>
                         </page>
-                        <page
-                            string="Preview"
-                            name="preview"
-                            attrs="{'invisible': [('id', '=', False)]}"
-                        >
+                        <page string="Preview" name="preview" attrs="{'invisible': [('id', '=', False)]}">
                             <div class="o_budget_preview_container">
                                 <div class="text-center p-3">
-                                    <button
-                                        type="object"
-                                        name="action_open_f5_preview"
-                                        class="btn btn-primary btn-lg"
-                                    >
+                                    <button type="object" name="action_open_f5_preview" class="btn btn-primary btn-lg">
                                         <i class="fa fa-eye" />
                                         เปิดดูตัวอย่างแบบละเอียด (F5)
                                     </button>
@@ -125,16 +117,16 @@
         <field name="model">budget.appropriation.line</field>
         <field name="arch" type="xml">
             <tree create="false" edit="false" delete="false" expand="context.get('expand', False)" sample="1">
-                <field name="budget_type" />
-                <field name="appropriation_id" widget="many2onebutton" />
-                <field name="date" />
+                <field name="budget_type" string="ประเภท" optional="hide" />
+                <field name="appropriation_id" widget="many2onebutton" optional="show" />
+                <field name="date" optional="show" />
                 <field name="department_analytic_id" />
                 <field name="activity_analytic_id" />
                 <field name="fund_analytic_id" />
                 <field name="source_analytic_id" />
                 <field name="account_id" />
                 <field name="balance" sum="Total" />
-                <field name="note" />
+                <field name="note" optional="hide" />
             </tree>
         </field>
     </record>
@@ -145,6 +137,7 @@
         <field name="model">budget.appropriation.line</field>
         <field name="arch" type="xml">
             <form string="Budget Appropriation Line">
+                <field name="analytic_distribution" widget="analytic_distribution" options="{'account_field': 'account_id', 'business_domain': 'budget'}" invisible="1" />
                 <sheet>
                     <group>
                         <field name="appropriation_id" readonly="1" />
@@ -152,9 +145,6 @@
                         <field name="account_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                         <field name="balance" />
                         <field name="note" />
-                    </group>
-                    <group string="Analytic Distribution">
-                        <field name="analytic_distribution" widget="analytic_distribution" options="{'account_field': 'account_id', 'business_domain': 'budget'}" />
                     </group>
                     <group string="Analytic Dimensions" readonly="1">
                         <field name="department_analytic_id" />
@@ -183,14 +173,50 @@
                 <filter name="review" string="In Review" domain="[('state', '=', 'review')]" />
                 <filter name="posted" string="Posted" domain="[('state', '=', 'posted')]" />
                 <separator />
-                <filter name="current_fy" string="Current Fiscal Year" domain="[('date_range_fy_id.date_from', '&lt;=', context_today()), ('date_range_fy_id.date_to', '&gt;=', context_today())]" />
+                <filter name="current_fy" string="ปีงบประมาณปัจจุบัน" domain="[('date_range_fy_id.date_from', '&lt;=', context_today()), ('date_range_fy_id.date_to', '&gt;=', context_today())]" />
                 <separator />
                 <group expand="0" string="Group By">
-                    <filter name="group_by_state" string="Status" context="{'group_by': 'state'}" />
-                    <filter name="group_by_journal" string="Journal" context="{'group_by': 'journal_id'}" />
-                    <filter name="group_by_fiscal_year" string="Fiscal Year" context="{'group_by': 'date_range_fy_id'}" />
-                    <filter name="group_by_source" string="Source" context="{'group_by': 'source_analytic_id'}" />
+                    <filter name="group_by_state" string="สถานะ" context="{'group_by': 'state'}" />
+                    <filter name="group_by_journal" string="ประเภท" context="{'group_by': 'journal_id'}" />
+                    <filter name="group_by_fiscal_year" string="ปีงบประมาณ" context="{'group_by': 'date_range_fy_id'}" />
+                    <filter name="group_by_source" string="แหล่งเงิน" context="{'group_by': 'source_analytic_id'}" />
                 </group>
+                <searchpanel>
+                    <field name="journal_id" icon="fa-book" enable_counters="1" />
+                    <field name="date_range_fy_id" icon="fa-calendar" enable_counters="1" />
+                    <field name="source_analytic_id" icon="fa-money" enable_counters="1" order="code asc" />
+                    <field name="department_analytic_id" icon="fa-users" enable_counters="1" order="code asc" />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <!-- View budget.appropriation.line search -->
+    <record id="view_budget_appropriation_line_search" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.line.search</field>
+        <field name="model">budget.appropriation.line</field>
+        <field name="arch" type="xml">
+            <search string="Budget Appropriations">
+                <field name="name" />
+                <field name="journal_id" />
+                <field name="source_analytic_id" />
+                <field name="department_analytic_id" />
+                <separator />
+                <filter name="current_fy" string="ปีงบประมาณปัจจุบัน" domain="[('date_range_fy_id.date_from', '&lt;=', context_today()), ('date_range_fy_id.date_to', '&gt;=', context_today())]" />
+                <separator />
+                <group expand="0" string="Group By">
+                    <filter name="group_by_state" string="สถานะ" context="{'group_by': 'parent_state'}" />
+                    <filter name="group_by_journal" string="ประเภท" context="{'group_by': 'journal_id'}" />
+                    <filter name="group_by_fiscal_year" string="ปีงบประมาณ" context="{'group_by': 'date_range_fy_id'}" />
+                    <filter name="group_by_source" string="แหล่งเงิน" context="{'group_by': 'source_analytic_id'}" />
+                </group>
+                <searchpanel>
+                    <field name="account_id" icon="fa-book" enable_counters="1" />
+                    <field name="journal_id" icon="fa-book" enable_counters="1" />
+                    <field name="date_range_fy_id" icon="fa-calendar" enable_counters="1" />
+                    <field name="source_analytic_id" icon="fa-money" enable_counters="1" order="code asc" />
+                    <field name="department_analytic_id" icon="fa-users" enable_counters="1" order="code asc" />
+                </searchpanel>
             </search>
         </field>
     </record>
@@ -215,7 +241,7 @@
     <record id="action_budget_appropriation_line" model="ir.actions.act_window">
         <field name="name">Budget Appropriation Lines</field>
         <field name="res_model">budget.appropriation.line</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,pivot</field>
         <field name="context">{}</field>
     </record>
 
