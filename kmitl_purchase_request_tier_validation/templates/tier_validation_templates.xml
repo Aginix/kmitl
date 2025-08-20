@@ -1,9 +1,0 @@
-<odoo>
-    <template
-        id="tier_validation_request_name"
-        inherit_id="base_tier_validation.tier_validation_buttons"
-    >
-        <xpath expr="//button[@name='request_validation']" position="replace">
-        </xpath>
-    </template>
-</odoo>

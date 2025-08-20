@@ -1,4 +1,7 @@
+from lxml import etree
+
 from odoo import _, api, fields, models
+
 
 
 class PurchaseRequest(models.Model):
@@ -8,6 +11,12 @@ class PurchaseRequest(models.Model):
     _state_to = ["approved"]
 
     _tier_validation_manual_config = False
+
+    is_purchase_request = fields.Boolean(compute="_compute_is_purchase_request")
+
+    def _compute_is_purchase_request(self):
+        for rec in self:
+            rec.is_purchase_request = rec._name == "purchase.request"
 
     @api.model
     def _get_under_validation_exceptions(self):
@@ -32,3 +41,12 @@ class PurchaseRequest(models.Model):
     def button_draft(self):
         self.restart_validation()
         return super().button_draft()
+
+    def _add_tier_validation_buttons(self, node, params):
+        if self.is_purchase_request:
+            str_element = self.env["ir.qweb"]._render(
+                "base_tier_validation.tier_validation_buttons", params
+            )
+            new_node = etree.fromstring(str_element)
+            return new_node
+        return etree.Element("div")
