@@ -4,14 +4,15 @@
     <record id="paperformat_budget_appropriation_f5" model="report.paperformat">
         <field name="name">Budget Appropriation F5 Paper Format</field>
         <field name="default" eval="False"/>
+        <field name="disable_shrinking" eval="True"/>
         <field name="format">A4</field>
         <field name="page_height">0</field>
         <field name="page_width">0</field>
         <field name="orientation">Portrait</field>
-        <field name="margin_top">5</field>
+        <field name="margin_top">8</field>
         <field name="margin_bottom">15</field>
-        <field name="margin_left">15</field>
-        <field name="margin_right">15</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
         <field name="header_line" eval="False"/>
         <field name="header_spacing">0</field>
         <field name="dpi">90</field>

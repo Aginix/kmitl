@@ -7,7 +7,7 @@
                         padding-top: 0 !important;
                         margin-top: 0 !important;
                     }
-                    
+
                     .budget-appropriation-f5-report {
                         font-family: 'TH SarabunPSK', 'Sarabun', Arial, sans-serif;
                         margin-left: 24pt;
@@ -20,7 +20,7 @@
                         margin: 0;
                         font-size: 10pt;
                         font-weight: 600;
-                        line-height: 1.5;
+                        line-height: 1.875;
                     }
 
                     .report-header {
@@ -49,7 +49,6 @@
                     .report-table {
                         width: 100%;
                         font-size: 9pt;
-                        border-collapse: collapse;
                     }
 
                     .report-table thead tr {
@@ -57,19 +56,19 @@
 
                     .report-table th {
                         text-align: center;
-                        padding: 5px;
+                        padding: 0px 6px;
                     }
 
                     .report-table .items-column {
-                        width: 65%;
+                        width: 63%;
                     }
 
                     .report-table .code-column {
-                        width: 15%;
+                        width: 7%;
                     }
 
                     .report-table .amount-column {
-                        width: 10%;
+                        width: 15%;
                     }
 
                     .report-header table {
@@ -85,10 +84,10 @@
                     }
 
                     .hierarchy-row td {
-                        padding-left: 4px;
-                        padding-right: 4px;
-                        padding-top: 1px;
-                        padding-bottom: 1px;
+                        padding-left: 6px;
+                        padding-right: 6px;
+                        padding-top: 2px;
+                        padding-bottom: 2px;
                     }
 
                     .account-content {
@@ -173,9 +172,7 @@
 
                     <div class="institution-info">
                         <h3 t-esc="o.source_analytic_id.name" />
-                        <h3>ประมาณการ                            <t t-esc="o.journal_id.name" />
- ประจำปีงบประมาณ พ.ศ.                            <t t-esc="o.date_range_fy_id.name" />
-                        </h3>
+                        <h3>ประมาณการ<t t-esc="o.journal_id.name" /> <t t-esc="o.date_range_fy_id.name" /></h3>
                         <h3>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
                         <h3 t-esc="o.department_analytic_id.complete_name" />
                         <div style="margin: 0 auto;">
@@ -183,7 +180,9 @@
                                 <tbody>
                                     <tr>
                                         <td align="right">วงเงิน</td>
-                                        <td align="right"><t t-esc="'{:,}'.format(int(o.total_amount))" /></td>
+                                        <td align="right">
+                                            <t t-esc="'{:,}'.format(int(o.total_amount))" />
+                                        </td>
                                         <td>บาท</td>
                                     </tr>
                                 </tbody>
@@ -193,12 +192,14 @@
                 </div>
 
                 <!-- Main Table -->
-                <table class="report-table table-borderless">
+                <table class="report-table table" style="border-spacing:0px 4px;">
                     <thead>
                         <tr>
-                            <th class="items-column" rowspan="2">รายการ</th>
-                            <th class="code-column" rowspan="2">รหัส</th>
-                            <th style="text-align: text_center" colspan="2">แหล่งเงิน (หน่วย : บาท)</th>
+                            <th style="vertical-align: bottom; text-align: left;" class="items-column" rowspan="2">
+                                <div></div>
+                            </th>
+                            <th style="vertical-align: bottom; text-align: right; padding-right: 10px;" class="code-column" rowspan="2">รหัส</th>
+                            <th style="padding-bottom: 4px;" colspan="2">แหล่งเงิน (หน่วย : บาท)</th>
                         </tr>
                         <tr>
                             <th class="amount-column">งบประมาณ</th>

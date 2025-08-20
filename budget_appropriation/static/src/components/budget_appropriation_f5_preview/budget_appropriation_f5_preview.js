@@ -129,7 +129,7 @@ export class BudgetAppropriationF5Preview extends Component {
             this.notification.add("ไม่พบข้อมูลเอกสาร", { type: "danger" });
             return;
         }
-        
+
         // Trigger the PDF report action
         this.actionService.doAction({
             type: 'ir.actions.report',
