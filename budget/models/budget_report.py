@@ -311,7 +311,7 @@ class BudgetReport(models.TransientModel):
         grouped_data = defaultdict(lambda: {'budget': 0.0, 'actual': 0.0})
 
         for move in budget_moves:
-            for line in move.line_ids.filtered(lambda l: not l.is_virtual_line):
+            for line in move.line_ids:
                 group_key = self._get_group_key(line)
 
                 if move.move_type == 'appropriation':
