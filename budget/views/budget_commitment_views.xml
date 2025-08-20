@@ -7,20 +7,18 @@
         <field name="model">budget.commitment</field>
         <field name="arch" type="xml">
             <tree string="Budget Commitments" decoration-danger="budget_availability_status == 'insufficient'" decoration-warning="budget_availability_status == 'warning'" decoration-success="budget_availability_status == 'sufficient'">
+                <field name="available_budget_amount" invisible="1" />
+                <field name="budget_availability_status" invisible="1" />
                 <field name="name"/>
                 <field name="date"/>
                 <field name="date_range_fy_id"/>
-                <field name="account_id"/>
-                <field name="activity_analytic_id"/>
-                <field name="department_analytic_id"/>
-                <field name="fund_analytic_id"/>
                 <field name="source_analytic_id"/>
+                <field name="department_analytic_id"/>
+                <field name="activity_analytic_id"/>
+                <field name="fund_analytic_id"/>
+                <field name="account_id"/>
                 <field name="amount" sum="Total Amount"/>
-                <field name="available_budget_amount" sum="Total Available" widget="monetary"/>
-                <field name="budget_availability_status" widget="badge"
-                       decoration-danger="budget_availability_status == 'insufficient'"
-                       decoration-warning="budget_availability_status == 'warning'"
-                       decoration-success="budget_availability_status == 'sufficient'"/>
+
                 <field name="consumed_amount" sum="Consumed Amount"/>
                 <field name="remaining_amount" sum="Remaining Amount"/>
                 <field name="state" widget="badge"
@@ -77,26 +75,19 @@
                             <field name="ref"/>
                         </group>
                         <group string="Budget Details">
+                            <field name="department_analytic_id" options="{'no_create': True}"/>
+                            <field name="source_analytic_id" options="{'no_create': True}"/>
+                            <field name="activity_analytic_id" options="{'no_create': True}"/>
+                            <field name="fund_analytic_id" options="{'no_create': True}"/>
                             <field name="account_id" options="{'no_create': True}"/>
                             <field name="amount" widget="monetary"/>
                             <field name="currency_id" invisible="1"/>
                         </group>
                     </group>
 
-                    <group string="4-Dimensional Analytics">
-                        <group>
-                            <field name="activity_analytic_id" options="{'no_create': True}"/>
-                            <field name="fund_analytic_id" options="{'no_create': True}"/>
-                        </group>
-                        <group>
-                            <field name="department_analytic_id" options="{'no_create': True}"/>
-                            <field name="source_analytic_id" options="{'no_create': True}"/>
-                        </group>
-                    </group>
-
                     <group string="Budget Analysis" name="budget_analysis">
                         <group>
-                            <field name="available_budget_amount" widget="monetary" 
+                            <field name="available_budget_amount" widget="monetary"
                                    decoration-danger="budget_availability_status == 'insufficient'"
                                    decoration-warning="budget_availability_status == 'warning'"
                                    decoration-success="budget_availability_status == 'sufficient'"/>

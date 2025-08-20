@@ -143,7 +143,7 @@ class BudgetCommitment(models.Model):
 
     date_range_fy_id = fields.Many2one(
         comodel_name="account.fiscal.year",
-        string="Fiscal Year",
+        string="ปีงบประมาณ",
         required=True,
         tracking=True,
         readonly=False,
@@ -168,38 +168,23 @@ class BudgetCommitment(models.Model):
         states=READONLY_STATES,
     )
 
-    # Line fields (from original budget.commitment.line)
-    sequence = fields.Integer(
-        string="Sequence",
-        default=10,
-        help="Sequence for ordering lines",
-    )
-
     account_id = fields.Many2one(
         comodel_name="budget.account",
-        string="Budget Account",
+        string="รหัสงบประมาณ",
         required=True,
         index=True,
         tracking=True,
         domain="[('budgetable', '=', True), ('budget_type', '=', 'expense')]",
     )
 
-    line_name = fields.Char(
-        string="Line Description",
-        related="account_id.name",
-        store=True,
-        tracking=True,
-    )
-
     amount = fields.Monetary(
-        string="Committed Amount",
+        string="จำนวนเงินจอง",
         required=True,
         currency_field="currency_id",
         tracking=True,
         help="Amount to be committed for this budget line",
     )
 
-    # 4-Dimensional Analytic Distribution
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="กิจกรรม",
@@ -409,7 +394,7 @@ class BudgetCommitment(models.Model):
                 if record.amount:
                     # Check if negative budget is allowed
                     allow_negative = record.env['ir.config_parameter'].sudo().get_param('budget.allow_negative', False)
-                    
+
                     if available >= record.amount:
                         record.budget_availability_status = 'sufficient'
                     elif available >= record.amount * 0.5 or (allow_negative and available >= 0):  # 50% threshold or allow negative
@@ -453,7 +438,7 @@ class BudgetCommitment(models.Model):
         if self.amount and self.available_budget_amount >= 0:
             # Check if negative budget is allowed
             allow_negative = self.env['ir.config_parameter'].sudo().get_param('budget.allow_negative', False)
-            
+
             if self.budget_availability_status == 'insufficient' and not allow_negative:
                 return {
                     'warning': {
@@ -533,7 +518,7 @@ class BudgetCommitment(models.Model):
         self.ensure_one()
         # Trigger recomputation of budget availability
         self._compute_available_budget()
-        
+
         if self.budget_availability_status == 'insufficient':
             raise UserError(_(
                 'Insufficient budget for this commitment.\n\n'
@@ -549,7 +534,7 @@ class BudgetCommitment(models.Model):
                 self.activity_analytic_id.display_name,
                 self.fund_analytic_id.display_name,
             ))
-        
+
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
@@ -576,7 +561,7 @@ class BudgetCommitment(models.Model):
         for record in self:
             if record.state != 'confirmed':
                 raise UserError(_('Only confirmed commitments can be reserved.'))
-            
+
             # Check budget availability before reserving
             record.action_check_budget_availability()
             record.state = 'reserved'
