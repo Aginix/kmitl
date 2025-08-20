@@ -418,65 +418,64 @@ class BudgetCommitmentLine(models.Model):
     @api.onchange("amount", "account_id", "activity_analytic_id", "fund_analytic_id")
     def _onchange_check_budget_availability(self):
         """Check budget availability and show warning if insufficient"""
-        pass
-        # if self.amount and self.available_budget_amount >= 0:
-        #     # Check if negative budget is allowed
-        #     allow_negative = self.env['ir.config_parameter'].sudo().get_param('budget.allow_negative', False)
+        if self.amount and self.available_budget_amount >= 0:
+            # Check if negative budget is allowed
+            allow_negative = self.env['ir.config_parameter'].sudo().get_param('budget.allow_negative', False)
 
-        #     if self.budget_availability_status == 'insufficient' and not allow_negative:
-        #         return {
-        #             'warning': {
-        #                 'title': _('Insufficient Budget'),
-        #                 'message': _(
-        #                     'The requested amount (%(requested)s) exceeds the available budget (%(available)s).\n\n'
-        #                     'Budget Account: %(account)s\n'
-        #                     'Activity: %(activity)s\n'
-        #                     'Fund: %(fund)s\n\n'
-        #                     'Please reduce the amount or select a different analytic combination.'
-        #                 ) % {
-        #                     'requested': "{:,.2f}".format(self.amount),
-        #                     'available': "{:,.2f}".format(self.available_budget_amount),
-        #                     'account': self.account_id.display_name if self.account_id else 'N/A',
-        #                     'activity': self.activity_analytic_id.display_name if self.activity_analytic_id else 'N/A',
-        #                     'fund': self.fund_analytic_id.display_name if self.fund_analytic_id else 'N/A',
-        #                 }
-        #             }
-        #         }
-        #     elif self.budget_availability_status == 'warning':
-        #         if allow_negative and self.available_budget_amount < self.amount:
-        #             return {
-        #                 'warning': {
-        #                     'title': _('Negative Budget Warning'),
-        #                     'message': _(
-        #                         'This commitment will create a negative budget balance.\n\n'
-        #                         'Requested: %(requested)s\n'
-        #                         'Available: %(available)s\n'
-        #                         'Remaining after commitment: %(remaining)s\n\n'
-        #                         'Negative budgets are allowed by system configuration.'
-        #                     ) % {
-        #                         'requested': "{:,.2f}".format(self.amount),
-        #                         'available': "{:,.2f}".format(self.available_budget_amount),
-        #                         'remaining': "{:,.2f}".format(self.available_budget_amount - self.amount),
-        #                     }
-        #                 }
-        #             }
-        #         else:
-        #             return {
-        #                 'warning': {
-        #                     'title': _('Low Budget Warning'),
-        #                     'message': _(
-        #                         'This commitment will use %(percentage).1f%% of the available budget.\n\n'
-        #                         'Requested: %(requested)s\n'
-        #                         'Available: %(available)s\n'
-        #                         'Remaining after commitment: %(remaining)s'
-        #                     ) % {
-        #                         'percentage': self.budget_availability_percentage,
-        #                         'requested': "{:,.2f}".format(self.amount),
-        #                         'available': "{:,.2f}".format(self.available_budget_amount),
-        #                         'remaining': "{:,.2f}".format(self.available_budget_amount - self.amount),
-        #                     }
-        #                 }
-        #             }
+            if self.budget_availability_status == 'insufficient' and not allow_negative:
+                return {
+                    'warning': {
+                        'title': _('Insufficient Budget'),
+                        'message': _(
+                            'The requested amount (%(requested)s) exceeds the available budget (%(available)s).\n\n'
+                            'Budget Account: %(account)s\n'
+                            'Activity: %(activity)s\n'
+                            'Fund: %(fund)s\n\n'
+                            'Please reduce the amount or select a different analytic combination.'
+                        ) % {
+                            'requested': "{:,.2f}".format(self.amount),
+                            'available': "{:,.2f}".format(self.available_budget_amount),
+                            'account': self.account_id.display_name if self.account_id else 'N/A',
+                            'activity': self.activity_analytic_id.display_name if self.activity_analytic_id else 'N/A',
+                            'fund': self.fund_analytic_id.display_name if self.fund_analytic_id else 'N/A',
+                        }
+                    }
+                }
+            elif self.budget_availability_status == 'warning':
+                if allow_negative and self.available_budget_amount < self.amount:
+                    return {
+                        'warning': {
+                            'title': _('Negative Budget Warning'),
+                            'message': _(
+                                'This commitment will create a negative budget balance.\n\n'
+                                'Requested: %(requested)s\n'
+                                'Available: %(available)s\n'
+                                'Remaining after commitment: %(remaining)s\n\n'
+                                'Negative budgets are allowed by system configuration.'
+                            ) % {
+                                'requested': "{:,.2f}".format(self.amount),
+                                'available': "{:,.2f}".format(self.available_budget_amount),
+                                'remaining': "{:,.2f}".format(self.available_budget_amount - self.amount),
+                            }
+                        }
+                    }
+                else:
+                    return {
+                        'warning': {
+                            'title': _('Low Budget Warning'),
+                            'message': _(
+                                'This commitment will use %(percentage).1f%% of the available budget.\n\n'
+                                'Requested: %(requested)s\n'
+                                'Available: %(available)s\n'
+                                'Remaining after commitment: %(remaining)s'
+                            ) % {
+                                'percentage': self.budget_availability_percentage,
+                                'requested': "{:,.2f}".format(self.amount),
+                                'available': "{:,.2f}".format(self.available_budget_amount),
+                                'remaining': "{:,.2f}".format(self.available_budget_amount - self.amount),
+                            }
+                        }
+                    }
 
     @api.constrains("amount")
     def _check_positive_amount(self):
