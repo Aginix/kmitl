@@ -163,7 +163,7 @@
                                 <field
                                     name="commitment_id"
                                     options='{"no_create": True, "no_create_edit": True}'
-                                    domain="[('state', 'in', ('reserved', 'consumed')), ('date_range_fy_id', '=', date_range_fy_id), ('source_analytic_id', '=', source_analytic_id)]"
+                                    domain="[('state', '=', 'reserved'), ('date_range_fy_id', '=', date_range_fy_id), ('source_analytic_id', '=', source_analytic_id)]"
                                 />
                             </group>
                         </page>

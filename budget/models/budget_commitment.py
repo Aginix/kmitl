@@ -42,13 +42,11 @@ class BudgetCommitment(models.Model):
         • Color-coded visual feedback in the user interface
 
     State Lifecycle:
-        draft → confirmed → reserved → consumed → done
-        │        │          │         │         │
-        │        │          │         │         └── Fully processed, no more changes
-        │        │          │         └─────────── Budget consumed via budget moves
-        │        │          └───────────────────── Budget reserved, prevents over-commitment
-        │        └──────────────────────────────── Validated, ready for reservation
-        └───────────────────────────────────────── Editable, no budget impact
+        draft → reserved → done
+        │       │         │
+        │       │         └── Fully processed, budget released or consumed
+        │       └──────────── Budget reserved, prevents over-commitment
+        └─────────────────── Editable, no budget impact
 
     Key Features:
         • Real-time budget availability checking with hierarchical matching
@@ -87,9 +85,7 @@ class BudgetCommitment(models.Model):
     _rec_names_search = ["name", "ref"]
 
     READONLY_STATES = {
-        "confirmed": [("readonly", True)],
         "reserved": [("readonly", True)],
-        "consumed": [("readonly", True)],
         "done": [("readonly", True)],
         "cancel": [("readonly", True)],
     }
@@ -126,9 +122,7 @@ class BudgetCommitment(models.Model):
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
-            ("confirmed", "Confirmed"),
             ("reserved", "Reserved"),
-            ("consumed", "Consumed"),
             ("done", "Done"),
             ("cancel", "Cancelled"),
         ],
@@ -555,18 +549,12 @@ class BudgetCommitment(models.Model):
             }
         }
 
-    def action_confirm(self):
-        """Confirm the commitment"""
-        for record in self:
-            if record.state != 'draft':
-                raise UserError(_('Only draft commitments can be confirmed.'))
-            record.state = 'confirmed'
 
     def action_reserve(self):
         """Reserve budget for this commitment"""
         for record in self:
-            if record.state != 'confirmed':
-                raise UserError(_('Only confirmed commitments can be reserved.'))
+            if record.state != 'draft':
+                raise UserError(_('Only draft commitments can be reserved.'))
 
             # Check budget availability before reserving
             record.action_check_budget_availability()
@@ -578,10 +566,10 @@ class BudgetCommitment(models.Model):
             record.state = 'reserved'
 
     def action_done(self):
-        """Mark commitment as done"""
+        """Mark commitment as done - closes the commitment and releases any remaining budget"""
         for record in self:
-            if record.state not in ['consumed']:
-                raise UserError(_('Only consumed commitments can be marked as done.'))
+            if record.state not in ['reserved']:
+                raise UserError(_('Only reserved commitments can be marked as done.'))
             record.state = 'done'
 
     def action_cancel(self):
