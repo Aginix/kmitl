@@ -94,7 +94,6 @@ class BudgetCommitment(models.Model):
         "cancel": [("readonly", True)],
     }
 
-    # Header fields (from original budget.commitment)
     name = fields.Char(
         string="Number",
         required=True,
@@ -519,7 +518,7 @@ class BudgetCommitment(models.Model):
             if not record.account_id:
                 raise ValidationError(_("Budget account is required."))
 
-    @api.model_create_multi  
+    @api.model_create_multi
     def create(self, vals_list):
         """Override create to generate sequence number"""
         for vals in vals_list:
