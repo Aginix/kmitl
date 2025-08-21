@@ -24,6 +24,7 @@ class ProcurementPlan(models.Model):
     _name = "procurement.plan"
     _description = "Procurement Plan"
     _inherit = ["mail.thread", "analytic.distribution.mixin"]
+    _check_company_auto = True
 
     READONLY_STATES = {
         "validate": [("readonly", True)],
@@ -109,10 +110,10 @@ class ProcurementPlan(models.Model):
         states=READONLY_STATES,
     )
 
+    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.company)
     activity_analytic_id = fields.Many2one(states=READONLY_STATES)
     department_analytic_id = fields.Many2one(required=True, states=READONLY_STATES)
     fund_analytic_id = fields.Many2one(states=READONLY_STATES)
-
     source_analytic_id = fields.Many2one(required=True, states=READONLY_STATES)
 
     analytic_account_id = fields.Many2one(
@@ -257,9 +258,14 @@ class ProcurementPlan(models.Model):
                 {
                     "name": record.name,
                     "company_id": record.company_id.id,
-                    "partner_id": record.partner_id.id,
                     "plan_id": record.company_id.analytic_plan_id.id,
                     "active": True,
                 }
             )
             record.write({"analytic_account_id": analytic_account.id})
+
+    def write(self, vals):
+        for record in self:
+            if record.state == 'pending' not record.analytic_account_id:
+                record._create_analytic_account()
+        return super().write(vals)

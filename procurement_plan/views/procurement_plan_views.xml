@@ -142,6 +142,11 @@
                             </tree>
                         </field>
                     </div>
+                    <notebook>
+                        <page name="additional_info" string="Additional Info">
+                            <field name="analytic_account_id" groups="analytic.group_analytic_accounting" />
+                        </page>
+                    </notebook>
                 </sheet>
                 <!-- Chatter -->
                 <div class="oe_chatter">
