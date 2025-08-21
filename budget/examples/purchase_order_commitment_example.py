@@ -1,10 +1,9 @@
 """
 Example: Purchase Order Integration with Budget Commitment Mixin
 
-This example demonstrates the flexible parameter-based approach for integrating
-budget.commitment.mixin. This approach provides maximum flexibility by allowing
-you to use custom analytic field names and structures without being forced to
-inherit from analytic.distribution.mixin.
+This example demonstrates the dynamic field approach for budget
+commitment integration. Shows how to configure custom field names
+and create comprehensive budget workflow integration.
 
 Note: This is an EXAMPLE file for documentation purposes.
 To implement this in your module, adapt the code to your specific needs.
@@ -18,13 +17,16 @@ class PurchaseOrderManual(models.Model):
     """
     Purchase Order with Budget Commitment Integration
     
-    This example demonstrates the flexible parameter-based approach for budget
-    commitment integration without requiring analytic.distribution.mixin inheritance.
-    Shows how to use custom analytic field names and create comprehensive
-    budget workflow integration.
+    This example demonstrates the dynamic field approach for budget
+    commitment integration. Shows how to configure custom field names
+    and create comprehensive budget workflow integration.
     """
     _name = 'purchase.order.manual'
     _inherit = ['purchase.order', 'budget.commitment.mixin']
+    
+    # Configure dynamic field names for the mixin
+    _commitment_id_field = 'budget_commitment_id'
+    _commitment_account_id_field = 'budget_account_id'
     
     budget_commitment_id = fields.Many2one(
         'budget.commitment',
@@ -101,11 +103,10 @@ class PurchaseOrderManual(models.Model):
                 order.budget_status = 'not_checked'
                 order.budget_available = 0.0
             else:
-                # Check budget availability using parameter-based approach
+                # Check budget availability using dynamic field approach
                 try:
                     result = order._check_budget_availability(
                         amount=order.amount_total,
-                        budget_account_id=order.budget_account_id,
                         activity_analytic_id=order.project_activity_id,
                         fund_analytic_id=order.funding_source_id,
                         department_analytic_id=order.responsible_department_id
@@ -129,10 +130,9 @@ class PurchaseOrderManual(models.Model):
                 "Please specify budget account and all required analytic dimensions"
             ))
         
-        # Check budget availability using parameter-based approach
+        # Check budget availability using dynamic field approach
         result = self._check_budget_availability(
             amount=self.amount_total,
-            budget_account_id=self.budget_account_id,
             activity_analytic_id=self.project_activity_id,
             fund_analytic_id=self.funding_source_id,
             department_analytic_id=self.responsible_department_id
@@ -169,7 +169,6 @@ class PurchaseOrderManual(models.Model):
         # Check budget availability first
         check_result = self._check_budget_availability(
             amount=self.amount_total,
-            budget_account_id=self.budget_account_id,
             activity_analytic_id=self.project_activity_id,
             fund_analytic_id=self.funding_source_id,
             department_analytic_id=self.responsible_department_id
@@ -181,20 +180,18 @@ class PurchaseOrderManual(models.Model):
             ) % check_result['message'])
         
         try:
-            # Create commitment using manual parameters
+            # Create commitment using dynamic field approach
             commitment = self._create_budget_commitment(
                 amount=self.amount_total,
-                budget_account_id=self.budget_account_id,
                 activity_analytic_id=self.project_activity_id,
                 fund_analytic_id=self.funding_source_id,
                 department_analytic_id=self.responsible_department_id,
                 ref=self.name,
-                description=f"Purchase Order: {self.name}\nVendor: {self.partner_id.name}",
+                description=f"Purchase Order: {self.name}\\nVendor: {self.partner_id.name}",
                 date=self.date_order,
                 auto_reserve=True
             )
-            
-            self.budget_commitment_id = commitment
+            # Note: commitment is automatically stored in budget_commitment_id by the mixin
             
             self.message_post(
                 body=_(
@@ -235,7 +232,7 @@ class PurchaseOrderManual(models.Model):
         for order in self:
             if order.budget_commitment_id:
                 try:
-                    self._cancel_budget_commitment(order.budget_commitment_id)
+                    order._cancel_budget_commitment()  # Uses dynamic field automatically
                     order.message_post(
                         body=_("Budget commitment %s has been cancelled") % order.budget_commitment_id.name
                     )
@@ -254,9 +251,8 @@ class PurchaseOrderManual(models.Model):
             for order in self:
                 if order.budget_commitment_id and order.state == 'purchase':
                     try:
-                        # Update commitment amount
-                        self._update_commitment_amount(
-                            order.budget_commitment_id,
+                        # Update commitment amount using dynamic field approach
+                        order._update_commitment_amount(
                             order.amount_total
                         )
                         order.message_post(
@@ -281,7 +277,6 @@ class PurchaseOrderManual(models.Model):
                 # Consume commitment for invoice amount
                 try:
                     budget_move = order._consume_commitment(
-                        order.budget_commitment_id,
                         invoice.amount_total,
                         reference=f"Invoice: {invoice.name}"
                     )
@@ -307,14 +302,15 @@ class PurchaseOrderManual(models.Model):
     def action_view_budget_commitment(self):
         """Action to view the related budget commitment"""
         self.ensure_one()
-        if not self.budget_commitment_id:
+        commitment = self._get_commitment_field_value('commitment_id')
+        if not commitment:
             raise UserError(_("No budget commitment linked to this purchase order"))
         
         return {
             'type': 'ir.actions.act_window',
             'name': _('Budget Commitment'),
             'res_model': 'budget.commitment',
-            'res_id': self.budget_commitment_id.id,
+            'res_id': commitment.id,
             'view_mode': 'form',
             'target': 'current',
         }
