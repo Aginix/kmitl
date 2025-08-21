@@ -266,6 +266,6 @@ class ProcurementPlan(models.Model):
 
     def write(self, vals):
         for record in self:
-            if record.state == 'pending' not record.analytic_account_id:
+            if record.state == 'pending' and not record.analytic_account_id:
                 record._create_analytic_account()
         return super().write(vals)
