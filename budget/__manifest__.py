@@ -32,7 +32,6 @@
         "views/budget_transfer_views.xml",
         "views/budget_menus.xml",
         "views/res_config_settings_views.xml",
-        "views/budget_report_views.xml",
         "views/budget_execution_status_report_views.xml",
         "views/budget_execution_report_interactive_views.xml",
         "views/budget_appropriation_overview_views.xml",
