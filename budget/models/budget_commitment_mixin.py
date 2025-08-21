@@ -32,11 +32,11 @@ class BudgetCommitmentMixin(models.AbstractModel):
     Usage Example:
         class PurchaseOrder(models.Model):
             _inherit = ['purchase.order', 'budget.commitment.mixin']
-            
+
             # Define field names for dynamic access
             _commitment_id_field = 'budget_commitment_id'
             _commitment_account_id_field = 'budget_account_id'
-            
+
             budget_commitment_id = fields.Many2one('budget.commitment')
             budget_account_id = fields.Many2one('budget.account')
 
@@ -65,22 +65,22 @@ class BudgetCommitmentMixin(models.AbstractModel):
     def _get_commitment_field_value(self, field_name):
         """
         Get the value of a dynamic commitment field.
-        
+
         Args:
             field_name (str): The name of the field to get ('commitment_id' or 'account_id')
-            
+
         Returns:
             The field value or False if field doesn't exist or is empty
         """
         self.ensure_one()
-        
+
         if field_name == 'commitment_id':
             actual_field_name = getattr(self.__class__, '_commitment_id_field', 'budget_commitment_id')
         elif field_name == 'account_id':
             actual_field_name = getattr(self.__class__, '_commitment_account_id_field', 'budget_account_id')
         else:
             raise ValueError(f"Unknown field_name: {field_name}")
-            
+
         if hasattr(self, actual_field_name):
             return getattr(self, actual_field_name)
         return False
@@ -88,18 +88,18 @@ class BudgetCommitmentMixin(models.AbstractModel):
     def _set_commitment_field_value(self, field_name, value):
         """
         Set the value of a dynamic commitment field.
-        
+
         Args:
             field_name (str): The name of the field to set ('commitment_id')
             value: The value to set
         """
         self.ensure_one()
-        
+
         if field_name == 'commitment_id':
             actual_field_name = getattr(self.__class__, '_commitment_id_field', 'budget_commitment_id')
         else:
             raise ValueError(f"Unknown field_name: {field_name}")
-            
+
         if hasattr(self, actual_field_name):
             setattr(self, actual_field_name, value)
         else:
@@ -126,7 +126,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
             budget.commitment: Created commitment record
         """
         self.ensure_one()
-        
+
         # Get budget account from dynamic field
         budget_account_id = self._get_commitment_field_value('account_id')
         if not budget_account_id:
@@ -140,24 +140,20 @@ class BudgetCommitmentMixin(models.AbstractModel):
             'account_id': budget_account_id.id if hasattr(budget_account_id, 'id') else budget_account_id,
             'activity_analytic_id': activity_analytic_id.id if hasattr(activity_analytic_id, 'id') else activity_analytic_id,
             'fund_analytic_id': fund_analytic_id.id if hasattr(fund_analytic_id, 'id') else fund_analytic_id,
+            'department_analytic_id': department_analytic_id.id if hasattr(department_analytic_id, 'id') else department_analytic_id,
+            'source_analytic_id': source_analytic_id.id if hasattr(source_analytic_id, 'id') else source_analytic_id,
+            'ref': ref,
+            'description': description or '',
+            'user_id': self.env.user.id,
+            'company_id': self.env.company.id,
         }
-
-        # Optional dimensions
-        if department_analytic_id:
-            commitment_vals['department_analytic_id'] = department_analytic_id.id if hasattr(department_analytic_id, 'id') else department_analytic_id
-        if source_analytic_id:
-            commitment_vals['source_analytic_id'] = source_analytic_id.id if hasattr(source_analytic_id, 'id') else source_analytic_id
-
-        # Additional fields
-        commitment_vals['ref'] = ref or (self.name if hasattr(self, 'name') else False)
-        commitment_vals['description'] = description or ''
 
         # Date and fiscal year
         commitment_date = kwargs.get('date', fields.Date.today())
         commitment_vals['date'] = commitment_date
 
         if not kwargs.get('date_range_fy_id'):
-            company_id = kwargs.get('company_id', 
+            company_id = kwargs.get('company_id',
                                   self.company_id.id if hasattr(self, 'company_id') and self.company_id else self.env.company.id)
             fiscal_year = self.env['account.fiscal.year'].search([
                 ('date_from', '<=', commitment_date),
@@ -171,12 +167,6 @@ class BudgetCommitmentMixin(models.AbstractModel):
             commitment_vals['date_range_fy_id'] = fiscal_year.id
         else:
             commitment_vals['date_range_fy_id'] = kwargs['date_range_fy_id']
-
-        # User and company
-        commitment_vals['user_id'] = kwargs.get('user_id', 
-                                               self.user_id.id if hasattr(self, 'user_id') and self.user_id else self.env.user.id)
-        commitment_vals['company_id'] = kwargs.get('company_id', 
-                                                  self.company_id.id if hasattr(self, 'company_id') and self.company_id else self.env.company.id)
 
         # Create commitment
         commitment = self.env['budget.commitment'].create(commitment_vals)
@@ -221,7 +211,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
             dict: Budget availability information
         """
         self.ensure_one()
-        
+
         # Get budget account from dynamic field
         budget_account_id = self._get_commitment_field_value('account_id')
         if not budget_account_id:
@@ -246,7 +236,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
         # Determine fiscal year
         if not kwargs.get('date_range_fy_id'):
             check_date = kwargs.get('date', fields.Date.today())
-            company_id = kwargs.get('company_id', 
+            company_id = kwargs.get('company_id',
                                   self.company_id.id if hasattr(self, 'company_id') and self.company_id else self.env.company.id)
             fiscal_year = self.env['account.fiscal.year'].search([
                 ('date_from', '<=', check_date),
@@ -261,7 +251,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
         else:
             fy_id = kwargs['date_range_fy_id']
 
-        company_id = kwargs.get('company_id', 
+        company_id = kwargs.get('company_id',
                                self.company_id.id if hasattr(self, 'company_id') and self.company_id else self.env.company.id)
 
         # Get available budget
@@ -321,10 +311,10 @@ class BudgetCommitmentMixin(models.AbstractModel):
             UserError: If commitment cannot be cancelled
         """
         self.ensure_one()
-        
+
         if commitment is None:
             commitment = self._get_commitment_field_value('commitment_id')
-            
+
         if not commitment:
             return True
 
@@ -358,10 +348,10 @@ class BudgetCommitmentMixin(models.AbstractModel):
             UserError: If commitment cannot be closed
         """
         self.ensure_one()
-        
+
         if commitment is None:
             commitment = self._get_commitment_field_value('commitment_id')
-            
+
         if not commitment:
             return True
 
@@ -400,10 +390,10 @@ class BudgetCommitmentMixin(models.AbstractModel):
             UserError: If budget is insufficient for increase
         """
         self.ensure_one()
-        
+
         if commitment is None:
             commitment = self._get_commitment_field_value('commitment_id')
-            
+
         if not commitment:
             raise ValidationError(_("No commitment to update"))
 
@@ -428,7 +418,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
             temp_self = self.env[self._name].new({
                 getattr(self.__class__, '_commitment_account_id_field', 'budget_account_id'): commitment.account_id.id
             })
-            
+
             # Check availability for the increase using commitment's analytics
             check_result = temp_self._check_budget_availability(
                 amount=increase,
@@ -457,7 +447,6 @@ class BudgetCommitmentMixin(models.AbstractModel):
 
         return True
 
-
     def _consume_commitment(self, amount, reference=None, commitment=None):
         """
         Record consumption against a commitment.
@@ -477,10 +466,10 @@ class BudgetCommitmentMixin(models.AbstractModel):
             ValidationError: If amount exceeds remaining commitment
         """
         self.ensure_one()
-        
+
         if commitment is None:
             commitment = self._get_commitment_field_value('commitment_id')
-            
+
         if not commitment:
             raise ValidationError(_("No commitment to consume"))
 
