@@ -12,10 +12,12 @@
         "l10n_th_gov_purchase_request",
     ],
     "data": [
+        "security/security.xml",
         "security/ir.model.access.csv",
         "views/procurement_plan_views.xml",
         "views/procurement_plan_menus.xml",
         "views/res_config_settings_views.xml",
+        "views/analytic_views.xml",
         "report/report_procurement_plan.xml",
     ],
     "assets": {
