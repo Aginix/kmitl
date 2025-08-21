@@ -161,8 +161,7 @@
             <div class="page budget-appropriation-report">
                 <div class="report-header">
                     <div class="document-ref">
-                        <div t-if="o.budget_type == 'revenue'">F4-P-วง-003</div>
-                        <div t-else="">F5-P-วง-003</div>
+                        <div>BUDGET-003</div>
                     </div>
 
                     <div class="institution-info">

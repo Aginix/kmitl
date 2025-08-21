@@ -58,7 +58,7 @@ class BudgetAppropriationOverviewReport(models.TransientModel):
         # Aggregate all non-virtual lines from these moves
         all_lines = self.env["budget.move.line"]
         for move in moves:
-            all_lines |= move.line_ids.filtered(lambda line: not line.is_virtual_line)
+            all_lines |= move.line_ids
 
         # Build hierarchy using the existing logic from budget_appropriation_report
         hierarchy = self._build_aggregated_hierarchy(all_lines)

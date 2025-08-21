@@ -37,7 +37,7 @@ class BudgetAppropriationLine(models.Model):
 
     appropriation_id = fields.Many2one(
         comodel_name="budget.appropriation",
-        string="Budget Appropriation",
+        string="รายการจัดสรร",
         copy=True,
         required=True,
         readonly=True,
@@ -58,17 +58,19 @@ class BudgetAppropriationLine(models.Model):
     name = fields.Char("ชื่อรายการ", related="account_id.name", store=True, tracking=True)
     account_id = fields.Many2one(
         comodel_name="budget.account",
+        string="รหัสงบประมาณ",
         index=True,
         required=True,
         domain="[('budget_type', '=', budget_type)]",
         tracking=True,
     )
     budget_type = fields.Selection(
-        related="appropriation_id.journal_id.default_budget_type", 
-        store=True, 
-        readonly=True
+        related="appropriation_id.journal_id.default_budget_type",
+        store=True,
+        readonly=True,
     )
     balance = fields.Float(
+        string="จำนวนเงิน",
         digits="Budget Precision",
         help="Appropriation Amount",
         readonly=False,
@@ -86,6 +88,18 @@ class BudgetAppropriationLine(models.Model):
     )
     currency_id = fields.Many2one(
         related="appropriation_id.currency_id",
+        store=True,
+    )
+    parent_state = fields.Selection(
+        related="appropriation_id.state",
+        store=True,
+    )
+    date_range_fy_id = fields.Many2one(
+        related="appropriation_id.date_range_fy_id",
+        store=True,
+    )
+    journal_id = fields.Many2one(
+        related="appropriation_id.journal_id",
         store=True,
     )
 
@@ -116,20 +130,6 @@ class BudgetAppropriationLine(models.Model):
         store=True,
         readonly=True,
     )
-
-    @api.onchange("activity_analytic_id", "fund_analytic_id", "department_analytic_id", "source_analytic_id")
-    def _onchange_analytic_fields(self):
-        """Update analytic distribution when individual fields change"""
-        if self.activity_analytic_id or self.fund_analytic_id or self.department_analytic_id or self.source_analytic_id:
-            distribution = {}
-            
-            # Add each dimension to distribution with 100% allocation
-            for field_name in ["department_analytic_id", "activity_analytic_id", "fund_analytic_id", "source_analytic_id"]:
-                analytic_account = getattr(self, field_name)
-                if analytic_account:
-                    distribution[str(analytic_account.id)] = 100.0
-            
-            self.analytic_distribution = distribution if distribution else False
 
     @api.onchange("balance")
     def _onchange_balance(self):

@@ -279,7 +279,7 @@ class BudgetController(models.AbstractModel):
 
         moves = BudgetMove.search(domain, order='date desc', limit=50)
         for move in moves:
-            for line in move.line_ids.filtered(lambda l: not l.is_virtual_line):
+            for line in move.line_ids:
                 if self._line_matches_analytic_data(line, analytic_data):
                     details.append({
                         'id': line.id,
@@ -293,7 +293,7 @@ class BudgetController(models.AbstractModel):
         domain[1] = ('move_type', '=', 'consume')
         moves = BudgetMove.search(domain, order='date desc', limit=50)
         for move in moves:
-            for line in move.line_ids.filtered(lambda l: not l.is_virtual_line):
+            for line in move.line_ids:
                 if self._line_matches_analytic_data(line, analytic_data):
                     details.append({
                         'id': line.id,
@@ -406,7 +406,7 @@ class BudgetController(models.AbstractModel):
         total = 0.0
 
         for move in moves:
-            for line in move.line_ids.filtered(lambda l: not l.is_virtual_line):
+            for line in move.line_ids:
                 if self._line_matches_analytic_data(line, analytic_data):
                     total += line.balance
 
@@ -445,7 +445,7 @@ class BudgetController(models.AbstractModel):
         total = 0.0
 
         for move in moves:
-            for line in move.line_ids.filtered(lambda l: not l.is_virtual_line):
+            for line in move.line_ids:
                 if self._line_matches_analytic_data(line, analytic_data):
                     total += abs(line.balance)
 

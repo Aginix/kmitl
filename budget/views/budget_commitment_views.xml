@@ -7,20 +7,24 @@
         <field name="model">budget.commitment</field>
         <field name="arch" type="xml">
             <tree string="Budget Commitments">
-                <field name="name"/>
-                <field name="date"/>
-                <field name="date_range_fy_id"/>
-                <field name="department_analytic_id"/>
+                <field name="name" optional="show" />
+                <field name="date" optional="hide" />
+                <field name="date_range_fy_id" optional="show" />
                 <field name="source_analytic_id"/>
-                <field name="total_amount" sum="Total Amount"/>
-                <field name="consumed_amount" sum="Consumed Amount"/>
-                <field name="remaining_amount" sum="Remaining Amount"/>
+                <field name="department_analytic_id"/>
+                <field name="activity_analytic_id"/>
+                <field name="fund_analytic_id"/>
+                <field name="account_id"/>
+                <field name="amount" sum="Total Amount"/>
+
+                <field name="consumed_amount" sum="Consumed Amount" optional="show" />
+                <field name="remaining_amount" sum="Remaining Amount" optional="show" />
                 <field name="state" widget="badge"
                        decoration-success="state == 'done'"
-                       decoration-info="state in ('confirmed', 'reserved')"
+                       decoration-info="state == 'reserved'"
                        decoration-warning="state == 'draft'"
                        decoration-danger="state == 'cancel'"/>
-                <field name="user_id"/>
+                <field name="user_id" widget="many2one_avatar_user" optional="show" />
             </tree>
         </field>
     </record>
@@ -33,19 +37,18 @@
             <form string="Budget Commitment">
                 <header>
                     <button name="action_check_budget_availability" string="Check Budget" type="object"
-                            class="btn-info" attrs="{'invisible': [('state', 'not in', ['draft', 'confirmed'])]}"
-                            help="Check budget availability for all commitment lines"/>
-                    <button name="action_confirm" string="Confirm" type="object"
-                            class="oe_highlight" attrs="{'invisible': ['|', ('show_confirm_button', '=', False), ('state', '!=', 'draft')]}"/>
+                            class="btn-info" attrs="{'invisible': [('state', '!=', 'draft')]}"
+                            help="Check budget availability for this commitment"/>
                     <button name="action_reserve" string="Reserve Budget" type="object"
-                            class="oe_highlight" attrs="{'invisible': ['|', ('show_reserve_button', '=', False), ('state', '!=', 'confirmed')]}"/>
+                            class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <button name="action_done" string="Mark as Done" type="object"
-                            attrs="{'invisible': [('state', 'not in', ['consumed'])]}"/>
+                            attrs="{'invisible': [('state', '!=', 'reserved')]}"
+                            help="Close this commitment and release any remaining budget"/>
                     <button name="action_cancel" string="Cancel" type="object"
                             attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"/>
                     <button name="action_reset_to_draft" string="Reset to Draft" type="object"
-                            attrs="{'invisible': [('show_reset_to_draft_button', '=', False)]}"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,reserved,consumed,done"/>
+                            attrs="{'invisible': [('state', 'not in', ['cancel'])]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,reserved,done"/>
                 </header>
 
                 <sheet>
@@ -57,98 +60,55 @@
 
                     <div class="oe_title">
                         <h1>
-                            <field name="name" placeholder="BC00001"/>
+                            <field name="name" readonly="1" />
                         </h1>
                     </div>
 
                     <group>
-                        <group>
+                        <group string="Basic Information">
                             <field name="date"/>
-                            <field name="date_range_fy_id" options="{'no_create': True}"/>
-                            <field name="user_id"/>
+                            <field name="date_range_fy_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="user_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="ref"/>
+                        </group>
+                        <group string="Budget Details">
+                            <field name="department_analytic_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="source_analytic_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="activity_analytic_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="fund_analytic_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="account_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="amount" widget="monetary"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Budget Analysis" name="budget_analysis">
+                        <group>
+                            <field name="consumed_amount" widget="monetary" readonly="1"/>
+                            <field name="remaining_amount" widget="monetary" readonly="1"/>
+                        </group>
+                        <group attrs="{'invisible': [('state', '!=', 'draft')]}">
+                            <field name="available_budget_amount" widget="monetary"
+                                   decoration-danger="budget_availability_status == 'insufficient'"
+                                   decoration-warning="budget_availability_status == 'warning'"
+                                   decoration-success="budget_availability_status == 'sufficient'"/>
+                            <field name="budget_availability_status" widget="badge"
+                                   decoration-danger="budget_availability_status == 'insufficient'"
+                                   decoration-warning="budget_availability_status == 'warning'"
+                                   decoration-success="budget_availability_status == 'sufficient'"/>
+                            <field name="budget_availability_percentage" widget="percentage"/>
+                        </group>
+                    </group>
+
+                    <group string="Additional Information">
+                        <group>
+
+                            <field name="description" placeholder="Commitment description..."/>
                         </group>
                         <group>
-                            <field name="ref"/>
-                            <field name="department_analytic_id" options="{'no_create': True}"/>
-                            <field name="source_analytic_id" options="{'no_create': True}"/>
+                            <field name="notes" placeholder="Additional notes..."/>
                         </group>
                     </group>
-
-                    <group>
-                        <field name="description" placeholder="Commitment description..."/>
-                    </group>
-
-                    <notebook>
-                        <page string="Commitment Lines">
-                            <field name="line_ids">
-                                <tree editable="bottom" decoration-danger="budget_availability_status == 'insufficient'" decoration-warning="budget_availability_status == 'warning'" decoration-success="budget_availability_status == 'sufficient'">
-                                    <field name="sequence" widget="handle"/>
-                                    <field name="account_id" options="{'no_create': True}"/>
-                                    <field name="name"/>
-                                    <field name="activity_analytic_id" options="{'no_create': True}"/>
-                                    <field name="fund_analytic_id" options="{'no_create': True}"/>
-                                    <field name="amount" sum="Total Amount"/>
-                                    <field name="available_budget_amount" sum="Total Available" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                                    <field name="budget_availability_status" widget="badge"
-                                           decoration-danger="budget_availability_status == 'insufficient'"
-                                           decoration-warning="budget_availability_status == 'warning'"
-                                           decoration-success="budget_availability_status == 'sufficient'"/>
-                                    <field name="consumed_amount" sum="Consumed Amount"/>
-                                    <field name="remaining_amount" sum="Remaining Amount" optional="show"/>
-                                    <field name="notes" optional="hide"/>
-                                    <field name="currency_id" invisible="1"/>
-                                </tree>
-                            </field>
-                            <group class="oe_subtotal_footer">
-                                <div class="alert alert-info" role="status">
-                                    <strong>Budget Availability Guide:</strong>
-                                    <ul class="mb-0">
-                                        <li><span class="badge badge-success">Sufficient</span> - Budget is available for this commitment</li>
-                                        <li><span class="badge badge-warning">Warning</span> - Less than 50% of commitment amount is available</li>
-                                        <li><span class="badge badge-danger">Insufficient</span> - Not enough budget available</li>
-                                    </ul>
-                                </div>
-                            </group>
-                        </page>
-
-                        <page string="Summary">
-                            <group>
-                                <group string="Amounts">
-                                    <field name="total_amount"/>
-                                    <field name="consumed_amount"/>
-                                    <field name="remaining_amount"/>
-                                </group>
-                                <group string="Status">
-                                    <field name="show_confirm_button" invisible="1"/>
-                                    <field name="show_reserve_button" invisible="1"/>
-                                    <field name="show_reset_to_draft_button" invisible="1"/>
-                                </group>
-                            </group>
-                        </page>
-
-                        <page string="Budget Analysis" attrs="{'invisible': [('state', '=', 'draft')]}">
-                            <group string="Budget Availability by Line">
-                                <div class="alert alert-info" role="status">
-                                    <p class="mb-0">
-                                        This page shows budget availability analysis for each commitment line.
-                                        The analysis includes appropriated amounts, reservations, consumptions, and available balances.
-                                    </p>
-                                </div>
-                            </group>
-                            <field name="line_ids" mode="tree" readonly="1">
-                                <tree>
-                                    <field name="account_id"/>
-                                    <field name="activity_analytic_id"/>
-                                    <field name="fund_analytic_id"/>
-                                    <field name="amount" sum="Total"/>
-                                    <field name="available_budget_amount" sum="Total Available" widget="monetary"/>
-                                    <field name="budget_availability_status" widget="badge"/>
-                                    <field name="consumed_amount" sum="Total Consumed" widget="monetary"/>
-                                    <field name="remaining_amount" sum="Total Remaining" widget="monetary"/>
-                                </tree>
-                            </field>
-                        </page>
-                    </notebook>
                 </sheet>
 
                 <div class="oe_chatter">
@@ -168,15 +128,16 @@
             <search string="Budget Commitments">
                 <field name="name"/>
                 <field name="ref"/>
+                <field name="account_id"/>
+                <field name="activity_analytic_id"/>
                 <field name="department_analytic_id"/>
+                <field name="fund_analytic_id"/>
                 <field name="source_analytic_id"/>
                 <field name="user_id"/>
                 <field name="date_range_fy_id"/>
 
                 <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
-                <filter string="Confirmed" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
                 <filter string="Reserved" name="reserved" domain="[('state', '=', 'reserved')]"/>
-                <filter string="Consumed" name="consumed" domain="[('state', '=', 'consumed')]"/>
                 <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
 
                 <separator/>
@@ -184,11 +145,22 @@
 
                 <group expand="0" string="Group By">
                     <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Budget Account" name="group_account" context="{'group_by': 'account_id'}"/>
+                    <filter string="Activity" name="group_activity" context="{'group_by': 'activity_analytic_id'}"/>
                     <filter string="Department" name="group_department" context="{'group_by': 'department_analytic_id'}"/>
+                    <filter string="Fund" name="group_fund" context="{'group_by': 'fund_analytic_id'}"/>
                     <filter string="Source" name="group_source" context="{'group_by': 'source_analytic_id'}"/>
                     <filter string="Fiscal Year" name="group_fy" context="{'group_by': 'date_range_fy_id'}"/>
                     <filter string="Responsible User" name="group_user" context="{'group_by': 'user_id'}"/>
                 </group>
+                <searchpanel>
+                    <field name="account_id" icon="fa-book" enable_counters="1" />
+                    <field name="date_range_fy_id" icon="fa-calendar" enable_counters="1" />
+                    <field name="source_analytic_id" icon="fa-money" enable_counters="1" order="code asc" />
+                    <field name="department_analytic_id" icon="fa-users" enable_counters="1" order="code asc" />
+                    <field name="activity_analytic_id" icon="fa-bullseye" enable_counters="1" order="code asc" />
+                    <field name="fund_analytic_id" icon="fa-database" enable_counters="1" order="code asc" />
+                </searchpanel>
             </search>
         </field>
     </record>
@@ -197,9 +169,9 @@
     <record id="action_budget_commitment" model="ir.actions.act_window">
         <field name="name">Budget Commitments</field>
         <field name="res_model">budget.commitment</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,form,pivot</field>
         <field name="search_view_id" ref="budget_commitment_search_view"/>
-        <field name="context">{'search_default_draft': 1}</field>
+        <field name="context">{}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create your first budget commitment!

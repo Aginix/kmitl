@@ -402,7 +402,7 @@ class BudgetExecutionStatusReport(models.TransientModel):
         result = defaultdict(float)
 
         for move in moves:
-            for line in move.line_ids.filtered(lambda l: not l.is_virtual_line):
+            for line in move.line_ids:
                 if not self._move_line_matches_filters(line):
                     continue
 
@@ -550,10 +550,10 @@ class BudgetExecutionStatusReport(models.TransientModel):
             # Create temporary report record with filters
             filter_vals = self._prepare_filters_from_dict(filters)
             report = self.create(filter_vals)
-            
+
             # Generate report data
             report.action_generate_report()
-            
+
             # Prepare summary data
             summary_data = {
                 'total_initial_appropriation': report.total_initial_appropriation,
@@ -583,24 +583,24 @@ class BudgetExecutionStatusReport(models.TransientModel):
     def _prepare_filters_from_dict(self, filters):
         """Convert frontend filters dict to model field values"""
         from datetime import datetime
-        
+
         # Ensure we have valid dates - fallback to current fiscal year or year
         date_from = filters.get('date_from')
         date_to = filters.get('date_to')
-        
+
         # Convert string dates to date objects if needed
         if isinstance(date_from, str) and date_from:
             try:
                 date_from = datetime.strptime(date_from, '%Y-%m-%d').date()
             except ValueError:
                 date_from = None
-        
+
         if isinstance(date_to, str) and date_to:
             try:
                 date_to = datetime.strptime(date_to, '%Y-%m-%d').date()
             except ValueError:
                 date_to = None
-        
+
         if not date_from or not date_to:
             # Try to get from fiscal year
             fy_id = filters.get('date_range_fy_id')
@@ -609,13 +609,13 @@ class BudgetExecutionStatusReport(models.TransientModel):
                 if fy.exists():
                     date_from = fy.date_from
                     date_to = fy.date_to
-            
+
             # If still no dates, use current year
             if not date_from or not date_to:
                 today = fields.Date.today()
                 date_from = today.replace(month=1, day=1)
                 date_to = today.replace(month=12, day=31)
-        
+
         vals = {
             'name': f"Interactive Report - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
             'date_from': date_from,
@@ -652,7 +652,7 @@ class BudgetExecutionStatusReport(models.TransientModel):
         # Collect all unique analytic account IDs from lines
         all_analytic_ids = set()
         all_budget_account_ids = set()
-        
+
         for line in self.line_ids:
             if line.activity_analytic_id:
                 all_analytic_ids.add(line.activity_analytic_id.id)
@@ -663,21 +663,21 @@ class BudgetExecutionStatusReport(models.TransientModel):
 
         # Get ALL analytic accounts in the hierarchy paths (including all parents)
         expanded_analytic_ids = self._get_all_hierarchy_analytic_ids(all_analytic_ids)
-        
-        # Get complete hierarchy paths 
+
+        # Get complete hierarchy paths
         hierarchy_paths = self._get_complete_hierarchy_paths(expanded_analytic_ids)
         budget_account_paths = self._get_budget_account_hierarchy_paths(all_budget_account_ids)
 
         # Build line data with paths
         line_data_with_paths = []
-        
+
         for line in self.line_ids:
             # Get complete paths for this line's analytic accounts
             paths = {
                 'activity': self._get_path_hierarchy(line.activity_analytic_id, hierarchy_paths) if line.activity_analytic_id else [],
                 'fund': self._get_path_hierarchy(line.fund_analytic_id, hierarchy_paths) if line.fund_analytic_id else [],
             }
-            
+
             # Get budget account hierarchy path
             budget_account_path = []
             if line.budget_account_id and line.budget_account_id.id in budget_account_paths:
@@ -688,7 +688,7 @@ class BudgetExecutionStatusReport(models.TransientModel):
                             budget_account_path.append(budget_account_paths[account_id])
                 else:
                     budget_account_path.append(budget_account_paths[line.budget_account_id.id])
-            
+
             line_data = {
                 "id": line.id,
                 "account": {
@@ -708,7 +708,7 @@ class BudgetExecutionStatusReport(models.TransientModel):
                 "returned_amount": line.returned_amount or 0,
                 "paths": paths
             }
-            
+
             line_data_with_paths.append(line_data)
 
         # Build complete hierarchy tree including all parent nodes
@@ -718,29 +718,29 @@ class BudgetExecutionStatusReport(models.TransientModel):
         """Get all analytic account IDs that should be included in hierarchy (including all parents)"""
         if not line_analytic_ids:
             return set()
-        
+
         # Start with line analytic IDs
         analytic_accounts = self.env['account.analytic.account'].browse(list(line_analytic_ids))
         all_related_ids = set(line_analytic_ids)
-        
+
         # For each account, add all its parents from parent_path
         for account in analytic_accounts:
             if account.parent_path:
                 # Extract all IDs from parent_path (format: "1/2/3/")
                 path_ids = [int(id_str) for id_str in account.parent_path.strip('/').split('/') if id_str]
                 all_related_ids.update(path_ids)
-        
+
         return all_related_ids
 
     def _get_complete_hierarchy_paths(self, analytic_ids):
         """Get complete hierarchy paths for analytic accounts using parent_path"""
         if not analytic_ids:
             return {}
-            
+
         # Get all related analytic accounts (including parents) using parent_path
         analytic_accounts = self.env['account.analytic.account'].browse(list(analytic_ids))
         all_related_ids = set()
-        
+
         for account in analytic_accounts:
             if account.parent_path:
                 # Extract all IDs from parent_path (format: "1/2/3/")
@@ -748,10 +748,10 @@ class BudgetExecutionStatusReport(models.TransientModel):
                 all_related_ids.update(path_ids)
             else:
                 all_related_ids.add(account.id)
-        
+
         # Fetch all related accounts with their hierarchy information
         all_accounts = self.env['account.analytic.account'].browse(list(all_related_ids))
-        
+
         # Build hierarchy mapping
         hierarchy_map = {}
         for account in all_accounts:
@@ -764,14 +764,14 @@ class BudgetExecutionStatusReport(models.TransientModel):
                 'root_plan_code': account.root_plan_id.code if account.root_plan_id else '',
                 'level': len(account.parent_path.strip('/').split('/')) if account.parent_path else 1
             }
-        
+
         return hierarchy_map
 
     def _get_path_hierarchy(self, analytic_account, hierarchy_map):
         """Get complete path hierarchy for a specific analytic account"""
         if not analytic_account or analytic_account.id not in hierarchy_map:
             return []
-        
+
         path = []
         if analytic_account.parent_path:
             # Extract path IDs and build hierarchy
@@ -782,18 +782,18 @@ class BudgetExecutionStatusReport(models.TransientModel):
         else:
             # Single account without parents
             path.append(hierarchy_map[analytic_account.id])
-        
+
         return path
 
     def _get_budget_account_hierarchy_paths(self, account_ids):
         """Get complete hierarchy paths for budget accounts using parent_path"""
         if not account_ids:
             return {}
-            
+
         # Get all related budget accounts (including parents) using parent_path
         budget_accounts = self.env['budget.account'].browse(list(account_ids))
         all_related_ids = set()
-        
+
         for account in budget_accounts:
             if account.parent_path:
                 # Extract all IDs from parent_path (format: "1/2/3/")
@@ -801,10 +801,10 @@ class BudgetExecutionStatusReport(models.TransientModel):
                 all_related_ids.update(path_ids)
             else:
                 all_related_ids.add(account.id)
-        
+
         # Fetch all related accounts with their hierarchy information
         all_accounts = self.env['budget.account'].browse(list(all_related_ids))
-        
+
         # Build hierarchy mapping
         hierarchy_map = {}
         for account in all_accounts:
@@ -816,44 +816,44 @@ class BudgetExecutionStatusReport(models.TransientModel):
                 'parent_path': account.parent_path or '',
                 'level': len(account.parent_path.strip('/').split('/')) if account.parent_path else 1
             }
-        
+
         return hierarchy_map
 
     def _build_complete_hierarchy_tree(self, line_data_with_paths, hierarchy_paths):
         """Build complete hierarchy tree including all parent nodes, similar to budget appropriation overview"""
-        
-        # Step 1: Identify root nodes for activities 
+
+        # Step 1: Identify root nodes for activities
         activity_roots = set()
-        
+
         for account_id, account_data in hierarchy_paths.items():
             if account_data['root_plan_code'] == 'activities':
                 # Find root activities (level 1 in hierarchy)
                 if account_data['level'] == 1:
                     activity_roots.add(account_id)
-        
+
         # Step 2: Build complete tree structure starting from activity roots
         root_nodes = {}
-        
+
         # Build activity hierarchy first (complete tree structure)
         for root_id in activity_roots:
             if root_id in hierarchy_paths:
                 root_data = hierarchy_paths[root_id]
                 self._build_node_tree(root_data, hierarchy_paths, root_nodes, "activity")
-        
+
         # Step 3: For each line, place it in the correct position in the tree
         for line_data in line_data_with_paths:
             self._place_line_in_tree(line_data, root_nodes, hierarchy_paths)
-        
+
         # Step 4: Calculate totals from bottom up and convert to list
         result = list(root_nodes.values())
         self._calculate_tree_totals(result)
-        
+
         return result
 
     def _build_node_tree(self, node_data, hierarchy_paths, parent_dict, node_type_prefix):
         """Recursively build node tree structure"""
         node_key = f"{node_type_prefix}_{node_data['code']}"
-        
+
         if node_key not in parent_dict:
             parent_dict[node_key] = {
                 "key": node_key,
@@ -877,7 +877,7 @@ class BudgetExecutionStatusReport(models.TransientModel):
                 "utilization": 0,
                 "expanded": False,
             }
-        
+
         # Find and add children
         for child_id, child_data in hierarchy_paths.items():
             if child_data.get('parent_id') == node_data['id'] and child_data['root_plan_code'] == node_data['root_plan_code']:
@@ -887,7 +887,7 @@ class BudgetExecutionStatusReport(models.TransientModel):
         """Place a line in the correct position in the tree structure"""
         activity_path = line_data['paths'].get('activity', [])
         fund_path = line_data['paths'].get('fund', [])
-        
+
         # Navigate to the correct activity node
         current_level = root_nodes
         for activity_node in activity_path:
@@ -896,11 +896,11 @@ class BudgetExecutionStatusReport(models.TransientModel):
                 current_level = current_level[activity_key]["children"]
             else:
                 return  # Activity not found
-        
+
         # Navigate/create fund hierarchy
         for i, fund_node in enumerate(fund_path):
             fund_key = f"fund_{fund_node['code']}"
-            
+
             if fund_key not in current_level:
                 # Create fund node if it doesn't exist
                 current_level[fund_key] = {
@@ -925,14 +925,14 @@ class BudgetExecutionStatusReport(models.TransientModel):
                     "utilization": 0,
                     "expanded": False,
                 }
-            
+
             current_level = current_level[fund_key]["children"]
-        
+
         # Add budget account and line data
         if line_data['budget_account_path']:
             for j, account_node in enumerate(line_data['budget_account_path']):
                 account_key = f"account_{account_node['code']}"
-                
+
                 if account_key not in current_level:
                     current_level[account_key] = {
                         "key": account_key,
@@ -957,7 +957,7 @@ class BudgetExecutionStatusReport(models.TransientModel):
                         "expanded": False,
                         "line_details": []
                     }
-                
+
                 # Add line data to the account
                 if j == len(line_data['budget_account_path']) - 1:  # Last account in path
                     current_level[account_key]["line_details"].append({
@@ -972,13 +972,13 @@ class BudgetExecutionStatusReport(models.TransientModel):
                         "remaining_budget": line_data['remaining_budget'],
                         "returned_amount": line_data['returned_amount'],
                     })
-                    
+
                     # Add line amounts to account totals
                     for field in ['initial_appropriation', 'current_budget', 'total_requested',
                                 'reserved_amount', 'obligated_amount', 'disbursed_amount',
                                 'total_used', 'remaining_budget', 'returned_amount']:
                         current_level[account_key]['totals'][field] += line_data[field]
-                
+
                 current_level = current_level[account_key]["children"]
 
     def _calculate_tree_totals(self, nodes):
@@ -988,17 +988,17 @@ class BudgetExecutionStatusReport(models.TransientModel):
                 # Convert children dict to list and process
                 children_list = list(node["children"].values())
                 node["children"] = children_list
-                
+
                 # Recursively calculate children totals first
                 self._calculate_tree_totals(children_list)
-                
+
                 # Sum up children totals
                 for child in children_list:
                     for field in ['initial_appropriation', 'current_budget', 'total_requested',
                                 'reserved_amount', 'obligated_amount', 'disbursed_amount',
                                 'total_used', 'remaining_budget', 'returned_amount']:
                         node['totals'][field] += child['totals'][field]
-                
+
                 # Calculate utilization
                 if node['totals']['current_budget'] > 0:
                     node['utilization'] = (node['totals']['total_used'] / node['totals']['current_budget']) * 100
