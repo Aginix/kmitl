@@ -6,14 +6,13 @@ from odoo import api, fields, models
 class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
-
     _STATES = [
-    ("draft", "Draft"),
-    ("to_approve", "To be approved"),
-    ("validation", "Validated"),
-    ("approved", "Approved"),
-    ("done", "Done"),
-    ("rejected", "Rejected"),
+        ("draft", "Draft"),
+        ("to_approve", "To be approved"),
+        ("validation", "Validated"),
+        ("approved", "Approved"),
+        ("done", "Done"),
+        ("rejected", "Rejected"),
     ]
 
     state = fields.Selection(
@@ -107,6 +106,7 @@ class PurchaseRequest(models.Model):
         string="validate Date",
         copy=False,
     )
+
     @api.depends('requested_by')
     def _compute_is_current_user_requester(self):
         current_uid = self.env.uid
