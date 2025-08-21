@@ -15,8 +15,8 @@
         "security/ir.model.access.csv",
         "views/procurement_plan_views.xml",
         "views/procurement_plan_menus.xml",
+        "views/res_config_settings_views.xml",
         "report/report_procurement_plan.xml",
-
     ],
     "assets": {
         "web.assets_backend": ["procurement_plan/static/src/**/*"],
