@@ -7,8 +7,8 @@
         <field name="arch" type="xml">
             <tree create='0' decoration-success="state == 'approved'" decoration-warning="state == 'draft'" decoration-danger="state == 'rejected'">
                 <field name="name"/>
-                <field name="request_by" readonly="1" />
-                <field name="payment_type_ref" string="ประเภทการจ่ายเงิน"/>
+                <field name="requested_by" readonly="1" />
+                <field name="payment_type" string="ประเภทการจ่ายเงิน"/>
                 <field name="state" widget="badge" decoration-success="state == 'approved'" decoration-warning="state == 'draft'" decoration-danger="state == 'rejected'" />
             </tree>
         </field>
@@ -34,27 +34,25 @@
                     </div>
                     <field name="is_editable" invisible="1" />
                     <group>
-                        <field name="department_id_ref" readonly='1' attrs="{'readonly': [('is_editable','=', False)]}"/>
-                        <field name="request_by" readonly="1" widget="many2one_avatar_user" />
-                        <field name="payment_type_ref" string="ประเภทการจ่ายเงิน" readonly='1' attrs="{'readonly': [('is_editable','=', False)]}"/>
-                        <field name="approval_date" readonly="1" widget="remaining_days" />
-                        <field name="approval_by" readonly="1" widget="many2one_avatar_user" />
-                        <field name="purchase_order_id" readonly="1" invisible="1"/>
+                        <field name="department_id" readonly='1' attrs="{'readonly': [('is_editable','=', False)]}"/>
+                        <field name="requested_by" readonly="1" widget="many2one_avatar_user" />
+                        <field name="payment_type" string="ประเภทการจ่ายเงิน" readonly='1' attrs="{'readonly': [('is_editable','=', False)]}"/>
+                        <field name="approved_date" readonly="1" widget="remaining_days" />
+                        <field name="approved_by" readonly="1" widget="many2one_avatar_user" />
                     </group>
-
                     <notebook>
                         <page string="Select PR2 Forms">
                             <field name="line_ids" attrs="{'readonly': [('is_editable','=', False)]}">
                                 <tree editable="bottom">
                                     <field name="pr2_form_id" widget="many2one" domain="[('payment_type', '=', payment_type_ref), ('department_id', '=', department_id_ref)]"/>
-                                    <field name="pr1_requested_by" widget="many2one_avatar_user" />
+                                    <field name="requested_by" widget="many2one_avatar_user" />
                                     <field name="vendor"/>
                                     <field name="department_id" />
-                                    <field name="department_id_ref" invisible="1"/>
+                                    <field name="department_id" invisible="1"/>
                                     <field name="purchase_request_name" />
                                     <field name="payment_type"/>
-                                    <field name="payment_type_ref" invisible="1"/>
-                                    <field name="estimated_cost_from_pr" />
+                                    <field name="payment_type" invisible="1"/>
+                                    <field name="estimated_cost" />
                                 </tree>
                             </field>
                         </page>
@@ -95,5 +93,4 @@
 
     <menuitem id="menu_purchase_request_approval_submitted" name="PR2 Submitted" parent="purchase.menu_procurement_management" action="action_purchase_request_approval_submitted" sequence="25"/>
     <menuitem id="menu_purchase_request_approval_submitted_root_pr" name="Purchase Request Approval Submitted" parent="purchase_request_approval_kmitl.menu_purchase_request_approval_form" action="action_purchase_request_approval_submitted" sequence="30"/>
-
 </odoo>

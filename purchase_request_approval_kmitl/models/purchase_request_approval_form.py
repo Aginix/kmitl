@@ -21,9 +21,9 @@ class PurchaseRequestApprovalForm(models.Model):
         copy=False,
         readonly=True,
         default='New')
-    pr1_ref = fields.Many2one(
+    pr1 = fields.Many2one(
         'purchase.request',
-        string='PR1 Reference',
+        string='PR1',
         readonly=True
     )
     vendor = fields.Many2one(
@@ -49,13 +49,13 @@ class PurchaseRequestApprovalForm(models.Model):
         help="The number of the purchase request associated with the selected lines.",
     )
     contract_type = fields.Selection(
-        related='pr1_ref.contract_type',
+        related='pr1.contract_type',
         string="Contract type",
         store=True,
         readonly=True
     )
     payment_type = fields.Selection(
-        related='pr1_ref.payment_type', store=True, string="Payment type", readonly=True)
+        related='pr1.payment_type', store=True, string="Payment type", readonly=True)
     purchase_request_name = fields.Char(
         string="Purchase request name",
         help="The name of the purchase request associated with the selected lines.",
@@ -68,33 +68,40 @@ class PurchaseRequestApprovalForm(models.Model):
     amount_untaxed = fields.Monetary(string='Untaxed Amount', compute='_compute_amount', store=True)
     amount_tax = fields.Monetary(string='Tax', compute='_compute_amount', store=True)
     amount_total = fields.Monetary(string='Total', compute='_compute_amount', store=True)
-    submitted_id = fields.Many2one('purchase.request.approval.submitted', string='PR2 Ref', readonly=True)
+    submitted_id = fields.Many2one('purchase.request.approval.submitted', string='PR2', readonly=True)
     submitted_state = fields.Selection(related='submitted_id.state', string='PR2 State')
     generate_po = fields.Boolean(string='Generate Purchase Order?', default=True, tracking=True)
-    pr1_requested_by = fields.Many2one(
+    requested_by = fields.Many2one(
         'res.users',
-        related='pr1_ref.requested_by',
-        string="PR1 Requester",
+        related='pr1.requested_by',
+        string="Request By",
         store=True,
         readonly=True)
-    estimated_cost_from_pr = fields.Monetary(
-        string="PR1 Total price",
-        related='pr1_ref.estimated_cost',
+    estimated_cost = fields.Monetary(
+        string="Total price",
+        related='pr1.estimated_cost',
         readonly=True,
         store=True,
         currency_field="currency_id"
     )
     department_id = fields.Many2one(
         'hr.department',
-        string='Department (from PR1)',
-        related='pr1_ref.department_id',
+        string='Department',
+        related='pr1.department_id',
         store=True,
         readonly=True,
+    )
+    master_department_id = fields.Many2one(
+        'hr.department',
+        related='pr1.department_id.master_department_id',
+        store=True,
+        readonly=True
     )
 
     @api.constrains('start_date', 'end_date')
     def _check_end_date_within_30_days(self):
         for record in self:
+            # todo: ทำเป็น exception ได้ไหม
             if record.start_date and record.end_date:
                 diff_days = (record.end_date - record.start_date).days
                 if diff_days > 30:
@@ -120,6 +127,7 @@ class PurchaseRequestApprovalForm(models.Model):
 
     def action_egp(self):
         for rec in self:
+            # todo: ทำเป็น exception ได้ไหม
             if rec.estimated_cost_from_pr < 100000:
                 raise UserError("ยอดประมาณการจาก PR1 ยังไม่ถึง 100,000 บาท")
             rec.write({'state': 'approved'})

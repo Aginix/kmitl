@@ -6,7 +6,8 @@
         <field name="model">purchase.request.approval.form.line</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="name"/>
+                <field name="product_id"/>
+                <field name="description"/>
             </tree>
         </field>
     </record>
@@ -17,26 +18,19 @@
         <field name="arch" type="xml">
             <form string="Purchase Request Approval Form Line">
                 <sheet>
-                    <div class="oe_title">
-                        <label for="name"/>
-                        <h1>
-                            <field name="name" placeholder="Name..."/>
-                        </h1>
-                    </div>
+                    <group>
+                        <group>
+                            <field name="product_id" />
+                            <field name="description"/>
+                        </group>
+                        <group>
+                            <field name="quantity"/>
+                            <field name="uom"/>
+                            <field name="unit_price"/>
+                        </group>
+                    </group>
                 </sheet>
             </form>
-        </field>
-    </record>
-
-    <record id="view_purchase_request_two_line_search" model="ir.ui.view">
-        <field name="name">view.purchase.request.two.line.search</field>
-        <field name="model">purchase.request.approval.form.line</field>
-        <field name="arch" type="xml">
-            <search>
-                <group expand="1" string="Group By">
-                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
-                </group>
-            </search>
         </field>
     </record>
 

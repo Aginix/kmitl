@@ -5,9 +5,10 @@ class PurchaseRequestApprovalFormLine(models.Model):
     _name = 'purchase.request.approval.form.line'
     _description = 'Purchase Request Approval Form Line'
 
-    name = fields.Char('Name')
     pr2_id = fields.Many2one('purchase.request.approval.form', string='PR2')
     product_id = fields.Many2one('product.product', string='Product', required=True)
+    uom = fields.Many2one('uom.uom', string='Unit of Measure', related='product_id.uom_id', readonly=True, store=True)
+    company_id = fields.Many2one('res.company', string='Company', related='pr2_id.company_id', readonly=True)
     quantity = fields.Float(string='Quantity')
     description = fields.Text(string='Description')
     unit_price = fields.Float(string='Unit Price')
