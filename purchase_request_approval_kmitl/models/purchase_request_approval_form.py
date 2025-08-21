@@ -62,6 +62,14 @@ class PurchaseRequestApprovalForm(models.Model):
         tracking=True
     )
     is_editable = fields.Boolean(compute="_compute_is_editable", readonly=True)
+    company_id = fields.Many2one(
+        'res.company',
+        string='Company',
+        default=lambda self: self.env.company,
+        required=True,
+        readonly=True,
+        tracking=True
+    )
     line_ids = fields.One2many('purchase.request.approval.form.line', 'pr2_id', string='Products', tracking=True)
     state = fields.Selection(selection=_STATES, default='draft', string='Status', tracking=True)
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.company.currency_id)

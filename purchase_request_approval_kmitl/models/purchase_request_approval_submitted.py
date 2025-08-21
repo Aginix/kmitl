@@ -11,7 +11,6 @@ class PurchaseRequestApprovalSubmitted(models.Model):
         ("approved", "Approved"),
         ("rejected", "Rejected"),
     ]
-    # past tense
     name = fields.Char(string='Submitted Ref', required=True, default=lambda self: _('New'))
     line_ids = fields.One2many('purchase.request.approval.submitted.line', 'submitted_id', string="PR2 Forms")
     payment_type = fields.Selection(
@@ -26,18 +25,24 @@ class PurchaseRequestApprovalSubmitted(models.Model):
         compute='_compute_payment_type',
         store=True
     )
+    master_department_id = fields.Many2one(
+        'hr.department',
+        string='Master Department',
+        related='department_id.master_department_id',
+        store=True
+    )
     requested_by = fields.Many2one(
         "res.users",
         string="Requested By",
         default=lambda self: self.env.user,
     )
     approved_date = fields.Date(
-        string="Approve date",
+        string="Approved date",
         help="The date when the purchase order was approved. If not set, it will be the current date.",
     )
     approved_by = fields.Many2one(
         "res.users",
-        string="Approve by",
+        string="Approved by",
         help="The user who approved the purchase order. If not set, it will be the current user.",
     )
     is_editable = fields.Boolean(compute="_compute_is_editable", readonly=True)
@@ -48,11 +53,11 @@ class PurchaseRequestApprovalSubmitted(models.Model):
         store=False,
     )
 
-    @api.depends('request_by')
+    @api.depends('requested_by')
     def _compute_is_current_user_request(self):
         current_uid = self.env.uid
         for rec in self:
-            rec.is_current_user_request = rec.request_by.id == current_uid
+            rec.is_current_user_request = rec.requested_by.id == current_uid
 
     @api.depends("state")
     def _compute_is_editable(self):
@@ -84,7 +89,6 @@ class PurchaseRequestApprovalSubmitted(models.Model):
             line.pr2_form_id.state = 'rejected'
         self.state = 'rejected'
 
-    # แยก
     @api.depends('line_ids.pr2_form_id.payment_type')
     def _compute_payment_type(self):
         for rec in self:

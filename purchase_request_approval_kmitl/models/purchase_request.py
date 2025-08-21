@@ -4,11 +4,17 @@ from odoo import _, api, fields, models
 class PurchaseRequest(models.Model):
     _inherit = 'purchase.request'
 
+    approval_form_ids = fields.One2many(
+        'purchase.request.approval.form',
+        'pr1',
+        string='Approval Forms'
+    )
+
     def action_create_pr_approval(self):
         self.ensure_one()
 
         pr2 = self.env['purchase.request.approval.form'].create({
-            'pr1_ref': self.id,
+            'pr1': self.id,
             'purchase_request_number': self.name,
         })
 

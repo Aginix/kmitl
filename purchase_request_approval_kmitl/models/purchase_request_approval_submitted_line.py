@@ -13,8 +13,8 @@ class PurchaseRequestApprovalSubmittedLine(models.Model):
     department_id = fields.Many2one(related='pr2_form_id.department_id', store=True, string='Department', readonly=True)
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.company.currency_id)
     purchase_request_name = fields.Char(related='pr2_form_id.purchase_request_name', string='Purchase request name', store=True, readonly=True)
-    estimated_cost = fields.Monetary(related='pr2_form_id.estimated_cost', string="PR1 Total price", store=True, readonly=True, currency_field="currency_id")
-    requested_by = fields.Many2one('res.users', related='pr2_form_id.requested_by', string='PR1 Requester', readonly=True, store=True)
+    estimated_cost = fields.Monetary(related='pr2_form_id.estimated_cost', string="Total price", store=True, readonly=True, currency_field="currency_id")
+    requested_by = fields.Many2one('res.users', related='pr2_form_id.requested_by', string='Requested By', readonly=True, store=True)
     line_count = fields.Integer(
         string="Total Lines in Submitted",
         compute="_compute_line_count",
