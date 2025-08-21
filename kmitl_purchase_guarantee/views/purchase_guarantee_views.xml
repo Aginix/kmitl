@@ -16,6 +16,19 @@
               <field name="receive_contract_ref" string="Receive contract reference"/>
               <field name="return_contract_ref" string="Return contract reference"/>
             </xpath>
+
+            <xpath expr="//sheet" position="inside">
+              <notebook>
+                <page name="document" string="Attachment">
+                    <field name="document_ids">
+                        <tree>
+                            <field name="file_name"/>
+                            <field name="description" />
+                        </tree>
+                    </field>
+                </page>
+              </notebook>
+            </xpath>
         </field>
     </record>
 

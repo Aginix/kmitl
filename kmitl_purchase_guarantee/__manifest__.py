@@ -10,9 +10,11 @@
     "data": [
         "data/purchase_guarantee_method_data.xml",
         "data/purchase_guarantee_rules.xml",
-        "data/purchase_guarantee_type_data.xml",
         "data/purchase_guarantee_sequence.xml",
+        "data/purchase_guarantee_type_data.xml",
+        "security/ir.model.access.csv",
         "views/agreement_views.xml",
+        "views/purchase_guarantee_attachment_views.xml",
         "views/purchase_guarantee_views.xml"
     ],
     'assets': {

@@ -16,6 +16,12 @@ class PurchaseGuarantee(models.Model):
         ]
     )
 
+    document_ids = fields.One2many(
+        "purchase.guarantee.attachment",
+        "request_id",
+        string="Attachment",
+    )
+
     document_ref = fields.Text()
 
     # รอเชื่อมกับของพี่แชมป์
