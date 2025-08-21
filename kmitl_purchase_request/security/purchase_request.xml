@@ -22,38 +22,18 @@
         <field name="model_id" ref="purchase_request.model_purchase_request" />
         <field name="groups" eval="[(6,0, [ref('kmitl_purchase_request.group_purchase_request_user_all')])]" />
         <field name="perm_read" eval="True" />
-        <field name="perm_write" eval="False" />
-        <field name="perm_create" eval="False" />
-        <field name="perm_unlink" eval="False" />
-    </record>
-    <record id="purchase_request_user_all_rule_write" model="ir.rule">
-        <field name="name">Purchase Request User : All Documents (write)</field>
-        <field name="model_id" ref="purchase_request.model_purchase_request" />
-        <field name="groups" eval="[(6,0, [ref('kmitl_purchase_request.group_purchase_request_user_all')])]" />
-        <field name="perm_read" eval="True" />
         <field name="perm_write" eval="True" />
         <field name="perm_create" eval="True" />
         <field name="perm_unlink" eval="True" />
-        <field name="domain_force">[('requested_by','=',user.id)]</field>
     </record>
     <record id="purchase_request_line_user_all_rule" model="ir.rule">
         <field name="name">Purchase Request User : All Documents</field>
         <field name="model_id" ref="purchase_request.model_purchase_request_line" />
         <field name="groups" eval="[(6,0, [ref('kmitl_purchase_request.group_purchase_request_user_all')])]" />
         <field name="perm_read" eval="True" />
-        <field name="perm_write" eval="False" />
-        <field name="perm_create" eval="False" />
-        <field name="perm_unlink" eval="False" />
-    </record>
-    <record id="purchase_request_line_user_all_rule" model="ir.rule">
-        <field name="name">Purchase Request User : All Documents (write)</field>
-        <field name="model_id" ref="purchase_request.model_purchase_request_line" />
-        <field name="groups" eval="[(6,0, [ref('kmitl_purchase_request.group_purchase_request_user_all')])]" />
-        <field name="perm_read" eval="True" />
         <field name="perm_write" eval="True" />
         <field name="perm_create" eval="True" />
         <field name="perm_unlink" eval="True" />
-        <field name="domain_force">[('request_id.requested_by','=',user.id)]</field>
     </record>
 
     <!-- change cotext -->
