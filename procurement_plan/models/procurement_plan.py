@@ -40,20 +40,24 @@ class ProcurementPlan(models.Model):
     name = fields.Char(
         required=True,
         tracking=True,
+        states=READONLY_STATES,
     )
     amount = fields.Integer(
         required=True,
         tracking=True,
+        states=READONLY_STATES,
     )
     unit = fields.Char(
         "Unit of Measure",
         required=True,
         tracking=True,
+        states=READONLY_STATES,
     )
     price_per_unit = fields.Float(
         "Price per unit",
         required=True,
         tracking=True,
+        states=READONLY_STATES,
     )
     total_price = fields.Float(
         "Total price",
@@ -67,6 +71,7 @@ class ProcurementPlan(models.Model):
         string="Procurement Method",
         required=True,
         tracking=True,
+        states=READONLY_STATES,
     )
     state = fields.Selection(
         [
@@ -124,6 +129,7 @@ class ProcurementPlan(models.Model):
         ondelete="set null",
         domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
         check_company=True,
+        states=READONLY_STATES,
         help="Analytic account to which this procurement plan. \n"
         "Track the costs and revenues of your procurement plan by setting this analytic account on your related documents (e.g. budgetings, purchase requests, purchase orders etc.).",
     )
