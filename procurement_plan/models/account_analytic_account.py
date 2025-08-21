@@ -10,7 +10,7 @@ class AccountAnalyticAccount(models.Model):
     _description = 'Analytic Account'
 
     procurement_plan_ids = fields.One2many('procurement.plan', 'analytic_account_id', string='Procurement Plans')
-    procurement_plan_count = fields.Integer("Project Count", compute='_compute_procurement_plan_count')
+    procurement_plan_count = fields.Integer("Procurement Count", compute='_compute_procurement_plan_count')
 
     @api.depends('procurement_plan_ids')
     def _compute_procurement_plan_count(self):
