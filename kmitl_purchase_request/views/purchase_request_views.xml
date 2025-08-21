@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <record id="view_purchase_request_tree" model="ir.ui.view">
         <field name="name">view.purchase.request.tree</field>
         <field name="model">purchase.request</field>
@@ -93,7 +92,7 @@
             </xpath>
 
             <xpath expr="//button[@name='button_approved']" position="after">
-                <button name='button_validate' string="Validate" class="btn-primary" attrs="{'invisible': ['|' ,('substate_sequence', '!=', 20), ('state', '!=', 'to_approve')]}" type="object" />
+                <button name='button_validate' string="Validate" class="btn-primary" attrs="{'invisible': [('state', '!=', 'to_approve')]}" type="object" groups="purchase_request.group_purchase_request_manager,kmitl_purchase_request.group_purchase_request_user_all" />
             </xpath>
 
             <xpath expr="//button[@name='button_draft']" position="attributes">
@@ -135,13 +134,11 @@
             </xpath>
 
             <xpath expr="//field[@name='verified_by']" position="attributes">
-                <attribute name="string">จองงบประมาณโดย</attribute>
-                <attribute name="widget">many2one_avatar_user</attribute>
+                <attribute name="invisible">1</attribute>
             </xpath>
 
             <xpath expr="//field[@name='date_verified']" position="attributes">
-                <attribute name="string">จองงบประมาณเมื่อ</attribute>
-                <attribute name="widget">remaining_days</attribute>
+                <attribute name="invisible">1</attribute>
             </xpath>
 
             <xpath expr="//field[@name='date_approved']" position="attributes">

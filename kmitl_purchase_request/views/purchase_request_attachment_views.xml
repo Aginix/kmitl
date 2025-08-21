@@ -22,8 +22,8 @@
             <form string="Purchase Request Attachment">
                 <sheet>
                     <group>
-                        <field name="request_id"/>
-                        <field name="attachment_type"/>
+                        <field name="request_id" readonly="1" />
+                        <field name="attachment_type" invisible="1" />
                         <field name="upload_file" filename="file_name"/>
                         <field name="file_name"/>
                         <field name="description"/>

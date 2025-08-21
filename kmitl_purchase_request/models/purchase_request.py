@@ -119,7 +119,18 @@ class PurchaseRequest(models.Model):
             rec.current_user = self.env.user
 
     def button_validate(self):
-        return self.write({"state": "validation", "validated_by": self.env.user.id,"date_validated": fields.Date.context_today(self)})
+        user = self.env.user
+        is_all_user = user.has_group('kmitl_purchase_request.group_purchase_request_user_all')
+        is_manager = user.has_group('purchase_request.group_purchase_request_manager')
+
+        if is_all_user or is_manager:
+            return self.sudo().write({
+                "state": "validation",
+                "validated_by": user.id,
+                "date_validated": fields.Date.context_today(self),
+            })
+        else:
+            raise AccessError(_("You do not have the rights to validate this request."))
 
     @api.depends("state")
     def _compute_is_editable(self):
@@ -136,5 +147,5 @@ class PurchaseRequest(models.Model):
                 rec.is_editable = True
 
     def button_draft(self):
-        self.write({"verified_by": "", "date_verified": False, "approved_by": "", "date_approved": False, "validated_by": "", "date_validated": False})
+        self.write({"approved_by": "", "date_approved": False, "validated_by": "", "date_validated": False})
         return super().button_draft()

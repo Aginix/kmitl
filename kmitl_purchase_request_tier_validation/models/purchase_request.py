@@ -3,7 +3,6 @@ from lxml import etree
 from odoo import _, api, fields, models
 
 
-
 class PurchaseRequest(models.Model):
     _name = "purchase.request"
     _inherit = ["purchase.request", "tier.validation"]
@@ -17,12 +16,6 @@ class PurchaseRequest(models.Model):
     def _compute_is_purchase_request(self):
         for rec in self:
             rec.is_purchase_request = rec._name == "purchase.request"
-
-    @api.model
-    def _get_under_validation_exceptions(self):
-        res = super(PurchaseRequest, self)._get_under_validation_exceptions()
-        res.append("route_id")
-        return res
 
     def _validate_tier(self, tiers=False):
         super(PurchaseRequest, self)._validate_tier(tiers)
@@ -41,6 +34,9 @@ class PurchaseRequest(models.Model):
     def button_draft(self):
         self.restart_validation()
         return super().button_draft()
+
+    def button_tier_to_approve(self):
+        return super().button_to_approve()
 
     def _add_tier_validation_buttons(self, node, params):
         if self.is_purchase_request:
