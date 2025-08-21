@@ -92,7 +92,7 @@
             </xpath>
 
             <xpath expr="//button[@name='button_approved']" position="after">
-                <button name='button_validate' string="Validate" class="btn-primary" attrs="{'invisible': [('state', '!=', 'to_approve')]}" type="object" groups="purchase_request.group_purchase_request_manager,kmitl_purchase_request.group_purchase_request_user_all" />
+                <button name='button_validate' string="Validate" class="btn-primary" attrs="{'invisible': [('state', '!=', 'to_approve')]}" type="object" groups="purchase_request.group_purchase_request_manager,purchase_request_kmitl.group_purchase_request_user_all" />
             </xpath>
 
             <xpath expr="//button[@name='button_draft']" position="attributes">

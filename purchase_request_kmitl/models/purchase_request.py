@@ -120,7 +120,7 @@ class PurchaseRequest(models.Model):
 
     def button_validate(self):
         user = self.env.user
-        is_all_user = user.has_group('kmitl_purchase_request.group_purchase_request_user_all')
+        is_all_user = user.has_group('purchase_request_kmitl.group_purchase_request_user_all')
         is_manager = user.has_group('purchase_request.group_purchase_request_manager')
 
         if is_all_user or is_manager:

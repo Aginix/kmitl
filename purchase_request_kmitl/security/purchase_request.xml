@@ -12,7 +12,7 @@
     </record>
     <record id="purchase_request.group_purchase_request_manager" model="res.groups">
         <field name="name">Purchase Request Manager</field>
-        <field name="implied_ids" eval="[(4, ref('kmitl_purchase_request.group_purchase_request_user_all'))]" />
+        <field name="implied_ids" eval="[(4, ref('purchase_request_kmitl.group_purchase_request_user_all'))]" />
         <field name="category_id" ref="purchase_request.module_category_purchase_request" />
     </record>
 
@@ -20,7 +20,7 @@
     <record id="purchase_request_user_all_rule" model="ir.rule">
         <field name="name">Purchase Request User : All Documents</field>
         <field name="model_id" ref="purchase_request.model_purchase_request" />
-        <field name="groups" eval="[(6,0, [ref('kmitl_purchase_request.group_purchase_request_user_all')])]" />
+        <field name="groups" eval="[(6,0, [ref('purchase_request_kmitl.group_purchase_request_user_all')])]" />
         <field name="perm_read" eval="True" />
         <field name="perm_write" eval="True" />
         <field name="perm_create" eval="True" />
@@ -29,7 +29,7 @@
     <record id="purchase_request_line_user_all_rule" model="ir.rule">
         <field name="name">Purchase Request User : All Documents</field>
         <field name="model_id" ref="purchase_request.model_purchase_request_line" />
-        <field name="groups" eval="[(6,0, [ref('kmitl_purchase_request.group_purchase_request_user_all')])]" />
+        <field name="groups" eval="[(6,0, [ref('purchase_request_kmitl.group_purchase_request_user_all')])]" />
         <field name="perm_read" eval="True" />
         <field name="perm_write" eval="True" />
         <field name="perm_create" eval="True" />

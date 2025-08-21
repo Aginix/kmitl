@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Kmitl Purchase Request Tier Validation',
+    'name': 'Purchase Request Tier Validation KMITL',
     'version': '16.0.1.0.0',
-    'summary': """ Kmitl Purchase Request Tier Validation""",
+    'summary': """ Purchase Request Tier Validation KMITL""",
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['purchase_request_tier_validation', 'kmitl_purchase_request'],
+    'depends': ['purchase_request_tier_validation', 'purchase_request_kmitl'],
     "data": [
         "views/purchase_request_views.xml"
     ],
