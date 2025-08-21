@@ -12,6 +12,7 @@
         "l10n_th_gov_purchase_request",
     ],
     "data": [
+        "data/account.analytic.plan.csv",
         "security/security.xml",
         "security/ir.model.access.csv",
         "views/procurement_plan_views.xml",

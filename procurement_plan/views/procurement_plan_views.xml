@@ -6,11 +6,7 @@
         <field name="name">view.procurement.plan.tree</field>
         <field name="model">procurement.plan</field>
         <field name="arch" type="xml">
-            <tree
-                decoration-info="state == 'procurement'"
-                decoration-success="state == 'done'"
-                decoration-warning="state in ('validate', 'pending')"
-            >
+            <tree decoration-info="state == 'procurement'" decoration-success="state == 'done'" decoration-warning="state in ('validate', 'pending')">
                 <field name="date_range_fy_id" />
                 <field name="source_analytic_id" />
                 <field name="department_analytic_id" />
@@ -20,13 +16,7 @@
                 <field name="price_per_unit" />
                 <field name="total_price" sum="รวมทั้งหมด" widget="monetary" />
                 <field name="procurement_method_id" />
-                <field
-                    name="state"
-                    widget="badge"
-                    decoration-info="state == 'procurement'"
-                    decoration-success="state == 'done'"
-                    decoration-warning="state in ('validate', 'pending')"
-                />
+                <field name="state" widget="badge" decoration-info="state == 'procurement'" decoration-success="state == 'done'" decoration-warning="state in ('validate', 'pending')" />
             </tree>
         </field>
     </record>
@@ -38,11 +28,7 @@
         <field name="arch" type="xml">
             <form string="Procurement Plan">
                 <header>
-                    <field
-                        name="state"
-                        widget="statusbar"
-                        statusbar_visible="draft,validate,pending,procurement,done"
-                    />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,validate,pending,procurement,done" />
                 </header>
                 <sheet>
                     <group>
@@ -94,10 +80,7 @@
                             <thead>
                                 <tr>
                                     <td align="center" rowSpan="2">จัดทำพ.1</td>
-                                    <td
-                                        align="center"
-                                        colSpan="3"
-                                    >การจัดซื้อจัดจ้าง</td>
+                                    <td align="center" colSpan="3">การจัดซื้อจัดจ้าง</td>
                                     <td align="center" rowSpan="2">ตรวจรับ/ส่งมอบ</td>
                                 </tr>
                                 <tr>
@@ -105,9 +88,7 @@
                                         ประกาศจัดซื้อจัดจ้าง
                                     </td>
                                     <td align="center">อนุมัติผล (รอลงนามสัญญา)</td>
-                                    <td
-                                        align="center"
-                                    >ลงนามสัญญา/ใบสั่งซื้อสั่งจ้าง</td>
+                                    <td align="center">ลงนามสัญญา/ใบสั่งซื้อสั่งจ้าง</td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -144,9 +125,11 @@
                     </div>
                     <notebook>
                         <page name="additional_info" string="Additional Info">
-                            <field name="company_id" invisible="1" />
-                            <field name="currency_id" invisible="1" />
-                            <field name="analytic_account_id" groups="analytic.group_analytic_accounting" />
+                            <group>
+                                <field name="company_id" invisible="1" />
+                                <field name="currency_id" invisible="1" />
+                                <field name="analytic_account_id" groups="analytic.group_analytic_accounting" />
+                            </group>
                         </page>
                     </notebook>
                 </sheet>
@@ -166,12 +149,7 @@
         <field name="arch" type="xml">
             <search>
                 <group expand="1" string="Group By">
-                    <filter
-                        string="Name"
-                        name="name"
-                        domain="[]"
-                        context="{'group_by':'name'}"
-                    />
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}" />
                 </group>
             </search>
         </field>

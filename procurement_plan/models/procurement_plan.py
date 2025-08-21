@@ -254,12 +254,13 @@ class ProcurementPlan(models.Model):
         return result
 
     def _create_analytic_account(self):
+        plan_id = self.env.ref('procurement_plan.analytic_plan_procurement_plan', raise_if_not_found=True).id
         for record in self:
             analytic_account = self.env["account.analytic.account"].create(
                 {
                     "name": record.name,
                     "company_id": record.company_id.id,
-                    "plan_id": record.company_id.analytic_plan_id.id,
+                    "plan_id": plan_id,
                     "active": True,
                 }
             )

@@ -8,24 +8,6 @@
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('settings')]" position="inside">
                 <div class="app_settings_block" data-string="Procurement Plan" string="Procurement Plan" data-key="procurement_plan" groups="procurement_plan.group_procurement_plan_manager">
-                    <h2 name="section_analytics">Analytics</h2>
-                    <div class="row mt16 o_settings_container" name="analytic">
-                        <div class="col-12 col-lg-6 o_setting_box" id="default_plan_setting" groups="analytic.group_analytic_accounting" title="Track the profitability of your procurement plan.">
-                            <div class="o_setting_left_pane"/>
-                            <div class="o_setting_right_pane">
-                                <label for="analytic_plan_id"/>
-                                <span class="fa fa-lg fa-building-o" title="Values set here are company-specific." groups="base.group_multi_company"/>
-                                <div class="text-muted">
-                                        Assign each new procurement plan to this analytic plan
-                                </div>
-                                <div class="content-group">
-                                    <div class="mt16">
-                                        <field name="analytic_plan_id"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </xpath>
         </field>
