@@ -144,6 +144,8 @@
                     </div>
                     <notebook>
                         <page name="additional_info" string="Additional Info">
+                            <field name="company_id" invisible="1" />
+                            <field name="currency_id" invisible="1" />
                             <field name="analytic_account_id" groups="analytic.group_analytic_accounting" />
                         </page>
                     </notebook>
