@@ -36,13 +36,23 @@ class ProcurementPlan(models.Model):
     date_range_fy_id = fields.Many2one(
         comodel_name="account.fiscal.year", string="Fiscal year", states=READONLY_STATES
     )
-    name = fields.Char(required=True, tracking=True,)
-    amount = fields.Integer(required=True, tracking=True,)
+    name = fields.Char(
+        required=True,
+        tracking=True,
+    )
+    amount = fields.Integer(
+        required=True,
+        tracking=True,
+    )
     unit = fields.Char(
-        "Unit of Measure", required=True, tracking=True,
+        "Unit of Measure",
+        required=True,
+        tracking=True,
     )
     price_per_unit = fields.Float(
-        "Price per unit", required=True, tracking=True,
+        "Price per unit",
+        required=True,
+        tracking=True,
     )
     total_price = fields.Float(
         "Total price",
@@ -105,10 +115,16 @@ class ProcurementPlan(models.Model):
 
     source_analytic_id = fields.Many2one(required=True, states=READONLY_STATES)
 
-        analytic_account_id = fields.Many2one('account.analytic.account', string="Analytic Account", copy=False, ondelete='set null',
-        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]", check_company=True,
+    analytic_account_id = fields.Many2one(
+        "account.analytic.account",
+        string="Analytic Account",
+        copy=False,
+        ondelete="set null",
+        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
+        check_company=True,
         help="Analytic account to which this procurement plan. \n"
-            "Track the costs and revenues of your procurement plan by setting this analytic account on your related documents (e.g. budgetings, purchase requests, purchase orders etc.).")
+        "Track the costs and revenues of your procurement plan by setting this analytic account on your related documents (e.g. budgetings, purchase requests, purchase orders etc.).",
+    )
     analytic_account_balance = fields.Monetary(related="analytic_account_id.balance")
 
     @api.depends("amount", "price_per_unit")
@@ -122,8 +138,12 @@ class ProcurementPlan(models.Model):
         fiscal_years = self.env["account.fiscal.year"].search(
             [], order="date_from desc"
         )
-        departments = self.env["account.analytic.account"].search([("root_plan_id.code", "=", "departments")], order="name")
-        sources = self.env["account.analytic.account"].search([("root_plan_id.code", "=", "sources")], order="name")
+        departments = self.env["account.analytic.account"].search(
+            [("root_plan_id.code", "=", "departments")], order="name"
+        )
+        sources = self.env["account.analytic.account"].search(
+            [("root_plan_id.code", "=", "sources")], order="name"
+        )
         return {
             "fiscal_years": [
                 {
@@ -134,28 +154,19 @@ class ProcurementPlan(models.Model):
                 }
                 for fy in fiscal_years
             ],
-            "departments": [
-                {
-                    "id": dept.id,
-                    "name": dept.name
-                }
-            for dept in departments
-        ],
-            "sources": [
-                {
-                    "id": source.id,
-                    "name": source.name
-                }
-            for source in sources
-        ],
+            "departments": [{"id": dept.id, "name": dept.name} for dept in departments],
+            "sources": [{"id": source.id, "name": source.name} for source in sources],
         }
+
     @api.model
     def get_procurement_plan_data(self, filters):
         domain = []
         if filters.get("fiscal_year_id"):
             domain.append(("date_range_fy_id", "=", filters["fiscal_year_id"]))
         if filters.get("department_analytic_id"):
-            domain.append(("department_analytic_id", "=", filters["department_analytic_id"]))
+            domain.append(
+                ("department_analytic_id", "=", filters["department_analytic_id"])
+            )
         if filters.get("source_analytic_id"):
             domain.append(("source_analytic_id", "=", filters["source_analytic_id"]))
         plans = self.search(domain)
@@ -166,40 +177,60 @@ class ProcurementPlan(models.Model):
             total_number_of_days = 0
             total_payment_amount = 0.0
             for payment in plan.payment_ids:
-                payment_list.append({
-                    "id": payment.id,
-                    "number": payment.number,
-                    "number_of_days": payment.number_of_days,
-                    "month": payment.month,
-                    "amount": payment.amount,
-                    "state": payment.state,
-                })
+                payment_list.append(
+                    {
+                        "id": payment.id,
+                        "number": payment.number,
+                        "number_of_days": payment.number_of_days,
+                        "month": payment.month,
+                        "amount": payment.amount,
+                        "state": payment.state,
+                    }
+                )
                 total_number_of_days += payment.number_of_days or 0
                 total_payment_amount += payment.amount or 0.0
-            data.append({
-                "id": plan.id,
-                "name": plan.name,
-                "fiscal_year": plan.date_range_fy_id.name if plan.date_range_fy_id else "",
-                "department": plan.department_analytic_id.name if plan.department_analytic_id else "",
-                "activity": plan.activity_analytic_id.name if plan.activity_analytic_id else "",
-                "fund": plan.fund_analytic_id.name if plan.fund_analytic_id else "",
-                "source": plan.source_analytic_id.name if plan.source_analytic_id else "",
-                "amount": plan.amount,
-                "unit": plan.unit,
-                "price_per_unit": plan.price_per_unit,
-                "total_price": plan.total_price,
-                "procurement_method": plan.procurement_method_id.name if plan.procurement_method_id else "",
-                "state": plan.state,
-                "note": plan.note or "-",
-                "purchase_request_eta": plan.purchase_request_eta,
-                "procurement_announcement_eta": plan.procurement_announcement_eta,
-                "approval_signing_eta": plan.approval_signing_eta,
-                "contract_order_signing_eta": plan.contract_order_signing_eta,
-                "acceptance_eta": plan.acceptance_eta,
-                "payments": payment_list,
-                "total_number_of_days": total_number_of_days,
-                "total_payment_amount": total_payment_amount,
-            })
+            data.append(
+                {
+                    "id": plan.id,
+                    "name": plan.name,
+                    "fiscal_year": (
+                        plan.date_range_fy_id.name if plan.date_range_fy_id else ""
+                    ),
+                    "department": (
+                        plan.department_analytic_id.name
+                        if plan.department_analytic_id
+                        else ""
+                    ),
+                    "activity": (
+                        plan.activity_analytic_id.name
+                        if plan.activity_analytic_id
+                        else ""
+                    ),
+                    "fund": plan.fund_analytic_id.name if plan.fund_analytic_id else "",
+                    "source": (
+                        plan.source_analytic_id.name if plan.source_analytic_id else ""
+                    ),
+                    "amount": plan.amount,
+                    "unit": plan.unit,
+                    "price_per_unit": plan.price_per_unit,
+                    "total_price": plan.total_price,
+                    "procurement_method": (
+                        plan.procurement_method_id.name
+                        if plan.procurement_method_id
+                        else ""
+                    ),
+                    "state": plan.state,
+                    "note": plan.note or "-",
+                    "purchase_request_eta": plan.purchase_request_eta,
+                    "procurement_announcement_eta": plan.procurement_announcement_eta,
+                    "approval_signing_eta": plan.approval_signing_eta,
+                    "contract_order_signing_eta": plan.contract_order_signing_eta,
+                    "acceptance_eta": plan.acceptance_eta,
+                    "payments": payment_list,
+                    "total_number_of_days": total_number_of_days,
+                    "total_payment_amount": total_payment_amount,
+                }
+            )
 
         return {
             "filters": filters,
@@ -212,7 +243,7 @@ class ProcurementPlan(models.Model):
 
     def unlink(self):
         # Delete the empty related analytic account
-        analytic_accounts_to_delete = self.env['account.analytic.account']
+        analytic_accounts_to_delete = self.env["account.analytic.account"]
         for record in self:
             if record.analytic_account_id and not record.analytic_account_id.line_ids:
                 analytic_accounts_to_delete |= record.analytic_account_id
@@ -222,11 +253,13 @@ class ProcurementPlan(models.Model):
 
     def _create_analytic_account(self):
         for record in self:
-            analytic_account = self.env['account.analytic.account'].create({
-                'name': record.name,
-                'company_id': record.company_id.id,
-                'partner_id': record.partner_id.id,
-                'plan_id': record.company_id.analytic_plan_id.id,
-                'active': True,
-            })
-            record.write({'analytic_account_id': analytic_account.id})
+            analytic_account = self.env["account.analytic.account"].create(
+                {
+                    "name": record.name,
+                    "company_id": record.company_id.id,
+                    "partner_id": record.partner_id.id,
+                    "plan_id": record.company_id.analytic_plan_id.id,
+                    "active": True,
+                }
+            )
+            record.write({"analytic_account_id": analytic_account.id})
