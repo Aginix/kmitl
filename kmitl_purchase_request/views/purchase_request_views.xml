@@ -188,7 +188,7 @@
                         <tree editable="bottom">
                             <field name="committee_type" invisible="1" />
                             <field name="employee_id" string="Employee" options="{'no_create': True, 'no_open': True}" />
-                            <field name="name" string="Committee Name" readonly="1" />
+                            <field name="name" string="Committee Name" />
                             <field name="approve_role" string="Role" />
                             <field name="department_id" string="Department" readonly="1" />
                             <field name="email" string="Work Email" readonly="1" />
