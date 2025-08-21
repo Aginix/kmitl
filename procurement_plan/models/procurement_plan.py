@@ -111,6 +111,7 @@ class ProcurementPlan(models.Model):
     )
 
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.company)
+    currency_id = fields.Many2one('res.currency', related="company_id.currency_id", string="Currency", readonly=True)
     activity_analytic_id = fields.Many2one(states=READONLY_STATES)
     department_analytic_id = fields.Many2one(required=True, states=READONLY_STATES)
     fund_analytic_id = fields.Many2one(states=READONLY_STATES)
