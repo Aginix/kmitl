@@ -44,36 +44,32 @@ class AnalyticDistributionMixin(models.AbstractModel):
         domain=[("root_plan_id.code", "=", "sources")],
     )
 
-    @api.depends("analytic_distribution")
+    @api.depends("activity_analytic_id", "fund_analytic_id", "department_analytic_id", "source_analytic_id")
     def _compute_analytic_distribution(self):
         for record in self:
-            # Reset fields in case distribution keys are missing or change
-            record.activity_analytic_id = False
-            record.department_analytic_id = False
-            record.fund_analytic_id = False
-            record.source_analytic_id = False
+            distribution = {}
 
-            # Extract the JSON data from 'analytic_distribution'
-            distribution = record.analytic_distribution or {}
+            # Add each dimension to distribution with 100% allocation
+            for field_name in self._analytic_fields():
+                analytic_account = getattr(record, field_name)
+                if analytic_account:
+                    distribution[str(analytic_account.id)] = 100.0
 
-            _logger.info(distribution)
+            record.analytic_distribution = distribution if distribution else False
 
-            # Iterate over the JSON data to find and assign analytic accounts
-            for analytic_id_str, _percent in distribution.items():
-                # Convert the string ID to integer
-                analytic_id = int(analytic_id_str)
-                analytic_account = self.env["account.analytic.account"].browse(
-                    analytic_id
-                )
+    def _analytic_fields(self):
+        return ["department_analytic_id", "activity_analytic_id", "fund_analytic_id", "source_analytic_id"]
 
-                _logger.info(analytic_id)
+    @api.onchange("activity_analytic_id", "fund_analytic_id", "department_analytic_id", "source_analytic_id")
+    def _onchange_analytic_fields(self):
+        """Update analytic distribution when individual fields change"""
+        if self.activity_analytic_id or self.fund_analytic_id or self.department_analytic_id or self.source_analytic_id:
+            distribution = {}
 
-                # Check analytic plan or dimension type to assign to correct field
-                if analytic_account.plan_id.code == "activities":
-                    record.activity_analytic_id = analytic_account
-                elif analytic_account.plan_id.code == "departments":
-                    record.department_analytic_id = analytic_account
-                elif analytic_account.plan_id.code == "funds":
-                    record.fund_analytic_id = analytic_account
-                elif analytic_account.plan_id.code == "sources":
-                    record.source_analytic_id = analytic_account
+            # Add each dimension to distribution with 100% allocation
+            for field_name in self._analytic_fields():
+                analytic_account = getattr(self, field_name)
+                if analytic_account:
+                    distribution[str(analytic_account.id)] = 100.0
+
+            self.analytic_distribution = distribution if distribution else False

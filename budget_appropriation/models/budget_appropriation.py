@@ -49,7 +49,7 @@ class BudgetAppropriation(models.Model):
     }
 
     name = fields.Char(
-        string="Number",
+        string="รายการ",
         compute="_compute_name",
         readonly=False,
         store=True,
@@ -66,7 +66,7 @@ class BudgetAppropriation(models.Model):
         states=READONLY_STATES,
     )
     date = fields.Date(
-        string="Date",
+        string="วันที่",
         index=True,
         default=lambda self: fields.Date.context_today(self),
         required=True,
@@ -82,7 +82,7 @@ class BudgetAppropriation(models.Model):
             ("posted", "Posted"),
             ("cancel", "Cancelled"),
         ],
-        string="Status",
+        string="สถานะ",
         required=True,
         readonly=True,
         copy=False,
@@ -91,7 +91,7 @@ class BudgetAppropriation(models.Model):
     )
     date_range_fy_id = fields.Many2one(
         comodel_name="account.fiscal.year",
-        string="Fiscal year",
+        string="ปีงบประมาณ",
         tracking=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
@@ -173,7 +173,7 @@ class BudgetAppropriation(models.Model):
     )
     company_currency_id = fields.Many2one(related="company_id.currency_id")
     total_amount = fields.Float(
-        string="Total Amount",
+        string="งบประมาณทั้งหมด",
         compute="_compute_amount",
         readonly=True,
         store=True,

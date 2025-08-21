@@ -467,7 +467,6 @@ msgid ""
 msgstr ""
 
 #. module: budget_project
-#: model_terms:ir.ui.view,arch_db:budget_project.view_budget_app_form_inherit_project
 #: model_terms:ir.ui.view,arch_db:budget_project.view_budget_move_line_form_inherit_project
 #: model_terms:ir.ui.view,arch_db:budget_project.view_budget_project_tree
 msgid "Total Budget"
@@ -523,9 +522,4 @@ msgstr ""
 #. module: budget_project
 #: model:ir.model.fields,field_description:budget_project.field_budget_project__source_analytic_id
 msgid "แหล่งเงิน"
-msgstr ""
-
-#. module: budget_project
-#: model_terms:ir.ui.view,arch_db:budget_project.view_budget_app_form_inherit_project
-msgid "โครงการ/กิจกรรม"
 msgstr ""
