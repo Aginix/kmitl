@@ -150,57 +150,83 @@ class PurchaseOrderManual(models.Model):
             }
         }
     
+    def action_reserve_budget(self):
+        """Reserve budget by creating commitment"""
+        self.ensure_one()
+        
+        if self.budget_commitment_id:
+            raise UserError(_("Budget has already been reserved for this purchase order"))
+        
+        if not self.budget_account_id:
+            raise ValidationError(_("Please specify budget account"))
+        
+        # Validate required analytic dimensions
+        if not all([self.project_activity_id, self.funding_source_id]):
+            raise ValidationError(_(
+                "Please specify activity and funding source for budget commitment"
+            ))
+        
+        # Check budget availability first
+        check_result = self._check_budget_availability(
+            amount=self.amount_total,
+            budget_account_id=self.budget_account_id,
+            activity_analytic_id=self.project_activity_id,
+            fund_analytic_id=self.funding_source_id,
+            department_analytic_id=self.responsible_department_id
+        )
+        
+        if not check_result['is_sufficient']:
+            raise UserError(_(
+                "Cannot reserve budget due to insufficient funds: %s"
+            ) % check_result['message'])
+        
+        try:
+            # Create commitment using manual parameters
+            commitment = self._create_budget_commitment(
+                amount=self.amount_total,
+                budget_account_id=self.budget_account_id,
+                activity_analytic_id=self.project_activity_id,
+                fund_analytic_id=self.funding_source_id,
+                department_analytic_id=self.responsible_department_id,
+                ref=self.name,
+                description=f"Purchase Order: {self.name}\nVendor: {self.partner_id.name}",
+                date=self.date_order,
+                auto_reserve=True
+            )
+            
+            self.budget_commitment_id = commitment
+            
+            self.message_post(
+                body=_(
+                    "Budget reserved: %s for amount %s"
+                ) % (commitment.name, self.amount_total)
+            )
+            
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Budget Reserved'),
+                    'message': _('Budget has been successfully reserved for %s') % self.amount_total,
+                    'type': 'success',
+                    'sticky': False,
+                }
+            }
+            
+        except UserError as e:
+            raise UserError(_(
+                "Cannot reserve budget: %s"
+            ) % str(e))
+    
     def button_confirm(self):
-        """Create budget commitment using manual parameters"""
+        """Confirm purchase order - budget reservation is now separate"""
+        # Check if budget reservation is required but not done
         for order in self:
             if order.budget_account_id and not order.budget_commitment_id:
-                
-                # Validate required analytic dimensions
-                if not all([order.project_activity_id, order.funding_source_id]):
-                    raise ValidationError(_(
-                        "Please specify activity and funding source for budget commitment"
-                    ))
-                
-                # Check budget availability first
-                check_result = order._check_budget_availability(
-                    amount=order.amount_total,
-                    budget_account_id=order.budget_account_id,
-                    activity_analytic_id=order.project_activity_id,
-                    fund_analytic_id=order.funding_source_id,
-                    department_analytic_id=order.responsible_department_id
-                )
-                
-                if not check_result['is_sufficient']:
-                    raise UserError(_(
-                        "Cannot confirm purchase order due to insufficient budget: %s"
-                    ) % check_result['message'])
-                
-                try:
-                    # Create commitment using manual parameters
-                    commitment = order._create_budget_commitment(
-                        amount=order.amount_total,
-                        budget_account_id=order.budget_account_id,
-                        activity_analytic_id=order.project_activity_id,
-                        fund_analytic_id=order.funding_source_id,
-                        department_analytic_id=order.responsible_department_id,
-                        ref=order.name,
-                        description=f"Purchase Order: {order.name}\nVendor: {order.partner_id.name}",
-                        date=order.date_order,
-                        auto_reserve=True
-                    )
-                    
-                    order.budget_commitment_id = commitment
-                    
-                    order.message_post(
-                        body=_(
-                            "Budget commitment created: %s for amount %s"
-                        ) % (commitment.name, order.amount_total)
-                    )
-                    
-                except UserError as e:
-                    raise UserError(_(
-                        "Cannot confirm purchase order due to budget constraint: %s"
-                    ) % str(e))
+                raise UserError(_(
+                    "Please reserve budget first before confirming the purchase order. "
+                    "Click 'Reserve Budget' button to proceed."
+                ))
         
         return super().button_confirm()
     
@@ -252,14 +278,11 @@ class PurchaseOrderManual(models.Model):
                 # Get latest invoice
                 invoice = order.invoice_ids[-1]
                 
-                # Consume commitment for invoice amount using parameter approach
+                # Consume commitment for invoice amount
                 try:
                     budget_move = order._consume_commitment(
                         order.budget_commitment_id,
                         invoice.amount_total,
-                        activity_analytic_id=order.project_activity_id,
-                        fund_analytic_id=order.funding_source_id,
-                        department_analytic_id=order.responsible_department_id,
                         reference=f"Invoice: {invoice.name}"
                     )
                     
