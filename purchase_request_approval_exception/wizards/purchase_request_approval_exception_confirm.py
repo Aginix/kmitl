@@ -3,8 +3,8 @@ from odoo import _, api, fields, models
 
 
 class PurchaseRequestApprovalExceptionConfirm(models.TransientModel):
-    _name = 'pr.form.ex.confirm'
-    _description = 'Purchase Request Approval Form Exception Confirm'
+    _name = 'purchase.request.approval.exception.confirm'
+    _description = 'Purchase Request Approval Exception Confirm'
     _inherit = ["exception.rule.confirm"]
 
     related_model_id = fields.Many2one("purchase.request.approval", "Purchase request approval form")

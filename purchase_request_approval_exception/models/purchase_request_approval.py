@@ -8,12 +8,6 @@ class PurchaseRequestApproval(models.Model):
     _order = "main_exception_id asc, id desc"
 
     @api.model
-    def test_all_draft_requests(self):
-        approval_set = self.search([("state", "=", "draft")])
-        approval_set.detect_exceptions()
-        return True
-
-    @api.model
     def _reverse_field(self):
         return "approval_ids"
 

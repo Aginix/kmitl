@@ -10,7 +10,7 @@
     "data": [
         "data/purchase_request_approval_data.xml",
         "security/ir.model.access.csv",
-        "views/purchase_request_approval_form_views.xml",
+        "views/purchase_request_approval_views.xml",
         "wizards/purchase_request_approval_exception_confirm.xml"
     ],
     'installable': True,
