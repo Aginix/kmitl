@@ -6,6 +6,7 @@ from . import budget_appropriation_report
 from . import budget_appropriation_overview_report
 
 # Modern budget models (renamed from _new to normal)
+from . import budget_commitment_mixin
 from . import budget_commitment
 
 # Budget execution status report
