@@ -7,7 +7,7 @@ class PurchaseRequestApprovalExceptionConfirm(models.TransientModel):
     _description = 'Purchase Request Approval Exception Confirm'
     _inherit = ["exception.rule.confirm"]
 
-    related_model_id = fields.Many2one("purchase.request.approval", "Purchase request approval form")
+    related_model_id = fields.Many2one("purchase.request.approval", "Purchase request approval")
 
     def action_confirm(self):
         self.ensure_one()
