@@ -108,6 +108,7 @@
     </record>
 
     <menuitem id="menu_purchase_request_approval_form" name="Purchase Requests Approval" parent="purchase_request.parent_menu_purchase_request" />
+    <menuitem id="menu_purchase_request_approval_form_config" name="Configuration" parent="purchase_request.parent_menu_purchase_request" />
     <menuitem id="menu_purchase_request_approval_form_root_pr" name="Purchase Request Approval Form" parent="purchase_request_approval_kmitl.menu_purchase_request_approval_form" action="action_purchase_request_approval_form" sequence="20"/>
     <menuitem id="menu_purchase_request_approval_form_root" name="Purchase Request Approval" parent="purchase.menu_procurement_management" action="action_purchase_request_approval_form" sequence="20"/>
 </odoo>

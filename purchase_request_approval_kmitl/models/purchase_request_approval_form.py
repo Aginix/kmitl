@@ -1,5 +1,4 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
 
 
 class PurchaseRequestApprovalForm(models.Model):
@@ -106,17 +105,6 @@ class PurchaseRequestApprovalForm(models.Model):
         readonly=True
     )
 
-    @api.constrains('start_date', 'end_date')
-    def _check_end_date_within_30_days(self):
-        for record in self:
-            # todo: ทำเป็น exception ได้ไหม
-            if record.start_date and record.end_date:
-                diff_days = (record.end_date - record.start_date).days
-                if diff_days > 30:
-                    raise ValidationError(
-                        "วันเริ่มและวันสิ้นสุดสัญญาต้องไม่เกิน 30 วัน"
-                    )
-
     @api.depends("state")
     def _compute_is_editable(self):
         for rec in self:
@@ -135,9 +123,6 @@ class PurchaseRequestApprovalForm(models.Model):
 
     def action_egp(self):
         for rec in self:
-            # todo: ทำเป็น exception ได้ไหม
-            if rec.estimated_cost_from_pr < 100000:
-                raise UserError("ยอดประมาณการจาก PR1 ยังไม่ถึง 100,000 บาท")
             rec.write({'state': 'approved'})
 
     @api.depends('line_ids.quantity', 'line_ids.unit_price', 'line_ids.taxes')

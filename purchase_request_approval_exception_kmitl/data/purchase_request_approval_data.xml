@@ -1,0 +1,14 @@
+<odoo noupdate="0">
+    <record id="pr_exception_30_days" model="exception.rule">
+        <field name="name">วันเริ่มและวันสิ้นสุดสัญญาต้องไม่เกิน 30 วัน</field>
+        <field name="description">พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</field>
+        <field name="model">purchase.request.approval.form</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code"><![CDATA[
+if self.start_date and self.end_date:
+    diff_days = (self.end_date - self.start_date).days
+    if diff_days > 30:
+        failed = True
+]]>        </field>
+    </record>
+</odoo>
