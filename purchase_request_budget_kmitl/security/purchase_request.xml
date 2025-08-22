@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_purchase_request_budget" model="res.groups">
+        <field name="name">Purchase Request User : Budget</field>
+        <field name="implied_ids" eval="[(4, ref('purchase_request.group_purchase_request_user'))]" />
+        <field name="category_id" ref="purchase_request.module_category_purchase_request" />
+    </record>
+    <record id="purchase_request_kmitl.group_purchase_request_user_all" model="res.groups">
+        <field name="name">Purchase Request User : All Documents</field>
+        <field name="implied_ids" eval="[(4, ref('group_purchase_request_budget'))]" />
+        <field name="category_id" ref="purchase_request.module_category_purchase_request" />
+    </record>
+</odoo>
