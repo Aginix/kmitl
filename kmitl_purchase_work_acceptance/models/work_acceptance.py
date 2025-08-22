@@ -13,13 +13,21 @@ class WorkAcceptance(models.Model):
     ("cancel", "Cancelled"),
     ]
 
-    agreement_id = fields.Many2one("agreement", string="Agreement Ref")
+    agreement_id = fields.Many2one(
+        "agreement", 
+        string="Agreement Ref"
+    )
+
+    agreement_version = fields.Integer(
+        related='agreement_id.version'
+    )
+
     document_ids = fields.One2many(
         "purchase.work.acceptance.attachment",
         "request_id",
         string="Attachment",
     )
-    invoice_plan = fields.Char(string='Invocie plan')
+
     work_acceptance_committee_ids = fields.One2many(
         related='agreement_id.work_acceptance_committee_ids',
         readonly=True,

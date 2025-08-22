@@ -45,6 +45,7 @@ class Agreement(models.Model):
 
         wa = self.env["work.acceptance"].create({
             "agreement_id": self.id,
+            "agreement_version": self.version,
             "partner_id": self.partner_id.id,
             "purchase_id": self.purchase_order_id.id,
             "date_due": self.end_date,

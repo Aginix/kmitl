@@ -34,16 +34,18 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
+            <xpath expr="//field[@name='invoice_ref']" position="before">
+                <field name="agreement_id" string="Agreement" readonly="1"/>
+                <field name="agreement_version" string="version" readonly="1"/>
+            </xpath>
+
+
             <xpath expr="//field[@name='invoice_ref']" position='attributes'>
                 <attribute name="attrs">{'readonly': [('is_editable','=', False)]}</attribute>
             </xpath>
 
             <xpath expr="//field[@name='currency_id']" position='attributes'>
                 <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <xpath expr="//field[@name='currency_id']" position="before">
-                <field name="invoice_plan" attrs="{'readonly': [('is_editable','=', False)]}" />
             </xpath>
 
             <xpath expr="//notebook" position="inside">
