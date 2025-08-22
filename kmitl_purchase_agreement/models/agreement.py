@@ -97,13 +97,9 @@ class Agreement(models.Model):
     def create_new_version(self):
         for rec in self:
             if not rec.state == "draft":
-                # Make sure status is draft
                 rec.state = "draft"
-            # Make a current copy and mark it as old
             rec.copy(default=rec._get_old_version_default_vals())
-            # Update version, created by and created on
             rec.update({"version": rec.version + 1})
-            # Reset revision to 0 since it's a new version
         return super().write({"revision": 0})
 
     def _exclude_readonly_field(self):
