@@ -7,7 +7,7 @@ class PurchaseRequestApprovalSubmittedLine(models.Model):
     _description = 'Purchase Request Approval Submitted Line'
 
     submitted_id = fields.Many2one('purchase.request.approval.submitted', string='Submitted')
-    pr2_form_id = fields.Many2one('purchase.request.approval.form', string='PR2 Form', required=True)
+    pr2_form_id = fields.Many2one('purchase.request.approval.form', string='PR2 Form', required=True, domain=lambda self: [('id', 'not in', self.submitted_id.line_ids.mapped('pr2_form_id').ids)])
     vendor = fields.Many2one(related='pr2_form_id.vendor', string='Vendor', store=True, readonly=True)
     payment_type = fields.Selection(related='pr2_form_id.payment_type', string='Payment Type', store=True, readonly=True)
     department_id = fields.Many2one(related='pr2_form_id.department_id', store=True, string='Department', readonly=True)

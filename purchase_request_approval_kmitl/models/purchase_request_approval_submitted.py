@@ -22,7 +22,7 @@ class PurchaseRequestApprovalSubmitted(models.Model):
     department_id = fields.Many2one(
         'hr.department',
         string='Department',
-        compute='_compute_payment_type',
+        compute="_compute_department_id",
         store=True
     )
     master_department_id = fields.Many2one(
@@ -92,6 +92,12 @@ class PurchaseRequestApprovalSubmitted(models.Model):
     @api.depends('line_ids.pr2_form_id.payment_type')
     def _compute_payment_type(self):
         for rec in self:
-            first_line = rec.line_ids.filtered(lambda l: l.pr2_form_id.payment_type and l.pr2_form_id.department_id)
+            first_line = rec.line_ids.filtered(lambda l: l.pr2_form_id.payment_type)
             rec.payment_type = first_line[0].pr2_form_id.payment_type if first_line else False
+
+    @api.depends('line_ids.pr2_form_id.department_id')
+    def _compute_department_id(self):
+        for rec in self:
+            first_line = rec.line_ids.filtered(lambda l: l.pr2_form_id.department_id)
             rec.department_id = first_line[0].pr2_form_id.department_id if first_line else False
+
