@@ -18,7 +18,7 @@
                 <div class="alert alert-danger" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('exceptions_summary','=',False)]}">
                     <p>
                         <strong
-                        >There are exceptions blocking this Purchase Order:</strong>
+                        >There are exceptions blocking this Purchase Request Approval:</strong>
                     </p>
                     <field name="exceptions_summary" />
                     <button name="action_ignore_exceptions" type="object" class="btn-danger" string="Ignore Exceptions" help="Click here to be able to confirm this Agreement regardless of the exceptions." groups="base_exception.group_exception_rule_manager" />
@@ -42,6 +42,5 @@
             </field>
         </field>
     </record>
-
     <menuitem id="menu_purchase_request_approval_form_config_exception" parent="purchase_request_approval_kmitl.menu_purchase_request_approval_form_config" action="action_purchase_request_approval_form_test_tree" sequence="20"/>
 </odoo>
