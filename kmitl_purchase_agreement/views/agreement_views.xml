@@ -117,6 +117,7 @@
                 <field name="verify_datetime" />
                 <field name="work_start_date" attrs="{'invisible': [('contract_type', '!=', 'contract_construction')]}" />
                 <field name="work_end_date" attrs="{'invisible': [('contract_type', '!=', 'contract_construction')]}" />
+                <field name="is_invoice" string="is invoice"/>
             </xpath>
 
             <xpath expr="//field[@name='uom_id']" position="after">
@@ -125,8 +126,7 @@
             </xpath>
 
             <xpath expr="//notebook" position="inside">
-                <field name="has_invoice_plan" invisible="1"/>
-                <page name="invoice" string="Invoice" attrs="{'invisible': [('has_invoice_plan', '=', False)]}">
+                <page name="invoice" string="Invoice">
                     <field name="invoice_plan_ids">
                         <tree>
                             <field name="installment"/>
