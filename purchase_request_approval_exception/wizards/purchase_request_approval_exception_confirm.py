@@ -2,7 +2,7 @@
 from odoo import _, api, fields, models
 
 
-class PurchaseRequestApprovalFormExceptionConfirm(models.TransientModel):
+class PurchaseRequestApprovalExceptionConfirm(models.TransientModel):
     _name = 'pr.form.ex.confirm'
     _description = 'Purchase Request Approval Form Exception Confirm'
     _inherit = ["exception.rule.confirm"]
@@ -14,5 +14,5 @@ class PurchaseRequestApprovalFormExceptionConfirm(models.TransientModel):
         if self.ignore:
             self.related_model_id.button_draft()
             self.related_model_id.ignore_exception = True
-            self.related_model_id.button_to_approve()
+            self.related_model_id.button_submit()
         return super().action_confirm()

@@ -11,7 +11,7 @@
         "data/purchase_request_approval_data.xml",
         "security/ir.model.access.csv",
         "views/purchase_request_approval_form_views.xml",
-        "wizards/purchase_request_approval_form_exception_confirm.xml"
+        "wizards/purchase_request_approval_exception_confirm.xml"
     ],
     'installable': True,
     'auto_install': False,
