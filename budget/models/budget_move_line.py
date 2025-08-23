@@ -2,6 +2,7 @@ import logging
 from contextlib import ExitStack
 
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -82,11 +83,25 @@ class BudgetMoveLine(models.Model):
     budget_type = fields.Selection(
         related="move_id.journal_id.default_budget_type", store=True, readonly=True
     )
-    balance = fields.Float(
+    debit = fields.Float(
+        string="เดบิต",
         digits="Budget Precision",
-        help="Amount",
-        readonly=False,
+        help="จำนวนเงินฝั่งเดบิต (การจัดสรรงบประมาณ, การรับโอนงบประมาณ)",
         tracking=True,
+        default=0.0,
+    )
+    credit = fields.Float(
+        string="เครดิต",
+        digits="Budget Precision",
+        help="จำนวนเงินฝั่งเครดิต (การใช้งบประมาณ, การโอนงบประมาณออก)",
+        tracking=True,
+        default=0.0,
+    )
+    balance = fields.Float(
+        string="จำนวนเงิน",
+        digits="Budget Precision",
+        tracking=True,
+        default=0.0,
     )
     unallocated_balance = fields.Float(
         string="ยังไม่ระบุรายการ",
@@ -134,6 +149,19 @@ class BudgetMoveLine(models.Model):
         compute="_compute_hide_unallocated_balance", readonly=True
     )
 
+    _sql_constraints = [
+        (
+            "debit_credit_positive",
+            "CHECK (debit >= 0 AND credit >= 0)",
+            "เดบิตและเครดิตต้องมีค่าไม่ติดลบ"
+        ),
+        (
+            "debit_credit_exclusive",
+            "CHECK ((debit > 0 AND credit = 0) OR (credit > 0 AND debit = 0) OR (debit = 0 AND credit = 0))",
+            "ไม่สามารถมีค่าเดบิตและเครดิตพร้อมกันได้ ต้องเลือกใดเลือกหนึ่ง"
+        ),
+    ]
+
     @api.model
     def default_get(self, fields):
         res = super().default_get(fields)
@@ -160,6 +188,43 @@ class BudgetMoveLine(models.Model):
     def _compute_unallocated_balance(self):
         for rec in self:
             rec.unallocated_balance = 0
+
+    @api.onchange("balance")
+    def _onchange_balance(self):
+        """แปลงค่า balance เป็น debit/credit อัตโนมัติ"""
+        for line in self:
+            if line.balance > 0:
+                # ค่าบวก: ใส่ในฝั่งเดบิต (การจัดสรร/รับโอน)
+                line.debit = line.balance
+                line.credit = 0.0
+            elif line.balance < 0:
+                # ค่าลบ: ใส่ในฝั่งเครดิต (การใช้/โอนออก)
+                line.debit = 0.0
+                line.credit = abs(line.balance)
+            else:
+                # ค่าศูนย์: เคลียร์ทั้งคู่
+                line.debit = 0.0
+                line.credit = 0.0
+
+    @api.constrains("debit", "credit")
+    def _check_debit_credit_rules(self):
+        """ตรวจสอบกฎสำหรับเดบิตและเครดิต"""
+        for line in self:
+            # ตรวจสอบค่าไม่ติดลบ
+            if line.debit < 0:
+                raise ValidationError(
+                    _("เดบิตต้องมีค่าไม่ติดลบ (รายการ: %s)") % line.name
+                )
+            if line.credit < 0:
+                raise ValidationError(
+                    _("เครดิตต้องมีค่าไม่ติดลบ (รายการ: %s)") % line.name
+                )
+
+            # ตรวจสอบว่าไม่สามารถมีทั้งเดบิตและเครดิตพร้อมกัน
+            if line.debit > 0 and line.credit > 0:
+                raise ValidationError(
+                    _("ไม่สามารถมีค่าเดบิตและเครดิตพร้อมกันได้ ต้องเลือกใดเลือกหนึ่ง (รายการ: %s)") % line.name
+                )
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -237,4 +302,14 @@ class BudgetMoveLine(models.Model):
         return result
 
     def _sanitize_vals(self, vals):
+        """ปรับแต่ง values ก่อน create/write เพื่อ sync balance กับ debit/credit"""
+        if 'balance' in vals:
+            balance = vals['balance']
+            if balance > 0:
+                vals.update({'debit': balance, 'credit': 0.0})
+            elif balance < 0:
+                vals.update({'debit': 0.0, 'credit': abs(balance)})
+            else:
+                vals.update({'debit': 0.0, 'credit': 0.0})
+
         return vals
