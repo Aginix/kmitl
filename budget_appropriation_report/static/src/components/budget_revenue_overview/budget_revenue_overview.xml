@@ -62,7 +62,10 @@
                                         t-as="state"
                                         t-key="state.id"
                                     >
-                                        <option t-att-value="state.id" t-esc="state.id" />
+                                        <option
+                                            t-att-value="state.id"
+                                            t-esc="state.id"
+                                        />
                                     </t>
                                 </select>
                             </div>
@@ -176,6 +179,25 @@
                                             <t t-set="row_no" t-value="row_no + 1" />
                                         </t>
                                     </t>
+                                    <div
+                                        style="
+                                            text-align: right;
+                                            font-weight: bold;
+                                            font-size: 16px;
+                                            padding-right: 6px;
+                                        "
+                                    >
+                                        รวมทั้งสิ้น
+                                        <span
+                                            class="amount-cell"
+                                            style="
+                                                text-decoration: underline;
+                                                text-decoration-style: double;
+                                            "
+                                            ><t t-esc="formatCurrency(totalBalance)"
+                                        /></span>
+                                        บาท
+                                    </div>
                                 </div>
                             </div>
                         </div>

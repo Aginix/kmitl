@@ -14,11 +14,14 @@ class BudgetAppropriationReportRevenueOverview(models.AbstractModel):
     def get_data(self, filters):
         fiscal_year_id = filters.get("fiscal_year_id", False)
         state = filters.get("state", False)
+        source_analytic_id = filters.get("source_analytic_id", False)
 
         if fiscal_year_id:
             fiscal_year = self.env["account.fiscal.year"].browse(fiscal_year_id)
         else:
-            fiscal_year = self.env["account.fiscal.year"].search([], limit=1, order="date_from DESC")
+            fiscal_year = self.env["account.fiscal.year"].search(
+                [], limit=1, order="date_from DESC"
+            )
             fiscal_year_id = fiscal_year.id
 
         accounts = self.env["budget.account"].search(
@@ -35,6 +38,8 @@ class BudgetAppropriationReportRevenueOverview(models.AbstractModel):
             domain.append(("parent_state", "=", state))
         if fiscal_year_id:
             domain.append(("date_range_fy_id", "=", fiscal_year_id))
+        if source_analytic_id:
+            domain.append(("source_analytic_id", "=", source_analytic_id))
         app_lines = self.env["budget.appropriation.line"].search(domain)
 
         account_map = dict(
@@ -64,14 +69,10 @@ class BudgetAppropriationReportRevenueOverview(models.AbstractModel):
             account_map[account_id]["department"][dept_id] += line.balance
             account_map[account_id]["total_balance"] += line.balance
 
-        departments_data = [
-            {"id": dept.id, "code": dept.code, "name": dept.name}
-            for dept in departments
-        ]
-
+        dept_map = [{"id": n.id, "code": n.code, "name": n.name} for n in departments]
         return {
             "data": account_map,
-            "departments": departments_data,
+            "departments": dept_map,
             "fiscal_year": {
                 "id": fiscal_year.id,
                 "name": fiscal_year.name,
@@ -79,7 +80,7 @@ class BudgetAppropriationReportRevenueOverview(models.AbstractModel):
             "filters": {"fiscal_year_id": fiscal_year_id, "state": state},
         }
 
-    def _get_fiscal_year(self):
+    def _get_fiscal_year_options(self):
         data = self.env["account.fiscal.year"].search([], order="date_from DESC")
         return [
             dict(
@@ -91,10 +92,19 @@ class BudgetAppropriationReportRevenueOverview(models.AbstractModel):
             for n in data
         ]
 
+    def _get_source_analytics_options(self):
+        data = self.env["account.analytic.account"].search(
+            [("plan_id.code", "=", "sources")], order="code ASC"
+        )
+        return [
+            dict(id=n.id, code=n.code, name=n.name, complete_name=n.complete_name)
+            for n in data
+        ]
+
     @api.model
     def get_filter_options(self):
-        fiscal_years = self._get_fiscal_year()
         return {
-            "fiscal_years": fiscal_years,
             "state": [{"id": "draft"}, {"id": "review"}, {"id": "posted"}],
+            "fiscal_years": self._get_fiscal_year_options(),
+            "source_analytics": self._get_source_analytics_options(),
         }

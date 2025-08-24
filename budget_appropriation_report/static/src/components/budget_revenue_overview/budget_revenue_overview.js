@@ -10,8 +10,6 @@ export class BudgetRevenueOverview extends Component {
     setup() {
         this.controlPanelDisplay = {
             "top-left": true,
-            // "top-right": true,
-            // "bottom-left": false,
             "bottom-right": false
         };
 
@@ -81,6 +79,14 @@ export class BudgetRevenueOverview extends Component {
 
     get departments() {
         return this.state.departments;
+    }
+
+    get totalBalance() {
+        let sum = 0
+        for (let n of Object.values(this.state.data)) {
+            sum += n.total_balance
+        }
+        return sum
     }
 
     get data() {
