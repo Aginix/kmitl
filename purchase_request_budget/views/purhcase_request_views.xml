@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+
+    <!-- View purhcase.request form -->
+    <record id="view_purhcase_request_form" model="ir.ui.view">
+        <field name="name">view.purhcase.request.form</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet/notebook" position="inside">
+                <page string="Budget Commitment">
+                    <group>
+                        <field name="budget_account_id" />
+                        <field name="activity_analytic_id" />
+                        <field name="department_analytic_id" />
+                        <field name="fund_analytic_id" />
+                        <field name="source_analytic_id" />
+                    </group>
+                </page>
+            </xpath>
+            <!-- <xpath expr="//button[@name='action_show_details']" position="after">
+                <button name="action_check_budget" type="object" string="View Budget Commitment" class="oe_highlight btn-info"/>
+            </xpath> -->
+        </field>
+    </record>
+    <record id="view_purhcase_request_budget_form" model="ir.ui.view">
+        <field name="name">view.purhcase.request.form</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request_kmitl.view_purchase_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='button_validate']" position="after">
+                <button name="action_check_budget" type="object" string="Check Buget" class="oe_highlight btn-info"/>
+                <button name="action_reserve_budget" type="object" string="Reserve Buget" class="oe_highlight btn-success"/>
+
+            </xpath>
+        </field>
+    </record>
+  </odoo>
