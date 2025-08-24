@@ -8,15 +8,29 @@ import {useService} from "@web/core/utils/hooks";
 
 export class BudgetRevenueOverview extends Component {
     setup() {
+        this.controlPanelDisplay = {
+            "top-left": true,
+            // "top-right": true,
+            // "bottom-left": false,
+            "bottom-right": false
+        };
+
         this.orm = useService("orm");
         this.notification = useService("notification");
 
         this.state = useState({
+            filters: {
+                fiscal_year_id: null,
+                state: null,
+            },
             loading: false,
             data: null,
             fiscalYear: null,
             departments: null,
-            config: {},
+            filterOptions: {
+                fiscal_years: [],
+                state: ["draft", "review", "posted"]
+            },
         });
 
         onWillStart(async () => {
@@ -30,20 +44,21 @@ export class BudgetRevenueOverview extends Component {
             const response = await this.orm.call(
                 "budget.appropriation.report.revenue.overview",
                 "get_data",
-                []
+                [this.state.filters]
             );
 
             this.state.data = response.data;
             this.state.fiscalYear = response.fiscal_year;
             this.state.departments = response.departments;
+            this.state.filters = response.filters;
 
-            const config = await this.orm.call(
+            const filterOptions = await this.orm.call(
                 "budget.appropriation.report.revenue.overview",
-                "get_config",
+                "get_filter_options",
                 []
             );
 
-            this.state.config = config;
+            this.state.filterOptions = filterOptions;
         } catch (error) {
             console.error("Error loading data:", error);
             this.notification.add("เกิดข้อผิดพลาดในการโหลดข้อมูล: " + error.message, {
@@ -53,6 +68,12 @@ export class BudgetRevenueOverview extends Component {
             this.state.loading = false;
         }
     }
+
+    onRefresh() {
+        this.loadData()
+    }
+
+    onPrint() {}
 
     get fiscalYear() {
         return this.state.fiscalYear;
@@ -80,6 +101,23 @@ export class BudgetRevenueOverview extends Component {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0
         }).format(amount);
+    }
+
+    async onFilterChange() {
+        await this.loadData()
+    }
+
+    async onStateChange(e) {
+        this.state.filters.state = e.target.value || null
+
+        await this.onFilterChange();
+    }
+
+    async onFiscalYearChange(e) {
+        const fiscalYearId = e.target.value ? Number(e.target.value) : null
+        this.state.filters.fiscal_year_id = fiscalYearId;
+
+        await this.onFilterChange();
     }
 }
 

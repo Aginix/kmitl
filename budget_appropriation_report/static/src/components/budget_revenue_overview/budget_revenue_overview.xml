@@ -2,9 +2,74 @@
 <templates xml:space="preserve">
     <t t-name="budget_appropriation_report.BudgetRevenueOverview" owl="1">
         <div class="o_action budget_appropriation_report_revenue_overview">
-            <div
+            <!-- <div
                 class="o_control_panel d-flex flex-wrap justify-content-between align-items-center p-3 border-bottom"
-            ></div>
+            ></div> -->
+            <ControlPanel display="controlPanelDisplay">
+                <t t-set-slot="control-panel-bottom-left-buttons">
+                    <div class="o_cp_buttons">
+                        <div class="btn-group me-2">
+                            <button
+                                type="button"
+                                class="btn btn-secondary"
+                                t-on-click="onRefresh"
+                                title="รีเฟรช"
+                            >
+                                <i class="fa fa-refresh" />
+                            </button>
+                        </div>
+                        <div class="btn-group">
+                            <button
+                                type="button"
+                                class="btn btn-primary"
+                                t-on-click="onPrint"
+                                title="พิมพ์"
+                            >
+                                <i class="fa fa-print" /> พิมพ์
+                            </button>
+                        </div>
+                    </div>
+                </t>
+                <t t-set-slot="control-panel-top-right">
+                    <div class="d-flex flex-wrap gap-2">
+                        <div>
+                            <div class="o_mobile_search_filter o_search_options">
+                                <select
+                                    class="form-select form-select-sm"
+                                    t-model="state.filters.fiscal_year_id"
+                                    t-on-change="onFiscalYearChange"
+                                >
+                                    <t
+                                        t-foreach="state.filterOptions.fiscal_years"
+                                        t-as="fy"
+                                        t-key="fy.id"
+                                    >
+                                        <option t-att-value="fy.id" t-esc="fy.name" />
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="o_mobile_search_filter o_search_options">
+                                <select
+                                    class="form-select form-select-sm"
+                                    t-model="state.filters.state"
+                                    t-on-change="onStateChange"
+                                >
+                                    <option value="">ทุกสถานะ</option>
+                                    <t
+                                        t-foreach="state.filterOptions.state"
+                                        t-as="state"
+                                        t-key="state.id"
+                                    >
+                                        <option t-att-value="state.id" t-esc="state.id" />
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </ControlPanel>
             <div class="o_content">
                 <div t-if="!state.loading" class="budget_appropriation_content">
                     <div class="row justify-content-center">
@@ -111,79 +176,6 @@
                                             <t t-set="row_no" t-value="row_no + 1" />
                                         </t>
                                     </t>
-                                    <!-- <table class="table budget-report-table">
-                                        <tbody>
-                                            <t t-set="row_no" t-value="1" />
-                                            <t t-if="data.length > 0">
-                                                <t
-                                                    t-foreach="data"
-                                                    t-as="account"
-                                                    t-key="account.id"
-                                                >
-                                                    <tr>
-                                                        <td colSpan="2">
-                                                            <span
-                                                                style="
-                                                                    font-weight: bold;
-                                                                    text-decoration: underline;
-                                                                "
-                                                            >
-                                                                <t
-                                                                    t-esc="`${row_no}. ${account.name}`"
-                                                                />
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                    <t
-                                                        t-foreach="account.departments"
-                                                        t-as="dept"
-                                                        t-key="account.id + dept.id"
-                                                    >
-                                                        <tr>
-                                                            <td style="width: 60%">
-                                                                <div
-                                                                    style="
-                                                                        padding-left: 16px;
-                                                                    "
-                                                                >
-                                                                    -
-                                                                    <t
-                                                                        t-esc="dept.name"
-                                                                    />
-                                                                </div>
-                                                            </td>
-                                                            <td
-                                                                class="amount-cell"
-                                                                style="
-                                                                    text-align: right;
-                                                                    width: 20%;
-                                                                "
-                                                            >
-                                                                <t
-                                                                    t-esc="formatCurrency(dept.balance)"
-                                                                />
-                                                            </td>
-                                                        </tr>
-                                                    </t>
-                                                    <tr>
-                                                        <td
-                                                            colspan="2"
-                                                            class="amount-cell"
-                                                            style="text-align: right; font-weight: bold; text-decoration: underline;"
-                                                        >
-                                                            <t
-                                                                t-esc="formatCurrency(account.total_balance)"
-                                                            />
-                                                        </td>
-                                                    </tr>
-                                                    <t
-                                                        t-set="row_no"
-                                                        t-value="row_no + 1"
-                                                    />
-                                                </t>
-                                            </t>
-                                        </tbody>
-                                    </table> -->
                                 </div>
                             </div>
                         </div>
