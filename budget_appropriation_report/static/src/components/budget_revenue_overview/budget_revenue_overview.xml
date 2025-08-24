@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="budget_appropriation_report.BudgetRevenueOverview" owl="1">
+        <div class="o_action budget_appropriation_report_revenue_overview">
+            <div
+                class="o_control_panel d-flex flex-wrap justify-content-between align-items-center p-3 border-bottom"
+            ></div>
+            <div class="o_content">
+                <div t-if="!state.loading" class="budget_appropriation_content">
+                    <div class="row justify-content-center">
+                        <div class="col-12" style="max-width: 960px">
+                            <div class="budget-report-container">
+                                <div class="report-header text-center mb-4">
+                                    <!-- <h3
+                                        t-if="appropriation.source"
+                                        t-esc="appropriation.source.name"
+                                    /> -->
+                                    <h3>
+                                        สรุปประมาณการรายรับ ประจำปีงบประมาณ พ.ศ.
+                                        <t t-esc="fiscalYear.name" />
+                                    </h3>
+                                    <h3>
+                                        สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง
+                                    </h3>
+                                </div>
+
+                                <!-- Report Table -->
+                                <div class="table-responsive">
+                                    <t t-set="row_no" t-value="1" />
+                                    <t t-if="data.length > 0">
+                                        <t
+                                            t-foreach="data"
+                                            t-as="account"
+                                            t-key="account.id"
+                                        >
+                                            <div style="margin-bottom: 24px">
+                                                <div>
+                                                    <span
+                                                        style="
+                                                            font-weight: bold;
+                                                            text-decoration: underline;
+                                                            font-size: 16px;
+                                                        "
+                                                    >
+                                                        <t
+                                                            t-esc="`${row_no}. ${account.name}`"
+                                                        />
+                                                    </span>
+                                                </div>
+
+                                                <table
+                                                    class="table budget-report-table"
+                                                >
+                                                    <tbody>
+                                                        <t
+                                                            t-foreach="account.departments"
+                                                            t-as="dept"
+                                                            t-key="account.id + dept.id"
+                                                        >
+                                                            <tr>
+                                                                <td style="width: 60%">
+                                                                    <div
+                                                                        style="
+                                                                            padding-left: 16px;
+                                                                        "
+                                                                    >
+                                                                        -
+                                                                        <t
+                                                                            t-esc="dept.name"
+                                                                        />
+                                                                    </div>
+                                                                </td>
+                                                                <td
+                                                                    class="amount-cell"
+                                                                    style="
+                                                                        text-align: right;
+                                                                        width: 20%;
+                                                                    "
+                                                                >
+                                                                    <t
+                                                                        t-esc="formatCurrency(dept.balance)"
+                                                                    />
+                                                                </td>
+                                                            </tr>
+                                                        </t>
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <tr>
+                                                            <td
+                                                                colspan="2"
+                                                                class="amount-cell"
+                                                                style="
+                                                                    text-align: right;
+                                                                    font-weight: bold;
+                                                                "
+                                                            >
+                                                                รวม
+                                                                <span
+                                                                    style="
+                                                                        text-decoration: underline;
+                                                                    "
+                                                                    ><t
+                                                                        t-esc="formatCurrency(account.total_balance)"
+                                                                /></span>
+                                                                บาท
+                                                            </td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                            <t t-set="row_no" t-value="row_no + 1" />
+                                        </t>
+                                    </t>
+                                    <!-- <table class="table budget-report-table">
+                                        <tbody>
+                                            <t t-set="row_no" t-value="1" />
+                                            <t t-if="data.length > 0">
+                                                <t
+                                                    t-foreach="data"
+                                                    t-as="account"
+                                                    t-key="account.id"
+                                                >
+                                                    <tr>
+                                                        <td colSpan="2">
+                                                            <span
+                                                                style="
+                                                                    font-weight: bold;
+                                                                    text-decoration: underline;
+                                                                "
+                                                            >
+                                                                <t
+                                                                    t-esc="`${row_no}. ${account.name}`"
+                                                                />
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                    <t
+                                                        t-foreach="account.departments"
+                                                        t-as="dept"
+                                                        t-key="account.id + dept.id"
+                                                    >
+                                                        <tr>
+                                                            <td style="width: 60%">
+                                                                <div
+                                                                    style="
+                                                                        padding-left: 16px;
+                                                                    "
+                                                                >
+                                                                    -
+                                                                    <t
+                                                                        t-esc="dept.name"
+                                                                    />
+                                                                </div>
+                                                            </td>
+                                                            <td
+                                                                class="amount-cell"
+                                                                style="
+                                                                    text-align: right;
+                                                                    width: 20%;
+                                                                "
+                                                            >
+                                                                <t
+                                                                    t-esc="formatCurrency(dept.balance)"
+                                                                />
+                                                            </td>
+                                                        </tr>
+                                                    </t>
+                                                    <tr>
+                                                        <td
+                                                            colspan="2"
+                                                            class="amount-cell"
+                                                            style="text-align: right; font-weight: bold; text-decoration: underline;"
+                                                        >
+                                                            <t
+                                                                t-esc="formatCurrency(account.total_balance)"
+                                                            />
+                                                        </td>
+                                                    </tr>
+                                                    <t
+                                                        t-set="row_no"
+                                                        t-value="row_no + 1"
+                                                    />
+                                                </t>
+                                            </t>
+                                        </tbody>
+                                    </table> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
