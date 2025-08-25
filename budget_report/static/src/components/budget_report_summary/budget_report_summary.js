@@ -121,7 +121,10 @@ export class BudgetReportSummary extends Component {
     }
 
     // Expand/Collapse functionality
-    toggleRow(rowKey) {
+    toggleRow(event) {
+        const rowKey = event.currentTarget.getAttribute('data-row-key');
+        if (!rowKey) return;
+        
         if (this.state.expandedRows.has(rowKey)) {
             this.state.expandedRows.delete(rowKey);
         } else {
@@ -134,12 +137,16 @@ export class BudgetReportSummary extends Component {
     }
 
     isRowVisible(row) {
+        if (!row || !this.state.rows) {
+            return false;
+        }
+        
         if (!row.parent_row_id) {
             return true; // Root rows are always visible
         }
         
         // Find parent row
-        const parentRow = this.state.rows.find(r => r.row_key === row.parent_row_id);
+        const parentRow = this.state.rows.find(r => r && r.row_key === row.parent_row_id);
         if (!parentRow) {
             return true;
         }
@@ -149,13 +156,20 @@ export class BudgetReportSummary extends Component {
     }
 
     get visibleRows() {
+        if (!this.state.rows || !Array.isArray(this.state.rows)) {
+            return [];
+        }
         return this.state.rows.filter(row => this.isRowVisible(row));
     }
 
     expandAll() {
+        if (!this.state.rows || !Array.isArray(this.state.rows)) {
+            return;
+        }
+        
         this.state.expandedRows.clear();
         this.state.rows.forEach(row => {
-            if (row.has_children) {
+            if (row && row.has_children && row.row_key) {
                 this.state.expandedRows.add(row.row_key);
             }
         });
@@ -167,7 +181,7 @@ export class BudgetReportSummary extends Component {
 
     // Get expand toggle icon class
     getExpandIcon(row) {
-        if (!row.has_children) return '';
+        if (!row || !row.has_children || !row.row_key) return '';
         return this.isRowExpanded(row.row_key) ? 'fa fa-caret-down' : 'fa fa-caret-right';
     }
 }

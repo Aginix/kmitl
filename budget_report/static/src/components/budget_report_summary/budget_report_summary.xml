@@ -168,7 +168,8 @@
                                                             <span
                                                                 t-if="row.has_children"
                                                                 class="expand-toggle me-2"
-                                                                t-on-click="() => toggleRow(row.row_key)"
+                                                                t-on-click.bind="toggleRow"
+                                                                t-att-data-row-key="row.row_key"
                                                                 style="cursor: pointer; width: 16px; text-align: center;"
                                                             >
                                                                 <i t-att-class="getExpandIcon(row)" />
