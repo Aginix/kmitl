@@ -109,7 +109,10 @@ class BudgetCommitmentMixin(models.AbstractModel):
                                  department_analytic_id=None, source_analytic_id=None,
                                  ref=None, description=None, auto_reserve=True, **kwargs):
         """
-        Create a budget commitment using the record's dynamic budget account field.
+        Create or reuse a budget commitment using the record's dynamic budget account field.
+
+        If a cancelled commitment exists for this record, it will be reused by resetting
+        it to draft and updating its values. Otherwise, a new commitment will be created.
 
         Args:
             amount (float): Amount to commit
@@ -123,7 +126,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
             **kwargs: Additional optional fields
 
         Returns:
-            budget.commitment: Created commitment record
+            budget.commitment: Created or reused commitment record
         """
         self.ensure_one()
 
@@ -134,7 +137,60 @@ class BudgetCommitmentMixin(models.AbstractModel):
                 "Budget account field '%s' is not set on this record"
             ) % getattr(self.__class__, '_commitment_account_id_field', 'budget_account_id'))
 
-        # Prepare commitment values
+        # Check if there's an existing cancelled commitment to reuse
+        existing_commitment = self._get_commitment_field_value('commitment_id')
+        if existing_commitment and existing_commitment.state in ['cancel', 'draft']:
+            commitment = self._reuse_cancelled_commitment(
+                existing_commitment, amount, activity_analytic_id, fund_analytic_id,
+                department_analytic_id, source_analytic_id, ref, description,
+                budget_account_id, **kwargs
+            )
+        else:
+            # No cancelled commitment exists, create a new one
+            commitment = self._create_new_commitment(
+                amount, activity_analytic_id, fund_analytic_id,
+                department_analytic_id, source_analytic_id, ref, description,
+                budget_account_id, **kwargs
+            )
+
+        # Auto reserve if requested
+        if auto_reserve:
+            try:
+                commitment.action_reserve()
+            except UserError as e:
+                # If we were reusing, don't delete it, just keep it in draft
+                if not (existing_commitment and existing_commitment == commitment):
+                    commitment.unlink()
+                raise UserError(_(
+                    "Failed to reserve budget commitment: %s"
+                ) % str(e))
+
+        # Store commitment in dynamic field (in case it's a new one)
+        self._set_commitment_field_value('commitment_id', commitment)
+
+        return commitment
+
+    def _prepare_commitment_vals(self, amount, activity_analytic_id, fund_analytic_id,
+                                department_analytic_id, source_analytic_id, ref, description,
+                                budget_account_id, include_company=True, **kwargs):
+        """
+        Prepare commitment values dictionary.
+
+        Args:
+            amount (float): Commitment amount
+            activity_analytic_id: Activity dimension
+            fund_analytic_id: Fund dimension
+            department_analytic_id: Department dimension
+            source_analytic_id: Source dimension
+            ref (str): Reference
+            description (str): Description
+            budget_account_id: Budget account
+            include_company (bool): Whether to include company_id
+            **kwargs: Additional fields
+
+        Returns:
+            dict: Commitment values dictionary
+        """
         commitment_vals = {
             'amount': amount,
             'account_id': budget_account_id.id if hasattr(budget_account_id, 'id') else budget_account_id,
@@ -145,10 +201,12 @@ class BudgetCommitmentMixin(models.AbstractModel):
             'ref': ref,
             'description': description or '',
             'user_id': self.env.user.id,
-            'company_id': self.env.company.id,
         }
 
-        # Date and fiscal year
+        if include_company:
+            commitment_vals['company_id'] = self.env.company.id
+
+        # Handle date and fiscal year
         commitment_date = kwargs.get('date', fields.Date.today())
         commitment_vals['date'] = commitment_date
 
@@ -168,24 +226,86 @@ class BudgetCommitmentMixin(models.AbstractModel):
         else:
             commitment_vals['date_range_fy_id'] = kwargs['date_range_fy_id']
 
-        # Create commitment
-        commitment = self.env['budget.commitment'].create(commitment_vals)
+        return commitment_vals
 
-        # Auto reserve if requested
-        if auto_reserve:
-            try:
-                commitment.action_reserve()
-            except UserError as e:
-                commitment.unlink()
-                raise UserError(_(
-                    "Failed to reserve budget commitment: %s"
-                ) % str(e))
+    def _reuse_cancelled_commitment(self, existing_commitment, amount, activity_analytic_id, fund_analytic_id,
+                                   department_analytic_id, source_analytic_id, ref, description,
+                                   budget_account_id, **kwargs):
+        """
+        Reuse an existing cancelled commitment by resetting and updating it.
 
-        # Store commitment in dynamic field
-        self._set_commitment_field_value('commitment_id', commitment)
+        Args:
+            existing_commitment: The cancelled commitment to reuse
+            amount (float): New commitment amount
+            activity_analytic_id: Activity dimension
+            fund_analytic_id: Fund dimension
+            department_analytic_id: Department dimension
+            source_analytic_id: Source dimension
+            ref (str): Reference
+            description (str): Description
+            budget_account_id: Budget account
+            **kwargs: Additional fields
+
+        Returns:
+            budget.commitment: Updated commitment
+        """
+        _logger.info(
+            "Reusing cancelled budget commitment %s for %s",
+            existing_commitment.name,
+            self._name
+        )
+
+        # Reset the cancelled commitment to draft
+        existing_commitment.action_reset_to_draft()
+
+        # Prepare and apply update values
+        commitment_vals = self._prepare_commitment_vals(
+            amount, activity_analytic_id, fund_analytic_id,
+            department_analytic_id, source_analytic_id, ref, description,
+            budget_account_id, include_company=False, **kwargs
+        )
+
+        existing_commitment.write(commitment_vals)
 
         _logger.info(
-            "Created budget commitment %s for %s amount %s",
+            "Updated reused commitment %s with new values for %s amount %s",
+            existing_commitment.name,
+            self._name,
+            existing_commitment.amount
+        )
+
+        return existing_commitment
+
+    def _create_new_commitment(self, amount, activity_analytic_id, fund_analytic_id,
+                              department_analytic_id, source_analytic_id, ref, description,
+                              budget_account_id, **kwargs):
+        """
+        Create a new budget commitment.
+
+        Args:
+            amount (float): Commitment amount
+            activity_analytic_id: Activity dimension
+            fund_analytic_id: Fund dimension
+            department_analytic_id: Department dimension
+            source_analytic_id: Source dimension
+            ref (str): Reference
+            description (str): Description
+            budget_account_id: Budget account
+            **kwargs: Additional fields
+
+        Returns:
+            budget.commitment: New commitment
+        """
+        commitment_vals = self._prepare_commitment_vals(
+            amount, activity_analytic_id, fund_analytic_id,
+            department_analytic_id, source_analytic_id, ref, description,
+            budget_account_id, include_company=True, **kwargs
+        )
+
+        commitment = self.env['budget.commitment'].create(commitment_vals)
+
+        _logger.info(
+            "Created new budget commitment %s for %s amount %s",
             commitment.name,
             self._name,
             commitment.amount
