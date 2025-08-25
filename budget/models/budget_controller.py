@@ -303,10 +303,10 @@ class BudgetController(models.AbstractModel):
                         'amount': -abs(line.balance),
                     })
 
-        # Get reserved commitments
+        # Get reserved and obligated commitments
         BudgetCommitment = self.env['budget.commitment']
         domain = [
-            ('state', '=', 'reserved'),
+            ('state', 'in', ['reserved', 'obligated']),
             ('date_range_fy_id', '=', fiscal_year_id),
             ('company_id', '=', company_id),
         ]
@@ -346,8 +346,8 @@ class BudgetController(models.AbstractModel):
         if not commitment.exists():
             raise UserError(_('Budget commitment not found.'))
 
-        if commitment.state != 'reserved':
-            raise UserError(_('Budget commitment must be in reserved state to consume.'))
+        if commitment.state not in ['reserved', 'obligated']:
+            raise UserError(_('Budget commitment must be in reserved or obligated state to consume.'))
 
         consumption_move = commitment.create_consumption_move(amount)
 
@@ -414,9 +414,9 @@ class BudgetController(models.AbstractModel):
 
     @api.model
     def _calculate_reserved_amount(self, analytic_data, fiscal_year_id, company_id):
-        """Calculate total reserved amount from commitments"""
+        """Calculate total reserved amount from commitments (reserved + obligated)"""
         domain = [
-            ('state', '=', 'reserved'),
+            ('state', 'in', ['reserved', 'obligated']),
             ('date_range_fy_id', '=', fiscal_year_id),
             ('company_id', '=', company_id),
         ]
