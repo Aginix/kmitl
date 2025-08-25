@@ -23,7 +23,7 @@ MONTH_SELECTION = [
 class ProcurementPlan(models.Model):
     _name = "procurement.plan"
     _description = "Procurement Plan"
-    _inherit = ["mail.thread", "analytic.distribution.mixin"]
+    _inherit = ["mail.thread"]
     _check_company_auto = True
 
     READONLY_STATES = {
