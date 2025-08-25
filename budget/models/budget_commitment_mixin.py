@@ -140,102 +140,17 @@ class BudgetCommitmentMixin(models.AbstractModel):
         # Check if there's an existing cancelled commitment to reuse
         existing_commitment = self._get_commitment_field_value('commitment_id')
         if existing_commitment and existing_commitment.state == 'cancel':
-            _logger.info(
-                "Reusing cancelled budget commitment %s for %s",
-                existing_commitment.name,
-                self._name
-            )
-            
-            # Reset the cancelled commitment to draft
-            existing_commitment.action_reset_to_draft()
-            
-            # Prepare update values
-            commitment_vals = {
-                'amount': amount,
-                'account_id': budget_account_id.id if hasattr(budget_account_id, 'id') else budget_account_id,
-                'activity_analytic_id': activity_analytic_id.id if hasattr(activity_analytic_id, 'id') else activity_analytic_id,
-                'fund_analytic_id': fund_analytic_id.id if hasattr(fund_analytic_id, 'id') else fund_analytic_id,
-                'department_analytic_id': department_analytic_id.id if hasattr(department_analytic_id, 'id') else department_analytic_id,
-                'source_analytic_id': source_analytic_id.id if hasattr(source_analytic_id, 'id') else source_analytic_id,
-                'ref': ref,
-                'description': description or '',
-                'user_id': self.env.user.id,
-            }
-            
-            # Update date and fiscal year
-            commitment_date = kwargs.get('date', fields.Date.today())
-            commitment_vals['date'] = commitment_date
-            
-            if not kwargs.get('date_range_fy_id'):
-                company_id = kwargs.get('company_id',
-                                      self.company_id.id if hasattr(self, 'company_id') and self.company_id else self.env.company.id)
-                fiscal_year = self.env['account.fiscal.year'].search([
-                    ('date_from', '<=', commitment_date),
-                    ('date_to', '>=', commitment_date),
-                    ('company_id', '=', company_id)
-                ], limit=1)
-                if not fiscal_year:
-                    raise ValidationError(_(
-                        "No fiscal year found for date %s"
-                    ) % commitment_date)
-                commitment_vals['date_range_fy_id'] = fiscal_year.id
-            else:
-                commitment_vals['date_range_fy_id'] = kwargs['date_range_fy_id']
-            
-            # Update the existing commitment with new values
-            existing_commitment.write(commitment_vals)
-            commitment = existing_commitment
-            
-            _logger.info(
-                "Updated reused commitment %s with new values for %s amount %s",
-                commitment.name,
-                self._name,
-                commitment.amount
+            commitment = self._reuse_cancelled_commitment(
+                existing_commitment, amount, activity_analytic_id, fund_analytic_id,
+                department_analytic_id, source_analytic_id, ref, description,
+                budget_account_id, **kwargs
             )
         else:
             # No cancelled commitment exists, create a new one
-            # Prepare commitment values
-            commitment_vals = {
-                'amount': amount,
-                'account_id': budget_account_id.id if hasattr(budget_account_id, 'id') else budget_account_id,
-                'activity_analytic_id': activity_analytic_id.id if hasattr(activity_analytic_id, 'id') else activity_analytic_id,
-                'fund_analytic_id': fund_analytic_id.id if hasattr(fund_analytic_id, 'id') else fund_analytic_id,
-                'department_analytic_id': department_analytic_id.id if hasattr(department_analytic_id, 'id') else department_analytic_id,
-                'source_analytic_id': source_analytic_id.id if hasattr(source_analytic_id, 'id') else source_analytic_id,
-                'ref': ref,
-                'description': description or '',
-                'user_id': self.env.user.id,
-                'company_id': self.env.company.id,
-            }
-
-            # Date and fiscal year
-            commitment_date = kwargs.get('date', fields.Date.today())
-            commitment_vals['date'] = commitment_date
-
-            if not kwargs.get('date_range_fy_id'):
-                company_id = kwargs.get('company_id',
-                                      self.company_id.id if hasattr(self, 'company_id') and self.company_id else self.env.company.id)
-                fiscal_year = self.env['account.fiscal.year'].search([
-                    ('date_from', '<=', commitment_date),
-                    ('date_to', '>=', commitment_date),
-                    ('company_id', '=', company_id)
-                ], limit=1)
-                if not fiscal_year:
-                    raise ValidationError(_(
-                        "No fiscal year found for date %s"
-                    ) % commitment_date)
-                commitment_vals['date_range_fy_id'] = fiscal_year.id
-            else:
-                commitment_vals['date_range_fy_id'] = kwargs['date_range_fy_id']
-
-            # Create commitment
-            commitment = self.env['budget.commitment'].create(commitment_vals)
-            
-            _logger.info(
-                "Created new budget commitment %s for %s amount %s",
-                commitment.name,
-                self._name,
-                commitment.amount
+            commitment = self._create_new_commitment(
+                amount, activity_analytic_id, fund_analytic_id,
+                department_analytic_id, source_analytic_id, ref, description,
+                budget_account_id, **kwargs
             )
 
         # Auto reserve if requested
@@ -253,6 +168,149 @@ class BudgetCommitmentMixin(models.AbstractModel):
         # Store commitment in dynamic field (in case it's a new one)
         self._set_commitment_field_value('commitment_id', commitment)
 
+        return commitment
+
+    def _prepare_commitment_vals(self, amount, activity_analytic_id, fund_analytic_id,
+                                department_analytic_id, source_analytic_id, ref, description,
+                                budget_account_id, include_company=True, **kwargs):
+        """
+        Prepare commitment values dictionary.
+        
+        Args:
+            amount (float): Commitment amount
+            activity_analytic_id: Activity dimension
+            fund_analytic_id: Fund dimension
+            department_analytic_id: Department dimension
+            source_analytic_id: Source dimension
+            ref (str): Reference
+            description (str): Description
+            budget_account_id: Budget account
+            include_company (bool): Whether to include company_id
+            **kwargs: Additional fields
+            
+        Returns:
+            dict: Commitment values dictionary
+        """
+        commitment_vals = {
+            'amount': amount,
+            'account_id': budget_account_id.id if hasattr(budget_account_id, 'id') else budget_account_id,
+            'activity_analytic_id': activity_analytic_id.id if hasattr(activity_analytic_id, 'id') else activity_analytic_id,
+            'fund_analytic_id': fund_analytic_id.id if hasattr(fund_analytic_id, 'id') else fund_analytic_id,
+            'department_analytic_id': department_analytic_id.id if hasattr(department_analytic_id, 'id') else department_analytic_id,
+            'source_analytic_id': source_analytic_id.id if hasattr(source_analytic_id, 'id') else source_analytic_id,
+            'ref': ref,
+            'description': description or '',
+            'user_id': self.env.user.id,
+        }
+        
+        if include_company:
+            commitment_vals['company_id'] = self.env.company.id
+            
+        # Handle date and fiscal year
+        commitment_date = kwargs.get('date', fields.Date.today())
+        commitment_vals['date'] = commitment_date
+        
+        if not kwargs.get('date_range_fy_id'):
+            company_id = kwargs.get('company_id',
+                                  self.company_id.id if hasattr(self, 'company_id') and self.company_id else self.env.company.id)
+            fiscal_year = self.env['account.fiscal.year'].search([
+                ('date_from', '<=', commitment_date),
+                ('date_to', '>=', commitment_date),
+                ('company_id', '=', company_id)
+            ], limit=1)
+            if not fiscal_year:
+                raise ValidationError(_(
+                    "No fiscal year found for date %s"
+                ) % commitment_date)
+            commitment_vals['date_range_fy_id'] = fiscal_year.id
+        else:
+            commitment_vals['date_range_fy_id'] = kwargs['date_range_fy_id']
+            
+        return commitment_vals
+
+    def _reuse_cancelled_commitment(self, existing_commitment, amount, activity_analytic_id, fund_analytic_id,
+                                   department_analytic_id, source_analytic_id, ref, description,
+                                   budget_account_id, **kwargs):
+        """
+        Reuse an existing cancelled commitment by resetting and updating it.
+        
+        Args:
+            existing_commitment: The cancelled commitment to reuse
+            amount (float): New commitment amount
+            activity_analytic_id: Activity dimension
+            fund_analytic_id: Fund dimension
+            department_analytic_id: Department dimension
+            source_analytic_id: Source dimension
+            ref (str): Reference
+            description (str): Description
+            budget_account_id: Budget account
+            **kwargs: Additional fields
+            
+        Returns:
+            budget.commitment: Updated commitment
+        """
+        _logger.info(
+            "Reusing cancelled budget commitment %s for %s",
+            existing_commitment.name,
+            self._name
+        )
+        
+        # Reset the cancelled commitment to draft
+        existing_commitment.action_reset_to_draft()
+        
+        # Prepare and apply update values
+        commitment_vals = self._prepare_commitment_vals(
+            amount, activity_analytic_id, fund_analytic_id,
+            department_analytic_id, source_analytic_id, ref, description,
+            budget_account_id, include_company=False, **kwargs
+        )
+        
+        existing_commitment.write(commitment_vals)
+        
+        _logger.info(
+            "Updated reused commitment %s with new values for %s amount %s",
+            existing_commitment.name,
+            self._name,
+            existing_commitment.amount
+        )
+        
+        return existing_commitment
+
+    def _create_new_commitment(self, amount, activity_analytic_id, fund_analytic_id,
+                              department_analytic_id, source_analytic_id, ref, description,
+                              budget_account_id, **kwargs):
+        """
+        Create a new budget commitment.
+        
+        Args:
+            amount (float): Commitment amount
+            activity_analytic_id: Activity dimension
+            fund_analytic_id: Fund dimension
+            department_analytic_id: Department dimension
+            source_analytic_id: Source dimension
+            ref (str): Reference
+            description (str): Description
+            budget_account_id: Budget account
+            **kwargs: Additional fields
+            
+        Returns:
+            budget.commitment: New commitment
+        """
+        commitment_vals = self._prepare_commitment_vals(
+            amount, activity_analytic_id, fund_analytic_id,
+            department_analytic_id, source_analytic_id, ref, description,
+            budget_account_id, include_company=True, **kwargs
+        )
+        
+        commitment = self.env['budget.commitment'].create(commitment_vals)
+        
+        _logger.info(
+            "Created new budget commitment %s for %s amount %s",
+            commitment.name,
+            self._name,
+            commitment.amount
+        )
+        
         return commitment
 
     def _check_budget_availability(self, amount, activity_analytic_id, fund_analytic_id,
