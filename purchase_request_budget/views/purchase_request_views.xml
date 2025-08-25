@@ -25,15 +25,14 @@
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request_kmitl.view_purchase_request_form"/>
         <field name="arch" type="xml">
-
             <xpath expr="//button[@name='button_validate']" position="after">
-                <field name="substate_sequence" invisible="1" />
-                <button name="action_check_budget" type="object" attrs="{'invisible':['|', ('state','!=','to_approve'), ('substate_sequence','!=', 10)]}" string="Check Budget" class="oe_highlight btn-info" groups="purchase_request_budget.group_purchase_request_budget" />
-                <button name="action_reserve_budget" type="object" attrs="{'invisible':['|', ('state','!=','to_approve'), ('substate_sequence','!=', 10)]}" string="Reserve Budget" class="oe_highlight btn-success" groups="purchase_request_budget.group_purchase_request_budget" />
+                <field name="can_edit_budget" invisible="1" />
+                <button name="action_check_budget" type="object" attrs="{'invisible':['|', ('state','!=','to_approve'), ('can_edit_budget','=', False)]}" string="Check Budget" class="oe_highlight btn-info" groups="purchase_request_budget.group_purchase_request_budget" />
+                <button name="action_reserve_budget" type="object" attrs="{'invisible':['|', ('state','!=','to_approve'), ('can_edit_budget','=', False)]}" string="Reserve Budget" class="oe_highlight btn-success" groups="purchase_request_budget.group_purchase_request_budget" />
             </xpath>
 
             <xpath expr="//button[@name='button_validate']" position="attributes">
-                <attribute name="attrs">{'invisible':['|', ('state','!=','to_approve'), ('substate_sequence','=', 10)]}</attribute>
+                <attribute name="attrs">{'invisible':['|', ('state','!=','to_approve'), ('can_edit_budget','!=', False)]}</attribute>
             </xpath>
 
             <xpath expr="//field[@name='department_id']" position="after">
