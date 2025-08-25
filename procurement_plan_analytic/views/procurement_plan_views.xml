@@ -7,7 +7,7 @@
         <field name="model">procurement.plan</field>
         <field name="inherit_id" ref="procurement_plan.view_procurement_plan_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='additional_info']" position="inside">
+            <xpath expr="//page[@name='additional_info']/group" position="inside">
                 <field name="analytic_account_id" groups="analytic.group_analytic_accounting" />
             </xpath>
         </field>
