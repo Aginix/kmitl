@@ -336,7 +336,7 @@ class BudgetExecutionStatusReport(models.TransientModel):
             ('date', '>=', self.date_from),
             ('date', '<=', self.date_to),
             ('company_id', '=', self.company_id.id),
-            ('state', '=', 'reserved'),
+            ('state', 'in', ['reserved', 'obligated']),
         ]
 
         # Add analytic filters
