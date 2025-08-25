@@ -14,7 +14,12 @@
     ],
     "assets": {
         "web.assets_backend": [
-            "budget_report/static/src/**/*",
+            "budget_report/static/src/components/budget_report_summary/budget_report_summary.js",
+            "budget_report/static/src/components/budget_report_summary/budget_report_summary.xml",
+            "budget_report/static/src/components/budget_report_summary/budget_report_summary.scss",
+            "budget_report/static/src/components/department_filter/department_filter.js",
+            "budget_report/static/src/components/department_filter/department_filter.xml",
+            "budget_report/static/src/components/department_filter/department_filter.scss",
         ],
     },
     "auto_install": False,

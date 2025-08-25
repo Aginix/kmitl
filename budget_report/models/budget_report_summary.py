@@ -17,6 +17,7 @@ class BudgetReportSummary(models.AbstractModel):
     @api.model
     def get_data(self, filters):
         fiscal_year_id = filters.get("fiscal_year_id", False)
+        department_ids = filters.get("department_ids", [])
 
         if fiscal_year_id:
             fiscal_year = self.env["account.fiscal.year"].browse(fiscal_year_id)
@@ -51,20 +52,33 @@ class BudgetReportSummary(models.AbstractModel):
         accounts = self.env["budget.account"].search(
             [("budget_type", "=", "expense")], order="code"
         )
+        # Build domain for move_lines with department filter
+        move_line_domain = [
+            ("parent_state", "=", "posted"),
+            ("date_range_fy_id", "=", fiscal_year.id),
+            ("source_analytic_id", "=", source_analytic.id),
+        ]
+        
+        if department_ids:
+            all_dept_ids = self._get_department_with_children(department_ids)
+            move_line_domain.append(("department_analytic_id", "in", all_dept_ids))
+        
         move_lines = self.env["budget.move.line"].search(
-            [
-                ("parent_state", "=", "posted"),
-                ("date_range_fy_id", "=", fiscal_year.id),
-                ("source_analytic_id", "=", source_analytic.id),
-            ],
+            move_line_domain,
             order="date desc",
         )
+        # Build domain for commitment_lines with department filter
+        commitment_domain = [
+            ("state", "in", ["reserved", "obligated"]),
+            ("date_range_fy_id", "=", fiscal_year.id),
+            ("source_analytic_id", "=", source_analytic.id),
+        ]
+        
+        if department_ids:
+            commitment_domain.append(("department_analytic_id", "in", all_dept_ids))
+        
         commitment_lines = self.env["budget.commitment"].search(
-            [
-                ("state", "in", ["reserved", "obligated"]),
-                ("date_range_fy_id", "=", fiscal_year.id),
-                ("source_analytic_id", "=", source_analytic.id),
-            ],
+            commitment_domain,
             order="date desc",
         )
 
@@ -105,7 +119,9 @@ class BudgetReportSummary(models.AbstractModel):
                 "date_from": fiscal_year.date_from.strftime("%Y-%m-%d"),
                 "date_to": fiscal_year.date_to.strftime("%Y-%m-%d"),
                 "source_analytic_id": source_analytic.id,
+                "department_ids": department_ids,
             },
+            "departments": self._get_department_hierarchy(),
             "current_date": current_date,
         }
 
@@ -178,10 +194,73 @@ class BudgetReportSummary(models.AbstractModel):
             for n in data
         ]
 
+    def _get_department_with_children(self, department_ids):
+        """Get department IDs including all children"""
+        if not department_ids:
+            return []
+        
+        departments = self.env["account.analytic.account"].browse(department_ids)
+        all_ids = set(department_ids)
+        
+        for dept in departments:
+            # Use parent_path for efficient child retrieval
+            children = self.env["account.analytic.account"].search([
+                ("parent_path", "=like", f"{dept.parent_path}%"),
+                ("root_plan_id.code", "=", "departments"),
+            ])
+            all_ids.update(children.ids)
+        
+        return list(all_ids)
+
+    def _get_department_hierarchy(self):
+        """Build department hierarchy for frontend"""
+        departments = self.env["account.analytic.account"].search([
+            ("root_plan_id.code", "=", "departments"),
+        ], order="code,name")
+        
+        # Build hierarchy structure
+        dept_dict = {}
+        roots = []
+        
+        for dept in departments:
+            dept_data = {
+                "id": dept.id,
+                "name": dept.name,
+                "code": dept.code,
+                "complete_name": dept.complete_name,
+                "children": [],
+                "has_data": self._department_has_data(dept),
+            }
+            dept_dict[dept.id] = dept_data
+            
+            if dept.parent_id:
+                parent = dept_dict.get(dept.parent_id.id)
+                if parent:
+                    parent["children"].append(dept_data)
+            else:
+                roots.append(dept_data)
+        
+        return roots
+
+    def _department_has_data(self, department):
+        """Check if department has budget data"""
+        has_moves = self.env["budget.move.line"].search_count([
+            ("department_analytic_id", "=", department.id),
+            ("parent_state", "=", "posted"),
+        ], limit=1)
+        
+        has_commitments = self.env["budget.commitment"].search_count([
+            ("department_analytic_id", "=", department.id),
+            ("state", "in", ["reserved", "obligated"]),
+        ], limit=1)
+        
+        return bool(has_moves or has_commitments)
+
     @api.model
     def get_filter_options(self):
         return {
             "state": [{"id": "draft"}, {"id": "review"}, {"id": "posted"}],
             "fiscal_years": self._get_fiscal_year_options(),
             "source_analytics": self._get_source_analytics_options(),
+            "departments": self._get_department_hierarchy(),
         }

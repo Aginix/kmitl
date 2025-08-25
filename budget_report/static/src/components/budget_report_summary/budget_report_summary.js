@@ -5,6 +5,7 @@ import {Component, onWillStart, useState} from "@odoo/owl";
 import { ControlPanel } from "@web/search/control_panel/control_panel";
 import {registry} from "@web/core/registry";
 import {useService} from "@web/core/utils/hooks";
+import {DepartmentFilter} from "../department_filter/department_filter";
 
 export class BudgetReportSummary extends Component {
     setup() {
@@ -20,14 +21,18 @@ export class BudgetReportSummary extends Component {
             filters: {
                 fiscal_year_id: null,
                 source_analytic_id: null,
+                department_ids: [],
             },
             loading: false,
             rows: [],
             fiscalYear: null,
             sourceAnalytic: null,
             departments: null,
+            selectedDepartmentIds: [],
+            showSidebar: true,
             filterOptions: {
                 fiscal_years: [],
+                departments: [],
             },
         });
 
@@ -49,6 +54,7 @@ export class BudgetReportSummary extends Component {
             this.state.fiscalYear = response.fiscal_year;
             this.state.sourceAnalytic = response.source_analytic;
             this.state.filters = response.filters;
+            this.state.departments = response.departments || null;
 
             this.state.filterOptions = await this.orm.call(
                 "budget.report.summary",
@@ -102,11 +108,22 @@ export class BudgetReportSummary extends Component {
     async onSourceAnalyticIdChange(e) {
         this.onChangeBy('source_analytic_id', e.target.value ? Number(e.target.value) : null)
     }
+
+    onDepartmentSelectionChange(selectedIds) {
+        this.state.selectedDepartmentIds = selectedIds;
+        this.state.filters.department_ids = selectedIds;
+        this.loadData();
+    }
+
+    get departmentHierarchy() {
+        return this.state.filterOptions.departments || [];
+    }
 }
 
 BudgetReportSummary.template = "budget_report.BudgetReportSummary";
 BudgetReportSummary.components = {
-    ControlPanel
+    ControlPanel,
+    DepartmentFilter
 };
 
 registry

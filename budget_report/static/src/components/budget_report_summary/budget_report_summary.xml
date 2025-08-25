@@ -75,11 +75,21 @@
                     </div>
                 </t>
             </ControlPanel>
-            <div class="o_content">
-                <div t-if="!state.loading" class="budget_report_summary_content">
-                    <div class="row justify-content-center">
-                        <div class="col-12">
-                            <div class="budget-report-container">
+            <div class="o_content with-sidebar">
+                <div class="content-wrapper">
+                    <!-- Department Filter Sidebar -->
+                    <DepartmentFilter 
+                        t-if="state.showSidebar"
+                        onSelectionChange.bind="onDepartmentSelectionChange"
+                        selectedIds="state.selectedDepartmentIds"
+                        departments="departmentHierarchy"/>
+                    
+                    <!-- Report Content -->
+                    <div class="report-content">
+                        <div t-if="!state.loading" class="budget_report_summary_content">
+                            <div class="row justify-content-center">
+                                <div class="col-12">
+                                    <div class="budget-report-container">
                                 <!-- Report Table -->
                                 <div class="table-responsive">
                                     <table
@@ -179,6 +189,7 @@
                                             </t>
                                         </tbody>
                                     </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
