@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Level 1: Main Category -->
+        <record id="product_category_equipment" model="product.category">
+            <field name="name">ครุภัณฑ์</field>
+        </record>
+
+        <!-- Level 2: Office Equipment -->
+        <record id="product_category_office_equipment" model="product.category">
+            <field name="name">1 ครุภัณฑ์สำนักงาน</field>
+            <field name="parent_id" ref="product_category_equipment"/>
+            <field name="property_account_expense_categ_id" eval="obj().env['account.account'].search([('code', '=', '5412000002')], limit=1).id or False"/>
+        </record>
+
+        <!-- Level 2: Computer & Telecommunications Equipment -->
+        <record id="product_category_computer_telecom" model="product.category">
+            <field name="name">2 ครุภัณฑ์คอมพิวเตอร์และโทรคมนาคม</field>
+            <field name="parent_id" ref="product_category_equipment"/>
+            <field name="property_account_expense_categ_id" eval="obj().env['account.account'].search([('code', '=', '5412000003')], limit=1).id or False"/>
+        </record>
+
+        <!-- Level 3: Equipment Groups -->
+        <record id="product_category_tables_71100600" model="product.category">
+            <field name="name">71100600 โต๊ะชนิดต่าง ๆ</field>
+            <field name="parent_id" ref="product_category_office_equipment"/>
+        </record>
+
+        <record id="product_category_chairs_71100700" model="product.category">
+            <field name="name">71100700 เก้าอี้ชนิดต่าง ๆ</field>
+            <field name="parent_id" ref="product_category_office_equipment"/>
+        </record>
+
+        <record id="product_category_cabinets_71100800" model="product.category">
+            <field name="name">71100800 ตู้ชนิดต่าง ๆ</field>
+            <field name="parent_id" ref="product_category_office_equipment"/>
+        </record>
+
+        <record id="product_category_other_office_71100900" model="product.category">
+            <field name="name">71100900 เครื่องใช้สำนักงานอื่น ๆ</field>
+            <field name="parent_id" ref="product_category_office_equipment"/>
+        </record>
+
+        <record id="product_category_calculators_71101000" model="product.category">
+            <field name="name">71101000 เครื่องคำนวณและอุปกรณ์</field>
+            <field name="parent_id" ref="product_category_office_equipment"/>
+        </record>
+
+        <!-- Level 3: Computer & Telecommunications Equipment Groups -->
+        <record id="product_category_desktop_computers_72100100" model="product.category">
+            <field name="name">72100100 เครื่องคอมพิวเตอร์ตั้งโต๊ะ</field>
+            <field name="parent_id" ref="product_category_computer_telecom"/>
+        </record>
+
+        <record id="product_category_laptops_72100200" model="product.category">
+            <field name="name">72100200 เครื่องคอมพิวเตอร์แบบพกพา</field>
+            <field name="parent_id" ref="product_category_computer_telecom"/>
+        </record>
+
+        <record id="product_category_servers_72100300" model="product.category">
+            <field name="name">72100300 เครื่องแม่ข่าย</field>
+            <field name="parent_id" ref="product_category_computer_telecom"/>
+        </record>
+
+        <record id="product_category_network_equipment_72100400" model="product.category">
+            <field name="name">72100400 อุปกรณ์เครือข่าย</field>
+            <field name="parent_id" ref="product_category_computer_telecom"/>
+        </record>
+
+        <record id="product_category_printers_scanners_72100500" model="product.category">
+            <field name="name">72100500 เครื่องพิมพ์และสแกนเนอร์</field>
+            <field name="parent_id" ref="product_category_computer_telecom"/>
+        </record>
+
+        <record id="product_category_accessories_72100600" model="product.category">
+            <field name="name">72100600 อุปกรณ์เสริมคอมพิวเตอร์</field>
+            <field name="parent_id" ref="product_category_computer_telecom"/>
+        </record>
+
+        <!-- Level 4: Specific Computer Equipment - Desktop Computers -->
+        <record id="product_category_desktop_basic_72100101" model="product.category">
+            <field name="name">72100101 เครื่องคอมพิวเตอร์ตั้งโต๊ะเบื้องต้น</field>
+            <field name="parent_id" ref="product_category_desktop_computers_72100100"/>
+        </record>
+
+        <record id="product_category_desktop_office_72100102" model="product.category">
+            <field name="name">72100102 เครื่องคอมพิวเตอร์ตั้งโต๊ะสำนักงาน</field>
+            <field name="parent_id" ref="product_category_desktop_computers_72100100"/>
+        </record>
+
+        <record id="product_category_desktop_workstation_72100103" model="product.category">
+            <field name="name">72100103 เครื่องคอมพิวเตอร์เวิร์กสเตชั่น</field>
+            <field name="parent_id" ref="product_category_desktop_computers_72100100"/>
+        </record>
+
+        <!-- Level 4: Specific Computer Equipment - Laptops -->
+        <record id="product_category_laptop_basic_72100201" model="product.category">
+            <field name="name">72100201 เครื่องคอมพิวเตอร์แบบพกพาเบื้องต้น</field>
+            <field name="parent_id" ref="product_category_laptops_72100200"/>
+        </record>
+
+        <record id="product_category_laptop_business_72100202" model="product.category">
+            <field name="name">72100202 เครื่องคอมพิวเตอร์แบบพกพาธุรกิจ</field>
+            <field name="parent_id" ref="product_category_laptops_72100200"/>
+        </record>
+
+        <record id="product_category_laptop_engineering_72100203" model="product.category">
+            <field name="name">72100203 เครื่องคอมพิวเตอร์แบบพกพาวิศวกรรม</field>
+            <field name="parent_id" ref="product_category_laptops_72100200"/>
+        </record>
+
+        <!-- Level 4: Specific Computer Equipment - Servers -->
+        <record id="product_category_server_tower_72100301" model="product.category">
+            <field name="name">72100301 เครื่องแม่ข่ายแบบทาวเวอร์</field>
+            <field name="parent_id" ref="product_category_servers_72100300"/>
+        </record>
+
+        <record id="product_category_server_rack_72100302" model="product.category">
+            <field name="name">72100302 เครื่องแม่ข่ายแบบแร็ค</field>
+            <field name="parent_id" ref="product_category_servers_72100300"/>
+        </record>
+
+        <record id="product_category_server_blade_72100303" model="product.category">
+            <field name="name">72100303 เครื่องแม่ข่ายแบบเบลด</field>
+            <field name="parent_id" ref="product_category_servers_72100300"/>
+        </record>
+
+        <!-- Level 4: Specific Computer Equipment - Network Equipment -->
+        <record id="product_category_switch_72100401" model="product.category">
+            <field name="name">72100401 อุปกรณ์สวิตช์</field>
+            <field name="parent_id" ref="product_category_network_equipment_72100400"/>
+        </record>
+
+        <record id="product_category_router_72100402" model="product.category">
+            <field name="name">72100402 อุปกรณ์เราเตอร์</field>
+            <field name="parent_id" ref="product_category_network_equipment_72100400"/>
+        </record>
+
+        <record id="product_category_access_point_72100403" model="product.category">
+            <field name="name">72100403 จุดเชื่อมต่อไร้สาย</field>
+            <field name="parent_id" ref="product_category_network_equipment_72100400"/>
+        </record>
+
+        <record id="product_category_firewall_72100404" model="product.category">
+            <field name="name">72100404 อุปกรณ์ไฟร์วอลล์</field>
+            <field name="parent_id" ref="product_category_network_equipment_72100400"/>
+        </record>
+
+        <!-- Level 4: Specific Computer Equipment - Printers & Scanners -->
+        <record id="product_category_printer_inkjet_72100501" model="product.category">
+            <field name="name">72100501 เครื่องพิมพ์อิงค์เจ็ท</field>
+            <field name="parent_id" ref="product_category_printers_scanners_72100500"/>
+        </record>
+
+        <record id="product_category_printer_laser_72100502" model="product.category">
+            <field name="name">72100502 เครื่องพิมพ์เลเซอร์</field>
+            <field name="parent_id" ref="product_category_printers_scanners_72100500"/>
+        </record>
+
+        <record id="product_category_scanner_72100503" model="product.category">
+            <field name="name">72100503 เครื่องสแกนเนอร์</field>
+            <field name="parent_id" ref="product_category_printers_scanners_72100500"/>
+        </record>
+
+        <record id="product_category_multifunction_72100504" model="product.category">
+            <field name="name">72100504 เครื่องพิมพ์อเนกประสงค์</field>
+            <field name="parent_id" ref="product_category_printers_scanners_72100500"/>
+        </record>
+
+        <!-- Level 4: Specific Computer Equipment - Accessories -->
+        <record id="product_category_monitor_72100601" model="product.category">
+            <field name="name">72100601 จอมอนิเตอร์</field>
+            <field name="parent_id" ref="product_category_accessories_72100600"/>
+        </record>
+
+        <record id="product_category_keyboard_mouse_72100602" model="product.category">
+            <field name="name">72100602 คีย์บอร์ดและเมาส์</field>
+            <field name="parent_id" ref="product_category_accessories_72100600"/>
+        </record>
+
+        <record id="product_category_ups_72100603" model="product.category">
+            <field name="name">72100603 เครื่องสำรองไฟ</field>
+            <field name="parent_id" ref="product_category_accessories_72100600"/>
+        </record>
+
+        <record id="product_category_external_storage_72100604" model="product.category">
+            <field name="name">72100604 อุปกรณ์จัดเก็บข้อมูลภายนอก</field>
+            <field name="parent_id" ref="product_category_accessories_72100600"/>
+        </record>
+
+        <!-- Level 4: Specific Equipment - Tables -->
+        <record id="product_category_conference_table_71100607" model="product.category">
+            <field name="name">71100607 โต๊ะประชุม</field>
+            <field name="parent_id" ref="product_category_tables_71100600"/>
+        </record>
+
+        <record id="product_category_work_desk_71100601" model="product.category">
+            <field name="name">71100601 โต๊ะทำงาน</field>
+            <field name="parent_id" ref="product_category_tables_71100600"/>
+        </record>
+
+        <record id="product_category_computer_desk_71100602" model="product.category">
+            <field name="name">71100602 โต๊ะคอมพิวเตอร์</field>
+            <field name="parent_id" ref="product_category_tables_71100600"/>
+        </record>
+
+        <record id="product_category_reception_table_71100603" model="product.category">
+            <field name="name">71100603 โต๊ะรับแขก</field>
+            <field name="parent_id" ref="product_category_tables_71100600"/>
+        </record>
+
+        <record id="product_category_executive_desk_71100604" model="product.category">
+            <field name="name">71100604 โต๊ะผู้บริหาร</field>
+            <field name="parent_id" ref="product_category_tables_71100600"/>
+        </record>
+
+        <record id="product_category_training_table_71100605" model="product.category">
+            <field name="name">71100605 โต๊ะอบรม</field>
+            <field name="parent_id" ref="product_category_tables_71100600"/>
+        </record>
+
+        <record id="product_category_side_table_71100606" model="product.category">
+            <field name="name">71100606 โต๊ะข้าง</field>
+            <field name="parent_id" ref="product_category_tables_71100600"/>
+        </record>
+
+        <!-- Level 4: Specific Equipment - Chairs -->
+        <record id="product_category_office_chair_71100701" model="product.category">
+            <field name="name">71100701 เก้าอี้สำนักงาน</field>
+            <field name="parent_id" ref="product_category_chairs_71100700"/>
+        </record>
+
+        <record id="product_category_conference_chair_71100702" model="product.category">
+            <field name="name">71100702 เก้าอี้ประชุม</field>
+            <field name="parent_id" ref="product_category_chairs_71100700"/>
+        </record>
+
+        <record id="product_category_reception_chair_71100703" model="product.category">
+            <field name="name">71100703 เก้าอี้รับแขก</field>
+            <field name="parent_id" ref="product_category_chairs_71100700"/>
+        </record>
+
+        <record id="product_category_executive_chair_71100704" model="product.category">
+            <field name="name">71100704 เก้าอี้ผู้บริหาร</field>
+            <field name="parent_id" ref="product_category_chairs_71100700"/>
+        </record>
+
+        <record id="product_category_training_chair_71100705" model="product.category">
+            <field name="name">71100705 เก้าอี้อบรม</field>
+            <field name="parent_id" ref="product_category_chairs_71100700"/>
+        </record>
+
+        <!-- Level 4: Specific Equipment - Cabinets -->
+        <record id="product_category_document_cabinet_71100801" model="product.category">
+            <field name="name">71100801 ตู้เอกสาร</field>
+            <field name="parent_id" ref="product_category_cabinets_71100800"/>
+        </record>
+
+        <record id="product_category_wardrobe_71100802" model="product.category">
+            <field name="name">71100802 ตู้เสื้อผ้า</field>
+            <field name="parent_id" ref="product_category_cabinets_71100800"/>
+        </record>
+
+        <record id="product_category_safe_71100803" model="product.category">
+            <field name="name">71100803 ตู้นิรภัย</field>
+            <field name="parent_id" ref="product_category_cabinets_71100800"/>
+        </record>
+
+        <record id="product_category_filing_cabinet_71100804" model="product.category">
+            <field name="name">71100804 ตู้แฟ้ม</field>
+            <field name="parent_id" ref="product_category_cabinets_71100800"/>
+        </record>
+
+        <record id="product_category_book_shelf_71100805" model="product.category">
+            <field name="name">71100805 ชั้นหนังสือ</field>
+            <field name="parent_id" ref="product_category_cabinets_71100800"/>
+        </record>
+
+        <!-- Level 4: Specific Equipment - Other Office Equipment -->
+        <record id="product_category_whiteboard_71100901" model="product.category">
+            <field name="name">71100901 กระดานขาว</field>
+            <field name="parent_id" ref="product_category_other_office_71100900"/>
+        </record>
+
+        <record id="product_category_flipchart_71100902" model="product.category">
+            <field name="name">71100902 กระดานพลิกแผ่น</field>
+            <field name="parent_id" ref="product_category_other_office_71100900"/>
+        </record>
+
+        <record id="product_category_projector_screen_71100903" model="product.category">
+            <field name="name">71100903 จอโปรเจคเตอร์</field>
+            <field name="parent_id" ref="product_category_other_office_71100900"/>
+        </record>
+
+        <record id="product_category_notice_board_71100904" model="product.category">
+            <field name="name">71100904 กระดานประกาศ</field>
+            <field name="parent_id" ref="product_category_other_office_71100900"/>
+        </record>
+
+        <record id="product_category_coat_rack_71100905" model="product.category">
+            <field name="name">71100905 ราวแขวนเสื้อ</field>
+            <field name="parent_id" ref="product_category_other_office_71100900"/>
+        </record>
+
+        <!-- Level 4: Specific Equipment - Calculators and Equipment -->
+        <record id="product_category_calculator_71101001" model="product.category">
+            <field name="name">71101001 เครื่องคิดเลข</field>
+            <field name="parent_id" ref="product_category_calculators_71101000"/>
+        </record>
+
+        <record id="product_category_adding_machine_71101002" model="product.category">
+            <field name="name">71101002 เครื่องบวกเลข</field>
+            <field name="parent_id" ref="product_category_calculators_71101000"/>
+        </record>
+
+        <record id="product_category_cash_register_71101003" model="product.category">
+            <field name="name">71101003 เครื่องคิดเงิน</field>
+            <field name="parent_id" ref="product_category_calculators_71101000"/>
+        </record>
+
+        <record id="product_category_time_clock_71101004" model="product.category">
+            <field name="name">71101004 เครื่องตอกบัตร</field>
+            <field name="parent_id" ref="product_category_calculators_71101000"/>
+        </record>
+
+        <record id="product_category_typewriter_71101005" model="product.category">
+            <field name="name">71101005 เครื่องพิมพ์ดีด</field>
+            <field name="parent_id" ref="product_category_calculators_71101000"/>
+        </record>
+    </data>
+</odoo>
