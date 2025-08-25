@@ -8,7 +8,8 @@
     'depends': ['account_analytic_kmitl', 'procurement_plan'],
     'data': [
         "data/account.analytic.plan.csv",
-        'views/analytic_views.xml'
+        'views/analytic_views.xml',
+        "views/procurement_plan_views.xml"
     ],
     'application': False,
     'installable': True,
