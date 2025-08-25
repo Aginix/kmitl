@@ -24,7 +24,7 @@ class PurchaseRequest(models.Model):
     def action_check_budget(self):
         """Action to check budget availability"""
         self.ensure_one()
-        amount = sum(self.line_ids.mapped("estimated_cost"))
+
         if not all([
             self.budget_account_id,
             self.activity_analytic_id,
@@ -33,6 +33,8 @@ class PurchaseRequest(models.Model):
             self.source_analytic_id,
         ]):
             raise UserError(_("Please specify budget account and all required analytic dimensions"))
+
+        amount = sum(self.line_ids.mapped("estimated_cost"))
 
         result = self._check_budget_availability(
             amount=amount,
@@ -65,13 +67,14 @@ class PurchaseRequest(models.Model):
     def action_reserve_budget(self):
         """Reserve budget by creating commitment"""
         self.ensure_one()
-        amount = sum(self.line_ids.mapped("estimated_cost"))
 
         if not self.budget_account_id:
             raise ValidationError(_("Please specify budget account"))
 
         if not all([self.activity_analytic_id, self.department_analytic_id, self.fund_analytic_id, self.source_analytic_id]):
             raise ValidationError(_("Please specify analytic dimensions for budget commitment"))
+
+        amount = sum(self.line_ids.mapped("estimated_cost"))
 
         check_result = self._check_budget_availability(
             amount=amount,
@@ -111,24 +114,24 @@ class PurchaseRequest(models.Model):
             raise UserError(_("Cannot reserve budget: %s") % str(e))
 
     def button_draft(self):
-        for request in self:
-            if request.budget_commitment_id:
+        for record in self:
+            if record.budget_commitment_id:
                 try:
-                    request._cancel_budget_commitment()
-                    request.write({"verified_by": "", "date_verified": False})
-                    request.message_post(body=_("Budget commitment %s has been cancelled") % request.budget_commitment_id.name)
+                    record._cancel_budget_commitment()
+                    record.write({"verified_by": "", "date_verified": False})
+                    record.message_post(body=_("Budget commitment %s has been cancelled") % record.budget_commitment_id.name)
                 except UserError as e:
-                    request.message_post(body=_("Warning: Could not cancel budget commitment: %s") % str(e))
+                    record.message_post(body=_("Warning: Could not cancel budget commitment: %s") % str(e))
 
         return super().button_draft()
 
     def button_rejected(self):
-        for request in self:
-            if request.budget_commitment_id:
+        for record in self:
+            if record.budget_commitment_id:
                 try:
-                    request._cancel_budget_commitment()
-                    request.message_post(body=_("Budget commitment %s has been cancelled") % request.budget_commitment_id.name)
+                    record._cancel_budget_commitment()
+                    record.message_post(body=_("Budget commitment %s has been cancelled") % record.budget_commitment_id.name)
                 except UserError as e:
-                    request.message_post(body=_("Warning: Could not cancel budget commitment: %s") % str(e))
+                    record.message_post(body=_("Warning: Could not cancel budget commitment: %s") % str(e))
 
         return super().button_rejected()
