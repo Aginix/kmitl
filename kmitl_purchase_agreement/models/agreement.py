@@ -34,7 +34,7 @@ class Agreement(models.Model):
         ondelete="set null",
     )
 
-    pr1_total = fields.Monetary(related='purchase_order_id.pr1_total', string='PR1 Total')
+    pr1_total = fields.Monetary(related='purchase_order_id.request_id', string='PR1 Total')
 
     invoice_plan_ids = fields.One2many(
         comodel_name="purchase.invoice.plan",
