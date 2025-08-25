@@ -13,9 +13,6 @@ class PurchaseRequestApproval(models.Model):
     def make_purchase_order(self):
         self.ensure_one()
 
-        if not self.generate_po:
-            return
-
         if self.state != 'approved':
             raise UserError("This PR2 is not ready for PO. Please approve first.")
 
@@ -48,7 +45,7 @@ class PurchaseRequestApproval(models.Model):
             'pr2_ref': self.id,
         })
 
-        self.state = 'po_created'
+        self.state = 'approved'
 
         return {
             'type': 'ir.actions.act_window',
