@@ -7,8 +7,8 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     'depends': ['base_tier_validation', 'purchase_request_approval'],
-    'data': [
-
+    "data": [
+        "views/purchase_request_approval_views.xml"
     ],
     'installable': True,
     'auto_install': False,
