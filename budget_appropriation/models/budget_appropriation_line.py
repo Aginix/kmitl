@@ -63,6 +63,7 @@ class BudgetAppropriationLine(models.Model):
         required=True,
         domain="[('budget_type', '=', budget_type)]",
         tracking=True,
+        auto_join=True,
     )
     budget_type = fields.Selection(
         related="appropriation_id.journal_id.default_budget_type",
@@ -110,18 +111,21 @@ class BudgetAppropriationLine(models.Model):
         related="appropriation_id.department_analytic_id",
         store=True,
         readonly=True,
+        auto_join=True,
     )
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="กิจกรรม",
         domain=[("root_plan_id.code", "=", "activities")],
         tracking=True,
+        auto_join=True,
     )
     fund_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="กองทุน",
         domain=[("root_plan_id.code", "=", "funds")],
         tracking=True,
+        auto_join=True,
     )
     source_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -129,6 +133,7 @@ class BudgetAppropriationLine(models.Model):
         related="appropriation_id.source_analytic_id",
         store=True,
         readonly=True,
+        auto_join=True,
     )
 
     @api.onchange("balance")
