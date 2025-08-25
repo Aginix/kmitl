@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View purchase.order.attachment View Tree -->
+    <record id="view_purchase_order_attachment_tree" model="ir.ui.view">
+        <field name="name">view.purchase.order.attachment.tree</field>
+        <field name="model">purchase.order.attachment</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="file_name"/>
+                <field name="description" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- View purchase.order.attachment form -->
+    <record id="view_purchase_order_attachment_form" model="ir.ui.view">
+        <field name="name">view.purchase.order.attachment.form</field>
+        <field name="model">purchase.order.attachment</field>
+        <field name="arch" type="xml">
+            <form string="Purchase Order Attachment">
+                <sheet>
+                    <group string="ข้อมูลเอกสารแนบ">
+                        <group>
+                            <field name="file" widget="binary" filename="file_name" required="1"/>
+                            <field name="file_name" string="Filename"/>
+                            <field name="description" />
+                        </group>
+
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action purchase.order.attachment -->
+    <record id="action_purchase_order_attachment" model="ir.actions.act_window">
+        <field name="name">Purchase Order Attachment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.order.attachment</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Purchase Order Attachment.
+            </p>
+        </field>
+    </record>
+
+</odoo>
