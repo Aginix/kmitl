@@ -1,16 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <odoo>
-
+<odoo>
     <!-- View budget.appropriation form -->
     <record id="view_budget_appropriation_form_procurement_plan" model="ir.ui.view">
         <field name="name">view.budget.appropriation.form.procurement.plan</field>
         <field name="model">budget.appropriation</field>
-        <field name="inherit_id" ref="budget_appropriation.view_budget_appropriation_form"/>
+        <field
+            name="inherit_id"
+            ref="budget_appropriation.view_budget_appropriation_form"
+        />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='line_ids']/tree/field[@name='account_id']" position="after">
-                <!-- <field name="account_id" options='{"no_open": True}' required="1" /> -->
+            <xpath expr="//form/sheet" position="inside">
+                <field name="procurement_plan" invisible="1" />
+            </xpath>
+            <xpath
+                expr="//field[@name='line_ids']/form/field[@name='balance']"
+                position="after"
+            >
+                <field
+                    name="procurement_plan_ids"
+                    attrs="{'invisible': [('procurement_plan', '=', False)]}"
+                    context="{
+                        'default_date_range_fy_id': date_range_fy_id,
+                        'default_source_analytic_id':source_analytic_id,
+                        'default_activity_analytic_id': activity_analytic_id,
+                        'default_department_analytic_id': department_analytic_id,
+                        'default_fund_analytic_id': fund_analytic_id,
+                        'default_budget_account_id': account_id,
+                        'default_company_id': company_id,
+                        'default_currency_id': currency_id,
+                    }"
+                >
+                    <tree>
+                        <field name="name" />
+                        <field name="amount" />
+                        <field name="unit" />
+                        <field name="price_per_unit" />
+                        <field name="total_price" sum="รวมทั้งหมด" />
+                        <field name="procurement_method_id" />
+                    </tree>
+                </field>
             </xpath>
         </field>
     </record>
-
-  </odoo>
+</odoo>

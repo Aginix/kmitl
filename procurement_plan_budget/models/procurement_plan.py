@@ -9,7 +9,8 @@ _logger = logging.getLogger(__name__)
 
 
 class ProcurementPlan(models.Model):
-    _inherit = 'procurement.plan'
+    _name = 'procurement.plan'
+    _inherit = ['procurement.plan']
 
     budget_account_id = fields.Many2one('budget.account')
     activity_analytic_id = fields.Many2one(required=True, states=ProcurementPlan.READONLY_STATES)
