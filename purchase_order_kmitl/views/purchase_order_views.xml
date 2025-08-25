@@ -17,8 +17,8 @@
                     <field name="work_end_date" attrs="{'invisible': [('contract_type', '!=', 'contract_construction')]}" />
                     <field name="purchase_request_name" />
                     <field name="fee" />
-                    <field name="pr1_ref" />
-                    <field name="pr2_ref" />
+                    <field name="request_id" />
+                    <field name="approval_id" />
                 </group>
             </xpath>
             <xpath expr="//field[@name='state']" position="attributes">
@@ -53,7 +53,7 @@
             </xpath>
 
             <xpath expr="//notebook" position="inside">
-                <field name="pr1_total" invisible='1'/>
+                <field name="request_total" invisible='1'/>
                 <page string="Committee">
                     <separator string="คณะกรรมการตรวจรับพัสดุ"/>
                     <field name="work_acceptance_committee_ids" readonly="1">
@@ -67,7 +67,7 @@
                         </tree>
                     </field>
 
-                    <div attrs="{'invisible': [('pr1_total', '&lt;', 100000)]}">
+                    <div attrs="{'invisible': [('request_total', '&lt;', 100000)]}">
                         <separator string="คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน" />
                         <field name="tor_committee_ids" readonly="1" >
                             <tree>
@@ -130,7 +130,7 @@
         </field>
     </record>
 
-    <menuitem id="menu_kmitl_purchase_order" name="Purchase Order" parent="purchase_request.parent_menu_purchase_request" />
-    <menuitem id="menu_purchase_order_root_pr" name="Purchase Order" parent="kmitl_purchase_order.menu_kmitl_purchase_order" action="purchase.purchase_form_action" sequence="20"/>
+    <menuitem id="menu_purchase_order_kmitl" name="Purchase Order" parent="purchase_request.parent_menu_purchase_request" />
+    <menuitem id="menu_purchase_order_root_pr" name="Purchase Order" parent="purchase_order_kmitl.menu_purchase_order_kmitl" action="purchase.purchase_form_action" sequence="20"/>
 
 </odoo>

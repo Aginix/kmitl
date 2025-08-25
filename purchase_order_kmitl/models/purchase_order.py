@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -17,14 +17,12 @@ class PurchaseOrder(models.Model):
         column2="request_id",
         string="Purchase Requests",
     )
-
     total_estimated_cost = fields.Monetary(
         string="Total Estimated Cost from Requests",
         compute="_compute_total_estimated_cost",
         store=True,
         currency_field="currency_id",
     )
-
     department_id = fields.Many2one(
         "hr.department",
         string="Department",
@@ -50,7 +48,6 @@ class PurchaseOrder(models.Model):
         string="ประเภทการชำระเงิน",
         help="Select the payment type for this purchase order. Prepaid means payment is made before delivery, Postpaid means payment is made after delivery.",
     )
-
     contract_start_date = fields.Date(
         string="Contract start date",
         help="The start date for the purchase order. If not set, the current date will be used.",
@@ -59,14 +56,12 @@ class PurchaseOrder(models.Model):
         string="Contract End date",
         help="The end date for the purchase order. If not set, the start date will be used.",
     )
-
     contract_type = fields.Selection(
-        related='pr2_ref.contract_type',
+        related='approval_id.contract_type',
         string="Contract type",
         store=True,
         readonly=True
     )
-
     work_start_date = fields.Date(
         string="Work start date",
         help="The start date for the purchase order. If not set, the current date will be used.",
@@ -75,45 +70,38 @@ class PurchaseOrder(models.Model):
         string="Work end date",
         help="The end date for the purchase order. If not set, the start date will be used.",
     )
-
     purchase_request_name = fields.Char(
         string="Purchase request name",
         help="The name of the purchase request associated with the selected lines.",
     )
-
     fee = fields.Char(
         string="Fee per day"
     )
-
-    pr1_ref = fields.Many2one('purchase.request', string="Reference PR1", readonly=True)
-    pr2_ref = fields.Many2one('purchase.request.approval', string="Reference PR2", readonly=True)
-
+    request_id = fields.Many2one('purchase.request', string="PR1", readonly=True)
+    approval_id = fields.Many2one('purchase.request.approval', string="PR2", readonly=True)
     work_acceptance_committee_ids = fields.One2many(
-        related='pr1_ref.work_acceptance_committee_ids',
+        related='request_id.work_acceptance_committee_ids',
         readonly=True,
     )
     tor_committee_ids = fields.One2many(
-        related='pr1_ref.tor_committee_ids',
+        related='request_id.tor_committee_ids',
         readonly=True,
     )
     price_determine_committee_ids = fields.One2many(
-        related='pr1_ref.price_determine_committee_ids',
+        related='request_id.price_determine_committee_ids',
         readonly=True,
     )
     evaluation_committee_ids = fields.One2many(
-        related='pr1_ref.evaluation_committee_ids',
+        related='request_id.evaluation_committee_ids',
         readonly=True,
     )
-
     bid_line_ids = fields.One2many('purchase.order.bidder.line', 'order_id', string='Bidder line')
-
     document_ids = fields.One2many(
         "purchase.order.attachment",
         "request_id",
         string="Attachment",
     )
-
-    pr1_total = fields.Monetary(related='pr2_ref.estimated_cost', string="PR1 Total")
+    request_total = fields.Monetary(related='approval_id.estimated_cost', string="PR1 Total")
 
     @api.depends("request_ids.line_ids.estimated_cost")
     def _compute_total_estimated_cost(self):
@@ -123,8 +111,9 @@ class PurchaseOrder(models.Model):
                 total += sum(req.line_ids.mapped("estimated_cost"))
             order.total_estimated_cost = total
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', 'New') in ('New', '/'):
-            vals['name'] = self.env['ir.sequence'].next_by_code('purchase.order.custom') or '/'
-        return super(PurchaseOrder, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = self.env['ir.sequence'].next_by_code('purchase.order.custom') or _('New')
+        return super().create(vals_list)

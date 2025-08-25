@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
-import logging
-
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class PurchaseRequestApproval(models.Model):
@@ -32,7 +28,7 @@ class PurchaseRequestApproval(models.Model):
                 'product_uom': line.product_id.uom_po_id.id,
             }))
 
-        po = self.env['purchase.order'].create({
+        order = self.env['purchase.order'].create({
             'department_id': self.env.user.employee_id.department_id.id,
             'partner_id': self.vendor.id,
             'order_line': order_lines,
@@ -41,8 +37,8 @@ class PurchaseRequestApproval(models.Model):
             'contract_start_date': self.start_date,
             'contract_end_date': self.end_date,
             'purchase_request_name': self.purchase_request_name,
-            'pr1_ref': self.request_id.id,
-            'pr2_ref': self.id,
+            'request_id': self.request_id.id,
+            'approval_id': self.id,
         })
 
         self.state = 'approved'
@@ -50,7 +46,7 @@ class PurchaseRequestApproval(models.Model):
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'purchase.order',
-            'res_id': po.id,
+            'res_id': order.id,
             'view_mode': 'form',
             'target': 'current',
         }

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Kmitl Purchase Order',
+    'name': 'Purchase Order KMITL',
     'version': '16.0.1.0.0',
-    'summary': """ Kmitl Purchase Order """,
+    'summary': """ Purchase Order KMITL """,
     'author': 'Aginix Techonologies',
     'website': 'https://github.com/aginix/kmitl',
     'category': 'KMITL',
