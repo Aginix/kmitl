@@ -8,8 +8,6 @@
         <field name="arch" type="xml">
             <tree decoration-info="state == 'procurement'" decoration-success="state == 'done'" decoration-warning="state in ('validate', 'pending')">
                 <field name="date_range_fy_id" />
-                <field name="source_analytic_id" />
-                <field name="department_analytic_id" />
                 <field name="name" />
                 <field name="amount" />
                 <field name="unit" />
@@ -36,13 +34,7 @@
                             <field name="name" />
                             <field name="procurement_method_id" />
                             <field name="note" />
-                        </group>
-                        <group name="fd">
                             <field name="date_range_fy_id" required="1" />
-                            <field name="source_analytic_id" attrs="{'readonly': True}" />
-                            <field name="activity_analytic_id" attrs="{'readonly': True}" />
-                            <field name="department_analytic_id" attrs="{'readonly': True}" />
-                            <field name="fund_analytic_id" attrs="{'readonly': True}" />
                         </group>
                     </group>
                     <div class="o_procurement_plan_budget">
@@ -128,7 +120,6 @@
                             <group>
                                 <field name="company_id" invisible="1" />
                                 <field name="currency_id" invisible="1" />
-                                <field name="analytic_account_id" groups="analytic.group_analytic_accounting" />
                             </group>
                         </page>
                     </notebook>
