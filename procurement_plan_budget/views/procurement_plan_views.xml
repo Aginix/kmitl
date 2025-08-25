@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+
+    <!-- View procurement.plan form -->
+    <record id="view_procurement_plan_form_budget" model="ir.ui.view">
+        <field name="name">view.procurement.plan.form.budget</field>
+        <field name="model">procurement.plan</field>
+        <field name="inherit_id" ref="procurement_plan.view_procurement_plan_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='basic']" position="after">
+                <group name="budget">
+                    <field name="activity_analytic_id" options="{'no_create': True, 'no_open': True}" />
+                    <field name="source_analytic_id" options="{'no_create': True, 'no_open': True}" />
+                    <field name="department_analytic_id" options="{'no_create': True, 'no_open': True}" />
+                    <field name="fund_analytic_id" options="{'no_create': True, 'no_open': True}" />
+                    <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" />
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- View procurement.plan tree -->
+    <record id="view_procurement_plan_tree_budget" model="ir.ui.view">
+        <field name="name">view.procurement.plan.tree.budget</field>
+        <field name="model">procurement.plan</field>
+        <field name="inherit_id" ref="procurement_plan.view_procurement_plan_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="budget_account_id" optional="show" />
+                <field name="activity_analytic_id" optional="hide" />
+                <field name="source_analytic_id" optional="show" />
+                <field name="department_analytic_id" optional="show" />
+                <field name="fund_analytic_id" optional="hide" />
+            </xpath>
+        </field>
+    </record>
+
+  </odoo>

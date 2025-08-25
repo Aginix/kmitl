@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+
+    <!-- View budget.appropriation form -->
+    <record id="view_budget_appropriation_form_procurement_plan" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.form.procurement.plan</field>
+        <field name="model">budget.appropriation</field>
+        <field name="inherit_id" ref="budget_appropriation.view_budget_appropriation_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='account_id']" position="after">
+                <!-- <field name="account_id" options='{"no_open": True}' required="1" /> -->
+            </xpath>
+        </field>
+    </record>
+
+  </odoo>
