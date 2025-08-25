@@ -152,8 +152,11 @@
                                         name="account_id"
                                         options='{"no_open": True}'
                                     />
-                                    <field name="balance" sum="Total" />
+                                    <field name="balance" sum="จำนวนเงิน" />
                                     <field name="note" />
+                                    <!-- Hidden fields for backend use -->
+                                    <field name="debit" invisible="1" />
+                                    <field name="credit" invisible="1" />
                                 </tree>
                             </field>
                         </page>
@@ -195,7 +198,10 @@
                 <field name="activity_analytic_id" />
                 <field name="fund_analytic_id" />
                 <field name="account_id" />
-                <field name="balance" sum="Total" />
+                <field name="balance" sum="จำนวนเงิน" />
+                <!-- Hidden fields for backend use -->
+                <field name="debit" invisible="1" />
+                <field name="credit" invisible="1" />
                 <field
                     name="parent_state"
                     widget="badge"
@@ -247,6 +253,9 @@
                         <field name="balance" />
                         <field name="unallocated_balance" attrs="{'invisible': [('hide_unallocated_balance', '=', True)]}" />
                         <field name="note" />
+                        <!-- Hidden fields for backend use -->
+                        <field name="debit" invisible="1" />
+                        <field name="credit" invisible="1" />
                     </group>
                 </sheet>
             </form>
