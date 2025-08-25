@@ -101,6 +101,15 @@ class PurchaseRequestApproval(models.Model):
         store=True,
         readonly=True
     )
+    is_egp = fields.Boolean(
+        string="Over 100,000",
+        compute="_compute_is_egp",
+    )
+
+    @api.depends("estimated_cost")
+    def _compute_is_egp(self):
+        for rec in self:
+            rec.is_egp = rec.estimated_cost > 100000 if rec.estimated_cost else False
 
     @api.depends("state")
     def _compute_is_editable(self):
