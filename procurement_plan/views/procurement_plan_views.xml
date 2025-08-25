@@ -9,11 +9,11 @@
             <tree decoration-info="state == 'procurement'" decoration-success="state == 'done'" decoration-warning="state in ('validate', 'pending')">
                 <field name="date_range_fy_id" />
                 <field name="name" />
-                <field name="amount" />
-                <field name="unit" />
-                <field name="price_per_unit" />
+                <field name="amount" optional="hide" />
+                <field name="unit" optional="hide" />
+                <field name="price_per_unit" optional="hide" />
                 <field name="total_price" sum="รวมทั้งหมด" widget="monetary" />
-                <field name="procurement_method_id" />
+                <field name="procurement_method_id" optional="show" />
                 <field name="state" widget="badge" decoration-info="state == 'procurement'" decoration-success="state == 'done'" decoration-warning="state in ('validate', 'pending')" />
             </tree>
         </field>
@@ -30,7 +30,7 @@
                 </header>
                 <sheet>
                     <group>
-                        <group>
+                        <group name="basic">
                             <field name="name" />
                             <field name="procurement_method_id" />
                             <field name="note" />
