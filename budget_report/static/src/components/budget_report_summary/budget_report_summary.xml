@@ -15,6 +15,24 @@
                                 <i class="fa fa-refresh" />
                             </button>
                         </div>
+                        <div class="btn-group me-2">
+                            <button
+                                type="button"
+                                class="btn btn-outline-secondary btn-sm"
+                                t-on-click="expandAll"
+                                title="ขยายทั้งหมด"
+                            >
+                                <i class="fa fa-expand" /> ขยายทั้งหมด
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-outline-secondary btn-sm"
+                                t-on-click="collapseAll"
+                                title="ย่อทั้งหมด"
+                            >
+                                <i class="fa fa-compress" /> ย่อทั้งหมด
+                            </button>
+                        </div>
                         <div class="btn-group">
                             <button
                                 type="button"
@@ -130,22 +148,41 @@
                                         </thead>
                                         <tbody>
                                             <t
-                                                t-foreach="rows"
+                                                t-foreach="visibleRows"
                                                 t-as="row"
-                                                t-key="row.id"
+                                                t-key="row.row_key"
                                             >
-                                                <tr>
+                                                <tr t-att-class="{'expandable-row': row.has_children}">
                                                     <th
                                                         style="
                                                             width: 25%;
                                                             text-align: left;
                                                         "
+                                                        t-att-data-level="row.level"
                                                     >
                                                         <div
                                                             t-att-style="'margin-left: ' + row.margin_level"
                                                             t-att-title="row.code + ' ' + row.name"
+                                                            class="d-flex align-items-center"
                                                         >
-                                                            <t t-esc="row.code + ' ' + row.name" />
+                                                            <span
+                                                                t-if="row.has_children"
+                                                                class="expand-toggle me-2"
+                                                                t-on-click="() => toggleRow(row.row_key)"
+                                                                style="cursor: pointer; width: 16px; text-align: center;"
+                                                            >
+                                                                <i t-att-class="getExpandIcon(row)" />
+                                                            </span>
+                                                            <span
+                                                                t-else=""
+                                                                class="me-2"
+                                                                style="width: 16px; display: inline-block;"
+                                                            />
+                                                            <span
+                                                                t-att-class="{'fw-bold': row.has_children, 'text-muted': row.level > 0 and !row.has_children}"
+                                                            >
+                                                                <t t-esc="row.code + ' ' + row.name" />
+                                                            </span>
                                                         </div>
                                                     </th>
                                                     <td class="amount-cell">0</td>

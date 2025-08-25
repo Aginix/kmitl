@@ -154,21 +154,40 @@ class BudgetReportSummary(models.AbstractModel):
 
     def _to_flat_table(self, roots):
         rows = []
+        parent_map = {}  # Track parent-child relationships
 
-        def traverse(node, level=0):
+        def traverse(node, level=0, parent_id=None):
             row_data = node.to_dict()
             row_data["margin_level"] = str(level * 20) + "px"
+            row_data["level"] = level
+            row_data["parent_row_id"] = parent_id
+            row_data["has_children"] = len(node.children) > 0
+            
+            # Generate unique row key for expand/collapse tracking
+            row_data["row_key"] = f"{node.node_type}_{node.value['code']}_{node.value['id']}"
+            
+            # Add to parent tracking
+            if parent_id:
+                if parent_id not in parent_map:
+                    parent_map[parent_id] = []
+                parent_map[parent_id].append(row_data["row_key"])
+            
             rows.append(row_data)
+            current_row_id = row_data["row_key"]
 
             # Process children - sort them at each level
             sorted_children = self._sort(node.children, level + 1)
             for child in sorted_children:
-                traverse(child, level + 1)
+                traverse(child, level + 1, current_row_id)
 
         # Start from root's children (skip root itself)
         sorted_roots = self._sort(roots, 0)
         for child in sorted_roots:
             traverse(child, 0)
+
+        # Add parent-child mapping to each row
+        for row in rows:
+            row["child_keys"] = parent_map.get(row["row_key"], [])
 
         _logger.info(f"Converted tree to flat table with {len(rows)} rows")
         return rows

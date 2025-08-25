@@ -30,6 +30,7 @@ export class BudgetReportSummary extends Component {
             departments: null,
             selectedDepartmentIds: [],
             showSidebar: true,
+            expandedRows: new Set(), // Track expanded rows
             filterOptions: {
                 fiscal_years: [],
                 departments: [],
@@ -117,6 +118,57 @@ export class BudgetReportSummary extends Component {
 
     get departmentHierarchy() {
         return this.state.filterOptions.departments || [];
+    }
+
+    // Expand/Collapse functionality
+    toggleRow(rowKey) {
+        if (this.state.expandedRows.has(rowKey)) {
+            this.state.expandedRows.delete(rowKey);
+        } else {
+            this.state.expandedRows.add(rowKey);
+        }
+    }
+
+    isRowExpanded(rowKey) {
+        return this.state.expandedRows.has(rowKey);
+    }
+
+    isRowVisible(row) {
+        if (!row.parent_row_id) {
+            return true; // Root rows are always visible
+        }
+        
+        // Find parent row
+        const parentRow = this.state.rows.find(r => r.row_key === row.parent_row_id);
+        if (!parentRow) {
+            return true;
+        }
+        
+        // Row is visible if parent is expanded and parent is visible (recursive)
+        return this.isRowExpanded(parentRow.row_key) && this.isRowVisible(parentRow);
+    }
+
+    get visibleRows() {
+        return this.state.rows.filter(row => this.isRowVisible(row));
+    }
+
+    expandAll() {
+        this.state.expandedRows.clear();
+        this.state.rows.forEach(row => {
+            if (row.has_children) {
+                this.state.expandedRows.add(row.row_key);
+            }
+        });
+    }
+
+    collapseAll() {
+        this.state.expandedRows.clear();
+    }
+
+    // Get expand toggle icon class
+    getExpandIcon(row) {
+        if (!row.has_children) return '';
+        return this.isRowExpanded(row.row_key) ? 'fa fa-caret-down' : 'fa fa-caret-right';
     }
 }
 
