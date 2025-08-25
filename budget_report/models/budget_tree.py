@@ -212,6 +212,7 @@ class BudgetTree:
                 node_id = get_dimension_id(move_line, dim)
                 if node_id and node_id in mapped:
                     mapped[node_id].add_line(move_line_map[move_line.id])
+                    del move_line_map[move_line.id]
 
             return [n for n in mapped.values() if n.value["parent_id"] is False]
 
@@ -245,6 +246,7 @@ class BudgetTree:
                     # เพิ่ม line ที่ node สุดท้าย
                     if i == len(dimensions) - 1:
                         current_node.add_line(move_line_map[move_line.id])
+                        del move_line_map[move_line.id]
 
                     previous_node = current_node
 
