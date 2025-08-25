@@ -17,9 +17,8 @@ class SelectWorkAcceptanceInvoicePlanWizard(models.TransientModel):
     @api.depends("installment_id")
     def _compute_active_installment_ids(self):
         self.ensure_one()
-        purchase = self.env["purchase.order"].browse(
-            self.order_id.id
-        )
+        purchase = self.agreement_id.purchase_order_id
+
         installment_ids = (
             purchase.wa_ids.filtered(lambda l: l.state != "cancel")
             .mapped("installment_id")
@@ -34,7 +33,8 @@ class SelectWorkAcceptanceInvoicePlanWizard(models.TransientModel):
         )
 
     def button_create_wa(self):
-        purchase = self.env["purchase.order"].browse(self.env.context.get("active_id"))
+        purchase = self.agreement_id.purchase_order_id
+        
         if self.installment_id not in self.active_installment_ids:
             raise UserError(
                 _("Installment {} is already used by other WA.").format(

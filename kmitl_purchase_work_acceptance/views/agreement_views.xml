@@ -15,7 +15,7 @@
             <xpath expr="//button[@name='action_open_new_version_wizard']" position="after">
                 <field name="wa_invoice_plan_equal" invisible="1" />
                 <field name="invoice_plan_count" invisible="1"  />
-                <button name="%(purchase_work_acceptance_invoice_plan.action_view_wa_installment)d" attrs="{'invisible': [('is_invoice', '=', False)]}" string="Create WA by Installment" type="action" class="oe_highlight" context="{'default_order_id': purchase_order_id, 'default_agreement_id': active_id}" />
+                <button name="%(purchase_work_acceptance_invoice_plan.action_view_wa_installment)d" attrs="{'invisible': [('is_invoice', '=', False)]}" string="Create WA by Installment" type="action" class="oe_highlight" context="{'default_agreement_id': active_id}" />
             </xpath>
 
             <xpath expr="//button[@name='action_open_new_version_wizard']" position='after'>
