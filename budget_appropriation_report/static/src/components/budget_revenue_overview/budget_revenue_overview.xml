@@ -31,7 +31,21 @@
                     </div>
                 </t>
                 <t t-set-slot="control-panel-top-right">
-                    <div class="d-flex flex-wrap gap-2">
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        <div>
+                            <div class="form-check form-switch">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    id="toggleHideEmpty"
+                                    t-model="state.hideEmpty"
+                                    t-on-change="onToggleHideEmpty"
+                                />
+                                <label class="form-check-label" for="toggleHideEmpty">
+                                    ซ่อนหน่วยงานที่ไม่มีประมาณการ
+                                </label>
+                            </div>
+                        </div>
                         <div>
                             <div class="o_mobile_search_filter o_search_options">
                                 <select

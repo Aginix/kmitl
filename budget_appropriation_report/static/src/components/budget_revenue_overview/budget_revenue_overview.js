@@ -25,6 +25,7 @@ export class BudgetRevenueOverview extends Component {
             data: null,
             fiscalYear: null,
             departments: null,
+            hideEmpty: true,
             filterOptions: {
                 fiscal_years: [],
                 state: ["draft", "review", "posted"]
@@ -92,12 +93,19 @@ export class BudgetRevenueOverview extends Component {
     get data() {
         const accounts = Object.values(this.state.data);
         for (let account of accounts) {
-            account["departments"] = this.state.departments.map((department) => {
+            let departmentsList = this.state.departments.map((department) => {
                 return {
                     ...department,
                     balance: account["department"][department.id] || 0
                 }
             });
+            
+            // Filter departments if hideEmpty is enabled
+            if (this.state.hideEmpty) {
+                departmentsList = departmentsList.filter(dept => dept.balance > 0);
+            }
+            
+            account["departments"] = departmentsList;
         }
         return accounts
     }
@@ -124,6 +132,10 @@ export class BudgetRevenueOverview extends Component {
         this.state.filters.fiscal_year_id = fiscalYearId;
 
         await this.onFilterChange();
+    }
+
+    onToggleHideEmpty() {
+        this.state.hideEmpty = !this.state.hideEmpty;
     }
 }
 
