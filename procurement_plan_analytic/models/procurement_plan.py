@@ -3,6 +3,7 @@ import logging
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
+from procurement_plan import ProcurementPlan
 
 _logger = logging.getLogger(__name__)
 
@@ -18,7 +19,7 @@ class ProcurementPlan(models.Model):
         ondelete="set null",
         domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
         check_company=True,
-        states=READONLY_STATES,
+        states=ProcurementPlan.READONLY_STATES,
         help="Analytic account to which this procurement plan. \n"
         "Track the costs and revenues of your procurement plan by setting this analytic account on your related documents (e.g. budgetings, purchase requests, purchase orders etc.).",
     )
