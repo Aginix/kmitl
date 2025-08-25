@@ -451,6 +451,43 @@ class BudgetCommitmentMixin(models.AbstractModel):
 
         return True
 
+    def _obligate_budget_commitment(self, commitment=None):
+        """
+        Obligate a budget commitment (mark as obligated).
+        This transitions from reserved to obligated state for firm commitments.
+        If no commitment is provided, uses the record's dynamic commitment field.
+
+        Args:
+            commitment (budget.commitment, optional): Commitment to obligate
+                                                     If None, uses record's commitment field
+
+        Returns:
+            bool: True if successful
+
+        Raises:
+            UserError: If commitment cannot be obligated
+        """
+        self.ensure_one()
+
+        if commitment is None:
+            commitment = self._get_commitment_field_value('commitment_id')
+
+        if not commitment:
+            return True
+
+        if commitment.state == 'obligated':
+            return True  # Already obligated
+
+        if commitment.state != 'reserved':
+            raise UserError(_(
+                "Cannot obligate commitment %s - it must be in reserved state"
+            ) % commitment.name)
+
+        commitment.action_obligate()
+        _logger.info("Obligated budget commitment %s", commitment.name)
+
+        return True
+
     def _close_budget_commitment(self, commitment=None):
         """
         Close a budget commitment (mark as done).
@@ -478,9 +515,9 @@ class BudgetCommitmentMixin(models.AbstractModel):
         if commitment.state == 'done':
             return True  # Already done
 
-        if commitment.state != 'reserved':
+        if commitment.state != 'obligated':
             raise UserError(_(
-                "Cannot close commitment %s - it must be in reserved state"
+                "Cannot close commitment %s - it must be in obligated state"
             ) % commitment.name)
 
         commitment.action_done()
@@ -517,9 +554,9 @@ class BudgetCommitmentMixin(models.AbstractModel):
         if not commitment:
             raise ValidationError(_("No commitment to update"))
 
-        if commitment.state != 'reserved':
+        if commitment.state not in ['reserved', 'obligated']:
             raise UserError(_(
-                "Can only update amount for reserved commitments"
+                "Can only update amount for reserved or obligated commitments"
             ))
 
         if new_amount <= 0:
@@ -593,9 +630,9 @@ class BudgetCommitmentMixin(models.AbstractModel):
         if not commitment:
             raise ValidationError(_("No commitment to consume"))
 
-        if commitment.state != 'reserved':
+        if commitment.state not in ['reserved', 'obligated']:
             raise UserError(_(
-                "Can only consume from reserved commitments"
+                "Can only consume from reserved or obligated commitments"
             ))
 
         if amount > commitment.remaining_amount:

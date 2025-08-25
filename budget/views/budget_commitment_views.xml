@@ -22,6 +22,7 @@
                 <field name="state" widget="badge"
                        decoration-success="state == 'done'"
                        decoration-info="state == 'reserved'"
+                       decoration-muted="state == 'obligated'"
                        decoration-warning="state == 'draft'"
                        decoration-danger="state == 'cancel'"/>
                 <field name="user_id" widget="many2one_avatar_user" optional="show" />
@@ -41,14 +42,17 @@
                             help="Check budget availability for this commitment"/>
                     <button name="action_reserve" string="Reserve Budget" type="object"
                             class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_obligate" string="Obligate Budget" type="object"
+                            class="btn-primary" attrs="{'invisible': [('state', '!=', 'reserved')]}"
+                            help="Mark this commitment as obligated - firm commitment"/>
                     <button name="action_done" string="Mark as Done" type="object"
-                            attrs="{'invisible': [('state', '!=', 'reserved')]}"
+                            attrs="{'invisible': [('state', '!=', 'obligated')]}"
                             help="Close this commitment and release any remaining budget"/>
                     <button name="action_cancel" string="Cancel" type="object"
                             attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"/>
                     <button name="action_reset_to_draft" string="Reset to Draft" type="object"
                             attrs="{'invisible': [('state', 'not in', ['cancel'])]}"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,reserved,done"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,reserved,obligated,done"/>
                 </header>
 
                 <sheet>
