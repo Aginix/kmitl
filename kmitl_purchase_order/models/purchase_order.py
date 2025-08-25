@@ -86,7 +86,7 @@ class PurchaseOrder(models.Model):
     )
 
     pr1_ref = fields.Many2one('purchase.request', string="Reference PR1", readonly=True)
-    pr2_ref = fields.Many2one('purchase.request.two', string="Reference PR2", readonly=True)
+    pr2_ref = fields.Many2one('purchase.request.approval', string="Reference PR2", readonly=True)
 
     work_acceptance_committee_ids = fields.One2many(
         related='pr1_ref.work_acceptance_committee_ids',
@@ -113,7 +113,7 @@ class PurchaseOrder(models.Model):
         string="Attachment",
     )
 
-    pr1_total = fields.Monetary(related='pr2_ref.estimated_cost_from_pr', string="PR1 Total")
+    pr1_total = fields.Monetary(related='pr2_ref.estimated_cost', string="PR1 Total")
 
     @api.depends("request_ids.line_ids.estimated_cost")
     def _compute_total_estimated_cost(self):

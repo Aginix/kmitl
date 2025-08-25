@@ -7,8 +7,8 @@ from odoo.exceptions import UserError, ValidationError
 _logger = logging.getLogger(__name__)
 
 
-class PurchaseRequestTwo(models.Model):
-    _inherit = 'purchase.request.two'
+class PurchaseRequestApproval(models.Model):
+    _inherit = 'purchase.request.approval'
 
     def make_purchase_order(self):
         self.ensure_one()
@@ -44,7 +44,7 @@ class PurchaseRequestTwo(models.Model):
             'contract_start_date': self.start_date,
             'contract_end_date': self.end_date,
             'purchase_request_name': self.purchase_request_name,
-            'pr1_ref': self.pr1_ref.id,
+            'pr1_ref': self.request_id.id,
             'pr2_ref': self.id,
         })
 

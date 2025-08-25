@@ -6,7 +6,7 @@
     'author': 'Aginix Techonologies',
     'website': 'https://github.com/aginix/kmitl',
     'category': 'KMITL',
-    'depends': ['kmitl_purchase_request_2', 'purchase_invoice_plan', 'purchase_no_rfq'],
+    'depends': ['purchase_request_approval', 'purchase_invoice_plan', 'purchase_no_rfq'],
     "data": [
         "data/purchase_order_sequence.xml",
         "security/ir.model.access.csv",
@@ -17,7 +17,7 @@
         "views/purchase_order_attachment_views.xml",
         "views/purchase_order_bidder_line_views.xml",
         "views/purchase_order_views.xml",
-        "views/purchase_request_two_views.xml",
+        "views/purchase_request_approval_views.xml",
         "views/purchase_requisition_views.xml"
     ],
     'installable': True,
