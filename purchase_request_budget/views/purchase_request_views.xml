@@ -28,8 +28,8 @@
 
             <xpath expr="//button[@name='button_validate']" position="after">
                 <field name="substate_sequence" invisible="1" />
-                <button name="action_check_budget" type="object" attrs="{'invisible':['|', ('state','!=','to_approve'), ('substate_sequence','!=', 10)]}" string="Check Buget" class="oe_highlight btn-info" groups="purchase_request_budget.group_purchase_request_budget" />
-                <button name="action_reserve_budget" type="object" attrs="{'invisible':['|', ('state','!=','to_approve'), ('substate_sequence','!=', 10)]}" string="Reserve Buget" class="oe_highlight btn-success" groups="purchase_request_budget.group_purchase_request_budget" />
+                <button name="action_check_budget" type="object" attrs="{'invisible':['|', ('state','!=','to_approve'), ('substate_sequence','!=', 10)]}" string="Check Budget" class="oe_highlight btn-info" groups="purchase_request_budget.group_purchase_request_budget" />
+                <button name="action_reserve_budget" type="object" attrs="{'invisible':['|', ('state','!=','to_approve'), ('substate_sequence','!=', 10)]}" string="Reserve Budget" class="oe_highlight btn-success" groups="purchase_request_budget.group_purchase_request_budget" />
             </xpath>
 
             <xpath expr="//button[@name='button_validate']" position="attributes">
