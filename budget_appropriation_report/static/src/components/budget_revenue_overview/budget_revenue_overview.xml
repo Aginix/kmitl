@@ -2,9 +2,7 @@
 <templates xml:space="preserve">
     <t t-name="budget_appropriation_report.BudgetRevenueOverview" owl="1">
         <div class="o_action budget_appropriation_report_revenue_overview">
-            <!-- <div
-                class="o_control_panel d-flex flex-wrap justify-content-between align-items-center p-3 border-bottom"
-            ></div> -->
+            <!-- <div class="o_control_panel d-flex flex-wrap justify-content-between align-items-center p-3 border-bottom"></div> -->
             <ControlPanel display="controlPanelDisplay">
                 <t t-set-slot="control-panel-bottom-left-buttons">
                     <div class="o_cp_buttons">
@@ -25,9 +23,14 @@
                                 t-on-click="onPrint"
                                 title="พิมพ์"
                             >
-                                <i class="fa fa-print" /> พิมพ์
+                                <i class="fa fa-print" />
+                                พิมพ์
                             </button>
                         </div>
+                    </div>
+                </t>
+                <t t-set-slot="control-panel-top-right">
+                    <div class="d-flex flex-wrap gap-3 align-items-center">
                         <div>
                             <div class="form-check">
                                 <input
@@ -42,10 +45,6 @@
                                 </label>
                             </div>
                         </div>
-                    </div>
-                </t>
-                <t t-set-slot="control-panel-top-right">
-                    <div class="d-flex flex-wrap gap-3 align-items-center">
                         <div>
                             <label class="form-label-sm mb-1">ปีงบประมาณ:</label>
                             <div class="o_mobile_search_filter o_search_options">
@@ -95,10 +94,7 @@
                         <div class="col-12" style="max-width: 960px">
                             <div class="budget-report-container">
                                 <div class="report-header text-center mb-4">
-                                    <!-- <h3
-                                        t-if="appropriation.source"
-                                        t-esc="appropriation.source.name"
-                                    /> -->
+                                    <!-- <h3 t-if="appropriation.source" t-esc="appropriation.source.name" /> -->
                                     <h3>
                                         สรุปประมาณการรายรับ ประจำปีงบประมาณ พ.ศ.
                                         <t t-esc="fiscalYear.name" />
@@ -183,9 +179,11 @@
                                                                     style="
                                                                         text-decoration: underline;
                                                                     "
-                                                                    ><t
+                                                                >
+                                                                    <t
                                                                         t-esc="formatCurrency(account.total_balance)"
-                                                                /></span>
+                                                                    />
+                                                                </span>
                                                                 บาท
                                                             </td>
                                                         </tr>
@@ -210,8 +208,9 @@
                                                 text-decoration: underline;
                                                 text-decoration-style: double;
                                             "
-                                            ><t t-esc="formatCurrency(totalBalance)"
-                                        /></span>
+                                        >
+                                            <t t-esc="formatCurrency(totalBalance)" />
+                                        </span>
                                         บาท
                                     </div>
                                 </div>
