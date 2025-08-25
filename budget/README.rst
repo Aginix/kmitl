@@ -49,7 +49,7 @@ Thai Government Compliance
 Advanced Reporting & Analytics
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-* **Interactive Budget Reports**: Real-time budget execution status with hierarchical data visualization
+* **Interactive Budget Reports**: Real-time budget reporting with hierarchical data visualization
 * **Budget Appropriation Reports**: Multi-level organizational reports with automatic hierarchy building
 * **Budget Execution Analysis**: Comprehensive tracking of initial, current, requested, reserved, and disbursed amounts
 * **Client-Side Components**: Modern JavaScript components for budget exploration and analysis

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <record id="action_budget_execution_report_interactive" model="ir.actions.client">
-        <field name="name">Budget Execution Status Report (Interactive)</field>
-        <field name="tag">budget_execution_report_interactive</field>
-        <field name="target">main</field>
-    </record>
-</odoo>
