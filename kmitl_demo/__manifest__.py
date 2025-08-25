@@ -14,15 +14,13 @@
         "hr_department_code",
         "account_fiscal_year",
         "account_analytic_kmitl",
-        "l10n_th_gov_purchase_request",
-        "procurement_plan",
+        "l10n_th_gov_purchase_request"
     ],
     "data": [
         "data/company.xml",
         "data/hr.department.csv",
         "data/account.fiscal.year.csv",
-        "data/ir_config_parameter.xml",
-        "data/procurement_plan.xml",
+        "data/ir_config_parameter.xml"
     ],
     "post_init_hook": "post_init",
     "uninstall_hook": "uninstall_hook",
