@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_request_form" model="ir.ui.view">
+        <field name="name">view.purchase.request.form</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet/notebook" position="inside">
+                <page string="จองงบประมาณ" groups="purchase_request_budget.group_purchase_request_budget">
+                    <group>
+                        <field name="substate_sequence" invisible="1" />
+                        <field name="budget_account_id" groups="purchase_request_budget.group_purchase_request_budget" attrs="{'readonly':[('substate_sequence','!=',10)]}" />
+                        <field name="activity_analytic_id" groups="purchase_request_budget.group_purchase_request_budget" attrs="{'readonly':[('substate_sequence','!=',10)]}" />
+                        <field name="department_analytic_id" groups="purchase_request_budget.group_purchase_request_budget" attrs="{'readonly':[('substate_sequence','!=',10)]}" />
+                        <field name="fund_analytic_id" groups="purchase_request_budget.group_purchase_request_budget" attrs="{'readonly':[('substate_sequence','!=',10)]}" />
+                        <field name="source_analytic_id" groups="purchase_request_budget.group_purchase_request_budget" attrs="{'readonly':[('substate_sequence','!=',10)]}" />
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_budget_form" model="ir.ui.view">
+        <field name="name">view.purchase.request.form</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request_kmitl.view_purchase_request_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//button[@name='button_validate']" position="after">
+                <field name="substate_sequence" invisible="1" />
+                <button name="action_check_budget" type="object" attrs="{'invisible':['|', ('state','!=','to_approve'), ('substate_sequence','!=', 10)]}" string="Check Buget" class="oe_highlight btn-info" groups="purchase_request_budget.group_purchase_request_budget" />
+                <button name="action_reserve_budget" type="object" attrs="{'invisible':['|', ('state','!=','to_approve'), ('substate_sequence','!=', 10)]}" string="Reserve Buget" class="oe_highlight btn-success" groups="purchase_request_budget.group_purchase_request_budget" />
+            </xpath>
+
+            <xpath expr="//button[@name='button_validate']" position="attributes">
+                <attribute name="attrs">{'invisible':['|', ('state','!=','to_approve'), ('substate_sequence','=', 10)]}</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='department_id']" position="after">
+                <field name="verified_by" readonly="1" widget="many2one_avatar_user" />
+                <field name="date_verified" readonly="1" widget="remaining_days" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

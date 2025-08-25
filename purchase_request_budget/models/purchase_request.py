@@ -12,7 +12,7 @@ class PurchaseRequest(models.Model):
         string='Budget Commitment',
         readonly=True,
         copy=False,
-        help="Related budget commitment for this purchase order"
+        help="Related budget commitment for this purchase request"
     )
     budget_account_id = fields.Many2one(
         'budget.account',
@@ -24,7 +24,7 @@ class PurchaseRequest(models.Model):
     def action_check_budget(self):
         """Action to check budget availability"""
         self.ensure_one()
-
+        amount = sum(self.line_ids.mapped("estimated_cost"))
         if not all([
             self.budget_account_id,
             self.activity_analytic_id,
@@ -34,16 +34,14 @@ class PurchaseRequest(models.Model):
         ]):
             raise UserError(_("Please specify budget account and all required analytic dimensions"))
 
-        # Check budget availability using dynamic field approach
         result = self._check_budget_availability(
-            amount=sum(self.line_ids.mapped("estimated_cost")),
+            amount=amount,
             activity_analytic_id=self.activity_analytic_id.id,
             department_analytic_id=self.department_analytic_id.id,
             fund_analytic_id=self.fund_analytic_id.id,
             source_analytic_id=self.source_analytic_id.id,
         )
 
-        # Show notification
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
@@ -55,23 +53,28 @@ class PurchaseRequest(models.Model):
             }
         }
 
+    def _action_purchase_reserve(self):
+        self.ensure_one()
+        substate = self.env["base.substate"].search(
+            [("model", "=", "purchase.request"), ("sequence", "=", 20)], limit=1
+        )
+        self.substate_id = substate.id
+        self.verified_by = self.env.user.id
+        self.date_verified = fields.Date.context_today(self)
+
     def action_reserve_budget(self):
         """Reserve budget by creating commitment"""
         self.ensure_one()
-
-        if self.budget_commitment_id:
-            raise UserError(_("Budget has already been reserved for this purchase order"))
+        amount = sum(self.line_ids.mapped("estimated_cost"))
 
         if not self.budget_account_id:
             raise ValidationError(_("Please specify budget account"))
 
-        # Validate required analytic dimensions
         if not all([self.activity_analytic_id, self.department_analytic_id, self.fund_analytic_id, self.source_analytic_id]):
             raise ValidationError(_("Please specify analytic dimensions for budget commitment"))
 
-        # Check budget availability first
         check_result = self._check_budget_availability(
-            amount=sum(self.line_ids.mapped("estimated_cost")),
+            amount=amount,
             activity_analytic_id=self.activity_analytic_id.id,
             department_analytic_id=self.department_analytic_id.id,
             fund_analytic_id=self.fund_analytic_id.id,
@@ -82,9 +85,8 @@ class PurchaseRequest(models.Model):
             raise UserError(_("Cannot reserve budget due to insufficient funds: %s") % check_result['message'])
 
         try:
-            # Create commitment using dynamic field approach
             commitment = self._create_budget_commitment(
-                amount=sum(self.line_ids.mapped("estimated_cost")),
+                amount=amount,
                 activity_analytic_id=self.activity_analytic_id.id,
                 department_analytic_id=self.department_analytic_id.id,
                 fund_analytic_id=self.fund_analytic_id.id,
@@ -94,19 +96,39 @@ class PurchaseRequest(models.Model):
                 date=self.date_start,
                 auto_reserve=True
             )
-            # Note: commitment is automatically stored in budget_commitment_id by the mixin
-            self.message_post(body=_("Budget reserved: %s for amount %s") % (commitment.name, sum(self.line_ids.mapped("estimated_cost"))))
-
+            self.message_post(body=_("Budget reserved: %s for amount %s") % (commitment.name, amount))
+            self._action_purchase_reserve()
             return {
-                'type': 'ir.actions.client',
-                'tag': 'display_notification',
-                'params': {
-                    'title': _('Budget Reserved'),
-                    'message': _('Budget has been successfully reserved for %s') % sum(self.line_ids.mapped("estimated_cost")),
-                    'type': 'success',
-                    'sticky': False,
-                }
+                "type": "ir.actions.act_window",
+                "res_model": "purchase.request",
+                "view_mode": "form",
+                "res_id": self.id,
+                "target": "current",
+                "context": self.env.context,
             }
 
         except UserError as e:
             raise UserError(_("Cannot reserve budget: %s") % str(e))
+
+    def button_draft(self):
+        for request in self:
+            if request.budget_commitment_id:
+                try:
+                    request._cancel_budget_commitment()
+                    request.write({"verified_by": "", "date_verified": False})
+                    request.message_post(body=_("Budget commitment %s has been cancelled") % request.budget_commitment_id.name)
+                except UserError as e:
+                    request.message_post(body=_("Warning: Could not cancel budget commitment: %s") % str(e))
+
+        return super().button_draft()
+
+    def button_rejected(self):
+        for request in self:
+            if request.budget_commitment_id:
+                try:
+                    request._cancel_budget_commitment()
+                    request.message_post(body=_("Budget commitment %s has been cancelled") % request.budget_commitment_id.name)
+                except UserError as e:
+                    request.message_post(body=_("Warning: Could not cancel budget commitment: %s") % str(e))
+
+        return super().button_rejected()
