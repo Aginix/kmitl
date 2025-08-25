@@ -20,6 +20,15 @@ class PurchaseRequest(models.Model):
         domain=[('budgetable', '=', True), ('budget_type', '=', 'expense')],
         help="Budget account to be used for commitment"
     )
+    can_edit_budget = fields.Boolean(
+        compute="_compute_can_edit_budget",
+    )
+
+    @api.depends("substate_id")
+    def _compute_can_edit_budget(self):
+        for rec in self:
+            xml_id = rec.substate_id.get_external_id().get(rec.substate_id.id)
+            rec.can_edit_budget = xml_id == "l10n_th_gov_purchase_request.base_substate_to_verify"
 
     def action_check_budget(self):
         """Action to check budget availability"""
@@ -57,9 +66,7 @@ class PurchaseRequest(models.Model):
 
     def _action_purchase_reserve(self):
         self.ensure_one()
-        substate = self.env["base.substate"].search(
-            [("model", "=", "purchase.request"), ("sequence", "=", 20)], limit=1
-        )
+        substate = self.env["base.substate"].browse(self.env.ref('l10n_th_gov_purchase_request.base_substate_verified').id)
         self.substate_id = substate.id
         self.verified_by = self.env.user.id
         self.date_verified = fields.Date.context_today(self)
