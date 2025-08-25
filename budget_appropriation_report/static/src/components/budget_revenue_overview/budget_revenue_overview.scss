@@ -11,7 +11,7 @@
         min-height: 100vh;
     }
 
-    // Toggle Switch Styling
+    // Form Controls Styling
     .form-check-label {
         font-size: 0.875rem;
         color: #666;
@@ -29,6 +29,14 @@
             outline: 0;
             box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
         }
+    }
+
+    .form-label-sm {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #495057;
+        margin-bottom: 0.25rem;
+        display: block;
     }
 
     // Report Container
