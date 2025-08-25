@@ -150,6 +150,7 @@
             <xpath expr="//field[@name='uom_id']" position="after">
                 <field name="price_unit" />
                 <field name="price_subtotal" />
+                <field name="product_categ_id" required='True'/>
             </xpath>
 
             <xpath expr="//notebook" position="inside">

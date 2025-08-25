@@ -15,3 +15,8 @@ class AgreementLine(models.Model):
     price_subtotal = fields.Monetary(string="Total")
 
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.company.currency_id)
+
+    product_categ_id = fields.Many2one(
+        "product.category", 
+        string="Product Category", 
+    )
