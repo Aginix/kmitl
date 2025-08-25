@@ -110,7 +110,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
                                  ref=None, description=None, auto_reserve=True, **kwargs):
         """
         Create or reuse a budget commitment using the record's dynamic budget account field.
-        
+
         If a cancelled commitment exists for this record, it will be reused by resetting
         it to draft and updating its values. Otherwise, a new commitment will be created.
 
@@ -139,7 +139,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
 
         # Check if there's an existing cancelled commitment to reuse
         existing_commitment = self._get_commitment_field_value('commitment_id')
-        if existing_commitment and existing_commitment.state == 'cancel':
+        if existing_commitment and existing_commitment.state in ['cancel', 'draft']:
             commitment = self._reuse_cancelled_commitment(
                 existing_commitment, amount, activity_analytic_id, fund_analytic_id,
                 department_analytic_id, source_analytic_id, ref, description,
@@ -175,7 +175,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
                                 budget_account_id, include_company=True, **kwargs):
         """
         Prepare commitment values dictionary.
-        
+
         Args:
             amount (float): Commitment amount
             activity_analytic_id: Activity dimension
@@ -187,7 +187,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
             budget_account_id: Budget account
             include_company (bool): Whether to include company_id
             **kwargs: Additional fields
-            
+
         Returns:
             dict: Commitment values dictionary
         """
@@ -202,14 +202,14 @@ class BudgetCommitmentMixin(models.AbstractModel):
             'description': description or '',
             'user_id': self.env.user.id,
         }
-        
+
         if include_company:
             commitment_vals['company_id'] = self.env.company.id
-            
+
         # Handle date and fiscal year
         commitment_date = kwargs.get('date', fields.Date.today())
         commitment_vals['date'] = commitment_date
-        
+
         if not kwargs.get('date_range_fy_id'):
             company_id = kwargs.get('company_id',
                                   self.company_id.id if hasattr(self, 'company_id') and self.company_id else self.env.company.id)
@@ -225,7 +225,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
             commitment_vals['date_range_fy_id'] = fiscal_year.id
         else:
             commitment_vals['date_range_fy_id'] = kwargs['date_range_fy_id']
-            
+
         return commitment_vals
 
     def _reuse_cancelled_commitment(self, existing_commitment, amount, activity_analytic_id, fund_analytic_id,
@@ -233,7 +233,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
                                    budget_account_id, **kwargs):
         """
         Reuse an existing cancelled commitment by resetting and updating it.
-        
+
         Args:
             existing_commitment: The cancelled commitment to reuse
             amount (float): New commitment amount
@@ -245,7 +245,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
             description (str): Description
             budget_account_id: Budget account
             **kwargs: Additional fields
-            
+
         Returns:
             budget.commitment: Updated commitment
         """
@@ -254,26 +254,26 @@ class BudgetCommitmentMixin(models.AbstractModel):
             existing_commitment.name,
             self._name
         )
-        
+
         # Reset the cancelled commitment to draft
         existing_commitment.action_reset_to_draft()
-        
+
         # Prepare and apply update values
         commitment_vals = self._prepare_commitment_vals(
             amount, activity_analytic_id, fund_analytic_id,
             department_analytic_id, source_analytic_id, ref, description,
             budget_account_id, include_company=False, **kwargs
         )
-        
+
         existing_commitment.write(commitment_vals)
-        
+
         _logger.info(
             "Updated reused commitment %s with new values for %s amount %s",
             existing_commitment.name,
             self._name,
             existing_commitment.amount
         )
-        
+
         return existing_commitment
 
     def _create_new_commitment(self, amount, activity_analytic_id, fund_analytic_id,
@@ -281,7 +281,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
                               budget_account_id, **kwargs):
         """
         Create a new budget commitment.
-        
+
         Args:
             amount (float): Commitment amount
             activity_analytic_id: Activity dimension
@@ -292,7 +292,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
             description (str): Description
             budget_account_id: Budget account
             **kwargs: Additional fields
-            
+
         Returns:
             budget.commitment: New commitment
         """
@@ -301,16 +301,16 @@ class BudgetCommitmentMixin(models.AbstractModel):
             department_analytic_id, source_analytic_id, ref, description,
             budget_account_id, include_company=True, **kwargs
         )
-        
+
         commitment = self.env['budget.commitment'].create(commitment_vals)
-        
+
         _logger.info(
             "Created new budget commitment %s for %s amount %s",
             commitment.name,
             self._name,
             commitment.amount
         )
-        
+
         return commitment
 
     def _check_budget_availability(self, amount, activity_analytic_id, fund_analytic_id,
