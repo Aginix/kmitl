@@ -9,7 +9,7 @@
                 <attribute name="attrs">{'invisible':['|', '|' ,('validation_status', 'in', ('pending', 'rejected')), ('is_egp', '=', True) , ('state', 'not in', ['submitted'])]}</attribute>
             </xpath>
             <xpath expr="(//button[@name='button_approve'])[2]" position="attributes">
-                <attribute name="attrs">{'invisible':['|', '|' ,('validation_status', 'in', ('pending', 'rejected')), ('is_egp', '=', False) , ('state', 'not in', ['submitted'])]}</attribute>
+                <attribute name="attrs">{'invisible':['|', '|' ,('validation_status', 'in', ('pending', 'rejected')), ('is_egp', '=', False) , ('state', 'not in', ['egp'])]}</attribute>
             </xpath>
             <field name="state" position="after">
                 <field name="validation_status" invisible="1" />

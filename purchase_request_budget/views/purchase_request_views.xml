@@ -37,7 +37,7 @@
 
             <xpath expr="//field[@name='department_id']" position="after">
                 <field name="verified_by" readonly="1" widget="many2one_avatar_user" />
-                <field name="date_verified" readonly="1" widget="remaining_days" />
+                <field name="date_verified" readonly="1" />
             </xpath>
         </field>
     </record>
