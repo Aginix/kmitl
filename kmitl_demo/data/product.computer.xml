@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Desktop Computers: 72100101 เครื่องคอมพิวเตอร์ตั้งโต๊ะเบื้องต้น -->
+        <record id="product_desktop_basic_intel_i3" model="product.product">
+            <field name="name">เครื่องคอมพิวเตอร์ตั้งโต๊ะเบื้องต้น Intel Core i3</field>
+            <field name="default_code">72100101-001</field>
+            <field name="categ_id" ref="product_category_desktop_basic_72100101"/>
+            <field name="list_price">18500</field>
+            <field name="standard_price">16650</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Intel Core i3-13100, 8GB DDR4 RAM, 256GB SSD, Intel UHD Graphics, Windows 11 Pro</field>
+            <field name="description_sale">เครื่องคอมพิวเตอร์ตั้งโต๊ะสำหรับงานพื้นฐานทั่วไป เหมาะสำหรับงานเอกสาร อีเมล และอินเทอร์เน็ต</field>
+        </record>
+        
+        <record id="product_desktop_basic_amd_ryzen3" model="product.product">
+            <field name="name">เครื่องคอมพิวเตอร์ตั้งโต๊ะเบื้องต้น AMD Ryzen 3</field>
+            <field name="default_code">72100101-002</field>
+            <field name="categ_id" ref="product_category_desktop_basic_72100101"/>
+            <field name="list_price">16800</field>
+            <field name="standard_price">15120</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">AMD Ryzen 3 4300G, 8GB DDR4 RAM, 240GB SSD, AMD Radeon Graphics, Windows 11 Pro</field>
+            <field name="description_sale">เครื่องคอมพิวเตอร์ประหยัดพลังงานพร้อมกราฟิกในตัว เหมาะสำหรับหน่วยงานราชการระดับต้น</field>
+        </record>
+        
+        <!-- Desktop Computers: 72100102 เครื่องคอมพิวเตอร์ตั้งโต๊ะสำนักงาน -->
+        <record id="product_desktop_office_intel_i5" model="product.product">
+            <field name="name">เครื่องคอมพิวเตอร์ตั้งโต๊ะสำนักงาน Intel Core i5</field>
+            <field name="default_code">72100102-001</field>
+            <field name="categ_id" ref="product_category_desktop_office_72100102"/>
+            <field name="list_price">28500</field>
+            <field name="standard_price">25650</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Intel Core i5-13400, 16GB DDR4 RAM, 512GB NVMe SSD, Intel UHD Graphics 730, Windows 11 Pro</field>
+            <field name="description_sale">เครื่องคอมพิวเตอร์สำนักงานประสิทธิภาพสูง รองรับงานหลายโปรแกรมพร้อมกัน</field>
+        </record>
+        
+        <record id="product_desktop_office_amd_ryzen5" model="product.product">
+            <field name="name">เครื่องคอมพิวเตอร์ตั้งโต๊ะสำนักงาน AMD Ryzen 5</field>
+            <field name="default_code">72100102-002</field>
+            <field name="categ_id" ref="product_category_desktop_office_72100102"/>
+            <field name="list_price">26200</field>
+            <field name="standard_price">23580</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">AMD Ryzen 5 5600G, 16GB DDR4 RAM, 500GB NVMe SSD, AMD Radeon Graphics, Windows 11 Pro</field>
+            <field name="description_sale">เครื่องคอมพิวเตอร์สำนักงานพร้อมกราฟิกในตัวขั้นสูง เหมาะสำหรับงานออกแบบเบื้องต้น</field>
+        </record>
+        
+        <!-- Desktop Computers: 72100103 เครื่องคอมพิวเตอร์เวิร์กสเตชั่น -->
+        <record id="product_workstation_intel_i7_quadro" model="product.product">
+            <field name="name">เครื่องเวิร์กสเตชั่น Intel Core i7 พร้อมการ์ดจอเฉพาะ</field>
+            <field name="default_code">72100103-001</field>
+            <field name="categ_id" ref="product_category_desktop_workstation_72100103"/>
+            <field name="list_price">58900</field>
+            <field name="standard_price">53010</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Intel Core i7-13700, 32GB DDR4 RAM, 1TB NVMe SSD, NVIDIA Quadro T1000, Windows 11 Pro for Workstations</field>
+            <field name="description_sale">เครื่องเวิร์กสเตชั่นสำหรับงานออกแบบ วิศวกรรม และการประมวลผลข้อมูลขนาดใหญ่</field>
+        </record>
+        
+        <record id="product_workstation_amd_ryzen7_rtx" model="product.product">
+            <field name="name">เครื่องเวิร์กสเตชั่น AMD Ryzen 7 PRO</field>
+            <field name="default_code">72100103-002</field>
+            <field name="categ_id" ref="product_category_desktop_workstation_72100103"/>
+            <field name="list_price">62500</field>
+            <field name="standard_price">56250</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">AMD Ryzen 7 PRO 5750G, 32GB DDR4 RAM, 1TB NVMe SSD + 2TB HDD, NVIDIA GeForce RTX 4060, Windows 11 Pro</field>
+            <field name="description_sale">เครื่องเวิร์กสเตชั่นระดับมืออาชีพ รองรับงาน CAD และการประมวลผลกราฟิก</field>
+        </record>
+        
+        <!-- Laptops: 72100201 เครื่องคอมพิวเตอร์แบบพกพาเบื้องต้น -->
+        <record id="product_laptop_basic_intel_i3_14" model="product.product">
+            <field name="name">โน้ตบุ๊กเบื้องต้น Intel Core i3 14 นิ้ว</field>
+            <field name="default_code">72100201-001</field>
+            <field name="categ_id" ref="product_category_laptop_basic_72100201"/>
+            <field name="list_price">22500</field>
+            <field name="standard_price">20250</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Intel Core i3-1215U, 8GB DDR4 RAM, 256GB SSD, Intel UHD Graphics, 14" HD Display, Windows 11 Pro</field>
+            <field name="description_sale">โน้ตบุ๊กสำหรับงานพื้นฐาน น้ำหนักเบา แบตเตอรี่ใช้งานได้นาน เหมาะสำหรับเจ้าหน้าที่ภาคสนาม</field>
+        </record>
+        
+        <record id="product_laptop_basic_amd_ryzen3_15" model="product.product">
+            <field name="name">โน้ตบุ๊กเบื้องต้น AMD Ryzen 3 15.6 นิ้ว</field>
+            <field name="default_code">72100201-002</field>
+            <field name="categ_id" ref="product_category_laptop_basic_72100201"/>
+            <field name="list_price">20800</field>
+            <field name="standard_price">18720</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">AMD Ryzen 3 5300U, 8GB DDR4 RAM, 256GB SSD, AMD Radeon Graphics, 15.6" FHD Display, Windows 11 Pro</field>
+            <field name="description_sale">โน้ตบุ๊กหน้าจอใหญ่ราคาประหยัด เหมาะสำหรับการประชุมและการนำเสนอ</field>
+        </record>
+        
+        <!-- Laptops: 72100202 เครื่องคอมพิวเตอร์แบบพกพาธุรกิจ -->
+        <record id="product_laptop_business_intel_i5_security" model="product.product">
+            <field name="name">โน้ตบุ๊กธุรกิจ Intel Core i5 พร้อมความปลอดภัยขั้นสูง</field>
+            <field name="default_code">72100202-001</field>
+            <field name="categ_id" ref="product_category_laptop_business_72100202"/>
+            <field name="list_price">38900</field>
+            <field name="standard_price">35010</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Intel Core i5-1340P, 16GB DDR4 RAM, 512GB NVMe SSD, Intel Iris Xe Graphics, 14" FHD IPS, Windows 11 Pro, TPM 2.0</field>
+            <field name="description_sale">โน้ตบุ๊กธุรกิจระดับมืออาชีพ พร้อมฟีเจอร์ความปลอดภัยขั้นสูงสำหรับหน่วยงานราชการ</field>
+        </record>
+        
+        <record id="product_laptop_business_amd_ryzen5_pro" model="product.product">
+            <field name="name">โน้ตบุ๊กธุรกิจ AMD Ryzen 5 PRO</field>
+            <field name="default_code">72100202-002</field>
+            <field name="categ_id" ref="product_category_laptop_business_72100202"/>
+            <field name="list_price">35500</field>
+            <field name="standard_price">31950</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">AMD Ryzen 5 PRO 6650U, 16GB DDR4 RAM, 512GB NVMe SSD, AMD Radeon Graphics, 15.6" FHD, Windows 11 Pro</field>
+            <field name="description_sale">โน้ตบุ๊กธุรกิจสำหรับผู้บริหาร พร้อมฟีเจอร์ความปลอดภัยและประสิทธิภาพสูง</field>
+        </record>
+        
+        <!-- Laptops: 72100203 เครื่องคอมพิวเตอร์แบบพกพาวิศวกรรม -->
+        <record id="product_laptop_engineering_intel_i7_rtx" model="product.product">
+            <field name="name">โน้ตบุ๊กวิศวกรรม Intel Core i7 พร้อมการ์ดจอเฉพาะ</field>
+            <field name="default_code">72100203-001</field>
+            <field name="categ_id" ref="product_category_laptop_engineering_72100203"/>
+            <field name="list_price">78500</field>
+            <field name="standard_price">70650</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Intel Core i7-13700H, 32GB DDR5 RAM, 1TB NVMe SSD, NVIDIA RTX A2000, 15.6" FHD IPS, Windows 11 Pro</field>
+            <field name="description_sale">โน้ตบุ๊กวิศวกรรมระดับมืออาชีพ รองรับซอฟต์แวร์ CAD/CAM และการจำลองทางวิศวกรรม</field>
+        </record>
+        
+        <record id="product_laptop_engineering_amd_ryzen7_4k" model="product.product">
+            <field name="name">โน้ตบุ๊กวิศวกรรม AMD Ryzen 7 PRO พร้อมจอ 4K</field>
+            <field name="default_code">72100203-002</field>
+            <field name="categ_id" ref="product_category_laptop_engineering_72100203"/>
+            <field name="list_price">82900</field>
+            <field name="standard_price">74610</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">AMD Ryzen 7 PRO 6850H, 32GB DDR5 RAM, 1TB NVMe SSD, NVIDIA GeForce RTX 4070, 16" 4K Display, Windows 11 Pro</field>
+            <field name="description_sale">โน้ตบุ๊กวิศวกรรมจอ 4K สำหรับงานออกแบบและวิเคราะห์ข้อมูลทางวิทยาศาสตร์</field>
+        </record>
+        
+        <!-- Servers: 72100301 เครื่องแม่ข่ายแบบทาวเวอร์ -->
+        <record id="product_server_tower_intel_xeon_basic" model="product.product">
+            <field name="name">เซิร์ฟเวอร์ทาวเวอร์ Intel Xeon รุ่นเริ่มต้น</field>
+            <field name="default_code">72100301-001</field>
+            <field name="categ_id" ref="product_category_server_tower_72100301"/>
+            <field name="list_price">89500</field>
+            <field name="standard_price">80550</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Intel Xeon E-2314, 16GB DDR4 ECC RAM, 1TB SATA HDD, Integrated Graphics, Windows Server 2022 Standard</field>
+            <field name="description_sale">เซิร์ฟเวอร์ทาวเวอร์สำหรับองค์กรขนาดกลาง รองรับการใช้งาน File Server และ Print Server</field>
+        </record>
+        
+        <record id="product_server_tower_amd_epyc_performance" model="product.product">
+            <field name="name">เซิร์ฟเวอร์ทาวเวอร์ AMD EPYC รุ่นประสิทธิภาพสูง</field>
+            <field name="default_code">72100301-002</field>
+            <field name="categ_id" ref="product_category_server_tower_72100301"/>
+            <field name="list_price">125000</field>
+            <field name="standard_price">112500</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">AMD EPYC 7313, 32GB DDR4 ECC RAM, 2x 1TB NVMe SSD (RAID 1), AMD Radeon Graphics, Windows Server 2022 Standard</field>
+            <field name="description_sale">เซิร์ฟเวอร์ทาวเวอร์ประสิทธิภาพสูง เหมาะสำหรับ Database Server และ Application Server</field>
+        </record>
+        
+        <!-- Servers: 72100302 เซิร์ฟเวอร์แบบแร็ค -->
+        <record id="product_server_rack_1u_intel_xeon" model="product.product">
+            <field name="name">เซิร์ฟเวอร์แร็ค 1U Intel Xeon</field>
+            <field name="default_code">72100302-001</field>
+            <field name="categ_id" ref="product_category_server_rack_72100302"/>
+            <field name="list_price">158500</field>
+            <field name="standard_price">142650</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Intel Xeon Silver 4314, 32GB DDR4 ECC RAM, 4x 1TB SATA HDD (RAID 5), Dual PSU, iDRAC9, 1U Rackmount</field>
+            <field name="description_sale">เซิร์ฟเวอร์แร็ค 1U สำหรับ Data Center ประสิทธิภาพสูง พร้อมระบบจัดการระยะไกล</field>
+        </record>
+        
+        <record id="product_server_rack_2u_amd_epyc" model="product.product">
+            <field name="name">เซิร์ฟเวอร์แร็ค 2U AMD EPYC</field>
+            <field name="default_code">72100302-002</field>
+            <field name="categ_id" ref="product_category_server_rack_72100302"/>
+            <field name="list_price">198000</field>
+            <field name="standard_price">178200</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">AMD EPYC 7413, 64GB DDR4 ECC RAM, 8x 2TB SAS HDD (RAID 6), Dual PSU, BMC Management, 2U Rackmount</field>
+            <field name="description_sale">เซิร์ฟเวอร์แร็ค 2U ความจุสูง เหมาะสำหรับ Virtualization และ Cloud Computing</field>
+        </record>
+        
+        <!-- Servers: 72100303 เซิร์ฟเวอร์แบบเบลด -->
+        <record id="product_server_blade_intel_xeon_basic" model="product.product">
+            <field name="name">เบลดเซิร์ฟเวอร์ Intel Xeon ระบบเริ่มต้น</field>
+            <field name="default_code">72100303-001</field>
+            <field name="categ_id" ref="product_category_server_blade_72100303"/>
+            <field name="list_price">385000</field>
+            <field name="standard_price">346500</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Intel Xeon Gold 6338, 128GB DDR4 ECC RAM, 2x 960GB NVMe SSD, 10Gb Ethernet, Blade Chassis (7U)</field>
+            <field name="description_sale">ระบบเบลดเซิร์ฟเวอร์สำหรับ Data Center ขนาดใหญ่ ประหยัดพื้นที่และพลังงาน</field>
+        </record>
+        
+        <record id="product_server_blade_amd_epyc_performance" model="product.product">
+            <field name="name">เบลดเซิร์ฟเวอร์ AMD EPYC ประสิทธิภาพสูง</field>
+            <field name="default_code">72100303-002</field>
+            <field name="categ_id" ref="product_category_server_blade_72100303"/>
+            <field name="list_price">485000</field>
+            <field name="standard_price">436500</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">AMD EPYC 7543, 256GB DDR4 ECC RAM, 4x 1.92TB NVMe SSD, 25Gb Ethernet, Full Blade Chassis (10U)</field>
+            <field name="description_sale">ระบบเบลดเซิร์ฟเวอร์ประสิทธิภาพสูงสุด รองรับงาน HPC และ AI Computing</field>
+        </record>
+        
+        <!-- Network Equipment: 72100401 อุปกรณ์สวิตช์ -->
+        <record id="product_switch_24port_gigabit_managed" model="product.product">
+            <field name="name">สวิตช์ 24 พอร์ต Gigabit แบบ Managed</field>
+            <field name="default_code">72100401-001</field>
+            <field name="categ_id" ref="product_category_switch_72100401"/>
+            <field name="list_price">28500</field>
+            <field name="standard_price">25650</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">24x Gigabit Ethernet Ports, 4x SFP+ 10Gb Uplink, Layer 3 Managed, VLAN Support, Web Management</field>
+            <field name="description_sale">สวิตช์เครือข่าย 24 พอร์ตสำหรับสำนักงานขนาดกลาง รองรับการจัดการขั้นสูง</field>
+        </record>
+        
+        <record id="product_switch_48port_poe_managed" model="product.product">
+            <field name="name">สวิตช์ 48 พอร์ต Gigabit แบบ Managed พร้อม PoE+</field>
+            <field name="default_code">72100401-002</field>
+            <field name="categ_id" ref="product_category_switch_72100401"/>
+            <field name="list_price">58900</field>
+            <field name="standard_price">53010</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">48x Gigabit PoE+ Ports, 4x SFP+ 10Gb Uplink, 740W PoE Budget, Layer 3 Managed, Stack-able</field>
+            <field name="description_sale">สวิตช์ขนาดใหญ่พร้อม PoE+ สำหรับเชื่อมต่ออุปกรณ์ไร้สายและกล้องวงจรปิด</field>
+        </record>
+        
+        <!-- Network Equipment: 72100402 อุปกรณ์เราเตอร์ -->
+        <record id="product_router_enterprise_medium" model="product.product">
+            <field name="name">เราเตอร์องค์กรขนาดกลาง</field>
+            <field name="default_code">72100402-001</field>
+            <field name="categ_id" ref="product_category_router_72100402"/>
+            <field name="list_price">18500</field>
+            <field name="standard_price">16650</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Dual WAN Support, 4x Gigabit LAN, VPN Support (IPSec, L2TP), Firewall, QoS, Bandwidth Management</field>
+            <field name="description_sale">เราเตอร์สำหรับองค์กรขนาดกลาง รองรับ VPN และการจัดการแบนด์วิธ</field>
+        </record>
+        
+        <record id="product_router_enterprise_large" model="product.product">
+            <field name="name">เราเตอร์องค์กรขนาดใหญ่</field>
+            <field name="default_code">72100402-002</field>
+            <field name="categ_id" ref="product_category_router_72100402"/>
+            <field name="list_price">35800</field>
+            <field name="standard_price">32220</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Multi-WAN (4x WAN), 8x Gigabit LAN, Advanced VPN, Load Balancing, UTM Functions, Centralized Management</field>
+            <field name="description_sale">เราเตอร์ระดับองค์กรพร้อมฟีเจอร์ความปลอดภัยขั้นสูงและการจัดการแบบรวมศูนย์</field>
+        </record>
+        
+        <!-- Network Equipment: 72100403 จุดเชื่อมต่อไร้สาย -->
+        <record id="product_access_point_wifi6_ceiling" model="product.product">
+            <field name="name">จุดเชื่อมต่อไร้สาย Wi-Fi 6 แบบติดเพดาน</field>
+            <field name="default_code">72100403-001</field>
+            <field name="categ_id" ref="product_category_access_point_72100403"/>
+            <field name="list_price">12500</field>
+            <field name="standard_price">11250</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Wi-Fi 6 (802.11ax), Dual Band (2.4GHz + 5GHz), 1.8Gbps Throughput, PoE+, Centralized Management</field>
+            <field name="description_sale">จุดเชื่อมต่อไร้สาย Wi-Fi 6 สำหรับสำนักงานขนาดกลาง รองรับผู้ใช้จำนวนมาก</field>
+        </record>
+        
+        <record id="product_access_point_wifi6e_high_density" model="product.product">
+            <field name="name">จุดเชื่อมต่อไร้สาย Wi-Fi 6E แบบ High Density</field>
+            <field name="default_code">72100403-002</field>
+            <field name="categ_id" ref="product_category_access_point_72100403"/>
+            <field name="list_price">22800</field>
+            <field name="standard_price">20520</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Wi-Fi 6E (802.11ax), Tri Band (2.4GHz + 5GHz + 6GHz), 4.8Gbps Throughput, PoE++, AI-Driven Optimization</field>
+            <field name="description_sale">จุดเชื่อมต่อไร้สายประสิทธิภาพสูงสำหรับพื้นที่ความหนาแน่นสูง เช่น หอประชุม</field>
+        </record>
+        
+        <!-- Network Equipment: 72100404 อุปกรณ์ไฟร์วอลล์ -->
+        <record id="product_firewall_enterprise_medium" model="product.product">
+            <field name="name">ไฟร์วอลล์องค์กรขนาดกลาง</field>
+            <field name="default_code">72100404-001</field>
+            <field name="categ_id" ref="product_category_firewall_72100404"/>
+            <field name="list_price">45500</field>
+            <field name="standard_price">40950</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">1.5Gbps Firewall Throughput, UTM Functions, VPN Support (250 Tunnels), Web Filtering, Anti-Malware</field>
+            <field name="description_sale">ไฟร์วอลล์องค์กรพร้อมฟีเจอร์ UTM ครบครัน เหมาะสำหรับองค์กร 200-500 ผู้ใช้</field>
+        </record>
+        
+        <record id="product_firewall_enterprise_large" model="product.product">
+            <field name="name">ไฟร์วอลล์องค์กรขนาดใหญ่</field>
+            <field name="default_code">72100404-002</field>
+            <field name="categ_id" ref="product_category_firewall_72100404"/>
+            <field name="list_price">125000</field>
+            <field name="standard_price">112500</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">5Gbps Firewall Throughput, Next-Gen Firewall, Advanced Threat Protection, SSL Inspection, Centralized Management</field>
+            <field name="description_sale">ไฟร์วอลล์รุ่นใหม่พร้อมการป้องกันภัยคุกคามขั้นสูง เหมาะสำหรับองค์กรขนาดใหญ่</field>
+        </record>
+        
+        <!-- Printers and Scanners: 72100501 เครื่องพิมพ์อิงค์เจ็ท -->
+        <record id="product_printer_inkjet_color_a4" model="product.product">
+            <field name="name">เครื่องพิมพ์อิงค์เจ็ทสี A4 สำหรับสำนักงาน</field>
+            <field name="default_code">72100501-001</field>
+            <field name="categ_id" ref="product_category_printer_inkjet_72100501"/>
+            <field name="list_price">8500</field>
+            <field name="standard_price">7650</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Color Inkjet, A4 Size, 20 ppm (Black), 16 ppm (Color), USB/Ethernet/Wi-Fi, Duplex Printing</field>
+            <field name="description_sale">เครื่องพิมพ์อิงค์เจ็ทสีสำหรับงานสำนักงานทั่วไป ประหยัดค่าใช้จ่าย</field>
+        </record>
+        
+        <record id="product_printer_inkjet_a3_special" model="product.product">
+            <field name="name">เครื่องพิมพ์อิงค์เจ็ท A3 รุ่นพิเศษ</field>
+            <field name="default_code">72100501-002</field>
+            <field name="categ_id" ref="product_category_printer_inkjet_72100501"/>
+            <field name="list_price">18900</field>
+            <field name="standard_price">17010</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Color Inkjet, A3 Size, 32 ppm (Black), 20 ppm (Color), Network Ready, High Capacity Ink Tank</field>
+            <field name="description_sale">เครื่องพิมพ์อิงค์เจ็ท A3 พร้อมถังหมึกขนาดใหญ่ เหมาะสำหรับงานออกแบบและแผนที่</field>
+        </record>
+        
+        <!-- Printers and Scanners: 72100502 เครื่องพิมพ์เลเซอร์ -->
+        <record id="product_printer_laser_mono_a4" model="product.product">
+            <field name="name">เครื่องพิมพ์เลเซอร์ขาวดำ A4</field>
+            <field name="default_code">72100502-001</field>
+            <field name="categ_id" ref="product_category_printer_laser_72100502"/>
+            <field name="list_price">12800</field>
+            <field name="standard_price">11520</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Monochrome Laser, A4 Size, 38 ppm, 1200x1200 dpi, USB/Ethernet, Duplex, 250-sheet Tray</field>
+            <field name="description_sale">เครื่องพิมพ์เลเซอร์ขาวดำความเร็วสูง เหมาะสำหรับงานเอกสารจำนวนมาก</field>
+        </record>
+        
+        <record id="product_printer_laser_color_a4_business" model="product.product">
+            <field name="name">เครื่องพิมพ์เลเซอร์สี A4 รุ่นธุรกิจ</field>
+            <field name="default_code">72100502-002</field>
+            <field name="categ_id" ref="product_category_printer_laser_72100502"/>
+            <field name="list_price">25500</field>
+            <field name="standard_price">22950</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Color Laser, A4 Size, 33 ppm (Black/Color), 2400x600 dpi, Network Ready, Duplex, Mobile Printing</field>
+            <field name="description_sale">เครื่องพิมพ์เลเซอร์สีสำหรับสำนักงาน คุณภาพสูง พิมพ์ผ่านมือถือได้</field>
+        </record>
+        
+        <!-- Printers and Scanners: 72100503 เครื่องสแกนเนอร์ -->
+        <record id="product_scanner_flatbed_a4" model="product.product">
+            <field name="name">เครื่องสแกนเนอร์เอกสาร A4 แบบแผ่นเรียบ</field>
+            <field name="default_code">72100503-001</field>
+            <field name="categ_id" ref="product_category_scanner_72100503"/>
+            <field name="list_price">6500</field>
+            <field name="standard_price">5850</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Flatbed Scanner, A4 Size, 1200x2400 dpi, USB 3.0, OCR Software, Document Management Software</field>
+            <field name="description_sale">เครื่องสแกนเนอร์แบบแผ่นเรียบ เหมาะสำหรับสแกนเอกสารและรูปภาพคุณภาพสูง</field>
+        </record>
+        
+        <record id="product_scanner_document_a3_adf" model="product.product">
+            <field name="name">เครื่องสแกนเนอร์เอกสาร A3 แบบป้อนอัตโนมัติ</field>
+            <field name="default_code">72100503-002</field>
+            <field name="categ_id" ref="product_category_scanner_72100503"/>
+            <field name="list_price">28500</field>
+            <field name="standard_price">25650</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Document Scanner, A3 Size, 600 dpi, 60 ppm Duplex, 100-sheet ADF, Network Scanning, OCR</field>
+            <field name="description_sale">เครื่องสแกนเนอร์ความเร็วสูงสำหรับงานเอกสารจำนวนมาก พร้อมป้อนกระดาษอัตโนมัติ</field>
+        </record>
+        
+        <!-- Printers and Scanners: 72100504 เครื่องพิมพ์อเนกประสงค์ -->
+        <record id="product_multifunction_laser_mono_a4" model="product.product">
+            <field name="name">เครื่องพิมพ์อเนกประสงค์เลเซอร์ขาวดำ A4</field>
+            <field name="default_code">72100504-001</field>
+            <field name="categ_id" ref="product_category_multifunction_72100504"/>
+            <field name="list_price">18800</field>
+            <field name="standard_price">16920</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Monochrome Laser MFP, Print/Copy/Scan/Fax, A4 Size, 40 ppm, Network, Duplex, 35-sheet ADF</field>
+            <field name="description_sale">เครื่องพิมพ์อเนกประสงค์เลเซอร์ ครบครันทุกฟีเจอร์ เหมาะสำหรับสำนักงานขนาดกลาง</field>
+        </record>
+        
+        <record id="product_multifunction_laser_color_a4" model="product.product">
+            <field name="name">เครื่องพิมพ์อเนกประสงค์เลเซอร์สี A4</field>
+            <field name="default_code">72100504-002</field>
+            <field name="categ_id" ref="product_category_multifunction_72100504"/>
+            <field name="list_price">38500</field>
+            <field name="standard_price">34650</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Color Laser MFP, Print/Copy/Scan/Fax, A4 Size, 30 ppm, Touchscreen, Network, Mobile Printing, Cloud Connect</field>
+            <field name="description_sale">เครื่องพิมพ์อเนกประสงค์เลเซอร์สี พร้อมจอสัมผัสและการเชื่อมต่อ Cloud</field>
+        </record>
+        
+        <!-- Accessories: 72100601 จอมอนิเตอร์ -->
+        <record id="product_monitor_24_fhd_led" model="product.product">
+            <field name="name">จอมอนิเตอร์ LED 24 นิ้ว Full HD</field>
+            <field name="default_code">72100601-001</field>
+            <field name="categ_id" ref="product_category_monitor_72100601"/>
+            <field name="list_price">4800</field>
+            <field name="standard_price">4320</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">24" IPS LED Monitor, 1920x1080 Full HD, 75Hz, HDMI/VGA, VESA Mount, Eye Care Technology</field>
+            <field name="description_sale">จอมอนิเตอร์ 24 นิ้วสำหรับงานสำนักงานทั่วไป คุณภาพภาพชัดเจน ลดความเมื่อยล้าของตา</field>
+        </record>
+        
+        <record id="product_monitor_27_4k_design" model="product.product">
+            <field name="name">จอมอนิเตอร์ LED 27 นิ้ว 4K สำหรับงานออกแบบ</field>
+            <field name="default_code">72100601-002</field>
+            <field name="categ_id" ref="product_category_monitor_72100601"/>
+            <field name="list_price">18500</field>
+            <field name="standard_price">16650</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">27" IPS 4K Monitor, 3840x2160, 99% sRGB Color Gamut, USB-C/HDMI/DisplayPort, Height Adjustable</field>
+            <field name="description_sale">จอมอนิเตอร์ 4K 27 นิ้วสำหรับงานออกแบบและกราฟิก แสดงสีแม่นยำระดับมืออาชีพ</field>
+        </record>
+        
+        <!-- Accessories: 72100602 คีย์บอร์ดและเมาส์ -->
+        <record id="product_keyboard_mouse_wireless_set" model="product.product">
+            <field name="name">ชุดคีย์บอร์ดและเมาส์แบบไร้สาย</field>
+            <field name="default_code">72100602-001</field>
+            <field name="categ_id" ref="product_category_keyboard_mouse_72100602"/>
+            <field name="list_price">1250</field>
+            <field name="standard_price">1125</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Wireless Keyboard &amp; Mouse Set, 2.4GHz, Ergonomic Design, Long Battery Life, Thai-English Layout</field>
+            <field name="description_sale">ชุดคีย์บอร์ดและเมาส์ไร้สายสำหรับงานสำนักงาน ออกแบบตามหลักสรีรศาสตร์</field>
+        </record>
+        
+        <record id="product_keyboard_mouse_business_set" model="product.product">
+            <field name="name">ชุดคีย์บอร์ดและเมาส์เกรดธุรกิจ</field>
+            <field name="default_code">72100602-002</field>
+            <field name="categ_id" ref="product_category_keyboard_mouse_72100602"/>
+            <field name="list_price">2800</field>
+            <field name="standard_price">2520</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">Business Keyboard &amp; Mouse Set, USB/Wireless Dual Mode, Spill-resistant, Multi-device Connection</field>
+            <field name="description_sale">ชุดคีย์บอร์ดและเมาส์เกรดธุรกิจ กันน้ำกันฝุ่น เชื่อมต่อได้หลายอุปกรณ์</field>
+        </record>
+        
+        <!-- Accessories: 72100603 เครื่องสำรองไฟ -->
+        <record id="product_ups_1000va_line_interactive" model="product.product">
+            <field name="name">เครื่องสำรองไฟ 1000VA แบบ Line Interactive</field>
+            <field name="default_code">72100603-001</field>
+            <field name="categ_id" ref="product_category_ups_72100603"/>
+            <field name="list_price">3800</field>
+            <field name="standard_price">3420</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">1000VA/600W, Line Interactive, 6 Outlets, USB Monitoring, AVR, Surge Protection, 3-year Warranty</field>
+            <field name="description_sale">เครื่องสำรองไฟสำหรับเครื่องคอมพิวเตอร์ตั้งโต๊ะ ป้องกันไฟดับและไฟกระชาก</field>
+        </record>
+        
+        <record id="product_ups_2000va_online_double" model="product.product">
+            <field name="name">เครื่องสำรองไฟ 2000VA แบบ Online Double Conversion</field>
+            <field name="default_code">72100603-002</field>
+            <field name="categ_id" ref="product_category_ups_72100603"/>
+            <field name="list_price">18500</field>
+            <field name="standard_price">16650</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">2000VA/1800W, Online Double Conversion, 8 Outlets, LCD Display, Network Management, Hot-swappable Battery</field>
+            <field name="description_sale">เครื่องสำรองไฟระดับเซิร์ฟเวอร์ ให้กระแสไฟเสถียรต่อเนื่อง พร้อมระบบจัดการผ่านเครือข่าย</field>
+        </record>
+        
+        <!-- Accessories: 72100604 อุปกรณ์จัดเก็บข้อมูลภายนอก -->
+        <record id="product_external_hdd_1tb_usb3" model="product.product">
+            <field name="name">ฮาร์ดไดรฟ์พกพา USB 3.0 ความจุ 1TB</field>
+            <field name="default_code">72100604-001</field>
+            <field name="categ_id" ref="product_category_external_storage_72100604"/>
+            <field name="list_price">2200</field>
+            <field name="standard_price">1980</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">1TB Portable Hard Drive, USB 3.0, 2.5", Shock-resistant, Hardware Encryption, Backup Software</field>
+            <field name="description_sale">ฮาร์ดไดรฟ์พกพาสำหรับสำรองข้อมูล ทนทานต่อการกระแทก พร้อมซอฟต์แวร์สำรองข้อมูล</field>
+        </record>
+        
+        <record id="product_portable_ssd_500gb_usbc" model="product.product">
+            <field name="name">SSD พกพา USB-C ความจุ 500GB</field>
+            <field name="default_code">72100604-002</field>
+            <field name="categ_id" ref="product_category_external_storage_72100604"/>
+            <field name="list_price">4800</field>
+            <field name="standard_price">4320</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">500GB Portable SSD, USB-C 3.2, Read 1000MB/s, Write 900MB/s, Hardware Encryption, Cross-platform</field>
+            <field name="description_sale">SSD พกพาความเร็วสูง เหมาะสำหรับถ่ายโอนไฟล์ขนาดใหญ่และงานที่ต้องการความเร็ว</field>
+        </record>
+        
+        <record id="product_nas_2bay_small_office" model="product.product">
+            <field name="name">NAS 2-Bay สำหรับสำนักงานขนาดเล็ก</field>
+            <field name="default_code">72100604-003</field>
+            <field name="categ_id" ref="product_category_external_storage_72100604"/>
+            <field name="list_price">8500</field>
+            <field name="standard_price">7650</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="type">product</field>
+            <field name="description">2-Bay NAS, ARM Quad-core CPU, 1GB RAM, Gigabit Ethernet, RAID 0/1, Cloud Sync, Mobile Apps</field>
+            <field name="description_sale">เครื่อง NAS 2 ช่องสำหรับจัดเก็บข้อมูลแบบรวมศูนย์ รองรับการเข้าถึงผ่านอินเทอร์เน็ต</field>
+        </record>
+    </data>
+</odoo>
