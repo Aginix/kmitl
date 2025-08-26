@@ -5,12 +5,12 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    'depends': ['procurement_plan', 'procurement_plan_analytic', 'budget', 'web'],
+    'depends': ['budget', 'budget_appropriation', 'procurement_plan', 'procurement_plan_analytic', 'web'],
     "data": [
+        "data/budget_account_procurement_update.xml",
         "views/budget_appropriation_views.xml",
         "views/procurement_plan_views.xml",
         "views/budget_account_views.xml",
-        "data/budget_account_procurement_update.xml",
         "views/procurement_plan_menu.xml"
     ],
     'application': False,
