@@ -16,6 +16,9 @@
                     <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" />
                 </group>
             </xpath>
+            <xpath expr="//header" position="attributes">
+                <attribute name="invisible">context.get('hide_header', False)</attribute>
+            </xpath>
         </field>
     </record>
 
@@ -32,6 +35,9 @@
                 <field name="source_analytic_id" optional="show" />
                 <field name="department_analytic_id" optional="show" />
                 <field name="fund_analytic_id" optional="hide" />
+            </xpath>
+            <xpath expr="//tree" position="attributes">
+                <attribute name="create">false</attribute>
             </xpath>
         </field>
     </record>
