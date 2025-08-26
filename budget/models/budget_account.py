@@ -36,6 +36,7 @@ class BudgetAccount(models.Model):
     _description = "Budget Account"
     _parent_store = True
     _order = "sequence, code"
+    _rec_names_search = ["name", "code"]
 
     _inherit = ["mail.thread"]
 
@@ -151,25 +152,6 @@ class BudgetAccount(models.Model):
     def _check_parent_id(self):
         if not self._check_recursion():
             raise ValidationError(_("You cannot create recursive budget account."))
-
-    @api.model
-    def name_search(self, name="", args=None, operator="ilike", limit=100):
-        if args is None:
-            args = []
-        domain = ["|", ("code", operator, name), ("name", operator, name)]
-        return self.search(domain + args, limit=limit).name_get()
-
-    @api.model
-    def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None):
-        if domain is None:
-            domain = []
-        if not fields:
-            fields = []
-        if "code" not in fields:
-            fields.append("code")
-        if "name" not in fields:
-            fields.append("name")
-        return super().search_read(domain, fields, offset, limit, order)
 
     def name_get(self):
         res = []
