@@ -45,7 +45,6 @@ class BudgetAppropriationLine(models.Model):
         "account_id.procurement_plan",
     )
     def _compute_unallocated_balance(self):
-        super()._compute_unallocated_balance()
         for rec in self:
             if rec.procurement_plan:
                 total_price = sum(rec.procurement_plan_ids.mapped("total_price"))
@@ -53,7 +52,6 @@ class BudgetAppropriationLine(models.Model):
 
     @api.depends("account_id.procurement_plan")
     def _compute_hide_unallocated_balance(self):
-        super()._compute_hide_unallocated_balance()
         for line in self:
             if line.account_id.procurement_plan:
                 line.hide_unallocated_balance = False
