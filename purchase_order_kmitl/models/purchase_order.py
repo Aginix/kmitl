@@ -100,5 +100,5 @@ class PurchaseOrder(models.Model):
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get('name', 'New') == 'New':
-                vals['name'] = self.env['ir.sequence'].next_by_code('purchase.order.custom') or _('New')
+                vals['name'] = self.env['ir.sequence'].next_by_code('purchase.order.kmitl') or _('New')
         return super().create(vals_list)

@@ -1,7 +1,7 @@
 <data noupdate="1">
-    <record id="seq_purchase_order_custom" model="ir.sequence">
-        <field name="name">Purchase Order Custom</field>
-        <field name="code">purchase.order.custom</field>
+    <record id="seq_purchase_order_kmitl" model="ir.sequence">
+        <field name="name">Purchase Order KMITL</field>
+        <field name="code">purchase.order.kmitl</field>
         <field name="prefix">PO/68/</field>
         <field name="prefix">PO/%(y_be)s/</field>
         <field name="padding">4</field>

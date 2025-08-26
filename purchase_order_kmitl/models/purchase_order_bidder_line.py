@@ -6,7 +6,7 @@ class PurchaseOrderBidderLine(models.Model):
     _name = 'purchase.order.bidder.line'
     _description = 'PurchaseOrderBidderLine'
 
-    name = fields.Char('Name')
+    name = fields.Char(related='bidder_id.name', string='Bidder Name', readonly=True)
     order_id = fields.Many2one('purchase.order', string='Purchase Order', ondelete='cascade')
     bidder_id = fields.Many2one(
         'res.partner',
