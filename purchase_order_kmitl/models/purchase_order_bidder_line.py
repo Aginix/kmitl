@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
-import logging
-
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
+from odoo import _, api, fields, models
 
 
 class PurchaseOrderBidderLine(models.Model):
@@ -12,12 +7,11 @@ class PurchaseOrderBidderLine(models.Model):
     _description = 'PurchaseOrderBidderLine'
 
     name = fields.Char('Name')
-
     order_id = fields.Many2one('purchase.order', string='Purchase Order', ondelete='cascade')
     bidder_id = fields.Many2one(
-    'res.partner',
-    string='Bidder',
-    required=True,
-    domain="[('supplier_rank', '>', 0)]"
-)
+        'res.partner',
+        string='Bidder',
+        required=True,
+        domain="[('supplier_rank', '>', 0)]"
+    )
     price_offer = fields.Float(string='Offer price', required=True)
