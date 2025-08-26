@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <!-- View purchase.order.attachment View Tree -->
     <record id="view_purchase_order_attachment_tree" model="ir.ui.view">
         <field name="name">view.purchase.order.attachment.tree</field>
         <field name="model">purchase.order.attachment</field>
@@ -13,7 +11,6 @@
         </field>
     </record>
 
-    <!-- View purchase.order.attachment form -->
     <record id="view_purchase_order_attachment_form" model="ir.ui.view">
         <field name="name">view.purchase.order.attachment.form</field>
         <field name="model">purchase.order.attachment</field>
@@ -33,7 +30,6 @@
         </field>
     </record>
 
-    <!-- Action purchase.order.attachment -->
     <record id="action_purchase_order_attachment" model="ir.actions.act_window">
         <field name="name">Purchase Order Attachment</field>
         <field name="type">ir.actions.act_window</field>
@@ -47,5 +43,4 @@
             </p>
         </field>
     </record>
-
 </odoo>

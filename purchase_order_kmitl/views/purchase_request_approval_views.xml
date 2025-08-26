@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <odoo>
-
-    <!-- View purchase.request.approval form -->
+<odoo>
     <record id="view_purchase_request_approval_form" model="ir.ui.view">
         <field name="name">view.purchase.request.approval.form</field>
         <field name="model">purchase.request.approval</field>
         <field name="inherit_id" ref="purchase_request_approval.view_purchase_request_approval"/>
         <field name="arch" type="xml">
             <xpath expr="//button[@name='button_approve']" position='after'>
-              <button name="make_purchase_order" string="สร้าง PO" type="object" class="btn-primary" states="approved" />
+                <button name="make_purchase_order" string="สร้าง PO" type="object" class="btn-primary" states="approved" />
             </xpath>
         </field>
     </record>
-
-  </odoo>
+</odoo>

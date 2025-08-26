@@ -1,40 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <odoo>
-  
-    <!-- View purchase.invoice.plan tree -->
+<odoo>
     <record id="view_purchase_invoice_plan_tree" model="ir.ui.view">
         <field name="name">view.purchase.invoice.plan.tree</field>
         <field name="model">purchase.invoice.plan</field>
         <field name="inherit_id" ref="purchase_invoice_plan.view_purchase_invoice_plan_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='installment']" position="attributes">
-              <attribute name="string">งวดที่</attribute>
+                <attribute name="string">งวดที่</attribute>
             </xpath>
 
             <xpath expr="//field[@name='plan_date']" position="attributes">
-              <attribute name="string">วันที่ครบกำหนด</attribute>
+                <attribute name="string">วันที่ครบกำหนด</attribute>
             </xpath>
 
             <xpath expr="//field[@name='invoice_type']" position="attributes">
-              <attribute name="invisible">1</attribute>
+                <attribute name="invisible">1</attribute>
             </xpath>
 
             <xpath expr="//field[@name='percent']" position="attributes">
-              <attribute name="string">ร้อยละ</attribute>
+                <attribute name="string">ร้อยละ</attribute>
             </xpath>
 
             <xpath expr="//field[@name='amount']" position="attributes">
-              <attribute name="string">จำนวนเงิน</attribute>
+                <attribute name="string">จำนวนเงิน</attribute>
             </xpath>
 
             <xpath expr="//field[@name='to_invoice']" position="attributes">
-              <attribute name="invisible">1</attribute>
+                <attribute name="invisible">1</attribute>
             </xpath>
 
             <xpath expr="//field[@name='invoiced']" position="attributes">
-              <attribute name="invisible">1</attribute>
+                <attribute name="invisible">1</attribute>
             </xpath>
         </field>
     </record>
-
-  </odoo>
+</odoo>
