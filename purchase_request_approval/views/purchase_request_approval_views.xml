@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_purchase_request_approval_tree" model="ir.ui.view">
+        <field name="name">view.purchase.request.approval.tree</field>
+        <field name="model">purchase.request.approval</field>
+        <field name="arch" type="xml">
+            <tree create='0' decoration-success="state == 'approved'" decoration-info="state in ('submitted')" decoration-warning="state == 'draft'" decoration-danger="state in ('rejected', 'cancelled')">
+                <field name="name" />
+                <field name="request_id"/>
+                <field name="vendor" />
+                <field name="payment_type" />
+                <field name="amount_total" />
+                <field name="state" widget="badge" decoration-success="state == 'approved'" decoration-info="state in ('submitted')" decoration-warning="state == 'draft'" decoration-danger="state in ('rejected', 'cancelled')" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_approval" model="ir.ui.view">
+        <field name="name">view.purchase.request.approval</field>
+        <field name="model">purchase.request.approval</field>
+        <field name="arch" type="xml">
+            <form string="Purchase Request Approval">
+                <header>
+                    <field name="is_egp" invisible="1" />
+                    <button name="button_approve" string="Approve" type="object" class="btn-primary" attrs="{'invisible': ['|' , ('is_egp', '=', True) , ('state', 'not in', ['submitted'])]}" groups="purchase_request.group_purchase_request_manager" />
+                    <button name="button_approve" string="Submit EGP" type="object" class="btn-primary" attrs="{'invisible': ['|' , ('is_egp', '=', False) , ('state', 'not in', ['submitted'])]}" />
+                    <button name="button_submit" string="Submit" type="object" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['draft'])]}" />
+                    <button name="button_reject" string="Reject" type="object" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['approved'])]}" />
+                    <button name="button_cancel" type="object" string="Cancel" class="btn-secondary" attrs="{'invisible': [('state', 'in', ['draft', 'cancel', 'rejected', 'approved'])]}" />
+                    <button name="button_draft" type="object" string="Reset" class="btn-secondary" attrs="{'invisible': [('state', 'in', ['draft'])]}" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved,cancelled,rejected"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Name..." readonly="1" />
+                        </h1>
+                    </div>
+                    <field name="is_editable" invisible="1" />
+                    <group>
+                        <group>
+                            <field name="vendor" required="1" attrs="{'readonly': [('is_editable','=', False)]}" />
+                             <field name="purchase_request_name" required="1" attrs="{'readonly': [('is_editable','=', False)]}" />
+                            <field name="start_date" widget="remaining_days"  attrs="{'readonly': [('is_editable','=', False)]}" />
+                            <field name="end_date" widget="remaining_days" attrs="{'readonly': [('is_editable','=', False)]}" />
+                        </group>
+                        <group>
+                            <field name="contract_type" readonly="1" />
+                            <field name="requested_by" invisible='1'/>
+                            <field name="payment_type" readonly="1" />
+                            <field name="department_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <label for="request_id"/>
+                    <h2>
+                        <field name="request_id" options="{'no_create': True}" />
+                    </h2>
+                    <label for="estimated_cost"/>
+                    <h2>
+                        <field name="estimated_cost"/>
+                    </h2>
+                    <notebook>
+                        <page string="Product Lines">
+                            <field name="line_ids" attrs="{'readonly': [('is_editable','=', False)]}">
+                                <tree editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="description"/>
+                                    <field name="quantity"/>
+                                    <field name="uom" />
+                                    <field name="unit_price"/>
+                                    <field name="taxes"/>
+                                    <field name="subtotal"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                    <group class="oe_subtotal_footer oe_right">
+                        <field name="amount_untaxed" readonly="1"/>
+                        <field name="amount_tax" readonly="1"/>
+                        <field name="amount_total" readonly="1"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_purchase_request_approval" model="ir.actions.act_window">
+        <field name="name">Purchase Request Approval</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.request.approval</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Purchase Request Approval.
+            </p>
+        </field>
+    </record>
+    <menuitem id="menu_purchase_request_approval" name="Purchase Requests Approval" parent="purchase_request.parent_menu_purchase_request" />
+    <menuitem id="menu_purchase_request_approval_config" name="Configuration" parent="purchase_request.parent_menu_purchase_request" />
+    <menuitem id="menu_purchase_request_approval_root" name="Purchase Request Approval" parent="purchase_request_approval.menu_purchase_request_approval" action="action_purchase_request_approval" sequence="20"/>
+    <menuitem id="menu_purchase_request_approval_root_purchase" name="Purchase Request Approval" parent="purchase.menu_procurement_management" action="action_purchase_request_approval" sequence="20"/>
+</odoo>

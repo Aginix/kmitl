@@ -13,7 +13,6 @@
         "l10n_th_base_sequence",
     ],
     "data": [
-        "data/budget_execution_report_interactive_action.xml",
         "data/budget_journal.xml",
         "data/budget_move_data.xml",
         "data/budget.account.csv",
@@ -32,12 +31,7 @@
         "views/budget_transfer_views.xml",
         "views/budget_menus.xml",
         "views/res_config_settings_views.xml",
-        "views/budget_report_views.xml",
-        "views/budget_execution_status_report_views.xml",
-        "views/budget_execution_report_interactive_views.xml",
         "views/budget_appropriation_overview_views.xml",
-        "report/budget_appropriation_report_templates.xml",
-        "report/budget_execution_status_report_templates.xml",
     ],
     "assets": {
         "web.assets_backend": ["budget/static/src/**/*"],

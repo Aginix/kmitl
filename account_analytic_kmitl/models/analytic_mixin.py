@@ -44,7 +44,7 @@ class AnalyticDistributionMixin(models.AbstractModel):
         domain=[("root_plan_id.code", "=", "sources")],
     )
 
-    @api.depends("activity_analytic_id", "fund_analytic_id", "department_analytic_id", "source_analytic_id")
+    @api.depends(lambda self: self._analytic_fields())
     def _compute_analytic_distribution(self):
         for record in self:
             distribution = {}
@@ -60,7 +60,7 @@ class AnalyticDistributionMixin(models.AbstractModel):
     def _analytic_fields(self):
         return ["department_analytic_id", "activity_analytic_id", "fund_analytic_id", "source_analytic_id"]
 
-    @api.onchange("activity_analytic_id", "fund_analytic_id", "department_analytic_id", "source_analytic_id")
+    @api.onchange(lambda self: self._analytic_fields())
     def _onchange_analytic_fields(self):
         """Update analytic distribution when individual fields change"""
         if self.activity_analytic_id or self.fund_analytic_id or self.department_analytic_id or self.source_analytic_id:

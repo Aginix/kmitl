@@ -42,11 +42,12 @@ class BudgetCommitment(models.Model):
         • Color-coded visual feedback in the user interface
 
     State Lifecycle:
-        draft → reserved → done
-        │       │         │
-        │       │         └── Fully processed, budget released or consumed
-        │       └──────────── Budget reserved, prevents over-commitment
-        └─────────────────── Editable, no budget impact
+        draft → reserved → obligated → done
+        │       │         │           │
+        │       │         │           └── Fully processed, budget released or consumed
+        │       │         └──────────── Budget obligated, firm commitment
+        │       └─────────────────────── Budget reserved, prevents over-commitment
+        └────────────────────────────── Editable, no budget impact
 
     Key Features:
         • Real-time budget availability checking with hierarchical matching
@@ -86,6 +87,7 @@ class BudgetCommitment(models.Model):
 
     READONLY_STATES = {
         "reserved": [("readonly", True)],
+        "obligated": [("readonly", True)],
         "done": [("readonly", True)],
         "cancel": [("readonly", True)],
     }
@@ -123,6 +125,7 @@ class BudgetCommitment(models.Model):
         selection=[
             ("draft", "Draft"),
             ("reserved", "Reserved"),
+            ("obligated", "Obligated"),
             ("done", "Done"),
             ("cancel", "Cancelled"),
         ],
@@ -384,8 +387,8 @@ class BudgetCommitment(models.Model):
                     record.company_id.id
                 )
 
-                # If commitment is already reserved, add back its own amount to available
-                if record.state == 'reserved' and record.amount:
+                # If commitment is already reserved or obligated, add back its own amount to available
+                if record.state in ['reserved', 'obligated'] and record.amount:
                     available += record.amount
 
                 record.available_budget_amount = available
@@ -565,11 +568,18 @@ class BudgetCommitment(models.Model):
 
             record.state = 'reserved'
 
+    def action_obligate(self):
+        """Obligate budget for this commitment - mark as firm commitment"""
+        for record in self:
+            if record.state != 'reserved':
+                raise UserError(_('Only reserved commitments can be obligated.'))
+            record.state = 'obligated'
+
     def action_done(self):
         """Mark commitment as done - closes the commitment and releases any remaining budget"""
         for record in self:
-            if record.state not in ['reserved']:
-                raise UserError(_('Only reserved commitments can be marked as done.'))
+            if record.state not in ['obligated']:
+                raise UserError(_('Only obligated commitments can be marked as done.'))
             record.state = 'done'
 
     def action_cancel(self):

@@ -1,0 +1,463 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_request_kmitl
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-21 08:03+0000\n"
+"PO-Revision-Date: 2025-08-21 08:03+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Approve"
+msgstr "อนุมัติ"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__approved
+msgid "Approved"
+msgstr "อนุมัติ"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__attachment_type
+msgid "Attachment Type"
+msgstr "ประเภทไฟล์แนบ"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Committee"
+msgstr "คณะกรรมการ"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Committee Name"
+msgstr "ชื่อคณะกรรมการ"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_committee__committee_type
+msgid "Committee Type"
+msgstr "ประเภทของคณะกรรมการ"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__contract_type__contract_buy
+msgid "Contract buy"
+msgstr "สัญญาซื้อขาย"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__contract_type__contract_construction
+msgid "Contract construction"
+msgstr "สัญญาจ้างก่อสร้าง"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__contract_type
+msgid "Contract type"
+msgstr "ประเภทสัญญา"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__create_uid
+msgid "Created by"
+msgstr "สร้างโดย"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__create_date
+msgid "Created on"
+msgstr "สร้างเมื่อ"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__current_user
+msgid "Current User"
+msgstr "ผู้ใช้ปัจจุบัน"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__department_id
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Department"
+msgstr "หน่วยงาน"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__description
+msgid "Description"
+msgstr "รายละเอียด"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__payment_type__direct
+msgid "Direct paid"
+msgstr "จ่ายตรง"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__display_name
+msgid "Display Name"
+msgstr "ชื่อแสดง"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__done
+msgid "Done"
+msgstr "เสร็จสิ้น"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__draft
+msgid "Draft"
+msgstr "ฉบับร่าง"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__etc_document_ids
+msgid "ETC"
+msgstr "อื่นๆ"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Employee"
+msgstr "พนักงาน"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request_attachment__attachment_type__etc
+msgid "Etc"
+msgstr "อื่นๆ"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__procurement_committee__committee_type__evaluation
+msgid "Evaluation Committee"
+msgstr "คณะกรรมการพิจารณาผล"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__evaluation_committee_ids
+msgid "Evaluation Committees"
+msgstr "คณะกรรมการพิจารณาผล"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__file_name
+msgid "Filename"
+msgstr "ชื่อไฟล์"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__id
+msgid "ID"
+msgstr "ไอดี"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__is_current_user_requester
+msgid "Is Current User Requester"
+msgstr "เป็นผู้ใช้ที่ร้องข้อ"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__payment_type__loan
+msgid "Loan"
+msgstr "เงินยืม"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Note"
+msgstr "หมายเหตุ"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__payment_type
+msgid "Payment Type"
+msgstr "ประเภทการจ่ายเงิน"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__payment_type__prepaid
+msgid "Prepaid"
+msgstr "สำรองจ่าย"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__procurement_committee__committee_type__price_determine
+msgid "Price Determination Committee"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__price_determine_committee_ids
+msgid "Price Determine Committees"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:ir.model,name:purchase_request_kmitl.model_procurement_committee
+msgid "Procurement Committee"
+msgstr "ชื่อคณะกรรมการ"
+
+#. module: purchase_request_kmitl
+#: model:ir.model,name:purchase_request_kmitl.model_purchase_request
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__request_id
+msgid "Purchase Request"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:ir.actions.act_window,name:purchase_request_kmitl.action_purchase_request_attachment
+#: model:ir.model,name:purchase_request_kmitl.model_purchase_request_attachment
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_attachment_form
+msgid "Purchase Request Attachment"
+msgstr "เอกสารแนบคำขอซื้อ"
+
+#. module: purchase_request_kmitl
+#: model:res.groups,name:purchase_request_kmitl.group_purchase_request_user_all
+msgid "Purchase Request User : All Documents"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__contract_type__order
+msgid "Purchase/Hire Order"
+msgstr "ใบสั่งซื้อ/จ้าง"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request_attachment__attachment_type__rfq
+msgid "Quotation"
+msgstr "ใบเสนอราคา"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__rfq_attachment_ids
+msgid "RFQ"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__rejected
+msgid "Rejected"
+msgstr "ถูกยกเลิก"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Role"
+msgstr "บทบาท"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request_attachment__attachment_type__tor
+msgid "Specification (TOR)"
+msgstr "ข้อกำหนดคุณลักษณะ"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__state
+msgid "Status"
+msgstr "สถานะ"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__attachment_id
+msgid "Stored Attachment"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__tor_document_ids
+msgid "TOR"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__procurement_committee__committee_type__tor_committee
+msgid "TOR Committee"
+msgstr "คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__tor_committee_ids
+msgid "TOR Committees"
+msgstr "คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.actions.act_window,help:purchase_request_kmitl.action_purchase_request_attachment
+msgid ""
+"There is no examples click here to add new Purchase Request Attachment."
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__to_approve
+msgid "To be approved"
+msgstr "รอการอนุมัติ"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__upload_file
+msgid "Upload File"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Validate"
+msgstr "ตรวจสอบข้อมูล"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__validation
+msgid "Validated"
+msgstr "ตรวจสอบแล้ว"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__validated_by
+msgid "Validated By"
+msgstr "ตรวจสอบข้อมูลโดย"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Work Email"
+msgstr "อีเมลที่ทำงาน"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Work Phone"
+msgstr "หมายเลขที่ทำงาน"
+
+#. module: purchase_request_kmitl
+#. odoo-python
+#: code:addons/purchase_request_kmitl/models/purchase_request.py:0
+#, python-format
+msgid "You do not have the rights to validate this request."
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__description
+msgid "reason"
+msgstr "เหตุผล/ความจำเป็น"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__title
+msgid "title"
+msgstr "ชื่อเรื่อง"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__date_validated
+msgid "validate Date"
+msgstr "ตรวจสอบข้อมูลเมื่อ"
+
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.kmitl_pr_exception_committee_2
+msgid ""
+"การจัดซื้อจัดจ้าง เกิน 100,000 บาท ต้องมี "
+"ต้องมีคณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน จำนวน 3 รายชื่อ "
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.kmitl_pr_exception_committee_3
+msgid ""
+"การจัดซื้อจัดจ้าง เกิน 100,000 บาท ต้องมี ต้องมีคณะกรรมการกำหนดราคากลาง "
+"จำนวน 3 รายชื่อ "
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.kmitl_pr_exception_committee_4
+msgid ""
+"การจัดซื้อจัดจ้าง เกิน 100,000 บาท ต้องมี ต้องมีคณะกรรมการพิจารณาผล จำนวน 3 "
+"รายชื่อ "
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "ขบวนการดำเนินการ"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "ขออนุมัติโดย"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "ข้อกำหนดคุณลักษณะ (TOR)"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "คณะกรรมการกำหนดราคากลาง"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "คณะกรรมการตรวจรับพัสดุ"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "คณะกรรมการพิจารณาผล"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_attachment_tree
+msgid "คำอธิบาย"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.kmitl_pr_exception_committee_1
+msgid "ต้องมีคณะกรรมการตรวจรับพัสดุ จำนวน 3 รายชื่อ"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.pr_exception_product_1
+msgid "ต้องมีรายการสินค้าอย่างน้อย 1 อย่าง"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:exception.rule,description:purchase_request_kmitl.kmitl_pr_exception_committee_1
+#: model:exception.rule,description:purchase_request_kmitl.kmitl_pr_exception_committee_2
+#: model:exception.rule,description:purchase_request_kmitl.kmitl_pr_exception_committee_3
+#: model:exception.rule,description:purchase_request_kmitl.kmitl_pr_exception_committee_4
+#: model:exception.rule,description:purchase_request_kmitl.pr_exception_product_1
+msgid "พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "ยกเลิก"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "รีเซ็ต"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "สร้างเมื่อ"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "ส่งคำขออนุมัติ"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "หมายเลขใบ พ.1"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "อนุมัติเมื่อ"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "อนุมัติโดย"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "อื่นๆ"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "เอกสารแนบ"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "ใบเสนอราคา"
+msgstr ""
