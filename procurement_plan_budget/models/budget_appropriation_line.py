@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 
 
 class BudgetAppropriationLine(models.Model):
-    _inherit = 'budget.appropriation.line'
+    _inherit = "budget.appropriation.line"
 
     procurement_plan_ids = fields.One2many(
         comodel_name="procurement.plan",
@@ -55,3 +55,9 @@ class BudgetAppropriationLine(models.Model):
         for line in self:
             if line.account_id.procurement_plan:
                 line.hide_unallocated_balance = False
+
+    def budget_move_line_vals(self):
+        vals = super().budget_move_line_vals()
+        if self.procurement_plan:
+            vals["balance"] = self.unallocated_balance
+        return vals

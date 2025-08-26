@@ -23,3 +23,7 @@ class AnalyticDistributionMixin(models.AbstractModel):
         fields = super()._analytic_fields()
         fields.append('procurement_plan_analytic_id')
         return fields
+
+    @api.onchange("procurement_plan_analytic_id")
+    def _onchange_procurement_plan_analytic_id(self):
+        self._onchange_analytic_fields()

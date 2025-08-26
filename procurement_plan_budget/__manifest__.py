@@ -11,7 +11,8 @@
         "views/budget_appropriation_views.xml",
         "views/procurement_plan_views.xml",
         "views/budget_account_views.xml",
-        "views/procurement_plan_menu.xml"
+        "views/procurement_plan_menu.xml",
+        "views/budget_move_views.xml",
     ],
     'application': False,
     'installable': True,

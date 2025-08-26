@@ -9,11 +9,11 @@
         <field name="arch" type="xml">
             <xpath expr="//group[@name='basic']" position="after">
                 <group name="budget">
-                    <field name="activity_analytic_id" options="{'no_create': True, 'no_open': True}" />
-                    <field name="source_analytic_id" options="{'no_create': True, 'no_open': True}" />
-                    <field name="department_analytic_id" options="{'no_create': True, 'no_open': True}" />
-                    <field name="fund_analytic_id" options="{'no_create': True, 'no_open': True}" />
-                    <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" />
+                    <field name="activity_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" />
+                    <field name="source_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" />
+                    <field name="department_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" />
+                    <field name="fund_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" />
+                    <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" />
                 </group>
             </xpath>
             <xpath expr="//header" position="attributes">

@@ -21,7 +21,7 @@ class ProcurementPlan(models.Model):
 
     budget_appropriation_id = fields.Many2one('budget.appropriation', related='budget_appropriation_line_id.appropriation_id', store=True, readonly=True)
     budget_appropriation_line_id = fields.Many2one('budget.appropriation.line')
-    budget_account_id = fields.Many2one('budget.account')
+    budget_account_id = fields.Many2one('budget.account', string="รหัสงบประมาณ", states=READONLY_STATES)
     activity_analytic_id = fields.Many2one(states=READONLY_STATES)
     department_analytic_id = fields.Many2one(states=READONLY_STATES)
     fund_analytic_id = fields.Many2one(states=READONLY_STATES)

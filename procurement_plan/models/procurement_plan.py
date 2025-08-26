@@ -231,3 +231,15 @@ class ProcurementPlan(models.Model):
                 "plan_count": len(plans),
             },
         }
+
+    def action_validate(self):
+        self.write({ "state": "validate" })
+
+    def action_pending(self):
+        self.write({ "state": "pending" })
+
+    def action_procurement(self):
+        self.write({ "state": "procurement" })
+
+    def action_done(self):
+        self.write({ "state": "done" })

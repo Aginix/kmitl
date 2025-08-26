@@ -14,8 +14,9 @@
             <xpath expr="//field[@name='balance']" position="after">
                 <field name="procurement_plan_ids" attrs="{'invisible': [('procurement_plan', '=', False)]}" context="{
                         'hide_header': True,
+                        'hide_budget': True,
                         'default_date_range_fy_id': date_range_fy_id,
-                        'default_source_analytic_id':source_analytic_id,
+                        'default_source_analytic_id': source_analytic_id,
                         'default_activity_analytic_id': activity_analytic_id,
                         'default_department_analytic_id': department_analytic_id,
                         'default_fund_analytic_id': fund_analytic_id,
@@ -32,6 +33,7 @@
                         <field name="procurement_method_id" />
                     </tree>
                 </field>
+                <field name="unallocated_balance" attrs="{'invisible': [('procurement_plan', '=', False)]}" />
             </xpath>
         </field>
     </record>

@@ -78,21 +78,6 @@
                                     <field name="balance" sum="Total" required="1" />
                                     <field name="note" />
                                 </tree>
-                                <form>
-                                    <field name="analytic_distribution" invisible="1" />
-                                    <group>
-                                        <field name="appropriation_id" invisible="1" />
-                                        <field name="budget_type" invisible="1" />
-                                        <field name="department_analytic_id" options='{"no_open": True}' readonly="1" />
-                                        <field name="source_analytic_id" options='{"no_open": True}' readonly="1" />
-                                        <field name="activity_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
-                                        <field name="fund_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
-                                        <field name="account_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
-                                        <field name="balance" required="1" />
-                                        <field name="note" />
-                                    </group>
-
-                                </form>
                             </field>
                         </page>
                         <page string="Preview" name="preview" attrs="{'invisible': [('id', '=', False)]}">
@@ -154,7 +139,6 @@
                         <field name="balance" required="1" />
                         <field name="note" />
                     </group>
-
                 </sheet>
             </form>
         </field>
