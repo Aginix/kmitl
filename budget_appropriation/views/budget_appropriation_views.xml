@@ -143,18 +143,18 @@
                 <field name="analytic_distribution" widget="analytic_distribution" options="{'account_field': 'account_id', 'business_domain': 'budget'}" invisible="1" />
                 <sheet>
                     <group>
-                        <field name="appropriation_id" readonly="1" />
+                        <field name="date_range_fy_id" invisible="1" />
+                        <field name="appropriation_id" invisible="1" />
                         <field name="budget_type" invisible="1" />
+                        <field name="department_analytic_id" options='{"no_open": True}' readonly="1" />
+                        <field name="source_analytic_id" options='{"no_open": True}' readonly="1" />
+                        <field name="activity_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
+                        <field name="fund_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                         <field name="account_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
-                        <field name="balance" />
+                        <field name="balance" required="1" />
                         <field name="note" />
                     </group>
-                    <group string="Analytic Dimensions" readonly="1">
-                        <field name="department_analytic_id" />
-                        <field name="activity_analytic_id" />
-                        <field name="fund_analytic_id" />
-                        <field name="source_analytic_id" />
-                    </group>
+
                 </sheet>
             </form>
         </field>
