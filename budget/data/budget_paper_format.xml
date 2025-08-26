@@ -17,16 +17,4 @@
         <field name="dpi">90</field>
     </record>
 
-    <!-- Report Action -->
-    <record id="action_report_budget_appropriation" model="ir.actions.report">
-        <field name="name">Budget Appropriation Report</field>
-        <field name="model">budget.move</field>
-        <field name="report_type">qweb-pdf</field>
-        <field name="report_name">budget.report_budget_appropriation</field>
-        <field name="report_file">budget.report_budget_appropriation</field>
-        <field name="binding_model_id" ref="model_budget_move"/>
-        <field name="binding_type">report</field>
-        <field name="paperformat_id" ref="paperformat_budget_appropriation"/>
-        <field name="print_report_name">'Budget Appropriation - %s' % (object.name)</field>
-    </record>
 </odoo>

@@ -71,7 +71,7 @@
 
             <xpath expr="//field[@name='date_verified']" position="after">
                 <field name="validated_by" readonly="1" widget="many2one_avatar_user" />
-                <field name="date_validated" readonly="1" widget="remaining_days" />
+                <field name="date_validated" readonly="1" />
             </xpath>
 
             <xpath expr="//field[@name='date_start']" position="attributes">
@@ -83,7 +83,7 @@
             </xpath>
 
             <xpath expr="//field[@name='verified_by']" position="before">
-                <field name="date_start" readonly="1" string="สร้างเมื่อ" widget="remaining_days" />
+                <field name="date_start" readonly="1" string="สร้างเมื่อ" />
                 <field name="department_id" readonly="1" />
             </xpath>
 
@@ -143,7 +143,6 @@
 
             <xpath expr="//field[@name='date_approved']" position="attributes">
                 <attribute name="string">อนุมัติเมื่อ</attribute>
-                <attribute name="widget">remaining_days</attribute>
             </xpath>
 
             <xpath expr="//field[@name='approved_by']" position="attributes">
