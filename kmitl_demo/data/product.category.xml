@@ -10,14 +10,12 @@
         <record id="product_category_office_equipment" model="product.category">
             <field name="name">1 ครุภัณฑ์สำนักงาน</field>
             <field name="parent_id" ref="product_category_equipment"/>
-            <field name="property_account_expense_categ_id" eval="obj().env['account.account'].search([('code', '=', '5412000002')], limit=1).id or False"/>
         </record>
 
         <!-- Level 2: Computer & Telecommunications Equipment -->
         <record id="product_category_computer_telecom" model="product.category">
             <field name="name">2 ครุภัณฑ์คอมพิวเตอร์และโทรคมนาคม</field>
             <field name="parent_id" ref="product_category_equipment"/>
-            <field name="property_account_expense_categ_id" eval="obj().env['account.account'].search([('code', '=', '5412000003')], limit=1).id or False"/>
         </record>
 
         <!-- Level 3: Equipment Groups -->
