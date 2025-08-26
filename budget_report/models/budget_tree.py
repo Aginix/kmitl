@@ -39,7 +39,10 @@ class BudgetNode:
             total += record.appropriation()
         for line in self.lines:
             if line["model"] == "budget.move.line":
-                total += line["balance"]
+                # Use debit for appropriation (money received)
+                # Only count appropriation type moves
+                if line.get("move_type") == "appropriation":
+                    total += line["debit"] if line.get("debit") else 0
         return total
 
     def commitment(self):
@@ -54,7 +57,7 @@ class BudgetNode:
     def obligation(self):
         total = 0
         for record in self.children:
-            total += record.commitment()
+            total += record.obligation()  # Fix: use obligation() not commitment()
         for line in self.lines:
             if line["model"] == "budget.commitment" and line["state"] == "obligated":
                 total += line["balance"]
@@ -65,8 +68,11 @@ class BudgetNode:
         for record in self.children:
             total += record.expenditure()
         for line in self.lines:
-            if line["model"] == "budget.move.line" and line["move_type"] == "consume":
-                total += line["credit"] if line["credit"] else 0
+            if line["model"] == "budget.move.line":
+                # Use credit for consumption (money spent)
+                # Only count consume type moves
+                if line.get("move_type") == "consume":
+                    total += line["credit"] if line.get("credit") else 0
         return total
 
     def total_balance(self):
@@ -199,61 +205,141 @@ class BudgetTree:
                 return record.account_id.id
             return None
 
+        # Prepare move lines
         move_line_map = dict(
             (record.id, self._prepare_line(record, model="budget.move.line"))
             for record in self.move_lines
         )
+        
+        # Prepare commitment lines
+        commitment_line_map = dict(
+            (record.id, self._prepare_line(record, model="budget.commitment"))
+            for record in self.commitment_lines
+        )
 
-        # กรณี 1 มิติ - ใช้โค้ดเดิม
+        # กรณี 1 มิติ
         if len(dimensions) == 1:
             dim = dimensions[0]
             mapped = self._build_tree(dim)
+            
+            # Add move lines
             for move_line in self.move_lines:
                 node_id = get_dimension_id(move_line, dim)
                 if node_id and node_id in mapped:
                     mapped[node_id].add_line(move_line_map[move_line.id])
-                    del move_line_map[move_line.id]
+            
+            # Add commitment lines
+            for commitment_line in self.commitment_lines:
+                node_id = get_dimension_id(commitment_line, dim)
+                if node_id and node_id in mapped:
+                    mapped[node_id].add_line(commitment_line_map[commitment_line.id])
 
             return [n for n in mapped.values() if n.value["parent_id"] is False]
 
-        # กรณีหลายมิติ - สร้าง chain
+        # กรณีหลายมิติ
         return self._build_multi_dimension_chain(
-            dimensions, get_dimension_id, move_line_map
+            dimensions, get_dimension_id, move_line_map, commitment_line_map
         )
 
-    def _build_multi_dimension_chain(self, dimensions, get_dimension_id, move_line_map):
-        """สร้าง chain แบบ dynamic"""
-
-        # สร้าง tree แต่ละมิติแยกกัน
-        dimension_trees = {}
-        for dim in dimensions:
-            dimension_trees[dim] = self._build_tree(dim)
-
-        # เชื่อม chain ตาม order ที่กำหนด
-        for move_line in self.move_lines:
-            previous_node = None
-
-            for i, dim in enumerate(dimensions):
-                node_id = get_dimension_id(move_line, dim)
-
-                if node_id and node_id in dimension_trees[dim]:
-                    current_node = dimension_trees[dim][node_id]
-
-                    # เชื่อม chain
-                    if previous_node and current_node not in previous_node.children:
-                        previous_node.add_child(current_node)
-
-                    # เพิ่ม line ที่ node สุดท้าย
-                    if i == len(dimensions) - 1:
-                        current_node.add_line(move_line_map[move_line.id])
-                        del move_line_map[move_line.id]
-
-                    previous_node = current_node
-
-        # return root dimension
+    def _build_multi_dimension_chain(self, dimensions, get_dimension_id, move_line_map, commitment_line_map):
+        """สร้าง hierarchical tree ที่ถูกต้องสำหรับ multi-dimensions"""
+        
+        # สร้าง tree สำหรับ dimension แรก (root level)
         root_dim = dimensions[0]
-        return [
-            node
-            for node in dimension_trees[root_dim].values()
-            if node.value["parent_id"] is False
-        ]
+        root_nodes = self._build_tree(root_dim)
+        
+        # Cache สำหรับเก็บ unique node combinations
+        node_cache = {}
+        
+        # Helper function to create dimension data map
+        dimension_data = {
+            'account': self.accounts,
+            'activity': self.activities,
+            'fund': self.funds,
+            'source': self.sources,
+            'department': self.departments
+        }
+        
+        # Process move lines
+        for move_line in self.move_lines:
+            self._add_line_to_tree(
+                move_line,
+                dimensions,
+                get_dimension_id,
+                root_nodes,
+                node_cache,
+                dimension_data,
+                move_line_map[move_line.id]
+            )
+        
+        # Process commitment lines
+        for commitment_line in self.commitment_lines:
+            self._add_line_to_tree(
+                commitment_line,
+                dimensions,
+                get_dimension_id,
+                root_nodes,
+                node_cache,
+                dimension_data,
+                commitment_line_map[commitment_line.id]
+            )
+        
+        return [n for n in root_nodes.values() if n.value["parent_id"] is False]
+
+    def _add_line_to_tree(self, line, dimensions, get_dimension_id, root_nodes, 
+                          node_cache, dimension_data, line_data):
+        """Add a line to the appropriate node in the tree"""
+        
+        parent_node = None
+        path_key = ""
+        
+        for i, dim in enumerate(dimensions):
+            dim_id = get_dimension_id(line, dim)
+            if not dim_id:
+                return  # Skip if dimension ID is missing
+            
+            # Build unique path key for this node
+            path_key = f"{path_key}/{dim}:{dim_id}" if path_key else f"{dim}:{dim_id}"
+            
+            # Check if this node combination already exists
+            if path_key not in node_cache:
+                if i == 0:
+                    # First dimension - use existing root node
+                    if dim_id in root_nodes:
+                        node_cache[path_key] = root_nodes[dim_id]
+                    else:
+                        continue
+                else:
+                    # Create new node for this unique combination
+                    original_data = None
+                    for record in dimension_data[dim]:
+                        if record.id == dim_id:
+                            original_data = record
+                            break
+                    
+                    if not original_data:
+                        continue
+                    
+                    # Create new node
+                    new_node = self._prepare_node(original_data, node_type=dim)
+                    node_cache[path_key] = new_node
+                    
+                    # Add as child of parent
+                    if parent_node:
+                        # Check if this node already exists as child
+                        existing_child = None
+                        for child in parent_node.children:
+                            if child.value["id"] == new_node.value["id"] and child.node_type == dim:
+                                existing_child = child
+                                break
+                        
+                        if existing_child:
+                            node_cache[path_key] = existing_child
+                        else:
+                            parent_node.add_child(new_node)
+            
+            parent_node = node_cache.get(path_key)
+            
+            # Add line to the last dimension node
+            if i == len(dimensions) - 1 and parent_node:
+                parent_node.add_line(line_data)
