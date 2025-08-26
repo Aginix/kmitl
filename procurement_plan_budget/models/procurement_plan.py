@@ -19,6 +19,8 @@ class ProcurementPlan(models.Model):
         "cancel": [("readonly", True)],
     }
 
+    budget_appropriation_id = fields.Many2one('budget.appropriation', related='budget_appropriation_line_id.appropriation_id', store=True, readonly=True)
+    budget_appropriation_line_id = fields.Many2one('budget.appropriation.line')
     budget_account_id = fields.Many2one('budget.account')
     activity_analytic_id = fields.Many2one(states=READONLY_STATES)
     department_analytic_id = fields.Many2one(states=READONLY_STATES)
