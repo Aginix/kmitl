@@ -150,7 +150,7 @@
                                             <t
                                                 t-foreach="visibleRows"
                                                 t-as="row"
-                                                t-key="row.row_key || 'empty-' + row_index"
+                                                t-key="(row.row_key || 'empty') + '-' + row_index"
                                             >
                                                 <tr t-if="row and row.row_key" t-att-class="{'expandable-row': row.has_children}">
                                                     <th
