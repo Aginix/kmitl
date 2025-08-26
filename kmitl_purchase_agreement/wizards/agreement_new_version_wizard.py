@@ -14,7 +14,7 @@ class AgreementNewVersionWizard(models.TransientModel):
         inverse_name="wizard_id",
         string="Attachments",
     )
-    verify_datetime = fields.Date(string="Date of Verification")
+    # verify_datetime = fields.Date(string="Date of Verification")
 
     def action_confirm(self):
         self.ensure_one()
@@ -29,8 +29,8 @@ class AgreementNewVersionWizard(models.TransientModel):
                 "description": attach.description,
             })
 
-        if self.verify_datetime:
-            agreement.verify_datetime = self.verify_datetime
+        # if self.verify_datetime:
+        #     agreement.verify_datetime = self.verify_datetime
 
         agreement.create_new_version()
         return {"type": "ir.actions.act_window_close"}

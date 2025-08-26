@@ -31,6 +31,10 @@
         <field name="inherit_id" ref="agreement_legal.partner_agreement_form_view"/>
         <field name="arch" type="xml">
 
+            <xpath expr="//field[@name='stage_id']" position="attributes">
+                <attribute name="domain">[('stage_type', '=', 'agreement'), ('name', 'in', ['New','Draft','Active','Expired','Terminated','Cancelled'])]</attribute>
+            </xpath>
+
             <xpath expr="//h1" position="after">
                 <label for="purchase_order_id" string="PO Ref"/>
                 <h2>
@@ -135,22 +139,26 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
-            <xpath expr="//field[@name='code']" position="after">
+            <!-- for debug -->
+            <!-- <xpath expr="//field[@name='code']" position="after">
                 <field name="version" string='version'/>
-            </xpath>
+            </xpath> -->
 
             <xpath expr="//field[@name='expiration_notice']" position="after">
                 <field name="contract_type" invisible="1" readonly="0" />
-                <field name="verify_datetime" />
+                <!-- <field name="verify_datetime" /> -->
                 <field name="work_start_date" attrs="{'invisible': [('contract_type', '!=', 'contract_construction')]}" />
                 <field name="work_end_date" attrs="{'invisible': [('contract_type', '!=', 'contract_construction')]}" />
                 <field name="is_invoice" string="is invoice"/>
             </xpath>
 
+            <xpath expr="//field[@name='qty']" position="before">
+                <field name="product_categ_id" required="1"/>
+            </xpath>
+
             <xpath expr="//field[@name='uom_id']" position="after">
                 <field name="price_unit" />
                 <field name="price_subtotal" />
-                <field name="product_categ_id" required='True'/>
             </xpath>
 
             <xpath expr="//notebook" position="inside">
@@ -246,6 +254,22 @@
                         <field name="fee" />
                     </group>
                 </page>
+            </xpath>
+
+            <xpath expr="//field[@name='special_terms']/.." position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//div[@name='Administration']/preceding-sibling::separator[1]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//div[@name='Administration']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//p[@name='footer']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
 
         </field>

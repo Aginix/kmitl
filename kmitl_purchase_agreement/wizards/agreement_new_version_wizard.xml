@@ -15,7 +15,7 @@
                             <field name="description"/>
                         </tree>
                     </field>
-                    <field name="verify_datetime" />
+                    <!-- <field name="verify_datetime" /> -->
                 </group>
                 <footer>
                     <button name="action_confirm" type="object" string="Conform" class="oe_highlight"/>

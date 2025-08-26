@@ -11,7 +11,7 @@
                 <attribute name="string">APPROVE</attribute>
                 <attribute
                     name="attrs"
-                >{'invisible':['|', '|', ('validation_status', 'in', ('pending', 'rejected')),('state', 'in', ['draft', 'submit'])]}</attribute>
+                >{'invisible':['|', ('validation_status', 'in', ('pending', 'rejected'))]}</attribute>
             </button>
             <field name="state" position="after">
                 <field name="validation_status" invisible="1" />

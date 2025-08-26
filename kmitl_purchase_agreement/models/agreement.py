@@ -27,7 +27,7 @@ class Agreement(models.Model):
         string="Attachment",
     )
 
-    verify_datetime = fields.Date(string="Date of Verification")
+    # verify_datetime = fields.Date(string="Date of Verification")
     purchase_order_id = fields.Many2one(
         'purchase.order',
         string="PO Ref",
