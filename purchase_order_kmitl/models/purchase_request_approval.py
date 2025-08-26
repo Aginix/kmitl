@@ -6,6 +6,12 @@ from odoo.exceptions import UserError
 class PurchaseRequestApproval(models.Model):
     _inherit = 'purchase.request.approval'
 
+    order_ids = fields.One2many(
+        "purchase.order",
+        "approval_id",
+        string="Purchase Orders"
+    )
+
     def make_purchase_order(self):
         self.ensure_one()
 

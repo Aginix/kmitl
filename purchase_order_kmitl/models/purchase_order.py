@@ -5,13 +5,6 @@ from odoo import _, api, fields, models
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-    request_ids = fields.Many2many(
-        comodel_name="purchase.request",
-        relation="purchase_request_po_rel",
-        column1="purchase_order_id",
-        column2="request_id",
-        string="Purchase Requests",
-    )
     total_estimated_cost = fields.Monetary(
         string="Total Estimated Cost from Requests",
         compute="_compute_total_estimated_cost",
@@ -98,13 +91,10 @@ class PurchaseOrder(models.Model):
     )
     request_total = fields.Monetary(related='approval_id.estimated_cost', string="PR1 Total")
 
-    @api.depends("request_ids.line_ids.estimated_cost")
+    @api.depends("request_id.line_ids.estimated_cost")
     def _compute_total_estimated_cost(self):
-        for order in self:
-            total = 0.0
-            for req in order.request_ids:
-                total += sum(req.line_ids.mapped("estimated_cost"))
-            order.total_estimated_cost = total
+        for record in self.request_id:
+            self.total_estimated_cost = sum(record.line_ids.mapped("estimated_cost"))
 
     @api.model_create_multi
     def create(self, vals_list):
