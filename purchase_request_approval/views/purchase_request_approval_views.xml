@@ -5,13 +5,13 @@
         <field name="name">view.purchase.request.approval.tree</field>
         <field name="model">purchase.request.approval</field>
         <field name="arch" type="xml">
-            <tree create='0' decoration-success="state == 'approved'" decoration-info="state in ('submitted')" decoration-warning="state == 'draft'" decoration-danger="state in ('rejected', 'cancelled')">
+            <tree create='0' decoration-success="state == 'approved'" decoration-info="state in ('submitted', 'egp')" decoration-warning="state == 'draft'" decoration-danger="state in ('rejected', 'cancelled')">
                 <field name="name" />
                 <field name="request_id"/>
                 <field name="vendor" />
                 <field name="payment_type" />
                 <field name="amount_total" />
-                <field name="state" widget="badge" decoration-success="state == 'approved'" decoration-info="state in ('submitted')" decoration-warning="state == 'draft'" decoration-danger="state in ('rejected', 'cancelled')" />
+                <field name="state" widget="badge" decoration-success="state == 'approved'" decoration-info="state in ('submitted', 'egp')" decoration-warning="state == 'draft'" decoration-danger="state in ('rejected', 'cancelled')" />
             </tree>
         </field>
     </record>
@@ -24,12 +24,12 @@
                 <header>
                     <field name="is_egp" invisible="1" />
                     <button name="button_approve" string="Approve" type="object" class="btn-primary" attrs="{'invisible': ['|' , ('is_egp', '=', True) , ('state', 'not in', ['submitted'])]}" groups="purchase_request.group_purchase_request_manager" />
-                    <button name="button_approve" string="Submit EGP" type="object" class="btn-primary" attrs="{'invisible': ['|' , ('is_egp', '=', False) , ('state', 'not in', ['submitted'])]}" />
+                    <button name="button_approve" string="Submit EGP" type="object" class="btn-primary" attrs="{'invisible': ['|' , ('is_egp', '=', False) , ('state', 'not in', ['egp'])]}" />
                     <button name="button_submit" string="Submit" type="object" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['draft'])]}" />
                     <button name="button_reject" string="Reject" type="object" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['approved'])]}" />
                     <button name="button_cancel" type="object" string="Cancel" class="btn-secondary" attrs="{'invisible': [('state', 'in', ['draft', 'cancel', 'rejected', 'approved'])]}" />
                     <button name="button_draft" type="object" string="Reset" class="btn-secondary" attrs="{'invisible': [('state', 'in', ['draft'])]}" />
-                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved,cancelled,rejected"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,egp,approved,cancelled,rejected"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -41,9 +41,15 @@
                     <field name="is_editable" invisible="1" />
                     <group>
                         <group>
-                            <field name="vendor" required="1" attrs="{'readonly': [('is_editable','=', False)]}" />
-                             <field name="purchase_request_name" required="1" attrs="{'readonly': [('is_editable','=', False)]}" />
-                            <field name="start_date" widget="remaining_days"  attrs="{'readonly': [('is_editable','=', False)]}" />
+                            <field name="vendor" attrs="{
+                                    'readonly': [('is_editable','=', False)],
+                                    'required': [('is_required_egp','=', True)]
+                            }" />
+                            <field name="purchase_request_name" attrs="{
+                                    'readonly': [('is_editable','=', False)],
+                                    'required': [('is_required_egp','=', True)]
+                            }" />
+                            <field name="start_date" widget="remaining_days" attrs="{'readonly': [('is_editable','=', False)]}" />
                             <field name="end_date" widget="remaining_days" attrs="{'readonly': [('is_editable','=', False)]}" />
                         </group>
                         <group>
@@ -60,6 +66,7 @@
                     <label for="estimated_cost"/>
                     <h2>
                         <field name="estimated_cost"/>
+                        <field name="is_required_egp" invisible="1" />
                     </h2>
                     <notebook>
                         <page string="Product Lines">
