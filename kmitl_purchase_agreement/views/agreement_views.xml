@@ -146,10 +146,8 @@
 
             <xpath expr="//field[@name='expiration_notice']" position="after">
                 <field name="contract_type" invisible="1" readonly="0" />
-                <!-- <field name="verify_datetime" /> -->
                 <field name="work_start_date" attrs="{'invisible': [('contract_type', '!=', 'contract_construction')]}" />
                 <field name="work_end_date" attrs="{'invisible': [('contract_type', '!=', 'contract_construction')]}" />
-                <field name="is_invoice" string="is invoice"/>
             </xpath>
 
             <xpath expr="//field[@name='qty']" position="before">
@@ -162,16 +160,6 @@
             </xpath>
 
             <xpath expr="//notebook" position="inside">
-                <page name="invoice" string="Invoice">
-                    <field name="invoice_plan_ids">
-                        <tree>
-                            <field name="installment"/>
-                            <field name="plan_date"/>
-                            <field name="percent"/>
-                            <field name="amount"/>
-                        </tree>
-                    </field>
-                </page>
 
                 <page name="committee" string="Committee">
 

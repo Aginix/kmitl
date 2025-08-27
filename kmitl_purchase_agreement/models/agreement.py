@@ -27,22 +27,8 @@ class Agreement(models.Model):
         string="Attachment",
     )
 
-    # verify_datetime = fields.Date(string="Date of Verification")
-    purchase_order_id = fields.Many2one(
-        'purchase.order',
-        string="PO Ref",
-        ondelete="set null",
-    )
-
     pr1_total = fields.Monetary(related='purchase_order_id.request_total', string='PR1 Total')
 
-    invoice_plan_ids = fields.One2many(
-        comodel_name="purchase.invoice.plan",
-        inverse_name="purchase_id",
-        string="Invoice Plan",
-        related="purchase_order_id.invoice_plan_ids",
-        readonly=True,
-    )
 
     work_acceptance_committee_ids = fields.One2many(
         related='purchase_order_id.work_acceptance_committee_ids',
@@ -76,10 +62,6 @@ class Agreement(models.Model):
     work_start_date = fields.Date(related='purchase_order_id.work_start_date', string="Work start date")
     work_end_date = fields.Date(related='purchase_order_id.work_end_date', string="Work end date")
 
-    is_invoice = fields.Boolean(
-        related='purchase_order_id.use_invoice_plan',
-        store=True
-    )
 
     def action_open_new_version_wizard(self):
         self.ensure_one()
