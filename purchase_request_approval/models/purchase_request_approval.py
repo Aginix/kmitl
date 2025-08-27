@@ -9,7 +9,6 @@ class PurchaseRequestApproval(models.Model):
     _STATES = [
         ("draft", "Draft"),
         ("submitted", "Submitted"),
-        ("egp", "waiting EGP"),
         ("approved", "Approved"),
         ("cancelled", "Cancelled"),
         ("rejected", "Rejected"),
@@ -24,7 +23,8 @@ class PurchaseRequestApproval(models.Model):
     request_id = fields.Many2one(
         'purchase.request',
         string='PR1',
-        readonly=True
+        readonly=True,
+        required=True,
     )
     vendor = fields.Many2one(
         "res.partner",
@@ -102,34 +102,13 @@ class PurchaseRequestApproval(models.Model):
         store=True,
         readonly=True
     )
-    is_egp = fields.Boolean(
-        string="Over 100,000",
-        compute="_compute_is_egp",
-    )
-    is_required_egp = fields.Boolean(
-        string="Require EGP",
-        compute='_compute_is_required_egp',
-    )
-
-    @api.depends("state", "is_egp")
-    def _compute_is_required_egp(self):
-        for rec in self:
-            rec.is_required_egp = (
-                rec.state == "egp"
-                or (rec.state == "draft" and not rec.is_egp)
-            )
-
-    @api.depends("estimated_cost")
-    def _compute_is_egp(self):
-        for rec in self:
-            rec.is_egp = rec.estimated_cost > 100000 if rec.estimated_cost else False
 
     @api.depends("state")
     def _compute_is_editable(self):
         for rec in self:
             if rec.state in (
                 "submitted",
-                "cancçelled",
+                "cancelled",
                 "approved",
                 "rejected",
             ):
@@ -138,10 +117,7 @@ class PurchaseRequestApproval(models.Model):
                 rec.is_editable = True
 
     def button_submit(self):
-        if self.is_egp:
-            return self.write({'state': 'egp'})
-        else:
-            return self.write({'state': 'submitted'})
+        return self.write({'state': 'submitted'})
 
     def button_cancel(self):
         return self.write({'state': 'cancelled'})

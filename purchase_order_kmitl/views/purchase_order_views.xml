@@ -123,7 +123,4 @@
             </xpath>
         </field>
     </record>
-
-    <menuitem id="menu_purchase_order_kmitl" name="Purchase Order" parent="purchase_request.parent_menu_purchase_request" />
-    <menuitem id="menu_purchase_order_root_pr" name="Purchase Order" parent="purchase_order_kmitl.menu_purchase_order_kmitl" action="purchase.purchase_form_action" sequence="20"/>
 </odoo>

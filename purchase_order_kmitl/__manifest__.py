@@ -14,7 +14,8 @@
         "views/purchase_order_attachment_views.xml",
         "views/purchase_order_views.xml",
         "views/purchase_request_approval_views.xml",
-        "views/purchase_requisition_views.xml"
+        "views/purchase_requisition_views.xml",
+        "views/purchase_request_views.xml",
     ],
     'installable': True,
     'auto_install': False,

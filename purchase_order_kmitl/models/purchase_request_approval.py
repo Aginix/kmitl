@@ -6,11 +6,17 @@ from odoo.exceptions import UserError
 class PurchaseRequestApproval(models.Model):
     _inherit = 'purchase.request.approval'
 
-    order_ids = fields.One2many(
+    order_id = fields.Many2one(
         "purchase.order",
-        "approval_id",
         string="Purchase Orders"
     )
+    hide_create_po_button = fields.Boolean(compute="_compute_hide_create_po_button")
+
+    @api.depends('state', 'order_id')
+    def _compute_hide_create_po_button(self):
+        for rec in self:
+            show = rec.state == 'approved' and not rec.order_id
+            rec.hide_create_po_button = not show
 
     def make_purchase_order(self):
         self.ensure_one()
@@ -46,7 +52,7 @@ class PurchaseRequestApproval(models.Model):
             'request_id': self.request_id.id,
             'approval_id': self.id,
         })
-
+        self.order_id = order.id
         self.state = 'approved'
 
         return {

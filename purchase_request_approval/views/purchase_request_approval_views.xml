@@ -22,14 +22,12 @@
         <field name="arch" type="xml">
             <form string="Purchase Request Approval">
                 <header>
-                    <field name="is_egp" invisible="1" />
-                    <button name="button_approve" string="Approve" type="object" class="btn-primary" attrs="{'invisible': ['|' , ('is_egp', '=', True) , ('state', 'not in', ['submitted'])]}" groups="purchase_request.group_purchase_request_manager" />
-                    <button name="button_approve" string="Submit EGP" type="object" class="btn-primary" attrs="{'invisible': ['|' , ('is_egp', '=', False) , ('state', 'not in', ['egp'])]}" />
+                    <button name="button_approve" string="Approve" type="object" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['submitted'])]}" groups="purchase_request.group_purchase_request_manager" />
                     <button name="button_submit" string="Submit" type="object" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['draft'])]}" />
-                    <button name="button_reject" string="Reject" type="object" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['approved'])]}" />
-                    <button name="button_cancel" type="object" string="Cancel" class="btn-secondary" attrs="{'invisible': [('state', 'in', ['draft', 'cancel', 'rejected', 'approved'])]}" />
-                    <button name="button_draft" type="object" string="Reset" class="btn-secondary" attrs="{'invisible': [('state', 'in', ['draft'])]}" />
-                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,egp,approved,cancelled,rejected"/>
+                    <button name="button_reject" string="Reject" type="object" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['approved', 'submitted'])]}" />
+                    <button name="button_cancel" type="object" string="Cancel" class="btn-secondary" attrs="{'invisible': [('state', 'in', ['draft', 'cancel', 'rejected', 'approved' , 'cancelled'])]}" />
+                    <button name="button_draft" type="object" string="Reset" class="btn-secondary" attrs="{'invisible': [('state', 'in', ['draft', 'submitted', 'approved'])]}" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -41,13 +39,11 @@
                     <field name="is_editable" invisible="1" />
                     <group>
                         <group>
-                            <field name="vendor" attrs="{
-                                    'readonly': [('is_editable','=', False)],
-                                    'required': [('is_required_egp','=', True)]
+                            <field name="vendor" required="1" attrs="{
+                                    'readonly': [('is_editable','=', False)]
                             }" />
-                            <field name="purchase_request_name" attrs="{
-                                    'readonly': [('is_editable','=', False)],
-                                    'required': [('is_required_egp','=', True)]
+                            <field name="purchase_request_name" required="1" attrs="{
+                                    'readonly': [('is_editable','=', False)]
                             }" />
                             <field name="start_date" widget="remaining_days" attrs="{'readonly': [('is_editable','=', False)]}" />
                             <field name="end_date" widget="remaining_days" attrs="{'readonly': [('is_editable','=', False)]}" />
@@ -66,7 +62,6 @@
                     <label for="estimated_cost"/>
                     <h2>
                         <field name="estimated_cost"/>
-                        <field name="is_required_egp" invisible="1" />
                     </h2>
                     <notebook>
                         <page string="Product Lines">
@@ -111,8 +106,6 @@
             </p>
         </field>
     </record>
-    <menuitem id="menu_purchase_request_approval" name="Purchase Requests Approval" parent="purchase_request.parent_menu_purchase_request" />
-    <menuitem id="menu_purchase_request_approval_config" name="Configuration" parent="purchase_request.parent_menu_purchase_request" />
-    <menuitem id="menu_purchase_request_approval_root" name="Purchase Request Approval" parent="purchase_request_approval.menu_purchase_request_approval" action="action_purchase_request_approval" sequence="20"/>
+
     <menuitem id="menu_purchase_request_approval_root_purchase" name="Purchase Request Approval" parent="purchase.menu_procurement_management" action="action_purchase_request_approval" sequence="20"/>
 </odoo>

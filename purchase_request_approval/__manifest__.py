@@ -10,9 +10,10 @@
     "data": [
         "data/purchase_request_approval_sequence.xml",
         "security/ir.model.access.csv",
-        "views/purchase_request_approval_views.xml",
         "views/purchase_request_approval_line_views.xml",
-        "views/purchase_request_views.xml"
+        "views/purchase_request_approval_views.xml",
+        "views/purchase_request_views.xml",
+        "wizards/purchase_request_approval_wizard.xml"
     ],
     'installable': True,
     'auto_install': False,

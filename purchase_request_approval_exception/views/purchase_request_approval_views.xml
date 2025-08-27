@@ -40,5 +40,5 @@
             </field>
         </field>
     </record>
-    <menuitem id="menu_purchase_request_approval_config_exception" parent="purchase_request_approval.menu_purchase_request_approval_config" action="action_purchase_request_approval_exception" sequence="20"/>
+    <menuitem action="action_purchase_request_approval_exception" id="menu_purchase_request_approval_config_exception" parent="purchase.menu_purchase_config" />
 </odoo>
