@@ -10,7 +10,6 @@ class PurchaseRequestApproval(models.Model):
     _STATES = [
         ("draft", "Draft"),
         ("submitted", "Submitted"),
-        ("egp", "waiting EGP"),
         ("approved", "Approved"),
         ("cancelled", "Cancelled"),
         ("rejected", "Rejected"),

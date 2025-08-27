@@ -78,10 +78,12 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//button[@name='button_draft']" position="attributes">
-                <attribute name="string">รีเซ็ต</attribute>
+                <attribute name="states"></attribute>
+                <attribute name="attrs">{'invisible': [('state', 'in', ['draft', 'to_approve', 'validation', 'approved'])]}</attribute>
             </xpath>
             <xpath expr="//button[@name='button_rejected']" position="attributes">
-                <attribute name="string">ยกเลิก</attribute>
+                <attribute name="states"></attribute>
+                <attribute name="attrs">{'invisible': [('state', 'in', ['draft', 'to_approve', 'validation' ,'rejected'])]}</attribute>
             </xpath>
             <xpath expr="//button[@name='button_to_approve']" position="attributes">
                 <attribute name="string">ส่งคำขออนุมัติ</attribute>

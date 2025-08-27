@@ -22,14 +22,12 @@
         <field name="arch" type="xml">
             <form string="Purchase Request Approval">
                 <header>
-                    <field name="is_egp" invisible="1" />
-                    <button name="button_approve" string="Approve" type="object" class="btn-primary" attrs="{'invisible': ['|' , ('is_egp', '=', True) , ('state', 'not in', ['submitted'])]}" groups="purchase_request.group_purchase_request_manager" />
-                    <button name="button_approve" string="Submit EGP" type="object" class="btn-primary" attrs="{'invisible': ['|' , ('is_egp', '=', False) , ('state', 'not in', ['egp'])]}" />
+                    <button name="button_approve" string="Approve" type="object" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['submitted'])]}" groups="purchase_request.group_purchase_request_manager" />
                     <button name="button_submit" string="Submit" type="object" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['draft'])]}" />
-                    <button name="button_reject" string="Reject" type="object" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['approved'])]}" />
-                    <button name="button_cancel" type="object" string="Cancel" class="btn-secondary" attrs="{'invisible': [('state', 'in', ['draft', 'cancel', 'rejected', 'approved'])]}" />
-                    <button name="button_draft" type="object" string="Reset" class="btn-secondary" attrs="{'invisible': [('state', 'in', ['draft'])]}" />
-                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,egp,approved,cancelled,rejected"/>
+                    <button name="button_reject" string="Reject" type="object" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['approved', 'submitted'])]}" />
+                    <button name="button_cancel" type="object" string="Cancel" class="btn-secondary" attrs="{'invisible': [('state', 'in', ['draft', 'cancel', 'rejected', 'approved' , 'cancelled'])]}" />
+                    <button name="button_draft" type="object" string="Reset" class="btn-secondary" attrs="{'invisible': [('state', 'in', ['draft', 'submitted', 'approved'])]}" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
