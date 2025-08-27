@@ -1837,7 +1837,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__line_id
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_form
 msgid "Purchase Request Line"
-msgstr ""
+msgstr "คำขอซื้อขอจ้างไลน์"
 
 #. module: l10n_th_gov_purchase_request
 #: model:ir.model,name:l10n_th_gov_purchase_request.model_purchase_request_line_make_purchase_requisition
@@ -1870,27 +1870,27 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_order_line_form2_sub
 #, python-format
 msgid "Purchase Request Lines"
-msgstr ""
+msgstr "คำขอซื้อขอจ้างไลน์"
 
 #. module: purchase_request
 #: model:res.groups,name:purchase_request.group_purchase_request_manager
 msgid "Purchase Request Manager"
-msgstr ""
+msgstr "ผู้จัดการคำขอซื้อขอจ้าง"
 
 #. module: purchase_request_substate
 #: model:base.substate.type,name:purchase_request_substate.base_substate_type_purchase_request
 msgid "Purchase Request Substate"
-msgstr ""
+msgstr "คำขอซื้อขอจ้างสถานะย่อย"
 
 #. module: purchase_request_kmitl
 #: model:res.groups,name:purchase_request_kmitl.group_purchase_request_user_all
 msgid "Purchase Request User : All Documents"
-msgstr ""
+msgstr "ผู้ใช้คำขอซื้อขอจ้าง : ทุกเอกสาร"
 
 #. module: purchase_request
 #: model:res.groups,name:purchase_request.group_purchase_request_user
 msgid "Purchase Request User : Own Documents Only"
-msgstr ""
+msgstr "ผู้ใช้คำขอซื้อขอจ้าง : เฉพาะเอกสารตนเอง"
 
 #. module: purchase_request
 #: model:mail.message.subtype,description:purchase_request.mt_request_approved
@@ -1993,7 +1993,7 @@ msgstr ""
 #. module: purchase_request_exception
 #: model:ir.model.fields.selection,name:purchase_request_exception.selection__exception_rule__model__purchase_request_line
 msgid "Purchase request line"
-msgstr ""
+msgstr "คำขอซื้อขอจ้างไลน์"
 
 #. module: purchase_request_exception
 #: model:exception.rule,description:purchase_request_exception.prl_excep_qty_check
@@ -2258,7 +2258,7 @@ msgstr "ผู้ขอ"
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 msgid "Requested for Quotation"
-msgstr ""
+msgstr "ใบเสนอราคา"
 
 #. module: purchase_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisitions
@@ -2450,7 +2450,7 @@ msgstr ""
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
 msgid "Start Date"
-msgstr ""
+msgstr "วันที่เริ่ม"
 
 #. module: purchase_requisition
 #: model_terms:ir.actions.act_window,help:purchase_requisition.action_purchase_requisition
