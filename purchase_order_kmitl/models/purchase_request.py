@@ -5,8 +5,8 @@ from odoo import _, api, fields, models
 class PurchaseRequest(models.Model):
     _inherit = 'purchase.request'
 
-    order_ids = fields.One2many(
+    order_id = fields.Many2one(
         "purchase.order",
-        "request_id",
-        string="Purchase Orders"
+        string="PO",
+        related='approval_id.order_id'
     )

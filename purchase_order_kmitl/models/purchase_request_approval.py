@@ -45,7 +45,7 @@ class PurchaseRequestApproval(models.Model):
             'request_id': self.request_id.id,
             'approval_id': self.id,
         })
-
+        self.order_id = order.id
         self.state = 'approved'
 
         return {
