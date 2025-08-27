@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Account Move Form View with Budget Integration -->
+    <record id="view_move_form_budget" model="ir.ui.view">
+        <field name="name">account.move.form.budget</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            
+            <!-- Add budget buttons in header -->
+            <xpath expr="//header/button[@name='action_post']" position="before">
+                <button name="action_check_budget" 
+                        type="object" 
+                        string="Check Budget" 
+                        class="btn-secondary"
+                        attrs="{'invisible': [('requires_budget', '=', False)]}" 
+                        help="Check budget availability"/>
+                        
+                <button name="action_reserve_budget" 
+                        type="object" 
+                        string="Reserve Budget" 
+                        class="btn-primary"
+                        attrs="{'invisible': ['|', ('requires_budget', '=', False), ('budget_commitment_id', '!=', False)]}" 
+                        help="Reserve budget for this journal entry"/>
+            </xpath>
+            
+            <!-- Add budget status field after state -->
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="budget_status" widget="badge"
+                       decoration-info="budget_status == 'none'"
+                       decoration-warning="budget_status == 'draft'"  
+                       decoration-success="budget_status in ['reserved', 'consumed']"
+                       attrs="{'invisible': [('requires_budget', '=', False)]}"/>
+            </xpath>
+            
+            <!-- Add Budget tab -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Budget" name="budget" 
+                      attrs="{'invisible': [('requires_budget', '=', False)]}">
+                      
+                    <group>
+                        <group name="budget_info">
+                            <field name="requires_budget" invisible="1"/>
+                            <field name="budget_account_id" 
+                                   options="{'no_create': True}"
+                                   attrs="{'required': [('requires_budget', '=', True)]}"/>
+                            <field name="budget_commitment_id" 
+                                   attrs="{'invisible': [('budget_commitment_id', '=', False)]}"
+                                   readonly="1"/>
+                        </group>
+                        
+                        <group name="analytic_dimensions">
+                            <field name="activity_analytic_id" 
+                                   domain="[('plan_id.code', '=', 'activities')]"
+                                   options="{'no_create': True}"
+                                   attrs="{'required': [('requires_budget', '=', True)]}"/>
+                            <field name="department_analytic_id" 
+                                   domain="[('plan_id.code', '=', 'departments')]"
+                                   options="{'no_create': True}"
+                                   attrs="{'required': [('requires_budget', '=', True)]}"/>
+                            <field name="fund_analytic_id" 
+                                   domain="[('plan_id.code', '=', 'funds')]"
+                                   options="{'no_create': True}"
+                                   attrs="{'required': [('requires_budget', '=', True)]}"/>
+                            <field name="source_analytic_id" 
+                                   domain="[('plan_id.code', '=', 'sources')]"
+                                   options="{'no_create': True}"
+                                   attrs="{'required': [('requires_budget', '=', True)]}"/>
+                        </group>
+                    </group>
+                    
+                    <div class="oe_button_box" name="button_box_budget">
+                        <button name="action_view_budget_commitment"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-calculator"
+                                attrs="{'invisible': [('budget_commitment_id', '=', False)]}">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">View</span>
+                                <span class="o_stat_text">Budget Commitment</span>
+                            </div>
+                        </button>
+                    </div>
+                    
+                </page>
+            </xpath>
+            
+        </field>
+    </record>
+
+    <!-- Account Move Tree View - Add Budget Status Column -->
+    <record id="view_account_move_tree_budget" model="ir.ui.view">
+        <field name="name">account.move.tree.budget</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="budget_status" optional="show" widget="badge"
+                       decoration-info="budget_status == 'none'"
+                       decoration-warning="budget_status == 'draft'"  
+                       decoration-success="budget_status in ['reserved', 'consumed']"/>
+                <field name="requires_budget" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Account Move Search View - Add Budget Filters -->
+    <record id="view_account_move_filter_budget" model="ir.ui.view">
+        <field name="name">account.move.search.budget</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_move_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='posted']" position="after">
+                <separator/>
+                <filter string="Requires Budget" name="requires_budget" 
+                        domain="[('requires_budget', '=', True)]"/>
+                <filter string="Budget Not Reserved" name="budget_draft" 
+                        domain="[('budget_status', '=', 'draft')]"/>
+                <filter string="Budget Reserved" name="budget_reserved" 
+                        domain="[('budget_status', '=', 'reserved')]"/>
+                <filter string="Budget Consumed" name="budget_consumed" 
+                        domain="[('budget_status', '=', 'consumed')]"/>
+            </xpath>
+            <xpath expr="//group" position="inside">
+                <filter string="Budget Status" name="group_budget_status" 
+                        context="{'group_by': 'budget_status'}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

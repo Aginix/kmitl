@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Budget Journal for Account Move Consumption -->
+        <record id="budget_journal_account_move_consumption" model="budget.journal">
+            <field name="name">Account Move Budget Consumption</field>
+            <field name="code">AMBC</field>
+            <field name="type">consume</field>
+            <field name="active">True</field>
+        </record>
+        
+    </data>
+</odoo>
