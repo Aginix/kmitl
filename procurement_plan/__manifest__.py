@@ -11,18 +11,17 @@
         "l10n_th_gov_purchase_request",
     ],
     "data": [
+        "data/sequence.xml",
         "security/security.xml",
         "security/ir.model.access.csv",
         "views/procurement_plan_views.xml",
         "views/procurement_plan_menus.xml",
-        "views/res_config_settings_views.xml",
-        "report/report_procurement_plan.xml",
+        "views/res_config_settings_views.xml"
     ],
-    "assets": {
-        "web.assets_backend": ["procurement_plan/static/src/**/*"],
-    },
-    "application": False,
+    "assets": {},
+    "application": True,
     "installable": True,
     "auto_install": False,
     "license": "LGPL-3",
 }
+

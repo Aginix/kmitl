@@ -9,6 +9,7 @@
             <tree decoration-info="state == 'procurement'" decoration-success="state == 'done'" decoration-warning="state in ('validate', 'pending')">
                 <field name="date_range_fy_id" />
                 <field name="name" />
+                <field name="description" />
                 <field name="amount" optional="hide" />
                 <field name="unit" optional="hide" />
                 <field name="price_per_unit" optional="hide" />
@@ -29,93 +30,50 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,validate,pending,procurement,done" />
                 </header>
                 <sheet>
+                    <div class="oe_title">
+                        <label for="name" />
+                        <h1>
+                            <field name="name" readonly="1" />
+                        </h1>
+                    </div>
                     <group>
                         <group name="basic">
-                            <field name="name" />
+                            <field name="description" placeholder="e.g. ครุภัณฑ์วิทยาศาสตร์และการแพทย์, ปรับปรุงห้องปฏิบัติการฟิสิกส์" />
                             <field name="procurement_method_id" />
-                            <field name="note" />
+                            <field name="price_per_unit" string="ราคา" />
+                            <label for="amount" string="จำนวน" />
+                            <div class="o_row">
+                                <field name="amount" />
+                                <field name="unit" placeholder="e.g. ชิ้น, รายการ, ตัว, ชุด" />
+                            </div>
+                            <field name="total_price" string="รวมทั้งสิ้น" />
+                            <field name="note" placeholder="Notes..." />
+                        </group>
+                        <group>
                             <field name="date_range_fy_id" required="1" />
+                            <field name="user_id" widget="many2one_avatar_user" required="1" />
                         </group>
                     </group>
-                    <div class="o_procurement_plan_budget">
-                        <separator string="รายละเอียดงบประมาณ" class="mb-4" />
-                        <table class="table table-bordered table-sm">
-                            <thead>
-                                <tr>
-                                    <td align="center">จำนวน</td>
-                                    <td align="center">หน่วยนับ</td>
-                                    <td align="center">ราคาต่อหน่วย</td>
-                                    <td align="center">วงเงินรวม</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td align="center">
-                                        <field name="amount" />
-                                    </td>
-                                    <td align="center">
-                                        <field name="unit" />
-                                    </td>
-                                    <td align="center">
-                                        <field name="price_per_unit" />
-                                    </td>
-                                    <td align="center">
-                                        <field name="total_price" />
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="o_procurement_plan_eta">
-                        <separator string="แผนการดำเนินงาน" class="mb-4" />
-                        <table class="table table-bordered table-sm">
-                            <thead>
-                                <tr>
-                                    <td align="center" rowSpan="2">จัดทำพ.1</td>
-                                    <td align="center" colSpan="3">การจัดซื้อจัดจ้าง</td>
-                                    <td align="center" rowSpan="2">ตรวจรับ/ส่งมอบ</td>
-                                </tr>
-                                <tr>
-                                    <td align="center">
-                                        ประกาศจัดซื้อจัดจ้าง
-                                    </td>
-                                    <td align="center">อนุมัติผล (รอลงนามสัญญา)</td>
-                                    <td align="center">ลงนามสัญญา/ใบสั่งซื้อสั่งจ้าง</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td align="center">
-                                        <field name="purchase_request_eta" />
-                                    </td>
-                                    <td align="center">
-                                        <field name="procurement_announcement_eta" />
-                                    </td>
-                                    <td align="center">
-                                        <field name="approval_signing_eta" />
-                                    </td>
-                                    <td align="center">
-                                        <field name="contract_order_signing_eta" />
-                                    </td>
-                                    <td align="center">
-                                        <field name="acceptance_eta" />
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="o_procurement_plan_payment_ids">
-                        <separator string="การเบิกจ่าย" class="mb-4" />
-                        <field name="payment_ids" nolabel="1">
-                            <tree editable="bottom">
-                                <field name="number" width="3" />
-                                <field name="number_of_days" width="3" />
-                                <field name="month" width="3" />
-                                <field name="amount" width="3" />
-                            </tree>
-                        </field>
-                    </div>
                     <notebook>
+                        <page string="ข้อมูลแผนการดำเนินงาน">
+                            <group>
+                                <field name="purchase_request_eta" />
+                                <field name="procurement_announcement_eta" />
+                                <field name="approval_signing_eta" />
+                                <field name="contract_order_signing_eta" />
+                                <field name="acceptance_eta" />
+                            </group>
+                        </page>
+                        <page string="การเบิกจ่าย">
+                            <field name="payment_ids">
+                                <tree editable="bottom">
+                                    <field name="number" width="1" />
+                                    <field name="number_of_days" width="3" />
+                                    <field name="month" width="3" />
+                                    <field name="amount" width="3" />
+                                </tree>
+                            </field>
+                        </page>
                         <page name="additional_info" string="Additional Info">
                             <group>
                                 <field name="company_id" invisible="1" />

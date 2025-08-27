@@ -33,23 +33,11 @@ class ProcurementPlan(models.Model):
         analytic_accounts_to_delete.unlink()
         return result
 
-    def _create_analytic_account(self):
-        plan_id = self.env.ref('procurement_plan_analytic.analytic_plan_procurement_plan', raise_if_not_found=True).id
-        for record in self:
-            analytic_account = self.env["account.analytic.account"].create(
-                {
-                    "name": record.name,
-                    "company_id": record.company_id.id,
-                    "plan_id": plan_id,
-                    "active": True,
-                }
-            )
-            record.write({"analytic_account_id": analytic_account.id})
-
     @api.model
     def _create_analytic_account_from_values(self, values):
         analytic_account = self.env['account.analytic.account'].create({
             'name': values.get('name', _('Unknown Analytic Account')),
+            'code': values.get('code'),
             'company_id': self.env.company.id,
             'partner_id': values.get('partner_id'),
             'plan_id': self.env.ref('procurement_plan_analytic.analytic_plan_procurement_plan', raise_if_not_found=True).id,
@@ -57,9 +45,11 @@ class ProcurementPlan(models.Model):
         return analytic_account
 
     def write(self, vals):
+        res = super().write(vals)
         if 'state' in vals and vals['state'] in ['pending', 'procurement', 'done'] and not self.analytic_account_id:
             analytic_account = self._create_analytic_account_from_values({
-                "name": vals.get('name', self.name),
+                "name": self.description,
+                "code": self.name,
             })
-            vals["analytic_account_id"] = analytic_account.id
-        return super().write(vals)
+            self.analytic_account_id = analytic_account.id
+        return res

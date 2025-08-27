@@ -25,7 +25,8 @@
                         'default_currency_id': currency_id,
                     }">
                     <tree>
-                        <field name="name" />
+                        <field name="name" invisible="1" />
+                        <field name="description" />
                         <field name="amount" />
                         <field name="unit" />
                         <field name="price_per_unit" />

@@ -7,14 +7,12 @@
         <field name="model">procurement.plan</field>
         <field name="inherit_id" ref="procurement_plan.view_procurement_plan_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//group[@name='basic']" position="after">
-                <group name="budget">
+            <xpath expr="//field[@name='date_range_fy_id']" position="after">
                     <field name="activity_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" />
                     <field name="source_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" />
                     <field name="department_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" />
                     <field name="fund_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" />
                     <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" />
-                </group>
             </xpath>
             <xpath expr="//header" position="attributes">
                 <attribute name="invisible">context.get('hide_header', False)</attribute>

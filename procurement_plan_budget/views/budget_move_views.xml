@@ -11,4 +11,18 @@
             </xpath>
         </field>
     </record>
+
+    <!-- View budget.move.live form -->
+    <record id="view_budget_move_line_form_procurement_plan" model="ir.ui.view">
+        <field name="name">view.budget.move.line.form.procurement.plan</field>
+        <field name="model">budget.move.line</field>
+        <field name="inherit_id" ref="budget.view_budget_move_line_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='account_id']" position="after">
+                <field name="procurement_plan" invisible="1" />
+                <field name="procurement_plan_analytic_id" invisible="1" />
+                <field name="procurement_plan_id" options='{"no_create": True, "no_create_edit": True}' attrs="{'invisible': [('procurement_plan', '=', False)]}" />
+            </xpath>
+        </field>
+    </record>
 </odoo>

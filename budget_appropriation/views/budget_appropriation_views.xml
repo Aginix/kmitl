@@ -67,7 +67,7 @@
                     <notebook>
                         <page name="line_ids" string="Appropriation Lines">
                             <field name="line_ids" style="max-width: 100%; display: block;" attrs="{'readonly': [('state', 'in', ['review', 'posted', 'cancel'])]}">
-                                <tree>
+                                <tree limit="1000">
                                     <field name="appropriation_id" invisible="1" />
                                     <field name="budget_type" invisible="1" />
                                     <field name="department_analytic_id" invisible="1" />
