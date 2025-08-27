@@ -106,9 +106,6 @@
             <xpath expr="//field[@name='approved_by']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-            <xpath expr="//field[@name='name']" position="attributes">
-                <attribute name="string">หมายเลขใบ พ.1</attribute>
-            </xpath>
             <field name="requested_by" position="before">
                 <field name="payment_type" required="True" attrs="{'readonly': [('is_editable','=', False)]}" />
                 <field name="contract_type" attrs="{'readonly': [('is_editable','=', False)]}" />
