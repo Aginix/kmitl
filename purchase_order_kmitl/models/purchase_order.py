@@ -66,7 +66,7 @@ class PurchaseOrder(models.Model):
         string="Fee per day"
     )
     request_id = fields.Many2one('purchase.request', string="PR1", readonly=True)
-    approval_id = fields.Many2one('purchase.request.approval', string="PR2", readonly=True, required=True)
+    approval_id = fields.Many2one('purchase.request.approval', string="PR2", readonly=True)
     work_acceptance_committee_ids = fields.One2many(
         related='request_id.work_acceptance_committee_ids',
         readonly=True,

@@ -10,6 +10,13 @@ class PurchaseRequestApproval(models.Model):
         "purchase.order",
         string="Purchase Orders"
     )
+    hide_create_po_button = fields.Boolean(compute="_compute_hide_create_po_button")
+
+    @api.depends('state', 'order_id')
+    def _compute_hide_create_po_button(self):
+        for rec in self:
+            show = rec.state == 'approved' and not rec.order_id
+            rec.hide_create_po_button = not show
 
     def make_purchase_order(self):
         self.ensure_one()
