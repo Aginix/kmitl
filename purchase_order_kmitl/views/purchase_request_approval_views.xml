@@ -6,7 +6,8 @@
         <field name="inherit_id" ref="purchase_request_approval.view_purchase_request_approval"/>
         <field name="arch" type="xml">
             <xpath expr="//button[@name='button_approve']" position='after'>
-                <button name="make_purchase_order" string="สร้าง PO" type="object" class="btn-primary" states="approved" />
+                <button name="make_purchase_order" string="Create PO" type="object" class="btn-primary" attrs="{
+            'invisible': ['|', ('state','!=','approved'), ('order_id','!=',False)]}" />
             </xpath>
         </field>
     </record>
