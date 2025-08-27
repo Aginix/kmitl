@@ -1,4 +1,5 @@
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class PurchaseRequestApproval(models.Model):
@@ -24,7 +25,9 @@ class PurchaseRequestApproval(models.Model):
     request_id = fields.Many2one(
         'purchase.request',
         string='PR1',
-        readonly=True
+        readonly=True,
+        required=True,
+        ondelete="cascade",
     )
     vendor = fields.Many2one(
         "res.partner",
@@ -111,13 +114,14 @@ class PurchaseRequestApproval(models.Model):
         compute='_compute_is_required_egp',
     )
 
-    @api.depends("state", "is_egp")
-    def _compute_is_required_egp(self):
+    @api.constrains('request_id')
+    def _check_unique_request(self):
+        """Ensure one-to-one: A Purchase Request can only have one Approval."""
         for rec in self:
-            rec.is_required_egp = (
-                rec.state == "egp"
-                or (rec.state == "draft" and not rec.is_egp)
-            )
+            if rec.request_id and self.search_count([('request_id', '=', rec.request_id.id)]) > 1:
+                raise ValidationError(
+                    _("Purchase Request %s already has an Approval.") % rec.request_id.display_name
+                )
 
     @api.depends("estimated_cost")
     def _compute_is_egp(self):

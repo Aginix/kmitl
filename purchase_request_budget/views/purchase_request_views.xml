@@ -25,19 +25,13 @@
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request_kmitl.view_purchase_request_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//button[@name='button_validate']" position="after">
+            <xpath expr="//button[@name='button_draft']" position="before">
                 <field name="can_edit_budget" invisible="1" />
                 <button name="action_check_budget" type="object" attrs="{'invisible':['|', ('state','!=','to_approve'), ('can_edit_budget','=', False)]}" string="Check Budget" class="oe_highlight btn-info" groups="purchase_request_budget.group_purchase_request_budget" />
                 <button name="action_reserve_budget" type="object" attrs="{'invisible':['|', ('state','!=','to_approve'), ('can_edit_budget','=', False)]}" string="Reserve Budget" class="oe_highlight btn-success" groups="purchase_request_budget.group_purchase_request_budget" />
             </xpath>
-
             <xpath expr="//button[@name='button_validate']" position="attributes">
                 <attribute name="attrs">{'invisible':['|', ('state','!=','to_approve'), ('can_edit_budget','!=', False)]}</attribute>
-            </xpath>
-
-            <xpath expr="//field[@name='department_id']" position="after">
-                <field name="verified_by" readonly="1" widget="many2one_avatar_user" />
-                <field name="date_verified" readonly="1" />
             </xpath>
         </field>
     </record>

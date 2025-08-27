@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <!-- View purchase.request.attachment View Tree -->
     <record id="view_purchase_request_attachment_tree" model="ir.ui.view">
         <field name="name">view.purchase.request.attachment.tree</field>
         <field name="model">purchase.request.attachment</field>
@@ -14,7 +13,6 @@
         </field>
     </record>
 
-    <!-- View purchase.request.attachment form -->
     <record id="view_purchase_request_attachment_form" model="ir.ui.view">
         <field name="name">view.purchase.request.attachment.form</field>
         <field name="model">purchase.request.attachment</field>
@@ -34,7 +32,6 @@
         </field>
     </record>
 
-    <!-- Action purchase.request.attachment -->
     <record id="action_purchase_request_attachment" model="ir.actions.act_window">
         <field name="name">Purchase Request Attachment</field>
         <field name="type">ir.actions.act_window</field>
