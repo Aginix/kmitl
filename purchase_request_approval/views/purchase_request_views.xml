@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <!-- View purchase.request form -->
     <record id="view_purchase_request_form_inherit" model="ir.ui.view">
         <field name="name">view.purchase.request.form.inherit</field>
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//button[@name='button_done']" position="before">
-                <button name="action_create_approval" type="object" string="บันทึกคู่ค้า" class="btn-primary" groups='purchase_request_kmitl.group_purchase_request_user_all' attrs="{'invisible': [('state', '!=', 'approved')]}"/>
+            <xpath expr="//button[@name='button_draft']" position="before">
+                <button name="action_create_approval" type="object" string="บันทึกคู่ค้า" class="btn-primary" groups="purchase_request_kmitl.group_purchase_request_user_all" attrs="{
+            'invisible': ['|', ('state','!=','approved'), ('approval_id','!=',False)]
+        }"/>
+            </xpath>
+            <xpath expr="//button[@name='button_done']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='description']" position="after">
+                <field name="approval_id" readonly="1" />
             </xpath>
         </field>
     </record>
-
 </odoo>

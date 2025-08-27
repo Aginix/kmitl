@@ -6,10 +6,7 @@
         <field name="inherit_id" ref="purchase_request_approval.view_purchase_request_approval"/>
         <field name="arch" type="xml">
             <xpath expr="//button[@name='button_approve']" position="attributes">
-                <attribute name="attrs">{'invisible':['|', '|' ,('validation_status', 'in', ('pending', 'rejected')), ('is_egp', '=', True) , ('state', 'not in', ['submitted'])]}</attribute>
-            </xpath>
-            <xpath expr="(//button[@name='button_approve'])[2]" position="attributes">
-                <attribute name="attrs">{'invisible':['|', '|' ,('validation_status', 'in', ('pending', 'rejected')), ('is_egp', '=', False) , ('state', 'not in', ['egp'])]}</attribute>
+                <attribute name="attrs">{'invisible':['|' ,('validation_status', 'in', ('pending', 'rejected')), ('state', 'not in', ['submitted'])]}</attribute>
             </xpath>
             <field name="state" position="after">
                 <field name="validation_status" invisible="1" />
