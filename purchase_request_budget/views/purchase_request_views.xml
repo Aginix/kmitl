@@ -35,4 +35,32 @@
             </xpath>
         </field>
     </record>
+
+    <record id="view_purchase_request_tree" model="ir.ui.view">
+        <field name="name">view.purchase.request.tree</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request_kmitl.view_purchase_request_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='payment_type']" position="after">
+                <field name="department_analytic_id" optional="show"/>
+                <field name="source_analytic_id" optional="show"/>
+                <field name="activity_analytic_id" optional="hide"/>
+                <field name="fund_analytic_id" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_search" model="ir.ui.view">
+        <field name="name">purchase.request.list.select</field>
+        <field name="model">purchase.request</field>
+        <field name="priority">30</field>
+        <field name="inherit_id" ref="purchase_request_kmitl.view_purchase_request_search" />
+        <field name="arch" type="xml">
+            <searchpanel position="inside">
+                <field name="procurement_method_id" icon="fa-money" enable_counters="1"/>
+                <field name="source_analytic_id" icon="fa-money" enable_counters="1"/>
+                <field name="department_analytic_id" icon="fa-users" enable_counters="1"/>
+            </searchpanel>
+        </field>
+    </record>
 </odoo>
