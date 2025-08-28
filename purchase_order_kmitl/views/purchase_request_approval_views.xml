@@ -9,11 +9,11 @@
                 <field name="hide_create_po_button" invisible="1" />
                 <button name="make_purchase_order" string="Create PO" type="object" class="btn-primary" attrs="{'invisible': [('hide_create_po_button','=',True)]}" />
             </xpath>
-            <xpath expr="//field[@name='request_id']" position='after'>
+            <xpath expr="//field[@name='estimated_cost']" position='after'>
                 <div>
                     <label for="order_id"/>
                     <h2>
-                        <field name="order_id" options="{'no_create': True}" />
+                        <field name="order_id" options="{'no_create': True}" readonly="1" />
                     </h2>
                 </div>
             </xpath>
