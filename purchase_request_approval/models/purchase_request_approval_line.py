@@ -49,8 +49,3 @@ class PurchaseRequestApprovalLine(models.Model):
             quantity=self.product_qty,
             price_subtotal=self.price_subtotal,
         )
-
-    @api.depends('product_qty', 'price_unit')
-    def _compute_subtotal(self):
-        for line in self:
-            line.subtotal = line.product_qty * line.price_unit
