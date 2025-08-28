@@ -12,6 +12,6 @@ class PurchaseRequestApprovalLine(models.Model):
 
     operating_unit_id = fields.Many2one(
         comodel_name="operating.unit",
-        related="request_id.operating_unit_id",
+        related="approval_id.operating_unit_id",
         string="Operating Unit",
     )
