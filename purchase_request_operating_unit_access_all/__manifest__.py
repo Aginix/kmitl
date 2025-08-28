@@ -7,7 +7,7 @@
     "website": "https://github.com/aginix/kmitl",
     "depends": ["purchase_request_operating_unit"],
     "data": [
-        "security/purchase_request_operating_unit_access_all_security.xml"
+        "security/security.xml"
     ],
     'application': False,
     'installable': True,
