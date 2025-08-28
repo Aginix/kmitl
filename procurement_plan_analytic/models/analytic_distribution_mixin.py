@@ -13,7 +13,7 @@ class AnalyticDistributionMixin(models.AbstractModel):
     procurement_plan_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="แผนจัดซื้อจัดจ้าง",
-        compute="_compute_analytic_distribution",
+        compute="_compute_procurement_plan_analytic_id",
         store=True,
         readonly=False,
         domain=[("root_plan_id.code", "=", "procurement_plan")],
@@ -27,3 +27,7 @@ class AnalyticDistributionMixin(models.AbstractModel):
     @api.onchange("procurement_plan_analytic_id")
     def _onchange_procurement_plan_analytic_id(self):
         self._onchange_analytic_fields()
+
+    @api.depends("procurement_plan_analytic_id")
+    def _compute_procurement_plan_analytic_id(self):
+        super()._compute_analytic_distribution()

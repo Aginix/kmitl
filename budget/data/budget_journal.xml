@@ -2,13 +2,13 @@
     <data>
         <record id="budget_move_expense_journal" model="budget.journal">
             <field name='code'>BEXP</field>
-            <field name='name'>ค่าใช้จ่าย</field>
+            <field name='name'>รายจ่าย</field>
             <field name='default_budget_type'>expense</field>
             <field name='sequence'>1</field>
         </record>
         <record id="budget_move_revenue_journal" model="budget.journal">
             <field name='code'>BREV</field>
-            <field name='name'>รายได้</field>
+            <field name='name'>รายรับ</field>
             <field name='default_budget_type'>revenue</field>
             <field name='sequence'>2</field>
         </record>

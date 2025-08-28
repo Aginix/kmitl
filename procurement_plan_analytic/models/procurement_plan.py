@@ -52,4 +52,5 @@ class ProcurementPlan(models.Model):
                 "code": self.name,
             })
             self.analytic_account_id = analytic_account.id
+            self.procurement_plan_analytic_id = analytic_account.id
         return res

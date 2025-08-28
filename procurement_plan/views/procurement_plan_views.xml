@@ -40,6 +40,7 @@
                         <group name="basic">
                             <field name="description" placeholder="e.g. ครุภัณฑ์วิทยาศาสตร์และการแพทย์, ปรับปรุงห้องปฏิบัติการฟิสิกส์" />
                             <field name="procurement_method_id" />
+                            <field name="user_id" widget="many2one_avatar_user" required="1" />
                             <field name="price_per_unit" string="ราคา" />
                             <label for="amount" string="จำนวน" />
                             <div class="o_row">
@@ -51,7 +52,6 @@
                         </group>
                         <group>
                             <field name="date_range_fy_id" required="1" />
-                            <field name="user_id" widget="many2one_avatar_user" required="1" />
                         </group>
                     </group>
                     <notebook>

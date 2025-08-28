@@ -8,7 +8,8 @@ _logger = logging.getLogger(__name__)
 
 
 class BudgetMoveLine(models.Model):
-    _inherit = "budget.move.line"
+    _name = "budget.move.line"
+    _inherit = ["budget.move.line", "analytic.distribution.mixin"]
 
     procurement_plan = fields.Boolean(
         related="account_id.procurement_plan",
@@ -17,3 +18,4 @@ class BudgetMoveLine(models.Model):
     )
 
     procurement_plan_id = fields.Many2one(comodel_name="procurement.plan", string="รายการแผนจัดซื้อจัดจ้าง")
+    procurement_plan_analytic_id = fields.Many2one("account.analytic.account")
