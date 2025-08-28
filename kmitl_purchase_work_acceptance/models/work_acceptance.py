@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class WorkAcceptance(models.Model):
@@ -24,7 +25,7 @@ class WorkAcceptance(models.Model):
 
     document_ids = fields.One2many(
         "purchase.work.acceptance.attachment",
-        "request_id",
+        "wa_id",
         string="Attachment",
     )
 
@@ -60,3 +61,20 @@ class WorkAcceptance(models.Model):
 
     def button_approved(self):
         self.write({"state": "approved"})
+
+    def button_draft(self):
+        picking_obj = self.env["stock.picking"]
+        wa_ids = picking_obj.search([("wa_id", "in", self.ids)])
+        if wa_ids:
+            raise UserError(
+                _(
+                    "Unable to set to draft this work acceptance. "
+                    "You must first cancel the related receipts."
+                )
+            )
+
+        for rec in self:
+            if rec.document_ids:
+                rec.document_ids.unlink()
+
+        self.write({"state": "draft"})

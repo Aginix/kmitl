@@ -14,7 +14,8 @@
         "views/purchase_order_views.xml",
         "views/purchase_work_acceptance_attachment_views.xml",
         "views/select_work_acceptance_invoice_plan_wizard_views.xml",
-        "views/work_acceptance_views.xml"
+        "views/work_acceptance_views.xml",
+        "views/work_accepted_date_wizard_views.xml"
     ],
     'installable': True,
     'auto_install': False,
