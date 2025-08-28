@@ -23,7 +23,7 @@ class PurchaseRequestApproval(models.Model):
     budget_account_id = fields.Many2one(
         "budget.account",
         string="รหัสงบประมาณ",
-        related="request_id.budget_commitment_id.budget_account_id",
+        related="request_id.budget_account_id",
         readonly=True,
         store=True,
         copy=False,
@@ -31,24 +31,24 @@ class PurchaseRequestApproval(models.Model):
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="ด้าน/แผนงาน/กิจกรรม",
-        related="request_id.budget_commitment_id.activity_analytic_id",
+        related="request_id.activity_analytic_id",
         readonly=True,
     )
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="ส่วนงาน",
-        related="request_id.budget_commitment_id.department_analytic_id",
+        related="request_id.department_analytic_id",
         readonly=True,
     )
     fund_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="กองทุน",
-        related="request_id.budget_commitment_id.fund_analytic_id",
+        related="request_id.fund_analytic_id",
         readonly=True,
     )
     source_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="แหล่งเงิน",
-        related="request_id.budget_commitment_id.source_analytic_id",
+        related="request_id.source_analytic_id",
         readonly=True,
     )
