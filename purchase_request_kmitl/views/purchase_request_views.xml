@@ -9,8 +9,9 @@
                 <field name="title" />
             </xpath>
             <xpath expr="//field[@name='requested_by']" position="after">
-                <field name="procurement_type_id" />
-                <field name="payment_type" />
+                <field name="procurement_type_id" optional="show" />
+                <field name="contract_type" optional="show" />
+                <field name="payment_type" optional="show" />
             </xpath>
             <xpath expr="//field[@name='estimated_cost']" position="attributes">
                 <attribute name="optional">show</attribute>
@@ -224,6 +225,23 @@
             <xpath expr="//field[@name='main_exception_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_search" model="ir.ui.view">
+        <field name="name">purchase.request.list.select</field>
+        <field name="model">purchase.request</field>
+        <field name="priority">30</field>
+        <field name="inherit_id" ref="l10n_th_gov_purchase_request.view_purchase_request_search" />
+        <field name="arch" type="xml">
+            <field name="requested_by" position="before">
+                <searchpanel>
+                    <field name="state" icon="fa-money" enable_counters="1"/>
+                    <field name="procurement_type_id" icon="fa-money" enable_counters="1"/>
+                    <field name="contract_type" icon="fa-money" enable_counters="1"/>
+                    <field name="payment_type" icon="fa-money" enable_counters="1"/>
+                </searchpanel>
+            </field>
         </field>
     </record>
 

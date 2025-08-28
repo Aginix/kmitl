@@ -761,7 +761,7 @@ msgstr "การสร้างถูกบล็อก"
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__date_start
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__date_start
 msgid "Creation date"
-msgstr "วันที่สร้าง"
+msgstr "วันที่ขอ"
 
 #. modules: purchase_request, purchase_requisition
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__currency_id
@@ -2241,7 +2241,7 @@ msgstr ""
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__requested_by
 msgid "Requested By"
-msgstr "ผู้ขอ"
+msgstr "ชื่อผู้ขอ"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_allocation__requested_product_uom_qty
@@ -2253,7 +2253,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
 msgid "Requested by"
-msgstr "ผู้ขอ"
+msgstr "ชื่อผู้ขอ"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
