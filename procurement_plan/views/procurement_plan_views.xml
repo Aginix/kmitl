@@ -101,9 +101,9 @@
             <search>
                 <group expand="1" string="Group By">
                     <filter string="ปีงบประมาณ" name="group_by_fiscal_year" context="{'group_by': 'date_range_fy_id'}" />
+                    <filter string="Procurement Method" name="group_by_procurement_method_id" context="{'group_by': 'procurement_method_id'}" />
+                    <filter string="สถานะ" name="group_by_state" context="{'group_by': 'state'}" />
                     <filter string="วิธีการจัดซื้อจัดจ้าง" name="group_by_procurement_method_id" context="{'group_by':'procurement_method_id'}" />
-                    <filter string="กองทุน" name="group_by_fund_analytic_id" context="{'group_by':'fund_analytic_id'}" />
-                    <filter string="แหล่งเงิน" name="group_by_source_analytic_id" context="{'group_by':'source_analytic_id'}" />
                 </group>
                 <searchpanel>
                     <field name="state" icon="fa-calendar" enable_counters="1" />
