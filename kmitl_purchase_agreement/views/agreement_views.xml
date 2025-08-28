@@ -11,7 +11,7 @@
             </xpath>
 
             <xpath expr="//field[@name='code']" position="after">
-                <field name="purchase_order_id" string="PO"/>
+                <field name="purchase_order_id" string="PO Ref"/>
             </xpath>
 
             <xpath expr="//field[@name='company_id']" position="attributes">

@@ -13,7 +13,7 @@ class PurchaseAgreementAttachment(models.Model):
 
     name = fields.Char('Name')
 
-    request_id = fields.Many2one("agreement", string="Purchase Request")
+    request_id = fields.Many2one("agreement", string="Agreement")
     file_name = fields.Char(string="Filename")
     file = fields.Binary(string="File", required=True)
     description = fields.Char(string="Description")

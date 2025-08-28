@@ -10,7 +10,7 @@
                 <group name="reason">
                     <field name="reason"/>
                 </group>
-                <group string="เอกสารการแก้ไขสัญญาใหม่">
+                <group string="Attachment Reversion">
                     <field name="attachment_ids">
                         <tree editable="bottom">
                             <field name="file" filename="file_name"/>
