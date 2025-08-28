@@ -1,0 +1,15 @@
+<odoo>
+    <record id="ir_rule_purchase_request_operating_unit" model="ir.rule">
+        <field name="model_id" ref="purchase_request.model_purchase_request" />
+        <field
+            name="domain_force"
+        >['|', ('operating_unit_id','=',False), ('operating_unit_id','in',operating_unit_ids)]
+        </field>
+        <field name="name">Purchase Request Operating Unit</field>
+        <field name="global" eval="True" />
+        <field name="perm_unlink" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="0" />
+    </record>
+</odoo>
