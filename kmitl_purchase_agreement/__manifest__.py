@@ -14,6 +14,11 @@
         "views/purchase_order_views.xml",
         "wizards/agreement_new_version_wizard.xml"
     ],
+    "assets": {
+        'web.assets_backend': [
+            'kmitl_purchase_agreement/static/src/css/template_inherit.css',
+        ],
+    },
     'installable': True,
     'auto_install': False,
     'license': 'LGPL-3',
