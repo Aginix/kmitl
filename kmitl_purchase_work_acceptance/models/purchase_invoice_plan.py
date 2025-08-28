@@ -15,7 +15,7 @@ class PurchaseInvoicePlan(models.Model):
         compute="_compute_wa_id",
         string="Work Acceptance",
         store=False,
-        index=True,
+        search=True,
     )
 
     wa_state = fields.Selection(
