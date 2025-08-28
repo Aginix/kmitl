@@ -7,9 +7,9 @@
         <field name="model">purchase.request.approval</field>
         <field name="inherit_id" ref="purchase_request_approval.view_purchase_request_approval"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='requested_by']" position="after">
+            <field name="requested_by" position="after">
                 <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit"/>
-            </xpath>
+            </field>
         </field>
     </record>
 
