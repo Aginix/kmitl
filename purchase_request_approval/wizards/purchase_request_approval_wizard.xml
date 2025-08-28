@@ -5,6 +5,9 @@
         <field name="model">purchase.request.approval.wizard</field>
         <field name="arch" type="xml">
             <form string="Create Approval">
+                <div class="alert alert-warning" role="alert">
+                    ถ้าจำนวนเงิน 100,000 บาท กรุณาดำเนินการ EGP ให้เสร็จสิ้นก่อนดำเนินการกรอกแบบฟอร์ม
+                </div>
                 <group>
                     <field name="vendor_id"/>
                     <field name="purchase_request_name"/>
