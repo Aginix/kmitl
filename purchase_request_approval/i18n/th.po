@@ -451,7 +451,6 @@ msgstr "ส่งคำขอแล้ว"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__price_subtotal
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__subtotal
 msgid "Subtotal"
 msgstr "ยอดรวมย่อย"
 

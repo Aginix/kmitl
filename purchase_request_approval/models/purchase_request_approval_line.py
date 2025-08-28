@@ -13,7 +13,6 @@ class PurchaseRequestApprovalLine(models.Model):
     description = fields.Text(string='Description')
     price_unit = fields.Float(string='Unit Price')
     taxes_id = fields.Many2many('account.tax', string='Taxes')
-    subtotal = fields.Monetary(string='Subtotal', compute='_compute_subtotal', store=True)
     currency_id = fields.Many2one(related='approval_id.currency_id', store=True, readonly=True)
     price_subtotal = fields.Monetary(compute='_compute_amount', string='Subtotal', store=True)
     price_total = fields.Monetary(compute='_compute_amount', string='Total', store=True)
