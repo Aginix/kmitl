@@ -1,13 +1,14 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
+# 	* purchase_request_approval
 # 	* purchase_request_kmitl
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-22 12:45+0000\n"
-"PO-Revision-Date: 2025-08-22 12:45+0000\n"
+"POT-Creation-Date: 2025-08-28 04:18+0000\n"
+"PO-Revision-Date: 2025-08-28 04:18+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -15,20 +16,63 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
-#. module: purchase_request_kmitl
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. modules: purchase_request_approval, purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
 msgid "Approve"
 msgstr "อนุมัติ"
 
-#. module: purchase_request_kmitl
+#. modules: purchase_request_approval, purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__approved
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__approved
 msgid "Approved"
 msgstr "อนุมัติ"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__attachment_type
 msgid "Attachment Type"
 msgstr "ประเภทไฟล์แนบ"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_wizard_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__cancelled
+msgid "Cancelled"
+msgstr "ถูกยกเลิก"
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
@@ -45,6 +89,17 @@ msgstr "ชื่อคณะกรรมการ"
 msgid "Committee Type"
 msgstr "ประเภทของคณะกรรมการ"
 
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__company_id
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__company_id
+msgid "Company"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_wizard_form
+msgid "Confirm"
+msgstr "ยืนยัน"
+
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__contract_type__contract_buy
 msgid "Contract buy"
@@ -55,33 +110,58 @@ msgstr "สัญญาซื้อขาย"
 msgid "Contract construction"
 msgstr "สัญญาจ้างก่อสร้าง"
 
-#. module: purchase_request_kmitl
+#. modules: purchase_request_approval, purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__contract_type
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__contract_type
 msgid "Contract type"
 msgstr "ประเภทสัญญา"
 
-#. module: purchase_request_kmitl
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_wizard_form
+msgid "Create Approval"
+msgstr ""
+
+#. modules: purchase_request_approval, purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__create_uid
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__create_uid
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_wizard__create_uid
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__create_uid
 msgid "Created by"
 msgstr "สร้างโดย"
 
-#. module: purchase_request_kmitl
+#. modules: purchase_request_approval, purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__create_date
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__create_date
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_wizard__create_date
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__create_date
 msgid "Created on"
 msgstr "สร้างเมื่อ"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__currency_id
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__currency_id
+msgid "Currency"
+msgstr ""
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__current_user
 msgid "Current User"
 msgstr "ผู้ใช้ปัจจุบัน"
 
-#. module: purchase_request_kmitl
+#. module: purchase_request_approval
+#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval_line__uom
+msgid "Default unit of measure used for all stock operations."
+msgstr ""
+
+#. modules: purchase_request_approval, purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__department_id
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__department_id
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
 msgid "Department"
 msgstr "หน่วยงาน"
 
-#. module: purchase_request_kmitl
+#. modules: purchase_request_approval, purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__description
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__description
 msgid "Description"
 msgstr "รายละเอียด"
@@ -91,7 +171,10 @@ msgstr "รายละเอียด"
 msgid "Direct paid"
 msgstr "จ่ายตรง"
 
-#. module: purchase_request_kmitl
+#. modules: purchase_request_approval, purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__display_name
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__display_name
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_wizard__display_name
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__display_name
 msgid "Display Name"
 msgstr "ชื่อแสดง"
@@ -101,7 +184,8 @@ msgstr "ชื่อแสดง"
 msgid "Done"
 msgstr "เสร็จสิ้น"
 
-#. module: purchase_request_kmitl
+#. modules: purchase_request_approval, purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__draft
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__draft
 msgid "Draft"
 msgstr "ฉบับร่าง"
@@ -115,6 +199,16 @@ msgstr "อื่นๆ"
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
 msgid "Employee"
 msgstr "พนักงาน"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_wizard__end_date
+msgid "End Date"
+msgstr "วันที่หมดสัญญา"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__end_date
+msgid "End date"
+msgstr "วันที่หมดสัญญา"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request_attachment__attachment_type__etc
@@ -136,44 +230,202 @@ msgstr "คณะกรรมการพิจารณาผล"
 msgid "Filename"
 msgstr "ชื่อไฟล์"
 
-#. module: purchase_request_kmitl
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__has_message
+msgid "Has Message"
+msgstr ""
+
+#. modules: purchase_request_approval, purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__id
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__id
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_wizard__id
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__id
 msgid "ID"
-msgstr "ไอดี"
+msgstr "รหัส"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__message_has_error
+#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__is_current_user_requester
 msgid "Is Current User Requester"
 msgstr "เป็นผู้ใช้ที่ร้องข้อ"
 
-#. module: purchase_request_kmitl
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__is_editable
+msgid "Is Editable"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. modules: purchase_request_approval, purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval____last_update
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line____last_update
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_wizard____last_update
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "แก้ไขครั้งล่าสุดเมื่อ"
 
-#. module: purchase_request_kmitl
+#. modules: purchase_request_approval, purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__write_uid
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__write_uid
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_wizard__write_uid
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "อัพเดทครั้งสุดท้ายโดย"
 
-#. module: purchase_request_kmitl
+#. modules: purchase_request_approval, purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__write_date
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__write_date
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_wizard__write_date
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "อัพเดทครั้งสุดท้ายเมื่อ"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__payment_type__loan
 msgid "Loan"
 msgstr "เงินยืม"
 
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__master_department_id
+msgid "Master Department"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval
+msgid "Name..."
+msgstr ""
+
+#. module: purchase_request_approval
+#. odoo-python
+#: code:addons/purchase_request_approval/models/purchase_request_approval.py:0
+#, python-format
+msgid "New"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: purchase_request_approval
+#. odoo-python
+#: code:addons/purchase_request_approval/wizards/purchase_request_approval_wizard.py:0
+#, python-format
+msgid "No active Purchase Request found."
+msgstr ""
+
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
 msgid "Note"
 msgstr "หมายเหตุ"
 
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__request_id
+msgid "PR1"
+msgstr "รหัสอ้างอิงแบบขอ"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request__approval_id
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__approval_id
+msgid "PR2"
+msgstr ""
+
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__payment_type
 msgid "Payment Type"
+msgstr "ประเภทการจ่ายเงิน"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__payment_type
+msgid "Payment type"
 msgstr "ประเภทการจ่ายเงิน"
 
 #. module: purchase_request_kmitl
@@ -196,11 +448,41 @@ msgstr ""
 msgid "Procurement Committee"
 msgstr "ชื่อคณะกรรมการ"
 
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__product_id
+msgid "Product"
+msgstr "สินค้า"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval
+msgid "Product Lines"
+msgstr "รายการสินค้า"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__line_ids
+msgid "Products"
+msgstr "สินค้า"
+
 #. module: purchase_request_kmitl
 #: model:ir.model,name:purchase_request_kmitl.model_purchase_request
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__request_id
 msgid "Purchase Request"
-msgstr ""
+msgstr "คำขอซื้อขอจ้าง"
+
+#. module: purchase_request_approval
+#: model:ir.actions.act_window,name:purchase_request_approval.action_purchase_request_approval
+#: model:ir.model,name:purchase_request_approval.model_purchase_request_approval
+#: model:ir.ui.menu,name:purchase_request_approval.menu_purchase_request_approval_root_purchase
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval
+msgid "Purchase Request Approval"
+msgstr "ขออนุมัติคำขอซื้อขอจ้าง"
+
+#. module: purchase_request_approval
+#: model:ir.actions.act_window,name:purchase_request_approval.action_purchase_request_approval_line
+#: model:ir.model,name:purchase_request_approval.model_purchase_request_approval_line
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_line_form
+msgid "Purchase Request Approval Line"
+msgstr "ขออนุมัติคำขอซื้อขอจ้างรายการ"
 
 #. module: purchase_request_kmitl
 #: model:ir.actions.act_window,name:purchase_request_kmitl.action_purchase_request_attachment
@@ -209,15 +491,35 @@ msgstr ""
 msgid "Purchase Request Attachment"
 msgstr "เอกสารแนบคำขอซื้อ"
 
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_wizard__purchase_request_name
+msgid "Purchase Request Name"
+msgstr "ชื่อคำขออนุมัติ"
+
 #. module: purchase_request_kmitl
 #: model:res.groups,name:purchase_request_kmitl.group_purchase_request_user_all
 msgid "Purchase Request User : All Documents"
+msgstr "ผู้ใช้คำขอซื้อขอจ้าง : ทุกเอกสาร"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__purchase_request_name
+msgid "Purchase request name"
+msgstr "ชื่อคำขออนุมัติ"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__purchase_request_number
+msgid "Purchase request number"
 msgstr ""
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__contract_type__order
 msgid "Purchase/Hire Order"
 msgstr "ใบสั่งซื้อ/จ้าง"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__quantity
+msgid "Quantity"
+msgstr "จำนวน"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request_attachment__attachment_type__rfq
@@ -229,30 +531,103 @@ msgstr "ใบเสนอราคา"
 msgid "RFQ"
 msgstr ""
 
-#. module: purchase_request_kmitl
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__name
+msgid "Reference"
+msgstr "รหัสเอกสารแบบขออนุมัติ (พจ.1)"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval
+msgid "Reject"
+msgstr "ตีกลับ"
+
+#. modules: purchase_request_approval, purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__rejected
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__rejected
 msgid "Rejected"
-msgstr "ถูกยกเลิก"
+msgstr "ถูกตีกลับ"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__requested_by
+msgid "Request By"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval
+msgid "Reset"
+msgstr "รีเซ็ต"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__activity_user_id
+msgid "Responsible User"
+msgstr ""
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
 msgid "Role"
 msgstr "บทบาท"
 
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__vendor
+#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval_wizard__vendor_id
+msgid ""
+"Select a vendor to create a purchase Request for the selected request lines."
+msgstr ""
+
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request_attachment__attachment_type__tor
 msgid "Specification (TOR)"
 msgstr "ข้อกำหนดคุณลักษณะ"
 
-#. module: purchase_request_kmitl
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_wizard__start_date
+msgid "Start Date"
+msgstr "วันที่เริ่มสัญญา"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__start_date
+msgid "Start date"
+msgstr "วันที่เริ่มสัญญา"
+
+#. modules: purchase_request_approval, purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__state
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__state
 msgid "Status"
 msgstr "สถานะ"
 
+#. module: purchase_request_approval
+#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__attachment_id
 msgid "Stored Attachment"
-msgstr ""
+msgstr "ชื่อที่เก็บไฟล์จริง"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval
+msgid "Submit"
+msgstr "ส่งคำขอ"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__submitted
+msgid "Submitted"
+msgstr "ส่งคำขอแล้ว"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__subtotal
+msgid "Subtotal"
+msgstr "ผลรวม"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__tor_document_ids
@@ -269,6 +644,51 @@ msgstr "คณะกรรมการกำหนดคุณลักษณะ
 msgid "TOR Committees"
 msgstr "คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน"
 
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__amount_tax
+msgid "Tax"
+msgstr "ภาษี"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__taxes
+msgid "Taxes"
+msgstr "ภาษี"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__end_date
+msgid ""
+"The end date for the purchase Request. If not set, the start date will be "
+"used."
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__purchase_request_name
+msgid "The name of the purchase request associated with the selected lines."
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__purchase_request_number
+msgid "The number of the purchase request associated with the selected lines."
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__start_date
+msgid ""
+"The start date for the purchase Request. If not set, the current date will "
+"be used."
+msgstr ""
+
+#. module: purchase_request_approval
+#: model_terms:ir.actions.act_window,help:purchase_request_approval.action_purchase_request_approval_line
+msgid ""
+"There is no examples click here to add new Purchase Request Approval Line."
+msgstr ""
+
+#. module: purchase_request_approval
+#: model_terms:ir.actions.act_window,help:purchase_request_approval.action_purchase_request_approval
+msgid "There is no examples click here to add new Purchase Request Approval."
+msgstr ""
+
 #. module: purchase_request_kmitl
 #: model_terms:ir.actions.act_window,help:purchase_request_kmitl.action_purchase_request_attachment
 msgid ""
@@ -280,10 +700,40 @@ msgstr ""
 msgid "To be approved"
 msgstr "รอการอนุมัติ"
 
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__amount_total
+msgid "Total"
+msgstr "ราคารวม"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__estimated_cost
+msgid "Total price"
+msgstr "จำนวนเงินทั้งหมด"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__unit_price
+msgid "Unit Price"
+msgstr "ราคาต่อหน่วย"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__uom
+msgid "Unit of Measure"
+msgstr "หน่วยนับ"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__amount_untaxed
+msgid "Untaxed Amount"
+msgstr "จำนวนเงินที่ไม่ต้องเสียภาษี"
+
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__upload_file
 msgid "Upload File"
-msgstr ""
+msgstr "อัปโหลดไฟล์"
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
@@ -299,6 +749,27 @@ msgstr "ตรวจสอบแล้ว"
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__validated_by
 msgid "Validated By"
 msgstr "ตรวจสอบข้อมูลโดย"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__vendor
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_wizard__vendor_id
+msgid "Vendor"
+msgstr "คู่ค้า"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model,name:purchase_request_approval.model_purchase_request_approval_wizard
+msgid "Wizard for Creating Purchase Request Approval"
+msgstr "สร้างหน้าต่างขออนุมัติคำขอซื้อขอจ้าง"
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
@@ -355,12 +826,7 @@ msgstr ""
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "ขบวนการดำเนินการ"
-msgstr ""
-
-#. module: purchase_request_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "ขออนุมัติโดย"
+msgid "การดำเนินงาน"
 msgstr ""
 
 #. module: purchase_request_kmitl
@@ -393,6 +859,11 @@ msgstr ""
 msgid "คำอธิบาย"
 msgstr ""
 
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_form_inherit
+msgid "จัดทำคำขออนุมัติ"
+msgstr ""
+
 #. module: purchase_request_kmitl
 #: model:exception.rule,name:purchase_request_kmitl.kmitl_pr_exception_committee_1
 msgid "ต้องมีคณะกรรมการตรวจรับพัสดุ จำนวน 3 รายชื่อ"
@@ -414,37 +885,7 @@ msgstr ""
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "ยกเลิก"
-msgstr ""
-
-#. module: purchase_request_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "รีเซ็ต"
-msgstr ""
-
-#. module: purchase_request_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "สร้างเมื่อ"
-msgstr ""
-
-#. module: purchase_request_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
 msgid "ส่งคำขออนุมัติ"
-msgstr ""
-
-#. module: purchase_request_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "หมายเลขใบ พ.1"
-msgstr ""
-
-#. module: purchase_request_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "อนุมัติเมื่อ"
-msgstr ""
-
-#. module: purchase_request_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "อนุมัติโดย"
 msgstr ""
 
 #. module: purchase_request_kmitl

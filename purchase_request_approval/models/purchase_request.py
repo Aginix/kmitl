@@ -17,5 +17,6 @@ class PurchaseRequest(models.Model):
             'res_model': 'purchase.request.approval.wizard',
             'view_mode': 'form',
             'target': 'new',
+            'name': "กรุณาบันทึกข้อมูลเพื่อจัดทำคำขออนุมัติ",
             'context': {'active_id': self.id}
         }

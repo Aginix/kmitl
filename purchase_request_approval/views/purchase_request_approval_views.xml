@@ -24,7 +24,7 @@
                 <header>
                     <button name="button_approve" string="Approve" type="object" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['submitted'])]}" groups="purchase_request.group_purchase_request_manager" />
                     <button name="button_submit" string="Submit" type="object" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['draft'])]}" />
-                    <button name="button_reject" string="Reject" type="object" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['approved', 'submitted'])]}" />
+                    <button name="button_reject" string="Reject" type="object" class="btn-primary" attrs="{'invisible': [('state', 'not in', ['approved'])]}" groups="purchase_request.group_purchase_request_manager" />
                     <button name="button_cancel" type="object" string="Cancel" class="btn-secondary" attrs="{'invisible': [('state', 'in', ['draft', 'cancel', 'rejected', 'approved' , 'cancelled'])]}" />
                     <button name="button_draft" type="object" string="Reset" class="btn-secondary" attrs="{'invisible': [('state', 'in', ['draft', 'submitted', 'approved'])]}" />
                     <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved"/>
@@ -45,8 +45,8 @@
                             <field name="purchase_request_name" required="1" attrs="{
                                     'readonly': [('is_editable','=', False)]
                             }" />
-                            <field name="start_date" widget="remaining_days" attrs="{'readonly': [('is_editable','=', False)]}" />
-                            <field name="end_date" widget="remaining_days" attrs="{'readonly': [('is_editable','=', False)]}" />
+                            <field name="start_date" attrs="{'readonly': [('is_editable','=', False)]}" />
+                            <field name="end_date" attrs="{'readonly': [('is_editable','=', False)]}" />
                         </group>
                         <group>
                             <field name="contract_type" readonly="1" />
