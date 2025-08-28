@@ -30,6 +30,5 @@ class AgreementNewVersionWizard(models.TransientModel):
             })
 
         agreement.with_context(revision_reason=self.reason).create_new_version()
-        agreement.create_new_version()
         return {"type": "ir.actions.act_window_close"}
 
