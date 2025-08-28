@@ -7,8 +7,8 @@ from odoo.exceptions import UserError, ValidationError
 _logger = logging.getLogger(__name__)
 
 
-class PurchaseRequest(models.Model):
-    _inherit = 'purchase.request'
+class PurchaseRequestApproval(models.Model):
+    _inherit = 'purchase.request.approval'
 
     operating_unit_id = fields.Many2one(
         comodel_name="operating.unit",
