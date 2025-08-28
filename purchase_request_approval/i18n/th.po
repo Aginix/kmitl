@@ -416,7 +416,7 @@ msgstr "รหัสอ้างอิงแบบขอ"
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request__approval_id
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__approval_id
 msgid "PR2"
-msgstr ""
+msgstr "รหัสอ้างอิงแบบขออนุมัติ (พจ.1)"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__payment_type

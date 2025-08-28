@@ -2343,7 +2343,7 @@ msgstr "โปรดระบุรหัสงบประมาณ"
 #: code:addons/purchase_request_budget/models/purchase_request.py:0
 #, python-format
 msgid "Please specify budget account and all required analytic dimensions"
-msgstr "โปรดระบุงบประมาณที่จำเป็นทั้งหมด"
+msgstr "กรุณาระบุข้อมูลการจองงบประมาณให้ถูกต้อง"
 
 #. module: budget
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_move_form
