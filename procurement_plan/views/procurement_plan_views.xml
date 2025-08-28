@@ -106,7 +106,6 @@
                     <filter string="แหล่งเงิน" name="group_by_source_analytic_id" context="{'group_by':'source_analytic_id'}" />
                 </group>
                 <searchpanel>
-                    <field name="account_id" icon="fa-book" enable_counters="1" />
                     <field name="date_range_fy_id" icon="fa-calendar" enable_counters="1" />
                     <field name="source_analytic_id" icon="fa-money" enable_counters="1" order="code asc" />
                     <field name="department_analytic_id" icon="fa-users" enable_counters="1" order="code asc" />
