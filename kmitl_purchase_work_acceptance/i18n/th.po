@@ -1,0 +1,1078 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* kmitl_purchase_work_acceptance
+# 	* purchase_work_acceptance_invoice_plan
+# 	* purchase_work_acceptance
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-28 15:35+0000\n"
+"PO-Revision-Date: 2025-08-28 22:53+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.6\n"
+
+#. module: purchase_work_acceptance
+#. odoo-python
+#: code:addons/purchase_work_acceptance/wizard/select_work_acceptance_wizard.py:0
+#, python-format
+msgid "%s was already used by some bill"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#. odoo-python
+#: code:addons/purchase_work_acceptance/models/stock_picking.py:0
+#, python-format
+msgid "%s was used in some picking."
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_form
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_accepted_date_wizard
+msgid "Accept"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
+msgid "Accepte Date"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields.selection,name:purchase_work_acceptance.selection__work_acceptance__state__accept
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_form_inherit
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
+msgid "Accepted"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
+msgid "Accepted By"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__date_accept
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__date_accept
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_accepted_date_wizard__date_accept
+msgid "Accepted Date"
+msgstr "วันที่นำเข้าคลัง"
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_purchase_order_line__qty_accepted
+msgid "Accepted Qty."
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__access_warning
+msgid "Access warning"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__active_installment_ids
+msgid "Active Installment"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: kmitl_purchase_work_acceptance
+#: model:ir.model,name:kmitl_purchase_work_acceptance.model_agreement
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_select_work_acceptance_invoice_plan_wizard__agreement_id
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_work_acceptance_form
+msgid "Agreement"
+msgstr "สัญญา"
+
+#. module: kmitl_purchase_work_acceptance
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_work_acceptance__agreement_id
+msgid "Agreement Ref"
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.actions.server,name:purchase_work_acceptance_invoice_plan.apply_on_all_product_line
+msgid "All product lines"
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__amount
+msgid "Amount"
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__analytic_distribution
+msgid "Analytic"
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__analytic_distribution_search
+msgid "Analytic Distribution Search"
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__analytic_precision
+msgid "Analytic Precision"
+msgstr ""
+
+#. module: kmitl_purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_work_acceptance_form
+msgid "Approve"
+msgstr ""
+
+#. module: kmitl_purchase_work_acceptance
+#: model:ir.model.fields.selection,name:kmitl_purchase_work_acceptance.selection__work_acceptance__state__approved
+msgid "Approved"
+msgstr ""
+
+#. module: kmitl_purchase_work_acceptance
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_work_acceptance__document_ids
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_work_acceptance_form
+msgid "Attachment"
+msgstr "เอกสารแนบ"
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: kmitl_purchase_work_acceptance
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_work_accepted_date_wizard__document_ids
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_work_accepted_date_wizard_form
+msgid "Attachments"
+msgstr "เอกสารแนบ"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__apply_method_id
+msgid "Base On"
+msgstr ""
+
+#. modules: purchase_work_acceptance, purchase_work_acceptance_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_select_work_acceptance_wizard
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_form
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_accepted_date_wizard
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.view_select_work_acceptance_invoice_plan_wizard
+msgid "Cancel"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields.selection,name:purchase_work_acceptance.selection__work_acceptance__state__cancel
+msgid "Cancelled"
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,help:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__apply_method_id
+msgid "Choose the method to find matcing product line for this installment"
+msgstr ""
+
+#. module: kmitl_purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_work_acceptance_form
+msgid "Committee"
+msgstr "คณะกรรมการ"
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__company_id
+msgid "Company"
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model,name:purchase_work_acceptance_invoice_plan.model_select_work_acceptance_invoice_plan_qty
+msgid "Compute quantity of each WA lines, according to product lines"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model,name:purchase_work_acceptance.model_res_config_settings
+msgid "Config Settings"
+msgstr "ตั้งค่าการกำหนดค่า"
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_select_work_acceptance_wizard
+msgid "Create Vendor Bill"
+msgstr ""
+
+#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance,
+#. purchase_work_acceptance_invoice_plan
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_agreement_form
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_form_inherit
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.view_select_work_acceptance_invoice_plan_wizard
+msgid "Create WA"
+msgstr ""
+
+#. modules: kmitl_purchase_work_acceptance,
+#. purchase_work_acceptance_invoice_plan
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_agreement_form
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.purchase_order_form_inherit
+msgid "Create WA by Installment"
+msgstr "สร้างการตรวจรับจากงวดงาน"
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.actions.act_window,help:purchase_work_acceptance.action_work_acceptance
+msgid "Create a new work acceptance"
+msgstr ""
+
+#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance,
+#. purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__create_uid
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard__create_uid
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__create_uid
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__create_uid
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_accepted_date_wizard__create_uid
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__create_uid
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__create_uid
+msgid "Created by"
+msgstr ""
+
+#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance,
+#. purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__create_date
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard__create_date
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__create_date
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__create_date
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_accepted_date_wizard__create_date
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__create_date
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__create_date
+msgid "Created on"
+msgstr ""
+
+#. modules: purchase_work_acceptance, purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__currency_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__currency_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,help:purchase_work_acceptance.field_work_acceptance__access_url
+msgid "Customer Portal URL"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_form
+msgid "Define your terms and conditions ..."
+msgstr ""
+
+#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__description
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__name
+msgid "Description"
+msgstr "รายละเอียด"
+
+#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance,
+#. purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__display_name
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard__display_name
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__display_name
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__display_name
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_accepted_date_wizard__display_name
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__display_name
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields.selection,name:purchase_work_acceptance.selection__work_acceptance__state__draft
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
+msgid "Draft"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__date_due
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__date_due
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
+msgid "Due Date"
+msgstr "วันที่สิ้นสุดการตรวจรับ"
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_res_config_settings__group_enable_wa_on_in
+#: model:res.groups,name:purchase_work_acceptance.group_enable_wa_on_in
+msgid "Enable WA on Goods Receipt"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_res_config_settings__group_enable_wa_on_po
+#: model:res.groups,name:purchase_work_acceptance.group_enable_wa_on_po
+msgid "Enable WA on Purchase Order"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_res_config_settings__group_enable_wa_on_invoice
+#: model:res.groups,name:purchase_work_acceptance.group_enable_wa_on_invoice
+msgid "Enable WA on Vendor Bill"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_res_config_settings__group_enforce_wa_on_in
+#: model:res.groups,name:purchase_work_acceptance.group_enforce_wa_on_in
+msgid "Enforce WA on Goods Receipt"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_res_config_settings__group_enforce_wa_on_invoice
+#: model:res.groups,name:purchase_work_acceptance.group_enforce_wa_on_invoice
+msgid "Enforce WA on Vendor Bill"
+msgstr ""
+
+#. module: kmitl_purchase_work_acceptance
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__file
+msgid "File"
+msgstr ""
+
+#. module: kmitl_purchase_work_acceptance
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__file_name
+msgid "Filename"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,help:purchase_work_acceptance.field_work_acceptance__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_purchase_work_acceptance_attachment_search
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
+msgid "Group By"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__has_message
+msgid "Has Message"
+msgstr ""
+
+#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance,
+#. purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__id
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard__id
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__id
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__id
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_accepted_date_wizard__id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__id
+msgid "ID"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,help:purchase_work_acceptance.field_work_acceptance__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,help:purchase_work_acceptance.field_work_acceptance__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,help:purchase_work_acceptance.field_work_acceptance__message_has_error
+#: model:ir.model.fields,help:purchase_work_acceptance.field_work_acceptance__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#. odoo-python
+#: code:addons/purchase_work_acceptance_invoice_plan/wizard/select_work_acceptance_invoice_plan_wizard.py:0
+#, python-format
+msgid "Installment Warning:"
+msgstr ""
+
+#. modules: kmitl_purchase_work_acceptance,
+#. purchase_work_acceptance_invoice_plan
+#. odoo-python
+#: code:addons/kmitl_purchase_work_acceptance/models/select_work_acceptance_invoice_plan_wizard.py:0
+#: code:addons/purchase_work_acceptance_invoice_plan/wizard/select_work_acceptance_invoice_plan_wizard.py:0
+#, python-format
+msgid "Installment {} is already used by other WA."
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__installment_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_work_acceptance__installment_id
+msgid "Invoice Plan"
+msgstr "งวดงาน"
+
+#. module: kmitl_purchase_work_acceptance
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_agreement__invoice_plan_count
+msgid "Invoice Plan Count"
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model,name:purchase_work_acceptance_invoice_plan.model_purchase_invoice_plan
+msgid "Invoice Planning Detail"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__invoice_ref
+msgid "Invoice Reference"
+msgstr "รหัสเอกสารการเบิกจ่าย"
+
+#. module: kmitl_purchase_work_acceptance
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_work_acceptance__is_editable
+msgid "Is Editable"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model,name:purchase_work_acceptance.model_account_move
+msgid "Journal Entry"
+msgstr "รายการบันทึกประจำวัน"
+
+#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance,
+#. purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment____last_update
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard____last_update
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance____last_update
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line____last_update
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_accepted_date_wizard____last_update
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty____last_update
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance,
+#. purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__write_uid
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard__write_uid
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__write_uid
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__write_uid
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_accepted_date_wizard__write_uid
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__write_uid
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance,
+#. purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__write_date
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard__write_date
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__write_date
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__write_date
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_accepted_date_wizard__write_date
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__write_date
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.view_select_work_acceptance_invoice_plan_wizard
+msgid "Leave blank to apply to all purchase lines"
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,help:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__order_line_ids
+msgid "List of product lines used to create WA. Blank means all"
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,help:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__installment_id
+msgid "List only installment that has not been used in WA (draft, accepted)"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
+msgid "My Work Acceptance"
+msgstr ""
+
+#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__name
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__name
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_purchase_work_acceptance_attachment_search
+msgid "Name"
+msgstr ""
+
+#. module: kmitl_purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_purchase_work_acceptance_attachment_form
+msgid "Name..."
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#. odoo-python
+#: code:addons/purchase_work_acceptance_invoice_plan/wizard/select_work_acceptance_invoice_plan_wizard.py:0
+#, python-format
+msgid "No product line with matched amount!"
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__qty_not_accepted
+msgid "Not Accepted"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__notes
+msgid "Notes"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,help:purchase_work_acceptance.field_work_acceptance__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,help:purchase_work_acceptance.field_work_acceptance__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#. odoo-python
+#: code:addons/purchase_work_acceptance/models/purchase.py:0
+#, python-format
+msgid "Operation not supported"
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__order_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__order_id
+msgid "Order"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__partner_id
+msgid "Partner"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model,name:purchase_work_acceptance.model_stock_picking_type
+msgid "Picking Type"
+msgstr "ประเภทการรับ"
+
+#. module: purchase_work_acceptance_invoice_plan
+#. odoo-python
+#: code:addons/purchase_work_acceptance_invoice_plan/wizard/select_work_acceptance_invoice_plan_wizard.py:0
+#, python-format
+msgid "Please register deposit first."
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__access_url
+msgid "Portal Access URL"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__product_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__product_id
+msgid "Product"
+msgstr "สินค้า"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__order_line_ids
+msgid "Product Filter"
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__order_line_id
+msgid "Product Line"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__product_uom
+msgid "Product Unit of Measure"
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.actions.server,name:purchase_work_acceptance_invoice_plan.apply_on_matched_amount
+msgid "Product line with matched amount"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_form
+msgid "Products"
+msgstr "สินค้า"
+
+#. module: purchase_work_acceptance
+#: model:ir.model,name:purchase_work_acceptance.model_purchase_order
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__purchase_id
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
+msgid "Purchase Order"
+msgstr "รหัสเอกสารการจัดซื้อจัดจ้าง"
+
+#. modules: purchase_work_acceptance, purchase_work_acceptance_invoice_plan
+#: model:ir.model,name:purchase_work_acceptance_invoice_plan.model_purchase_order_line
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__purchase_line_id
+msgid "Purchase Order Line"
+msgstr "ไลน์คำสั่งซื้อ"
+
+#. module: kmitl_purchase_work_acceptance
+#: model:ir.actions.act_window,name:kmitl_purchase_work_acceptance.action_purchase_work_acceptance_attachment
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_purchase_work_acceptance_attachment_form
+msgid "Purchase Work Acceptance Attachment"
+msgstr ""
+
+#. module: kmitl_purchase_work_acceptance
+#: model:ir.model,name:kmitl_purchase_work_acceptance.model_purchase_work_acceptance_attachment
+msgid "PurchaseWorkAcceptanceAttachment"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__product_qty
+msgid "Quantity"
+msgstr "จำนวน"
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
+msgid "Receive Date"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__date_receive
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__date_receive
+msgid "Received Date"
+msgstr "วันที่ตรวจรับ"
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_tree
+msgid "Reference"
+msgstr "รหัสใบตรวจรับ"
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_account_bank_statement_line__require_wa
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_account_move__require_wa
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_account_payment__require_wa
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard__require_wa
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_stock_picking__require_wa
+msgid "Require Wa"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__responsible_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__responsible_id
+msgid "Responsible Person"
+msgstr "ผู้จัดทำ"
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__access_token
+msgid "Security Token"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#. odoo-python
+#: code:addons/purchase_work_acceptance/models/work_acceptance.py:0
+#, python-format
+msgid "Select Accept Date"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_accepted_date_wizard
+msgid "Select Accepted Date"
+msgstr ""
+
+#. modules: purchase_work_acceptance, purchase_work_acceptance_invoice_plan
+#. odoo-python
+#: code:addons/purchase_work_acceptance/models/purchase.py:0
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_select_work_acceptance_wizard
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.view_select_work_acceptance_invoice_plan_wizard
+#, python-format
+msgid "Select Work Acceptance"
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model,name:purchase_work_acceptance_invoice_plan.model_select_work_acceptance_invoice_plan_wizard
+msgid "Select Work Acceptance Invoice Plan Wizard"
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model,name:purchase_work_acceptance_invoice_plan.model_select_work_acceptance_wizard
+msgid "Select Work Acceptance Wizard"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model,name:purchase_work_acceptance.model_work_accepted_date_wizard
+msgid "Select work accepted date"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_form
+msgid "Set to draft"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__state
+msgid "Status"
+msgstr "สถานะ"
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,help:purchase_work_acceptance.field_work_acceptance__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: kmitl_purchase_work_acceptance
+#: model:ir.model.fields.selection,name:kmitl_purchase_work_acceptance.selection__work_acceptance__state__submit
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_work_acceptance_form
+msgid "Submit"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__price_subtotal
+msgid "Subtotal"
+msgstr "ราคารวม"
+
+#. module: purchase_work_acceptance_invoice_plan
+#. odoo-python
+#: code:addons/purchase_work_acceptance_invoice_plan/wizard/select_work_acceptance_invoice_plan_wizard.py:0
+#, python-format
+msgid ""
+"The 1st installment is 'Invoice Plan %(min_installment)s' but you are "
+"choosing 'Invoice Plan %(installment)s'"
+msgstr ""
+
+#. module: kmitl_purchase_work_acceptance
+#: model:ir.model.fields,help:kmitl_purchase_work_acceptance.field_work_acceptance__agreement_version
+msgid ""
+"The versions are used to keep track of document history and previous "
+"versions can be referenced."
+msgstr ""
+
+#. module: kmitl_purchase_work_acceptance
+#: model_terms:ir.actions.act_window,help:kmitl_purchase_work_acceptance.action_purchase_work_acceptance_attachment
+msgid ""
+"There is no examples click here to add new Purchase Work Acceptance "
+"Attachment."
+msgstr ""
+
+#. modules: purchase_work_acceptance, purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__quantity
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_form_inherit
+msgid "To Accept"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_purchase_order_line__qty_to_accept
+msgid "To Accept Qty."
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,help:purchase_work_acceptance.field_account_bank_statement_line__wa_id
+#: model:ir.model.fields,help:purchase_work_acceptance.field_account_move__wa_id
+#: model:ir.model.fields,help:purchase_work_acceptance.field_account_payment__wa_id
+msgid ""
+"To control quantity and unit price of the vendor bill, to be according to "
+"the quantity and unit price of the work acceptance."
+msgstr ""
+
+#. modules: purchase_work_acceptance, purchase_work_acceptance_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_form
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.view_select_work_acceptance_invoice_plan_wizard
+msgid "Total"
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.view_select_work_acceptance_invoice_plan_wizard
+msgid ""
+"Total amount not equal to installment amount, are you sure to continue?"
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#. odoo-python
+#: code:addons/purchase_work_acceptance_invoice_plan/wizard/select_work_acceptance_invoice_plan_wizard.py:0
+#, python-format
+msgid "Total purchase amount must not be zero!"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model,name:purchase_work_acceptance.model_stock_picking
+msgid "Transfer"
+msgstr "โอน"
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,help:purchase_work_acceptance.field_work_acceptance__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: purchase_work_acceptance
+#. odoo-python
+#: code:addons/purchase_work_acceptance/models/work_acceptance.py:0
+#, python-format
+msgid ""
+"Unable set to draft this work acceptance. You must first cancel the related "
+"receipts."
+msgstr ""
+
+#. module: kmitl_purchase_work_acceptance
+#. odoo-python
+#: code:addons/kmitl_purchase_work_acceptance/models/work_acceptance.py:0
+#, python-format
+msgid ""
+"Unable to set to draft this work acceptance. You must first cancel the "
+"related receipts."
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__price_unit
+msgid "Unit Price"
+msgstr "ราคาต่อหน่วย"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__valid_amount
+msgid "Valid Amount"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__partner_id
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
+msgid "Vendor"
+msgstr "คู่ค้า"
+
+#. module: kmitl_purchase_work_acceptance
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_work_acceptance__agreement_version
+msgid "Version"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_form_inherit
+msgid "WA"
+msgstr ""
+
+#. module: kmitl_purchase_work_acceptance
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_agreement__wa_invoice_plan_equal
+msgid "WA = Invoice Plan"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_purchase_order__wa_accepted
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_view_search
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_purchase_order_filter
+msgid "WA Accepted"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_purchase_order__wa_line_ids
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_purchase_order_line__wa_line_ids
+msgid "WA Lines"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_view_search
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_purchase_order_filter
+msgid "WA Not Accepted"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_account_bank_statement_line__wa_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_account_move__wa_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_account_payment__wa_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_stock_picking__wa_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__wa_id
+msgid "WA Reference"
+msgstr ""
+
+#. module: kmitl_purchase_work_acceptance
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_invoice_plan__wa_state
+msgid "WA State"
+msgstr "สถานะการตรวจรับ"
+
+#. module: kmitl_purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_l10n_agreement_invoice_plan
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_purchase_invoice_plan_form
+msgid "WA Status"
+msgstr "สถานะการตรวจรับ"
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_purchase_order__wa_count
+msgid "WA count"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_stock_picking_type__bypass_wa
+msgid "WA not required"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard__wa_ids
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_stock_picking__wa_ids
+msgid "Wa"
+msgstr ""
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__wa_qty_line_ids
+msgid "Wa Qty Line"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,help:purchase_work_acceptance.field_work_acceptance__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,help:purchase_work_acceptance.field_stock_picking_type__bypass_wa
+msgid ""
+"When 'Enforce WA on Goods Receipt' is set, this option type can by pass it"
+msgstr ""
+
+#. modules: kmitl_purchase_work_acceptance,
+#. purchase_work_acceptance_invoice_plan
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__wizard_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__wizard_id
+msgid "Wizard"
+msgstr ""
+
+#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance,
+#. purchase_work_acceptance_invoice_plan
+#: model:ir.actions.act_window,name:purchase_work_acceptance.action_work_acceptance
+#: model:ir.actions.act_window,name:purchase_work_acceptance_invoice_plan.action_view_wa_installment
+#: model:ir.model,name:purchase_work_acceptance_invoice_plan.model_work_acceptance
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_invoice_plan__wa_id
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__wa_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard__wa_id
+#: model:ir.ui.menu,name:purchase_work_acceptance.menu_work_acceptance
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_l10n_agreement_invoice_plan
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_purchase_invoice_plan_form
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.res_config_settings_view_form_purchase
+msgid "Work Acceptance"
+msgstr "ใบตรวจรับ"
+
+#. module: kmitl_purchase_work_acceptance
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_work_acceptance__work_acceptance_committee_ids
+msgid "Work Acceptance Committees"
+msgstr ""
+
+#. module: kmitl_purchase_work_acceptance
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_agreement__wa_count
+msgid "Work Acceptance Count"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model,name:purchase_work_acceptance.model_work_acceptance_line
+msgid "Work Acceptance Line"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__wa_line_ids
+msgid "Work Acceptance Lines"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__user_id
+msgid "Work Acceptance Representative"
+msgstr ""
+
+#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance
+#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_agreement__wa_ids
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_purchase_order__wa_ids
+#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_agreement_form
+msgid "Work Acceptances"
+msgstr "ใบตรวจรับ"
+
+#. module: purchase_work_acceptance_invoice_plan
+#: model:ir.model.constraint,message:purchase_work_acceptance_invoice_plan.constraint_select_work_acceptance_invoice_plan_qty_order_line_unique
+msgid "You are selecting same product line more than one."
+msgstr ""
+
+#. module: purchase_work_acceptance
+#. odoo-python
+#: code:addons/purchase_work_acceptance/models/account_move.py:0
+#, python-format
+msgid "You cannot validate a bill if Quantity not equal accepted quantity"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#. odoo-python
+#: code:addons/purchase_work_acceptance/models/stock_picking.py:0
+#, python-format
+msgid ""
+"You cannot validate a transfer if done quantity not equal accepted quantity"
+msgstr ""
