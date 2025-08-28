@@ -21,7 +21,7 @@ class Agreement(models.Model):
     reversion_document_ids = fields.One2many(
         comodel_name="purchase.agreement.attachment",
         inverse_name="request_id",
-        string="Attachment",
+        string="Reversion Attachment",
     )
 
     pr1_total = fields.Monetary(related='purchase_order_id.request_total', string='PR1 Total')

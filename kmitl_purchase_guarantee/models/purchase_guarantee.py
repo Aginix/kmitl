@@ -30,11 +30,12 @@ class PurchaseGuarantee(models.Model):
     # รอเชื่อมกับของพี่แชมป์
     return_contract_ref = fields.Char()
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', 'New') in ('New', '/'):
-            vals['name'] = self.env['ir.sequence'].next_by_code('purchase.guarantee.custom') or '/'
-        return super(PurchaseGuarantee, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') in ('New', '/'):
+                vals['name'] = self.env['ir.sequence'].next_by_code('purchase.guarantee.custom') or '/'
+        return super().create(vals_list)
 
     @api.model
     def default_get(self, fields_list):
