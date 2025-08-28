@@ -34,11 +34,9 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
-            <!-- for debug -->
-            <!-- <xpath expr="//field[@name='invoice_ref']" position="before">
+            <xpath expr="//field[@name='invoice_ref']" position="before">
                 <field name="agreement_id" string="Agreement" readonly="1"/>
-                <field name="agreement_version" string="version" readonly="1"/>
-            </xpath> -->
+            </xpath>
 
 
             <xpath expr="//field[@name='invoice_ref']" position='attributes'>

@@ -9,6 +9,7 @@
     'depends': ['l10n_th_gov_purchase_agreement', 'purchase_order_kmitl'],
     "data": [
         "security/ir.model.access.csv",
+        "views/agreement_menu.xml",
         "views/agreement_views.xml",
         "views/purchase_order_views.xml",
         "wizards/agreement_new_version_wizard.xml"

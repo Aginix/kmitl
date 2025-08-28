@@ -9,6 +9,26 @@
             <xpath expr="//tree" position="attributes">
                 <attribute name="create">0</attribute>
             </xpath>
+
+            <xpath expr="//field[@name='code']" position="after">
+                <field name="purchase_order_id" string="PO"/>
+            </xpath>
+
+            <xpath expr="//field[@name='company_id']" position="attributes">
+                <attribute name="optional">show</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='parent_agreement_id']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='agreement_type_id']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='agreement_subtype_id']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
         </field>
     </record>
 
