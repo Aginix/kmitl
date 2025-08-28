@@ -1610,7 +1610,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_order__invoice_plan_ids
 #: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.purchase_order_form
 msgid "Invoice Plan"
-msgstr ""
+msgstr "แบ่งงวดงาน"
 
 #. module: purchase_invoice_plan
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_order__ip_invoice_plan
