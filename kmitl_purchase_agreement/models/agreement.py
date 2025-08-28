@@ -8,10 +8,7 @@ class Agreement(models.Model):
 
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.company.currency_id)
 
-    project_ids = fields.Selection(
-        [("project_1", "Project 1"), ("project_2", "Project 2")],
-        string="Project",
-    )
+    revision_reason = fields.Text(string="Revision Reason")
 
     document_ids = fields.One2many(
         comodel_name="purchase.order.attachment",
@@ -91,3 +88,17 @@ class Agreement(models.Model):
             "work_start_date",
             "work_end_date",
         ]
+    
+    def _get_old_version_default_vals(self):
+        self.ensure_one()
+        default_vals = {
+            "name": "{} - OLD VERSION".format(self.name),
+            "active": False,
+            "parent_agreement_id": self.id,
+            "version": self.version,
+            "revision": self.revision,
+            "code": "{}-V{}".format(self.code, str(self.version)),
+            "stage_id": self.stage_id.id,
+            "revision_reason": self._context.get('revision_reason', ''),
+        }
+        return default_vals
