@@ -15,3 +15,7 @@ class PurchaseRequestApproval(models.Model):
         res = super(PurchaseRequestApproval, self)._get_under_validation_exceptions()
         res.append("route_id")
         return res
+
+    def button_draft(self):
+        self.mapped("review_ids").unlink()
+        return super().button_draft()
