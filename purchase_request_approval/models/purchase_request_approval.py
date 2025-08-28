@@ -54,6 +54,18 @@ class PurchaseRequestApproval(models.Model):
         store=True,
         readonly=True
     )
+    procurement_type_id = fields.Many2one(
+        related='request_id.procurement_type_id',
+        string="Procurement Type",
+        store=True,
+        readonly=True
+    )
+    procurement_method_id = fields.Many2one(
+        related='request_id.procurement_method_id',
+        string="Procurement Method",
+        store=True,
+        readonly=True
+    )
     payment_type = fields.Selection(
         related='request_id.payment_type', store=True, string="Payment type", readonly=True)
     purchase_request_name = fields.Char(

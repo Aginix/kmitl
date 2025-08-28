@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-28 10:28+0000\n"
-"PO-Revision-Date: 2025-08-28 10:28+0000\n"
+"POT-Creation-Date: 2025-08-28 15:58+0000\n"
+"PO-Revision-Date: 2025-08-28 15:58+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -47,6 +47,7 @@ msgstr "อนุมัติ"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__approved
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
 msgid "Approved"
 msgstr "อนุมัติ"
 
@@ -131,6 +132,7 @@ msgstr "ชื่อแสดง"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__draft
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
 msgid "Draft"
 msgstr "ฉบับร่าง"
 
@@ -319,6 +321,16 @@ msgid "Payment type"
 msgstr "ประเภทการจ่ายเงิน"
 
 #. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__procurement_method_id
+msgid "Procurement Method"
+msgstr "วิธีการจัดซื้อจัดจ้าง"
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__procurement_type_id
+msgid "Procurement Type"
+msgstr "ประเภทการจัดซื้อ/จ้าง"
+
+#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__product_id
 msgid "Product"
 msgstr "สินค้า"
@@ -344,14 +356,14 @@ msgstr "คำขอซื้อขอจ้าง"
 #: model:ir.ui.menu,name:purchase_request_approval.menu_purchase_request_approval_root_purchase
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval
 msgid "Purchase Request Approval"
-msgstr "ขออนุมัติคำขอซื้อขอจ้าง"
+msgstr "ขออนุมัติจัดซื้อจัดจ้าง"
 
 #. module: purchase_request_approval
 #: model:ir.actions.act_window,name:purchase_request_approval.action_purchase_request_approval_line
 #: model:ir.model,name:purchase_request_approval.model_purchase_request_approval_line
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_line_form
 msgid "Purchase Request Approval Line"
-msgstr "ขออนุมัติคำขอซื้อขอจ้างรายการ"
+msgstr "ขออนุมัติจัดซื้อจัดจ้างรายการ"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_wizard__purchase_request_name
@@ -375,6 +387,7 @@ msgstr "ปริมาณ"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__name
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
 msgid "Reference"
 msgstr "รหัสเอกสารแบบขออนุมัติ (พจ.1)"
 
@@ -406,6 +419,11 @@ msgstr ""
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__message_has_sms_error
 msgid "SMS Delivery error"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
+msgid "Search Purchase Request Approvals"
 msgstr ""
 
 #. module: purchase_request_approval
@@ -452,7 +470,7 @@ msgstr "ส่งคำขอแล้ว"
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__price_subtotal
 msgid "Subtotal"
-msgstr "ยอดรวมย่อย"
+msgstr "ผลรวม"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__amount_tax
@@ -555,4 +573,11 @@ msgstr "สร้างหน้าต่างขออนุมัติคำ
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_form_inherit
 msgid "จัดทำคำขออนุมัติ"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_wizard_form
+msgid ""
+"ถ้าจำนวนเงิน 100,000 บาท กรุณาดำเนินการ EGP "
+"ให้เสร็จสิ้นก่อนดำเนินการกรอกแบบฟอร์ม"
 msgstr ""

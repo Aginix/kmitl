@@ -7,10 +7,13 @@
         <field name="arch" type="xml">
             <tree create='0' decoration-success="state == 'approved'" decoration-info="state in ('submitted', 'egp')" decoration-warning="state == 'draft'" decoration-danger="state in ('rejected', 'cancelled')">
                 <field name="name" />
-                <field name="request_id"/>
-                <field name="vendor" />
-                <field name="payment_type" />
-                <field name="amount_total" />
+                <field name="request_id" optional="show"/>
+                <field name="vendor" optional="show" />
+                <field name="payment_type" optional="show" />
+                <field name="contract_type" optional="show" />
+                <field name="procurement_type_id" optional="show" />
+                <field name="procurement_method_id" optional="show" />
+                <field name="amount_total" optional="show" />
                 <field name="state" widget="badge" decoration-success="state == 'approved'" decoration-info="state in ('submitted', 'egp')" decoration-warning="state == 'draft'" decoration-danger="state in ('rejected', 'cancelled')" />
             </tree>
         </field>
@@ -93,11 +96,34 @@
         </field>
     </record>
 
+    <record id="view_purchase_request_approval_search" model="ir.ui.view">
+        <field name="name">purchase.request.approval.search</field>
+        <field name="model">purchase.request.approval</field>
+        <field name="arch" type="xml">
+            <search string="Search Purchase Request Approvals">
+                <field name="name" string="Reference"/>
+                <field name="vendor"/>
+                <field name="request_id"/>
+                <filter name="draft" string="Draft" domain="[('state','=','draft')]"/>
+                <filter name="approved" string="Approved" domain="[('state','=','approved')]"/>
+
+                <searchpanel>
+                    <field name="state" icon="fa-money" enable_counters="1"/>
+                    <field name="procurement_method_id" icon="fa-money" enable_counters="1"/>
+                    <field name="procurement_type_id" icon="fa-money" enable_counters="1"/>
+                    <field name="contract_type" icon="fa-money" enable_counters="1"/>
+                    <field name="payment_type" icon="fa-money" enable_counters="1"/>
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+
     <record id="action_purchase_request_approval" model="ir.actions.act_window">
         <field name="name">Purchase Request Approval</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">purchase.request.approval</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,form,pivot</field>
         <field name="domain">[]</field>
         <field name="context">{}</field>
         <field name="help" type="html">
