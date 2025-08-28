@@ -26,7 +26,7 @@ over-expenditure through budget availability validation.
 Technical Implementation:
 -------------------------
 * Extends account.move model with budget integration
-* Automatic budget.move creation for consumption tracking  
+* Automatic budget.move creation for consumption tracking
 * Links account moves to budget accounts via analytic dimensions
 * Integrates with existing budget approval workflows
     """,
@@ -41,7 +41,6 @@ Technical Implementation:
     "data": [
         "security/ir.model.access.csv",
         "views/account_move_views.xml",
-        "data/budget_journal_config.xml",
     ],
     "auto_install": False,
     "application": False,
