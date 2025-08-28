@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <record id="l10n_th_gov_purchase_guarantee.cash" model="purchase.guarantee.type">
+        <field name="name">เงินสด/เงินโอน</field>
+    </record>
+
     <record id="l10n_th_gov_purchase_guarantee.cheque_draft" model="purchase.guarantee.type">
         <field name="active">False</field>
     </record>

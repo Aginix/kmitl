@@ -2,11 +2,11 @@
 <odoo>
 
     <record id="l10n_th_gov_purchase_guarantee.advance_payment_guarantee" model="purchase.guarantee.method">
-        <field name="name">Contract guarantee</field>
+        <field name="name">หลักประกันสัญญา</field>
     </record>
 
     <record id="offer_guarantee" model="purchase.guarantee.method">
-        <field name="name">Offer Guarantee</field>
+        <field name="name">หลักประกันข้อเสนอ</field>
         <field name="default_for_model">purchase.guarantee</field>
     </record>
 
