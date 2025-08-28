@@ -69,11 +69,11 @@
                                 <tree editable="bottom">
                                     <field name="product_id"/>
                                     <field name="description"/>
-                                    <field name="quantity"/>
+                                    <field name="product_qty"/>
                                     <field name="uom" />
-                                    <field name="unit_price"/>
-                                    <field name="taxes"/>
-                                    <field name="subtotal"/>
+                                    <field name="price_unit"/>
+                                    <field name="taxes_id" widget="many2many_tags"/>
+                                    <field name="price_subtotal"/>
                                 </tree>
                             </field>
                         </page>

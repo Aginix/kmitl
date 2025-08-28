@@ -45,8 +45,8 @@ class PurchaseRequestApprovalWizard(models.TransientModel):
             line_vals.append((0, 0, {
                 'product_id': line.product_id.id,
                 'description': line.name,
-                'quantity': line.product_qty,
-                'unit_price': line.estimated_cost / line.product_qty if line.product_qty else 0,
+                'product_qty': line.product_qty,
+                'price_unit': line.estimated_cost / line.product_qty if line.product_qty else 0,
             }))
         active_request.write({'approval_id': approval.id})
         approval.write({'line_ids': line_vals})
