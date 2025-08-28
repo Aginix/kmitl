@@ -9,6 +9,7 @@
                 <field name="name" />
                 <field name="request_id" optional="show"/>
                 <field name="vendor" optional="show" />
+                <field name="purchase_request_name" optional="show" />
                 <field name="payment_type" optional="show" />
                 <field name="contract_type" optional="show" />
                 <field name="procurement_type_id" optional="show" />
