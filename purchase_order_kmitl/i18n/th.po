@@ -3782,12 +3782,12 @@ msgstr ""
 #. module: purchase_order_kmitl
 #: model:ir.model.fields,field_description:purchase_order_kmitl.field_purchase_order__work_end_date
 msgid "Work end date"
-msgstr ""
+msgstr "วันที่สิ้นสุดงาน"
 
 #. module: purchase_order_kmitl
 #: model:ir.model.fields,field_description:purchase_order_kmitl.field_purchase_order__work_start_date
 msgid "Work start date"
-msgstr ""
+msgstr "วันที่เริ่มงาน"
 
 #. module: purchase_invoice_plan
 #: model:ir.model.fields.selection,name:purchase_invoice_plan.selection__purchase_create_invoice_plan__interval_type__year

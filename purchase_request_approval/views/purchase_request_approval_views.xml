@@ -43,6 +43,15 @@
                     <field name="is_editable" invisible="1" />
                     <group>
                         <group>
+                            <field name="procurement_type_id" />
+                            <field name="procurement_method_id" />
+                            <field name="contract_type" readonly="1" />
+                            <field name="requested_by" invisible='1'/>
+                            <field name="payment_type" readonly="1" />
+                            <field name="request_id" options="{'no_create': True}" />
+                            <field name="estimated_cost" invisible="1" />
+                        </group>
+                        <group>
                             <field name="vendor" required="1" attrs="{
                                     'readonly': [('is_editable','=', False)]
                             }" />
@@ -52,21 +61,7 @@
                             <field name="start_date" attrs="{'readonly': [('is_editable','=', False)]}" />
                             <field name="end_date" attrs="{'readonly': [('is_editable','=', False)]}" />
                         </group>
-                        <group>
-                            <field name="contract_type" readonly="1" />
-                            <field name="requested_by" invisible='1'/>
-                            <field name="payment_type" readonly="1" />
-                            <field name="department_id" readonly="1"/>
-                        </group>
                     </group>
-                    <label for="request_id"/>
-                    <h2>
-                        <field name="request_id" options="{'no_create': True}" />
-                    </h2>
-                    <label for="estimated_cost"/>
-                    <h2>
-                        <field name="estimated_cost"/>
-                    </h2>
                     <notebook>
                         <page string="Product Lines">
                             <field name="line_ids" attrs="{'readonly': [('is_editable','=', False)]}">
