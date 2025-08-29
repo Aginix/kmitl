@@ -8,6 +8,7 @@
     "website": "https://github.com/aginix/kmitl",
     'depends': ['base_tier_validation', 'purchase_request_approval'],
     "data": [
+        "data/tier_definition_data.xml",
         "views/purchase_request_approval_views.xml"
     ],
     'installable': True,

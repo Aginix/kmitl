@@ -52,9 +52,7 @@ class BudgetAppropriationLine(models.Model):
         index="btree",
     )
     date = fields.Date(related="appropriation_id.date", store=True)
-    code = fields.Char(
-        "รหัสงบประมาณ", related="account_id.code", store=True, tracking=True
-    )
+    code = fields.Char(related="account_id.code", store=True, tracking=True)
     name = fields.Char("ชื่อรายการ", related="account_id.name", store=True, tracking=True)
     account_id = fields.Many2one(
         comodel_name="budget.account",
