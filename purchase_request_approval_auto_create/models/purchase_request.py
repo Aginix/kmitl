@@ -7,20 +7,16 @@ class PurchaseRequest(models.Model):
     _name = "purchase.request"
     _inherit = ["purchase.request", "tier.validation"]
 
-    def _validate_tier(self, tiers=False):
-        super()._validate_tier(tiers)
-        approval = self.env['purchase.request.approval'].create({
+    def _prepare_approval_vals(self):
+        return {
             'request_id': self.id,
             'purchase_request_number': self.name,
-        })
+        }
 
-        line_vals = []
-        for line in self.line_ids:
-            line_vals.append(Command.create({
-                'product_id': line.product_id.id,
-                'description': line.name,
-                'product_qty': line.product_qty,
-                'price_unit': line.estimated_cost / line.product_qty if line.product_qty else 0,
-            }))
+    def _validate_tier(self, tiers=False):
+        super()._validate_tier(tiers)
+        approval = self.env['purchase.request.approval'].create(self._prepare_approval_vals())
+
+        line_vals = [Command.create(line._prepare_approval_line_vals()) for line in self.line_ids]
         self.write({'approval_id': approval.id})
         approval.write({'line_ids': line_vals})
