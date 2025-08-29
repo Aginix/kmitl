@@ -74,4 +74,11 @@
             </xpath>
         </field>
     </record>
+
+    <menuitem
+        id="kmitl_wa"
+        name="Work Acceptance"
+        parent="agreement.agreement_menu"
+        action="purchase_work_acceptance.action_work_acceptance"
+        sequence="20"/>
   </odoo>

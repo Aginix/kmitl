@@ -16,4 +16,21 @@
         <field name="active">False</field>
     </record>
 
+    <!-- ซ่อนหมวด Master Data -->
+    <record id="agreement_legal.agreement_masterdata" model="ir.ui.menu">
+        <field name="active">False</field>
+    </record>
+
+    <!-- ซ่อนหมวด Reporting -->
+    <record id="agreement_legal.agreement_reporting" model="ir.ui.menu">
+        <field name="active">False</field>
+    </record>
+
+    <menuitem
+        id="kmitl_agreement"
+        name="Agreements"
+        parent="agreement.agreement_menu"
+        action="agreement_legal.agreement_operations_agreement"
+        sequence="10"/>
+
 </odoo>

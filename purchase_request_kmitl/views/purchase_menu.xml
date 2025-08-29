@@ -2,4 +2,5 @@
 <odoo>
     <menuitem id="purchase.menu_procurement_management" name="Orders" parent="purchase.menu_purchase_root" sequence="1" groups="purchase.group_purchase_manager" />
     <menuitem id="purchase.menu_purchase_products" name="Products" parent="purchase.menu_purchase_root" sequence="5" groups="purchase.group_purchase_manager" />
+    <menuitem id="menu_vendor" name="Vendors" action="account.res_partner_action_supplier" parent="purchase.menu_purchase_root" sequence="8"/>
 </odoo>

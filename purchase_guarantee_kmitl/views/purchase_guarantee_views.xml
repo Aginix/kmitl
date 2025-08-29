@@ -48,4 +48,18 @@
         </field>
     </record>
 
+    <menuitem
+        id="kmitl_guarantee_agreement"
+        name="Guarantee"
+        parent="agreement.agreement_menu"
+        action="l10n_th_gov_purchase_guarantee.purchase_guarantee_action"
+        sequence="10"/>
+
+    <menuitem
+        id="kmitl_guarantee_purchase"
+        name="Guarantee"
+        parent="purchase.menu_purchase_root"
+        action="l10n_th_gov_purchase_guarantee.purchase_guarantee_action"
+        sequence="10"/>
+
   </odoo>
