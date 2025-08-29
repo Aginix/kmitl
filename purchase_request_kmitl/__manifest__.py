@@ -13,8 +13,9 @@
         "data/purchase_request_sequence.xml",
         "data/purchase_request_rules.xml",
         "data/purchase_request_exception.xml",
+        "views/purchase_menu.xml",
         "views/purchase_request_attachment_views.xml",
-        "views/purchase_request_views.xml"
+        "views/purchase_request_views.xml",
     ],
     'installable': True,
     'auto_install': False,

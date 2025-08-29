@@ -261,4 +261,7 @@
             </xpath>
         </field>
     </record>
+
+    <!-- menu -->
+    <menuitem id="purchase_request_kmitl_root_menu" name="Pruchase Request" parent="purchase.menu_purchase_root" action="purchase_request.purchase_request_form_action" sequence="1" />
 </odoo>
