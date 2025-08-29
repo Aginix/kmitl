@@ -1,18 +1,17 @@
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class PurchaseRequest(models.Model):
     _inherit = 'purchase.request'
 
-    approval_ids = fields.One2many(
-        'purchase.request.approval',
-        'request_id',
-        string='Approval'
+    approval_id = fields.Many2one(
+        "purchase.request.approval",
+        string="PR2",
     )
 
-    def action_create_approval(self):
+    def button_approved(self):
         self.ensure_one()
-
         approval = self.env['purchase.request.approval'].create({
             'request_id': self.id,
             'purchase_request_number': self.name,
@@ -23,15 +22,10 @@ class PurchaseRequest(models.Model):
             line_vals.append((0, 0, {
                 'product_id': line.product_id.id,
                 'description': line.name,
-                'quantity': line.product_qty,
-                'unit_price' : line.estimated_cost/line.product_qty,
+                'product_qty': line.product_qty,
+                'price_unit': line.estimated_cost / line.product_qty if line.product_qty else 0,
             }))
+        self.write({'approval_id': approval.id})
         approval.write({'line_ids': line_vals})
 
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': 'purchase.request.approval',
-            'view_mode': 'form',
-            'res_id': approval.id,
-            'target': 'current',
-        }
+        return super().button_approved()

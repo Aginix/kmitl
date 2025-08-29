@@ -23,7 +23,8 @@ class PurchaseRequestApproval(models.Model):
     request_id = fields.Many2one(
         'purchase.request',
         string='PR1',
-        readonly=True
+        readonly=True,
+        required=True,
     )
     vendor = fields.Many2one(
         "res.partner",
@@ -53,6 +54,18 @@ class PurchaseRequestApproval(models.Model):
         store=True,
         readonly=True
     )
+    procurement_type_id = fields.Many2one(
+        related='request_id.procurement_type_id',
+        string="Procurement Type",
+        store=True,
+        readonly=True
+    )
+    procurement_method_id = fields.Many2one(
+        related='request_id.procurement_method_id',
+        string="Procurement Method",
+        store=True,
+        readonly=True
+    )
     payment_type = fields.Selection(
         related='request_id.payment_type', store=True, string="Payment type", readonly=True)
     purchase_request_name = fields.Char(
@@ -72,9 +85,9 @@ class PurchaseRequestApproval(models.Model):
     line_ids = fields.One2many('purchase.request.approval.line', 'approval_id', string='Products', tracking=True)
     state = fields.Selection(selection=_STATES, default='draft', string='Status', tracking=True)
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.company.currency_id)
-    amount_untaxed = fields.Monetary(string='Untaxed Amount', compute='_compute_amount', store=True)
-    amount_tax = fields.Monetary(string='Tax', compute='_compute_amount', store=True)
-    amount_total = fields.Monetary(string='Total', compute='_compute_amount', store=True)
+    amount_untaxed = fields.Monetary(string='Untaxed Amount', compute='_amount_all', store=True)
+    amount_tax = fields.Monetary(string='Tax', compute='_amount_all', store=True)
+    amount_total = fields.Monetary(string='Total', compute='_amount_all', store=True)
     requested_by = fields.Many2one(
         'res.users',
         related='request_id.requested_by',
@@ -101,22 +114,13 @@ class PurchaseRequestApproval(models.Model):
         store=True,
         readonly=True
     )
-    is_egp = fields.Boolean(
-        string="Over 100,000",
-        compute="_compute_is_egp",
-    )
-
-    @api.depends("estimated_cost")
-    def _compute_is_egp(self):
-        for rec in self:
-            rec.is_egp = rec.estimated_cost > 100000 if rec.estimated_cost else False
 
     @api.depends("state")
     def _compute_is_editable(self):
         for rec in self:
             if rec.state in (
                 "submitted",
-                "cancçelled",
+                "cancelled",
                 "approved",
                 "rejected",
             ):
@@ -139,23 +143,26 @@ class PurchaseRequestApproval(models.Model):
     def button_reject(self):
         self.write({'state': 'rejected'})
 
-    @api.depends('line_ids.quantity', 'line_ids.unit_price', 'line_ids.taxes')
-    def _compute_amount(self):
-        for rec in self:
-            untaxed = 0.0
-            taxes = 0.0
-            currency = rec.currency_id
-            for line in rec.line_ids:
-                subtotal = line.quantity * line.unit_price
-                tax_amount = sum(
-                    tax._compute_amount(subtotal, 1, product=line.product_id, partner=rec.vendor)
-                    for tax in line.taxes
-                )
-                untaxed += subtotal
-                taxes += tax_amount
-            rec.amount_untaxed = untaxed
-            rec.amount_tax = taxes
-            rec.amount_total = untaxed + taxes
+    @api.depends('line_ids.price_total')
+    def _amount_all(self):
+        for record in self:
+            lines = record.line_ids
+
+            if record.company_id.tax_calculation_rounding_method == 'round_globally':
+                tax_results = self.env['account.tax']._compute_taxes([
+                    line._convert_to_tax_base_line_dict()
+                    for line in lines
+                ])
+                totals = tax_results['totals']
+                amount_untaxed = totals.get(record.currency_id, {}).get('amount_untaxed', 0.0)
+                amount_tax = totals.get(record.currency_id, {}).get('amount_tax', 0.0)
+            else:
+                amount_untaxed = sum(lines.mapped('price_subtotal'))
+                amount_tax = sum(lines.mapped('price_tax'))
+
+            record.amount_untaxed = amount_untaxed
+            record.amount_tax = amount_tax
+            record.amount_total = record.amount_untaxed + record.amount_tax
 
     @api.model_create_multi
     def create(self, vals_list):

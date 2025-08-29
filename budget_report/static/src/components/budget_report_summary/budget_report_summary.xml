@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="budget_report.BudgetReportSummary" owl="1">
+        <div class="o_action budget_report_summary">
+            <ControlPanel display="controlPanelDisplay">
+                <t t-set-slot="control-panel-bottom-left-buttons">
+                    <div class="o_cp_buttons">
+                        <div class="btn-group me-2">
+                            <button
+                                type="button"
+                                class="btn btn-secondary"
+                                t-on-click="onRefresh"
+                                title="รีเฟรช"
+                            >
+                                <i class="fa fa-refresh" />
+                            </button>
+                        </div>
+                        <div class="btn-group me-2">
+                            <button
+                                type="button"
+                                class="btn btn-outline-secondary btn-sm"
+                                t-on-click="expandAll"
+                                title="ขยายทั้งหมด"
+                            >
+                                <i class="fa fa-expand" /> ขยายทั้งหมด
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-outline-secondary btn-sm"
+                                t-on-click="collapseAll"
+                                title="ย่อทั้งหมด"
+                            >
+                                <i class="fa fa-compress" /> ย่อทั้งหมด
+                            </button>
+                        </div>
+                        <div class="btn-group">
+                            <button
+                                type="button"
+                                class="btn btn-primary"
+                                t-on-click="onPrint"
+                                title="พิมพ์"
+                            >
+                                <i class="fa fa-print" />
+                                พิมพ์
+                            </button>
+                        </div>
+                    </div>
+                </t>
+                <t t-set-slot="control-panel-top-right">
+                    <div class="d-flex flex-wrap gap-2">
+                        <div>
+                            <label class="form-label-sm mb-1">ปีงบประมาณ:</label>
+                            <div class="o_mobile_search_filter o_search_options">
+                                <select
+                                    class="form-select form-select-sm"
+                                    name="fiscal_year_id"
+                                    t-model="state.filters.fiscal_year_id"
+                                    t-on-change="onFiscalYearChange"
+                                >
+                                    <t
+                                        t-foreach="state.filterOptions.fiscal_years"
+                                        t-as="fy"
+                                        t-key="fy.id"
+                                    >
+                                        <option t-att-value="fy.id" t-esc="fy.name" />
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="form-label-sm mb-1">แหล่งเงิน:</label>
+                            <div class="o_mobile_search_filter o_search_options">
+                                <select
+                                    class="form-select form-select-sm"
+                                    name="source_analytic_id"
+                                    t-model="state.filters.source_analytic_id"
+                                    t-on-change="onSourceAnalyticIdChange"
+                                >
+                                    <option value="">ทั้งหมด</option>
+                                    <t
+                                        t-foreach="state.filterOptions.source_analytics"
+                                        t-as="n"
+                                        t-key="n.id"
+                                    >
+                                        <option
+                                            t-att-value="n.id"
+                                            t-esc="`[${n.code}] ${n.name}`"
+                                        />
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </ControlPanel>
+            <div class="o_content with-sidebar">
+                <div class="content-wrapper">
+                    <!-- Department Filter Sidebar -->
+                    <DepartmentFilter 
+                        t-if="state.showSidebar"
+                        onSelectionChange.bind="onDepartmentSelectionChange"
+                        selectedIds="state.selectedDepartmentIds"
+                        departments="departmentHierarchy"/>
+                    
+                    <!-- Report Content -->
+                    <div class="report-content">
+                        <div t-if="!state.loading" class="budget_report_summary_content">
+                            <div class="row justify-content-center">
+                                <div class="col-12">
+                                    <div class="budget-report-container">
+                                <!-- Report Table -->
+                                <div class="table-responsive">
+                                    <table
+                                        class="table table-bordered table-striped table-sm table-hover budget-report-table caption-top"
+                                    >
+                                        <caption>
+                                            สรุปการใช้งบประมาณภาพรวม
+                                            <br />
+                                            <t t-esc="state.sourceAnalytic.name" />
+                                            ประจำปีงบประมาณ พ.ศ.<t
+                                                t-esc="state.fiscalYear.name"
+                                            />
+                                            <br />
+                                            สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง
+                                        </caption>
+                                        <thead>
+                                            <tr>
+                                                <th rowspan="2" style="width: 25%">
+                                                    รายการ
+                                                </th>
+                                                <th rowspan="2">
+                                                    งบประมาณ<br />จัดสรรต้นปี
+                                                </th>
+                                                <th rowspan="2">งบประมาณ<br />(a)</th>
+                                                <th rowspan="2">ขอใช้ทั้งหมด</th>
+                                                <th colspan="4">สถานะการเบิกจ่าย</th>
+                                                <th rowspan="2">
+                                                    งบประมาณคงเหลือ<br />(f) = (a) - (e)
+                                                </th>
+                                                <th rowspan="2">ส่งคืนเงินเหลือจ่าย</th>
+                                            </tr>
+                                            <tr>
+                                                <th>เงินจอง<br />(b)</th>
+                                                <th>ผูกพัน<br />(c)</th>
+                                                <th>เบิกจ่ายแล้ว<br />(d)</th>
+                                                <th>รวม<br />(e) = (b) + (c) + (d)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t
+                                                t-foreach="visibleRows"
+                                                t-as="row"
+                                                t-key="(row.row_key || 'empty') + '-' + row_index"
+                                            >
+                                                <tr t-if="row and row.row_key" t-att-class="{'expandable-row': row.has_children}">
+                                                    <th
+                                                        style="
+                                                            width: 25%;
+                                                            text-align: left;
+                                                        "
+                                                        t-att-data-level="row.level"
+                                                    >
+                                                        <div
+                                                            t-att-style="'margin-left: ' + row.margin_level"
+                                                            t-att-title="row.code + ' ' + row.name"
+                                                            class="d-flex align-items-center"
+                                                        >
+                                                            <span
+                                                                t-if="row.has_children"
+                                                                class="expand-toggle me-2"
+                                                                t-on-click="(event) => this.toggleRow(event)"
+                                                                t-att-data-row-key="row.row_key"
+                                                                style="cursor: pointer; width: 16px; text-align: center;"
+                                                            >
+                                                                <i t-att-class="getExpandIcon(row)" />
+                                                            </span>
+                                                            <span
+                                                                t-else=""
+                                                                class="me-2"
+                                                                style="width: 16px; display: inline-block;"
+                                                            />
+                                                            <span
+                                                                t-att-class="{'fw-bold': row.has_children, 'text-muted': row.level > 0 and !row.has_children}"
+                                                            >
+                                                                <t t-esc="row.code + ' ' + row.name" />
+                                                            </span>
+                                                        </div>
+                                                    </th>
+                                                    <td class="amount-cell">0</td>
+                                                    <td class="amount-cell">
+                                                        <t
+                                                            t-esc="formatCurrency(row.appropriation)"
+                                                        />
+                                                    </td>
+                                                    <td class="amount-cell">0</td>
+                                                    <td class="amount-cell">
+                                                        <t
+                                                            t-esc="formatCurrency(row.commitment)"
+                                                        />
+                                                    </td>
+                                                    <td class="amount-cell">
+                                                        <t
+                                                            t-esc="formatCurrency(row.obligation)"
+                                                        />
+                                                    </td>
+                                                    <td class="amount-cell">
+                                                        <t
+                                                            t-esc="formatCurrency(row.expenditure)"
+                                                        />
+                                                    </td>
+                                                    <td class="amount-cell">
+                                                        <t
+                                                            t-esc="formatCurrency(row.total_expenditure)"
+                                                        />
+                                                    </td>
+                                                    <td class="amount-cell">
+                                                        <t
+                                                            t-esc="formatCurrency(row.total_balance)"
+                                                        />
+                                                    </td>
+                                                    <td class="amount-cell">
+                                                        <t
+                                                            t-esc="formatCurrency(row.return_unspend)"
+                                                        />
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View purchase.request.approval form -->
+    <record id="view_purchase_request_approval_form" model="ir.ui.view">
+        <field name="name">view.purchase.request.approval.form</field>
+        <field name="model">purchase.request.approval</field>
+        <field name="inherit_id" ref="purchase_request_approval.view_purchase_request_approval"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet/notebook" position="inside">
+                <page string="จองงบประมาณ" groups="purchase_request_budget.group_purchase_request_budget">
+                    <group>
+                        <field name="budget_account_id" readonly="1" groups="purchase_request_budget.group_purchase_request_budget" />
+                        <field name="activity_analytic_id" readonly="1" groups="purchase_request_budget.group_purchase_request_budget" />
+                        <field name="department_analytic_id" readonly="1" groups="purchase_request_budget.group_purchase_request_budget" />
+                        <field name="fund_analytic_id" readonly="1" groups="purchase_request_budget.group_purchase_request_budget" />
+                        <field name="source_analytic_id" readonly="1" groups="purchase_request_budget.group_purchase_request_budget" />
+                        <field name="budget_commitment_id" readonly="1" groups="purchase_request_budget.group_purchase_request_budget" />
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- View purchase.request.approval tree -->
+    <record id="view_purchase_request_approval_tree" model="ir.ui.view">
+        <field name="name">view.purchase.request.approval.tree</field>
+        <field name="model">purchase.request.approval</field>
+        <field name="inherit_id" ref="purchase_request_approval.view_purchase_request_approval_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='amount_total']" position="before">
+                <field name="budget_account_id" groups="purchase_request_budget.group_purchase_request_budget" optional="show" />
+                <field name="activity_analytic_id" groups="purchase_request_budget.group_purchase_request_budget" optional="hide" />
+                <field name="department_analytic_id" groups="purchase_request_budget.group_purchase_request_budget" optional="hide" />
+                <field name="fund_analytic_id" groups="purchase_request_budget.group_purchase_request_budget" optional="hide" />
+                <field name="source_analytic_id" groups="purchase_request_budget.group_purchase_request_budget" optional="show" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
