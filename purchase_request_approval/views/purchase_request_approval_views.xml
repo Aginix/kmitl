@@ -46,8 +46,8 @@
                             <field name="procurement_type_id" />
                             <field name="procurement_method_id" />
                             <field name="contract_type" readonly="1" />
-                            <field name="requested_by" widget="many2one_avatar_user" />
                             <field name="payment_type" readonly="1" />
+                            <field name="requested_by" widget="many2one_avatar_user" />
                             <field name="request_id" options="{'no_create': True}" />
                             <field name="estimated_cost" invisible="1" />
                         </group>
