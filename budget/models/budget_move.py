@@ -287,37 +287,6 @@ class BudgetMove(models.Model):
         store=False
     )
 
-    compute_fund_analytic_id = fields.Many2one(
-        'account.analytic.account',
-        string='compute fund Used',
-        compute='_compute_fund_analytic_id',
-        store=False
-    )
-
-    compute_activity_analytic_id = fields.Many2one(
-        'account.analytic.account',
-        string='compute fund Used',
-        compute='_compute_activity_analytic_id',
-        store=False
-    )
-
-    @api.depends('line_ids')
-    def _compute_fund_analytic_id(self):
-        for record in self:
-            if record.line_ids:
-                record.compute_fund_analytic_id = record.line_ids[-1].fund_analytic_id
-            else:
-                record.compute_fund_analytic_id = False
-
-    @api.depends('line_ids')
-    def _compute_activity_analytic_id(self):
-        for record in self:
-            if record.line_ids:
-                record.compute_activity_analytic_id = record.line_ids[-1].activity_analytic_id
-            else:
-                record.compute_activity_analytic_id = False
-
-
     @api.depends(
         "line_ids.balance",
         "move_type",
@@ -380,8 +349,6 @@ class BudgetMove(models.Model):
 
     def button_draft(self):
         self.write({"state": "draft"})
-
-
 
     def _stolen_move(self, vals):
         for command in vals.get("line_ids", ()):
