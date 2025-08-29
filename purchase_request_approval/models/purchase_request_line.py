@@ -12,8 +12,8 @@ class PurchaseRequestLine(models.Model):
 
     def _prepare_approval_line_vals(self):
         return {
-            'product_id': line.product_id.id,
-            'description': line.name,
-            'product_qty': line.product_qty,
-            'price_unit': line.estimated_cost / line.product_qty if line.product_qty else 0,
+            'product_id': self.product_id.id,
+            'description': self.name,
+            'product_qty': self.product_qty,
+            'price_unit': self.estimated_cost / self.product_qty if self.product_qty else 0,
         }
