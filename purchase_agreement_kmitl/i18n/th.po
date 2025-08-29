@@ -1,8 +1,8 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # 	* l10n_th_gov_purchase_agreement
-# 	* kmitl_purchase_agreement
 # 	* purchase_invoice_plan
+# 	* purchase_agreement_kmitl
 # 	* agreement
 # 	* agreement_legal
 #
@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-28 15:29+0000\n"
-"PO-Revision-Date: 2025-08-28 22:30+0700\n"
+"POT-Creation-Date: 2025-08-29 09:08+0000\n"
+"PO-Revision-Date: 2025-08-29 16:15+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -86,18 +86,18 @@ msgstr ""
 msgid "Advanced Features"
 msgstr ""
 
-#. modules: agreement, agreement_legal, kmitl_purchase_agreement,
-#. l10n_th_gov_purchase_agreement
+#. modules: agreement, agreement_legal, l10n_th_gov_purchase_agreement,
+#. purchase_agreement_kmitl
 #: model:ir.actions.report,name:agreement_legal.partner_agreement_contract_document
-#: model:ir.model,name:l10n_th_gov_purchase_agreement.model_agreement
+#: model:ir.model,name:purchase_agreement_kmitl.model_agreement
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_appendix__agreement_id
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause__agreement_id
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_line__agreement_id
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_recital__agreement_id
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_section__agreement_id
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_new_version_wizard__agreement_id
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_purchase_agreement_attachment__request_id
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_agreement.field_purchase_order__agreement_ids
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_new_version_wizard__agreement_id
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment__request_id
 #: model:ir.model.fields.selection,name:agreement_legal.selection__agreement_stage__stage_type__agreement
 #: model:ir.model.fields.selection,name:l10n_th_gov_purchase_agreement.selection__purchase_requisition__po_type__agreement
 #: model:ir.module.category,name:agreement_legal.module_agreement_legal_category
@@ -105,7 +105,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
 #: model_terms:ir.ui.view,arch_db:agreement_legal.report_agreement_document
 msgid "Agreement"
-msgstr "สัญญา"
+msgstr "การบริหารสัญญา"
 
 #. module: agreement_legal
 #: model:ir.model,name:agreement_legal.model_agreement_appendix
@@ -122,8 +122,8 @@ msgstr ""
 msgid "Agreement Count"
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model,name:kmitl_purchase_agreement.model_agreement_line
+#. module: purchase_agreement_kmitl
+#: model:ir.model,name:purchase_agreement_kmitl.model_agreement_line
 msgid "Agreement Lines"
 msgstr ""
 
@@ -133,9 +133,9 @@ msgstr ""
 msgid "Agreement Name"
 msgstr "ชื่อข้อตกลง/ใบสั่งซื้อ/จ้าง"
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model,name:kmitl_purchase_agreement.model_agreement_new_version_wizard
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_agreement.view_agreement_new_version_wizard_form
+#. module: purchase_agreement_kmitl
+#: model:ir.model,name:purchase_agreement_kmitl.model_agreement_new_version_wizard
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_new_version_wizard_form
 msgid "Agreement New Version Wizard"
 msgstr ""
 
@@ -215,7 +215,8 @@ msgstr ""
 msgid "Agreement: Check to Review Days"
 msgstr ""
 
-#. modules: agreement, agreement_legal, l10n_th_gov_purchase_agreement
+#. modules: agreement, agreement_legal, l10n_th_gov_purchase_agreement,
+#. purchase_agreement_kmitl
 #: model:ir.actions.act_window,name:agreement.agreement_action
 #: model:ir.actions.act_window,name:agreement_legal.action_agreement_report_order
 #: model:ir.actions.act_window,name:agreement_legal.agreement_dashboard_agreement
@@ -225,8 +226,10 @@ msgstr ""
 #: model:ir.ui.menu,name:agreement.agreement_menu
 #: model:ir.ui.menu,name:agreement.agreement_menu_root
 #: model:ir.ui.menu,name:agreement_legal.agreement_agreement_reporting
+#: model:ir.ui.menu,name:agreement_legal.agreement_operations
 #: model:ir.ui.menu,name:agreement_legal.dashboard_agreements
 #: model:ir.ui.menu,name:agreement_legal.operations_agreements
+#: model:ir.ui.menu,name:purchase_agreement_kmitl.kmitl_agreement
 #: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_graph_view
 #: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_pivot_view
 #: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_section_search_view
@@ -234,7 +237,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_agreement.purchase_order_form
 msgid "Agreements"
-msgstr "สัญญา"
+msgstr "สัญญาใบสั่งซื้อ/จ้าง"
 
 #. module: agreement_legal
 #: model:ir.model.fields,field_description:agreement_legal.field_res_partner__agreements_count
@@ -342,9 +345,9 @@ msgstr "ผู้จัดทำ"
 msgid "At least one invoice plan line pending to create invoice"
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement__document_ids
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_agreement.view_agreement_form
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__document_ids
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_form
 msgid "Attachment"
 msgstr "เอกสารแนบ"
 
@@ -353,14 +356,14 @@ msgstr "เอกสารแนบ"
 msgid "Attachment Count"
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_agreement.view_agreement_form
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_agreement.view_agreement_new_version_wizard_form
+#. module: purchase_agreement_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_form
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_new_version_wizard_form
 msgid "Attachment Reversion"
 msgstr "เอกสารการแก้ไขสัญญาใหม่"
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_new_version_wizard__attachment_ids
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_new_version_wizard__attachment_ids
 msgid "Attachments"
 msgstr "เอกสารแนบ"
 
@@ -372,7 +375,7 @@ msgstr ""
 #. module: purchase_invoice_plan
 #: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_invoice_plan_filter
 msgid "Bills Received"
-msgstr ""
+msgstr "ได้รับบิลแล้ว"
 
 #. module: purchase_invoice_plan
 #: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_make_planned_invoice
@@ -386,9 +389,9 @@ msgstr ""
 msgid "By:"
 msgstr ""
 
-#. modules: agreement_legal, kmitl_purchase_agreement, purchase_invoice_plan
+#. modules: agreement_legal, purchase_agreement_kmitl, purchase_invoice_plan
 #: model_terms:ir.ui.view,arch_db:agreement_legal.create_agreement_from_template_form_view
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_agreement.view_agreement_new_version_wizard_form
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_new_version_wizard_form
 #: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_create_invoice_plan
 #: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_make_planned_invoice
 msgid "Cancel"
@@ -431,8 +434,8 @@ msgstr ""
 msgid "Color"
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_agreement.view_agreement_form
+#. module: purchase_agreement_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_form
 msgid "Committee"
 msgstr "คณะกรรมการ"
 
@@ -482,12 +485,12 @@ msgstr "ตั้งค่าการกำหนดค่า"
 #: model:ir.ui.menu,name:agreement_legal.agreement_configuration
 #: model_terms:ir.ui.view,arch_db:agreement.agreement_form
 msgid "Configuration"
-msgstr ""
+msgstr "การกำหนดค่า"
 
-#. module: kmitl_purchase_agreement
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_agreement.view_agreement_new_version_wizard_form
+#. module: purchase_agreement_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_new_version_wizard_form
 msgid "Conform"
-msgstr "ยืนยัน"
+msgstr ""
 
 #. module: agreement_legal
 #: model:ir.model,name:agreement_legal.model_res_partner
@@ -511,8 +514,8 @@ msgstr ""
 msgid "Contents"
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement__contract_type
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__contract_type
 msgid "Contract type"
 msgstr "ประเภทสัญญา/ใบสั่งซื้อ/จ้าง"
 
@@ -531,9 +534,9 @@ msgid ""
 "terms"
 msgstr ""
 
-#. modules: agreement_legal, kmitl_purchase_agreement
+#. modules: agreement_legal, purchase_agreement_kmitl
 #: model_terms:ir.ui.view,arch_db:agreement_legal.create_agreement_from_template_form_view
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_agreement.view_purchase_order_form
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_purchase_order_form
 msgid "Create Agreement"
 msgstr ""
 
@@ -564,7 +567,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:purchase_invoice_plan.action_purchase_create_invoice_plan
 #: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_create_invoice_plan
 msgid "Create Invoice Plan"
-msgstr ""
+msgstr "สร้างงวดงาน"
 
 #. module: purchase_invoice_plan
 #: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_make_planned_invoice
@@ -581,7 +584,7 @@ msgstr ""
 msgid "Create an agreement when the sales order is confirmed"
 msgstr ""
 
-#. modules: agreement, agreement_legal, kmitl_purchase_agreement,
+#. modules: agreement, agreement_legal, purchase_agreement_kmitl,
 #. purchase_invoice_plan
 #: model:ir.model.fields,field_description:agreement.field_agreement__create_uid
 #: model:ir.model.fields,field_description:agreement.field_agreement_type__create_uid
@@ -593,21 +596,21 @@ msgstr ""
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_stage__create_uid
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_subtype__create_uid
 #: model:ir.model.fields,field_description:agreement_legal.field_create_agreement_wizard__create_uid
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_new_version_wizard__create_uid
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_wizard_attachment__create_uid
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_purchase_agreement_attachment__create_uid
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_new_version_wizard__create_uid
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment__create_uid
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment__create_uid
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_create_invoice_plan__create_uid
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__create_uid
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_make_planned_invoice__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "สร้างโดย"
 
 #. module: agreement_legal
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement__create_uid_parent
 msgid "Created by (parent)"
 msgstr ""
 
-#. modules: agreement, agreement_legal, kmitl_purchase_agreement,
+#. modules: agreement, agreement_legal, purchase_agreement_kmitl,
 #. purchase_invoice_plan
 #: model:ir.model.fields,field_description:agreement.field_agreement__create_date
 #: model:ir.model.fields,field_description:agreement.field_agreement_type__create_date
@@ -619,25 +622,25 @@ msgstr ""
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_stage__create_date
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_subtype__create_date
 #: model:ir.model.fields,field_description:agreement_legal.field_create_agreement_wizard__create_date
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_new_version_wizard__create_date
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_wizard_attachment__create_date
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_purchase_agreement_attachment__create_date
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_new_version_wizard__create_date
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment__create_date
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment__create_date
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_create_invoice_plan__create_date
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__create_date
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_make_planned_invoice__create_date
 msgid "Created on"
-msgstr ""
+msgstr "สร้างเมื่อ"
 
 #. module: agreement_legal
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement__create_date_parent
 msgid "Created on (parent)"
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement__currency_id
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_line__currency_id
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__currency_id
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_line__currency_id
 msgid "Currency"
-msgstr "สกุลเงิน"
+msgstr ""
 
 #. module: agreement_legal
 #: model:ir.ui.menu,name:agreement_legal.agreement_dashboard
@@ -688,12 +691,12 @@ msgstr ""
 msgid "Default Value"
 msgstr ""
 
-#. modules: agreement_legal, kmitl_purchase_agreement
+#. modules: agreement_legal, purchase_agreement_kmitl
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement__description
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_line__name
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_wizard_attachment__description
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_purchase_agreement_attachment__description
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_agreement.view_agreement_form
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment__description
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment__description
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_form
 msgid "Description"
 msgstr "รายละเอียด"
 
@@ -702,7 +705,7 @@ msgstr "รายละเอียด"
 msgid "Description of the agreement"
 msgstr "รายละเอียด"
 
-#. modules: agreement, agreement_legal, kmitl_purchase_agreement,
+#. modules: agreement, agreement_legal, purchase_agreement_kmitl,
 #. purchase_invoice_plan
 #: model:ir.model.fields,field_description:agreement.field_agreement__display_name
 #: model:ir.model.fields,field_description:agreement.field_agreement_type__display_name
@@ -714,14 +717,14 @@ msgstr "รายละเอียด"
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_stage__display_name
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_subtype__display_name
 #: model:ir.model.fields,field_description:agreement_legal.field_create_agreement_wizard__display_name
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_new_version_wizard__display_name
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_wizard_attachment__display_name
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_purchase_agreement_attachment__display_name
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_new_version_wizard__display_name
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment__display_name
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment__display_name
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_create_invoice_plan__display_name
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__display_name
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_make_planned_invoice__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "แสดงชื่อ"
 
 #. module: agreement
 #: model:ir.model.fields,field_description:agreement.field_agreement__domain
@@ -783,13 +786,13 @@ msgstr "วันสิ่นสุดสัญญา"
 msgid "Enter the default value if the field is empty"
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_agreement.view_agreement_form
+#. module: purchase_agreement_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_form
 msgid "Evaluation Committee"
 msgstr "คณะกรรมการพิจารณาผล"
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement__evaluation_committee_ids
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__evaluation_committee_ids
 msgid "Evaluation Committees"
 msgstr "คณะกรรมการพิจารณาผล"
 
@@ -798,13 +801,13 @@ msgstr "คณะกรรมการพิจารณาผล"
 msgid "Exp. Notice (Days)"
 msgstr "วันที่แจ้งเตือนก่อนหมดอายุสัญญา"
 
-#. module: kmitl_purchase_agreement
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_agreement.view_agreement_form
+#. module: purchase_agreement_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_form
 msgid "Fee"
 msgstr "ค่าปรับ"
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement__fee
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__fee
 msgid "Fee Per Day"
 msgstr "ค่าปรับ"
 
@@ -822,18 +825,18 @@ msgstr ""
 msgid "Field Service"
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_wizard_attachment__file
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_purchase_agreement_attachment__file
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment__file
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment__file
 msgid "File"
 msgstr ""
 
-#. modules: agreement_legal, kmitl_purchase_agreement
+#. modules: agreement_legal, purchase_agreement_kmitl
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement__signed_contract_filename
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_wizard_attachment__file_name
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_purchase_agreement_attachment__file_name
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment__file_name
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment__file_name
 msgid "Filename"
-msgstr ""
+msgstr "ชื่อไฟล์"
 
 #. module: purchase_invoice_plan
 #: model:ir.model,name:purchase_invoice_plan.model_purchase_create_invoice_plan
@@ -874,7 +877,7 @@ msgstr "ข้อมูลทั่วไป"
 #. module: purchase_invoice_plan
 #: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_invoice_plan_filter
 msgid "Group By"
-msgstr ""
+msgstr "กลุ่มโดย"
 
 #. module: agreement
 #: model:ir.model.fields,field_description:agreement.field_agreement__has_message
@@ -886,7 +889,7 @@ msgstr ""
 msgid "Helpdesk"
 msgstr ""
 
-#. modules: agreement, agreement_legal, kmitl_purchase_agreement,
+#. modules: agreement, agreement_legal, purchase_agreement_kmitl,
 #. purchase_invoice_plan
 #: model:ir.model.fields,field_description:agreement.field_agreement__id
 #: model:ir.model.fields,field_description:agreement.field_agreement_type__id
@@ -898,14 +901,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_stage__id
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_subtype__id
 #: model:ir.model.fields,field_description:agreement_legal.field_create_agreement_wizard__id
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_new_version_wizard__id
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_wizard_attachment__id
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_purchase_agreement_attachment__id
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_new_version_wizard__id
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment__id
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment__id
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_create_invoice_plan__id
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__id
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_make_planned_invoice__id
 msgid "ID"
-msgstr ""
+msgstr "ไอดี"
 
 #. module: agreement_legal
 #: model:ir.model.fields,help:agreement_legal.field_agreement__code
@@ -986,7 +989,7 @@ msgstr ""
 #. module: purchase_invoice_plan
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_create_invoice_plan__installment_date
 msgid "Installment Date"
-msgstr ""
+msgstr "วันที่เริ่มสัญญา"
 
 #. module: purchase_invoice_plan
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_create_invoice_plan__interval
@@ -1063,7 +1066,7 @@ msgstr ""
 msgid "Last Installment"
 msgstr ""
 
-#. modules: agreement, agreement_legal, kmitl_purchase_agreement,
+#. modules: agreement, agreement_legal, purchase_agreement_kmitl,
 #. purchase_invoice_plan
 #: model:ir.model.fields,field_description:agreement.field_agreement____last_update
 #: model:ir.model.fields,field_description:agreement.field_agreement_type____last_update
@@ -1075,16 +1078,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_stage____last_update
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_subtype____last_update
 #: model:ir.model.fields,field_description:agreement_legal.field_create_agreement_wizard____last_update
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_new_version_wizard____last_update
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_wizard_attachment____last_update
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_purchase_agreement_attachment____last_update
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_new_version_wizard____last_update
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment____last_update
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment____last_update
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_create_invoice_plan____last_update
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan____last_update
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_make_planned_invoice____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "แก้ไขครั้งล่าสุดเมื่อ"
 
-#. modules: agreement, agreement_legal, kmitl_purchase_agreement,
+#. modules: agreement, agreement_legal, purchase_agreement_kmitl,
 #. purchase_invoice_plan
 #: model:ir.model.fields,field_description:agreement.field_agreement__write_uid
 #: model:ir.model.fields,field_description:agreement.field_agreement_type__write_uid
@@ -1096,16 +1099,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_stage__write_uid
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_subtype__write_uid
 #: model:ir.model.fields,field_description:agreement_legal.field_create_agreement_wizard__write_uid
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_new_version_wizard__write_uid
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_wizard_attachment__write_uid
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_purchase_agreement_attachment__write_uid
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_new_version_wizard__write_uid
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment__write_uid
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment__write_uid
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_create_invoice_plan__write_uid
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__write_uid
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_make_planned_invoice__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "อัปเดตครั้งล่าสุดโดย"
 
-#. modules: agreement, agreement_legal, kmitl_purchase_agreement,
+#. modules: agreement, agreement_legal, purchase_agreement_kmitl,
 #. purchase_invoice_plan
 #: model:ir.model.fields,field_description:agreement.field_agreement__write_date
 #: model:ir.model.fields,field_description:agreement.field_agreement_type__write_date
@@ -1117,14 +1120,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_stage__write_date
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_subtype__write_date
 #: model:ir.model.fields,field_description:agreement_legal.field_create_agreement_wizard__write_date
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_new_version_wizard__write_date
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_wizard_attachment__write_date
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_purchase_agreement_attachment__write_date
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_new_version_wizard__write_date
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment__write_date
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment__write_date
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_create_invoice_plan__write_date
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__write_date
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_make_planned_invoice__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "อัปเดตครั้งล่าสุดเมื่อ"
 
 #. module: purchase_invoice_plan
 #: model:ir.model.fields,help:purchase_invoice_plan.field_purchase_invoice_plan__last
@@ -1274,15 +1277,15 @@ msgstr ""
 msgid "My Activity Deadline"
 msgstr ""
 
-#. modules: agreement, agreement_legal, kmitl_purchase_agreement
+#. modules: agreement, agreement_legal, purchase_agreement_kmitl
 #: model:ir.model.fields,field_description:agreement.field_agreement_type__name
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_appendix__name
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause__name
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_recital__name
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_section__name
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_new_version_wizard__name
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_wizard_attachment__name
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_purchase_agreement_attachment__name
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_new_version_wizard__name
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment__name
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment__name
 msgid "Name"
 msgstr ""
 
@@ -1385,7 +1388,7 @@ msgstr ""
 #. module: purchase_invoice_plan
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_create_invoice_plan__num_installment
 msgid "Number of Installment"
-msgstr ""
+msgstr "จำนวนงวดงาน"
 
 #. module: agreement
 #: model:ir.model.fields,field_description:agreement.field_agreement__message_has_error_counter
@@ -1403,7 +1406,6 @@ msgid "Number of messages with delivery error"
 msgstr ""
 
 #. module: agreement_legal
-#: model:ir.ui.menu,name:agreement_legal.agreement_operations
 #: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
 msgid "Operations"
 msgstr ""
@@ -1417,9 +1419,9 @@ msgstr ""
 msgid "Optional value to use if the target field is empty."
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_agreement.view_agreement_form
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_agreement.view_agreement_tree
+#. module: purchase_agreement_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_form
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_tree
 msgid "PO Ref"
 msgstr "รหัสเอกสารการจัดซื้อจัดจ้าง"
 
@@ -1429,8 +1431,8 @@ msgstr "รหัสเอกสารการจัดซื้อจัดจ
 msgid "PO Type"
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement__pr1_total
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__pr1_total
 msgid "PR1 Total"
 msgstr "ราคารวม PR1"
 
@@ -1556,13 +1558,13 @@ msgstr ""
 msgid "Previouse Versions"
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_agreement.view_agreement_form
+#. module: purchase_agreement_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_form
 msgid "Price Determine Committee"
 msgstr "คณะกรรมการกำหนดราคากลาง"
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement__price_determine_committee_ids
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__price_determine_committee_ids
 msgid "Price Determine Committees"
 msgstr "คณะกรรมการกำหนดราคากลาง"
 
@@ -1581,8 +1583,8 @@ msgstr ""
 msgid "Product"
 msgstr "สินค้า"
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_line__product_categ_id
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_line__product_categ_id
 msgid "Product Category"
 msgstr "ประเภทพัสดุ"
 
@@ -1626,7 +1628,7 @@ msgstr "คำสั่งซื้อ"
 #. module: purchase_invoice_plan
 #: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_invoice_plan_filter
 msgid "Purchase Orders"
-msgstr ""
+msgstr "คำสั่งซื้อ"
 
 #. module: l10n_th_gov_purchase_agreement
 #: model:ir.model,name:l10n_th_gov_purchase_agreement.model_purchase_requisition
@@ -1643,8 +1645,8 @@ msgstr ""
 msgid "Purchase orders that include lines not invoiced."
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model,name:kmitl_purchase_agreement.model_purchase_agreement_attachment
+#. module: purchase_agreement_kmitl
+#: model:ir.model,name:purchase_agreement_kmitl.model_purchase_agreement_attachment
 msgid "PurchaseAgreementAttachment"
 msgstr ""
 
@@ -1679,10 +1681,10 @@ msgstr ""
 msgid "Readonly"
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_new_version_wizard__reason
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_new_version_wizard__reason
 msgid "Reason for Revision"
-msgstr "เหตุผล"
+msgstr ""
 
 #. module: agreement_legal
 #: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_recital_form
@@ -1740,8 +1742,8 @@ msgstr ""
 msgid "Returns"
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement__reversion_document_ids
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__reversion_document_ids
 msgid "Reversion Attachment"
 msgstr "เอกสารการแก้ไขสัญญาใหม่"
 
@@ -1775,10 +1777,10 @@ msgstr ""
 msgid "Revision"
 msgstr "ประวัติการแก้ไขสัญญา"
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement__revision_reason
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__revision_reason
 msgid "Revision Reason"
-msgstr "เหตุผล"
+msgstr "เหตุผลการแก้ไขสัญญา"
 
 #. module: agreement_legal
 #: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
@@ -2055,13 +2057,13 @@ msgstr ""
 msgid "Supplier"
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_agreement.view_agreement_form
+#. module: purchase_agreement_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_form
 msgid "TOR Committee"
 msgstr "คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน"
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement__tor_committee_ids
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__tor_committee_ids
 msgid "TOR Committees"
 msgstr "คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน"
 
@@ -2084,8 +2086,8 @@ msgstr ""
 msgid "Templates"
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model,name:kmitl_purchase_agreement.model_agreement_wizard_attachment
+#. module: purchase_agreement_kmitl
+#: model:ir.model,name:purchase_agreement_kmitl.model_agreement_wizard_attachment
 msgid "Temporary Attachments for Agreement Wizard"
 msgstr ""
 
@@ -2122,8 +2124,8 @@ msgstr ""
 msgid "The customer or vendor this agreement is related to."
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model.fields,help:kmitl_purchase_agreement.field_agreement__work_end_date
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,help:purchase_agreement_kmitl.field_agreement__work_end_date
 msgid ""
 "The end date for the purchase order. If not set, the start date will be "
 "used."
@@ -2151,8 +2153,8 @@ msgstr ""
 msgid "The revision will increase with every save event."
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model.fields,help:kmitl_purchase_agreement.field_agreement__work_start_date
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,help:purchase_agreement_kmitl.field_agreement__work_start_date
 msgid ""
 "The start date for the purchase order. If not set, the current date will be "
 "used."
@@ -2243,7 +2245,7 @@ msgstr ""
 #. module: purchase_invoice_plan
 #: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_create_invoice_plan
 msgid "This wizard help you quickly create invoice plan."
-msgstr ""
+msgstr "กรุณากรอกรายละเอียดงวดงาน"
 
 #. module: agreement_legal
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement__name
@@ -2263,29 +2265,29 @@ msgstr "ชื่อสัญญา/ใบสั่งซื้อ/จ้าง"
 #. module: purchase_invoice_plan
 #: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_invoice_plan_filter
 msgid "To Approve"
-msgstr ""
+msgstr "ที่จะอนุมัติ"
 
 #. module: agreement_legal
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement__to_review_date
 msgid "To Review Date"
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_line__price_subtotal
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_line__price_subtotal
 msgid "Total"
-msgstr "รวมเป็นเงินทั้งสิ้น"
+msgstr "ราคารวม"
 
 #. module: purchase_invoice_plan
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_order__ip_total_amount
 msgid "Total Amount"
-msgstr ""
+msgstr "จำนวนรวม"
 
 #. modules: agreement_legal, purchase_invoice_plan
 #: model:ir.model.fields,field_description:agreement_legal.field_agreement_stage__stage_type
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__invoice_type
 #: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_stage_search_view
 msgid "Type"
-msgstr ""
+msgstr "ประเภท"
 
 #. module: agreement
 #: model_terms:ir.ui.view,arch_db:agreement.agreement_type_list_view
@@ -2302,8 +2304,8 @@ msgstr ""
 msgid "Types"
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_line__price_unit
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_line__price_unit
 msgid "Unit Price"
 msgstr "ราคาต่อหน่วย"
 
@@ -2321,7 +2323,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_agreement.field_agreement__use_invoice_plan
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_order__use_invoice_plan
 msgid "Use Invoice Plan"
-msgstr ""
+msgstr "แบ่งงวดงาน"
 
 #. module: purchase_invoice_plan
 #. odoo-python
@@ -2383,7 +2385,7 @@ msgstr ""
 #. module: purchase_invoice_plan
 #: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_invoice_plan_filter
 msgid "Waiting Bills"
-msgstr ""
+msgstr "รอออกบิล"
 
 #. module: agreement_legal
 #: model:ir.model.fields,help:agreement_legal.field_agreement__sub_model_object_field_id
@@ -2419,8 +2421,8 @@ msgstr ""
 msgid "When the agreement starts."
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement_wizard_attachment__wizard_id
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment__wizard_id
 msgid "Wizard"
 msgstr ""
 
@@ -2429,23 +2431,23 @@ msgstr ""
 msgid "Wizard when create invoice by plan"
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_agreement.view_agreement_form
+#. module: purchase_agreement_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_form
 msgid "Work Acceptance Committee"
 msgstr "คณะกรรมการตรวจรับพัสดุ"
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement__work_acceptance_committee_ids
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__work_acceptance_committee_ids
 msgid "Work Acceptance Committees"
 msgstr "คณะกรรมการตรวจรับพัสดุ"
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement__work_end_date
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__work_end_date
 msgid "Work end date"
 msgstr "วันสิ้นสุดทำงาน"
 
-#. module: kmitl_purchase_agreement
-#: model:ir.model.fields,field_description:kmitl_purchase_agreement.field_agreement__work_start_date
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__work_start_date
 msgid "Work start date"
 msgstr "วันที่เริ่มทำงาน"
 
@@ -2474,8 +2476,8 @@ msgstr ""
 msgid "compute dynamic Content"
 msgstr ""
 
-#. module: kmitl_purchase_agreement
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_agreement.view_purchase_order_form
+#. module: purchase_agreement_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_purchase_order_form
 msgid "lock"
 msgstr ""
 
@@ -2512,9 +2514,9 @@ msgstr ""
 #. module: purchase_invoice_plan
 #: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.purchase_order_form
 msgid "⇒ Create Invoice Plan"
-msgstr ""
+msgstr "สร้างงวดงาน"
 
 #. module: purchase_invoice_plan
 #: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.purchase_order_form
 msgid "⇒ Remove Invoice Plan"
-msgstr ""
+msgstr "ลบงวดงาน"

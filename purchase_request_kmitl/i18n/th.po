@@ -1629,6 +1629,11 @@ msgid "Procurement Methods"
 msgstr "วิธีการจัดซื้อจัดจ้าง"
 
 #. module: purchase_request_kmitl
+#: model:ir.ui.menu,name:purchase_request_kmitl.menu_vendor
+msgid "Vendors"
+msgstr "คู่ค้า"
+
+#. module: purchase_request_kmitl
 #: model:ir.ui.menu,name:purchase_request_kmitl.purchase_request_kmitl_root_menu
 msgid "Pruchase Request"
 msgstr "คำขอซื้อขอจ้าง"

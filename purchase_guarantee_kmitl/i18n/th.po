@@ -1,14 +1,14 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* kmitl_purchase_guarantee
 # 	* l10n_th_gov_purchase_guarantee
+# 	* purchase_guarantee_kmitl
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-28 15:06+0000\n"
-"PO-Revision-Date: 2025-08-28 22:50+0700\n"
+"POT-Creation-Date: 2025-08-29 09:25+0000\n"
+"PO-Revision-Date: 2025-08-29 16:27+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -63,8 +63,8 @@ msgstr ""
 msgid "Activity Type Icon"
 msgstr ""
 
-#. module: kmitl_purchase_guarantee
-#: model:ir.model,name:kmitl_purchase_guarantee.model_agreement
+#. module: purchase_guarantee_kmitl
+#: model:ir.model,name:purchase_guarantee_kmitl.model_agreement
 msgid "Agreement"
 msgstr "สัญญา"
 
@@ -83,9 +83,9 @@ msgstr "มูลค่าหลักประกัน"
 msgid "Archived"
 msgstr ""
 
-#. module: kmitl_purchase_guarantee
-#: model:ir.model.fields,field_description:kmitl_purchase_guarantee.field_purchase_guarantee__document_ids
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_guarantee.view_purchase_guarantee_form
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee__document_ids
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_guarantee_form
 msgid "Attachment"
 msgstr "เอกสารแนบ"
 
@@ -120,19 +120,19 @@ msgstr ""
 msgid "Create Invoice ?"
 msgstr ""
 
-#. modules: kmitl_purchase_guarantee, l10n_th_gov_purchase_guarantee
-#: model:ir.model.fields,field_description:kmitl_purchase_guarantee.field_purchase_guarantee_attachment__create_uid
+#. modules: l10n_th_gov_purchase_guarantee, purchase_guarantee_kmitl
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee__create_uid
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee_method__create_uid
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee_type__create_uid
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee_attachment__create_uid
 msgid "Created by"
 msgstr ""
 
-#. modules: kmitl_purchase_guarantee, l10n_th_gov_purchase_guarantee
-#: model:ir.model.fields,field_description:kmitl_purchase_guarantee.field_purchase_guarantee_attachment__create_date
+#. modules: l10n_th_gov_purchase_guarantee, purchase_guarantee_kmitl
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee__create_date
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee_method__create_date
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee_type__create_date
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee_attachment__create_date
 msgid "Created on"
 msgstr ""
 
@@ -141,26 +141,26 @@ msgstr ""
 msgid "Currency"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_guarantee
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee_method__default_for_model
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee_method__default_for_model
 msgid "Default method for"
 msgstr ""
 
-#. module: kmitl_purchase_guarantee
-#: model:ir.model.fields,field_description:kmitl_purchase_guarantee.field_purchase_guarantee_attachment__description
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee_attachment__description
 msgid "Description"
-msgstr ""
+msgstr "รายละเอียด"
 
-#. modules: kmitl_purchase_guarantee, l10n_th_gov_purchase_guarantee
-#: model:ir.model.fields,field_description:kmitl_purchase_guarantee.field_purchase_guarantee_attachment__display_name
+#. modules: l10n_th_gov_purchase_guarantee, purchase_guarantee_kmitl
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee__display_name
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee_method__display_name
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee_type__display_name
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee_attachment__display_name
 msgid "Display Name"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_guarantee
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee__document_ref
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee__document_ref
 msgid "Document Ref"
 msgstr "ข้อมูลอ้างอิงเอกสาร"
 
@@ -169,15 +169,15 @@ msgstr "ข้อมูลอ้างอิงเอกสาร"
 msgid "Due Date"
 msgstr "วันที่หมดอายุหลักประกันสัญญา"
 
-#. module: kmitl_purchase_guarantee
-#: model:ir.model.fields,field_description:kmitl_purchase_guarantee.field_purchase_guarantee_attachment__file
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee_attachment__file
 msgid "File"
-msgstr ""
+msgstr "ไฟล์"
 
-#. module: kmitl_purchase_guarantee
-#: model:ir.model.fields,field_description:kmitl_purchase_guarantee.field_purchase_guarantee_attachment__file_name
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee_attachment__file_name
 msgid "Filename"
-msgstr ""
+msgstr "ชื่อไฟล์"
 
 #. module: l10n_th_gov_purchase_guarantee
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee__message_follower_ids
@@ -194,33 +194,35 @@ msgstr ""
 msgid "Font awesome icon e.g. fa-tasks"
 msgstr ""
 
-#. module: kmitl_purchase_guarantee
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_guarantee.view_purchase_guarantee_attachment_search
+#. module: purchase_guarantee_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_guarantee_attachment_search
 msgid "Group By"
 msgstr ""
 
-#. modules: kmitl_purchase_guarantee, l10n_th_gov_purchase_guarantee
+#. modules: l10n_th_gov_purchase_guarantee, purchase_guarantee_kmitl
 #: model:ir.actions.act_window,name:l10n_th_gov_purchase_guarantee.purchase_guarantee_action
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_account_bank_statement_line__guarantee_ids
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_account_move__guarantee_ids
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_account_payment__guarantee_ids
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_order__purchase_guarantee_ids
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_requisition__purchase_guarantee_ids
-#: model:ir.model.fields.selection,name:kmitl_purchase_guarantee.selection__purchase_guarantee__reference__purchase_guarantee
-#: model:ir.model.fields.selection,name:kmitl_purchase_guarantee.selection__purchase_guarantee_method__default_for_model__purchase_guarantee
+#: model:ir.model.fields.selection,name:purchase_guarantee_kmitl.selection__purchase_guarantee__reference__purchase_guarantee
+#: model:ir.model.fields.selection,name:purchase_guarantee_kmitl.selection__purchase_guarantee_method__default_for_model__purchase_guarantee
 #: model:ir.ui.menu,name:l10n_th_gov_purchase_guarantee.purchase_guarantee_config_menu
 #: model:ir.ui.menu,name:l10n_th_gov_purchase_guarantee.purchase_guarantee_menu
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_guarantee.view_agreement_form
+#: model:ir.ui.menu,name:purchase_guarantee_kmitl.kmitl_guarantee_agreement
+#: model:ir.ui.menu,name:purchase_guarantee_kmitl.kmitl_guarantee_purchase
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_guarantee.purchase_guarantee_search_view
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_guarantee.purchase_order_form
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_guarantee.view_purchase_requisition_form
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_agreement_form
 msgid "Guarantee"
 msgstr "หลักประกัน"
 
-#. modules: kmitl_purchase_guarantee, l10n_th_gov_purchase_guarantee
-#: model:ir.model.fields,field_description:kmitl_purchase_guarantee.field_agreement__purchase_guarantee_count
+#. modules: l10n_th_gov_purchase_guarantee, purchase_guarantee_kmitl
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_order__purchase_guarantee_count
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_requisition__purchase_guarantee_count
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_agreement__purchase_guarantee_count
 msgid "Guarantee Count"
 msgstr ""
 
@@ -257,8 +259,8 @@ msgstr "วันที่รับหลักประกัน"
 msgid "Guarantee Type"
 msgstr "ประเภทหลักประกัน"
 
-#. module: l10n_th_gov_purchase_guarantee
-#: model:ir.model.fields,help:l10n_th_gov_purchase_guarantee.field_purchase_guarantee_method__default_for_model
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,help:purchase_guarantee_kmitl.field_purchase_guarantee_method__default_for_model
 msgid "Guarantee created from which document model, will use this method"
 msgstr ""
 
@@ -267,11 +269,11 @@ msgstr ""
 msgid "Has Message"
 msgstr ""
 
-#. modules: kmitl_purchase_guarantee, l10n_th_gov_purchase_guarantee
-#: model:ir.model.fields,field_description:kmitl_purchase_guarantee.field_purchase_guarantee_attachment__id
+#. modules: l10n_th_gov_purchase_guarantee, purchase_guarantee_kmitl
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee__id
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee_method__id
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee_type__id
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee_attachment__id
 msgid "ID"
 msgstr ""
 
@@ -317,27 +319,27 @@ msgstr ""
 msgid "Journal Entry"
 msgstr "รายการบันทึกประจำวัน"
 
-#. modules: kmitl_purchase_guarantee, l10n_th_gov_purchase_guarantee
-#: model:ir.model.fields,field_description:kmitl_purchase_guarantee.field_purchase_guarantee_attachment____last_update
+#. modules: l10n_th_gov_purchase_guarantee, purchase_guarantee_kmitl
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee____last_update
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee_method____last_update
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee_type____last_update
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee_attachment____last_update
 msgid "Last Modified on"
 msgstr ""
 
-#. modules: kmitl_purchase_guarantee, l10n_th_gov_purchase_guarantee
-#: model:ir.model.fields,field_description:kmitl_purchase_guarantee.field_purchase_guarantee_attachment__write_uid
+#. modules: l10n_th_gov_purchase_guarantee, purchase_guarantee_kmitl
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee__write_uid
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee_method__write_uid
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee_type__write_uid
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee_attachment__write_uid
 msgid "Last Updated by"
 msgstr ""
 
-#. modules: kmitl_purchase_guarantee, l10n_th_gov_purchase_guarantee
-#: model:ir.model.fields,field_description:kmitl_purchase_guarantee.field_purchase_guarantee_attachment__write_date
+#. modules: l10n_th_gov_purchase_guarantee, purchase_guarantee_kmitl
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee__write_date
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee_method__write_date
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee_type__write_date
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee_attachment__write_date
 msgid "Last Updated on"
 msgstr ""
 
@@ -361,11 +363,11 @@ msgstr ""
 msgid "My Activity Deadline"
 msgstr ""
 
-#. modules: kmitl_purchase_guarantee, l10n_th_gov_purchase_guarantee
-#: model:ir.model.fields,field_description:kmitl_purchase_guarantee.field_purchase_guarantee_attachment__name
+#. modules: l10n_th_gov_purchase_guarantee, purchase_guarantee_kmitl
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee_method__name
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee_type__name
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_guarantee.view_purchase_guarantee_attachment_search
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee_attachment__name
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_guarantee_attachment_search
 msgid "Name"
 msgstr ""
 
@@ -425,20 +427,20 @@ msgstr ""
 msgid "Purchase Agreements"
 msgstr ""
 
-#. modules: kmitl_purchase_guarantee, l10n_th_gov_purchase_guarantee
-#: model:ir.model,name:l10n_th_gov_purchase_guarantee.model_purchase_guarantee
-#: model:ir.model.fields,field_description:kmitl_purchase_guarantee.field_purchase_guarantee_attachment__request_id
+#. module: purchase_guarantee_kmitl
+#: model:ir.model,name:purchase_guarantee_kmitl.model_purchase_guarantee
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee_attachment__request_id
 msgid "Purchase Guarantee"
 msgstr ""
 
-#. module: kmitl_purchase_guarantee
-#: model:ir.actions.act_window,name:kmitl_purchase_guarantee.action_purchase_guarantee_attachment
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_guarantee.view_purchase_guarantee_attachment_form
+#. module: purchase_guarantee_kmitl
+#: model:ir.actions.act_window,name:purchase_guarantee_kmitl.action_purchase_guarantee_attachment
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_guarantee_attachment_form
 msgid "Purchase Guarantee Attachment"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_guarantee
-#: model:ir.model,name:l10n_th_gov_purchase_guarantee.model_purchase_guarantee_method
+#. module: purchase_guarantee_kmitl
+#: model:ir.model,name:purchase_guarantee_kmitl.model_purchase_guarantee_method
 msgid "Purchase Guarantee Method"
 msgstr "ประเภทการค้ำประกัน"
 
@@ -461,13 +463,13 @@ msgstr "คำสั่งซื้อ"
 msgid "Purchase Requisition"
 msgstr "ใบเบิกซื้อ"
 
-#. module: kmitl_purchase_guarantee
-#: model:ir.model,name:kmitl_purchase_guarantee.model_purchase_guarantee_attachment
+#. module: purchase_guarantee_kmitl
+#: model:ir.model,name:purchase_guarantee_kmitl.model_purchase_guarantee_attachment
 msgid "PurchaseGuaranteeAttachment"
 msgstr ""
 
-#. module: kmitl_purchase_guarantee
-#: model:ir.model.fields,field_description:kmitl_purchase_guarantee.field_purchase_guarantee__receive_contract_ref
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee__receive_contract_ref
 msgid "Receive Contract Ref"
 msgstr "รหัสเอกสารตั้งหนี้"
 
@@ -476,8 +478,8 @@ msgstr "รหัสเอกสารตั้งหนี้"
 msgid "Receive Date"
 msgstr "วันที่รับหลักประกัน"
 
-#. module: kmitl_purchase_guarantee
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_guarantee.view_purchase_guarantee_form
+#. module: purchase_guarantee_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_guarantee_form
 msgid "Receive contract reference"
 msgstr "รหัสเอกสารตั้งหนี้"
 
@@ -486,8 +488,8 @@ msgstr "รหัสเอกสารตั้งหนี้"
 msgid "Received"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_guarantee
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee__reference
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee__reference
 msgid "Reference"
 msgstr "รหัสเอกสารการจัดซื้อจัดจ้าง"
 
@@ -511,10 +513,10 @@ msgstr ""
 msgid "Responsible User"
 msgstr ""
 
-#. module: kmitl_purchase_guarantee
-#: model:ir.model.fields,field_description:kmitl_purchase_guarantee.field_purchase_guarantee__return_contract_ref
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee__return_contract_ref
 msgid "Return Contract Ref"
-msgstr ""
+msgstr "รหัสเอกสารล้างหนี้"
 
 #. module: l10n_th_gov_purchase_guarantee
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee__date_return
@@ -528,8 +530,8 @@ msgstr "วันที่คืนหลักประกันสัญญา
 msgid "Return Guarantee"
 msgstr ""
 
-#. module: kmitl_purchase_guarantee
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_guarantee.view_purchase_guarantee_form
+#. module: purchase_guarantee_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_guarantee_form
 msgid "Return contract reference"
 msgstr "รหัสเอกสารล้างหนี้"
 
@@ -557,10 +559,10 @@ msgid ""
 "Planned: Future activities."
 msgstr ""
 
-#. module: kmitl_purchase_guarantee
-#: model_terms:ir.actions.act_window,help:kmitl_purchase_guarantee.action_purchase_guarantee_attachment
+#. module: purchase_guarantee_kmitl
+#: model_terms:ir.actions.act_window,help:purchase_guarantee_kmitl.action_purchase_guarantee_attachment
 msgid "There is no examples click here to add new Purchase Guarantee Attachment."
-msgstr "รหัสเอกสารล้างหนี้"
+msgstr ""
 
 #. module: l10n_th_gov_purchase_guarantee
 #: model:ir.model.fields,help:l10n_th_gov_purchase_guarantee.field_purchase_guarantee__activity_exception_decoration
@@ -577,17 +579,17 @@ msgstr ""
 msgid "Website communication history"
 msgstr ""
 
-#. module: kmitl_purchase_guarantee
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_guarantee.view_purchase_guarantee_attachment_form
+#. module: purchase_guarantee_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_guarantee_attachment_form
 msgid "คำอธิบาย"
 msgstr ""
 
-#. module: kmitl_purchase_guarantee
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_guarantee.view_purchase_guarantee_attachment_form
+#. module: purchase_guarantee_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_guarantee_attachment_form
 msgid "ชื่อไฟล์ที่แสดง"
 msgstr ""
 
-#. module: kmitl_purchase_guarantee
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_guarantee.view_purchase_guarantee_attachment_form
+#. module: purchase_guarantee_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_guarantee_attachment_form
 msgid "รายละเอียดไฟล์"
 msgstr ""

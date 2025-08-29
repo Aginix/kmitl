@@ -1,15 +1,15 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* kmitl_purchase_work_acceptance
-# 	* purchase_work_acceptance_invoice_plan
 # 	* purchase_work_acceptance
+# 	* purchase_work_acceptance_invoice_plan
+# 	* purchase_work_acceptance_kmitl
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-28 15:35+0000\n"
-"PO-Revision-Date: 2025-08-28 22:53+0700\n"
+"POT-Creation-Date: 2025-08-29 09:21+0000\n"
+"PO-Revision-Date: 2025-08-29 16:24+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -44,8 +44,8 @@ msgstr ""
 msgid "Accepte Date"
 msgstr ""
 
-#. module: purchase_work_acceptance
-#: model:ir.model.fields.selection,name:purchase_work_acceptance.selection__work_acceptance__state__accept
+#. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance__state__accept
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_form_inherit
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
 msgid "Accepted"
@@ -103,17 +103,17 @@ msgstr ""
 msgid "Activity Type Icon"
 msgstr ""
 
-#. module: kmitl_purchase_work_acceptance
-#: model:ir.model,name:kmitl_purchase_work_acceptance.model_agreement
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_select_work_acceptance_invoice_plan_wizard__agreement_id
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_work_acceptance_form
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model,name:purchase_work_acceptance_kmitl.model_agreement
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_select_work_acceptance_invoice_plan_wizard__agreement_id
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form
 msgid "Agreement"
-msgstr "สัญญา"
+msgstr "รหัสเอกสารสัญญา/ใบสั่งซื้อ/จ้าง"
 
-#. module: kmitl_purchase_work_acceptance
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_work_acceptance__agreement_id
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__agreement_id
 msgid "Agreement Ref"
-msgstr ""
+msgstr "รหัสเอกสารสัญญา/ใบสั่งซื้อ/จ้าง"
 
 #. module: purchase_work_acceptance_invoice_plan
 #: model:ir.actions.server,name:purchase_work_acceptance_invoice_plan.apply_on_all_product_line
@@ -140,19 +140,19 @@ msgstr ""
 msgid "Analytic Precision"
 msgstr ""
 
-#. module: kmitl_purchase_work_acceptance
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_work_acceptance_form
+#. module: purchase_work_acceptance_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form
 msgid "Approve"
 msgstr ""
 
-#. module: kmitl_purchase_work_acceptance
-#: model:ir.model.fields.selection,name:kmitl_purchase_work_acceptance.selection__work_acceptance__state__approved
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance__state__approved
 msgid "Approved"
 msgstr ""
 
-#. module: kmitl_purchase_work_acceptance
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_work_acceptance__document_ids
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_work_acceptance_form
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__document_ids
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form
 msgid "Attachment"
 msgstr "เอกสารแนบ"
 
@@ -161,9 +161,9 @@ msgstr "เอกสารแนบ"
 msgid "Attachment Count"
 msgstr ""
 
-#. module: kmitl_purchase_work_acceptance
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_work_accepted_date_wizard__document_ids
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_work_accepted_date_wizard_form
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_accepted_date_wizard__document_ids
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_accepted_date_wizard_form
 msgid "Attachments"
 msgstr "เอกสารแนบ"
 
@@ -180,8 +180,8 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#. module: purchase_work_acceptance
-#: model:ir.model.fields.selection,name:purchase_work_acceptance.selection__work_acceptance__state__cancel
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance__state__cancel
 msgid "Cancelled"
 msgstr ""
 
@@ -190,8 +190,8 @@ msgstr ""
 msgid "Choose the method to find matcing product line for this installment"
 msgstr ""
 
-#. module: kmitl_purchase_work_acceptance
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_work_acceptance_form
+#. module: purchase_work_acceptance_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form
 msgid "Committee"
 msgstr "คณะกรรมการ"
 
@@ -215,18 +215,18 @@ msgstr "ตั้งค่าการกำหนดค่า"
 msgid "Create Vendor Bill"
 msgstr ""
 
-#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance,
-#. purchase_work_acceptance_invoice_plan
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_agreement_form
+#. modules: purchase_work_acceptance, purchase_work_acceptance_invoice_plan,
+#. purchase_work_acceptance_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_form_inherit
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.view_select_work_acceptance_invoice_plan_wizard
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_agreement_form
 msgid "Create WA"
 msgstr ""
 
-#. modules: kmitl_purchase_work_acceptance,
-#. purchase_work_acceptance_invoice_plan
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_agreement_form
+#. modules: purchase_work_acceptance_invoice_plan,
+#. purchase_work_acceptance_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_invoice_plan.purchase_order_form_inherit
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_agreement_form
 msgid "Create WA by Installment"
 msgstr "สร้างการตรวจรับจากงวดงาน"
 
@@ -235,27 +235,27 @@ msgstr "สร้างการตรวจรับจากงวดงาน
 msgid "Create a new work acceptance"
 msgstr ""
 
-#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance,
-#. purchase_work_acceptance_invoice_plan
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__create_uid
+#. modules: purchase_work_acceptance, purchase_work_acceptance_invoice_plan,
+#. purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard__create_uid
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__create_uid
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__create_uid
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_accepted_date_wizard__create_uid
 #: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__create_uid
 #: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__create_uid
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_work_acceptance_attachment__create_uid
 msgid "Created by"
 msgstr ""
 
-#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance,
-#. purchase_work_acceptance_invoice_plan
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__create_date
+#. modules: purchase_work_acceptance, purchase_work_acceptance_invoice_plan,
+#. purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard__create_date
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__create_date
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__create_date
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_accepted_date_wizard__create_date
 #: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__create_date
 #: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__create_date
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_work_acceptance_attachment__create_date
 msgid "Created on"
 msgstr ""
 
@@ -276,26 +276,26 @@ msgstr ""
 msgid "Define your terms and conditions ..."
 msgstr ""
 
-#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__description
+#. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__name
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_work_acceptance_attachment__description
 msgid "Description"
 msgstr "รายละเอียด"
 
-#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance,
-#. purchase_work_acceptance_invoice_plan
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__display_name
+#. modules: purchase_work_acceptance, purchase_work_acceptance_invoice_plan,
+#. purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard__display_name
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__display_name
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__display_name
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_accepted_date_wizard__display_name
 #: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__display_name
 #: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__display_name
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_work_acceptance_attachment__display_name
 msgid "Display Name"
 msgstr ""
 
-#. module: purchase_work_acceptance
-#: model:ir.model.fields.selection,name:purchase_work_acceptance.selection__work_acceptance__state__draft
+#. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance__state__draft
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
 msgid "Draft"
 msgstr ""
@@ -337,15 +337,15 @@ msgstr ""
 msgid "Enforce WA on Vendor Bill"
 msgstr ""
 
-#. module: kmitl_purchase_work_acceptance
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__file
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_work_acceptance_attachment__file
 msgid "File"
-msgstr ""
+msgstr "ไฟล์"
 
-#. module: kmitl_purchase_work_acceptance
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__file_name
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_work_acceptance_attachment__file_name
 msgid "Filename"
-msgstr ""
+msgstr "ชื่อไฟล์"
 
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__message_follower_ids
@@ -362,9 +362,9 @@ msgstr ""
 msgid "Font awesome icon e.g. fa-tasks"
 msgstr ""
 
-#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_purchase_work_acceptance_attachment_search
+#. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_purchase_work_acceptance_attachment_search
 msgid "Group By"
 msgstr ""
 
@@ -373,15 +373,15 @@ msgstr ""
 msgid "Has Message"
 msgstr ""
 
-#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance,
-#. purchase_work_acceptance_invoice_plan
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__id
+#. modules: purchase_work_acceptance, purchase_work_acceptance_invoice_plan,
+#. purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard__id
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__id
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__id
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_accepted_date_wizard__id
 #: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__id
 #: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_work_acceptance_attachment__id
 msgid "ID"
 msgstr ""
 
@@ -413,11 +413,11 @@ msgstr ""
 msgid "Installment Warning:"
 msgstr ""
 
-#. modules: kmitl_purchase_work_acceptance,
-#. purchase_work_acceptance_invoice_plan
+#. modules: purchase_work_acceptance_invoice_plan,
+#. purchase_work_acceptance_kmitl
 #. odoo-python
-#: code:addons/kmitl_purchase_work_acceptance/models/select_work_acceptance_invoice_plan_wizard.py:0
 #: code:addons/purchase_work_acceptance_invoice_plan/wizard/select_work_acceptance_invoice_plan_wizard.py:0
+#: code:addons/purchase_work_acceptance_kmitl/models/select_work_acceptance_invoice_plan_wizard.py:0
 #, python-format
 msgid "Installment {} is already used by other WA."
 msgstr ""
@@ -428,13 +428,13 @@ msgstr ""
 msgid "Invoice Plan"
 msgstr "งวดงาน"
 
-#. module: kmitl_purchase_work_acceptance
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_agreement__invoice_plan_count
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_agreement__invoice_plan_count
 msgid "Invoice Plan Count"
 msgstr ""
 
-#. module: purchase_work_acceptance_invoice_plan
-#: model:ir.model,name:purchase_work_acceptance_invoice_plan.model_purchase_invoice_plan
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model,name:purchase_work_acceptance_kmitl.model_purchase_invoice_plan
 msgid "Invoice Planning Detail"
 msgstr ""
 
@@ -443,8 +443,8 @@ msgstr ""
 msgid "Invoice Reference"
 msgstr "รหัสเอกสารการเบิกจ่าย"
 
-#. module: kmitl_purchase_work_acceptance
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_work_acceptance__is_editable
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__is_editable
 msgid "Is Editable"
 msgstr ""
 
@@ -458,39 +458,39 @@ msgstr ""
 msgid "Journal Entry"
 msgstr "รายการบันทึกประจำวัน"
 
-#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance,
-#. purchase_work_acceptance_invoice_plan
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment____last_update
+#. modules: purchase_work_acceptance, purchase_work_acceptance_invoice_plan,
+#. purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard____last_update
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance____last_update
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line____last_update
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_accepted_date_wizard____last_update
 #: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty____last_update
 #: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard____last_update
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_work_acceptance_attachment____last_update
 msgid "Last Modified on"
 msgstr ""
 
-#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance,
-#. purchase_work_acceptance_invoice_plan
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__write_uid
+#. modules: purchase_work_acceptance, purchase_work_acceptance_invoice_plan,
+#. purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard__write_uid
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__write_uid
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__write_uid
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_accepted_date_wizard__write_uid
 #: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__write_uid
 #: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__write_uid
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_work_acceptance_attachment__write_uid
 msgid "Last Updated by"
 msgstr ""
 
-#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance,
-#. purchase_work_acceptance_invoice_plan
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__write_date
+#. modules: purchase_work_acceptance, purchase_work_acceptance_invoice_plan,
+#. purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard__write_date
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__write_date
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__write_date
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_accepted_date_wizard__write_date
 #: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__write_date
 #: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__write_date
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_work_acceptance_attachment__write_date
 msgid "Last Updated on"
 msgstr ""
 
@@ -534,15 +534,15 @@ msgstr ""
 msgid "My Work Acceptance"
 msgstr ""
 
-#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__name
+#. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__name
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_purchase_work_acceptance_attachment_search
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_work_acceptance_attachment__name
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_purchase_work_acceptance_attachment_search
 msgid "Name"
 msgstr ""
 
-#. module: kmitl_purchase_work_acceptance
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_purchase_work_acceptance_attachment_form
+#. module: purchase_work_acceptance_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_purchase_work_acceptance_attachment_form
 msgid "Name..."
 msgstr ""
 
@@ -669,7 +669,7 @@ msgstr "สินค้า"
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__purchase_id
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
 msgid "Purchase Order"
-msgstr "รหัสเอกสารการจัดซื้อจัดจ้าง"
+msgstr "คำสั่งซื้อ"
 
 #. modules: purchase_work_acceptance, purchase_work_acceptance_invoice_plan
 #: model:ir.model,name:purchase_work_acceptance_invoice_plan.model_purchase_order_line
@@ -677,14 +677,14 @@ msgstr "รหัสเอกสารการจัดซื้อจัดจ
 msgid "Purchase Order Line"
 msgstr "ไลน์คำสั่งซื้อ"
 
-#. module: kmitl_purchase_work_acceptance
-#: model:ir.actions.act_window,name:kmitl_purchase_work_acceptance.action_purchase_work_acceptance_attachment
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_purchase_work_acceptance_attachment_form
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.actions.act_window,name:purchase_work_acceptance_kmitl.action_purchase_work_acceptance_attachment
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_purchase_work_acceptance_attachment_form
 msgid "Purchase Work Acceptance Attachment"
 msgstr ""
 
-#. module: kmitl_purchase_work_acceptance
-#: model:ir.model,name:kmitl_purchase_work_acceptance.model_purchase_work_acceptance_attachment
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model,name:purchase_work_acceptance_kmitl.model_purchase_work_acceptance_attachment
 msgid "PurchaseWorkAcceptanceAttachment"
 msgstr ""
 
@@ -761,8 +761,8 @@ msgstr ""
 msgid "Select Work Acceptance"
 msgstr ""
 
-#. module: purchase_work_acceptance_invoice_plan
-#: model:ir.model,name:purchase_work_acceptance_invoice_plan.model_select_work_acceptance_invoice_plan_wizard
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model,name:purchase_work_acceptance_kmitl.model_select_work_acceptance_invoice_plan_wizard
 msgid "Select Work Acceptance Invoice Plan Wizard"
 msgstr ""
 
@@ -771,8 +771,8 @@ msgstr ""
 msgid "Select Work Acceptance Wizard"
 msgstr ""
 
-#. module: purchase_work_acceptance
-#: model:ir.model,name:purchase_work_acceptance.model_work_accepted_date_wizard
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model,name:purchase_work_acceptance_kmitl.model_work_accepted_date_wizard
 msgid "Select work accepted date"
 msgstr ""
 
@@ -781,8 +781,8 @@ msgstr ""
 msgid "Set to draft"
 msgstr ""
 
-#. module: purchase_work_acceptance
-#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__state
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__state
 msgid "Status"
 msgstr "สถานะ"
 
@@ -795,9 +795,9 @@ msgid ""
 "Planned: Future activities."
 msgstr ""
 
-#. module: kmitl_purchase_work_acceptance
-#: model:ir.model.fields.selection,name:kmitl_purchase_work_acceptance.selection__work_acceptance__state__submit
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_work_acceptance_form
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance__state__submit
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form
 msgid "Submit"
 msgstr ""
 
@@ -815,15 +815,15 @@ msgid ""
 "choosing 'Invoice Plan %(installment)s'"
 msgstr ""
 
-#. module: kmitl_purchase_work_acceptance
-#: model:ir.model.fields,help:kmitl_purchase_work_acceptance.field_work_acceptance__agreement_version
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,help:purchase_work_acceptance_kmitl.field_work_acceptance__agreement_version
 msgid ""
 "The versions are used to keep track of document history and previous "
 "versions can be referenced."
 msgstr ""
 
-#. module: kmitl_purchase_work_acceptance
-#: model_terms:ir.actions.act_window,help:kmitl_purchase_work_acceptance.action_purchase_work_acceptance_attachment
+#. module: purchase_work_acceptance_kmitl
+#: model_terms:ir.actions.act_window,help:purchase_work_acceptance_kmitl.action_purchase_work_acceptance_attachment
 msgid ""
 "There is no examples click here to add new Purchase Work Acceptance "
 "Attachment."
@@ -887,9 +887,9 @@ msgid ""
 "receipts."
 msgstr ""
 
-#. module: kmitl_purchase_work_acceptance
+#. module: purchase_work_acceptance_kmitl
 #. odoo-python
-#: code:addons/kmitl_purchase_work_acceptance/models/work_acceptance.py:0
+#: code:addons/purchase_work_acceptance_kmitl/models/work_acceptance.py:0
 #, python-format
 msgid ""
 "Unable to set to draft this work acceptance. You must first cancel the "
@@ -912,8 +912,8 @@ msgstr ""
 msgid "Vendor"
 msgstr "คู่ค้า"
 
-#. module: kmitl_purchase_work_acceptance
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_work_acceptance__agreement_version
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__agreement_version
 msgid "Version"
 msgstr ""
 
@@ -922,8 +922,8 @@ msgstr ""
 msgid "WA"
 msgstr ""
 
-#. module: kmitl_purchase_work_acceptance
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_agreement__wa_invoice_plan_equal
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_agreement__wa_invoice_plan_equal
 msgid "WA = Invoice Plan"
 msgstr ""
 
@@ -953,16 +953,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_stock_picking__wa_id
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__wa_id
 msgid "WA Reference"
+msgstr "รหัสใบตรวจรับ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_invoice_plan__wa_state
+msgid "WA State"
 msgstr ""
 
-#. module: kmitl_purchase_work_acceptance
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_invoice_plan__wa_state
-msgid "WA State"
-msgstr "สถานะการตรวจรับ"
-
-#. module: kmitl_purchase_work_acceptance
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_l10n_agreement_invoice_plan
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_purchase_invoice_plan_form
+#. module: purchase_work_acceptance_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_l10n_agreement_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_purchase_invoice_plan_form
 msgid "WA Status"
 msgstr "สถานะการตรวจรับ"
 
@@ -1003,35 +1003,36 @@ msgid ""
 "When 'Enforce WA on Goods Receipt' is set, this option type can by pass it"
 msgstr ""
 
-#. modules: kmitl_purchase_work_acceptance,
-#. purchase_work_acceptance_invoice_plan
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__wizard_id
+#. modules: purchase_work_acceptance_invoice_plan,
+#. purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_qty__wizard_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_work_acceptance_attachment__wizard_id
 msgid "Wizard"
 msgstr ""
 
-#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance,
-#. purchase_work_acceptance_invoice_plan
+#. modules: purchase_work_acceptance, purchase_work_acceptance_invoice_plan,
+#. purchase_work_acceptance_kmitl
 #: model:ir.actions.act_window,name:purchase_work_acceptance.action_work_acceptance
 #: model:ir.actions.act_window,name:purchase_work_acceptance_invoice_plan.action_view_wa_installment
-#: model:ir.model,name:purchase_work_acceptance_invoice_plan.model_work_acceptance
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_invoice_plan__wa_id
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_purchase_work_acceptance_attachment__wa_id
+#: model:ir.model,name:purchase_work_acceptance_kmitl.model_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard__wa_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_invoice_plan__wa_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_purchase_work_acceptance_attachment__wa_id
 #: model:ir.ui.menu,name:purchase_work_acceptance.menu_work_acceptance
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_l10n_agreement_invoice_plan
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_purchase_invoice_plan_form
+#: model:ir.ui.menu,name:purchase_work_acceptance_kmitl.kmitl_wa
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.res_config_settings_view_form_purchase
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_l10n_agreement_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_purchase_invoice_plan_form
 msgid "Work Acceptance"
 msgstr "ใบตรวจรับ"
 
-#. module: kmitl_purchase_work_acceptance
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_work_acceptance__work_acceptance_committee_ids
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__work_acceptance_committee_ids
 msgid "Work Acceptance Committees"
-msgstr ""
+msgstr "คณะกรรมการตรวจรับพัสดุ"
 
-#. module: kmitl_purchase_work_acceptance
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_agreement__wa_count
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_agreement__wa_count
 msgid "Work Acceptance Count"
 msgstr ""
 
@@ -1050,10 +1051,10 @@ msgstr ""
 msgid "Work Acceptance Representative"
 msgstr ""
 
-#. modules: kmitl_purchase_work_acceptance, purchase_work_acceptance
-#: model:ir.model.fields,field_description:kmitl_purchase_work_acceptance.field_agreement__wa_ids
+#. modules: purchase_work_acceptance, purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_purchase_order__wa_ids
-#: model_terms:ir.ui.view,arch_db:kmitl_purchase_work_acceptance.view_agreement_form
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_agreement__wa_ids
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_agreement_form
 msgid "Work Acceptances"
 msgstr "ใบตรวจรับ"
 
