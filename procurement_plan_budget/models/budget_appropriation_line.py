@@ -13,7 +13,7 @@ class BudgetAppropriationLine(models.Model):
     procurement_plan_ids = fields.One2many(
         comodel_name="procurement.plan",
         inverse_name="budget_appropriation_line_id",
-        string="แผนจัดซื้อจัดจ้าง",
+        string="รายการแผนจัดซื้อจัดจ้าง",
         help="รายการแผนจัดซื้อจัดจ้างที่ใช้เงินจากรหัสงบประมาณนี้",
     )
 
