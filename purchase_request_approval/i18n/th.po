@@ -89,6 +89,11 @@ msgid "Create Approval"
 msgstr ""
 
 #. module: purchase_request_approval
+#: model:ir.ui.menu,name:purchase_request_approval.purchase_request_approval_root_menu
+msgid "Pruchase Request Approval"
+msgstr "คำขอจัดซื้อจัดจ้าง"
+
+#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__create_uid
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__create_uid
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_wizard__create_uid

@@ -1628,6 +1628,11 @@ msgstr "วิธีการจัดซื้อจัดจ้าง"
 msgid "Procurement Methods"
 msgstr "วิธีการจัดซื้อจัดจ้าง"
 
+#. module: purchase_request_kmitl
+#: model:ir.ui.menu,name:purchase_request_kmitl.purchase_request_kmitl_root_menu
+msgid "Pruchase Request"
+msgstr "คำขอซื้อขอจ้าง"
+
 #. module: l10n_th_gov_purchase_request
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_request__procurement_type_id
 msgid "Procurement Type"

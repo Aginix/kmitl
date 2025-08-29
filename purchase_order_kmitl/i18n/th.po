@@ -3722,6 +3722,11 @@ msgstr "แจ้งเตือนสำหรับการจัดซื้
 msgid "Warning when Purchasing this Product"
 msgstr ""
 
+#. module: purchase_order_kmitl
+#: model:ir.ui.menu,name:purchase_order_kmitl.purchase_order_kmitl_root_menu
+msgid "Pruchase Order"
+msgstr "การจัดซื้อจัดจ้าง"
+
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase

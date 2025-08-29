@@ -129,5 +129,6 @@
         </field>
     </record>
 
-    <menuitem id="menu_purchase_request_approval_root_purchase" name="Purchase Request Approval" parent="purchase.menu_procurement_management" action="action_purchase_request_approval" sequence="20"/>
+    <!-- menu -->
+    <menuitem id="purchase_request_approval_root_menu" name="Pruchase Request Approval" parent="purchase.menu_purchase_root" action="action_purchase_request_approval" sequence="1" />
 </odoo>
