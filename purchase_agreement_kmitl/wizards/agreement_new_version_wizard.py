@@ -7,7 +7,6 @@ class AgreementNewVersionWizard(models.TransientModel):
     _name = 'agreement.new.version.wizard'
     _description = 'Agreement New Version Wizard'
 
-    name = fields.Char(string="Name")
     agreement_id = fields.Many2one("agreement", string="Agreement", required=True)
     attachment_ids = fields.One2many(
         comodel_name="agreement.wizard.attachment",
@@ -22,8 +21,7 @@ class AgreementNewVersionWizard(models.TransientModel):
 
         for attach in self.attachment_ids:
             self.env["purchase.agreement.attachment"].create({
-                "request_id": agreement.id,
-                "name": attach.name,
+                "agreement_id": agreement.id,
                 "file_name": attach.file_name,
                 "file": attach.file,
                 "description": attach.description,

@@ -8,7 +8,6 @@
         <field name="arch" type="xml">
             <form string="Agreement New Version Wizard">
                 <group string="Attachment Reversion">
-                     <field name="name" />
                      <field name="file" />
                      <field name="file_name" />
                      <field name="description" />

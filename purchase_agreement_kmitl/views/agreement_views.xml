@@ -171,11 +171,6 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
-            <!-- for debug -->
-            <!-- <xpath expr="//field[@name='code']" position="after">
-                <field name="version" string='version'/>
-            </xpath> -->
-
             <xpath expr="//field[@name='expiration_notice']" position="after">
                 <field name="contract_type" invisible="1" readonly="0" />
                 <field name="work_start_date" attrs="{'invisible': [('contract_type', '!=', 'contract_construction')]}" />
@@ -200,9 +195,7 @@
             </xpath>
 
             <xpath expr="//page[@name='old_versions']" position="before">
-
                 <page name="committee" string="Committee">
-
                     <field name="pr1_total" invisible='1'/>
                     <separator string="Work Acceptance Committee"/>
                     <field name="work_acceptance_committee_ids" readonly="1">
@@ -215,7 +208,6 @@
                             <field name="phone"/>
                         </tree>
                     </field>
-
                     <div attrs="{'invisible': [('pr1_total', '&lt;', 100000)]}">
                         <separator string="TOR Committee"/>
                         <field name="tor_committee_ids" readonly="1">
@@ -229,7 +221,6 @@
                                 <field name="note"/>
                             </tree>
                         </field>
-
                         <separator string="Price Determine Committee"/>
                         <field name="price_determine_committee_ids" readonly="1">
                             <tree>
@@ -242,8 +233,6 @@
                                 <field name="note"/>
                             </tree>
                         </field>
-
-
                         <separator string="Evaluation Committee"/>
                         <field name="evaluation_committee_ids" readonly="1">
                             <tree>
@@ -258,25 +247,23 @@
                         </field>
                     </div>
                 </page>
-
                 <page name="document" string="Attachment">
-                        <separator string="Attachment"/>
-                        <field name="document_ids">
-                            <tree>
-                                <field name="file" filename="file_name" />
-                                <field name="file_name" readonly="1" />
-                                <field name="description" />
-                            </tree>
-                        </field>
-                        <separator string="Attachment Reversion"/>
-                        <field name="reversion_document_ids">
-                            <tree>
-                                <field name="file_name" readonly="1" />
-                                <field name="description" />
-                            </tree>
-                        </field>
+                    <separator string="Attachment"/>
+                    <field name="document_ids">
+                        <tree>
+                            <field name="file" filename="file_name" />
+                            <field name="file_name" readonly="1" />
+                            <field name="description" />
+                        </tree>
+                    </field>
+                    <separator string="Attachment Reversion"/>
+                    <field name="reversion_document_ids">
+                        <tree>
+                            <field name="file_name" readonly="1" />
+                            <field name="description" />
+                        </tree>
+                    </field>
                 </page>
-
                 <page name="fee" string="Fee">
                     <group name="fee">
                         <field name="fee" />
@@ -299,7 +286,6 @@
             <xpath expr="//p[@name='footer']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-
         </field>
     </record>
 
