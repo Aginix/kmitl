@@ -6,11 +6,17 @@ from odoo.exceptions import UserError
 class PurchaseRequestApproval(models.Model):
     _inherit = 'purchase.request.approval'
 
-    order_ids = fields.One2many(
+    order_id = fields.Many2one(
         "purchase.order",
-        "approval_id",
         string="Purchase Orders"
     )
+    hide_create_po_button = fields.Boolean(compute="_compute_hide_create_po_button")
+
+    @api.depends('state', 'order_id')
+    def _compute_hide_create_po_button(self):
+        for rec in self:
+            show = rec.state == 'approved' and not rec.order_id
+            rec.hide_create_po_button = not show
 
     def make_purchase_order(self):
         self.ensure_one()
@@ -23,14 +29,14 @@ class PurchaseRequestApproval(models.Model):
 
         order_lines = []
         for line in self.line_ids:
-            if not line.product_id or not line.quantity:
+            if not line.product_id or not line.product_qty:
                 raise UserError("Please fill all required line data.")
             order_lines.append((0, 0, {
                 'product_id': line.product_id.id,
                 'name': line.description or line.product_id.display_name,
-                'product_qty': line.quantity,
-                'price_unit': line.unit_price,
-                'taxes_id': [(6, 0, line.taxes.ids)],
+                'product_qty': line.product_qty,
+                'price_unit': line.price_unit,
+                'taxes_id': [(6, 0, line.taxes_id.ids)],
                 'product_uom': line.product_id.uom_po_id.id,
             }))
 
@@ -46,7 +52,7 @@ class PurchaseRequestApproval(models.Model):
             'request_id': self.request_id.id,
             'approval_id': self.id,
         })
-
+        self.order_id = order.id
         self.state = 'approved'
 
         return {

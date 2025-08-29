@@ -26,6 +26,12 @@
             <xpath expr="//field[@name='currency_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//button[@name='action_rfq_send']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='print_quotation']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
             <xpath expr="//field[@name='partner_ref']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
@@ -123,7 +129,4 @@
             </xpath>
         </field>
     </record>
-
-    <menuitem id="menu_purchase_order_kmitl" name="Purchase Order" parent="purchase_request.parent_menu_purchase_request" />
-    <menuitem id="menu_purchase_order_root_pr" name="Purchase Order" parent="purchase_order_kmitl.menu_purchase_order_kmitl" action="purchase.purchase_form_action" sequence="20"/>
 </odoo>
