@@ -6,16 +6,10 @@
     'author': 'Aginix Techonologies',
     'website': 'https://github.com/aginix/kmitl',
     'category': 'KMITL',
-    'depends': ['base', 'web', 'purchase_work_acceptance_tier_validation', 'purchase_work_acceptance_kmitl'],
+    'depends': ['purchase_work_acceptance_tier_validation', 'purchase_work_acceptance_kmitl'],
     "data": [
         "views/work_acceptance_views.xml"
     ],
-    'assets': {
-              'web.assets_backend': [
-                  'kmitl_purchase_work_acceptance_tier_validation/static/src/**/*'
-              ],
-          },
-    'application': True,
     'installable': True,
     'auto_install': False,
     'license': 'LGPL-3',
