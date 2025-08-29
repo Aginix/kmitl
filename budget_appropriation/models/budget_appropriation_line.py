@@ -149,3 +149,15 @@ class BudgetAppropriationLine(models.Model):
         for appropriation in appropriations:
             appropriation._compute_amount()
         return result
+
+    def budget_move_line_vals(self):
+        return {
+            "account_id": self.account_id.id,
+            "balance": self.balance,
+            "note": self.note,
+            "analytic_distribution": self.analytic_distribution,
+            "activity_analytic_id": self.activity_analytic_id.id,
+            "fund_analytic_id": self.fund_analytic_id.id,
+            "department_analytic_id": self.department_analytic_id.id,
+            "source_analytic_id": self.source_analytic_id.id,
+        }

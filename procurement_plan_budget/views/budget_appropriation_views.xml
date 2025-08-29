@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- View budget.appropriation.line form -->
+    <record id="view_budget_appropriation_line_form_procurement_plan" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.line.form.procurement.plan</field>
+        <field name="model">budget.appropriation.line</field>
+        <field name="inherit_id" ref="budget_appropriation.view_budget_appropriation_line_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <field name="company_id" invisible="1" />
+                <field name="currency_id" invisible="1" />
+                <field name="procurement_plan" invisible="1" />
+            </xpath>
+            <xpath expr="//field[@name='balance']" position="after">
+                <field name="procurement_plan_ids" attrs="{'invisible': [('procurement_plan', '=', False)]}" context="{
+                        'hide_header': True,
+                        'hide_budget': True,
+                        'default_date_range_fy_id': date_range_fy_id,
+                        'default_source_analytic_id': source_analytic_id,
+                        'default_activity_analytic_id': activity_analytic_id,
+                        'default_department_analytic_id': department_analytic_id,
+                        'default_fund_analytic_id': fund_analytic_id,
+                        'default_budget_account_id': account_id,
+                        'default_company_id': company_id,
+                        'default_currency_id': currency_id,
+                    }">
+                    <tree>
+                        <field name="name" invisible="1" />
+                        <field name="description" />
+                        <field name="amount" />
+                        <field name="unit" />
+                        <field name="price_per_unit" />
+                        <field name="total_price" sum="รวมทั้งหมด" />
+                        <field name="procurement_method_id" />
+                    </tree>
+                </field>
+                <field name="unallocated_balance" attrs="{'invisible': [('procurement_plan', '=', False)]}" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

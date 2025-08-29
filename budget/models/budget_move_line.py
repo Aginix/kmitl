@@ -68,12 +68,11 @@ class BudgetMoveLine(models.Model):
         index="btree",
     )
     date = fields.Date(related="move_id.date", store=True)
-    code = fields.Char(
-        "รหัสงบประมาณ", related="account_id.code", store=True, tracking=True
-    )
+    code = fields.Char(related="account_id.code", store=True, tracking=True)
     name = fields.Char("ชื่อรายการ", related="account_id.name", store=True, tracking=True)
     account_id = fields.Many2one(
         comodel_name="budget.account",
+        string="รหัสงบประมาณ",
         index=True,
         required=True,
         # TODO: ต้องกรองข้อมูลเฉพาะรหัสงบประมาณ ที่อยู่ภายใต้กองทุนที่เลือกเท่านั้น
@@ -111,7 +110,7 @@ class BudgetMoveLine(models.Model):
         digits="Budget",
         compute="_compute_unallocated_balance",
     )
-    note = fields.Text(tracking=True)
+    note = fields.Text(string="หมายเหตุ", tracking=True)
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
         domain=[("root_plan_id.code", "=", "departments")],

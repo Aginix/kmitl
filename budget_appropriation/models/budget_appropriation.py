@@ -1,6 +1,6 @@
 import logging
 
-from odoo import _, api, fields, models
+from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -214,10 +214,14 @@ class BudgetAppropriation(models.Model):
                 continue
 
             appropriation_has_name = appropriation.name and appropriation.name != "New"
-            if appropriation_has_name or (appropriation.state not in ("review", "posted")):
+            if appropriation_has_name or (
+                appropriation.state not in ("review", "posted")
+            ):
                 continue
             if not appropriation_has_name and appropriation.date:
-                appropriation.name = self.env["ir.sequence"].next_by_code("budget.appropriation") or _("New")
+                appropriation.name = self.env["ir.sequence"].next_by_code(
+                    "budget.appropriation"
+                ) or _("New")
 
     @api.depends("date", "state")
     def _compute_hide_post_button(self):
@@ -252,7 +256,9 @@ class BudgetAppropriation(models.Model):
         # Reset to draft only if no budget move created
         for record in self:
             if record.budget_move_id and record.budget_move_id.state == "posted":
-                raise UserError(_("Cannot reset to draft: Related budget move is already posted."))
+                raise UserError(
+                    _("Cannot reset to draft: Related budget move is already posted.")
+                )
         self.write({"state": "draft"})
 
     def _create_budget_move(self):
@@ -262,35 +268,7 @@ class BudgetAppropriation(models.Model):
                 continue  # Already created
 
             # Create budget move with essential fields
-            move_vals = {
-                "move_type": "appropriation",
-                "date": appropriation.date,
-                "ref": appropriation.ref,
-                "journal_id": appropriation.journal_id.id,
-                "department_analytic_id": appropriation.department_analytic_id.id,
-                "source_analytic_id": appropriation.source_analytic_id.id,
-                "date_range_fy_id": appropriation.date_range_fy_id.id,
-                "note": appropriation.note,
-                "company_id": appropriation.company_id.id,
-                "currency_id": appropriation.currency_id.id,
-                "appropriation_id": appropriation.id,
-                "line_ids": [],
-            }
-
-            # Create move lines with complete analytic dimensions
-            for line in appropriation.line_ids:
-                line_vals = {
-                    "account_id": line.account_id.id,
-                    "balance": line.balance,
-                    "note": line.note,
-                    "analytic_distribution": line.analytic_distribution,
-                    "activity_analytic_id": line.activity_analytic_id.id,
-                    "fund_analytic_id": line.fund_analytic_id.id,
-                    "department_analytic_id": line.department_analytic_id.id,
-                    "source_analytic_id": line.source_analytic_id.id,
-                }
-
-                move_vals["line_ids"].append((0, 0, line_vals))
+            move_vals = appropriation.budget_move_vals()
 
             budget_move = self.env["budget.move"].create(move_vals)
             appropriation.budget_move_id = budget_move.id
@@ -298,6 +276,28 @@ class BudgetAppropriation(models.Model):
             # Auto-post the budget move
             budget_move.action_review()
             budget_move.action_post()
+
+    def budget_move_vals(self):
+        return {
+            "move_type": "appropriation",
+            "date": self.date,
+            "ref": self.ref,
+            "journal_id": self.journal_id.id,
+            "department_analytic_id": self.department_analytic_id.id,
+            "source_analytic_id": self.source_analytic_id.id,
+            "date_range_fy_id": self.date_range_fy_id.id,
+            "note": self.note,
+            "company_id": self.company_id.id,
+            "currency_id": self.currency_id.id,
+            "appropriation_id": self.id,
+            "line_ids": [Command.create(vals) for vals in self.budget_move_line_vals()],
+        }
+
+    def budget_move_line_vals(self):
+        lines = list()
+        for line in self.line_ids:
+            lines.append(line.budget_move_line_vals())
+        return lines
 
     def action_open_f5_preview(self):
         """Open the budget appropriation F5 preview in full screen"""
