@@ -376,10 +376,10 @@ budget_account_5109100008,expense,5109100008,ค่าจ้างชั่ว�
 budget_account_5109100009,expense,5109100009,ค่าใช้จ่ายในการจัดประชุมทางวิชาการ,budget_account_5109000000,,true,
 budget_account_5109100010,expense,5109100010,ค่าใช้จ่ายในการดำเนินโครงการ,budget_account_5109000000,,true,
 budget_account_5109100016,expense,5109100016,ค่าใช้จ่ายในการดำเนินงานทรัพย์สินทางปัญญา,budget_account_5109000000,,true,
-budget_account_e702,expense,e702,งบกองทุนสำรอง,,,true,
-budget_account_702,expense,702,กองทุนสำรอง,budget_account_e702,,true,
-__export__.budget_account_547_6004ce02,expense,0702000001,เงินชดใช้เงินคงคลัง,,,true,account_analytic_kmitl.fund_0702
-__export__.budget_account_548_9bc7af60,expense,0702000002,เงินสำรอง,,,true,account_analytic_kmitl.fund_0702
+budget_account_07020,expense,07020,งบกองทุนสำรอง,,,true,account_analytic_kmitl.fund_0702
+budget_account_0702000000,expense,0702000000,กองทุนสำรอง,budget_account_07020,,true,account_analytic_kmitl.fund_0702
+budget_account_0702000001,expense,0702000001,เงินชดใช้เงินคงคลัง,budget_account_0702000000,,true,account_analytic_kmitl.fund_0702
+budget_account_0702000002,expense,0702000002,เงินสำรอง,budget_account_0702000000,,true,account_analytic_kmitl.fund_0702
 budget_account_r49000,revenue,"r49000","ค่าธรรมเนียมการศึกษา และค่าธรรมเนียมอื่น ๆ",,,true,
 budget_account_r43100,revenue,"43100","รายได้ค่าธรรมเนียมการศึกษา",budget_account_r49000,,true,
 budget_account_r4121010010,revenue,"4121010010","รายได้ค่าบำรุงกีฬา",budget_account_r43100,,true,
