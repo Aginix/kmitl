@@ -12,20 +12,17 @@ class PurchaseRequest(models.Model):
 
     def button_approved(self):
         self.ensure_one()
-        approval = self.env['purchase.request.approval'].create({
+        res = super().button_approved()
+        self._create_approval()
+        return res
+
+    def _prepare_approval_vals(self):
+        return {
             'request_id': self.id,
             'purchase_request_number': self.name,
-        })
+            'line_ids': [Command.create(line._prepare_approval_line_vals()) for line in self.line_ids],
+        }
 
-        line_vals = []
-        for line in self.line_ids:
-            line_vals.append((0, 0, {
-                'product_id': line.product_id.id,
-                'description': line.name,
-                'product_qty': line.product_qty,
-                'price_unit': line.estimated_cost / line.product_qty if line.product_qty else 0,
-            }))
+    def _create_approval(self):
+        approval = self.env['purchase.request.approval'].create(self._prepare_approval_vals())
         self.write({'approval_id': approval.id})
-        approval.write({'line_ids': line_vals})
-
-        return super().button_approved()
