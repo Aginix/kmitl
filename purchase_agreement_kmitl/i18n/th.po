@@ -1,0 +1,2522 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_th_gov_purchase_agreement
+# 	* purchase_invoice_plan
+# 	* purchase_agreement_kmitl
+# 	* agreement
+# 	* agreement_legal
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-29 09:08+0000\n"
+"PO-Revision-Date: 2025-08-29 16:15+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.6\n"
+
+#. module: agreement
+#. odoo-python
+#: code:addons/agreement/models/agreement.py:0
+#, python-format
+msgid "%s (copy)"
+msgstr ""
+
+#. module: l10n_th_gov_purchase_agreement
+#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_agreement.report_agreement_document
+msgid "(Version:"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.view_project_agreement_kanban
+msgid "<span class=\"fa fa-ellipsis-v\" aria-hidden=\"true\" title=\"Icon\"/>"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. modules: agreement, agreement_legal
+#: model:ir.model.fields,field_description:agreement.field_agreement_type__active
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__active
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_appendix__active
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause__active
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_recital__active
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_section__active
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_stage__active
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_subtype__active
+#: model:ir.model.fields.selection,name:agreement_legal.selection__agreement__state__active
+msgid "Active"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "Administration"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Advanced Features"
+msgstr ""
+
+#. modules: agreement, agreement_legal, l10n_th_gov_purchase_agreement,
+#. purchase_agreement_kmitl
+#: model:ir.actions.report,name:agreement_legal.partner_agreement_contract_document
+#: model:ir.model,name:purchase_agreement_kmitl.model_agreement
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_appendix__agreement_id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause__agreement_id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_line__agreement_id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_recital__agreement_id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_section__agreement_id
+#: model:ir.model.fields,field_description:l10n_th_gov_purchase_agreement.field_purchase_order__agreement_ids
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_new_version_wizard__agreement_id
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment__request_id
+#: model:ir.model.fields.selection,name:agreement_legal.selection__agreement_stage__stage_type__agreement
+#: model:ir.model.fields.selection,name:l10n_th_gov_purchase_agreement.selection__purchase_requisition__po_type__agreement
+#: model:ir.module.category,name:agreement_legal.module_agreement_legal_category
+#: model_terms:ir.ui.view,arch_db:agreement.agreement_form
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.report_agreement_document
+msgid "Agreement"
+msgstr "การบริหารสัญญา"
+
+#. module: agreement_legal
+#: model:ir.model,name:agreement_legal.model_agreement_appendix
+msgid "Agreement Appendices"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model,name:agreement_legal.model_agreement_clause
+msgid "Agreement Clauses"
+msgstr ""
+
+#. module: l10n_th_gov_purchase_agreement
+#: model:ir.model.fields,field_description:l10n_th_gov_purchase_agreement.field_purchase_order__agreement_count
+msgid "Agreement Count"
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model,name:purchase_agreement_kmitl.model_agreement_line
+msgid "Agreement Lines"
+msgstr ""
+
+#. modules: agreement, agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement.agreement_form
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "Agreement Name"
+msgstr "ชื่อข้อตกลง/ใบสั่งซื้อ/จ้าง"
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model,name:purchase_agreement_kmitl.model_agreement_new_version_wizard
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_new_version_wizard_form
+msgid "Agreement New Version Wizard"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.actions.report,name:agreement_legal.partner_agreement_contract_document_preview
+msgid "Agreement Preview"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model,name:agreement_legal.model_agreement_recital
+msgid "Agreement Recitals"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_search_view
+msgid "Agreement Search"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.actions.act_window,name:agreement_legal.partner_agreement_action_section
+#: model:ir.model,name:agreement_legal.model_agreement_section
+msgid "Agreement Sections"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.actions.act_window,name:agreement_legal.partner_agreement_action_stage
+msgid "Agreement Stage"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model,name:agreement_legal.model_agreement_stage
+msgid "Agreement Stages"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.actions.act_window,name:agreement_legal.partner_agreement_action_subtype
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_subtype_form_view
+msgid "Agreement Sub-Types"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__agreement_subtype_id
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_search_view
+msgid "Agreement Sub-type"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model,name:agreement_legal.model_agreement_subtype
+msgid "Agreement Subtypes"
+msgstr ""
+
+#. modules: agreement, agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__agreement_type_id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_subtype__agreement_type_id
+#: model_terms:ir.ui.view,arch_db:agreement.agreement_type_form_view
+#: model_terms:ir.ui.view,arch_db:agreement.agreement_type_search
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_search_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_subtype_search_view
+msgid "Agreement Type"
+msgstr ""
+
+#. modules: agreement, agreement_legal
+#: model:ir.actions.act_window,name:agreement.agreement_type_action
+#: model:ir.actions.act_window,name:agreement_legal.partner_agreement_action_type
+#: model:ir.model,name:agreement_legal.model_agreement_type
+msgid "Agreement Types"
+msgstr ""
+
+#. module: agreement_legal
+#: model:mail.activity.type,name:agreement_legal.mail_activity_review_agreement
+msgid "Agreement needs a review"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.actions.server,name:agreement_legal.ir_cron_test_acc_move_except_ir_actions_server
+#: model:ir.cron,cron_name:agreement_legal.ir_cron_test_acc_move_except
+msgid "Agreement: Check to Review Days"
+msgstr ""
+
+#. modules: agreement, agreement_legal, l10n_th_gov_purchase_agreement,
+#. purchase_agreement_kmitl
+#: model:ir.actions.act_window,name:agreement.agreement_action
+#: model:ir.actions.act_window,name:agreement_legal.action_agreement_report_order
+#: model:ir.actions.act_window,name:agreement_legal.agreement_dashboard_agreement
+#: model:ir.actions.act_window,name:agreement_legal.agreement_operations_agreement
+#: model:ir.model.fields,field_description:agreement_legal.field_res_partner__agreement_ids
+#: model:ir.model.fields,field_description:agreement_legal.field_res_users__agreement_ids
+#: model:ir.ui.menu,name:agreement.agreement_menu
+#: model:ir.ui.menu,name:agreement.agreement_menu_root
+#: model:ir.ui.menu,name:agreement_legal.agreement_agreement_reporting
+#: model:ir.ui.menu,name:agreement_legal.agreement_operations
+#: model:ir.ui.menu,name:agreement_legal.dashboard_agreements
+#: model:ir.ui.menu,name:agreement_legal.operations_agreements
+#: model:ir.ui.menu,name:purchase_agreement_kmitl.kmitl_agreement
+#: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_graph_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_pivot_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_section_search_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_form
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_agreement.purchase_order_form
+msgid "Agreements"
+msgstr "สัญญาใบสั่งซื้อ/จ้าง"
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_res_partner__agreements_count
+#: model:ir.model.fields,field_description:agreement_legal.field_res_users__agreements_count
+msgid "Agreements Count"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_stage_form_view
+msgid "Agreements Stage Form"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_stage_search_view
+msgid "Agreements Stage Search"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_subtype_search_view
+msgid "Agreements Sub-Types Search"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_search_view
+msgid "Agreements to review"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__amount
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_invoice_plan_tree
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_invoice_plan_tree_readonly
+msgid "Amount"
+msgstr "จำนวนเงิน"
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__amount_invoiced
+msgid "Amount Invoiced"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__special_terms
+msgid ""
+"Any terms that you have agreed to and want to track on the agreement/"
+"contract."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.actions.act_window,name:agreement_legal.agreement_appendix_action
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__appendix_ids
+#: model:ir.ui.menu,name:agreement_legal.agreement_appendices
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "Appendices"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_appendix_form
+#: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_appendix_search
+msgid "Appendix"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__approved_user_id
+msgid "Approved By"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__approved_date
+msgid "Approved Date"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "Approved by"
+msgstr ""
+
+#. modules: agreement, agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement.agreement_form
+#: model_terms:ir.ui.view,arch_db:agreement.agreement_search
+#: model_terms:ir.ui.view,arch_db:agreement.agreement_type_form_view
+#: model_terms:ir.ui.view,arch_db:agreement.agreement_type_search
+#: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_appendix_form
+#: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_recital_form
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_clause_form_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_search_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_section_form_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_stage_form_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_stage_search_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_subtype_form_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_subtype_search_view
+msgid "Archived"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.purchase_order_form
+msgid "Are you sure to remove this invoice plan?"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__assigned_user_id
+msgid "Assigned To"
+msgstr "ผู้จัดทำ"
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,help:purchase_invoice_plan.field_purchase_order__ip_invoice_plan
+msgid "At least one invoice plan line pending to create invoice"
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__document_ids
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_form
+msgid "Attachment"
+msgstr "เอกสารแนบ"
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_form
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_new_version_wizard_form
+msgid "Attachment Reversion"
+msgstr "เอกสารการแก้ไขสัญญาใหม่"
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_new_version_wizard__attachment_ids
+msgid "Attachments"
+msgstr "เอกสารแนบ"
+
+#. module: purchase_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_make_planned_invoice
+msgid "Bill Purchase Order"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_invoice_plan_filter
+msgid "Bills Received"
+msgstr "ได้รับบิลแล้ว"
+
+#. module: purchase_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_make_planned_invoice
+msgid ""
+"Bills will be created in draft for this installment\n"
+"                        so that you can review them before validation."
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.report_agreement_document
+msgid "By:"
+msgstr ""
+
+#. modules: agreement_legal, purchase_agreement_kmitl, purchase_invoice_plan
+#: model_terms:ir.ui.view,arch_db:agreement_legal.create_agreement_from_template_form_view
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_new_version_wizard_form
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_create_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_make_planned_invoice
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__change_notice
+msgid "Change Notice (Days)"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__child_agreements_ids
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "Child Agreements"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_clause_search_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_clause_form_view
+msgid "Clause"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause__content
+msgid "Clause Content"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.actions.act_window,name:agreement_legal.partner_agreement_action_clause
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__clauses_ids
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_section__clauses_ids
+#: model:ir.ui.menu,name:agreement_legal.agreement_clauses
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_section_form_view
+msgid "Clauses"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__color
+msgid "Color"
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_form
+msgid "Committee"
+msgstr "คณะกรรมการ"
+
+#. modules: agreement, agreement_legal
+#: model:ir.model.fields,field_description:agreement.field_agreement__company_id
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.report_agreement_document
+msgid "Company"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__company_contact_id
+msgid "Company Contact"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.report_agreement_document
+msgid "Company Information"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__company_partner_id
+msgid "Company's Partner"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__dynamic_description
+msgid "Compute dynamic description"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__dynamic_parties
+msgid "Compute dynamic parties"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__dynamic_special_terms
+msgid "Compute dynamic special terms"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model,name:agreement_legal.model_res_config_settings
+msgid "Config Settings"
+msgstr "ตั้งค่าการกำหนดค่า"
+
+#. modules: agreement, agreement_legal
+#: model:ir.ui.menu,name:agreement_legal.agreement_configuration
+#: model_terms:ir.ui.view,arch_db:agreement.agreement_form
+msgid "Configuration"
+msgstr "การกำหนดค่า"
+
+#. module: purchase_agreement_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_new_version_wizard_form
+msgid "Conform"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model,name:agreement_legal.model_res_partner
+msgid "Contact"
+msgstr "ติดต่อ"
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__partner_signed_user_id
+msgid "Contact on the account that signed the agreement/contract."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_appendix__content
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_recital__content
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_section_form_view
+msgid "Content"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.ui.menu,name:agreement_legal.agreement_data_contents
+msgid "Contents"
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__contract_type
+msgid "Contract type"
+msgstr "ประเภทสัญญา/ใบสั่งซื้อ/จ้าง"
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_appendix_form
+#: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_recital_form
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_clause_form_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_section_form_view
+msgid "Copy and paste the placeholder expression in the content"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid ""
+"Copy and paste the placeholder expression in the description or the special "
+"terms"
+msgstr ""
+
+#. modules: agreement_legal, purchase_agreement_kmitl
+#: model_terms:ir.ui.view,arch_db:agreement_legal.create_agreement_from_template_form_view
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_purchase_order_form
+msgid "Create Agreement"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model,name:agreement_legal.model_create_agreement_wizard
+msgid "Create Agreement Wizard"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_make_planned_invoice
+msgid "Create All Remaining Bills"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.purchase_order_form
+msgid "Create Bill by Plan"
+msgstr ""
+
+#. module: agreement_legal
+#. odoo-javascript
+#: code:addons/agreement_legal/static/src/xml/agreement.xml:0
+#: model:ir.actions.act_window,name:agreement_legal.create_agreement_from_template_action
+#, python-format
+msgid "Create From Template"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.actions.act_window,name:purchase_invoice_plan.action_purchase_create_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_create_invoice_plan
+msgid "Create Invoice Plan"
+msgstr "สร้างงวดงาน"
+
+#. module: purchase_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_make_planned_invoice
+msgid "Create Next Bill"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_res_config_settings__module_agreement_sale
+msgid "Create an agreement when the sale order is confirmed."
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Create an agreement when the sales order is confirmed"
+msgstr ""
+
+#. modules: agreement, agreement_legal, purchase_agreement_kmitl,
+#. purchase_invoice_plan
+#: model:ir.model.fields,field_description:agreement.field_agreement__create_uid
+#: model:ir.model.fields,field_description:agreement.field_agreement_type__create_uid
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_appendix__create_uid
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause__create_uid
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_line__create_uid
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_recital__create_uid
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_section__create_uid
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_stage__create_uid
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_subtype__create_uid
+#: model:ir.model.fields,field_description:agreement_legal.field_create_agreement_wizard__create_uid
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_new_version_wizard__create_uid
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment__create_uid
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment__create_uid
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_create_invoice_plan__create_uid
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__create_uid
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_make_planned_invoice__create_uid
+msgid "Created by"
+msgstr "สร้างโดย"
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__create_uid_parent
+msgid "Created by (parent)"
+msgstr ""
+
+#. modules: agreement, agreement_legal, purchase_agreement_kmitl,
+#. purchase_invoice_plan
+#: model:ir.model.fields,field_description:agreement.field_agreement__create_date
+#: model:ir.model.fields,field_description:agreement.field_agreement_type__create_date
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_appendix__create_date
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause__create_date
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_line__create_date
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_recital__create_date
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_section__create_date
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_stage__create_date
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_subtype__create_date
+#: model:ir.model.fields,field_description:agreement_legal.field_create_agreement_wizard__create_date
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_new_version_wizard__create_date
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment__create_date
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment__create_date
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_create_invoice_plan__create_date
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__create_date
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_make_planned_invoice__create_date
+msgid "Created on"
+msgstr "สร้างเมื่อ"
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__create_date_parent
+msgid "Created on (parent)"
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__currency_id
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_line__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.ui.menu,name:agreement_legal.agreement_dashboard
+msgid "Dashboard"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__termination_requested
+msgid "Date that a request for termination was received."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__termination_date
+msgid "Date that the contract was terminated."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__company_signed_date
+msgid "Date the contract was signed by Company."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__partner_signed_date
+msgid "Date the contract was signed by the Partner."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__to_review_date
+msgid "Date used to warn us some days before agreement expires"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.report_agreement_document
+msgid "Date:"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields.selection,name:purchase_invoice_plan.selection__purchase_create_invoice_plan__interval_type__day
+msgid "Day"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__default_value
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_appendix__default_value
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause__default_value
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_recital__default_value
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_section__default_value
+msgid "Default Value"
+msgstr ""
+
+#. modules: agreement_legal, purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__description
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_line__name
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment__description
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment__description
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_form
+msgid "Description"
+msgstr "รายละเอียด"
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__description
+msgid "Description of the agreement"
+msgstr "รายละเอียด"
+
+#. modules: agreement, agreement_legal, purchase_agreement_kmitl,
+#. purchase_invoice_plan
+#: model:ir.model.fields,field_description:agreement.field_agreement__display_name
+#: model:ir.model.fields,field_description:agreement.field_agreement_type__display_name
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_appendix__display_name
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause__display_name
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_line__display_name
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_recital__display_name
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_section__display_name
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_stage__display_name
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_subtype__display_name
+#: model:ir.model.fields,field_description:agreement_legal.field_create_agreement_wizard__display_name
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_new_version_wizard__display_name
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment__display_name
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment__display_name
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_create_invoice_plan__display_name
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__display_name
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_make_planned_invoice__display_name
+msgid "Display Name"
+msgstr "แสดงชื่อ"
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__domain
+#: model:ir.model.fields,field_description:agreement.field_agreement_type__domain
+#: model_terms:ir.ui.view,arch_db:agreement.agreement_search
+#: model_terms:ir.ui.view,arch_db:agreement.agreement_type_search
+msgid "Domain"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields.selection,name:agreement_legal.selection__agreement__state__draft
+msgid "Draft"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_appendix__dynamic_content
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause__dynamic_content
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_recital__dynamic_content
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_section__dynamic_content
+msgid "Dynamic Content"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__dynamic_description
+msgid "Dynamic Description"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__dynamic_parties
+msgid "Dynamic Parties"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__dynamic_special_terms
+msgid "Dynamic Special Terms"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.view_project_agreement_kanban
+msgid "Edit"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__company_contact_email
+msgid "Email"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__end_date
+msgid "End Date"
+msgstr "วันสิ่นสุดสัญญา"
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_appendix_form
+#: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_recital_form
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_clause_form_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_section_form_view
+msgid "Enter the default value if the field is empty"
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_form
+msgid "Evaluation Committee"
+msgstr "คณะกรรมการพิจารณาผล"
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__evaluation_committee_ids
+msgid "Evaluation Committees"
+msgstr "คณะกรรมการพิจารณาผล"
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__expiration_notice
+msgid "Exp. Notice (Days)"
+msgstr "วันที่แจ้งเตือนก่อนหมดอายุสัญญา"
+
+#. module: purchase_agreement_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_form
+msgid "Fee"
+msgstr "ค่าปรับ"
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__fee
+msgid "Fee Per Day"
+msgstr "ค่าปรับ"
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__field_id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_appendix__field_id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause__field_id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_recital__field_id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_section__field_id
+msgid "Field"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Field Service"
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment__file
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment__file
+msgid "File"
+msgstr ""
+
+#. modules: agreement_legal, purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__signed_contract_filename
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment__file_name
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment__file_name
+msgid "Filename"
+msgstr "ชื่อไฟล์"
+
+#. module: purchase_invoice_plan
+#: model:ir.model,name:purchase_invoice_plan.model_purchase_create_invoice_plan
+msgid "Fillig invoice planning criteria"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__copyvalue
+#: model:ir.model.fields,help:agreement_legal.field_agreement_appendix__copyvalue
+#: model:ir.model.fields,help:agreement_legal.field_agreement_clause__copyvalue
+#: model:ir.model.fields,help:agreement_legal.field_agreement_recital__copyvalue
+#: model:ir.model.fields,help:agreement_legal.field_agreement_section__copyvalue
+msgid ""
+"Final placeholder expression, to be copy-pasted in the desired\n"
+"         template field."
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,help:agreement.field_agreement__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "General"
+msgstr "ข้อมูลทั่วไป"
+
+#. module: purchase_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_invoice_plan_filter
+msgid "Group By"
+msgstr "กลุ่มโดย"
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Helpdesk"
+msgstr ""
+
+#. modules: agreement, agreement_legal, purchase_agreement_kmitl,
+#. purchase_invoice_plan
+#: model:ir.model.fields,field_description:agreement.field_agreement__id
+#: model:ir.model.fields,field_description:agreement.field_agreement_type__id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_appendix__id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause__id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_line__id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_recital__id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_section__id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_stage__id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_subtype__id
+#: model:ir.model.fields,field_description:agreement_legal.field_create_agreement_wizard__id
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_new_version_wizard__id
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment__id
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment__id
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_create_invoice_plan__id
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__id
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_make_planned_invoice__id
+msgid "ID"
+msgstr "ไอดี"
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__code
+msgid "ID used for internal contract tracking."
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,help:agreement.field_agreement__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,help:agreement.field_agreement__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,help:agreement.field_agreement__message_has_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,help:purchase_invoice_plan.field_purchase_invoice_plan__invoiced
+msgid "If this line already invoiced"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,help:purchase_invoice_plan.field_purchase_invoice_plan__to_invoice
+msgid "If this line is ready to create new invoice"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__active
+#: model:ir.model.fields,help:agreement_legal.field_agreement_clause__active
+#: model:ir.model.fields,help:agreement_legal.field_agreement_section__active
+msgid ""
+"If unchecked, it will allow you to hide the agreement without removing it."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement_appendix__active
+msgid ""
+"If unchecked, it will allow you to hide this appendix without removing it."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement_recital__active
+msgid ""
+"If unchecked, it will allow you to hide this recital without removing it."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields.selection,name:agreement_legal.selection__agreement__state__inactive
+msgid "Inactive"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__installment
+#: model:ir.model.fields.selection,name:purchase_invoice_plan.selection__purchase_invoice_plan__invoice_type__installment
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_invoice_plan_filter
+msgid "Installment"
+msgstr "งวดงาน"
+
+#. module: purchase_invoice_plan
+#. odoo-python
+#: code:addons/purchase_invoice_plan/models/purchase.py:0
+#, python-format
+msgid ""
+"Installment %s: already used and not allowed to delete.\n"
+"Please discard changes."
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_create_invoice_plan__installment_date
+msgid "Installment Date"
+msgstr "วันที่เริ่มสัญญา"
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_create_invoice_plan__interval
+msgid "Interval"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_create_invoice_plan__interval_type
+msgid "Interval Type"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Inventory"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__invoiced
+msgid "Invoice Created"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.actions.act_window,name:purchase_invoice_plan.action_view_purchase_make_planned_invoice
+msgid "Invoice Order"
+msgstr ""
+
+#. modules: l10n_th_gov_purchase_agreement, purchase_invoice_plan
+#: model:ir.model.fields,field_description:l10n_th_gov_purchase_agreement.field_agreement__invoice_plan_ids
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_order__invoice_plan_ids
+#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_agreement.partner_agreement_form_view
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.purchase_order_form
+msgid "Invoice Plan"
+msgstr "งวดงาน"
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_order__ip_invoice_plan
+msgid "Invoice Plan In Process"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model,name:purchase_invoice_plan.model_purchase_invoice_plan
+msgid "Invoice Planning Detail"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#. odoo-python
+#: code:addons/purchase_invoice_plan/models/purchase.py:0
+#, python-format
+msgid "Invoice plan total percentage must not exceed 100%"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__invoice_ids
+msgid "Invoices"
+msgstr "งวดงาน"
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_stage__fold
+msgid "Is Folded"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__is_template
+msgid "Is a Template?"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__last
+msgid "Last Installment"
+msgstr ""
+
+#. modules: agreement, agreement_legal, purchase_agreement_kmitl,
+#. purchase_invoice_plan
+#: model:ir.model.fields,field_description:agreement.field_agreement____last_update
+#: model:ir.model.fields,field_description:agreement.field_agreement_type____last_update
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_appendix____last_update
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause____last_update
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_line____last_update
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_recital____last_update
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_section____last_update
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_stage____last_update
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_subtype____last_update
+#: model:ir.model.fields,field_description:agreement_legal.field_create_agreement_wizard____last_update
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_new_version_wizard____last_update
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment____last_update
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment____last_update
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_create_invoice_plan____last_update
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan____last_update
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_make_planned_invoice____last_update
+msgid "Last Modified on"
+msgstr "แก้ไขครั้งล่าสุดเมื่อ"
+
+#. modules: agreement, agreement_legal, purchase_agreement_kmitl,
+#. purchase_invoice_plan
+#: model:ir.model.fields,field_description:agreement.field_agreement__write_uid
+#: model:ir.model.fields,field_description:agreement.field_agreement_type__write_uid
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_appendix__write_uid
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause__write_uid
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_line__write_uid
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_recital__write_uid
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_section__write_uid
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_stage__write_uid
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_subtype__write_uid
+#: model:ir.model.fields,field_description:agreement_legal.field_create_agreement_wizard__write_uid
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_new_version_wizard__write_uid
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment__write_uid
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment__write_uid
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_create_invoice_plan__write_uid
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__write_uid
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_make_planned_invoice__write_uid
+msgid "Last Updated by"
+msgstr "อัปเดตครั้งล่าสุดโดย"
+
+#. modules: agreement, agreement_legal, purchase_agreement_kmitl,
+#. purchase_invoice_plan
+#: model:ir.model.fields,field_description:agreement.field_agreement__write_date
+#: model:ir.model.fields,field_description:agreement.field_agreement_type__write_date
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_appendix__write_date
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause__write_date
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_line__write_date
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_recital__write_date
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_section__write_date
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_stage__write_date
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_subtype__write_date
+#: model:ir.model.fields,field_description:agreement_legal.field_create_agreement_wizard__write_date
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_new_version_wizard__write_date
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment__write_date
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment__write_date
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_create_invoice_plan__write_date
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__write_date
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_make_planned_invoice__write_date
+msgid "Last Updated on"
+msgstr "อัปเดตครั้งล่าสุดเมื่อ"
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,help:purchase_invoice_plan.field_purchase_invoice_plan__last
+msgid "Last installment will create invoice use remaining amount"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__parent_agreement_id
+msgid ""
+"Link this agreement to a parent agreement. For example if this agreement is "
+"an amendment to another agreement. This list will only show other "
+"agreements related to the same account."
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Link your Field Service orders and equipments to an agreement"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_res_config_settings__module_fieldservice_agreement
+msgid "Link your Field Service orders and equipments to an agreement."
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Link your Helpdesk tickets to an agreement"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_res_config_settings__module_agreement_helpdesk
+msgid "Link your Helpdesk tickets to an agreement."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_res_config_settings__module_agreement_rma
+msgid "Link your RMAs to an agreement."
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Link your manufacturing orders to an agreement"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_res_config_settings__module_agreement_mrp
+msgid "Link your manufacturing orders to an agreement."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_res_config_settings__module_agreement_stock
+msgid "Link your pickings to an agreement."
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Link your projects and tasks to an agreement"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_res_config_settings__module_agreement_project
+msgid "Link your projects and tasks to an agreement."
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Link your repair orders to an agreement"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_res_config_settings__module_agreement_repair
+msgid "Link your repair orders to an agreement."
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Link your returns to an agreement"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Link your subscriptions to an agreement"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_res_config_settings__module_agreement_sale_subscription
+msgid "Link your subscriptions to an agreement."
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Link your transfers to an agreement"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Maintenance"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Manage maintenance agreements and contracts"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_res_config_settings__module_agreement_maintenance
+msgid "Manage maintenance agreements and contracts."
+msgstr ""
+
+#. module: agreement_legal
+#: model:res.groups,name:agreement_legal.group_agreement_manager
+msgid "Manager"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Manufacturing"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.ui.menu,name:agreement_legal.agreement_masterdata
+msgid "Master Data"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields.selection,name:purchase_invoice_plan.selection__purchase_create_invoice_plan__interval_type__month
+msgid "Month"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. modules: agreement, agreement_legal, purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:agreement.field_agreement_type__name
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_appendix__name
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause__name
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_recital__name
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_section__name
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_new_version_wizard__name
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment__name
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_purchase_agreement_attachment__name
+msgid "Name"
+msgstr ""
+
+#. module: agreement
+#: model_terms:ir.ui.view,arch_db:agreement.agreement_search
+msgid "Name or Number"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.report_agreement_document
+msgid "Name:"
+msgstr ""
+
+#. module: agreement_legal
+#. odoo-python
+#: code:addons/agreement_legal/models/agreement.py:0
+#, python-format
+msgid "New"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "New Agreement"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "New Version"
+msgstr "ปรับปรุง/แก้ไขสัญญา"
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__to_invoice
+msgid "Next Invoice"
+msgstr ""
+
+#. module: l10n_th_gov_purchase_agreement
+#: model:ir.model.fields.selection,name:l10n_th_gov_purchase_agreement.selection__purchase_requisition__po_type__no_agreement
+msgid "No Agreement"
+msgstr ""
+
+#. module: l10n_th_gov_purchase_agreement
+#. odoo-python
+#: code:addons/l10n_th_gov_purchase_agreement/models/purchase.py:0
+#, python-format
+msgid "No Agreement."
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__no_edit
+msgid "No Edit"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_search_view
+msgid "Non-Templates"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__notification_address_id
+msgid "Notification Address"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#. odoo-python
+#: code:addons/purchase_invoice_plan/wizard/purchase_create_invoice_plan.py:0
+#, python-format
+msgid "Number Installment must greater than 1"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__expiration_notice
+msgid "Number of Days before expiration to be notified."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__change_notice
+msgid "Number of Days to be notified before changes."
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_create_invoice_plan__num_installment
+msgid "Number of Installment"
+msgstr "จำนวนงวดงาน"
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,help:agreement.field_agreement__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,help:agreement.field_agreement__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Operations"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__default_value
+#: model:ir.model.fields,help:agreement_legal.field_agreement_appendix__default_value
+#: model:ir.model.fields,help:agreement_legal.field_agreement_clause__default_value
+#: model:ir.model.fields,help:agreement_legal.field_agreement_recital__default_value
+#: model:ir.model.fields,help:agreement_legal.field_agreement_section__default_value
+msgid "Optional value to use if the target field is empty."
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_form
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_tree
+msgid "PO Ref"
+msgstr "รหัสเอกสารการจัดซื้อจัดจ้าง"
+
+#. module: l10n_th_gov_purchase_agreement
+#: model:ir.model.fields,field_description:l10n_th_gov_purchase_agreement.field_purchase_order__po_type
+#: model:ir.model.fields,field_description:l10n_th_gov_purchase_agreement.field_purchase_requisition__po_type
+msgid "PO Type"
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__pr1_total
+msgid "PR1 Total"
+msgstr "ราคารวม PR1"
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__parent_agreement_id
+msgid "Parent Agreement"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__parties
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.report_agreement_document
+msgid "Parties"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "Parties Content"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__parties
+msgid "Parties of the agreement"
+msgstr ""
+
+#. modules: agreement, agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__partner_id
+#: model_terms:ir.ui.view,arch_db:agreement.agreement_search
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.report_agreement_document
+msgid "Partner"
+msgstr "คู่ค้า"
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__partner_contact_id
+msgid "Partner Contact"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__partner_contact_email
+msgid "Partner Email"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.report_agreement_document
+msgid "Partner Information"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__partner_contact_phone
+msgid "Partner Phone"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_search_view
+msgid "Partners"
+msgstr "คู่ค้า"
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__percent
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_order__ip_total_percent
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_invoice_plan_tree_readonly
+msgid "Percent"
+msgstr "ร้อยละ"
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "Performance"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "Perhaps include invoices with total vs costs?"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__company_contact_phone
+msgid "Phone"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__copyvalue
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_appendix__copyvalue
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause__copyvalue
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_recital__copyvalue
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_section__copyvalue
+msgid "Placeholder Expression"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__plan_date
+msgid "Plan Date"
+msgstr "วันที่กำหนด"
+
+#. module: purchase_invoice_plan
+#. odoo-python
+#: code:addons/purchase_invoice_plan/models/purchase.py:0
+#, python-format
+msgid ""
+"Plan quantity: %(plan)s, exceed invoiceable quantity: %(qty)s\n"
+"Product should be delivered before invoice"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#. odoo-python
+#: code:addons/purchase_invoice_plan/models/purchase.py:0
+#, python-format
+msgid "Please fill percentage for all invoice plan lines"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "Preview"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__previous_version_agreements_ids
+msgid "Previous Versions"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "Previouse Versions"
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_form
+msgid "Price Determine Committee"
+msgstr "คณะกรรมการกำหนดราคากลาง"
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__price_determine_committee_ids
+msgid "Price Determine Committees"
+msgstr "คณะกรรมการกำหนดราคากลาง"
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "Primary Contact"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "Print"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_line__product_id
+msgid "Product"
+msgstr "สินค้า"
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_line__product_categ_id
+msgid "Product Category"
+msgstr "ประเภทพัสดุ"
+
+#. module: agreement_legal
+#: model:ir.ui.menu,name:agreement_legal.agreement_products
+msgid "Products"
+msgstr "สินค้า"
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__line_ids
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "Products/Services"
+msgstr "สินค้า"
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Project"
+msgstr ""
+
+#. module: agreement
+#. odoo-python
+#: code:addons/agreement/models/agreement.py:0
+#: model_terms:ir.ui.view,arch_db:agreement.agreement_search
+#: model_terms:ir.ui.view,arch_db:agreement.agreement_type_search
+#, python-format
+msgid "Purchase"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.actions.act_window,name:purchase_invoice_plan.action_purchase_invoice_plan
+#: model:ir.ui.menu,name:purchase_invoice_plan.menu_purchase_invoice_plan
+msgid "Purchase Invoice Plan"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model,name:purchase_invoice_plan.model_purchase_order
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_invoice_plan_filter
+msgid "Purchase Order"
+msgstr "คำสั่งซื้อ"
+
+#. module: purchase_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_invoice_plan_filter
+msgid "Purchase Orders"
+msgstr "คำสั่งซื้อ"
+
+#. module: l10n_th_gov_purchase_agreement
+#: model:ir.model,name:l10n_th_gov_purchase_agreement.model_purchase_requisition
+msgid "Purchase Requisition"
+msgstr "ใบเบิกซื้อ"
+
+#. module: purchase_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_invoice_plan_filter
+msgid "Purchase orders that have been invoiced."
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_invoice_plan_filter
+msgid "Purchase orders that include lines not invoiced."
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model,name:purchase_agreement_kmitl.model_purchase_agreement_attachment
+msgid "PurchaseAgreementAttachment"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__purchase_id
+msgid "Purchases Order"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_line__qty
+msgid "Quantity"
+msgstr "จำนวน"
+
+#. module: purchase_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_invoice_plan_filter
+msgid "Quotations"
+msgstr ""
+
+#. module: l10n_th_gov_purchase_agreement
+#: model:ir.model.fields,field_description:l10n_th_gov_purchase_agreement.field_agreement__purchase_order_id
+msgid "RFQ"
+msgstr ""
+
+#. module: agreement_legal
+#: model:res.groups,name:agreement_legal.group_agreement_readonly
+msgid "Read-Only Users"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__readonly
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_stage__readonly
+msgid "Readonly"
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_new_version_wizard__reason
+msgid "Reason for Revision"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_recital_form
+msgid "Recital"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.actions.act_window,name:agreement_legal.agreement_recital_action
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__recital_ids
+#: model:ir.ui.menu,name:agreement_legal.agreement_recitals
+#: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_recital_search
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.report_agreement_document
+msgid "Recitals"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.view_project_agreement_kanban
+msgid "Record's Colour"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__code
+msgid "Reference"
+msgstr "รหัสเอกสารสัญญา/ใบสั่งซื้อ/จ้าง"
+
+#. module: purchase_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_invoice_plan_form
+msgid "Related Bills"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Repair"
+msgstr ""
+
+#. modules: agreement, agreement_legal
+#: model:ir.ui.menu,name:agreement.agreement_reporting_menu
+#: model:ir.ui.menu,name:agreement_legal.agreement_reporting
+msgid "Reporting"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.report_agreement_document
+msgid "Represented by"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Returns"
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__reversion_document_ids
+msgid "Reversion Attachment"
+msgstr "เอกสารการแก้ไขสัญญาใหม่"
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_type__review_days
+msgid "Review Days"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_type__review_user_id
+msgid "Review User"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__reviewed_user_id
+msgid "Reviewed By"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__reviewed_date
+msgid "Reviewed Date"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "Reviewed by"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__revision
+msgid "Revision"
+msgstr "ประวัติการแก้ไขสัญญา"
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__revision_reason
+msgid "Revision Reason"
+msgstr "เหตุผลการแก้ไขสัญญา"
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "Revisions"
+msgstr "ประวัติการแก้ไขสัญญา"
+
+#. module: agreement
+#. odoo-python
+#: code:addons/agreement/models/agreement.py:0
+#: model_terms:ir.ui.view,arch_db:agreement.agreement_search
+#: model_terms:ir.ui.view,arch_db:agreement.agreement_type_search
+#, python-format
+msgid "Sale"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Sale Subscriptions"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Sales"
+msgstr ""
+
+#. module: agreement
+#: model_terms:ir.ui.view,arch_db:agreement.agreement_search
+msgid "Search Agreements"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_invoice_plan_filter
+msgid "Search Purchase Invoice Plan Lines"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause__section_id
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_section_form_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_section_search_view
+msgid "Section"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_section__content
+msgid "Section Content"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__sections_ids
+#: model:ir.ui.menu,name:agreement_legal.agreement_sections
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "Sections"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__field_id
+#: model:ir.model.fields,help:agreement_legal.field_agreement_appendix__field_id
+#: model:ir.model.fields,help:agreement_legal.field_agreement_clause__field_id
+#: model:ir.model.fields,help:agreement_legal.field_agreement_recital__field_id
+#: model:ir.model.fields,help:agreement_legal.field_agreement_section__field_id
+msgid ""
+"Select target field from the related document model. If it is a\n"
+"         relationship field you will be able to select a target field at "
+"the\n"
+"         destination of the relationship."
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "Select the agreement field"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_appendix_form
+msgid "Select the appendix field"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_clause_form_view
+msgid "Select the clause field"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__stage_id
+msgid "Select the current stage of the agreement."
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_recital_form
+msgid "Select the recital field"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_section_form_view
+msgid "Select the section field"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_appendix_form
+#: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_recital_form
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_clause_form_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_section_form_view
+msgid "Select the sub-field"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__agreement_subtype_id
+msgid ""
+"Select the sub-type of this agreement. Sub-Types are related to agreement "
+"types."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__agreement_type_id
+msgid "Select the type of agreement"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__assigned_user_id
+msgid "Select the user who manages this agreement."
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Sell and purchase products in different units of measure"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_appendix__sequence
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause__sequence
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_recital__sequence
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_section__sequence
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_stage__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,help:agreement.field_agreement__is_template
+msgid ""
+"Set if the agreement is a template. Template agreements don't require a "
+"partner."
+msgstr ""
+
+#. modules: agreement, agreement_legal
+#: model:ir.actions.act_window,name:agreement_legal.action_agreement_config
+#: model:ir.ui.menu,name:agreement.agreement_setting_menu
+#: model:ir.ui.menu,name:agreement_legal.agreement_settings
+msgid "Settings"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,field_description:agreement.field_agreement__signature_date
+#: model_terms:ir.ui.view,arch_db:agreement.agreement_search
+msgid "Signature Date"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.report_agreement_document
+msgid "Signatures"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__company_signed_user_id
+msgid "Signed By"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__partner_signed_user_id
+msgid "Signed By (Partner)"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__signed_contract
+msgid "Signed Document"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__company_signed_date
+msgid "Signed on"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__partner_signed_date
+msgid "Signed on (Partner)"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__special_terms
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.report_agreement_document
+msgid "Special Terms"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__stage_id
+msgid "Stage"
+msgstr "สถานะ"
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_stage__name
+msgid "Stage Name"
+msgstr "สถานะ"
+
+#. module: agreement_legal
+#: model:ir.ui.menu,name:agreement_legal.agreement_stages
+msgid "Stages"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__start_date
+msgid "Start Date"
+msgstr "วันที่เริ่มสัญญา"
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__state
+msgid "State"
+msgstr "สถานะ"
+
+#. modules: agreement_legal, purchase_invoice_plan
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__state
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_search_view
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_invoice_plan_filter
+msgid "Status"
+msgstr "สถานะ"
+
+#. module: agreement
+#: model:ir.model.fields,help:agreement.field_agreement__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "Structure"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_subtype__name
+msgid "Sub-Type Name"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_type__agreement_subtypes_ids
+#: model:ir.ui.menu,name:agreement_legal.agreement_subtypes
+msgid "Sub-Types"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__sub_model_object_field_id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_appendix__sub_model_object_field_id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause__sub_model_object_field_id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_recital__sub_model_object_field_id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_section__sub_model_object_field_id
+msgid "Sub-field"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__sub_object_id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_appendix__sub_object_id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause__sub_object_id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_recital__sub_object_id
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_section__sub_object_id
+msgid "Sub-model"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__partner_id
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_invoice_plan_filter
+msgid "Supplier"
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_form
+msgid "TOR Committee"
+msgstr "คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน"
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__tor_committee_ids
+msgid "TOR Committees"
+msgstr "คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน"
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause__temp_agreement_id
+msgid "Temp Agreement"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__template_id
+#: model:ir.model.fields,field_description:agreement_legal.field_create_agreement_wizard__template_id
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "Template"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.actions.act_window,name:agreement_legal.partner_agreement_agreement_templates
+#: model:ir.ui.menu,name:agreement_legal.template
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_search_view
+msgid "Templates"
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model,name:purchase_agreement_kmitl.model_agreement_wizard_attachment
+msgid "Temporary Attachments for Agreement Wizard"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "Term Dates"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__termination_date
+msgid "Termination Date"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__termination_requested
+msgid "Termination Requested Date"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__notification_address_id
+msgid ""
+"The address to send notifications to, if different from customer address."
+"(Address Type = Other)"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__readonly
+#: model:ir.model.fields,help:agreement_legal.field_agreement_stage__readonly
+msgid "The agreement can not edit if set Readonly = True."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__partner_id
+msgid "The customer or vendor this agreement is related to."
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,help:purchase_agreement_kmitl.field_agreement__work_end_date
+msgid ""
+"The end date for the purchase order. If not set, the start date will be "
+"used."
+msgstr ""
+
+#. module: l10n_th_gov_purchase_agreement
+#. odoo-python
+#: code:addons/l10n_th_gov_purchase_agreement/models/agreement.py:0
+#, python-format
+msgid "The partner should be the same as in RFQ."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__company_contact_id
+msgid "The primary contact in the company."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__partner_contact_id
+msgid "The primary partner contact (If Applicable)."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__revision
+msgid "The revision will increase with every save event."
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,help:purchase_agreement_kmitl.field_agreement__work_start_date
+msgid ""
+"The start date for the purchase order. If not set, the current date will be "
+"used."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement_appendix__title
+#: model:ir.model.fields,help:agreement_legal.field_agreement_clause__title
+#: model:ir.model.fields,help:agreement_legal.field_agreement_recital__title
+#: model:ir.model.fields,help:agreement_legal.field_agreement_section__title
+msgid "The title is displayed on the PDF. The name is not."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__company_signed_user_id
+msgid ""
+"The user at our company who authorized/signed the agreement or contract."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__version
+msgid ""
+"The versions are used to keep track of document history and previous "
+"versions can be referenced."
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.constraint,message:agreement.constraint_agreement_code_partner_company_unique
+msgid "This agreement code already exists for this partner!"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,help:purchase_invoice_plan.field_purchase_invoice_plan__amount
+msgid "This amount will be used to calculate the percent"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement_clause__temp_agreement_id
+msgid "This field help to filter section."
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,help:purchase_invoice_plan.field_purchase_invoice_plan__percent
+msgid "This percent will be used to calculate new quantity"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_appendix_form
+#: model_terms:ir.ui.view,arch_db:agreement_legal.agreement_recital_form
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_clause_form_view
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_section_form_view
+msgid ""
+"This section (on the left) allows you to add dynamic fields inside the "
+"content."
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid ""
+"This section (on the left) allows you to add dynamic fields inside the "
+"description and special terms."
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid ""
+"This section (on the left) allows you to replace the default listing of the "
+"parties with custom dynamic content."
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid ""
+"This section is a place where financial records will show the current "
+"performance of this agreement."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement_stage__fold
+msgid "This stage is folded in the kanban view by default."
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model_terms:ir.actions.act_window,help:purchase_invoice_plan.action_purchase_invoice_plan
+msgid "This view show all available invoice plan line for reporting purposes"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_create_invoice_plan
+msgid "This wizard help you quickly create invoice plan."
+msgstr "กรุณากรอกรายละเอียดงวดงาน"
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__name
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_appendix__title
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_clause__title
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_recital__title
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_section__title
+#: model:ir.model.fields,field_description:agreement_legal.field_create_agreement_wizard__name
+msgid "Title"
+msgstr "ชื่อสัญญา/ใบสั่งซื้อ/จ้าง"
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.report_agreement_document
+msgid "Title:"
+msgstr "ชื่อสัญญา/ใบสั่งซื้อ/จ้าง"
+
+#. module: purchase_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_invoice_plan_filter
+msgid "To Approve"
+msgstr "ที่จะอนุมัติ"
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__to_review_date
+msgid "To Review Date"
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_line__price_subtotal
+msgid "Total"
+msgstr "ราคารวม"
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_order__ip_total_amount
+msgid "Total Amount"
+msgstr "จำนวนรวม"
+
+#. modules: agreement_legal, purchase_invoice_plan
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_stage__stage_type
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_invoice_plan__invoice_type
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_stage_search_view
+msgid "Type"
+msgstr "ประเภท"
+
+#. module: agreement
+#: model_terms:ir.ui.view,arch_db:agreement.agreement_type_list_view
+msgid "Type Name"
+msgstr ""
+
+#. module: agreement
+#: model:ir.model.fields,help:agreement.field_agreement__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.ui.menu,name:agreement_legal.agreement_types
+msgid "Types"
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_line__price_unit
+msgid "Unit Price"
+msgstr "ราคาต่อหน่วย"
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement_line__uom_id
+msgid "Unit of Measure"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.res_config_settings_view_form
+msgid "Units Of Measure"
+msgstr ""
+
+#. modules: l10n_th_gov_purchase_agreement, purchase_invoice_plan
+#: model:ir.model.fields,field_description:l10n_th_gov_purchase_agreement.field_agreement__use_invoice_plan
+#: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_order__use_invoice_plan
+msgid "Use Invoice Plan"
+msgstr "แบ่งงวดงาน"
+
+#. module: purchase_invoice_plan
+#. odoo-python
+#: code:addons/purchase_invoice_plan/models/purchase.py:0
+#, python-format
+msgid "Use Invoice Plan selected, but no plan created"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__use_parties_content
+msgid "Use Parties Content"
+msgstr ""
+
+#. module: agreement
+#: model:res.groups,name:agreement.group_use_agreement_template
+msgid "Use agreement template"
+msgstr ""
+
+#. module: agreement
+#: model:res.groups,name:agreement.group_use_agreement_type
+msgid "Use agreement type"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "Use custom content"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__use_parties_content
+msgid "Use custom content for parties"
+msgstr ""
+
+#. module: agreement_legal
+#: model:res.groups,name:agreement_legal.group_agreement_user
+msgid "User"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement_type__review_user_id
+msgid "User assigned automatically the activity on review date"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,field_description:agreement_legal.field_agreement__version
+msgid "Version"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "Version:"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model_terms:ir.actions.act_window,help:purchase_invoice_plan.action_purchase_invoice_plan
+msgid "View purchase invoice plan lines"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.view_purchase_invoice_plan_filter
+msgid "Waiting Bills"
+msgstr "รอออกบิล"
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__sub_model_object_field_id
+#: model:ir.model.fields,help:agreement_legal.field_agreement_appendix__sub_model_object_field_id
+#: model:ir.model.fields,help:agreement_legal.field_agreement_clause__sub_model_object_field_id
+#: model:ir.model.fields,help:agreement_legal.field_agreement_recital__sub_model_object_field_id
+#: model:ir.model.fields,help:agreement_legal.field_agreement_section__sub_model_object_field_id
+msgid ""
+"When a relationship field is selected as first field, this\n"
+"         field lets you select the target field within the destination "
+"document\n"
+"          model (sub-model)."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__sub_object_id
+#: model:ir.model.fields,help:agreement_legal.field_agreement_appendix__sub_object_id
+#: model:ir.model.fields,help:agreement_legal.field_agreement_clause__sub_object_id
+#: model:ir.model.fields,help:agreement_legal.field_agreement_recital__sub_object_id
+#: model:ir.model.fields,help:agreement_legal.field_agreement_section__sub_object_id
+msgid ""
+"When a relationship field is selected as first field, this\n"
+"         field shows the document model the relationship goes to."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__end_date
+msgid "When the agreement ends."
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement__start_date
+msgid "When the agreement starts."
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement_wizard_attachment__wizard_id
+msgid "Wizard"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model,name:purchase_invoice_plan.model_purchase_make_planned_invoice
+msgid "Wizard when create invoice by plan"
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_agreement_form
+msgid "Work Acceptance Committee"
+msgstr "คณะกรรมการตรวจรับพัสดุ"
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__work_acceptance_committee_ids
+msgid "Work Acceptance Committees"
+msgstr "คณะกรรมการตรวจรับพัสดุ"
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__work_end_date
+msgid "Work end date"
+msgstr "วันสิ้นสุดทำงาน"
+
+#. module: purchase_agreement_kmitl
+#: model:ir.model.fields,field_description:purchase_agreement_kmitl.field_agreement__work_start_date
+msgid "Work start date"
+msgstr "วันที่เริ่มทำงาน"
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields.selection,name:purchase_invoice_plan.selection__purchase_create_invoice_plan__interval_type__year
+msgid "Year"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model:ir.model.fields,help:purchase_invoice_plan.field_purchase_invoice_plan__partner_id
+msgid "You can find a vendor by its Name, TIN, Email or Internal Reference."
+msgstr ""
+
+#. module: agreement_legal
+#. odoo-python
+#: code:addons/agreement_legal/models/agreement.py:0
+#, python-format
+msgid "Your activity is going to end soon"
+msgstr ""
+
+#. module: agreement_legal
+#: model:ir.model.fields,help:agreement_legal.field_agreement_appendix__dynamic_content
+#: model:ir.model.fields,help:agreement_legal.field_agreement_clause__dynamic_content
+#: model:ir.model.fields,help:agreement_legal.field_agreement_recital__dynamic_content
+#: model:ir.model.fields,help:agreement_legal.field_agreement_section__dynamic_content
+msgid "compute dynamic Content"
+msgstr ""
+
+#. module: purchase_agreement_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_agreement_kmitl.view_purchase_order_form
+msgid "lock"
+msgstr ""
+
+#. module: agreement_legal
+#: model:mail.activity.type,summary:agreement_legal.mail_activity_review_agreement
+msgid "note"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.view_project_agreement_kanban
+msgid "oe_kanban_text_red"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "on"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.view_project_agreement_kanban
+msgid "user & picture"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "|  Created By:"
+msgstr ""
+
+#. module: agreement_legal
+#: model_terms:ir.ui.view,arch_db:agreement_legal.partner_agreement_form_view
+msgid "|  Created On:"
+msgstr ""
+
+#. module: purchase_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.purchase_order_form
+msgid "⇒ Create Invoice Plan"
+msgstr "สร้างงวดงาน"
+
+#. module: purchase_invoice_plan
+#: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.purchase_order_form
+msgid "⇒ Remove Invoice Plan"
+msgstr "ลบงวดงาน"

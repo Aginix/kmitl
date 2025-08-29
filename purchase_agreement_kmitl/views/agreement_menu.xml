@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- เปลี่ยน action ของเมนูหลักให้เปิดที่ Operations > Agreements -->
+    <record id="agreement.agreement_menu" model="ir.ui.menu">
+        <field name="action" ref="agreement_legal.agreement_operations_agreement"/>
+    </record>
+
+    <!-- ซ่อนหมวด Dashboard -->
+    <record id="agreement_legal.agreement_dashboard" model="ir.ui.menu">
+        <field name="active">False</field>
+    </record>
+
+    <!-- ซ่อนเมนู Dashboard > Agreements -->
+    <record id="agreement_legal.dashboard_agreements" model="ir.ui.menu">
+        <field name="active">False</field>
+    </record>
+
+    <!-- ซ่อนหมวด Master Data -->
+    <record id="agreement_legal.agreement_masterdata" model="ir.ui.menu">
+        <field name="active">False</field>
+    </record>
+
+    <!-- ซ่อนหมวด Reporting -->
+    <record id="agreement_legal.agreement_reporting" model="ir.ui.menu">
+        <field name="active">False</field>
+    </record>
+
+    <menuitem
+        id="kmitl_agreement"
+        name="Agreements"
+        parent="agreement.agreement_menu"
+        action="agreement_legal.agreement_operations_agreement"
+        sequence="10"/>
+
+</odoo>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View agreement.new.version.wizard form -->
+    <record id="view_agreement_new_version_wizard_form" model="ir.ui.view">
+        <field name="name">view.agreement.new.version.wizard.form</field>
+        <field name="model">agreement.new.version.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Agreement New Version Wizard">
+                <group name="reason">
+                    <field name="reason"/>
+                </group>
+                <group string="Attachment Reversion">
+                    <field name="attachment_ids">
+                        <tree editable="bottom">
+                            <field name="file" filename="file_name"/>
+                            <field name="file_name"/>
+                            <field name="description"/>
+                        </tree>
+                    </field>
+                </group>
+                <footer>
+                    <button name="action_confirm" type="object" string="Conform" class="oe_highlight"/>
+                    <button special="cancel" string="Cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>
