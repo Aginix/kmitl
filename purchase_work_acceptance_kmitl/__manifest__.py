@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Kmitl Purchase Work Acceptance',
+    'name': 'Purchase Work Acceptance KMITL',
     'version': '16.0.1.0.0',
-    'summary': """ Kmitl Purchase Work Acceptance Summary """,
+    'summary': """ Purchase Work Acceptance System for KMITL """,
     'author': 'Aginix Techonologies',
     'website': 'https://github.com/aginix/kmitl',
     'category': 'KMITL',
-    'depends': ['purchase_work_acceptance', 'kmitl_purchase_agreement', 'purchase_work_acceptance_invoice_plan'],
+    'depends': ['purchase_work_acceptance', 'purchase_agreement_kmitl', 'purchase_work_acceptance_invoice_plan'],
     "data": [
         "security/ir.model.access.csv",
         "views/agreement_views.xml",

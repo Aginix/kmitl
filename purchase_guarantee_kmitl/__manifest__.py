@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Kmitl_purchase_guarantee',
+    'name': 'Purchase Guarantee KMITL',
     'version': '16.0.1.0.0',
-    'summary': """ Kmitl_purchase_guarantee Summary """,
-    'author': '',
-    'website': '',
-    'category': '',
-    'depends': ['base', 'web', 'l10n_th_gov_purchase_guarantee', 'kmitl_purchase_agreement'],
+    'summary': """ Purchase Guarantee System for KMITL """,
+    'author': 'Aginix Techonologies',
+    'website': 'https://github.com/aginix/kmitl',
+    'category': 'KMITL',
+    'depends': ['base', 'web', 'l10n_th_gov_purchase_guarantee', 'purchase_agreement_kmitl'],
     "data": [
         "data/purchase_guarantee_method_data.xml",
         "data/purchase_guarantee_rules.xml",
@@ -19,7 +19,7 @@
     ],
     'assets': {
               'web.assets_backend': [
-                  'kmitl_purchase_guarantee/static/src/**/*'
+                  'purchase_guarantee_kmitl/static/src/**/*'
               ],
           },
     'application': True,

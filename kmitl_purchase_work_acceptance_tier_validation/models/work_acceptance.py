@@ -28,7 +28,7 @@ class WorkAcceptance(models.Model):
     #     for rec in self:
     #         for user in rec.work_acceptance_committee_ids:
     #             TierDefinition.create({
-    #                 'model_id': self.env.ref('kmitl_purchase_work_acceptance.model_work_acceptance').id,
+    #                 'model_id': self.env.ref('purchase_work_acceptance_kmitl.model_work_acceptance').id,
     #                 'name': f'Test Work Acceptance {user.name}',
     #                 'definition_type': 'domain',
     #                 'definition_domain': "[]",

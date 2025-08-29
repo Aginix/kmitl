@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Kmitl purchase agreement',
+    'name': 'Purchase Agreement KMITL',
     'version': '16.0.1.0.0',
-    'summary': """ Kmitl Purchase Agreement Summary """,
+    'summary': """ Purchase Agreement System for KMITL """,
     'author': 'Aginix Techonologies',
     'website': 'https://github.com/aginix/kmitl',
     'category': 'KMITL',
@@ -16,7 +16,7 @@
     ],
     "assets": {
         'web.assets_backend': [
-            'kmitl_purchase_agreement/static/src/css/template_inherit.css',
+            'purchase_agreement_kmitl/static/src/css/template_inherit.css',
         ],
     },
     'installable': True,
