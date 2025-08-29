@@ -14,8 +14,6 @@
         "hr_department_code",
         "account_fiscal_year",
         "account_analytic_kmitl",
-        "l10n_th_gov_purchase_request",
-        "procurement_plan",
         "product",
     ],
     "data": [
@@ -26,7 +24,6 @@
         "data/product.category.xml",
         "data/product.product.xml",
         "data/product.computer.xml",
-        "data/procurement_plan.xml",
     ],
     "post_init_hook": "post_init",
     "uninstall_hook": "uninstall_hook",

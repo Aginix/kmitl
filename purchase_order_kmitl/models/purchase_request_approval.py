@@ -29,14 +29,14 @@ class PurchaseRequestApproval(models.Model):
 
         order_lines = []
         for line in self.line_ids:
-            if not line.product_id or not line.quantity:
+            if not line.product_id or not line.product_qty:
                 raise UserError("Please fill all required line data.")
             order_lines.append((0, 0, {
                 'product_id': line.product_id.id,
                 'name': line.description or line.product_id.display_name,
-                'product_qty': line.quantity,
-                'price_unit': line.unit_price,
-                'taxes_id': [(6, 0, line.taxes.ids)],
+                'product_qty': line.product_qty,
+                'price_unit': line.price_unit,
+                'taxes_id': [(6, 0, line.taxes_id.ids)],
                 'product_uom': line.product_id.uom_po_id.id,
             }))
 

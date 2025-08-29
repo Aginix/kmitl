@@ -125,11 +125,14 @@ export class BudgetReportSummary extends Component {
         const rowKey = event.currentTarget.getAttribute('data-row-key');
         if (!rowKey) return;
         
-        if (this.state.expandedRows.has(rowKey)) {
-            this.state.expandedRows.delete(rowKey);
+        // Create a new Set to ensure OWL detects the state change properly
+        const newExpandedRows = new Set(this.state.expandedRows);
+        if (newExpandedRows.has(rowKey)) {
+            newExpandedRows.delete(rowKey);
         } else {
-            this.state.expandedRows.add(rowKey);
+            newExpandedRows.add(rowKey);
         }
+        this.state.expandedRows = newExpandedRows;
     }
 
     isRowExpanded(rowKey) {
@@ -137,7 +140,7 @@ export class BudgetReportSummary extends Component {
     }
 
     isRowVisible(row) {
-        if (!row || !this.state.rows) {
+        if (!row || !this.state.rows || !row.row_key) {
             return false;
         }
         
@@ -147,8 +150,8 @@ export class BudgetReportSummary extends Component {
         
         // Find parent row
         const parentRow = this.state.rows.find(r => r && r.row_key === row.parent_row_id);
-        if (!parentRow) {
-            return true;
+        if (!parentRow || !parentRow.row_key) {
+            return true; // Show row if parent not found (defensive)
         }
         
         // Row is visible if parent is expanded and parent is visible (recursive)
@@ -159,7 +162,7 @@ export class BudgetReportSummary extends Component {
         if (!this.state.rows || !Array.isArray(this.state.rows)) {
             return [];
         }
-        return this.state.rows.filter(row => this.isRowVisible(row));
+        return this.state.rows.filter(row => row && row.row_key && this.isRowVisible(row));
     }
 
     expandAll() {
@@ -167,16 +170,19 @@ export class BudgetReportSummary extends Component {
             return;
         }
         
-        this.state.expandedRows.clear();
+        // Create a new Set with all rows that have children
+        const newExpandedRows = new Set();
         this.state.rows.forEach(row => {
             if (row && row.has_children && row.row_key) {
-                this.state.expandedRows.add(row.row_key);
+                newExpandedRows.add(row.row_key);
             }
         });
+        this.state.expandedRows = newExpandedRows;
     }
 
     collapseAll() {
-        this.state.expandedRows.clear();
+        // Create a new empty Set to ensure OWL detects the change
+        this.state.expandedRows = new Set();
     }
 
     // Get expand toggle icon class

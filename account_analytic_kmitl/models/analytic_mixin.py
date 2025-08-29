@@ -60,16 +60,15 @@ class AnalyticDistributionMixin(models.AbstractModel):
     def _analytic_fields(self):
         return ["department_analytic_id", "activity_analytic_id", "fund_analytic_id", "source_analytic_id"]
 
-    @api.onchange(lambda self: self._analytic_fields())
+    @api.onchange("department_analytic_id", "activity_analytic_id", "fund_analytic_id", "source_analytic_id")
     def _onchange_analytic_fields(self):
         """Update analytic distribution when individual fields change"""
-        if self.activity_analytic_id or self.fund_analytic_id or self.department_analytic_id or self.source_analytic_id:
-            distribution = {}
+        distribution = {}
 
-            # Add each dimension to distribution with 100% allocation
-            for field_name in self._analytic_fields():
-                analytic_account = getattr(self, field_name)
-                if analytic_account:
-                    distribution[str(analytic_account.id)] = 100.0
+        # Add each dimension to distribution with 100% allocation
+        for field_name in self._analytic_fields():
+            analytic_account = getattr(self, field_name)
+            if analytic_account:
+                distribution[str(analytic_account.id)] = 100.0
 
-            self.analytic_distribution = distribution if distribution else False
+        self.analytic_distribution = distribution if distribution else False

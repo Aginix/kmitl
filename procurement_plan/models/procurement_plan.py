@@ -1,8 +1,9 @@
 import logging
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 _logger = logging.getLogger(__name__)
+
 
 MONTH_SELECTION = [
     ("1", "January"),
@@ -23,7 +24,10 @@ MONTH_SELECTION = [
 class ProcurementPlan(models.Model):
     _name = "procurement.plan"
     _description = "Procurement Plan"
-    _inherit = ["mail.thread", "analytic.distribution.mixin"]
+    _inherit = ["mail.thread"]
+    _check_company_auto = True
+    _rec_name = "description"
+    _rec_names_search = ["name", "description"]
 
     READONLY_STATES = {
         "validate": [("readonly", True)],
@@ -34,15 +38,43 @@ class ProcurementPlan(models.Model):
     }
 
     date_range_fy_id = fields.Many2one(
-        comodel_name="account.fiscal.year", string="Fiscal year", states=READONLY_STATES
+        comodel_name="account.fiscal.year",
+        string="Fiscal year",
+        required=True,
+        states=READONLY_STATES,
     )
-    name = fields.Char(required=True, tracking=True,)
-    amount = fields.Integer(required=True, tracking=True,)
+    name = fields.Char(
+        string="รหัสเอกสาร",
+        compute="_compute_name",
+        readonly=False,
+        store=True,
+        copy=False,
+        tracking=True,
+        index="trigram",
+        default=lambda self: _("New"),
+    )
+    description = fields.Char(
+        string="ชื่อรายการ",
+        required=True,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+    amount = fields.Integer(
+        required=True,
+        tracking=True,
+        states=READONLY_STATES,
+    )
     unit = fields.Char(
-        "Unit of Measure", required=True, tracking=True,
+        "Unit of Measure",
+        required=True,
+        tracking=True,
+        states=READONLY_STATES,
     )
     price_per_unit = fields.Float(
-        "Price per unit", required=True, tracking=True,
+        "Price per unit",
+        required=True,
+        tracking=True,
+        states=READONLY_STATES,
     )
     total_price = fields.Float(
         "Total price",
@@ -56,6 +88,7 @@ class ProcurementPlan(models.Model):
         string="Procurement Method",
         required=True,
         tracking=True,
+        states=READONLY_STATES,
     )
     state = fields.Selection(
         [
@@ -68,137 +101,91 @@ class ProcurementPlan(models.Model):
         ],
         string="Status",
         readonly=True,
+        copy=False,
         default="draft",
         tracking=True,
     )
     note = fields.Text("Notes", tracking=True, states=READONLY_STATES)
     purchase_request_eta = fields.Selection(
-        MONTH_SELECTION, "Purchase Request (ETA)", tracking=True, states=READONLY_STATES
+        MONTH_SELECTION,
+        "Purchase Request (ETA)",
+        tracking=True,
     )
     procurement_announcement_eta = fields.Selection(
-        MONTH_SELECTION,
-        "Procurement Announcement (ETA)",
-        tracking=True,
-        states=READONLY_STATES,
+        MONTH_SELECTION, "Procurement Announcement (ETA)", tracking=True
     )
     approval_signing_eta = fields.Selection(
-        MONTH_SELECTION, "Approval Signing (ETA)", tracking=True, states=READONLY_STATES
+        MONTH_SELECTION,
+        "Approval Signing (ETA)",
+        tracking=True,
     )
     contract_order_signing_eta = fields.Selection(
-        MONTH_SELECTION,
-        "Contract Order Signing (ETA)",
-        tracking=True,
-        states=READONLY_STATES,
+        MONTH_SELECTION, "Contract Order Signing (ETA)", tracking=True
     )
     acceptance_eta = fields.Selection(
-        MONTH_SELECTION, "Acceptance (ETA)", tracking=True, states=READONLY_STATES
+        MONTH_SELECTION,
+        "Acceptance (ETA)",
+        tracking=True,
     )
     payment_ids = fields.One2many(
-        comodel_name="procurement.plan.payment",
-        inverse_name="procurement_plan_id",
+        comodel_name="procurement.plan.payment", inverse_name="procurement_plan_id"
+    )
+    user_id = fields.Many2one(
+        string="User",
+        comodel_name="res.users",
+        copy=False,
+        default=lambda self: self.env.user,
+        store=True,
+        tracking=True,
+        readonly=False,
         states=READONLY_STATES,
     )
 
-    activity_analytic_id = fields.Many2one(states=READONLY_STATES)
-    department_analytic_id = fields.Many2one(required=True, states=READONLY_STATES)
-    fund_analytic_id = fields.Many2one(states=READONLY_STATES)
-    source_analytic_id = fields.Many2one(required=True, states=READONLY_STATES)
+    company_id = fields.Many2one(
+        "res.company",
+        string="Company",
+        required=True,
+        default=lambda self: self.env.company,
+    )
+
+    currency_id = fields.Many2one(
+        "res.currency",
+        related="company_id.currency_id",
+        string="Currency",
+        readonly=True,
+    )
+
+    @api.depends("state", "name")
+    def _compute_name(self):
+        self = self.sorted(lambda m: m.id)
+
+        for record in self:
+            if record.state == "cancel":
+                continue
+
+            record_has_name = record.name and record.name != "New"
+            if record_has_name or (
+                record.state not in ("pending", "procurement", "done")
+            ):
+                continue
+            if not record_has_name:
+                record.name = self.env["ir.sequence"].next_by_code(
+                    "procurement.plan"
+                ) or _("New")
 
     @api.depends("amount", "price_per_unit")
     def _compute_total_price(self):
         for record in self:
             record.total_price = record.amount * record.price_per_unit
 
-    @api.model
-    def get_filter_options(self):
-        """Get available options for filters"""
-        fiscal_years = self.env["account.fiscal.year"].search(
-            [], order="date_from desc"
-        )
-        departments = self.env["account.analytic.account"].search([("root_plan_id.code", "=", "departments")], order="name")
-        sources = self.env["account.analytic.account"].search([("root_plan_id.code", "=", "sources")], order="name")
-        return {
-            "fiscal_years": [
-                {
-                    "id": fy.id,
-                    "name": fy.name,
-                    "date_start": fy.date_from.strftime("%Y-%m-%d"),
-                    "date_end": fy.date_to.strftime("%Y-%m-%d"),
-                }
-                for fy in fiscal_years
-            ],
-            "departments": [
-                {
-                    "id": dept.id,
-                    "name": dept.name
-                }
-            for dept in departments
-        ],
-            "sources": [
-                {
-                    "id": source.id,
-                    "name": source.name
-                }
-            for source in sources
-        ],
-        }
-    @api.model
-    def get_procurement_plan_data(self, filters):
-        domain = []
-        if filters.get("fiscal_year_id"):
-            domain.append(("date_range_fy_id", "=", filters["fiscal_year_id"]))
-        if filters.get("department_analytic_id"):
-            domain.append(("department_analytic_id", "=", filters["department_analytic_id"]))
-        if filters.get("source_analytic_id"):
-            domain.append(("source_analytic_id", "=", filters["source_analytic_id"]))
-        plans = self.search(domain)
+    def action_validate(self):
+        self.write({"state": "validate"})
 
-        data = []
-        for plan in plans:
-            payment_list = []
-            total_number_of_days = 0
-            total_payment_amount = 0.0
-            for payment in plan.payment_ids:
-                payment_list.append({
-                    "id": payment.id,
-                    "number": payment.number,
-                    "number_of_days": payment.number_of_days,
-                    "month": payment.month,
-                    "amount": payment.amount,
-                    "state": payment.state,
-                })
-                total_number_of_days += payment.number_of_days or 0
-                total_payment_amount += payment.amount or 0.0
-            data.append({
-                "id": plan.id,
-                "name": plan.name,
-                "fiscal_year": plan.date_range_fy_id.name if plan.date_range_fy_id else "",
-                "department": plan.department_analytic_id.name if plan.department_analytic_id else "",
-                "activity": plan.activity_analytic_id.name if plan.activity_analytic_id else "",
-                "fund": plan.fund_analytic_id.name if plan.fund_analytic_id else "",
-                "source": plan.source_analytic_id.name if plan.source_analytic_id else "",
-                "amount": plan.amount,
-                "unit": plan.unit,
-                "price_per_unit": plan.price_per_unit,
-                "total_price": plan.total_price,
-                "procurement_method": plan.procurement_method_id.name if plan.procurement_method_id else "",
-                "state": plan.state,
-                "note": plan.note or "-",
-                "purchase_request_eta": plan.purchase_request_eta,
-                "procurement_announcement_eta": plan.procurement_announcement_eta,
-                "approval_signing_eta": plan.approval_signing_eta,
-                "contract_order_signing_eta": plan.contract_order_signing_eta,
-                "acceptance_eta": plan.acceptance_eta,
-                "payments": payment_list,
-                "total_number_of_days": total_number_of_days,
-                "total_payment_amount": total_payment_amount,
-            })
+    def action_pending(self):
+        self.write({"state": "pending"})
 
-        return {
-            "filters": filters,
-            "records": data,
-            "summary": {
-                "total_amount": sum(p.total_price for p in plans),
-                "plan_count": len(plans),
-            },
-        }
+    def action_procurement(self):
+        self.write({"state": "procurement"})
+
+    def action_done(self):
+        self.write({"state": "done"})

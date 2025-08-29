@@ -7,22 +7,20 @@ class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
     _STATES = [
-        ("draft", "Draft"),
-        ("to_approve", "To be approved"),
         ("validation", "Validated"),
-        ("approved", "Approved"),
-        ("done", "Done"),
-        ("rejected", "Rejected"),
+        ("approved",)
     ]
 
     state = fields.Selection(
-        selection=_STATES,
+        selection_add=_STATES,
         string="Status",
         index=True,
         tracking=True,
         required=True,
         copy=False,
-        default="draft",
+        ondelete={
+        "validation": "set default",
+        }
     )
     tor_committee_ids = fields.One2many(
         comodel_name="procurement.committee",

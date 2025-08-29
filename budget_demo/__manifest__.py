@@ -6,7 +6,11 @@
     "author": "nopparuts, Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "depends": ["account_analytic_kmitl", "budget", "kmitl_demo"],
-    "data": [],
+    "data": [
+        "data/budget.move.csv",
+        "data/budget.move.line.csv",
+        "data/budget.commitment.csv",
+    ],
     "auto_install": False,
     "application": True,
     "license": "AGPL-3",

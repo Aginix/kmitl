@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- View budget.move form -->
+    <record id="view_budget_move_form_appropriation" model="ir.ui.view">
+        <field name="name">view.budget.move.form.appropriation</field>
+        <field name="model">budget.move</field>
+        <field name="inherit_id" ref="budget.view_budget_move_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='additional_info']/group" position="inside">
+                <field name="appropriation_id" readonly="1" />
+            </xpath>
+        </field>
+    </record>
+</odoo>
