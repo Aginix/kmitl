@@ -8,6 +8,15 @@
             <xpath expr="//button[@name='button_approve']" position="attributes">
                 <attribute name="attrs">{'invisible':['|' ,('validation_status', 'in', ('pending', 'rejected')), ('state', 'not in', ['submitted'])]}</attribute>
             </xpath>
+            <xpath expr="//button[@name='button_approve']" position="after">
+                <field name="validation_status" invisible="1" />
+                <field name="need_validation" invisible="1" />
+                <button name="request_validation" string="Request Validation" class="btn-primary" attrs="{'invisible': ['|', '|',
+        ('need_validation', '!=', True),
+        ('validation_status', 'in', ['pending', 'rejected']),
+        ('state', 'not in', 'submitted')]}" type="object" />
+            </xpath>
+
             <field name="state" position="after">
                 <field name="validation_status" invisible="1" />
             </field>
