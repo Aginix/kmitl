@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Kmitl_purchase_work_acceptance_tier_validation',
+    'name': 'Purchase Work Acceptance Tier Validation KMITL',
     'version': '16.0.1.0.0',
-    'summary': """ Kmitl_purchase_work_acceptance_tier_validation Summary """,
-    'author': '',
-    'website': '',
-    'category': '',
-    'depends': ['base', 'web', 'base_tier_validation', 'purchase_work_acceptance_kmitl'],
+    'summary': """ Purchase Work Acceptance Tier Validation System for KMITL """,
+    'author': 'Aginix Techonologies',
+    'website': 'https://github.com/aginix/kmitl',
+    'category': 'KMITL',
+    'depends': ['base', 'web', 'purchase_work_acceptance_tier_validation', 'purchase_work_acceptance_kmitl'],
     "data": [
         "views/work_acceptance_views.xml"
     ],
