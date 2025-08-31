@@ -14,13 +14,9 @@
     ],
     "data": [
         "data/budget_journal.xml",
-        "data/budget_move_data.xml",
         "data/budget.account.csv",
-        "data/budget_paper_format.xml",
         "data/budget_sequence.xml",
-        "data/budget_commitment_sequence.xml",
         "data/budget_transfer_security.xml",
-        "data/budget_transfer_sequence.xml",
         "data/budget_transfer_email_templates.xml",
         "security/security.xml",
         "security/ir.model.access.csv",
