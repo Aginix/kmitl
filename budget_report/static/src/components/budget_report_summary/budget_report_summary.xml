@@ -189,7 +189,8 @@
                                                     <td class="amount-cell">0</td>
                                                     <td class="amount-cell"
                                                         t-att-class="{'clickable-cell': isClickable(row.appropriation)}"
-                                                        t-on-click="(event) => row.appropriation ? onAppropriationClick(event, row) : null">
+                                                        t-on-click="row.appropriation ? onAppropriationClick.bind(this) : null"
+                                                        t-att-data-row='JSON.stringify(row)'>
                                                         <t
                                                             t-esc="formatCurrency(row.appropriation)"
                                                         />
@@ -197,21 +198,24 @@
                                                     <td class="amount-cell">0</td>
                                                     <td class="amount-cell"
                                                         t-att-class="{'clickable-cell': isClickable(row.commitment)}"
-                                                        t-on-click="(event) => row.commitment ? onCommitmentClick(event, row) : null">
+                                                        t-on-click="row.commitment ? onCommitmentClick.bind(this) : null"
+                                                        t-att-data-row='JSON.stringify(row)'>
                                                         <t
                                                             t-esc="formatCurrency(row.commitment)"
                                                         />
                                                     </td>
                                                     <td class="amount-cell"
                                                         t-att-class="{'clickable-cell': isClickable(row.obligation)}"
-                                                        t-on-click="(event) => row.obligation ? onObligationClick(event, row) : null">
+                                                        t-on-click="row.obligation ? onObligationClick.bind(this) : null"
+                                                        t-att-data-row='JSON.stringify(row)'>
                                                         <t
                                                             t-esc="formatCurrency(row.obligation)"
                                                         />
                                                     </td>
                                                     <td class="amount-cell"
                                                         t-att-class="{'clickable-cell': isClickable(row.expenditure)}"
-                                                        t-on-click="(event) => row.expenditure ? onExpenditureClick(event, row) : null">
+                                                        t-on-click="row.expenditure ? onExpenditureClick.bind(this) : null"
+                                                        t-att-data-row='JSON.stringify(row)'>
                                                         <t
                                                             t-esc="formatCurrency(row.expenditure)"
                                                         />
