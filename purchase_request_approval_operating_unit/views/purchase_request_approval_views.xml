@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View purchase.request.approval form -->
+    <record id="view_purchase_request_approval_form" model="ir.ui.view">
+        <field name="name">view.purchase.request.approval.form</field>
+        <field name="model">purchase.request.approval</field>
+        <field name="inherit_id" ref="purchase_request_approval.view_purchase_request_approval"/>
+        <field name="arch" type="xml">
+            <field name="requested_by" position="after">
+                <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- View purchase.request.approval tree -->
+    <record id="view_purchase_request_approval_tree" model="ir.ui.view">
+        <field name="name">view.purchase.request.approval.tree</field>
+        <field name="model">purchase.request.approval</field>
+        <field name="inherit_id" ref="purchase_request_approval.view_purchase_request_approval_tree"/>
+        <field name="arch" type="xml">
+            <field name="requested_by" position="after">
+                <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit" />
+            </field>
+        </field>
+    </record>
+
+    <record id="purchase_request_approval_group_by_ou" model="ir.ui.view">
+        <field name="name">purchase.request.approval.group.by.ou</field>
+        <field name="model">purchase.request.approval</field>
+        <field name="inherit_id" ref="purchase_request_approval.view_purchase_request_approval_search" />
+        <field name="arch" type="xml">
+            <field name="requested_by" position="after">
+                <filter string="Operating Unit" name="operating_unit_grouped" domain="[]" context="{'group_by':'operating_unit_id'}" groups="operating_unit.group_multi_operating_unit" />
+            </field>
+        </field>
+    </record>
+</odoo>

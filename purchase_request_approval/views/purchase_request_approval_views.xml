@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <tree create='0' decoration-success="state == 'approved'" decoration-info="state in ('submitted', 'egp')" decoration-warning="state == 'draft'" decoration-danger="state in ('rejected', 'cancelled')">
                 <field name="name" />
-                <field name="request_id" optional="show"/>
+                <field name="requested_by" optional="show"/>
                 <field name="vendor" optional="show" />
                 <field name="purchase_request_name" optional="show" />
                 <field name="payment_type" optional="show" />
@@ -46,8 +46,8 @@
                             <field name="procurement_type_id" />
                             <field name="procurement_method_id" />
                             <field name="contract_type" readonly="1" />
-                            <field name="requested_by" invisible='1'/>
                             <field name="payment_type" readonly="1" />
+                            <field name="requested_by" widget="many2one_avatar_user" />
                             <field name="request_id" options="{'no_create': True}" />
                             <field name="estimated_cost" invisible="1" />
                         </group>
@@ -99,7 +99,7 @@
             <search string="Search Purchase Request Approvals">
                 <field name="name" string="Reference"/>
                 <field name="vendor"/>
-                <field name="request_id"/>
+                <field name="requested_by"/>
                 <filter name="draft" string="Draft" domain="[('state','=','draft')]"/>
                 <filter name="approved" string="Approved" domain="[('state','=','approved')]"/>
 
