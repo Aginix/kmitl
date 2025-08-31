@@ -27,9 +27,6 @@ class BudgetTransferRejectWizard(models.TransientModel):
         """Reject the transfer with provided reason"""
         self.ensure_one()
         
-        if not self.env.user.has_group("budget.group_budget_transfer_approver"):
-            raise UserError(_("You don't have permission to reject budget transfers"))
-        
         self.transfer_id.write({
             "state": "rejected",
             "rejection_reason": self.rejection_reason,

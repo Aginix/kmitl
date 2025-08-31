@@ -39,14 +39,12 @@
                     id="action_budget_transfers_pending_menu"
                     name="รอการอนุมัติ"
                     action="action_budget_transfers_pending"
-                    groups="budget.group_budget_transfer_approver"
                     sequence="2"
                 />
                 <menuitem
                     id="action_budget_transfer_menu"
                     name="คำขอโอนงบประมาณทั้งหมด"
                     action="action_budget_transfer"
-                    groups="budget.group_budget_transfer_approver"
                     sequence="3"
                 />
             </menuitem>
