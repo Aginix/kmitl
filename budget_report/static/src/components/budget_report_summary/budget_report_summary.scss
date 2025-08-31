@@ -120,6 +120,39 @@
             text-align: right;
             font-family: 'Courier New', monospace;
         }
+
+        // Clickable cell styles for drill-down
+        &.clickable-cell {
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+            
+            &:hover {
+                background-color: rgba(0, 123, 255, 0.1) !important;
+                color: #007bff;
+                text-decoration: underline;
+                font-weight: 500;
+            }
+            
+            &:active {
+                background-color: rgba(0, 123, 255, 0.2) !important;
+            }
+            
+            // Add a subtle icon indicator
+            &::after {
+                content: "\f08e"; // External link icon
+                font-family: FontAwesome;
+                font-size: 0.7em;
+                margin-left: 4px;
+                opacity: 0;
+                transition: opacity 0.2s ease;
+                color: #007bff;
+            }
+            
+            &:hover::after {
+                opacity: 0.8;
+            }
+        }
     }
 
     // Animation for row expand/collapse

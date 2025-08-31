@@ -16,6 +16,7 @@ export class BudgetReportSummary extends Component {
 
         this.orm = useService("orm");
         this.notification = useService("notification");
+        this.actionService = useService("action");
 
         this.state = useState({
             filters: {
@@ -189,6 +190,204 @@ export class BudgetReportSummary extends Component {
     getExpandIcon(row) {
         if (!row || !row.has_children || !row.row_key) return '';
         return this.isRowExpanded(row.row_key) ? 'fa fa-caret-down' : 'fa fa-caret-right';
+    }
+
+    // Drill-down functionality
+    // Helper to check if a cell value is clickable (not zero)
+    isClickable(value) {
+        return value && value !== 0;
+    }
+
+    // Handler for งบประมาณ (Appropriation) column
+    async onAppropriationClick(event, row) {
+        event.stopPropagation();
+        event.preventDefault();
+        
+        const domain = this._buildMoveLineDomain(row, ['appropriation', 'entry']);
+        
+        await this.actionService.doAction({
+            type: 'ir.actions.act_window',
+            name: `งบประมาณ - ${row.code} ${row.name}`,
+            res_model: 'budget.move.line',
+            views: [[false, 'tree'], [false, 'form'], [false, 'pivot']],
+            domain: domain,
+            context: {
+                search_default_group_by_account: 1,
+                search_default_group_by_move: 1,
+            },
+            target: 'current',
+        });
+    }
+
+    // Handler for เงินจอง (Commitment) column  
+    async onCommitmentClick(event, row) {
+        event.stopPropagation();
+        event.preventDefault();
+        
+        const domain = this._buildCommitmentDomain(row, 'reserved');
+        
+        await this.actionService.doAction({
+            type: 'ir.actions.act_window',
+            name: `เงินจอง - ${row.code} ${row.name}`,
+            res_model: 'budget.commitment',
+            views: [[false, 'tree'], [false, 'form'], [false, 'pivot']],
+            domain: domain,
+            context: {
+                search_default_state_reserved: 1,
+            },
+            target: 'current',
+        });
+    }
+
+    // Handler for ผูกพัน (Obligation) column
+    async onObligationClick(event, row) {
+        event.stopPropagation();
+        event.preventDefault();
+        
+        const domain = this._buildCommitmentDomain(row, 'obligated');
+        
+        await this.actionService.doAction({
+            type: 'ir.actions.act_window',
+            name: `ผูกพัน - ${row.code} ${row.name}`,
+            res_model: 'budget.commitment',
+            views: [[false, 'tree'], [false, 'form'], [false, 'pivot']],
+            domain: domain,
+            context: {
+                search_default_state_obligated: 1,
+            },
+            target: 'current',
+        });
+    }
+
+    // Handler for เบิกจ่ายแล้ว (Expenditure) column
+    async onExpenditureClick(event, row) {
+        event.stopPropagation();
+        event.preventDefault();
+        
+        const domain = this._buildMoveLineDomain(row, ['consume']);
+        
+        await this.actionService.doAction({
+            type: 'ir.actions.act_window',
+            name: `เบิกจ่ายแล้ว - ${row.code} ${row.name}`,
+            res_model: 'budget.move.line',
+            views: [[false, 'tree'], [false, 'form'], [false, 'pivot']],
+            domain: domain,
+            context: {
+                search_default_group_by_move: 1,
+            },
+            target: 'current',
+        });
+    }
+
+    // Build domain for budget.move.line queries
+    _buildMoveLineDomain(row, moveTypes) {
+        const domain = [
+            ['parent_state', '=', 'posted'],
+            ['date_range_fy_id', '=', this.state.filters.fiscal_year_id],
+        ];
+        
+        // Add source analytic filter
+        if (this.state.filters.source_analytic_id) {
+            domain.push(['source_analytic_id', '=', this.state.filters.source_analytic_id]);
+        }
+        
+        // Add department filter from report filters
+        if (this.state.filters.department_ids && this.state.filters.department_ids.length > 0) {
+            const deptIds = this._getDepartmentWithChildren(this.state.filters.department_ids);
+            domain.push(['department_analytic_id', 'in', deptIds]);
+        }
+        
+        // Add move type filter
+        if (moveTypes && moveTypes.length > 0) {
+            domain.push(['move_type', 'in', moveTypes]);
+        }
+        
+        // Add row-specific analytic filters based on row type
+        this._addRowAnalyticFilters(domain, row);
+        
+        return domain;
+    }
+
+    // Build domain for budget.commitment queries
+    _buildCommitmentDomain(row, state) {
+        const domain = [
+            ['state', '=', state],
+            ['date_range_fy_id', '=', this.state.filters.fiscal_year_id],
+        ];
+        
+        // Add source analytic filter
+        if (this.state.filters.source_analytic_id) {
+            domain.push(['source_analytic_id', '=', this.state.filters.source_analytic_id]);
+        }
+        
+        // Add department filter from report filters
+        if (this.state.filters.department_ids && this.state.filters.department_ids.length > 0) {
+            const deptIds = this._getDepartmentWithChildren(this.state.filters.department_ids);
+            domain.push(['department_analytic_id', 'in', deptIds]);
+        }
+        
+        // Add row-specific analytic filters
+        this._addRowAnalyticFilters(domain, row);
+        
+        return domain;
+    }
+
+    // Add analytic filters based on row context
+    _addRowAnalyticFilters(domain, row) {
+        // Determine which dimension we're filtering on based on row type
+        if (row.type === 'activity') {
+            // For activity rows, filter by activity and its children
+            const activityIds = this._getAnalyticWithChildren(row.id, row.parent_path);
+            domain.push(['activity_analytic_id', 'in', activityIds]);
+        } else if (row.type === 'fund') {
+            // For fund rows, need to filter by parent activity AND fund
+            if (row.parent_activity_id) {
+                const activityIds = this._getAnalyticWithChildren(
+                    row.parent_activity_id, 
+                    row.parent_activity_path
+                );
+                domain.push(['activity_analytic_id', 'in', activityIds]);
+            }
+            const fundIds = this._getAnalyticWithChildren(row.id, row.parent_path);
+            domain.push(['fund_analytic_id', 'in', fundIds]);
+        } else if (row.type === 'account') {
+            // For account rows, filter by all parent dimensions
+            if (row.parent_activity_id) {
+                const activityIds = this._getAnalyticWithChildren(
+                    row.parent_activity_id,
+                    row.parent_activity_path
+                );
+                domain.push(['activity_analytic_id', 'in', activityIds]);
+            }
+            if (row.parent_fund_id) {
+                const fundIds = this._getAnalyticWithChildren(
+                    row.parent_fund_id,
+                    row.parent_fund_path
+                );
+                domain.push(['fund_analytic_id', 'in', fundIds]);
+            }
+            // Filter by specific budget account
+            domain.push(['account_id', '=', row.id]);
+        }
+    }
+
+    // Get analytic IDs including children (for hierarchical filtering)
+    _getAnalyticWithChildren(analyticId, parentPath) {
+        // For now, return just the ID
+        // Future enhancement: call server method for hierarchical expansion
+        // const children = await this.orm.call(
+        //     "budget.report.summary", 
+        //     "get_analytic_children", 
+        //     [analyticId, dimension]
+        // );
+        return [analyticId];
+    }
+
+    // Get department IDs including children
+    _getDepartmentWithChildren(departmentIds) {
+        // For now, return the original list
+        // This could be enhanced to expand to include child departments
+        return departmentIds;
     }
 }
 

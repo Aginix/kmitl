@@ -187,23 +187,31 @@
                                                         </div>
                                                     </th>
                                                     <td class="amount-cell">0</td>
-                                                    <td class="amount-cell">
+                                                    <td class="amount-cell"
+                                                        t-att-class="{'clickable-cell': isClickable(row.appropriation)}"
+                                                        t-on-click="(event) => row.appropriation ? onAppropriationClick(event, row) : null">
                                                         <t
                                                             t-esc="formatCurrency(row.appropriation)"
                                                         />
                                                     </td>
                                                     <td class="amount-cell">0</td>
-                                                    <td class="amount-cell">
+                                                    <td class="amount-cell"
+                                                        t-att-class="{'clickable-cell': isClickable(row.commitment)}"
+                                                        t-on-click="(event) => row.commitment ? onCommitmentClick(event, row) : null">
                                                         <t
                                                             t-esc="formatCurrency(row.commitment)"
                                                         />
                                                     </td>
-                                                    <td class="amount-cell">
+                                                    <td class="amount-cell"
+                                                        t-att-class="{'clickable-cell': isClickable(row.obligation)}"
+                                                        t-on-click="(event) => row.obligation ? onObligationClick(event, row) : null">
                                                         <t
                                                             t-esc="formatCurrency(row.obligation)"
                                                         />
                                                     </td>
-                                                    <td class="amount-cell">
+                                                    <td class="amount-cell"
+                                                        t-att-class="{'clickable-cell': isClickable(row.expenditure)}"
+                                                        t-on-click="(event) => row.expenditure ? onExpenditureClick(event, row) : null">
                                                         <t
                                                             t-esc="formatCurrency(row.expenditure)"
                                                         />
