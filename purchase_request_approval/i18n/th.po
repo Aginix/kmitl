@@ -371,21 +371,6 @@ msgid "Purchase Request Approval Line"
 msgstr "ขออนุมัติจัดซื้อจัดจ้างรายการ"
 
 #. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_wizard__purchase_request_name
-msgid "Purchase Request Name"
-msgstr "ชื่อคำขออนุมัติ"
-
-#. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__purchase_request_name
-msgid "Purchase request name"
-msgstr "ชื่อคำขออนุมัติ"
-
-#. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__purchase_request_number
-msgid "Purchase request number"
-msgstr ""
-
-#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval_line__product_qty
 msgid "Quantity"
 msgstr "ปริมาณ"
@@ -493,16 +478,6 @@ msgstr "ภาษี"
 msgid ""
 "The end date for the purchase Request. If not set, the start date will be "
 "used."
-msgstr ""
-
-#. module: purchase_request_approval
-#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__purchase_request_name
-msgid "The name of the purchase request associated with the selected lines."
-msgstr ""
-
-#. module: purchase_request_approval
-#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__purchase_request_number
-msgid "The number of the purchase request associated with the selected lines."
 msgstr ""
 
 #. module: purchase_request_approval
