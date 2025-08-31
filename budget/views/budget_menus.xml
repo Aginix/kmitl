@@ -50,7 +50,14 @@
             </menuitem>
         </menuitem>
 
-        <menuitem id="budget_reporting_menu" name="รายงาน" sequence="90" />
+        <menuitem id="budget_reporting_menu" name="รายงาน" sequence="90">
+            <menuitem
+                id="action_print_budget_account_report_menu"
+                name="รายการรหัสงบประมาณ (PDF)"
+                action="action_server_print_all_budget_accounts"
+                sequence="1"
+            />
+        </menuitem>
         <menuitem id="budget_config_menu" name="การกำหนดค่า" sequence="99" groups="budget.group_budget_manager">
             <menuitem
                 id="action_budget_account_menu_action"

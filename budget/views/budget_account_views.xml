@@ -22,13 +22,6 @@ action = env.ref('budget.action_report_budget_account').report_action(env['budge
                 decoration-muted="deprecated == True"
                 decoration-bf="parent_id == False"
             >
-                <header>
-                    <button name="%(budget.action_server_print_all_budget_accounts)d" 
-                            string="พิมพ์รายการรหัสงบประมาณทั้งหมด" 
-                            type="action" 
-                            class="btn-primary"
-                            icon="fa-print"/>
-                </header>
                 <field name="sequence" widget="handle" />
                 <field name="code" string="Budget Code" />
                 <field name="name" string="Account Name" />
@@ -135,6 +128,13 @@ action = env.ref('budget.action_report_budget_account').report_action(env['budge
                                 widget="statinfo"
                             />
                         </button>
+                        <button
+                            name="%(budget.action_server_print_all_budget_accounts)d"
+                            type="action"
+                            class="oe_stat_button"
+                            icon="fa-print"
+                            string="พิมพ์รายการทั้งหมด"
+                        />
                     </div>
                     <widget
                         name="web_ribbon"
