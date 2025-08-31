@@ -19,6 +19,7 @@
         "data/budget_transfer_email_templates.xml",
         "security/security.xml",
         "security/ir.model.access.csv",
+        "report/budget_account_report_templates.xml",
         "views/budget_account_views.xml",
         "views/budget_commitment_views.xml",
         "views/budget_journal_views.xml",

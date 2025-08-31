@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Report Template -->
+    <template id="report_budget_account_document">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <!-- Report Header -->
+                <div class="text-center mb-4">
+                    <h2>รายการรหัสงบประมาณ</h2>
+                    <h4>Budget Account Reference</h4>
+                    <p class="text-muted">
+                        <span t-field="company.name"/> - 
+                        <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y %H:%M')"/>
+                    </p>
+                </div>
+                
+                <!-- Revenue Section -->
+                <t t-if="revenue_accounts">
+                    <h4 class="mt-4 mb-3">รายรับ (Revenue)</h4>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th width="15%">รหัสงบประมาณ</th>
+                                <th width="35%">ชื่อ</th>
+                                <th width="35%">กองทุน</th>
+                                <th width="10%" class="text-center">ระบุงบประมาณ</th>
+                                <th width="5%" class="text-center">สถานะ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="revenue_accounts" t-as="account">
+                                <tr>
+                                    <!-- Code with indentation for hierarchy -->
+                                    <td>
+                                        <span t-attf-style="padding-left: #{account.hierarchy_level * 15}px;">
+                                            <t t-esc="account.code"/>
+                                        </span>
+                                    </td>
+                                    <!-- Name with indentation -->
+                                    <td>
+                                        <span t-attf-style="padding-left: #{account.hierarchy_level * 15}px;">
+                                            <t t-esc="account.name"/>
+                                        </span>
+                                    </td>
+                                    <!-- Funds -->
+                                    <td>
+                                        <t t-if="account.fund_analytic_ids">
+                                            <t t-foreach="account.fund_analytic_ids" t-as="fund">
+                                                <span class="d-block">
+                                                    [<t t-esc="fund.code"/>] <t t-esc="fund.name"/>
+                                                </span>
+                                            </t>
+                                        </t>
+                                    </td>
+                                    <!-- Budgetable -->
+                                    <td class="text-center">
+                                        <t t-if="account.budgetable">✓</t>
+                                        <t t-else="">✗</t>
+                                    </td>
+                                    <!-- Status -->
+                                    <td class="text-center">
+                                        <t t-if="account.deprecated">
+                                            <span title="Deprecated">⚠</span>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </t>
+                
+                <!-- Expense Section -->
+                <t t-if="expense_accounts">
+                    <h4 class="mt-4 mb-3">รายจ่าย (Expense)</h4>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th width="15%">รหัสงบประมาณ</th>
+                                <th width="35%">ชื่อ</th>
+                                <th width="35%">กองทุน</th>
+                                <th width="10%" class="text-center">ระบุงบประมาณ</th>
+                                <th width="5%" class="text-center">สถานะ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="expense_accounts" t-as="account">
+                                <tr>
+                                    <!-- Code with indentation for hierarchy -->
+                                    <td>
+                                        <span t-attf-style="padding-left: #{account.hierarchy_level * 15}px;">
+                                            <t t-esc="account.code"/>
+                                        </span>
+                                    </td>
+                                    <!-- Name with indentation -->
+                                    <td>
+                                        <span t-attf-style="padding-left: #{account.hierarchy_level * 15}px;">
+                                            <t t-esc="account.name"/>
+                                        </span>
+                                    </td>
+                                    <!-- Funds -->
+                                    <td>
+                                        <t t-if="account.fund_analytic_ids">
+                                            <t t-foreach="account.fund_analytic_ids" t-as="fund">
+                                                <span class="d-block">
+                                                    [<t t-esc="fund.code"/>] <t t-esc="fund.name"/>
+                                                </span>
+                                            </t>
+                                        </t>
+                                    </td>
+                                    <!-- Budgetable -->
+                                    <td class="text-center">
+                                        <t t-if="account.budgetable">✓</t>
+                                        <t t-else="">✗</t>
+                                    </td>
+                                    <!-- Status -->
+                                    <td class="text-center">
+                                        <t t-if="account.deprecated">
+                                            <span title="Deprecated">⚠</span>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </t>
+                
+                <!-- Footer Note -->
+                <div class="mt-4 text-muted small">
+                    <p>
+                        <strong>หมายเหตุ:</strong><br/>
+                        - สัญลักษณ์ ✓ หมายถึง สามารถระบุงบประมาณได้<br/>
+                        - สัญลักษณ์ ✗ หมายถึง ไม่สามารถระบุงบประมาณได้<br/>
+                        - สัญลักษณ์ ⚠ หมายถึง รหัสงบประมาณที่ไม่ใช้งานแล้ว (Deprecated)
+                    </p>
+                </div>
+            </div>
+        </t>
+    </template>
+    
+    <!-- Main Report Definition -->
+    <template id="report_budget_account">
+        <t t-call="web.html_container">
+            <t t-call="budget.report_budget_account_document"/>
+        </t>
+    </template>
+    
+    <!-- Report Action -->
+    <record id="action_report_budget_account" model="ir.actions.report">
+        <field name="name">Budget Account Reference</field>
+        <field name="model">budget.account</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget.report_budget_account</field>
+        <field name="report_file">budget.report_budget_account</field>
+        <field name="print_report_name">'Budget_Account_Reference_' + (datetime.datetime.now()).strftime('%Y%m%d')</field>
+        <field name="binding_model_id" ref="model_budget_account"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="budget.paperformat_budget_appropriation"/>
+    </record>
+</odoo>
