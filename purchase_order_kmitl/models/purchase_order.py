@@ -45,7 +45,7 @@ class PurchaseOrder(models.Model):
         help="The end date for the purchase order. If not set, the start date will be used.",
     )
     contract_type = fields.Selection(
-        related='approval_id.contract_type',
+        related='request_approval_id.contract_type',
         string="Contract type",
         store=True,
         readonly=True
@@ -58,7 +58,7 @@ class PurchaseOrder(models.Model):
         string="Work end date",
         help="The end date for the purchase order. If not set, the start date will be used.",
     )
-    purchase_request_name = fields.Char(
+    description = fields.Char(
         string="Purchase request name",
         help="The name of the purchase request associated with the selected lines.",
     )
@@ -66,7 +66,7 @@ class PurchaseOrder(models.Model):
         string="Fee per day"
     )
     request_id = fields.Many2one('purchase.request', string="PR1", readonly=True)
-    approval_id = fields.Many2one('purchase.request.approval', string="PR2", readonly=True)
+    request_approval_id = fields.Many2one('purchase.request.approval', string="PR2", readonly=True)
     work_acceptance_committee_ids = fields.One2many(
         related='request_id.work_acceptance_committee_ids',
         readonly=True,
@@ -89,7 +89,7 @@ class PurchaseOrder(models.Model):
         "request_id",
         string="Attachment",
     )
-    request_total = fields.Monetary(related='approval_id.estimated_cost', string="PR1 Total")
+    request_total = fields.Monetary(related='request_approval_id.estimated_cost', string="PR1 Total")
 
     @api.depends("request_id.line_ids.estimated_cost")
     def _compute_total_estimated_cost(self):

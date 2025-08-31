@@ -2186,7 +2186,7 @@ msgid "PR1 Total"
 msgstr "จำนวนเงินทั้งหมด"
 
 #. module: purchase_order_kmitl
-#: model:ir.model.fields,field_description:purchase_order_kmitl.field_purchase_order__approval_id
+#: model:ir.model.fields,field_description:purchase_order_kmitl.field_purchase_order__request_approval_id
 msgid "PR2"
 msgstr "รหัสเอกสารแบบขออนุมัติ (พจ.1)"
 

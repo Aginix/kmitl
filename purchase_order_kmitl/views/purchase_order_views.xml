@@ -14,10 +14,10 @@
                     <field name="contract_type"/>
                     <field name="work_start_date" attrs="{'invisible': [('contract_type', '!=', 'contract_construction')]}" />
                     <field name="work_end_date" attrs="{'invisible': [('contract_type', '!=', 'contract_construction')]}" />
-                    <field name="purchase_request_name" />
+                    <field name="description" />
                     <field name="fee" />
                     <field name="request_id" />
-                    <field name="approval_id" />
+                    <field name="request_approval_id" />
                 </group>
             </xpath>
             <xpath expr="//field[@name='state']" position="attributes">

@@ -19,7 +19,6 @@ class PurchaseRequest(models.Model):
     def _prepare_approval_vals(self):
         return {
             'request_id': self.id,
-            'purchase_request_number': self.name,
             'line_ids': [Command.create(line._prepare_approval_line_vals()) for line in self.line_ids],
         }
 

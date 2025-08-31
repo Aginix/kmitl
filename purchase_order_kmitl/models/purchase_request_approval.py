@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import _, api, fields, models
+from odoo import _, api, fields, models, Command
 from odoo.exceptions import UserError
 
 
@@ -27,31 +27,7 @@ class PurchaseRequestApproval(models.Model):
         if not self.vendor:
             raise UserError("Vendor is required.")
 
-        order_lines = []
-        for line in self.line_ids:
-            if not line.product_id or not line.product_qty:
-                raise UserError("Please fill all required line data.")
-            order_lines.append((0, 0, {
-                'product_id': line.product_id.id,
-                'name': line.description or line.product_id.display_name,
-                'product_qty': line.product_qty,
-                'price_unit': line.price_unit,
-                'taxes_id': [(6, 0, line.taxes_id.ids)],
-                'product_uom': line.product_id.uom_po_id.id,
-            }))
-
-        order = self.env['purchase.order'].create({
-            'department_id': self.env.user.employee_id.department_id.id,
-            'partner_id': self.vendor.id,
-            'order_line': order_lines,
-            'origin': self.name,
-            'contract_type' : self.contract_type,
-            'contract_start_date': self.start_date,
-            'contract_end_date': self.end_date,
-            'purchase_request_name': self.purchase_request_name,
-            'request_id': self.request_id.id,
-            'approval_id': self.id,
-        })
+        order = self.env['purchase.order'].create(self._prepare_purchase_order_vals())
         self.order_id = order.id
         self.state = 'approved'
 
@@ -61,4 +37,34 @@ class PurchaseRequestApproval(models.Model):
             'res_id': order.id,
             'view_mode': 'form',
             'target': 'current',
+        }
+
+    def _prepare_purchase_order_vals(self):
+        return {
+            'department_id': self.env.user.employee_id.department_id.id,
+            'partner_id': self.vendor.id,
+            'order_line': [Command.create(line._prepare_purchase_order_line_vals()) for line in self.line_ids],
+            'origin': self.name,
+            'contract_type': self.contract_type,
+            'contract_start_date': self.start_date,
+            'contract_end_date': self.end_date,
+            # 'description': self.description,
+            'request_id': self.request_id.id,
+            'request_approval_id': self.id,
+        }
+
+
+class PurchaseRequestApprovalLine(models.Model):
+    _inherit = 'purchase.request.approval.line'
+
+    def _prepare_purchase_order_line_vals(self):
+        if not self.product_id or not self.product_qty:
+            raise UserError("Please fill all required line data.")
+        return {
+            'product_id': self.product_id.id,
+            'name': self.description or self.product_id.display_name,
+            'product_qty': self.product_qty,
+            'price_unit': self.price_unit,
+            'taxes_id': [(6, 0, self.taxes_id.ids)],
+            'product_uom': self.product_id.uom_po_id.id,
         }

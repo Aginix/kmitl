@@ -9,7 +9,7 @@
                 <field name="name" />
                 <field name="requested_by" optional="show"/>
                 <field name="vendor" optional="show" />
-                <field name="purchase_request_name" optional="show" />
+                <field name="description" optional="show" />
                 <field name="payment_type" optional="show" />
                 <field name="contract_type" optional="show" />
                 <field name="procurement_type_id" optional="show" />
@@ -55,7 +55,7 @@
                             <field name="vendor" required="1" attrs="{
                                     'readonly': [('is_editable','=', False)]
                             }" />
-                            <field name="purchase_request_name" required="1" attrs="{
+                            <field name="description" required="1" attrs="{
                                     'readonly': [('is_editable','=', False)]
                             }" />
                             <field name="start_date" attrs="{'readonly': [('is_editable','=', False)]}" />
