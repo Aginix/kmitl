@@ -10,6 +10,13 @@
                 decoration-muted="deprecated == True"
                 decoration-bf="parent_id == False"
             >
+                <header>
+                    <button name="%(budget.action_server_print_all_budget_accounts)d" 
+                            string="พิมพ์รายการรหัสงบประมาณทั้งหมด" 
+                            type="action" 
+                            class="btn-primary"
+                            icon="fa-print"/>
+                </header>
                 <field name="sequence" widget="handle" />
                 <field name="code" string="Budget Code" />
                 <field name="name" string="Account Name" />
@@ -274,12 +281,10 @@
     </record>
 
     <!-- Server Action to Print All Budget Accounts -->
-    <record id="action_print_all_budget_accounts" model="ir.actions.server">
+    <record id="action_server_print_all_budget_accounts" model="ir.actions.server">
         <field name="name">พิมพ์รายการรหัสงบประมาณทั้งหมด</field>
         <field name="type">ir.actions.server</field>
         <field name="model_id" ref="model_budget_account"/>
-        <field name="binding_model_id" ref="model_budget_account"/>
-        <field name="binding_view_types">list,form</field>
         <field name="state">code</field>
         <field name="code">
 # Always print all budget accounts regardless of selection
