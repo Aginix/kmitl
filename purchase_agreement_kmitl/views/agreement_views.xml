@@ -171,10 +171,9 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
-            <!-- for debug -->
-            <!-- <xpath expr="//field[@name='code']" position="after">
+            <xpath expr="//field[@name='code']" position="after">
                 <field name="version" string='version'/>
-            </xpath> -->
+            </xpath>
 
             <xpath expr="//field[@name='expiration_notice']" position="after">
                 <field name="contract_type" invisible="1" readonly="0" />
