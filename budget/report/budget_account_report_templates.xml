@@ -30,7 +30,7 @@
                 <!-- Revenue Section -->
                 <t t-if="revenue_accounts">
                     <h4 class="mt-4 mb-3">รายรับ (Revenue)</h4>
-                    <table class="table table-sm table-bordered">
+                    <table class="table table-sm">
                         <thead>
                             <tr>
                                 <th width="15%">รหัสงบประมาณ</th>
@@ -85,7 +85,7 @@
                 <!-- Expense Section -->
                 <t t-if="expense_accounts">
                     <h4 class="mt-4 mb-3">รายจ่าย (Expense)</h4>
-                    <table class="table table-sm table-bordered">
+                    <table class="table table-sm">
                         <thead>
                             <tr>
                                 <th width="15%">รหัสงบประมาณ</th>
