@@ -198,12 +198,20 @@ export class BudgetReportSummary extends Component {
         return value && value !== 0;
     }
 
+    // Helper to find row by row_key
+    _findRowByKey(rowKey) {
+        return this.state.rows.find(row => row.row_key === rowKey);
+    }
+
     // Handler for งบประมาณ (Appropriation) column
     async onAppropriationClick(event) {
         event.stopPropagation();
         event.preventDefault();
         
-        const row = JSON.parse(event.currentTarget.getAttribute('data-row'));
+        const rowKey = event.currentTarget.getAttribute('data-row-key');
+        const row = this._findRowByKey(rowKey);
+        if (!row) return;
+        
         const domain = this._buildMoveLineDomain(row, ['appropriation', 'entry']);
         
         await this.actionService.doAction({
@@ -225,7 +233,10 @@ export class BudgetReportSummary extends Component {
         event.stopPropagation();
         event.preventDefault();
         
-        const row = JSON.parse(event.currentTarget.getAttribute('data-row'));
+        const rowKey = event.currentTarget.getAttribute('data-row-key');
+        const row = this._findRowByKey(rowKey);
+        if (!row) return;
+        
         const domain = this._buildCommitmentDomain(row, 'reserved');
         
         await this.actionService.doAction({
@@ -246,7 +257,10 @@ export class BudgetReportSummary extends Component {
         event.stopPropagation();
         event.preventDefault();
         
-        const row = JSON.parse(event.currentTarget.getAttribute('data-row'));
+        const rowKey = event.currentTarget.getAttribute('data-row-key');
+        const row = this._findRowByKey(rowKey);
+        if (!row) return;
+        
         const domain = this._buildCommitmentDomain(row, 'obligated');
         
         await this.actionService.doAction({
@@ -267,7 +281,10 @@ export class BudgetReportSummary extends Component {
         event.stopPropagation();
         event.preventDefault();
         
-        const row = JSON.parse(event.currentTarget.getAttribute('data-row'));
+        const rowKey = event.currentTarget.getAttribute('data-row-key');
+        const row = this._findRowByKey(rowKey);
+        if (!row) return;
+        
         const domain = this._buildMoveLineDomain(row, ['consume']);
         
         await this.actionService.doAction({
