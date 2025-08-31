@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <!-- Server Action to Print All Budget Accounts -->
+    <record id="action_server_print_all_budget_accounts" model="ir.actions.server">
+        <field name="name">พิมพ์รายการรหัสงบประมาณทั้งหมด</field>
+        <field name="type">ir.actions.server</field>
+        <field name="model_id" ref="model_budget_account"/>
+        <field name="state">code</field>
+        <field name="code">
+# Always print all budget accounts regardless of selection
+action = env.ref('budget.action_report_budget_account').report_action(env['budget.account'].search([]))
+        </field>
+    </record>
+
     <!-- View budget.account View Tree -->
     <record id="view_budget_account_tree" model="ir.ui.view">
         <field name="name">view.budget.account.tree</field>
@@ -277,18 +289,6 @@
             <p class="oe_view_nocontent_create">
                 ไม่มีข้อมูลรหัสงบประมาณ คลิกที่นี่เพื่อสร้างข้อมูลใหม่
             </p>
-        </field>
-    </record>
-
-    <!-- Server Action to Print All Budget Accounts -->
-    <record id="action_server_print_all_budget_accounts" model="ir.actions.server">
-        <field name="name">พิมพ์รายการรหัสงบประมาณทั้งหมด</field>
-        <field name="type">ir.actions.server</field>
-        <field name="model_id" ref="model_budget_account"/>
-        <field name="state">code</field>
-        <field name="code">
-# Always print all budget accounts regardless of selection
-action = env.ref('budget.action_report_budget_account').report_action(env['budget.account'].search([]))
         </field>
     </record>
 
