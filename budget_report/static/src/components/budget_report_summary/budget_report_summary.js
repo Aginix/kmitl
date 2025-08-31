@@ -199,10 +199,11 @@ export class BudgetReportSummary extends Component {
     }
 
     // Handler for งบประมาณ (Appropriation) column
-    async onAppropriationClick(event, row) {
+    async onAppropriationClick(event) {
         event.stopPropagation();
         event.preventDefault();
         
+        const row = JSON.parse(event.currentTarget.getAttribute('data-row'));
         const domain = this._buildMoveLineDomain(row, ['appropriation', 'entry']);
         
         await this.actionService.doAction({
@@ -220,10 +221,11 @@ export class BudgetReportSummary extends Component {
     }
 
     // Handler for เงินจอง (Commitment) column  
-    async onCommitmentClick(event, row) {
+    async onCommitmentClick(event) {
         event.stopPropagation();
         event.preventDefault();
         
+        const row = JSON.parse(event.currentTarget.getAttribute('data-row'));
         const domain = this._buildCommitmentDomain(row, 'reserved');
         
         await this.actionService.doAction({
@@ -240,10 +242,11 @@ export class BudgetReportSummary extends Component {
     }
 
     // Handler for ผูกพัน (Obligation) column
-    async onObligationClick(event, row) {
+    async onObligationClick(event) {
         event.stopPropagation();
         event.preventDefault();
         
+        const row = JSON.parse(event.currentTarget.getAttribute('data-row'));
         const domain = this._buildCommitmentDomain(row, 'obligated');
         
         await this.actionService.doAction({
@@ -260,10 +263,11 @@ export class BudgetReportSummary extends Component {
     }
 
     // Handler for เบิกจ่ายแล้ว (Expenditure) column
-    async onExpenditureClick(event, row) {
+    async onExpenditureClick(event) {
         event.stopPropagation();
         event.preventDefault();
         
+        const row = JSON.parse(event.currentTarget.getAttribute('data-row'));
         const domain = this._buildMoveLineDomain(row, ['consume']);
         
         await this.actionService.doAction({
