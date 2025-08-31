@@ -279,9 +279,10 @@
         <field name="type">ir.actions.server</field>
         <field name="model_id" ref="model_budget_account"/>
         <field name="binding_model_id" ref="model_budget_account"/>
-        <field name="binding_view_types">list</field>
+        <field name="binding_view_types">list,form</field>
         <field name="state">code</field>
         <field name="code">
+# Always print all budget accounts regardless of selection
 action = env.ref('budget.action_report_budget_account').report_action(env['budget.account'].search([]))
         </field>
     </record>
