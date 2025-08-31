@@ -7,8 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='currency_id']/../.." position="after">
                 <group>
-                    <field name="department_id" />
-                    <field name="request_by" />
+                    <field name="responsible_id" />
                     <field name="contract_start_date" />
                     <field name="contract_end_date" />
                     <field name="contract_type"/>
@@ -57,7 +56,6 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//notebook" position="inside">
-                <field name="request_total" invisible='1'/>
                 <page string="Committee">
                     <separator string="คณะกรรมการตรวจรับพัสดุ"/>
                     <field name="work_acceptance_committee_ids" readonly="1">
@@ -70,7 +68,7 @@
                             <field name="phone"/>
                         </tree>
                     </field>
-                    <div attrs="{'invisible': [('request_total', '&lt;', 100000)]}">
+                    <div attrs="{'invisible': [('amount_total', '&lt;', 100000)]}">
                         <separator string="คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน" />
                         <field name="tor_committee_ids" readonly="1">
                             <tree>

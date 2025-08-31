@@ -5,22 +5,12 @@ from odoo import _, api, fields, models
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-    total_estimated_cost = fields.Monetary(
-        string="Total Estimated Cost from Requests",
-        compute="_compute_total_estimated_cost",
-        store=True,
-        currency_field="currency_id",
-    )
-    department_id = fields.Many2one(
-        "hr.department",
-        string="Department",
-        help="The department associated with this purchase order.",
-        readonly=True,
-    )
-    request_by = fields.Many2one(
+    responsible_id = fields.Many2one(
         "res.users",
-        string="Requested By",
+        string="Responsible Person",
         default=lambda self: self.env.user,
+        required=True,
+        tracking=True,
     )
     approval_date = fields.Date(
         string="Approve date",
@@ -44,12 +34,6 @@ class PurchaseOrder(models.Model):
         string="Contract End date",
         help="The end date for the purchase order. If not set, the start date will be used.",
     )
-    contract_type = fields.Selection(
-        related='request_approval_id.contract_type',
-        string="Contract type",
-        store=True,
-        readonly=True
-    )
     work_start_date = fields.Date(
         string="Work start date",
         help="The start date for the purchase order. If not set, the current date will be used.",
@@ -58,15 +42,32 @@ class PurchaseOrder(models.Model):
         string="Work end date",
         help="The end date for the purchase order. If not set, the start date will be used.",
     )
-    description = fields.Char(
-        string="Purchase request name",
-        help="The name of the purchase request associated with the selected lines.",
-    )
     fee = fields.Char(
         string="Fee per day"
     )
+
+    bid_line_ids = fields.One2many('purchase.order.bidder.line', 'order_id', string='Bidder line')
+    document_ids = fields.One2many(
+        "purchase.order.attachment",
+        "request_id",
+        string="Attachment",
+    )
+
     request_id = fields.Many2one('purchase.request', string="PR1", readonly=True)
     request_approval_id = fields.Many2one('purchase.request.approval', string="PR2", readonly=True)
+
+    # Related fields
+    description = fields.Char(
+        related="request_approval_id.description",
+        readonly=True,
+        help="The name of the purchase request associated with the selected lines.",
+    )
+    contract_type = fields.Selection(
+        related='request_approval_id.contract_type',
+        string="Contract type",
+        store=True,
+        readonly=True
+    )
     work_acceptance_committee_ids = fields.One2many(
         related='request_id.work_acceptance_committee_ids',
         readonly=True,
@@ -83,18 +84,6 @@ class PurchaseOrder(models.Model):
         related='request_id.evaluation_committee_ids',
         readonly=True,
     )
-    bid_line_ids = fields.One2many('purchase.order.bidder.line', 'order_id', string='Bidder line')
-    document_ids = fields.One2many(
-        "purchase.order.attachment",
-        "request_id",
-        string="Attachment",
-    )
-    request_total = fields.Monetary(related='request_approval_id.estimated_cost', string="PR1 Total")
-
-    @api.depends("request_id.line_ids.estimated_cost")
-    def _compute_total_estimated_cost(self):
-        for record in self.request_id:
-            self.total_estimated_cost = sum(record.line_ids.mapped("estimated_cost"))
 
     @api.model_create_multi
     def create(self, vals_list):

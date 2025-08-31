@@ -2181,11 +2181,6 @@ msgid "PR1"
 msgstr "รหัสเอกสารแบบขอซื้อ/จ้าง (พ.1)"
 
 #. module: purchase_order_kmitl
-#: model:ir.model.fields,field_description:purchase_order_kmitl.field_purchase_order__request_total
-msgid "PR1 Total"
-msgstr "จำนวนเงินทั้งหมด"
-
-#. module: purchase_order_kmitl
 #: model:ir.model.fields,field_description:purchase_order_kmitl.field_purchase_order__request_approval_id
 msgid "PR2"
 msgstr "รหัสเอกสารแบบขออนุมัติ (พจ.1)"
@@ -2877,9 +2872,9 @@ msgid "Request managers to approve orders above a minimum amount"
 msgstr ""
 
 #. module: purchase_order_kmitl
-#: model:ir.model.fields,field_description:purchase_order_kmitl.field_purchase_order__request_by
-msgid "Requested By"
-msgstr "ผู้จัดทำ"
+#: model:ir.model.fields,field_description:purchase_order_kmitl.field_purchase_order__responsible_id
+msgid "Responsible User"
+msgstr "ผู้รับผิดชอบข้อมูล"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_rfqs
@@ -3435,11 +3430,6 @@ msgstr "รวม"
 #: model:ir.model.fields,field_description:purchase_invoice_plan.field_purchase_order__ip_total_amount
 msgid "Total Amount"
 msgstr "จำนวนรวม"
-
-#. module: purchase_order_kmitl
-#: model:ir.model.fields,field_description:purchase_order_kmitl.field_purchase_order__total_estimated_cost
-msgid "Total Estimated Cost from Requests"
-msgstr ""
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__product_uom_qty

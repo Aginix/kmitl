@@ -28,8 +28,7 @@ class PurchaseRequestApproval(models.Model):
             raise UserError("Vendor is required.")
 
         order = self.env['purchase.order'].create(self._prepare_purchase_order_vals())
-        self.order_id = order.id
-        self.state = 'approved'
+        self.write({ "order_id": order.id })
 
         return {
             'type': 'ir.actions.act_window',
@@ -48,9 +47,10 @@ class PurchaseRequestApproval(models.Model):
             'contract_type': self.contract_type,
             'contract_start_date': self.start_date,
             'contract_end_date': self.end_date,
-            # 'description': self.description,
+            'description': self.description,
             'request_id': self.request_id.id,
             'request_approval_id': self.id,
+            'user_id': self.requested_by.id,
         }
 
 
