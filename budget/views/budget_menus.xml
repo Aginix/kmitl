@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <menuitem id="budget_root_menu" name="Budgeting" sequence="10">
+    <menuitem id="budget_root_menu" name="Budgeting" sequence="10" groups="budget.group_budget_user">
 
         <menuitem id="budget_commitment_management" name="จองงบประมาณ" sequence="30">
             <menuitem id="budget_commitment_menu" name="จองงบประมาณ" sequence="1">
@@ -39,14 +39,12 @@
                     id="action_budget_transfers_pending_menu"
                     name="รอการอนุมัติ"
                     action="action_budget_transfers_pending"
-                    groups="budget.group_budget_transfer_approver"
                     sequence="2"
                 />
                 <menuitem
                     id="action_budget_transfer_menu"
                     name="คำขอโอนงบประมาณทั้งหมด"
                     action="action_budget_transfer"
-                    groups="budget.group_budget_transfer_approver"
                     sequence="3"
                 />
             </menuitem>
@@ -64,6 +62,10 @@
                 name="ประเภทสมุดบัญชีงบประมาณ"
                 action="action_budget_journal"
             />
+            <menuitem id="budget_account_analytic" name="มิติทางบัญชี">
+                <menuitem id="action_budget_account_analytic_account_menu_action" name="Analytic Accounts" action="analytic.action_account_analytic_account_form" sequence="100" />
+                <menuitem id="action_budget_account_analytic_plan_menu_action" name="Analytic Plans" action="analytic.account_analytic_plan_action" sequence="101" />
+            </menuitem>
         </menuitem>
     </menuitem>
 </odoo>
