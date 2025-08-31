@@ -16,7 +16,6 @@
         "data/budget_journal.xml",
         "data/budget.account.csv",
         "data/budget_sequence.xml",
-        "data/budget_transfer_security.xml",
         "data/budget_transfer_email_templates.xml",
         "security/security.xml",
         "security/ir.model.access.csv",
