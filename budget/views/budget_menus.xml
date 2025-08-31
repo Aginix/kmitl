@@ -4,34 +4,68 @@
 
         <menuitem id="budget_commitment_management" name="จองงบประมาณ" sequence="30">
             <menuitem id="budget_commitment_menu" name="จองงบประมาณ" sequence="1">
-                <menuitem id="action_budget_commitment_menu_action" name="รายการจองงบประมาณ" action="action_budget_commitment" />
+                <menuitem
+                    id="action_budget_commitment_menu_action"
+                    name="รายการจองงบประมาณ"
+                    action="action_budget_commitment"
+                />
             </menuitem>
         </menuitem>
 
         <menuitem id="budget_move" name="บัญชีงบประมาณ" sequence="40">
             <menuitem id="budget_move_menu" name="บัญชีงบประมาณ" sequence="1">
-                <menuitem id="action_budget_move_menu_action" name="รายการบันทึกสมุดบัญชีงบประมาณ" action="action_budget_move" />
-                <menuitem id="action_budget_move_line_menu_action" name="รายการบันทึกสมุดบัญชีงบประมาณ (แบบแจกแจง)" action="action_budget_move_line" />
+                <menuitem
+                    id="action_budget_move_menu_action"
+                    name="รายการบันทึกสมุดบัญชีงบประมาณ"
+                    action="action_budget_move"
+                />
+                <menuitem
+                    id="action_budget_move_line_menu_action"
+                    name="รายการบันทึกสมุดบัญชีงบประมาณ (แบบแจกแจง)"
+                    action="action_budget_move_line"
+                />
             </menuitem>
         </menuitem>
 
         <menuitem id="budget_transfer_management" name="โอนงบประมาณ" sequence="50">
             <menuitem id="budget_transfer_menu" name="โอนงบประมาณ" sequence="1">
-                <menuitem id="action_my_budget_transfers_menu" name="คำขอโอนงบประมาณของฉัน" action="action_my_budget_transfers" sequence="1" />
-                <menuitem id="action_budget_transfers_pending_menu" name="รอการอนุมัติ" action="action_budget_transfers_pending" groups="budget.group_budget_transfer_approver" sequence="2" />
-                <menuitem id="action_budget_transfer_menu" name="คำขอโอนงบประมาณทั้งหมด" action="action_budget_transfer" groups="budget.group_budget_transfer_approver" sequence="3" />
+                <menuitem
+                    id="action_my_budget_transfers_menu"
+                    name="คำขอโอนงบประมาณของฉัน"
+                    action="action_my_budget_transfers"
+                    sequence="1"
+                />
+                <menuitem
+                    id="action_budget_transfers_pending_menu"
+                    name="รอการอนุมัติ"
+                    action="action_budget_transfers_pending"
+                    sequence="2"
+                />
+                <menuitem
+                    id="action_budget_transfer_menu"
+                    name="คำขอโอนงบประมาณทั้งหมด"
+                    action="action_budget_transfer"
+                    sequence="3"
+                />
             </menuitem>
         </menuitem>
 
         <menuitem id="budget_reporting_menu" name="รายงาน" sequence="90" />
         <menuitem id="budget_config_menu" name="การกำหนดค่า" sequence="99" groups="budget.group_budget_manager">
-            <menuitem id="action_budget_account_menu_action" name="รหัสงบประมาณ" action="action_budget_account" />
-            <menuitem id="action_budget_journal_menu_action" name="ประเภทสมุดบัญชีงบประมาณ" action="action_budget_journal" />
+            <menuitem
+                id="action_budget_account_menu_action"
+                name="รหัสงบประมาณ"
+                action="action_budget_account"
+            />
+            <menuitem
+                id="action_budget_journal_menu_action"
+                name="ประเภทสมุดบัญชีงบประมาณ"
+                action="action_budget_journal"
+            />
             <menuitem id="budget_account_analytic" name="มิติทางบัญชี">
                 <menuitem id="action_budget_account_analytic_account_menu_action" name="Analytic Accounts" action="analytic.action_account_analytic_account_form" sequence="100" />
                 <menuitem id="action_budget_account_analytic_plan_menu_action" name="Analytic Plans" action="analytic.account_analytic_plan_action" sequence="101" />
             </menuitem>
-
         </menuitem>
     </menuitem>
 </odoo>
