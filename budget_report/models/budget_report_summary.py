@@ -156,7 +156,10 @@ class BudgetReportSummary(models.AbstractModel):
         rows = []
         parent_map = {}  # Track parent-child relationships
 
-        def traverse(node, level=0, parent_id=None):
+        def traverse(node, level=0, parent_id=None, parent_contexts=None):
+            if parent_contexts is None:
+                parent_contexts = {}
+                
             row_data = node.to_dict()
             row_data["margin_level"] = str(level * 20) + "px"
             row_data["level"] = level
@@ -165,6 +168,30 @@ class BudgetReportSummary(models.AbstractModel):
             
             # Generate unique row key for expand/collapse tracking
             row_data["row_key"] = f"{node.node_type}_{node.value['code']}_{node.value['id']}"
+            
+            # Add parent context for multi-dimensional filtering
+            if node.node_type == "activity":
+                parent_contexts["activity"] = {
+                    "id": node.value["id"],
+                    "path": node.value.get("parent_path", ""),
+                }
+            elif node.node_type == "fund":
+                parent_contexts["fund"] = {
+                    "id": node.value["id"],
+                    "path": node.value.get("parent_path", ""),
+                }
+                # Include parent activity context
+                if "activity" in parent_contexts:
+                    row_data["parent_activity_id"] = parent_contexts["activity"]["id"]
+                    row_data["parent_activity_path"] = parent_contexts["activity"]["path"]
+            elif node.node_type == "account":
+                # Include all parent contexts
+                if "activity" in parent_contexts:
+                    row_data["parent_activity_id"] = parent_contexts["activity"]["id"]
+                    row_data["parent_activity_path"] = parent_contexts["activity"]["path"]
+                if "fund" in parent_contexts:
+                    row_data["parent_fund_id"] = parent_contexts["fund"]["id"]
+                    row_data["parent_fund_path"] = parent_contexts["fund"]["path"]
             
             # Add to parent tracking
             if parent_id:
@@ -175,10 +202,10 @@ class BudgetReportSummary(models.AbstractModel):
             rows.append(row_data)
             current_row_id = row_data["row_key"]
 
-            # Process children - sort them at each level
+            # Process children with updated context
             sorted_children = self._sort(node.children, level + 1)
             for child in sorted_children:
-                traverse(child, level + 1, current_row_id)
+                traverse(child, level + 1, current_row_id, parent_contexts.copy())
 
         # Start from root's children (skip root itself)
         sorted_roots = self._sort(roots, 0)
@@ -283,3 +310,18 @@ class BudgetReportSummary(models.AbstractModel):
             "source_analytics": self._get_source_analytics_options(),
             "departments": self._get_department_hierarchy(),
         }
+
+    @api.model
+    def get_analytic_children(self, analytic_id, dimension):
+        """Get all child analytic account IDs for hierarchical filtering"""
+        analytic = self.env["account.analytic.account"].browse(analytic_id)
+        if not analytic.exists():
+            return [analytic_id]
+        
+        # Use parent_path for efficient child retrieval
+        children = self.env["account.analytic.account"].search([
+            ("parent_path", "=like", f"{analytic.parent_path}%"),
+            ("root_plan_id.code", "=", dimension),
+        ])
+        
+        return children.ids
