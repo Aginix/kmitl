@@ -39,10 +39,8 @@ class BudgetNode:
             total += record.appropriation()
         for line in self.lines:
             if line["model"] == "budget.move.line":
-                # Use debit for appropriation (money received)
-                # Only count appropriation type moves
                 if line.get("move_type") in ["appropriation", "entry"]:
-                    total += line["debit"] if line.get("debit") else 0
+                    total += line["balance"]
         return total
 
     def commitment(self):
