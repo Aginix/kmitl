@@ -2,18 +2,31 @@
 <odoo>
     <!-- Main Report Template -->
     <template id="report_budget_account_document">
-        <t t-call="web.external_layout">
-            <div class="page">
+        <t t-call="web.basic_layout">
+            <style>
+                .page {
+                    padding-top: 0 !important;
+                    margin-top: 0 !important;
+                }
+
+                .budget_account-report {
+                    font-family: 'TH SarabunPSK', 'Sarabun', Arial, sans-serif;
+                    margin-left: 24pt;
+                    margin-right: 24pt;
+                    margin-top: 0;
+                    padding-top: 0;
+                }
+            </style>
+            <div class="page budget_account-report">
                 <!-- Report Header -->
                 <div class="text-center mb-4">
                     <h2>รายการรหัสงบประมาณ</h2>
-                    <h4>Budget Account Reference</h4>
                     <p class="text-muted">
-                        <span t-field="company.name"/> - 
+                        <span t-field="company.name"/> -
                         <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y %H:%M')"/>
                     </p>
                 </div>
-                
+
                 <!-- Revenue Section -->
                 <t t-if="revenue_accounts">
                     <h4 class="mt-4 mb-3">รายรับ (Revenue)</h4>
@@ -68,7 +81,7 @@
                         </tbody>
                     </table>
                 </t>
-                
+
                 <!-- Expense Section -->
                 <t t-if="expense_accounts">
                     <h4 class="mt-4 mb-3">รายจ่าย (Expense)</h4>
@@ -123,7 +136,7 @@
                         </tbody>
                     </table>
                 </t>
-                
+
                 <!-- Footer Note -->
                 <div class="mt-4 text-muted small">
                     <p>
@@ -136,14 +149,14 @@
             </div>
         </t>
     </template>
-    
+
     <!-- Main Report Definition -->
     <template id="report_budget_account">
         <t t-call="web.html_container">
             <t t-call="budget.report_budget_account_document"/>
         </t>
     </template>
-    
+
     <!-- Report Action -->
     <record id="action_report_budget_account" model="ir.actions.report">
         <field name="name">Budget Account Reference</field>
