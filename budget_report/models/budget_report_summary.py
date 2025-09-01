@@ -339,3 +339,56 @@ class BudgetReportSummary(models.AbstractModel):
         ])
         
         return children.ids
+
+    @api.model
+    def get_budget_accounts_for_activity(self, activity_id):
+        """Get all budget account IDs that are used with this activity"""
+        # Get all child activities under this activity
+        activity_children = self.get_analytic_children(activity_id, 'activities')
+        
+        # Find all budget accounts that have data under these activities
+        move_lines = self.env["budget.move.line"].search([
+            ('activity_analytic_id', 'in', activity_children),
+            ('parent_state', '=', 'posted'),
+        ])
+        commitments = self.env["budget.commitment"].search([
+            ('activity_analytic_id', 'in', activity_children),
+            ('state', 'in', ['reserved', 'obligated']),
+        ])
+        
+        account_ids = set()
+        account_ids.update(move_lines.mapped('account_id').ids)
+        account_ids.update(commitments.mapped('account_id').ids)
+        
+        return list(account_ids)
+
+    @api.model
+    def get_budget_accounts_for_fund(self, fund_id, parent_activity_id=None):
+        """Get all budget account IDs that are used with this fund (and optionally parent activity)"""
+        # Get all child funds under this fund
+        fund_children = self.get_analytic_children(fund_id, 'funds')
+        
+        domain_move = [
+            ('fund_analytic_id', 'in', fund_children),
+            ('parent_state', '=', 'posted'),
+        ]
+        domain_commitment = [
+            ('fund_analytic_id', 'in', fund_children),
+            ('state', 'in', ['reserved', 'obligated']),
+        ]
+        
+        # If parent activity is specified, also filter by activity
+        if parent_activity_id:
+            activity_children = self.get_analytic_children(parent_activity_id, 'activities')
+            domain_move.append(('activity_analytic_id', 'in', activity_children))
+            domain_commitment.append(('activity_analytic_id', 'in', activity_children))
+        
+        # Find all budget accounts that have data under these funds
+        move_lines = self.env["budget.move.line"].search(domain_move)
+        commitments = self.env["budget.commitment"].search(domain_commitment)
+        
+        account_ids = set()
+        account_ids.update(move_lines.mapped('account_id').ids)
+        account_ids.update(commitments.mapped('account_id').ids)
+        
+        return list(account_ids)
