@@ -360,6 +360,12 @@ export class BudgetReportSummary extends Component {
             // For activity rows, filter by activity and its children
             const activityIds = await this._getAnalyticWithChildren(row.id, 'activities');
             domain.push(['activity_analytic_id', 'in', activityIds]);
+            
+            // Also get all budget accounts under this activity
+            const accountIds = await this._getBudgetAccountsForActivity(row.id);
+            if (accountIds.length > 0) {
+                domain.push(['account_id', 'in', accountIds]);
+            }
         } else if (row.type === 'fund') {
             // For fund rows, need to filter by parent activity AND fund
             if (row.parent_activity_id) {
@@ -371,6 +377,12 @@ export class BudgetReportSummary extends Component {
             }
             const fundIds = await this._getAnalyticWithChildren(row.id, 'funds');
             domain.push(['fund_analytic_id', 'in', fundIds]);
+            
+            // Also get all budget accounts under this fund (and parent activity if exists)
+            const accountIds = await this._getBudgetAccountsForFund(row.id, row.parent_activity_id);
+            if (accountIds.length > 0) {
+                domain.push(['account_id', 'in', accountIds]);
+            }
         } else if (row.type === 'account') {
             // For account rows, filter by all parent dimensions
             if (row.parent_activity_id) {
@@ -420,6 +432,36 @@ export class BudgetReportSummary extends Component {
         } catch (error) {
             console.warn("Failed to get budget account children, using single ID:", error);
             return [accountId];
+        }
+    }
+
+    // Get budget account IDs for a specific activity
+    async _getBudgetAccountsForActivity(activityId) {
+        try {
+            const accountIds = await this.orm.call(
+                "budget.report.summary", 
+                "get_budget_accounts_for_activity", 
+                [activityId]
+            );
+            return accountIds;
+        } catch (error) {
+            console.warn("Failed to get budget accounts for activity:", error);
+            return [];
+        }
+    }
+
+    // Get budget account IDs for a specific fund and optional parent activity
+    async _getBudgetAccountsForFund(fundId, parentActivityId = null) {
+        try {
+            const accountIds = await this.orm.call(
+                "budget.report.summary", 
+                "get_budget_accounts_for_fund", 
+                [fundId, parentActivityId]
+            );
+            return accountIds;
+        } catch (error) {
+            console.warn("Failed to get budget accounts for fund:", error);
+            return [];
         }
     }
 
