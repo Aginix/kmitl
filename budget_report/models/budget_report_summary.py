@@ -325,3 +325,17 @@ class BudgetReportSummary(models.AbstractModel):
         ])
         
         return children.ids
+
+    @api.model
+    def get_budget_account_children(self, account_id):
+        """Get all child budget account IDs for hierarchical filtering"""
+        account = self.env["budget.account"].browse(account_id)
+        if not account.exists():
+            return [account_id]
+        
+        # Use parent_path for efficient child retrieval
+        children = self.env["budget.account"].search([
+            ("parent_path", "=like", f"{account.parent_path}%"),
+        ])
+        
+        return children.ids

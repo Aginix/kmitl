@@ -212,7 +212,7 @@ export class BudgetReportSummary extends Component {
         const row = this._findRowByKey(rowKey);
         if (!row) return;
         
-        const domain = this._buildMoveLineDomain(row, ['appropriation', 'entry']);
+        const domain = await this._buildMoveLineDomain(row, ['appropriation', 'entry']);
         
         await this.actionService.doAction({
             type: 'ir.actions.act_window',
@@ -237,7 +237,7 @@ export class BudgetReportSummary extends Component {
         const row = this._findRowByKey(rowKey);
         if (!row) return;
         
-        const domain = this._buildCommitmentDomain(row, 'reserved');
+        const domain = await this._buildCommitmentDomain(row, 'reserved');
         
         await this.actionService.doAction({
             type: 'ir.actions.act_window',
@@ -261,7 +261,7 @@ export class BudgetReportSummary extends Component {
         const row = this._findRowByKey(rowKey);
         if (!row) return;
         
-        const domain = this._buildCommitmentDomain(row, 'obligated');
+        const domain = await this._buildCommitmentDomain(row, 'obligated');
         
         await this.actionService.doAction({
             type: 'ir.actions.act_window',
@@ -285,7 +285,7 @@ export class BudgetReportSummary extends Component {
         const row = this._findRowByKey(rowKey);
         if (!row) return;
         
-        const domain = this._buildMoveLineDomain(row, ['consume']);
+        const domain = await this._buildMoveLineDomain(row, ['consume']);
         
         await this.actionService.doAction({
             type: 'ir.actions.act_window',
@@ -301,7 +301,7 @@ export class BudgetReportSummary extends Component {
     }
 
     // Build domain for budget.move.line queries
-    _buildMoveLineDomain(row, moveTypes) {
+    async _buildMoveLineDomain(row, moveTypes) {
         const domain = [
             ['parent_state', '=', 'posted'],
             ['date_range_fy_id', '=', this.state.filters.fiscal_year_id],
@@ -314,7 +314,7 @@ export class BudgetReportSummary extends Component {
         
         // Add department filter from report filters
         if (this.state.filters.department_ids && this.state.filters.department_ids.length > 0) {
-            const deptIds = this._getDepartmentWithChildren(this.state.filters.department_ids);
+            const deptIds = await this._getDepartmentWithChildren(this.state.filters.department_ids);
             domain.push(['department_analytic_id', 'in', deptIds]);
         }
         
@@ -324,13 +324,13 @@ export class BudgetReportSummary extends Component {
         }
         
         // Add row-specific analytic filters based on row type
-        this._addRowAnalyticFilters(domain, row);
+        await this._addRowAnalyticFilters(domain, row);
         
         return domain;
     }
 
     // Build domain for budget.commitment queries
-    _buildCommitmentDomain(row, state) {
+    async _buildCommitmentDomain(row, state) {
         const domain = [
             ['state', '=', state],
             ['date_range_fy_id', '=', this.state.filters.fiscal_year_id],
@@ -343,72 +343,99 @@ export class BudgetReportSummary extends Component {
         
         // Add department filter from report filters
         if (this.state.filters.department_ids && this.state.filters.department_ids.length > 0) {
-            const deptIds = this._getDepartmentWithChildren(this.state.filters.department_ids);
+            const deptIds = await this._getDepartmentWithChildren(this.state.filters.department_ids);
             domain.push(['department_analytic_id', 'in', deptIds]);
         }
         
         // Add row-specific analytic filters
-        this._addRowAnalyticFilters(domain, row);
+        await this._addRowAnalyticFilters(domain, row);
         
         return domain;
     }
 
     // Add analytic filters based on row context
-    _addRowAnalyticFilters(domain, row) {
+    async _addRowAnalyticFilters(domain, row) {
         // Determine which dimension we're filtering on based on row type
         if (row.type === 'activity') {
             // For activity rows, filter by activity and its children
-            const activityIds = this._getAnalyticWithChildren(row.id, row.parent_path);
+            const activityIds = await this._getAnalyticWithChildren(row.id, 'activities');
             domain.push(['activity_analytic_id', 'in', activityIds]);
         } else if (row.type === 'fund') {
             // For fund rows, need to filter by parent activity AND fund
             if (row.parent_activity_id) {
-                const activityIds = this._getAnalyticWithChildren(
+                const activityIds = await this._getAnalyticWithChildren(
                     row.parent_activity_id, 
-                    row.parent_activity_path
+                    'activities'
                 );
                 domain.push(['activity_analytic_id', 'in', activityIds]);
             }
-            const fundIds = this._getAnalyticWithChildren(row.id, row.parent_path);
+            const fundIds = await this._getAnalyticWithChildren(row.id, 'funds');
             domain.push(['fund_analytic_id', 'in', fundIds]);
         } else if (row.type === 'account') {
             // For account rows, filter by all parent dimensions
             if (row.parent_activity_id) {
-                const activityIds = this._getAnalyticWithChildren(
+                const activityIds = await this._getAnalyticWithChildren(
                     row.parent_activity_id,
-                    row.parent_activity_path
+                    'activities'
                 );
                 domain.push(['activity_analytic_id', 'in', activityIds]);
             }
             if (row.parent_fund_id) {
-                const fundIds = this._getAnalyticWithChildren(
+                const fundIds = await this._getAnalyticWithChildren(
                     row.parent_fund_id,
-                    row.parent_fund_path
+                    'funds'
                 );
                 domain.push(['fund_analytic_id', 'in', fundIds]);
             }
-            // Filter by specific budget account
-            domain.push(['account_id', '=', row.id]);
+            // For budget account rows, get all child accounts too
+            const accountIds = await this._getBudgetAccountWithChildren(row.id);
+            domain.push(['account_id', 'in', accountIds]);
         }
     }
 
     // Get analytic IDs including children (for hierarchical filtering)
-    _getAnalyticWithChildren(analyticId, parentPath) {
-        // For now, return just the ID
-        // Future enhancement: call server method for hierarchical expansion
-        // const children = await this.orm.call(
-        //     "budget.report.summary", 
-        //     "get_analytic_children", 
-        //     [analyticId, dimension]
-        // );
-        return [analyticId];
+    async _getAnalyticWithChildren(analyticId, dimension) {
+        try {
+            const children = await this.orm.call(
+                "budget.report.summary", 
+                "get_analytic_children", 
+                [analyticId, dimension]
+            );
+            return children;
+        } catch (error) {
+            console.warn("Failed to get analytic children, using single ID:", error);
+            return [analyticId];
+        }
+    }
+
+    // Get budget account IDs including children
+    async _getBudgetAccountWithChildren(accountId) {
+        try {
+            const children = await this.orm.call(
+                "budget.report.summary", 
+                "get_budget_account_children", 
+                [accountId]
+            );
+            return children;
+        } catch (error) {
+            console.warn("Failed to get budget account children, using single ID:", error);
+            return [accountId];
+        }
     }
 
     // Get department IDs including children
-    _getDepartmentWithChildren(departmentIds) {
-        // For now, return the original list
-        // This could be enhanced to expand to include child departments
-        return departmentIds;
+    async _getDepartmentWithChildren(departmentIds) {
+        try {
+            const allDeptIds = [];
+            for (const deptId of departmentIds) {
+                const children = await this._getAnalyticWithChildren(deptId, 'departments');
+                allDeptIds.push(...children);
+            }
+            return [...new Set(allDeptIds)]; // Remove duplicates
+        } catch (error) {
+            console.warn("Failed to get department children, using original IDs:", error);
+            return departmentIds;
+        }
     }
 }
 
