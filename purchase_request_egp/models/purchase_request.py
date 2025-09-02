@@ -12,36 +12,22 @@ class PurchaseRequest(models.Model):
 
     is_egp = fields.Boolean(string="e-GP", compute="_compute_is_egp", store=True)
 
-    egp_status = fields.Selection(
-        [
-            ("waiting_egp", "รอดำเนินการ e-GP"),
-            ("in_egp", "อยู่ในกระบวนการ e-GP"),
-            ("done", "เสร็จสิ้น"),
-        ],
-        string="สถานะ e-GP",
-        store=True,
-        tracking=True,
-    )
-
-    egp_project_id = fields.Char(string="เลขที่โครงการ", tracking=True)
+    egp_project_id = fields.Char(string="เลขที่โครงการ e-GP", tracking=True)
     egp_project_url = fields.Char(
-        string="ลิงค์", compute="_compute_egp_project_url", readonly=True
+        string="ลิงค์ e-GP", compute="_compute_egp_project_url", readonly=True
     )
 
     @api.depends("egp_project_id")
     def _compute_egp_project_url(self):
         for record in self:
-            if not record.egp_project_id:
-                record.egp_project_url = False
-                continue
-            ts = datetime.now().timestamp()
-            project_id = record.egp_project_id
-            url = (
-                "https://process.gprocurement.go.th/egp2procmainWeb/jsp/FPRO9951A_3.jsp?tor_project_id="
-                + project_id
-                + "&invite_templateType=D2&invite_announceFlag=A&invite_itemNo=0&invite_seqno=0&invite_methodId=16&intvite_docAnnounceType=D0&invite_announceId=&_=" + ts
-            )
-            record.egp_project_url = url
+            record.egp_project_url = record.get_epg_project_url()
+
+    def get_epg_project_url(self):
+        if not self.egp_project_id:
+            return False
+        ts = datetime.now().timestamp()
+        project_id = record.egp_project_id
+        return f"https://process.gprocurement.go.th/egp2procmainWeb/jsp/FPRO9951A_3.jsp?tor_project_id={project_id}&invite_templateType=D2&invite_announceFlag=A&invite_itemNo=0&invite_seqno=0&invite_methodId=16&intvite_docAnnounceType=D0&invite_announceId=&_={ts}"
 
     @api.depends("estimated_cost", "state")
     def _compute_is_egp(self):
