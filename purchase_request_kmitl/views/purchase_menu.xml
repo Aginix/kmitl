@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <menuitem id="purchase.menu_procurement_management" name="Orders" parent="purchase.menu_purchase_root" sequence="1" groups="purchase.group_purchase_manager" />
-    <menuitem id="purchase.menu_purchase_products" name="Products" parent="purchase.menu_purchase_root" sequence="5" groups="purchase.group_purchase_manager" />
-</odoo>

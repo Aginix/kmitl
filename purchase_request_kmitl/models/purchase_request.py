@@ -6,22 +6,6 @@ from odoo import api, fields, models
 class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
-    _STATES = [
-        ("validation", "Validated"),
-        ("approved",)
-    ]
-
-    state = fields.Selection(
-        selection_add=_STATES,
-        string="Status",
-        index=True,
-        tracking=True,
-        required=True,
-        copy=False,
-        ondelete={
-        "validation": "set default",
-        }
-    )
     tor_committee_ids = fields.One2many(
         comodel_name="procurement.committee",
         inverse_name="request_id",
@@ -94,12 +78,6 @@ class PurchaseRequest(models.Model):
         store=True,
         readonly=True,
     )
-    validated_by = fields.Many2one(
-        comodel_name="res.users",
-        index=True,
-        copy=False,
-        tracking=True,
-    )
     date_validated = fields.Date(
         string="validate Date",
         copy=False,
@@ -116,26 +94,11 @@ class PurchaseRequest(models.Model):
         for rec in self:
             rec.current_user = self.env.user
 
-    def button_validate(self):
-        user = self.env.user
-        is_all_user = user.has_group('purchase_request_kmitl.group_purchase_request_user_all')
-        is_manager = user.has_group('purchase_request.group_purchase_request_manager')
-
-        if is_all_user or is_manager:
-            return self.sudo().write({
-                "state": "validation",
-                "validated_by": user.id,
-                "date_validated": fields.Date.context_today(self),
-            })
-        else:
-            raise AccessError(_("You do not have the rights to validate this request."))
-
     @api.depends("state")
     def _compute_is_editable(self):
         for rec in self:
             if rec.state in (
                 "to_approve",
-                "validation",
                 "approved",
                 "rejected",
                 "done",
@@ -144,6 +107,3 @@ class PurchaseRequest(models.Model):
             else:
                 rec.is_editable = True
 
-    def button_draft(self):
-        self.write({"approved_by": "", "date_approved": False, "validated_by": "", "date_validated": False})
-        return super().button_draft()

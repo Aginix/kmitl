@@ -1,41 +1,46 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* purchase_request_substate
-# 	* purchase_request
 # 	* l10n_th_gov_purchase_request
-# 	* purchase_requisition
 # 	* purchase_request_exception
+# 	* purchase_request_substate
 # 	* purchase_request_kmitl
+# 	* purchase_request
+# 	* purchase_request_to_requisition
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-27 12:34+0000\n"
-"PO-Revision-Date: 2025-08-27 12:34+0000\n"
+"POT-Creation-Date: 2025-09-02 12:23+0000\n"
+"PO-Revision-Date: 2025-09-02 19:31+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
+"Language: th\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
-"Plural-Forms: \n"
-
-#. module: purchase_requisition
-#: model:ir.actions.report,print_report_name:purchase_requisition.action_report_purchase_requisitions
-msgid "'Purchase Agreement - %s' % (object.name)"
-msgstr "'ข้อตกลงการซื้อ - %s' % (object.name)"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.6\n"
 
 #. module: purchase_request_substate
 #: model:mail.template,body_html:purchase_request_substate.mail_template_data_purchase_request_substate_verified
 msgid ""
 "<div>\n"
 "    Dear ${object.requested_by.name or 'requester'},<br>\n"
-"    This email is to inform that your purchase request ${object.name} was verified by procurement team.\n"
+"    This email is to inform that your purchase request ${object.name} was "
+"verified by procurement team.\n"
 "       <br><br>\n"
 "    Thank you,\n"
 "    <br>\n"
 "</div>\n"
 "        "
+msgstr ""
+
+#. module: purchase_request_to_requisition
+#. odoo-python
+#: code:addons/purchase_request_to_requisition/models/purchase_requisition.py:0
+#, python-format
+msgid "<li><b>%(name)s</b>: Total bid quantity %(qty)s %(uom)s</li>"
 msgstr ""
 
 #. module: purchase_request
@@ -60,17 +65,11 @@ msgstr ""
 #. module: purchase_request
 #. odoo-python
 #: code:addons/purchase_request/models/stock_move_line.py:0
-#: code:addons/purchase_request/models/stock_move_line.py:0
 #, python-format
 msgid ""
 "<li><b>%(product_name)s</b>: Transferred quantity %(product_qty)s "
 "%(product_uom)s</li>"
 msgstr ""
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisitions
-msgid "<strong>Agreement Deadline:</strong><br/>"
-msgstr "<strong>กำหนดเวลาของสัญญา:</strong><br/>"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.report_purchase_request
@@ -91,11 +90,6 @@ msgid ""
 "                                <br/>"
 msgstr ""
 
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisitions
-msgid "<strong>Date</strong>"
-msgstr "<strong>วันที่</strong>"
-
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.report_purchase_request
 msgid ""
@@ -103,9 +97,8 @@ msgid ""
 "                                <br/>"
 msgstr ""
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.report_purchase_request
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisitions
 msgid "<strong>Description</strong>"
 msgstr "<strong>รายละเอียด</strong>"
 
@@ -121,27 +114,15 @@ msgid ""
 "                                <br/>"
 msgstr ""
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.report_purchase_request
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisitions
 msgid "<strong>Product UoM</strong>"
 msgstr "<strong>หน่วยวัดสินค้า</strong>"
 
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisitions
-msgid "<strong>Product</strong>"
-msgstr "<strong>สินค้า</strong>"
-
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.report_purchase_request
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisitions
 msgid "<strong>Qty</strong>"
 msgstr "<strong>ปริมาณ</strong>"
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisitions
-msgid "<strong>Reference </strong>"
-msgstr "<strong>dkiอ้างอิง </strong>"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.report_purchase_request
@@ -162,27 +143,12 @@ msgid ""
 "                                <br/>"
 msgstr ""
 
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisitions
-msgid "<strong>Scheduled Date</strong>"
-msgstr "<strong>วันที่ตามกำหนดการ</strong>"
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisitions
-msgid "<strong>Scheduled Ordering Date:</strong><br/>"
-msgstr "<strong>วันสั่งซื้อที่กำหนดไว้:</strong><br/>"
-
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.report_purchase_request
 msgid ""
 "<strong>Source:</strong>\n"
 "                                <br/>"
 msgstr ""
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisitions
-msgid "<strong>Source:</strong><br/>"
-msgstr "<strong>แหล่งที่มา:</strong><br/>"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.report_purchase_request
@@ -193,11 +159,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_request_exception.view_purchase_request_form
 msgid "<strong>There are exceptions blocking this Purchase Order:</strong>"
 msgstr ""
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisitions
-msgid "<strong>Vendor </strong>"
-msgstr "<strong>ผู้ขาย </strong>"
 
 #. module: purchase_request
 #: model_terms:ir.actions.act_window,help:purchase_request.purchase_request_form_action
@@ -216,70 +177,42 @@ msgid ""
 "cancelled/deleted. Check if an action is needed."
 msgstr ""
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__message_needaction
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__message_needaction
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__message_needaction
 msgid "Action Needed"
 msgstr "จำเป็นต้องดำเนินการ"
 
-#. modules: l10n_th_gov_purchase_request, purchase_requisition
+#. module: l10n_th_gov_purchase_request
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_method__active
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__active
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__active
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_type__active
 msgid "Active"
 msgstr "เปิดใช้งาน"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__activity_ids
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__activity_ids
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__activity_ids
 msgid "Activities"
 msgstr "กิจกรรม"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__activity_exception_decoration
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__activity_exception_decoration
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__activity_exception_decoration
 msgid "Activity Exception Decoration"
 msgstr "การตกแต่งข้อยกเว้นกิจกรรม"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__activity_state
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__activity_state
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__activity_state
 msgid "Activity State"
 msgstr "สถานะกิจกรรม"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__activity_type_icon
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__activity_type_icon
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__activity_type_icon
 msgid "Activity Type Icon"
 msgstr "ไอคอนประเภทกิจกรรม"
-
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_product_supplierinfo__purchase_requisition_id
-msgid "Agreement"
-msgstr "ข้อตกลง"
-
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__date_end
-msgid "Agreement Deadline"
-msgstr "กำหนดเวลาของสัญญา"
-
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_type__exclusive
-msgid "Agreement Selection Type"
-msgstr "ประเภทการเลือกข้อตกลง"
-
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__type_id
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_type__name
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_type_form
-msgid "Agreement Type"
-msgstr "ประเภทข้อตกลง"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
@@ -302,43 +235,8 @@ msgstr ""
 msgid "Allowed Procurement Method"
 msgstr ""
 
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order__alternative_po_ids
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_alternative_warning__alternative_po_ids
-msgid "Alternative POs"
-msgstr "ตัวเลือก PO"
-
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_alternative_warning__alternative_po_count
-msgid "Alternative Po Count"
-msgstr "จำนวนตัวเลือก Po"
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_form_inherit
-msgid "Alternative Purchase Order"
-msgstr "ตัวเลือกใบสั่งซื้อ"
-
-#. module: purchase_requisition
-#. odoo-python
-#: code:addons/purchase_requisition/models/purchase.py:0
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_requisition_alternative_warning_form
-#, python-format
-msgid "Alternative Warning"
-msgstr "ตัวเลือกคำแจ้งเตือน"
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_form_inherit
-msgid "Alternatives"
-msgstr "ตัวเลือก"
-
-#. module: purchase_requisition
-#: model_terms:ir.actions.act_window,help:purchase_requisition.action_purchase_requisition
-msgid "An example of a purchase agreement is a blanket order."
-msgstr "ตัวอย่างของข้อตกลงการซื้อคือคำสั่งซื้อแบบ blanket order"
-
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__analytic_distribution
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__analytic_distribution
 msgid "Analytic"
 msgstr "การวิเคราะห์"
 
@@ -347,15 +245,13 @@ msgstr "การวิเคราะห์"
 msgid "Analytic Distribution"
 msgstr ""
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__analytic_distribution_search
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__analytic_distribution_search
 msgid "Analytic Distribution Search"
 msgstr "การค้นหาการกระจายการวิเคราะห์"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__analytic_precision
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__analytic_precision
 msgid "Analytic Precision"
 msgstr "ความแม่นยำในการวิเคราะห์"
 
@@ -365,20 +261,18 @@ msgstr "ความแม่นยำในการวิเคราะห์
 msgid "Apply on"
 msgstr ""
 
-#. modules: purchase_request, purchase_request_kmitl
+#. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
 msgid "Approve"
 msgstr "อนุมัติ"
 
-#. modules: purchase_request, purchase_request_kmitl,
-#. purchase_request_substate
-#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__approved
+#. modules: purchase_request, purchase_request_substate
+#: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__approved
 #: model:target.state.value,name:purchase_request_substate.target_state_value_approved
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
 msgid "Approved"
-msgstr "อนุมัติ"
+msgstr "คำขอได้รับอนุมัติแล้ว"
 
 #. module: l10n_th_gov_purchase_request
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_request__approved_by
@@ -390,12 +284,10 @@ msgstr "ผู้อนุมัติ"
 msgid "Approved Date"
 msgstr "วันที่อนุมัติ"
 
-#. modules: l10n_th_gov_purchase_request, purchase_requisition
+#. module: l10n_th_gov_purchase_request
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.procurement_method_view_form
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.procurement_type_view_form
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.purchase_type_view_form
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_type_form
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_type_search
 msgid "Archived"
 msgstr "เก็บถาวรแล้ว"
 
@@ -412,6 +304,11 @@ msgstr ""
 msgid "Assigned to me"
 msgstr ""
 
+#. module: purchase_request_to_requisition
+#: model_terms:ir.ui.view,arch_db:purchase_request_to_requisition.purchase_request_line_search
+msgid "At least a Draft Bid has been created"
+msgstr ""
+
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 msgid "At least a Draft PO has been created"
@@ -422,15 +319,25 @@ msgstr ""
 msgid "At least a PO has been completed"
 msgstr ""
 
-#. module: purchase_request
+#. modules: purchase_request, purchase_request_to_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
+#: model_terms:ir.ui.view,arch_db:purchase_request_to_requisition.purchase_request_line_search
 msgid "At least a PO has been confirmed"
 msgstr ""
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request_to_requisition
+#: model_terms:ir.ui.view,arch_db:purchase_request_to_requisition.purchase_request_line_search
+msgid "At least one of the Bids has been completed"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Attachment"
+msgstr "เอกสารแนบ"
+
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__message_attachment_count
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__message_attachment_count
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__message_attachment_count
 msgid "Attachment Count"
 msgstr "จำนวนสิ่งที่แนบมา"
 
@@ -444,21 +351,26 @@ msgstr "ประเภทไฟล์แนบ"
 msgid "Base Substate Type"
 msgstr ""
 
-#. module: purchase_requisition
-#: model:ir.model.fields.selection,name:purchase_requisition.selection__purchase_requisition__state__open
-#: model:ir.model.fields.selection,name:purchase_requisition.selection__purchase_requisition__state_blanket_order__open
-msgid "Bid Selection"
-msgstr "การเลือกประมูล"
-
-#. module: purchase_requisition
-#: model:purchase.requisition.type,name:purchase_requisition.type_single
-msgid "Blanket Order"
+#. module: purchase_request_to_requisition
+#: model_terms:ir.ui.view,arch_db:purchase_request_to_requisition.purchase_request_line_search
+msgid "Bid Sent to Suppliers"
 msgstr ""
 
-#. module: purchase_requisition
-#: model:ir.actions.act_window,name:purchase_requisition.action_purchase_requisition
-#: model:ir.ui.menu,name:purchase_requisition.menu_purchase_requisition_pro_mgt
-msgid "Blanket Orders"
+#. module: purchase_request_to_requisition
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line__requisition_state
+msgid "Bid Status"
+msgstr ""
+
+#. module: purchase_request_to_requisition
+#: model_terms:ir.ui.view,arch_db:purchase_request_to_requisition.purchase_request_line_search
+msgid "Bid completed"
+msgstr ""
+
+#. module: purchase_request_to_requisition
+#. odoo-python
+#: code:addons/purchase_request_to_requisition/models/purchase_requisition.py:0
+#, python-format
+msgid "Bid confirmation %(bid_name)s for your Request %(request_name)s"
 msgstr ""
 
 #. module: purchase_request_exception
@@ -471,23 +383,14 @@ msgstr ""
 msgid "Can verify purchase request"
 msgstr ""
 
-#. modules: purchase_request, purchase_requisition
+#. modules: purchase_request, purchase_request_to_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_line_make_purchase_order
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_requisition_alternative_warning_form
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_requisition_create_alternative_form
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_form
+#: model_terms:ir.ui.view,arch_db:purchase_request_to_requisition.view_purchase_request_line_make_purchase_requisition
 msgid "Cancel"
 msgstr "ตีกลับ"
 
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_requisition_alternative_warning_form
-msgid "Cancel Alternatives"
-msgstr "ยกเลิกตัวเลือกอื่น"
-
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__cancelled
-#: model:ir.model.fields.selection,name:purchase_requisition.selection__purchase_requisition__state__cancel
-#: model:ir.model.fields.selection,name:purchase_requisition.selection__purchase_requisition__state_blanket_order__cancel
 msgid "Cancelled"
 msgstr "ตีกลับ"
 
@@ -496,16 +399,8 @@ msgstr "ตีกลับ"
 msgid "Cancelled Quantity"
 msgstr ""
 
-#. module: purchase_requisition
-#. odoo-python
-#: code:addons/purchase_requisition/models/purchase_requisition.py:0
-#, python-format
-msgid "Cancelled by the agreement associated to this quotation."
-msgstr "ยกเลิกโดยข้อตกลงที่เกี่ยวข้องกับใบเสนอราคานี้"
-
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__product_uom_category_id
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__product_uom_category_id
 msgid "Category"
 msgstr "หมวดหมู่"
 
@@ -522,26 +417,6 @@ msgid ""
 "For Quotation from procurement."
 msgstr ""
 
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_line_compare_tree
-msgid "Choose"
-msgstr "เลือก"
-
-#. module: purchase_requisition
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition_create_alternative__partner_id
-msgid "Choose a vendor for alternative PO"
-msgstr "เลือกผู้ขายสำหรับตัวเลือก PO"
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_line_compare_tree
-msgid "Clear"
-msgstr "ล้าง"
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_line_compare_tree
-msgid "Clear Selected"
-msgstr "ล้างรายการที่เลือก"
-
 #. module: purchase_request_exception
 #: model_terms:ir.ui.view,arch_db:purchase_request_exception.view_purchase_request_form
 msgid ""
@@ -553,17 +428,6 @@ msgstr ""
 #: model_terms:ir.actions.act_window,help:purchase_request.purchase_request_form_action
 msgid "Click to start a new purchase request process."
 msgstr ""
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_form
-msgid "Close"
-msgstr "ปิด"
-
-#. module: purchase_requisition
-#: model:ir.model.fields.selection,name:purchase_requisition.selection__purchase_requisition__state__done
-#: model:ir.model.fields.selection,name:purchase_requisition.selection__purchase_requisition__state_blanket_order__done
-msgid "Closed"
-msgstr "ปิดแล้ว"
 
 #. module: l10n_th_gov_purchase_request
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__code
@@ -593,38 +457,12 @@ msgstr "ประเภทของคณะกรรมการ"
 msgid "Committee has to be unique"
 msgstr ""
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__company_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_allocation__company_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__company_id
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__company_id
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__company_id
 msgid "Company"
 msgstr "บริษัท"
-
-#. module: purchase_requisition
-#. odoo-python
-#: code:addons/purchase_requisition/models/purchase.py:0
-#, python-format
-msgid "Compare Order Lines"
-msgstr "เปรียบเทียบรายการคำสั่งซื้อ"
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_form_inherit
-msgid "Compare Product Lines"
-msgstr "เปรียบเทียบรายการสินค้า"
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_form
-msgid "Confirm"
-msgstr "ยืนยัน"
-
-#. module: purchase_requisition
-#: model:ir.model.fields.selection,name:purchase_requisition.selection__purchase_requisition__state__in_progress
-#: model:ir.model.fields.selection,name:purchase_requisition.selection__purchase_requisition__state_blanket_order__in_progress
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
-msgid "Confirmed"
-msgstr "ยืนยันแล้ว"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__contract_type__contract_buy
@@ -641,20 +479,13 @@ msgstr "สัญญาจ้างก่อสร้าง"
 msgid "Contract type"
 msgstr "ประเภทสัญญา"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_purchase_request_line__product_uom_category_id
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition_line__product_uom_category_id
 msgid ""
 "Conversion between Units of Measure can only occur if they belong to the "
 "same category. The conversion will be made based on the ratios."
 msgstr ""
-"การแปลงระหว่างหน่วยวัดจะเกิดขึ้นได้ก็ต่อเมื่ออยู่ในหมวดหมู่เดียวกัน "
-"การแปลงจะอิงตามอัตราส่วน"
-
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__copy_products
-msgid "Copy Products"
-msgstr "คัดลอกสินค้า"
+"การแปลงระหว่างหน่วยวัดจะเกิดขึ้นได้ก็ต่อเมื่ออยู่ในหมวดหมู่เดียวกัน การแปลงจะอิงตามอัตราส่วน"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__keep_description
@@ -666,36 +497,19 @@ msgstr ""
 msgid "Copy estimative cost to new PO"
 msgstr ""
 
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_form_inherit
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_requisition_create_alternative_form
-msgid "Create Alternative"
-msgstr "สร้างทางเลือกใหม่"
+#. module: purchase_request_to_requisition
+#: model:ir.actions.act_window,name:purchase_request_to_requisition.action_purchase_request_line_make_purchase_requisition
+#: model:ir.actions.act_window,name:purchase_request_to_requisition.action_purchase_request_make_purchase_requisition
+#: model_terms:ir.ui.view,arch_db:purchase_request_to_requisition.view_purchase_request_line_make_purchase_requisition
+msgid "Create Purchase Agreements"
+msgstr ""
 
 #. module: purchase_request
 #: model:ir.actions.act_window,name:purchase_request.action_purchase_request_line_make_purchase_order
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_line_make_purchase_order
 msgid "Create RFQ"
-msgstr "สร้างโดย"
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_form_inherit
-msgid ""
-"Create a call for tender by adding alternative request for quotations to different vendors.\n"
-"                            Make your choice by selecting the best combination of lead time, OTD and/or total amount.\n"
-"                            By comparing product lines you can also decide to order some products from one vendor and others from another vendor."
-msgstr ""
-"สร้างการเรียกประกวดราคาโดยการเพิ่มคำขอใบเสนอราคาอื่นไปยังผู้จำหน่ายที่แตกต่างกัน\n"
-"                          ตัดสินใจเลือกโดยเลือกแบบผสมผสานระหว่างระยะเวลารอคอยสินค้า, OTD และ/หรือจำนวนรวมที่ดีที่สุด\n"
-"                          เมื่อเปรียบเทียบกลุ่มสินค้า คุณยังสามารถตัดสินใจสั่งซื้อสินค้าบางอย่างจากผู้จำหน่ายรายหนึ่งและรายอื่นๆ จากผู้จำหน่ายรายอื่นได้"
-
-#. module: purchase_requisition
-#. odoo-python
-#: code:addons/purchase_requisition/models/purchase.py:0
-#, python-format
-msgid "Create alternative"
-msgstr "สร้างทางเลือก"
+msgstr "สร้างใบจัดซื้อจัดจ้าง"
 
 #. module: l10n_th_gov_purchase_request
 #: model:ir.model.fields,help:l10n_th_gov_purchase_request.field_purchase_request__to_create
@@ -709,7 +523,8 @@ msgid "Created Purchase Request Line"
 msgstr ""
 
 #. modules: l10n_th_gov_purchase_request, purchase_request,
-#. purchase_request_exception, purchase_request_kmitl, purchase_requisition
+#. purchase_request_exception, purchase_request_kmitl,
+#. purchase_request_to_requisition
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__create_uid
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_method__create_uid
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__create_uid
@@ -721,17 +536,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__create_uid
 #: model:ir.model.fields,field_description:purchase_request_exception.field_purchase_request_exception_confirm__create_uid
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__create_uid
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order_group__create_uid
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__create_uid
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_alternative_warning__create_uid
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__create_uid
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__create_uid
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_type__create_uid
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition__create_uid
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition_item__create_uid
 msgid "Created by"
 msgstr "สร้างโดย"
 
 #. modules: l10n_th_gov_purchase_request, purchase_request,
-#. purchase_request_exception, purchase_request_kmitl, purchase_requisition
+#. purchase_request_exception, purchase_request_kmitl,
+#. purchase_request_to_requisition
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__create_date
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_method__create_date
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__create_date
@@ -743,19 +555,10 @@ msgstr "สร้างโดย"
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__create_date
 #: model:ir.model.fields,field_description:purchase_request_exception.field_purchase_request_exception_confirm__create_date
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__create_date
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order_group__create_date
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__create_date
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_alternative_warning__create_date
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__create_date
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__create_date
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_type__create_date
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition__create_date
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition_item__create_date
 msgid "Created on"
 msgstr "สร้างเมื่อ"
-
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__creation_blocked
-msgid "Creation Blocked"
-msgstr "การสร้างถูกบล็อก"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__date_start
@@ -763,11 +566,10 @@ msgstr "การสร้างถูกบล็อก"
 msgid "Creation date"
 msgstr "วันที่ขอ"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__currency_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__currency_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__currency_id
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__currency_id
 msgid "Currency"
 msgstr "สกุลเงิน"
 
@@ -775,16 +577,6 @@ msgstr "สกุลเงิน"
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__current_user
 msgid "Current User"
 msgstr "ผู้ใช้ปัจจุบัน"
-
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__product_description_variants
-msgid "Custom Description"
-msgstr "คำอธิบายที่กำหนดเอง"
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_type_form
-msgid "Data for new quotations"
-msgstr "ข้อมูลสำหรับใบเสนอราคาใหม่"
 
 #. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_purchase_request__date_start
@@ -807,11 +599,6 @@ msgstr ""
 msgid "Default purchase type on the purchase request"
 msgstr ""
 
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__schedule_date
-msgid "Delivery Date"
-msgstr "วันที่จัดส่ง"
-
 #. modules: l10n_th_gov_purchase_request, purchase_request_kmitl
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__department_id
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__department_id
@@ -820,14 +607,14 @@ msgid "Department"
 msgstr "หน่วยงาน"
 
 #. modules: l10n_th_gov_purchase_request, purchase_request,
-#. purchase_request_kmitl, purchase_requisition
+#. purchase_request_kmitl, purchase_request_to_requisition
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_method__description
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__description
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__description
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__name
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__name
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__description
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__description
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition_item__name
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.purchase_type_view_form
 msgid "Description"
 msgstr "รายละเอียด"
@@ -845,7 +632,8 @@ msgid "Direct paid"
 msgstr "จ่ายตรง"
 
 #. modules: l10n_th_gov_purchase_request, purchase_request,
-#. purchase_request_exception, purchase_request_kmitl, purchase_requisition
+#. purchase_request_exception, purchase_request_kmitl,
+#. purchase_request_to_requisition
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__display_name
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_method__display_name
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__display_name
@@ -857,45 +645,33 @@ msgstr "จ่ายตรง"
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__display_name
 #: model:ir.model.fields,field_description:purchase_request_exception.field_purchase_request_exception_confirm__display_name
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__display_name
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order_group__display_name
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__display_name
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_alternative_warning__display_name
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__display_name
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__display_name
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_type__display_name
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition__display_name
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition_item__display_name
 msgid "Display Name"
 msgstr "ชื่อแสดง"
 
-#. module: purchase_requisition
-#: model:ir.model.fields.selection,name:purchase_requisition.selection__purchase_requisition_type__line_copy__none
-msgid "Do not create RfQ lines automatically"
-msgstr "ไม่สร้างรายการ RfQ โดยอัตโนมัติ"
-
-#. modules: purchase_request, purchase_request_kmitl, purchase_requisition
-#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__done
+#. module: purchase_request
+#: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__done
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
 msgid "Done"
-msgstr "เสร็จสิ้น"
+msgstr "จัดซื้อจัดจ้างเสร็จสิ้น"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__move_dest_ids
 msgid "Downstream Moves"
 msgstr ""
 
-#. modules: purchase_request, purchase_request_kmitl, purchase_requisition
-#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__draft
-#: model:ir.model.fields.selection,name:purchase_requisition.selection__purchase_requisition__state__draft
-#: model:ir.model.fields.selection,name:purchase_requisition.selection__purchase_requisition__state_blanket_order__draft
+#. module: purchase_request
+#: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__draft
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
 msgid "Draft"
 msgstr "ฉบับร่าง"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__etc_document_ids
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
 msgid "ETC"
 msgstr "อื่นๆ"
 
@@ -905,9 +681,10 @@ msgstr "อื่นๆ"
 msgid "Employee"
 msgstr "พนักงาน"
 
-#. module: purchase_request
+#. modules: purchase_request, purchase_request_to_requisition
 #. odoo-python
 #: code:addons/purchase_request/wizard/purchase_request_line_make_purchase_order.py:0
+#: code:addons/purchase_request_to_requisition/wizard/purchase_request_line_make_purchase_requisition.py:0
 #, python-format
 msgid "Enter a positive quantity."
 msgstr ""
@@ -937,6 +714,7 @@ msgstr "อื่นๆ"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__procurement_committee__committee_type__evaluation
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
 msgid "Evaluation Committee"
 msgstr "คณะกรรมการพิจารณาผล"
 
@@ -970,6 +748,11 @@ msgstr ""
 msgid "Existing RFQ to update:"
 msgstr ""
 
+#. module: purchase_request_to_requisition
+#: model_terms:ir.ui.view,arch_db:purchase_request_to_requisition.view_purchase_request_line_make_purchase_requisition
+msgid "Existing draft purchase agreement to update:"
+msgstr ""
+
 #. module: l10n_th_gov_purchase_request
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__visible_on_expense
 #: model:ir.model.fields.selection,name:l10n_th_gov_purchase_request.selection__purchase_type__to_create__expense
@@ -981,37 +764,23 @@ msgstr ""
 msgid "Filename"
 msgstr "ชื่อไฟล์"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__message_follower_ids
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__message_follower_ids
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__message_follower_ids
 msgid "Followers"
 msgstr "ผู้ติดตาม"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__message_partner_ids
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__message_partner_ids
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__message_partner_ids
 msgid "Followers (Partners)"
 msgstr "ผู้ติดตาม (พาร์ทเนอร์)"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_purchase_request__activity_type_icon
 #: model:ir.model.fields,help:purchase_request.field_purchase_request_line__activity_type_icon
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
 msgstr "ไอคอนแบบฟอนต์ที่ยอดเยี่ยมเช่น fa-tasks"
-
-#. module: purchase_requisition
-#: model_terms:ir.actions.act_window,help:purchase_requisition.action_purchase_requisition
-msgid ""
-"For a blanket order, you can record an agreement for a specific period\n"
-"            (e.g. a year) and you order products within this agreement to benefit\n"
-"            from the negotiated prices."
-msgstr ""
-"สำหรับคำสั่งซื้อแบบ blanket order คุณสามารถบันทึกข้อตกลงในช่วงเวลาที่กำหนดได้\n"
-"(เช่น ปี) และท่านสั่งซื้อสินค้าภายในข้อตกลงนี้เพื่อรับประโยชน์\n"
-"จากราคาที่ตกลงกันไว้"
 
 #. module: purchase_request
 #. odoo-python
@@ -1022,19 +791,13 @@ msgid ""
 "request"
 msgstr ""
 
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
-msgid "Future Activities"
-msgstr "กิจกรรมในอนาคต"
-
 #. module: l10n_th_gov_purchase_request
 #: model:ir.model.fields,help:l10n_th_gov_purchase_request.field_purchase_request__substate_sequence
 msgid "Gives the sequence order when applying the default substate"
 msgstr ""
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_order_line_search_sub
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
 msgid "Group By"
 msgstr "จัดกลุ่มตาม..."
 
@@ -1044,19 +807,16 @@ msgstr "จัดกลุ่มตาม..."
 msgid "Group By..."
 msgstr "จัดกลุ่มตาม..."
 
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order__has_alternatives
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_kpis_tree_inherit_purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_tree_inherit_purchase_requisition
-msgid "Has Alternatives"
-msgstr "มีทางเลือก"
-
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__has_message
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__has_message
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__has_message
 msgid "Has Message"
 msgstr "มีข้อความ"
+
+#. module: purchase_request_to_requisition
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_requisition_line__has_purchase_request_lines
+msgid "Has Purchase Request Lines"
+msgstr ""
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_order_line_search_sub
@@ -1064,7 +824,8 @@ msgid "Hide cancelled lines"
 msgstr ""
 
 #. modules: l10n_th_gov_purchase_request, purchase_request,
-#. purchase_request_exception, purchase_request_kmitl, purchase_requisition
+#. purchase_request_exception, purchase_request_kmitl,
+#. purchase_request_to_requisition
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__id
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_method__id
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__id
@@ -1076,64 +837,36 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__id
 #: model:ir.model.fields,field_description:purchase_request_exception.field_purchase_request_exception_confirm__id
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__id
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order_group__id
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__id
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_alternative_warning__id
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__id
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__id
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_type__id
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition__id
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition_item__id
 msgid "ID"
 msgstr "รหัส"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__activity_exception_icon
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__activity_exception_icon
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__activity_exception_icon
 msgid "Icon"
 msgstr "ไอคอน"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_purchase_request__activity_exception_icon
 #: model:ir.model.fields,help:purchase_request.field_purchase_request_line__activity_exception_icon
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition__activity_exception_icon
 msgid "Icon to indicate an exception activity."
 msgstr "ไอคอนเพื่อระบุการยกเว้นกิจกรรม"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_purchase_request__message_needaction
 #: model:ir.model.fields,help:purchase_request.field_purchase_request_line__message_needaction
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition__message_needaction
 msgid "If checked, new messages require your attention."
 msgstr "ถ้าเลือก ข้อความใหม่จะต้องการความสนใจจากคุณ"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_purchase_request__message_has_error
 #: model:ir.model.fields,help:purchase_request.field_purchase_request__message_has_sms_error
 #: model:ir.model.fields,help:purchase_request.field_purchase_request_line__message_has_error
 #: model:ir.model.fields,help:purchase_request.field_purchase_request_line__message_has_sms_error
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition__message_has_error
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr "ถ้าเลือก ข้อความบางข้อความมีข้อผิดพลาดในการส่ง"
-
-#. module: purchase_requisition
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition_create_alternative__creation_blocked
-msgid ""
-"If the chosen vendor or if any of the products in the original PO have a "
-"blocking warning then we prevent creation of alternative PO. This is because"
-" normally these fields are cleared w/warning message within form view, but "
-"we cannot recreate that in this case."
-msgstr ""
-"หากผู้ขายที่เลือก หรือ หากสินค้าใดใน PO เดิม มีคำแจ้งเตือนการบล็อค "
-"เราจะป้องกันการสร้าง PO อื่นเพิ่มขึ้นมา "
-"เนื่องจากโดยปกติแล้วข้อมูลเหล่านี้จะถูกล้างพร้อมข้อความแจ้งเตือนภายในมุมมองแบบฟอร์ม"
-" แต่เราจะไม่สามารถสร้างขึ้นมาใหม่ได้ในกรณีนี้"
-
-#. module: purchase_requisition
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition_create_alternative__copy_products
-msgid ""
-"If this is checked, the product quantities of the original PO will be copied"
-msgstr "หากมีการตรวจสอบปริมาณสินค้า PO เดิมจะถูกคัดลอก"
 
 #. module: purchase_request_exception
 #: model:ir.model.fields,field_description:purchase_request_exception.field_purchase_request__ignore_exception
@@ -1148,17 +881,12 @@ msgstr "ข้อยกเว้น"
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
 msgid "In Progress"
-msgstr ""
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
-msgid "In negotiation"
-msgstr "ในการเจรจาต่อรอง"
+msgstr "อยู่ระหว่างจัดซื้อจัดจ้าง"
 
 #. module: purchase_request
 #: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__in_progress
 msgid "In progress"
-msgstr ""
+msgstr "อยู่ระหว่างจัดซื้อจัดจ้าง"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__is_current_user_requester
@@ -1170,10 +898,9 @@ msgstr "เป็นผู้ใช้ที่ร้องข้อ"
 msgid "Is Editable"
 msgstr ""
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__message_is_follower
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__message_is_follower
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__message_is_follower
 msgid "Is Follower"
 msgstr "เป็นผู้ติดตาม"
 
@@ -1182,23 +909,20 @@ msgstr "เป็นผู้ติดตาม"
 msgid "Is Name Editable"
 msgstr ""
 
-#. module: purchase_request
-#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__is_editable
+#. module: purchase_request_to_requisition
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line__is_editable
 msgid "Is editable"
 msgstr ""
 
-#. module: purchase_request
+#. modules: purchase_request, purchase_request_to_requisition
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order__item_ids
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition__item_ids
 msgid "Items"
 msgstr ""
 
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_requisition_alternative_warning_form
-msgid "Keep Alternatives"
-msgstr "เก็บทางเลือกไว้"
-
 #. modules: l10n_th_gov_purchase_request, purchase_request,
-#. purchase_request_exception, purchase_request_kmitl, purchase_requisition
+#. purchase_request_exception, purchase_request_kmitl,
+#. purchase_request_to_requisition
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee____last_update
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_method____last_update
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type____last_update
@@ -1210,17 +934,14 @@ msgstr "เก็บทางเลือกไว้"
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item____last_update
 #: model:ir.model.fields,field_description:purchase_request_exception.field_purchase_request_exception_confirm____last_update
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment____last_update
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order_group____last_update
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition____last_update
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_alternative_warning____last_update
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative____last_update
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line____last_update
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_type____last_update
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition____last_update
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition_item____last_update
 msgid "Last Modified on"
 msgstr "แก้ไขครั้งล่าสุดเมื่อ"
 
 #. modules: l10n_th_gov_purchase_request, purchase_request,
-#. purchase_request_exception, purchase_request_kmitl, purchase_requisition
+#. purchase_request_exception, purchase_request_kmitl,
+#. purchase_request_to_requisition
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__write_uid
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_method__write_uid
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__write_uid
@@ -1232,17 +953,14 @@ msgstr "แก้ไขครั้งล่าสุดเมื่อ"
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__write_uid
 #: model:ir.model.fields,field_description:purchase_request_exception.field_purchase_request_exception_confirm__write_uid
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__write_uid
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order_group__write_uid
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__write_uid
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_alternative_warning__write_uid
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__write_uid
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__write_uid
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_type__write_uid
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition__write_uid
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition_item__write_uid
 msgid "Last Updated by"
 msgstr "อัพเดทครั้งสุดท้ายโดย"
 
 #. modules: l10n_th_gov_purchase_request, purchase_request,
-#. purchase_request_exception, purchase_request_kmitl, purchase_requisition
+#. purchase_request_exception, purchase_request_kmitl,
+#. purchase_request_to_requisition
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__write_date
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_method__write_date
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__write_date
@@ -1254,40 +972,24 @@ msgstr "อัพเดทครั้งสุดท้ายโดย"
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__write_date
 #: model:ir.model.fields,field_description:purchase_request_exception.field_purchase_request_exception_confirm__write_date
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__write_date
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order_group__write_date
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__write_date
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_alternative_warning__write_date
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__write_date
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__write_date
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_type__write_date
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition__write_date
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition_item__write_date
 msgid "Last Updated on"
 msgstr "อัพเดทครั้งสุดท้ายเมื่อ"
 
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
-msgid "Late Activities"
-msgstr "กิจกรรมล่าสุด"
-
-#. modules: purchase_request, purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_type__line_copy
+#. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
 msgid "Lines"
 msgstr "รายการ"
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_form_inherit
-msgid "Link to Existing RfQ"
-msgstr "ลิงก์ไปยัง RfQ ที่มีอยู่"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__payment_type__loan
 msgid "Loan"
 msgstr "เงินยืม"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__message_main_attachment_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__message_main_attachment_id
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__message_main_attachment_id
 msgid "Main Attachment"
 msgstr "เอกสารหลักที่แนบมา"
 
@@ -1306,17 +1008,15 @@ msgstr ""
 msgid "Match existing PO lines by Scheduled Date"
 msgstr ""
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__message_has_error
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__message_has_error
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__message_has_error
 msgid "Message Delivery error"
 msgstr "เกิดข้อผิดพลาดในการส่งข้อความ"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__message_ids
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__message_ids
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__message_ids
 msgid "Messages"
 msgstr "ข้อความ"
 
@@ -1325,17 +1025,11 @@ msgstr "ข้อความ"
 msgid "Minimum Inventory Rule"
 msgstr "กฎขั้นต่ำของสินค้าคงคลัง"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__my_activity_date_deadline
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__my_activity_date_deadline
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__my_activity_date_deadline
 msgid "My Activity Deadline"
 msgstr "วันครบกำหนดกิจกรรมของฉัน"
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
-msgid "My Agreements"
-msgstr "ข้อตกลงของฉัน"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
@@ -1350,55 +1044,50 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_form_inherit
-msgid "Name, TIN, Email, or Reference"
-msgstr "ชื่อ TIN อีเมล หรือข้อมูลอ้างอิง"
-
 #. module: purchase_request
 #. odoo-python
-#: code:addons/purchase_request/models/purchase_request.py:0
-#: code:addons/purchase_request/models/purchase_request.py:0
 #: code:addons/purchase_request/models/purchase_request.py:0
 #, python-format
 msgid "New"
 msgstr ""
 
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
-msgid "New Agreements"
-msgstr "ข้อตกลงใหม่"
+#. module: purchase_request_to_requisition
+#: model_terms:ir.ui.view,arch_db:purchase_request_to_requisition.purchase_request_line_search
+msgid "New Bid"
+msgstr ""
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_line_make_purchase_order
 msgid "New PO details:"
-msgstr ""
+msgstr "ข้อมูล PO"
 
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_form
-msgid "New Quotation"
-msgstr "ใบเสนอราคาใหม่"
-
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__activity_date_deadline
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__activity_date_deadline
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__activity_date_deadline
 msgid "Next Activity Deadline"
 msgstr "วันครบกำหนดกิจกรรมถัดไป"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__activity_summary
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__activity_summary
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__activity_summary
 msgid "Next Activity Summary"
 msgstr "สรุปกิจกรรมถัดไป"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__activity_type_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__activity_type_id
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__activity_type_id
 msgid "Next Activity Type"
 msgstr "ประเภทกิจกรรมถัดไป"
+
+#. module: purchase_request_to_requisition
+#: model_terms:ir.ui.view,arch_db:purchase_request_to_requisition.purchase_request_line_search
+msgid "No Bid"
+msgstr ""
+
+#. module: purchase_request_to_requisition
+#: model_terms:ir.ui.view,arch_db:purchase_request_to_requisition.purchase_request_line_search
+msgid "No Bid has been created"
+msgstr ""
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
@@ -1421,51 +1110,29 @@ msgstr ""
 msgid "Note"
 msgstr "หมายเหตุ"
 
-#. module: purchase_requisition
-#. odoo-python
-#: code:addons/purchase_requisition/models/purchase.py:0
-#, python-format
-msgid "Nothing to clear"
-msgstr "ไม่มีอะไรให้ล้าง"
-
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__message_needaction_counter
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__message_needaction_counter
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__message_needaction_counter
 msgid "Number of Actions"
 msgstr "จํานวนการดําเนินการ"
 
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__order_count
-msgid "Number of Orders"
-msgstr "จำนวนคำสั่งซื้อ"
-
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__message_has_error_counter
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__message_has_error_counter
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__message_has_error_counter
 msgid "Number of errors"
 msgstr "จํานวนข้อผิดพลาด"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_purchase_request__message_needaction_counter
 #: model:ir.model.fields,help:purchase_request.field_purchase_request_line__message_needaction_counter
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition__message_needaction_counter
 msgid "Number of messages requiring action"
 msgstr "จำนวนข้อความที่ต้องดำเนินการ"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_purchase_request__message_has_error_counter
 #: model:ir.model.fields,help:purchase_request.field_purchase_request_line__message_has_error_counter
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition__message_has_error_counter
 msgid "Number of messages with delivery error"
 msgstr "จํานวนข้อความที่มีข้อผิดพลาดในการส่ง"
-
-#. module: purchase_requisition
-#: model:ir.model.fields.selection,name:purchase_requisition.selection__purchase_requisition__state__ongoing
-#: model:ir.model.fields.selection,name:purchase_requisition.selection__purchase_requisition__state_blanket_order__ongoing
-msgid "Ongoing"
-msgstr "ต่อเนื่อง"
 
 #. module: l10n_th_gov_purchase_request
 #. odoo-python
@@ -1480,10 +1147,10 @@ msgstr ""
 msgid "Open Quantity"
 msgstr ""
 
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order_group__order_ids
-msgid "Order"
-msgstr "คำสั่ง"
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Operation"
+msgstr "การดำเนินงาน"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_order_line_search_sub
@@ -1497,45 +1164,29 @@ msgstr ""
 msgid "Order confirmation %(po_name)s for your Request %(pr_name)s"
 msgstr ""
 
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__qty_ordered
-msgid "Ordered Quantities"
-msgstr "จำนวนที่สั่งซื้อ"
-
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__ordering_date
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
-msgid "Ordering Date"
-msgstr "วันที่สั่งซื้อ"
-
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__orderpoint_id
 msgid "Orderpoint"
 msgstr ""
-
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__origin_po_id
-msgid "Origin Po"
-msgstr "ต้นกำเนิด Po"
-
-#. module: purchase_requisition
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_order__alternative_po_ids
-msgid "Other potential purchase orders for purchasing products"
-msgstr "คำสั่งซื้อที่เป็นไปได้สำหรับการสั่งซื้อสินค้า"
 
 #. module: purchase_request_exception
 #: model:ir.actions.act_window,name:purchase_request_exception.action_purchase_request_exception_confirm
 msgid "Outstanding exceptions to manage"
 msgstr ""
 
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_alternative_warning__po_ids
-msgid "POs to Confirm"
-msgstr "POs ที่จะยืนยัน"
-
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__description
 msgid "PR Description"
+msgstr ""
+
+#. module: purchase_request_to_requisition
+#: model_terms:ir.ui.view,arch_db:purchase_request_to_requisition.view_purchase_requisition_form
+msgid "PR Lines"
+msgstr ""
+
+#. module: purchase_request_to_requisition
+#: model_terms:ir.ui.view,arch_db:purchase_request_to_requisition.view_purchase_requisition_form
+msgid "PRs"
 msgstr ""
 
 #. module: purchase_request_kmitl
@@ -1584,17 +1235,17 @@ msgstr "สำรองจ่าย"
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__procurement_committee__committee_type__price_determine
 msgid "Price Determination Committee"
-msgstr ""
+msgstr "คณะกรรมการกำหนดราคากลาง"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Price Determine Committee"
+msgstr "คณะกรรมการกำหนดราคากลาง"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__price_determine_committee_ids
 msgid "Price Determine Committees"
-msgstr ""
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisitions
-msgid "Price Unit"
-msgstr "ราคาต่อหน่วย"
+msgstr "คณะกรรมการกำหนดราคากลาง"
 
 #. modules: l10n_th_gov_purchase_request, purchase_request_kmitl
 #: model:ir.model,name:purchase_request_kmitl.model_procurement_committee
@@ -1628,11 +1279,6 @@ msgstr "วิธีการจัดซื้อจัดจ้าง"
 msgid "Procurement Methods"
 msgstr "วิธีการจัดซื้อจัดจ้าง"
 
-#. module: purchase_request_kmitl
-#: model:ir.ui.menu,name:purchase_request_kmitl.purchase_request_kmitl_root_menu
-msgid "Pruchase Request"
-msgstr "คำขอซื้อขอจ้าง"
-
 #. module: l10n_th_gov_purchase_request
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_request__procurement_type_id
 msgid "Procurement Type"
@@ -1646,15 +1292,14 @@ msgid "Procurement Types"
 msgstr "ประเภทการจัดซื้อ/จ้าง"
 
 #. modules: l10n_th_gov_purchase_request, purchase_request,
-#. purchase_requisition
+#. purchase_request_to_requisition
 #: model:ir.model,name:purchase_request.model_product_template
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__product_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__product_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_allocation__product_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__product_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__product_id
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__product_id
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__product_id
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition_item__product_id
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 msgid "Product"
 msgstr "สินค้า"
@@ -1664,49 +1309,37 @@ msgstr "สินค้า"
 msgid "Product Moves (Stock Move Line)"
 msgstr "ย้ายสินค้า ( ไลน์เคลื่อนย้ายสต๊อก )"
 
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__product_uom_id
-msgid "Product Unit of Measure"
-msgstr "หน่วยวัดสินค้า"
-
-#. module: purchase_requisition
-#: model:ir.model,name:purchase_requisition.model_product_product
-msgid "Product Variant"
-msgstr "ตัวแปรสินค้า"
-
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.report_purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisitions
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_form
 msgid "Products"
 msgstr "สินค้า"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__line_ids
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__line_ids
 msgid "Products to Purchase"
 msgstr "สินค้าที่จะซื้อ"
 
-#. modules: l10n_th_gov_purchase_request, purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order__requisition_id
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__requisition_id
+#. module: purchase_request_kmitl
+#: model:ir.ui.menu,name:purchase_request_kmitl.purchase_request_kmitl_root_menu
+msgid "Pruchase Request"
+msgstr "คำขอซื้อขอจ้าง"
+
+#. modules: l10n_th_gov_purchase_request, purchase_request_to_requisition
+#. odoo-python
+#: code:addons/purchase_request_to_requisition/wizard/purchase_request_line_make_purchase_requisition.py:0
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition__purchase_requisition_id
 #: model:ir.model.fields.selection,name:l10n_th_gov_purchase_request.selection__purchase_type__to_create__purchase_agreement
+#, python-format
 msgid "Purchase Agreement"
 msgstr "ข้อตกลงการซื้อ"
 
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_type_form
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_type_tree
-msgid "Purchase Agreement Types"
-msgstr "ประเภทข้อตกลงการซื้อ"
-
-#. module: purchase_requisition
-#: model:ir.actions.report,name:purchase_requisition.action_report_purchase_requisitions
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_form
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_tree
-msgid "Purchase Agreements"
-msgstr "การซื้อ"
+#. module: purchase_request_to_requisition
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line__requisition_lines
+#: model_terms:ir.ui.view,arch_db:purchase_request_to_requisition.purchase_request_line_form
+#: model_terms:ir.ui.view,arch_db:purchase_request_to_requisition.view_purchase_request_line_details
+msgid "Purchase Agreement Lines"
+msgstr ""
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
@@ -1718,34 +1351,28 @@ msgstr ""
 msgid "Purchase Done"
 msgstr ""
 
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order__purchase_group_id
-msgid "Purchase Group"
-msgstr "กลุ่มจัดซื้อ"
-
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_allocation__purchase_line_id
 msgid "Purchase Line"
 msgstr ""
 
-#. modules: purchase_request, purchase_requisition
-#: model:ir.model,name:purchase_requisition.model_purchase_order
+#. module: purchase_request
+#: model:ir.model,name:purchase_request.model_purchase_order
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order__purchase_order_id
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
 msgid "Purchase Order"
 msgstr "คำสั่งซื้อ"
 
-#. module: purchase_requisition
-#: model:ir.model,name:purchase_requisition.model_purchase_order_line
+#. module: purchase_request
+#: model:ir.model,name:purchase_request.model_purchase_order_line
 msgid "Purchase Order Line"
 msgstr "ไลน์คำสั่งซื้อ"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__purchase_lines
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_order_line_form2_sub
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_form
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_line_details
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_line_compare_tree
 msgid "Purchase Order Lines"
 msgstr ""
 
@@ -1759,28 +1386,20 @@ msgstr ""
 msgid "Purchase Order is confirmed"
 msgstr ""
 
-#. modules: purchase_request, purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__purchase_ids
+#. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
 msgid "Purchase Orders"
 msgstr "คำสั่งซื้อ"
 
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_search_inherit
-msgid "Purchase Orders with requisition"
-msgstr "ใบสั่งซื้อพร้อมใบเบิก"
-
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__assigned_to
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__user_id
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
 msgid "Purchase Representative"
 msgstr ""
 
 #. modules: l10n_th_gov_purchase_request, purchase_request,
-#. purchase_request_kmitl, purchase_request_substate
+#. purchase_request_kmitl, purchase_request_to_requisition
 #: model:ir.actions.report,name:purchase_request.action_report_purchase_requests
-#: model:ir.model,name:purchase_request_substate.model_purchase_request
+#: model:ir.model,name:purchase_request_to_requisition.model_purchase_request
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__request_id
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__visible_on_purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_product_product__purchase_request
@@ -1788,6 +1407,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__request_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__request_id
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_attachment__request_id
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition_item__request_id
 #: model:ir.module.category,name:purchase_request.module_category_purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.report_purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
@@ -1830,27 +1450,38 @@ msgstr ""
 msgid "Purchase Request Attachment"
 msgstr "เอกสารแนบคำขอซื้อ"
 
+#. module: purchase_request_to_requisition
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_requisition__purchase_request_count
+msgid "Purchase Request Count"
+msgstr ""
+
 #. module: purchase_request_exception
 #: model:ir.actions.act_window,name:purchase_request_exception.action_purchase_request_test_tree
 #: model:ir.ui.menu,name:purchase_request_exception.menu_purchase_request_test
 msgid "Purchase Request Exception Rules"
 msgstr ""
 
-#. modules: purchase_request, purchase_request_exception
-#: model:ir.model,name:purchase_request_exception.model_purchase_request_line
+#. modules: purchase_request, purchase_request_to_requisition
+#: model:ir.model,name:purchase_request_to_requisition.model_purchase_request_line
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_allocation__purchase_request_line_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__line_id
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition_item__line_id
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_form
 msgid "Purchase Request Line"
 msgstr "คำขอซื้อขอจ้างไลน์"
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model,name:l10n_th_gov_purchase_request.model_purchase_request_line_make_purchase_requisition
+#. module: purchase_request_to_requisition
+#: model:ir.model,name:purchase_request_to_requisition.model_purchase_request_line_make_purchase_requisition
 msgid "Purchase Request Line Make Purchase Agreement"
 msgstr ""
 
-#. module: purchase_request
-#: model:ir.model,name:purchase_request.model_purchase_request_line_make_purchase_order
+#. module: purchase_request_to_requisition
+#: model:ir.model,name:purchase_request_to_requisition.model_purchase_request_line_make_purchase_requisition_item
+msgid "Purchase Request Line Make Purchase Agreement Item"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:ir.model,name:purchase_request_kmitl.model_purchase_request_line_make_purchase_order
 msgid "Purchase Request Line Make Purchase Order"
 msgstr ""
 
@@ -1864,11 +1495,13 @@ msgstr ""
 msgid "Purchase Request Line count"
 msgstr ""
 
-#. module: purchase_request
+#. modules: purchase_request, purchase_request_to_requisition
 #. odoo-python
 #: code:addons/purchase_request/models/purchase_order.py:0
+#: code:addons/purchase_request_to_requisition/models/purchase_requisition.py:0
 #: model:ir.actions.act_window,name:purchase_request.purchase_request_line_form_action
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_order_line__purchase_request_lines
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_requisition_line__purchase_request_lines
 #: model:ir.ui.menu,name:purchase_request.menu_purchase_request_line
 #: model:ir.ui.menu,name:purchase_request.menu_purchase_request_line_act
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_order_line_form2
@@ -1931,9 +1564,11 @@ msgstr ""
 msgid "Purchase Request: Test Draft Purchase Requests Exception"
 msgstr ""
 
-#. modules: purchase_request, purchase_request_exception
+#. modules: purchase_request, purchase_request_exception,
+#. purchase_request_to_requisition
 #: model:ir.actions.act_window,name:purchase_request.action_purchase_request_line_product_tree
 #: model:ir.actions.act_window,name:purchase_request.purchase_request_form_action
+#: model:ir.actions.act_window,name:purchase_request_to_requisition.action_purchase_purchase_list
 #: model:ir.model.fields,field_description:purchase_request.field_stock_move__purchase_request_ids
 #: model:ir.model.fields,field_description:purchase_request_exception.field_exception_rule__purchase_request_ids
 #: model:ir.ui.menu,name:purchase_request.menu_purchase_request
@@ -1943,21 +1578,15 @@ msgstr ""
 msgid "Purchase Requests"
 msgstr "คำขอซื้อขอจ้าง"
 
-#. module: purchase_requisition
-#: model:ir.model,name:purchase_requisition.model_purchase_requisition
+#. module: purchase_request_to_requisition
+#: model:ir.model,name:purchase_request_to_requisition.model_purchase_requisition
 msgid "Purchase Requisition"
 msgstr "ใบเบิกซื้อ"
 
-#. module: purchase_requisition
-#: model:ir.model,name:purchase_requisition.model_purchase_requisition_line
-#: model:ir.model.fields,field_description:purchase_requisition.field_product_supplierinfo__purchase_requisition_line_id
+#. module: purchase_request_to_requisition
+#: model:ir.model,name:purchase_request_to_requisition.model_purchase_requisition_line
 msgid "Purchase Requisition Line"
 msgstr "รายการใบเบิกซื้อ"
-
-#. module: purchase_requisition
-#: model:ir.model,name:purchase_requisition.model_purchase_requisition_type
-msgid "Purchase Requisition Type"
-msgstr "ประเภทใบขอซื้อ"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__purchase_state
@@ -2042,16 +1671,8 @@ msgstr ""
 msgid "Qty In Progress"
 msgstr ""
 
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_order__is_quantity_copy
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__is_quantity_copy
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_type__quantity_copy
-msgid "Quantities"
-msgstr "ปริมาณ"
-
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__product_qty
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__product_qty
 msgid "Quantity"
 msgstr "ปริมาณ"
 
@@ -2063,6 +1684,11 @@ msgstr ""
 #. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_purchase_request_line__qty_done
 msgid "Quantity completed"
+msgstr ""
+
+#. module: purchase_request_to_requisition
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line__requisition_qty
+msgid "Quantity in a Bid"
 msgstr ""
 
 #. module: purchase_request
@@ -2085,14 +1711,19 @@ msgstr ""
 #. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_purchase_request_allocation__requested_product_uom_qty
 msgid ""
-"Quantity of the purchase request line allocated to thestock move, in the UoM"
-" of the Purchase Request Line"
+"Quantity of the purchase request line allocated to thestock move, in the "
+"UoM of the Purchase Request Line"
+msgstr ""
+
+#. module: purchase_request_to_requisition
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition_item__product_qty
+msgid "Quantity to Bid"
 msgstr ""
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__product_qty
 msgid "Quantity to purchase"
-msgstr ""
+msgstr "จำนวน"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request_attachment__attachment_type__rfq
@@ -2107,15 +1738,15 @@ msgstr "ใบเสนอราคา"
 msgid "RFQ"
 msgstr ""
 
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "RFQ Document"
+msgstr "ใบเสนอราคา"
+
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__purchased_qty
 msgid "RFQ/PO Qty"
 msgstr ""
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_form
-msgid "RFQs/Orders"
-msgstr "RFQs/คำสั่งซื้อ"
 
 #. module: l10n_th_gov_purchase_request
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_request__expense_reason
@@ -2142,34 +1773,21 @@ msgstr ""
 msgid "Receipt is done"
 msgstr ""
 
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__name
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_form_inherit
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_line_compare_tree
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_requisition_alternative_warning_form
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
-msgid "Reference"
-msgstr "การอ้างอิง"
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisitions
-msgid "Reference:"
-msgstr "อ้างอิง:"
-
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
 msgid "Reject"
 msgstr "ตีกลับ"
 
-#. modules: purchase_request, purchase_request_kmitl
-#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__rejected
+#. module: purchase_request
+#: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__rejected
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
 msgid "Rejected"
 msgstr "ถูกตีกลับ"
 
-#. module: purchase_request
+#. modules: purchase_request, purchase_request_to_requisition
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
+#: model_terms:ir.ui.view,arch_db:purchase_request_to_requisition.purchase_request_line_search
 msgid "Request"
 msgstr ""
 
@@ -2193,16 +1811,6 @@ msgstr "รหัสเอกสาร แบบขอซื้อ/จ้าง 
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
 msgid "Request approval"
 msgstr ""
-
-#. module: purchase_requisition
-#: model:ir.actions.act_window,name:purchase_requisition.action_purchase_requisition_to_so
-msgid "Request for Quotation"
-msgstr "ใบแจ้งขอใบเสนอราคา"
-
-#. module: purchase_requisition
-#: model:ir.actions.act_window,name:purchase_requisition.action_purchase_requisition_list
-msgid "Request for Quotations"
-msgstr "ขอใบเสนอราคา"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
@@ -2265,30 +1873,24 @@ msgstr "ชื่อผู้ขอ"
 msgid "Requested for Quotation"
 msgstr "ใบเสนอราคา"
 
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.report_purchaserequisitions
-msgid "Requests for Quotation Details"
-msgstr "การขอรายละเอียดใบเสนอราคา"
+#. module: purchase_request_to_requisition
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request__requisition_count
+msgid "Requisition Count"
+msgstr ""
 
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_search_inherit
-msgid "Requisition"
-msgstr "คำขอ"
+#. module: purchase_request_to_requisition
+#: model_terms:ir.ui.view,arch_db:purchase_request_to_requisition.purchase_request_line_search
+msgid "Requisition Status"
+msgstr ""
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
 msgid "Reset"
 msgstr "รีเซ็ต"
 
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_form
-msgid "Reset to Draft"
-msgstr "รีเซ็ตเป็นฉบับร่าง"
-
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__activity_user_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__activity_user_id
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__activity_user_id
 msgid "Responsible User"
 msgstr "ผู้ใช้ที่รับผิดชอบ"
 
@@ -2298,22 +1900,11 @@ msgstr "ผู้ใช้ที่รับผิดชอบ"
 msgid "Role"
 msgstr "บทบาท"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__message_has_sms_error
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__message_has_sms_error
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__message_has_sms_error
 msgid "SMS Delivery error"
 msgstr "ข้อผิดพลาดในการส่ง SMS"
-
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__schedule_date
-msgid "Scheduled Date"
-msgstr "วันที่ตามกำหนดการ"
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
-msgid "Search Purchase Agreements"
-msgstr "ค้นหาข้อตกลงการซื้อ"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_order_line_search_sub
@@ -2326,27 +1917,6 @@ msgstr ""
 msgid "Search Purchase Request"
 msgstr ""
 
-#. module: purchase_requisition
-#: model:ir.model.fields.selection,name:purchase_requisition.selection__purchase_requisition_type__exclusive__multiple
-msgid "Select multiple RFQ (non-exclusive)"
-msgstr "เลือก RFQ หลายรายการ (ไม่ผูกขาด)"
-
-#. module: purchase_requisition
-#: model:ir.model.fields.selection,name:purchase_requisition.selection__purchase_requisition_type__exclusive__exclusive
-msgid "Select only one RFQ (exclusive)"
-msgstr "เลือก RFQ เดียวเท่านั้น (ผูกขาด)"
-
-#. module: purchase_requisition
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition_type__exclusive
-msgid ""
-"Select only one RFQ (exclusive):  when a purchase order is confirmed, cancel the remaining purchase order.\n"
-"\n"
-"                    Select multiple RFQ (non-exclusive): allows multiple purchase orders. On confirmation of a purchase order it does not cancel the remaining orders"
-msgstr ""
-"เลือก RFQ รายการเดียวเท่านั้น (ผูกขาด): เมื่อมีการยืนยันใบสั่งซื้อ ให้ยกเลิกใบสั่งซื้อที่เหลือ\n"
-"\n"
-"เลือก RFQ หลายรายการ (ไม่ผูกขาด): อนุญาตให้มีใบสั่งซื้อหลายรายการ เมื่อยืนยันคำสั่งซื้อแล้ว จะไม่ยกเลิกคำสั่งซื้อที่เหลือ"
-
 #. module: l10n_th_gov_purchase_request
 #. odoo-python
 #: code:addons/l10n_th_gov_purchase_request/wizards/purchase_request_line_make_purchase_requisition.py:0
@@ -2356,12 +1926,11 @@ msgid ""
 "agreement"
 msgstr ""
 
-#. modules: l10n_th_gov_purchase_request, purchase_requisition
+#. module: l10n_th_gov_purchase_request
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_method__sequence
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__sequence
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_request__substate_sequence
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__sequence
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_type__sequence
 msgid "Sequence"
 msgstr "ลำดับ"
 
@@ -2376,18 +1945,6 @@ msgstr ""
 #, python-format
 msgid "Service confirmation for Request %s"
 msgstr ""
-
-#. module: purchase_requisition
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition_type__active
-msgid ""
-"Set active to false to hide the Purchase Agreement Types without removing "
-"it."
-msgstr "ตั้งค่าใช้งานเป็น False เพื่อซ่อนประเภทข้อตกลงการซื้อโดยไม่ต้องลบออก"
-
-#. module: purchase_requisition
-#: model:ir.model.fields.selection,name:purchase_requisition.selection__purchase_requisition_type__quantity_copy__none
-msgid "Set quantities manually"
-msgstr "กำหนดปริมาณด้วยตนเอง"
 
 #. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_purchase_request_line_make_purchase_order_item__keep_description
@@ -2408,35 +1965,14 @@ msgstr ""
 msgid "Show Details"
 msgstr ""
 
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
-msgid "Show all records which has next action date is before today"
-msgstr "แสดงระเบียนทั้งหมดที่มีวันที่ดำเนินการถัดไปคือก่อนวันนี้"
-
-#. module: purchase_requisition
-#. odoo-python
-#: code:addons/purchase_requisition/models/purchase.py:0
-#, python-format
-msgid "Some not cleared"
-msgstr "บางส่วนยังไม่ถูกล้างออก"
-
-#. module: purchase_requisition
-#. odoo-python
-#: code:addons/purchase_requisition/models/purchase.py:0
-#, python-format
-msgid ""
-"Some quantities were not cleared because their status is not a RFQ status."
-msgstr "ปริมาณบางส่วนไม่ได้รับการหักล้าง เนื่องจากสถานะไม่ใช่สถานะ RFQ"
-
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
 msgid "Source"
 msgstr ""
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__origin
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__origin
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__origin
 msgid "Source Document"
 msgstr "เอกสารต้นทาง"
 
@@ -2457,28 +1993,15 @@ msgstr ""
 msgid "Start Date"
 msgstr "วันที่เริ่ม"
 
-#. module: purchase_requisition
-#: model_terms:ir.actions.act_window,help:purchase_requisition.action_purchase_requisition
-msgid "Start a new purchase agreement"
-msgstr "เริ่มข้อตกลงการซื้อใหม่"
-
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__state_blanket_order
-msgid "State Blanket Order"
-msgstr "สถานะคำสั่งซื้อ Blanket Order"
-
-#. modules: purchase_request, purchase_request_kmitl, purchase_requisition
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__state
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_allocation__purchase_state
-#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__state
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__state
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
 msgid "Status"
 msgstr "สถานะ"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_purchase_request__activity_state
 #: model:ir.model.fields,help:purchase_request.field_purchase_request_line__activity_state
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition__activity_state
 msgid ""
 "Status based on activities\n"
 "Overdue: Due date is already passed\n"
@@ -2521,6 +2044,11 @@ msgstr "ชื่อที่เก็บไฟล์จริง"
 msgid "Sub State"
 msgstr "สถานะย่อ"
 
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Submit Approval"
+msgstr "ส่งคำขออนุมัติ"
+
 #. module: l10n_th_gov_purchase_request
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.view_purchase_request_search
 msgid "Subsate = To Verify"
@@ -2534,17 +2062,12 @@ msgstr ""
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order__supplier_id
 msgid "Supplier"
-msgstr "ซัพพลายเออร์"
+msgstr "คู่ค้า"
 
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__supplier_info_ids
-msgid "Supplier Info"
-msgstr "ข้อมูลซัพพลายเออร์"
-
-#. module: purchase_requisition
-#: model:ir.model,name:purchase_requisition.model_product_supplierinfo
-msgid "Supplier Pricelist"
-msgstr "รายการราคาซัพพลายเออร์"
+#. module: purchase_request_to_requisition
+#: model_terms:ir.ui.view,arch_db:purchase_request_to_requisition.view_purchase_request_form
+msgid "TEs"
+msgstr ""
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__tor_document_ids
@@ -2561,15 +2084,10 @@ msgstr "คณะกรรมการกำหนดคุณลักษณะ
 msgid "TOR Committees"
 msgstr "คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน"
 
-#. module: purchase_requisition
-#: model:ir.model,name:purchase_requisition.model_purchase_order_group
-msgid "Technical model to group PO for call to tenders"
-msgstr "แบบจำลองทางเทคนิค เพื่อจัดกลุ่ม PO เพื่อเรียกผู้ประมูล"
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_form
-msgid "Terms and Conditions"
-msgstr "เงื่อนไขและข้อกำหนด"
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "TOR Document"
+msgstr "ข้อกำหนดคุณลักษณะ (TOR)"
 
 #. module: purchase_request
 #. odoo-python
@@ -2578,12 +2096,6 @@ msgstr "เงื่อนไขและข้อกำหนด"
 msgid ""
 "The company of the purchase request must match with that of the location."
 msgstr ""
-
-#. module: purchase_requisition
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition__schedule_date
-msgid ""
-"The expected and scheduled delivery date where all the products are received"
-msgstr "วันจัดส่งที่คาดหวังและกำหนดไว้ว่าจะได้รับสินค้าทั้งหมด"
 
 #. module: purchase_request
 #. odoo-python
@@ -2601,6 +2113,15 @@ msgstr ""
 msgid ""
 "The following requested items from Purchase Request %(request_name)s have "
 "now been received in %(location_name)s using Picking %(picking_name)s:"
+msgstr ""
+
+#. module: purchase_request_to_requisition
+#. odoo-python
+#: code:addons/purchase_request_to_requisition/models/purchase_requisition.py:0
+#, python-format
+msgid ""
+"The following requested items from Purchase Request %(request_name)s have "
+"now being sent to Suppliers using Purchase Bid %(bid_name)s:"
 msgstr ""
 
 #. module: purchase_request
@@ -2621,50 +2142,20 @@ msgid ""
 "requested by %(requestor)s have now been received:"
 msgstr ""
 
-#. module: purchase_requisition
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition_create_alternative__origin_po_id
-msgid "The original PO that this alternative PO is being created for."
-msgstr "PO ต้นฉบับที่ PO ทางเลือกนี้ถูกสร้างขึ้นให้"
-
 #. module: purchase_request
 #. odoo-python
-#: code:addons/purchase_request/wizard/purchase_request_line_make_purchase_order.py:0
 #: code:addons/purchase_request/wizard/purchase_request_line_make_purchase_order.py:0
 #, python-format
 msgid "The purchase has already been completed."
 msgstr ""
 
-#. module: purchase_requisition
+#. module: purchase_request_kmitl
 #. odoo-python
-#: code:addons/purchase_requisition/wizard/purchase_requisition_create_alternative.py:0
+#: code:addons/purchase_request_kmitl/wizards/purchase_request_line_make_purchase_order.py:0
 #, python-format
 msgid ""
-"The vendor you have selected or at least one of the products you are copying"
-" from the original order has a blocking warning on it and cannot be selected"
-" to create an alternative."
+"The purchase request line '%s' already has a linked Purchase Order line."
 msgstr ""
-"ผู้ขายที่คุณเลือก หรือ อย่างน้อยหนึ่งสินค้า "
-"ที่คุณกำลังคัดลอกจากคำสั่งซื้อเดิมมีคำแจ้งเตือนการบล็อกอยู่และไม่สามารถเลือก"
-" สร้างทางเลือกอื่นได้"
-
-#. module: purchase_requisition
-#. odoo-python
-#: code:addons/purchase_requisition/models/purchase.py:0
-#, python-format
-msgid "There are no quantities to clear."
-msgstr "ไม่มีปริมาณที่ต้องหักล้าง"
-
-#. module: purchase_requisition
-#. odoo-python
-#: code:addons/purchase_requisition/models/purchase_requisition.py:0
-#, python-format
-msgid ""
-"There is already an open blanket order for this supplier. We suggest you "
-"complete this open blanket order, instead of creating a new one."
-msgstr ""
-"มีคำสั่งซื้อแบบ blanket order สำหรับซัพพลายเออร์รายนี้อยู่แล้ว "
-"เราขอแนะนำให้คุณดำเนินการคำสั่งซื้อแบบ blanket order นี้ให้เสร็จสิ้น "
-"แทนที่จะสร้างคำสั่งซื้อใหม่"
 
 #. module: purchase_request_kmitl
 #: model_terms:ir.actions.act_window,help:purchase_request_kmitl.action_purchase_request_attachment
@@ -2684,14 +2175,6 @@ msgid ""
 "This field will help to filter procurement method in each purchase type on "
 "the purchase request"
 msgstr ""
-
-#. module: purchase_requisition
-#. odoo-python
-#: code:addons/purchase_requisition/wizard/purchase_requisition_create_alternative.py:0
-#: code:addons/purchase_requisition/wizard/purchase_requisition_create_alternative.py:0
-#, python-format
-msgid "This is a blocking warning!\n"
-msgstr "นี่คือคำเตือนการบล็อก!\n"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
@@ -2720,21 +2203,16 @@ msgstr ""
 msgid "To Verify"
 msgstr "รอตรวจสอบงบ"
 
-#. modules: purchase_request_kmitl, purchase_request_substate
-#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__to_approve
+#. modules: purchase_request, purchase_request_substate
+#: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__to_approve
 #: model:target.state.value,name:purchase_request_substate.target_state_value_to_approve
 msgid "To be approved"
 msgstr "รอการอนุมัติ"
 
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_filter
-msgid "Today Activities"
-msgstr "กิจกรรมวันนี้"
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_line_compare_tree
-msgid "Total"
-msgstr "รวม"
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Tor Committee"
+msgstr "คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__estimated_cost
@@ -2752,10 +2230,9 @@ msgstr ""
 msgid "Type of purchase"
 msgstr ""
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_purchase_request__activity_exception_decoration
 #: model:ir.model.fields,help:purchase_request.field_purchase_request_line__activity_exception_decoration
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition__activity_exception_decoration
 msgid "Type of the exception activity on record."
 msgstr "ประเภทกิจกรรมข้อยกเว้นบนบันทึก"
 
@@ -2774,21 +2251,16 @@ msgstr ""
 msgid "Uncancelled"
 msgstr ""
 
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_line__price_unit
-msgid "Unit Price"
-msgstr "ราคาต่อหน่วย"
-
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
 msgid "Unread Messages"
 msgstr ""
 
-#. modules: purchase_request, purchase_requisition
+#. modules: purchase_request, purchase_request_to_requisition
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_allocation__product_uom_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__product_uom_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__product_uom_id
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_form
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition_item__product_uom_id
 msgid "UoM"
 msgstr "หน่วยวัด"
 
@@ -2797,38 +2269,9 @@ msgstr "หน่วยวัด"
 msgid "Upload File"
 msgstr "อัปโหลดไฟล์"
 
-#. module: purchase_requisition
-#: model:ir.model.fields.selection,name:purchase_requisition.selection__purchase_requisition_type__line_copy__copy
-msgid "Use lines of agreement"
-msgstr "ใช้รายการของข้อตกลง"
-
-#. module: purchase_requisition
-#: model:ir.model.fields.selection,name:purchase_requisition.selection__purchase_requisition_type__quantity_copy__copy
-msgid "Use quantities of agreement"
-msgstr "ใช้ปริมาณของข้อตกลง"
-
-#. modules: purchase_request_kmitl, purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_form
-msgid "Validate"
-msgstr "ตรวจสอบข้อมูล"
-
-#. module: purchase_request_kmitl
-#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_request__state__validation
-msgid "Validated"
-msgstr "ตรวจสอบแล้ว"
-
-#. module: purchase_request_kmitl
-#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__validated_by
-msgid "Validated By"
-msgstr "ตรวจสอบข้อมูลโดย"
-
-#. modules: purchase_request, purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__vendor_id
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__partner_id
+#. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_order_line_search_sub
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_order_line_tree_sub
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_order_line_compare_tree
 msgid "Vendor"
 msgstr "ผู้ขาย"
 
@@ -2858,94 +2301,42 @@ msgstr ""
 msgid "Visible On"
 msgstr ""
 
-#. module: purchase_requisition
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition_create_alternative__purchase_warn_msg
-msgid "Warning Messages"
-msgstr "ข้อความแจ้งเตือน"
-
-#. module: purchase_requisition
-#. odoo-python
-#: code:addons/purchase_requisition/wizard/purchase_requisition_create_alternative.py:0
-#, python-format
-msgid ""
-"Warning for %(partner)s:\n"
-"%(warning_message)s\n"
-msgstr ""
-"คำเตือนสำหรับ %(partner)s:\n"
-"%(warning_message)s\n"
-
-#. module: purchase_requisition
-#. odoo-python
-#: code:addons/purchase_requisition/wizard/purchase_requisition_create_alternative.py:0
-#, python-format
-msgid ""
-"Warning for %(product)s:\n"
-"%(warning_message)s\n"
-msgstr ""
-"คำเตือนสำหรับ %(product)s:\n"
-"%(warning_message)s\n"
-
-#. module: purchase_requisition
-#. odoo-python
-#: code:addons/purchase_requisition/models/purchase_requisition.py:0
-#, python-format
-msgid "Warning for %s"
-msgstr "คำเตือนสำหรับ %s"
-
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__website_message_ids
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__website_message_ids
-#: model:ir.model.fields,field_description:purchase_requisition.field_purchase_requisition__website_message_ids
 msgid "Website Messages"
 msgstr "ข้อความเว็บไซต์"
 
-#. modules: purchase_request, purchase_requisition
+#. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_purchase_request__website_message_ids
 #: model:ir.model.fields,help:purchase_request.field_purchase_request_line__website_message_ids
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_requisition__website_message_ids
 msgid "Website communication history"
 msgstr "ประวัติการสื่อสารของเว็บไซต์"
 
 #. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_purchase_request_line_make_purchase_order__sync_data_planned
 msgid ""
-"When checked, PO lines on the selected purchase order are only reused if the"
-" scheduled date matches as well."
+"When checked, PO lines on the selected purchase order are only reused if "
+"the scheduled date matches as well."
 msgstr ""
 
-#. module: purchase_requisition
-#: model:ir.model.fields,help:purchase_requisition.field_purchase_order__has_alternatives
-msgid ""
-"Whether or not this purchase order is linked to another purchase order as an"
-" alternative."
-msgstr "ใบสั่งซื้อนี้เชื่อมโยงกับใบสั่งซื้ออื่นที่เป็นทางเลือกหรือไม่"
-
-#. module: purchase_request
+#. modules: purchase_request, purchase_request_to_requisition
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__wiz_id
+#: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition_item__wiz_id
 msgid "Wizard"
 msgstr ""
 
-#. module: purchase_requisition
-#: model:ir.model,name:purchase_requisition.model_purchase_requisition_alternative_warning
-msgid "Wizard in case PO still has open alternative requests for quotation"
-msgstr ""
-"โปรแกรมช่วยสร้างในกรณีที่ PO ยังคงมีคำขออื่นที่เปิดอยู่สำหรับใบเสนอราคา"
-
-#. module: purchase_requisition
-#: model:ir.model,name:purchase_requisition.model_purchase_requisition_create_alternative
-msgid "Wizard to preset values for alternative PO"
-msgstr "โปรแกรมช่วยสร้างการตั้งค่าล่วงหน้าสำหรับใบสั่งซื้อสำรอง"
-
-#. module: l10n_th_gov_purchase_request
+#. modules: l10n_th_gov_purchase_request, purchase_request_kmitl
 #: model:ir.model.fields.selection,name:l10n_th_gov_purchase_request.selection__procurement_committee__committee_type__work_acceptance
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.view_purchase_request_form
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
 msgid "Work Acceptance Committee"
-msgstr ""
+msgstr "คณะกรรมการตรวจรับพัสดุ"
 
 #. module: l10n_th_gov_purchase_request
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_request__work_acceptance_committee_ids
 msgid "Work Acceptance Committees"
-msgstr ""
+msgstr "คณะกรรมการตรวจรับพัสดุ"
 
 #. modules: l10n_th_gov_purchase_request, purchase_request_kmitl
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__email
@@ -2986,13 +2377,6 @@ msgid ""
 "draft state."
 msgstr ""
 
-#. module: purchase_requisition
-#. odoo-python
-#: code:addons/purchase_requisition/models/purchase_requisition.py:0
-#, python-format
-msgid "You can only delete draft or cancelled requisitions."
-msgstr "คุณสามารถลบได้เฉพาะใบขอซื้อแบบร่างหรือที่ยกเลิกแล้วเท่านั้น"
-
 #. module: purchase_request
 #. odoo-python
 #: code:addons/purchase_request/models/purchase_request.py:0
@@ -3000,29 +2384,6 @@ msgstr "คุณสามารถลบได้เฉพาะใบขอซ
 msgid ""
 "You can't request an approval for a purchase request which is empty. (%s)"
 msgstr ""
-
-#. module: purchase_requisition
-#. odoo-python
-#: code:addons/purchase_requisition/models/purchase_requisition.py:0
-#, python-format
-msgid "You cannot confirm agreement '%s' because there is no product line."
-msgstr "คุณไม่สามารถยืนยันข้อตกลง '%s' ได้เนื่องจากไม่มีรายการสินค้า"
-
-#. module: purchase_requisition
-#. odoo-python
-#: code:addons/purchase_requisition/models/purchase_requisition.py:0
-#: code:addons/purchase_requisition/models/purchase_requisition.py:0
-#: code:addons/purchase_requisition/models/purchase_requisition.py:0
-#, python-format
-msgid "You cannot confirm the blanket order without price."
-msgstr "คุณไม่สามารถยืนยันคำสั่งซื้อแบบ blanket order โดยไม่มีราคาได้"
-
-#. module: purchase_requisition
-#. odoo-python
-#: code:addons/purchase_requisition/models/purchase_requisition.py:0
-#, python-format
-msgid "You cannot confirm the blanket order without quantity."
-msgstr "คุณไม่สามารถยืนยันคำสั่งซื้อแบบ blanket order โดยไม่มีจำนวนได้"
 
 #. module: purchase_request
 #. odoo-python
@@ -3040,28 +2401,13 @@ msgstr ""
 msgid "You cannot delete a purchase request which is not draft."
 msgstr ""
 
-#. module: purchase_request
+#. modules: purchase_request, purchase_request_to_requisition
 #. odoo-python
 #: code:addons/purchase_request/models/purchase_request_line.py:0
+#: code:addons/purchase_request_to_requisition/models/purchase_request.py:0
 #, python-format
 msgid "You cannot delete a record that refers to purchase lines!"
 msgstr ""
-
-#. module: purchase_request_kmitl
-#. odoo-python
-#: code:addons/purchase_request_kmitl/models/purchase_request.py:0
-#, python-format
-msgid "You do not have the rights to validate this request."
-msgstr ""
-
-#. module: purchase_requisition
-#. odoo-python
-#: code:addons/purchase_requisition/models/purchase_requisition.py:0
-#, python-format
-msgid ""
-"You have to cancel or validate every RfQ before closing the purchase "
-"requisition."
-msgstr "คุณต้องยกเลิกหรือตรวจสอบ RfQ ทุกอันก่อนที่จะปิดใบขอซื้อ"
 
 #. module: purchase_request
 #. odoo-python
@@ -3077,29 +2423,25 @@ msgstr ""
 msgid "You have to select lines from the same Picking Type."
 msgstr ""
 
-#. module: purchase_request
+#. modules: purchase_request, purchase_request_to_requisition
 #. odoo-python
 #: code:addons/purchase_request/wizard/purchase_request_line_make_purchase_order.py:0
+#: code:addons/purchase_request_to_requisition/wizard/purchase_request_line_make_purchase_requisition.py:0
 #, python-format
 msgid "You have to select lines from the same company."
+msgstr ""
+
+#. module: purchase_request_to_requisition
+#. odoo-python
+#: code:addons/purchase_request_to_requisition/wizard/purchase_request_line_make_purchase_requisition.py:0
+#, python-format
+msgid "You have to select lines from the same picking type."
 msgstr ""
 
 #. module: purchase_request_substate
 #: model:mail.template,subject:purchase_request_substate.mail_template_data_purchase_request_substate_verified
 msgid "Your purchase request ${object.name} is verified"
 msgstr ""
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.purchase_requisition_alternative_warning_form
-msgid ""
-"alternative request for quotations are still open, do you want to cancel "
-"them?"
-msgstr "คำขอใบเสนอราคาอื่นยังคงเปิดอยู่ คุณต้องการยกเลิกหรือไม่"
-
-#. module: purchase_requisition
-#: model_terms:ir.ui.view,arch_db:purchase_requisition.view_purchase_requisition_form
-msgid "e.g. PO0025"
-msgstr "เช่น PO0025"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__description
@@ -3131,50 +2473,18 @@ msgstr ""
 #. module: purchase_request_kmitl
 #: model:exception.rule,name:purchase_request_kmitl.kmitl_pr_exception_committee_3
 msgid ""
-"การจัดซื้อจัดจ้าง เกิน 100,000 บาท ต้องมี ต้องมีคณะกรรมการกำหนดราคากลาง "
-"จำนวน 3 รายชื่อ "
+"การจัดซื้อจัดจ้าง เกิน 100,000 บาท ต้องมี ต้องมีคณะกรรมการกำหนดราคากลาง จำนวน 3 รายชื่อ "
 msgstr ""
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,name:purchase_request_kmitl.kmitl_pr_exception_committee_4
 msgid ""
-"การจัดซื้อจัดจ้าง เกิน 100,000 บาท ต้องมี ต้องมีคณะกรรมการพิจารณาผล จำนวน 3 "
-"รายชื่อ "
-msgstr ""
-
-#. module: purchase_request_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "การดำเนินงาน"
-msgstr ""
-
-#. module: purchase_request_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "ข้อกำหนดคุณลักษณะ (TOR)"
+"การจัดซื้อจัดจ้าง เกิน 100,000 บาท ต้องมี ต้องมีคณะกรรมการพิจารณาผล จำนวน 3 รายชื่อ "
 msgstr ""
 
 #. module: l10n_th_gov_purchase_request
 #: model:exception.rule,name:l10n_th_gov_purchase_request.pr_exception_committee_2
 msgid "คณะกรรมการ 1 คนต้องไม่เป็นประธาน"
-msgstr ""
-
-#. module: purchase_request_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน"
-msgstr ""
-
-#. module: purchase_request_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "คณะกรรมการกำหนดราคากลาง"
-msgstr ""
-
-#. module: purchase_request_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "คณะกรรมการตรวจรับพัสดุ"
-msgstr ""
-
-#. module: purchase_request_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "คณะกรรมการพิจารณาผล"
 msgstr ""
 
 #. module: l10n_th_gov_purchase_request
@@ -3209,8 +2519,7 @@ msgstr ""
 
 #. module: l10n_th_gov_purchase_request
 #: model:exception.rule,name:l10n_th_gov_purchase_request.pr_exception_7
-msgid ""
-"จ้างออกแบบและควบคุมงานก่อสร้าง ต้องมีกรรมการจัดซื้อจัดจ้างอย่างน้อย 3 คน"
+msgid "จ้างออกแบบและควบคุมงานก่อสร้าง ต้องมีกรรมการจัดซื้อจัดจ้างอย่างน้อย 3 คน"
 msgstr ""
 
 #. module: l10n_th_gov_purchase_request
@@ -3309,24 +2618,4 @@ msgstr ""
 #. module: l10n_th_gov_purchase_request
 #: model:exception.rule,name:l10n_th_gov_purchase_request.pr_exception_1
 msgid "ระเบียบ วงเงินเล็กน้อย มูลค่าไม่เกิน 100,000 บาท"
-msgstr ""
-
-#. module: purchase_request_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "ส่งคำขออนุมัติ"
-msgstr ""
-
-#. module: purchase_request_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "อื่นๆ"
-msgstr ""
-
-#. module: purchase_request_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "เอกสารแนบ"
-msgstr ""
-
-#. module: purchase_request_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
-msgid "ใบเสนอราคา"
 msgstr ""
