@@ -9,7 +9,7 @@
     'depends': ['purchase_request_kmitl', 'budget'],
     "data": [
         "security/purchase_request.xml",
-        "views/purchase_request_views.xml"
+        "views/purchase_request_views.xml",
     ],
     'installable': True,
     'auto_install': False,

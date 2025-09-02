@@ -7,6 +7,22 @@ class PurchaseRequest(models.Model):
     _name = 'purchase.request'
     _inherit = ['purchase.request', 'budget.commitment.mixin', 'analytic.distribution.mixin']
 
+    _STATES = [
+        ("budget_validate", "Validate"),
+        ("to_approve",)
+    ]
+
+    state = fields.Selection(
+        selection_add=_STATES,
+        string="Status",
+        index=True,
+        tracking=True,
+        required=True,
+        copy=False,
+        ondelete={
+        "budget_validate": "set default",
+        }
+    )
     budget_commitment_id = fields.Many2one(
         'budget.commitment',
         string='Budget Commitment',
@@ -20,15 +36,12 @@ class PurchaseRequest(models.Model):
         domain=[('budgetable', '=', True), ('budget_type', '=', 'expense')],
         help="Budget account to be used for commitment"
     )
-    can_edit_budget = fields.Boolean(
-        compute="_compute_can_edit_budget",
-    )
 
-    @api.depends("substate_id")
-    def _compute_can_edit_budget(self):
-        for rec in self:
-            xml_id = rec.substate_id.get_external_id().get(rec.substate_id.id)
-            rec.can_edit_budget = xml_id == "l10n_th_gov_purchase_request.base_substate_to_verify"
+    def button_to_budget_validate(self):
+        self.ensure_one()
+        if self.detect_exceptions() and not self.ignore_exception:
+            return self._popup_exceptions()
+        self.write({"state": "budget_validate"})
 
     def action_check_budget(self):
         """Action to check budget availability"""
@@ -63,13 +76,6 @@ class PurchaseRequest(models.Model):
                 'sticky': False,
             }
         }
-
-    def _action_purchase_reserve(self):
-        self.ensure_one()
-        substate = self.env["base.substate"].browse(self.env.ref('l10n_th_gov_purchase_request.base_substate_verified').id)
-        self.substate_id = substate.id
-        self.verified_by = self.env.user.id
-        self.date_verified = fields.Date.context_today(self)
 
     def action_reserve_budget(self):
         """Reserve budget by creating commitment"""
@@ -107,7 +113,7 @@ class PurchaseRequest(models.Model):
                 auto_reserve=True
             )
             self.message_post(body=_("Budget reserved: %s for amount %s") % (commitment.name, amount))
-            self._action_purchase_reserve()
+            self.state = 'to_approve'
             return {
                 "type": "ir.actions.act_window",
                 "res_model": "purchase.request",
