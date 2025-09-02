@@ -26,7 +26,7 @@ class PurchaseRequest(models.Model):
         if not self.egp_project_id:
             return False
         ts = str(datetime.now().timestamp())
-        project_id = record.egp_project_id
+        project_id = self.egp_project_id
         return f"https://process.gprocurement.go.th/egp2procmainWeb/jsp/FPRO9951A_3.jsp?tor_project_id={project_id}&invite_templateType=D2&invite_announceFlag=A&invite_itemNo=0&invite_seqno=0&invite_methodId=16&intvite_docAnnounceType=D0&invite_announceId=&_={ts}"
 
     @api.depends("estimated_cost", "state")
