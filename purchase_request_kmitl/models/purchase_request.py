@@ -100,6 +100,7 @@ class PurchaseRequest(models.Model):
             if rec.state in (
                 "to_approve",
                 "approved",
+                "in_progress",
                 "rejected",
                 "done",
             ):
