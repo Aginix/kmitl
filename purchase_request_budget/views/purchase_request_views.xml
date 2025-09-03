@@ -15,24 +15,24 @@
                 <attribute name="statusbar_visible">draft,budget_validate,to_approve,approved,done,in_progress</attribute>
             </xpath>
             <xpath expr="//form/sheet/notebook" position="inside">
-                <page string="จองงบประมาณ" groups="purchase_request_budget.group_purchase_request_budget">
+                <page string="จองงบประมาณ">
                     <group>
-                        <field name="budget_account_id" groups="purchase_request_budget.group_purchase_request_budget" />
-                        <field name="activity_analytic_id" groups="purchase_request_budget.group_purchase_request_budget" />
-                        <field name="department_analytic_id" groups="purchase_request_budget.group_purchase_request_budget" />
-                        <field name="fund_analytic_id" groups="purchase_request_budget.group_purchase_request_budget" />
-                        <field name="source_analytic_id" groups="purchase_request_budget.group_purchase_request_budget" />
+                        <field name="can_edit_budget" invisible="1" />
+                        <field name="budget_account_id" attrs="{'readonly':[('can_edit_budget','=',False)]}" />
+                        <field name="activity_analytic_id" attrs="{'readonly':[('can_edit_budget','=',False)]}" />
+                        <field name="department_analytic_id" attrs="{'readonly':[('can_edit_budget','=',False)]}" />
+                        <field name="fund_analytic_id" attrs="{'readonly':[('can_edit_budget','=',False)]}" />
+                        <field name="source_analytic_id" attrs="{'readonly':[('can_edit_budget','=',False)]}" />
                     </group>
                 </page>
             </xpath>
             <xpath expr="//button[@name='button_draft']" position="before">
-                <button name="action_check_budget" type="object" attrs="{'invisible':[('state','!=','budget_validate')]}" string="Check Budget" class="oe_highlight btn-info" groups="purchase_request_budget.group_purchase_request_budget" />
-                <button name="action_reserve_budget" type="object" attrs="{'invisible':[('state','!=','budget_validate')]}" string="Reserve Budget" class="oe_highlight btn-success" groups="purchase_request_budget.group_purchase_request_budget" />
+                <button name="action_reserve_budget" type="object" attrs="{'invisible':[('state','!=','budget_validate')]}" string="Reserve Budget" class="oe_highlight btn-success" />
             </xpath>
         </field>
     </record>
 
-    <record id="view_purchase_request_tree" model="ir.ui.view">
+    <!-- <record id="view_purchase_request_tree" model="ir.ui.view">
         <field name="name">view.purchase.request.tree</field>
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_tree" />
@@ -58,5 +58,5 @@
                 <field name="department_analytic_id" icon="fa-users" enable_counters="1"/>
             </searchpanel>
         </field>
-    </record>
+    </record> -->
 </odoo>

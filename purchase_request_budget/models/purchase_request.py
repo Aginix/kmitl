@@ -36,46 +36,20 @@ class PurchaseRequest(models.Model):
         domain=[('budgetable', '=', True), ('budget_type', '=', 'expense')],
         help="Budget account to be used for commitment"
     )
+    can_edit_budget = fields.Boolean(
+        compute="_compute_can_edit_budget",
+    )
+
+    @api.depends("state")
+    def _compute_can_edit_budget(self):
+        for rec in self:
+            rec.can_edit_budget = (rec.state == 'budget_validate')
 
     def button_to_budget_validate(self):
         self.ensure_one()
         if self.detect_exceptions() and not self.ignore_exception:
             return self._popup_exceptions()
         self.write({"state": "budget_validate"})
-
-    def action_check_budget(self):
-        """Action to check budget availability"""
-        self.ensure_one()
-
-        if not all([
-            self.budget_account_id,
-            self.activity_analytic_id,
-            self.department_analytic_id,
-            self.fund_analytic_id,
-            self.source_analytic_id,
-        ]):
-            raise UserError(_("Please specify budget account and all required analytic dimensions"))
-
-        amount = sum(self.line_ids.mapped("estimated_cost"))
-
-        result = self._check_budget_availability(
-            amount=amount,
-            activity_analytic_id=self.activity_analytic_id.id,
-            department_analytic_id=self.department_analytic_id.id,
-            fund_analytic_id=self.fund_analytic_id.id,
-            source_analytic_id=self.source_analytic_id.id,
-        )
-
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': _('Budget Check'),
-                'message': result['message'],
-                'type': 'success' if result['is_sufficient'] else 'warning',
-                'sticky': False,
-            }
-        }
 
     def action_reserve_budget(self):
         """Reserve budget by creating commitment"""
@@ -148,3 +122,18 @@ class PurchaseRequest(models.Model):
                     record.message_post(body=_("Warning: Could not cancel budget commitment: %s") % str(e))
 
         return super().button_rejected()
+
+    @api.depends("state")
+    def _compute_is_editable(self):
+        for rec in self:
+            if rec.state in (
+                "budget_validate",
+                "to_approve",
+                "approved",
+                "rejected",
+                "in_progress",
+                "done",
+            ):
+                rec.is_editable = False
+            else:
+                rec.is_editable = True
