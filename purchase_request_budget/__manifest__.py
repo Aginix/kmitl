@@ -6,10 +6,9 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['purchase_request_kmitl', 'budget'],
+    'depends': ['l10n_th_gov_purchase_request', 'budget'],
     "data": [
-        "security/purchase_request.xml",
-        "views/purchase_request_views.xml"
+        "views/purchase_request_views.xml",
     ],
     'installable': True,
     'auto_install': False,

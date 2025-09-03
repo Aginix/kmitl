@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <!-- แก้สิทธิ exception rule ให้ทำการแก้ไขได้ -->
-    <function name="write" model="ir.model.data">
-        <value model="ir.model.data" search="[('module', '=', 'l10n_th_gov_purchase_request'), ('name', 'in',['pr_exception_1','pr_exception_1_1','pr_exception_2','pr_exception_2_1','pr_exception_3','pr_exception_3_1','pr_exception_4','pr_exception_5','pr_exception_5_1','pr_exception_6','pr_exception_6_1','pr_exception_7','pr_exception_7_1','pr_exception_committee_1','pr_exception_committee_2'])]" />
-        <value eval="{'noupdate': False}" />
-    </function>
-</odoo>
