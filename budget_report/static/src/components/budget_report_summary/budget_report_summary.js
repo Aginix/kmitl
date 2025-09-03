@@ -326,6 +326,7 @@ export class BudgetReportSummary extends Component {
         // Add row-specific analytic filters based on row type
         await this._addRowAnalyticFilters(domain, row);
         
+        console.log('Final move line domain:', domain, 'Row:', row);
         return domain;
     }
 
@@ -350,6 +351,7 @@ export class BudgetReportSummary extends Component {
         // Add row-specific analytic filters
         await this._addRowAnalyticFilters(domain, row);
         
+        console.log('Final commitment domain:', domain, 'Row:', row);
         return domain;
     }
 
@@ -359,12 +361,25 @@ export class BudgetReportSummary extends Component {
         if (row.type === 'activity') {
             // For activity rows, filter by activity and its children
             const activityIds = await this._getAnalyticWithChildren(row.id, 'activities');
-            domain.push(['activity_analytic_id', 'in', activityIds]);
+            console.log('Activity IDs for filtering:', activityIds, 'Row:', row);
+            
+            if (activityIds && activityIds.length > 0) {
+                // Filter out any null/false values
+                const validActivityIds = activityIds.filter(id => id);
+                if (validActivityIds.length > 0) {
+                    domain.push(['activity_analytic_id', 'in', validActivityIds]);
+                }
+            }
             
             // Also get all budget accounts under this activity
             const accountIds = await this._getBudgetAccountsForActivity(row.id);
-            if (accountIds.length > 0) {
-                domain.push(['account_id', 'in', accountIds]);
+            console.log('Account IDs for activity filtering:', accountIds);
+            
+            if (accountIds && accountIds.length > 0) {
+                const validAccountIds = accountIds.filter(id => id);
+                if (validAccountIds.length > 0) {
+                    domain.push(['account_id', 'in', validAccountIds]);
+                }
             }
         } else if (row.type === 'fund') {
             // For fund rows, need to filter by parent activity AND fund
@@ -373,15 +388,34 @@ export class BudgetReportSummary extends Component {
                     row.parent_activity_id, 
                     'activities'
                 );
-                domain.push(['activity_analytic_id', 'in', activityIds]);
+                console.log('Activity IDs for fund filtering:', activityIds);
+                
+                if (activityIds && activityIds.length > 0) {
+                    const validActivityIds = activityIds.filter(id => id);
+                    if (validActivityIds.length > 0) {
+                        domain.push(['activity_analytic_id', 'in', validActivityIds]);
+                    }
+                }
             }
             const fundIds = await this._getAnalyticWithChildren(row.id, 'funds');
-            domain.push(['fund_analytic_id', 'in', fundIds]);
+            console.log('Fund IDs for filtering:', fundIds);
+            
+            if (fundIds && fundIds.length > 0) {
+                const validFundIds = fundIds.filter(id => id);
+                if (validFundIds.length > 0) {
+                    domain.push(['fund_analytic_id', 'in', validFundIds]);
+                }
+            }
             
             // Also get all budget accounts under this fund (and parent activity if exists)
             const accountIds = await this._getBudgetAccountsForFund(row.id, row.parent_activity_id);
-            if (accountIds.length > 0) {
-                domain.push(['account_id', 'in', accountIds]);
+            console.log('Account IDs for fund filtering:', accountIds);
+            
+            if (accountIds && accountIds.length > 0) {
+                const validAccountIds = accountIds.filter(id => id);
+                if (validAccountIds.length > 0) {
+                    domain.push(['account_id', 'in', validAccountIds]);
+                }
             }
         } else if (row.type === 'account') {
             // For account rows, filter by all parent dimensions
@@ -390,18 +424,39 @@ export class BudgetReportSummary extends Component {
                     row.parent_activity_id,
                     'activities'
                 );
-                domain.push(['activity_analytic_id', 'in', activityIds]);
+                console.log('Activity IDs for account filtering:', activityIds);
+                
+                if (activityIds && activityIds.length > 0) {
+                    const validActivityIds = activityIds.filter(id => id);
+                    if (validActivityIds.length > 0) {
+                        domain.push(['activity_analytic_id', 'in', validActivityIds]);
+                    }
+                }
             }
             if (row.parent_fund_id) {
                 const fundIds = await this._getAnalyticWithChildren(
                     row.parent_fund_id,
                     'funds'
                 );
-                domain.push(['fund_analytic_id', 'in', fundIds]);
+                console.log('Fund IDs for account filtering:', fundIds);
+                
+                if (fundIds && fundIds.length > 0) {
+                    const validFundIds = fundIds.filter(id => id);
+                    if (validFundIds.length > 0) {
+                        domain.push(['fund_analytic_id', 'in', validFundIds]);
+                    }
+                }
             }
             // For budget account rows, get all child accounts too
             const accountIds = await this._getBudgetAccountWithChildren(row.id);
-            domain.push(['account_id', 'in', accountIds]);
+            console.log('Account IDs for account filtering:', accountIds);
+            
+            if (accountIds && accountIds.length > 0) {
+                const validAccountIds = accountIds.filter(id => id);
+                if (validAccountIds.length > 0) {
+                    domain.push(['account_id', 'in', validAccountIds]);
+                }
+            }
         }
     }
 
