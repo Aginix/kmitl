@@ -298,22 +298,18 @@ class BudgetTransfer(models.Model):
                 transfer.state == "draft" and transfer.user_id == user
             )
 
-            # Approve/Reject buttons - only for approvers in submitted state
-            can_approve = user.has_group("budget.group_budget_transfer_approver")
-            transfer.show_approve_button = transfer.state == "submitted" and can_approve
-            transfer.show_reject_button = transfer.state == "submitted" and can_approve
+            # Approve/Reject buttons - available for all users in submitted state
+            transfer.show_approve_button = transfer.state == "submitted"
+            transfer.show_reject_button = transfer.state == "submitted"
 
-            # Post button - only for managers in approved state
-            can_manage = user.has_group("budget.group_budget_transfer_manager")
-            transfer.show_post_button = transfer.state == "approved" and can_manage
+            # Post button - available for all users in approved state
+            transfer.show_post_button = transfer.state == "approved"
 
             # Cancel button - available in draft/submitted states
-            transfer.show_cancel_button = transfer.state in ("draft", "submitted") and (
-                transfer.user_id == user or can_approve or can_manage
-            )
+            transfer.show_cancel_button = transfer.state in ("draft", "submitted")
 
-            # Reset button - available for managers in non-draft states
-            transfer.show_reset_button = transfer.state != "draft" and can_manage
+            # Reset button - available for all users in non-draft states
+            transfer.show_reset_button = transfer.state != "draft"
 
     @api.depends("line_ids.amount")
     def _compute_amount(self):
@@ -504,9 +500,6 @@ class BudgetTransfer(models.Model):
 
     def action_approve(self):
         """Approve the transfer"""
-        if not self.env.user.has_group("budget.group_budget_transfer_approver"):
-            raise UserError(_("You don't have permission to approve budget transfers"))
-
         # Final validation before approval
         self._validate_budget_availability()
 
@@ -525,17 +518,11 @@ class BudgetTransfer(models.Model):
 
     def action_reject(self):
         """Reject the transfer with reason"""
-        if not self.env.user.has_group("budget.group_budget_transfer_approver"):
-            raise UserError(_("You don't have permission to reject budget transfers"))
-
         # Open wizard for rejection reason
         return self._open_rejection_wizard()
 
     def action_post(self):
         """Post the transfer and create budget moves"""
-        if not self.env.user.has_group("budget.group_budget_transfer_manager"):
-            raise UserError(_("You don't have permission to post budget transfers"))
-
         # Final validation before posting
         self._validate_budget_availability()
 
@@ -560,9 +547,6 @@ class BudgetTransfer(models.Model):
 
     def action_reset_to_draft(self):
         """Reset transfer to draft state"""
-        if not self.env.user.has_group("budget.group_budget_transfer_manager"):
-            raise UserError(_("You don't have permission to reset budget transfers"))
-
         # Remove any generated budget moves if not posted
         if self.state != "posted":
             self.budget_move_ids.unlink()
@@ -736,35 +720,26 @@ class BudgetTransfer(models.Model):
     # Notification Methods
     def _notify_approvers(self):
         """Send notification to budget transfer approvers"""
-        approvers = self.env["res.users"].search(
-            [
-                (
-                    "groups_id",
-                    "in",
-                    self.env.ref("budget.group_budget_transfer_approver").ids,
-                )
-            ]
-        )
-
-        if approvers:
-            # Send email using template
-            template = self.env.ref("budget.email_template_budget_transfer_submitted")
-            if template:
-                for approver in approvers:
-                    template.with_context(lang=approver.lang).send_mail(
+        # Send email using template to all users
+        template = self.env.ref("budget.email_template_budget_transfer_submitted")
+        if template:
+            # Get all active users as potential approvers
+            users = self.env["res.users"].search([("active", "=", True)])
+            for user in users:
+                if user.email:
+                    template.with_context(lang=user.lang).send_mail(
                         self.id,
-                        email_values={"email_to": approver.email},
+                        email_values={"email_to": user.email},
                         force_send=True,
                     )
 
-            # Also post in chatter
-            self.message_post(
-                body=_("Budget transfer submitted for approval by {}").format(
-                    self.user_id.name
-                ),
-                partner_ids=approvers.partner_id.ids,
-                message_type="notification",
-            )
+        # Also post in chatter
+        self.message_post(
+            body=_("Budget transfer submitted for approval by {}").format(
+                self.user_id.name
+            ),
+            message_type="notification",
+        )
 
     def _notify_approval(self):
         """Send approval notification to requestor"""

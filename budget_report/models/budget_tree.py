@@ -39,10 +39,8 @@ class BudgetNode:
             total += record.appropriation()
         for line in self.lines:
             if line["model"] == "budget.move.line":
-                # Use debit for appropriation (money received)
-                # Only count appropriation type moves
-                if line.get("move_type") == "appropriation":
-                    total += line["debit"] if line.get("debit") else 0
+                if line.get("move_type") in ["appropriation", "entry"]:
+                    total += line["balance"]
         return total
 
     def commitment(self):
@@ -210,7 +208,7 @@ class BudgetTree:
             (record.id, self._prepare_line(record, model="budget.move.line"))
             for record in self.move_lines
         )
-        
+
         # Prepare commitment lines
         commitment_line_map = dict(
             (record.id, self._prepare_line(record, model="budget.commitment"))
@@ -221,13 +219,13 @@ class BudgetTree:
         if len(dimensions) == 1:
             dim = dimensions[0]
             mapped = self._build_tree(dim)
-            
+
             # Add move lines
             for move_line in self.move_lines:
                 node_id = get_dimension_id(move_line, dim)
                 if node_id and node_id in mapped:
                     mapped[node_id].add_line(move_line_map[move_line.id])
-            
+
             # Add commitment lines
             for commitment_line in self.commitment_lines:
                 node_id = get_dimension_id(commitment_line, dim)
@@ -243,14 +241,14 @@ class BudgetTree:
 
     def _build_multi_dimension_chain(self, dimensions, get_dimension_id, move_line_map, commitment_line_map):
         """สร้าง hierarchical tree ที่ถูกต้องสำหรับ multi-dimensions"""
-        
+
         # สร้าง tree สำหรับ dimension แรก (root level)
         root_dim = dimensions[0]
         root_nodes = self._build_tree(root_dim)
-        
+
         # Cache สำหรับเก็บ unique node combinations
         node_cache = {}
-        
+
         # Helper function to create dimension data map
         dimension_data = {
             'account': self.accounts,
@@ -259,7 +257,7 @@ class BudgetTree:
             'source': self.sources,
             'department': self.departments
         }
-        
+
         # Process move lines
         for move_line in self.move_lines:
             self._add_line_to_tree(
@@ -271,7 +269,7 @@ class BudgetTree:
                 dimension_data,
                 move_line_map[move_line.id]
             )
-        
+
         # Process commitment lines
         for commitment_line in self.commitment_lines:
             self._add_line_to_tree(
@@ -283,24 +281,24 @@ class BudgetTree:
                 dimension_data,
                 commitment_line_map[commitment_line.id]
             )
-        
+
         return [n for n in root_nodes.values() if n.value["parent_id"] is False]
 
-    def _add_line_to_tree(self, line, dimensions, get_dimension_id, root_nodes, 
+    def _add_line_to_tree(self, line, dimensions, get_dimension_id, root_nodes,
                           node_cache, dimension_data, line_data):
         """Add a line to the appropriate node in the tree"""
-        
+
         parent_node = None
         path_key = ""
-        
+
         for i, dim in enumerate(dimensions):
             dim_id = get_dimension_id(line, dim)
             if not dim_id:
                 return  # Skip if dimension ID is missing
-            
+
             # Build unique path key for this node
             path_key = f"{path_key}/{dim}:{dim_id}" if path_key else f"{dim}:{dim_id}"
-            
+
             # Check if this node combination already exists
             if path_key not in node_cache:
                 if i == 0:
@@ -316,14 +314,14 @@ class BudgetTree:
                         if record.id == dim_id:
                             original_data = record
                             break
-                    
+
                     if not original_data:
                         continue
-                    
+
                     # Create new node
                     new_node = self._prepare_node(original_data, node_type=dim)
                     node_cache[path_key] = new_node
-                    
+
                     # Add as child of parent
                     if parent_node:
                         # Check if this node already exists as child
@@ -332,14 +330,14 @@ class BudgetTree:
                             if child.value["id"] == new_node.value["id"] and child.node_type == dim:
                                 existing_child = child
                                 break
-                        
+
                         if existing_child:
                             node_cache[path_key] = existing_child
                         else:
                             parent_node.add_child(new_node)
-            
+
             parent_node = node_cache.get(path_key)
-            
+
             # Add line to the last dimension node
             if i == len(dimensions) - 1 and parent_node:
                 parent_node.add_line(line_data)
