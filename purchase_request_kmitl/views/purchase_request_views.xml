@@ -68,6 +68,7 @@
             <xpath expr="//button[@name='button_approved']" position="attributes">
                 <attribute name="attrs">{'invisible': [('state', '!=', 'to_approve')]}</attribute>
                 <attribute name="groups">purchase_request.group_purchase_request_manager</attribute>
+                <attribute name="class">btn-primary o_button_approved</attribute>
             </xpath>
             <xpath expr="//button[@name='button_rejected']" position="attributes">
                 <attribute name="states"></attribute>
