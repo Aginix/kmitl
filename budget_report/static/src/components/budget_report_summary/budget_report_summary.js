@@ -355,106 +355,44 @@ export class BudgetReportSummary extends Component {
         return domain;
     }
 
-    // Add analytic filters based on row context
+    // Add analytic filters based on row context using code-based filtering
     async _addRowAnalyticFilters(domain, row) {
-        // Determine which dimension we're filtering on based on row type
+        console.log('Adding analytic filters for row:', row);
+        
+        // Use code-based filtering with ilike for simpler and more reliable filtering
         if (row.type === 'activity') {
-            // For activity rows, filter by activity and its children
-            const activityIds = await this._getAnalyticWithChildren(row.id, 'activities');
-            console.log('Activity IDs for filtering:', activityIds, 'Row:', row);
-            
-            if (activityIds && activityIds.length > 0) {
-                // Filter out any null/false values
-                const validActivityIds = activityIds.filter(id => id);
-                if (validActivityIds.length > 0) {
-                    domain.push(['activity_analytic_id', 'in', validActivityIds]);
-                }
-            }
-            
-            // Also get all budget accounts under this activity
-            const accountIds = await this._getBudgetAccountsForActivity(row.id);
-            console.log('Account IDs for activity filtering:', accountIds);
-            
-            if (accountIds && accountIds.length > 0) {
-                const validAccountIds = accountIds.filter(id => id);
-                if (validAccountIds.length > 0) {
-                    domain.push(['account_id', 'in', validAccountIds]);
-                }
+            // For activity rows, filter by activity code and its children using prefix
+            if (row.code) {
+                // Use analytic account code prefix matching
+                await this._addAnalyticCodeFilter(domain, 'activity_analytic_id', row.code);
+                
+                // Also get budget accounts that start with this activity code
+                await this._addBudgetAccountCodeFilter(domain, row.code);
             }
         } else if (row.type === 'fund') {
-            // For fund rows, need to filter by parent activity AND fund
-            if (row.parent_activity_id) {
-                const activityIds = await this._getAnalyticWithChildren(
-                    row.parent_activity_id, 
-                    'activities'
-                );
-                console.log('Activity IDs for fund filtering:', activityIds);
+            // For fund rows, filter by fund code and parent activity if exists
+            if (row.parent_activity_code) {
+                await this._addAnalyticCodeFilter(domain, 'activity_analytic_id', row.parent_activity_code);
+            }
+            if (row.code) {
+                await this._addAnalyticCodeFilter(domain, 'fund_analytic_id', row.code);
                 
-                if (activityIds && activityIds.length > 0) {
-                    const validActivityIds = activityIds.filter(id => id);
-                    if (validActivityIds.length > 0) {
-                        domain.push(['activity_analytic_id', 'in', validActivityIds]);
-                    }
-                }
-            }
-            const fundIds = await this._getAnalyticWithChildren(row.id, 'funds');
-            console.log('Fund IDs for filtering:', fundIds);
-            
-            if (fundIds && fundIds.length > 0) {
-                const validFundIds = fundIds.filter(id => id);
-                if (validFundIds.length > 0) {
-                    domain.push(['fund_analytic_id', 'in', validFundIds]);
-                }
-            }
-            
-            // Also get all budget accounts under this fund (and parent activity if exists)
-            const accountIds = await this._getBudgetAccountsForFund(row.id, row.parent_activity_id);
-            console.log('Account IDs for fund filtering:', accountIds);
-            
-            if (accountIds && accountIds.length > 0) {
-                const validAccountIds = accountIds.filter(id => id);
-                if (validAccountIds.length > 0) {
-                    domain.push(['account_id', 'in', validAccountIds]);
-                }
+                // Also get budget accounts for this fund
+                await this._addBudgetAccountCodeFilter(domain, row.code, row.parent_activity_code);
             }
         } else if (row.type === 'account') {
-            // For account rows, filter by all parent dimensions
-            if (row.parent_activity_id) {
-                const activityIds = await this._getAnalyticWithChildren(
-                    row.parent_activity_id,
-                    'activities'
-                );
-                console.log('Activity IDs for account filtering:', activityIds);
-                
-                if (activityIds && activityIds.length > 0) {
-                    const validActivityIds = activityIds.filter(id => id);
-                    if (validActivityIds.length > 0) {
-                        domain.push(['activity_analytic_id', 'in', validActivityIds]);
-                    }
-                }
+            // For account rows, filter by parent analytic codes and account code
+            if (row.parent_activity_code) {
+                await this._addAnalyticCodeFilter(domain, 'activity_analytic_id', row.parent_activity_code);
             }
-            if (row.parent_fund_id) {
-                const fundIds = await this._getAnalyticWithChildren(
-                    row.parent_fund_id,
-                    'funds'
-                );
-                console.log('Fund IDs for account filtering:', fundIds);
-                
-                if (fundIds && fundIds.length > 0) {
-                    const validFundIds = fundIds.filter(id => id);
-                    if (validFundIds.length > 0) {
-                        domain.push(['fund_analytic_id', 'in', validFundIds]);
-                    }
-                }
+            if (row.parent_fund_code) {
+                await this._addAnalyticCodeFilter(domain, 'fund_analytic_id', row.parent_fund_code);
             }
-            // For budget account rows, get all child accounts too
-            const accountIds = await this._getBudgetAccountWithChildren(row.id);
-            console.log('Account IDs for account filtering:', accountIds);
-            
-            if (accountIds && accountIds.length > 0) {
-                const validAccountIds = accountIds.filter(id => id);
-                if (validAccountIds.length > 0) {
-                    domain.push(['account_id', 'in', validAccountIds]);
+            if (row.code) {
+                // Filter budget accounts by code prefix
+                const accountIds = await this._getBudgetAccountsByCode(row.code);
+                if (accountIds && accountIds.length > 0) {
+                    domain.push(['account_id', 'in', accountIds]);
                 }
             }
         }
@@ -517,6 +455,57 @@ export class BudgetReportSummary extends Component {
         } catch (error) {
             console.warn("Failed to get budget accounts for fund:", error);
             return [];
+        }
+    }
+
+    // Add analytic filter using code prefix matching
+    async _addAnalyticCodeFilter(domain, field_name, code) {
+        try {
+            const analyticIds = await this.orm.call(
+                "budget.report.summary", 
+                "get_analytic_ids_by_code_prefix", 
+                [code, field_name]
+            );
+            console.log(`${field_name} IDs for code ${code}:`, analyticIds);
+            
+            if (analyticIds && analyticIds.length > 0) {
+                domain.push([field_name, 'in', analyticIds]);
+            }
+        } catch (error) {
+            console.warn(`Failed to get analytic IDs for ${field_name} with code ${code}:`, error);
+        }
+    }
+
+    // Add budget account filter using code prefix
+    async _addBudgetAccountCodeFilter(domain, code, parentCode = null) {
+        try {
+            const accountIds = await this.orm.call(
+                "budget.report.summary", 
+                "get_budget_account_ids_by_code_prefix", 
+                [code, parentCode]
+            );
+            console.log(`Account IDs for code ${code}:`, accountIds);
+            
+            if (accountIds && accountIds.length > 0) {
+                domain.push(['account_id', 'in', accountIds]);
+            }
+        } catch (error) {
+            console.warn(`Failed to get account IDs for code ${code}:`, error);
+        }
+    }
+
+    // Get budget account IDs by code prefix
+    async _getBudgetAccountsByCode(code) {
+        try {
+            const accountIds = await this.orm.call(
+                "budget.report.summary", 
+                "get_budget_account_ids_by_code_prefix", 
+                [code]
+            );
+            return accountIds;
+        } catch (error) {
+            console.warn(`Failed to get budget accounts by code ${code}:`, error);
+            return []; 
         }
     }
 

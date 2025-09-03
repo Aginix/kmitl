@@ -173,24 +173,29 @@ class BudgetReportSummary(models.AbstractModel):
             if node.node_type == "activity":
                 parent_contexts["activity"] = {
                     "id": node.value["id"],
+                    "code": node.value.get("code", ""),
                     "path": node.value.get("parent_path", ""),
                 }
             elif node.node_type == "fund":
                 parent_contexts["fund"] = {
                     "id": node.value["id"],
+                    "code": node.value.get("code", ""),
                     "path": node.value.get("parent_path", ""),
                 }
                 # Include parent activity context
                 if "activity" in parent_contexts:
                     row_data["parent_activity_id"] = parent_contexts["activity"]["id"]
+                    row_data["parent_activity_code"] = parent_contexts["activity"]["code"]
                     row_data["parent_activity_path"] = parent_contexts["activity"]["path"]
             elif node.node_type == "account":
                 # Include all parent contexts
                 if "activity" in parent_contexts:
                     row_data["parent_activity_id"] = parent_contexts["activity"]["id"]
+                    row_data["parent_activity_code"] = parent_contexts["activity"]["code"]
                     row_data["parent_activity_path"] = parent_contexts["activity"]["path"]
                 if "fund" in parent_contexts:
                     row_data["parent_fund_id"] = parent_contexts["fund"]["id"]
+                    row_data["parent_fund_code"] = parent_contexts["fund"]["code"]
                     row_data["parent_fund_path"] = parent_contexts["fund"]["path"]
             
             # Add to parent tracking
@@ -392,3 +397,41 @@ class BudgetReportSummary(models.AbstractModel):
         account_ids.update(commitments.mapped('account_id').ids)
         
         return list(account_ids)
+
+    @api.model
+    def get_analytic_ids_by_code_prefix(self, code_prefix, field_name):
+        """Get analytic account IDs that start with the given code prefix"""
+        # Map field names to dimensions
+        dimension_map = {
+            'activity_analytic_id': 'activities',
+            'fund_analytic_id': 'funds', 
+            'source_analytic_id': 'sources',
+            'department_analytic_id': 'departments',
+        }
+        
+        dimension = dimension_map.get(field_name)
+        if not dimension:
+            _logger.warning(f"Unknown analytic field: {field_name}")
+            return []
+        
+        # Search analytic accounts by code prefix
+        analytics = self.env["account.analytic.account"].search([
+            ("root_plan_id.code", "=", dimension),
+            ("code", "=ilike", f"{code_prefix}%"),
+        ])
+        
+        _logger.info(f"Found {len(analytics)} analytic accounts for {field_name} with code prefix {code_prefix}")
+        return analytics.ids
+
+    @api.model 
+    def get_budget_account_ids_by_code_prefix(self, code_prefix, parent_code_prefix=None):
+        """Get budget account IDs that start with the given code prefix"""
+        domain = [("code", "=ilike", f"{code_prefix}%")]
+        
+        # If parent code is provided, also filter by parent context
+        # This can be used for more specific filtering if needed
+        
+        accounts = self.env["budget.account"].search(domain)
+        
+        _logger.info(f"Found {len(accounts)} budget accounts with code prefix {code_prefix}")
+        return accounts.ids
