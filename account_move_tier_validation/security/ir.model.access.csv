@@ -1,5 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_tier_definition_account_move_validator,tier.definition.account.move.validator,base_tier_validation.model_tier_definition,group_account_move_validator,1,0,0,0
-access_tier_definition_account_move_approver,tier.definition.account.move.approver,base_tier_validation.model_tier_definition,group_account_move_approver,1,1,1,1
-access_tier_review_account_move_validator,tier.review.account.move.validator,base_tier_validation.model_tier_review,group_account_move_validator,1,1,1,0
-access_tier_review_account_move_approver,tier.review.account.move.approver,base_tier_validation.model_tier_review,group_account_move_approver,1,1,1,0
