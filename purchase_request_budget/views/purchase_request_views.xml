@@ -32,12 +32,12 @@
         </field>
     </record>
 
-    <!-- <record id="view_purchase_request_tree" model="ir.ui.view">
+    <record id="view_purchase_request_tree" model="ir.ui.view">
         <field name="name">view.purchase.request.tree</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request.view_purchase_request_tree" />
+        <field name="inherit_id" ref="l10n_th_gov_purchase_request.view_purchase_request_tree" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='payment_type']" position="after">
+            <xpath expr="//field[@name='state']" position="after">
                 <field name="department_analytic_id" optional="show"/>
                 <field name="source_analytic_id" optional="show"/>
                 <field name="activity_analytic_id" optional="hide"/>
@@ -52,11 +52,13 @@
         <field name="priority">30</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_search" />
         <field name="arch" type="xml">
-            <searchpanel position="inside">
-                <field name="procurement_method_id" icon="fa-money" enable_counters="1"/>
-                <field name="source_analytic_id" icon="fa-money" enable_counters="1"/>
-                <field name="department_analytic_id" icon="fa-users" enable_counters="1"/>
-            </searchpanel>
+            <field name="state" position="after">
+                <searchpanel>
+                    <field name="procurement_method_id" icon="fa-money" enable_counters="1"/>
+                    <field name="source_analytic_id" icon="fa-money" enable_counters="1"/>
+                    <field name="department_analytic_id" icon="fa-users" enable_counters="1"/>
+                </searchpanel>
+            </field>
         </field>
-    </record> -->
+    </record>
 </odoo>

@@ -82,7 +82,7 @@ class PurchaseRequest(models.Model):
                 fund_analytic_id=self.fund_analytic_id.id,
                 source_analytic_id=self.source_analytic_id.id,
                 ref=self.name,
-                description=f"Purchase Request: {self.name}\\nVendor: {self.title}",
+                description=f"Purchase Request: {self.name}",
                 date=self.date_start,
                 auto_reserve=True
             )
