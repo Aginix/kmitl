@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="purchase_request_egp.view_purchase_request_form"/>
         <field name="arch" type="xml">
             <xpath expr="//page[@name='egp_page']" position="attributes">
-                <attribute name="attrs">{'invisible': [('is_egp', '=', False), ('state', 'not in', ('approved', 'in_progress', 'done'))]}</attribute>
+                <attribute name="attrs">{'invisible': ['|', ('is_egp', '=', False), ('state', 'not in', ('approved', 'in_progress', 'done'))]}</attribute>
             </xpath>
         </field>
     </record>
