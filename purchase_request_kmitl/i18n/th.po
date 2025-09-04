@@ -508,6 +508,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:purchase_request.action_purchase_request_line_make_purchase_order
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_line_make_purchase_order
+#, fuzzy
 msgid "Create RFQ"
 msgstr "สร้างใบจัดซื้อจัดจ้าง"
 
