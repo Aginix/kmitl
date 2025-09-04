@@ -10,7 +10,6 @@
     "data": [
         "data/purchase_request_exception.xml",
         "data/purchase_request_rules.xml",
-        "security/ir.model.access.csv",
         "views/purchase_request_views.xml",
         "wizards/purchase_request_line_make_purchase_order_views.xml",
     ],
