@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class PurchaseRequest(models.Model):
@@ -23,7 +24,8 @@ class PurchaseRequest(models.Model):
 
     def action_set_egp_waiting(self):
         for rec in self:
-            rec.egp_status = "waiting"
+            if rec.is_egp:
+                rec.egp_status = "in_progress"
 
     @api.depends_context("uid")
     def _compute_can_edit_egp(self):
@@ -41,8 +43,16 @@ class PurchaseRequest(models.Model):
         res = super().write(vals)
         for rec in self:
             if 'state' in vals:
-                if rec.state == "in_progress":
-                    rec.egp_status = "in_progress"
-                if rec.state == "done":
+                if rec.is_egp and rec.state == "approved":
+                    rec.egp_status = "waiting"
+                if rec.is_egp and rec.state == "done":
                     rec.egp_status = "done"
         return res
+
+    def action_create_rfq(self):
+        for rec in self:
+            if not rec.egp_project_id and rec.is_egp:
+                raise UserError("ไม่สามารถสร้าง PO ได้ เพราะไม่ใช่ e-GP เลขที่โครงการ")
+
+        action = self.env.ref("purchase_request.action_purchase_request_line_make_purchase_order").read()[0]
+        return action

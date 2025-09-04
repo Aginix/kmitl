@@ -13,10 +13,14 @@
                 <attribute name="attrs">{'invisible': ['|', ('is_egp', '=', False), ('state', 'not in', ('approved', 'in_progress', 'done'))]}</attribute>
             </xpath>
             <xpath expr="//field[@name='egp_project_id']" position="attributes">
-                <attribute name="attrs">{'readonly': ['|', ('can_edit_egp', '=', False), ('egp_status', '!=', False)]}</attribute>
+                <attribute name="attrs">{'readonly': ['|', ('can_edit_egp', '=', False), ('egp_status', '!=', 'waiting')]}</attribute>
             </xpath>
             <xpath expr="//button[@name='button_done']" position="after">
-                <button name="action_set_egp_waiting" type="object" string="อยู่ในกระบวนการ e-GP" attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('egp_status', '=', 'waiting')]}" class="btn-primary"/>
+                <button name="action_set_egp_waiting" type="object" string="อยู่ในกระบวนการ e-GP" attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('egp_status', '!=', 'waiting')]}" class="btn-primary"/>
+            </xpath>
+            <xpath expr="//button[@type='action']" position="attributes">
+                <attribute name="name">action_create_rfq</attribute>
+                <attribute name="type">object</attribute>
             </xpath>
         </field>
     </record>
