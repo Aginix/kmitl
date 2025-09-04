@@ -27,23 +27,11 @@ class PurchaseRequest(models.Model):
         domain=[("committee_type", "=", "evaluation")],
         copy=True,
     )
-    tor_document_ids = fields.One2many(
+    attachment_ids = fields.One2many(
         comodel_name="purchase.request.attachment",
         inverse_name="request_id",
-        string="TOR",
-        domain=[("attachment_type", "=", "tor")],
-    )
-    rfq_attachment_ids = fields.One2many(
-        comodel_name="purchase.request.attachment",
-        inverse_name="request_id",
-        string="RFQ",
-        domain=[("attachment_type", "=", "rfq")],
-    )
-    etc_document_ids = fields.One2many(
-        comodel_name="purchase.request.attachment",
-        inverse_name="request_id",
-        string="ETC",
-        domain=[("attachment_type", "=", "etc")],
+        string="Attachments",
+        copy=True,
     )
     title = fields.Char(
         string="title",

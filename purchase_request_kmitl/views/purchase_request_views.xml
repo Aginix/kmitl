@@ -51,6 +51,9 @@
             <xpath expr="//button[@name='action_show_details']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//button[@name='action_view_purchase_request_line']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
             <xpath expr="//button[@name='button_in_progress']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
@@ -113,6 +116,9 @@
             <xpath expr="//field[@name='date_required']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//field[@name='line_ids']//tree" position="attributes">
+                <attribute name="no_open">1</attribute>
+            </xpath>
             <xpath expr="//page[@name='committee']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
@@ -171,14 +177,13 @@
                     </field>
                 </page>
                 <page name="document" string="Attachment">
-                    <separator string="TOR Document" />
-                    <field name="tor_document_ids" attrs="{'readonly': [('is_editable','=', False)]}" context="{'default_attachment_type': 'tor'}">
-                    </field>
-                    <separator string="RFQ Document" />
-                    <field name="rfq_attachment_ids" attrs="{'readonly': [('is_editable','=', False)]}" context="{'default_attachment_type': 'rfq'}">
-                    </field>
-                    <separator string="ETC" />
-                    <field name="etc_document_ids" attrs="{'readonly': [('is_editable','=', False)]}" context="{'default_attachment_type': 'etc'}">
+                    <field name="attachment_ids" attrs="{'readonly': [('is_editable','=', False)]}">
+                        <tree editable="bottom">
+                            <field name="attachment_type" required="1"/>
+                            <field name="file_name"/>
+                            <field name="upload_file" filename="file_name" required="1"/>
+                            <field name="description"/>
+                        </tree>
                     </field>
                 </page>
                 <page name="logs" string="Operation">

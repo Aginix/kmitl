@@ -4,6 +4,7 @@ from odoo import api, fields, models
 class PurchaseRequestAttachment(models.Model):
     _name = "purchase.request.attachment"
     _description = "Purchase Request Attachment"
+    _order = "attachment_type, id"
 
     request_id = fields.Many2one("purchase.request", string="Purchase Request")
     attachment_type = fields.Selection(
@@ -12,7 +13,6 @@ class PurchaseRequestAttachment(models.Model):
             ("rfq", "Quotation"),
             ("etc", "Etc"),
         ],
-        default="tor",
     )
     upload_file = fields.Binary(string="Upload File", attachment=False)
     file_name = fields.Char(string="Filename")
