@@ -60,10 +60,6 @@ class PurchaseRequest(models.Model):
         store=True,
         readonly=True,
     )
-    date_validated = fields.Date(
-        string="validate Date",
-        copy=False,
-    )
 
     @api.depends('requested_by')
     def _compute_is_current_user_requester(self):
