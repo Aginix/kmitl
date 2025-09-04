@@ -250,10 +250,16 @@ class PurchaseGuarantee(models.Model):
             )
 
     @api.model
-    def create(self, vals):
-        if vals.get("name", "/") == "/":
-            vals["name"] = self.env["ir.sequence"].next_by_code("purchase.guarantee")
-        return super().create(vals)
+    def create(self, vals_list):
+        if isinstance(vals_list, dict):
+            vals_list = [vals_list]
+
+        for vals in vals_list:
+            if vals.get("name", "/") == "/":
+                vals["name"] = self.env["ir.sequence"].next_by_code("purchase.guarantee")
+
+        records = super().create(vals_list)
+        return records
 
     def name_get(self):
         result = []
