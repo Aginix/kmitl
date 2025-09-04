@@ -15,7 +15,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
             line = item.line_id
             if line.purchase_lines:
                 raise UserError(_(
-                    "The purchase request line '%s' already has a linked Purchase Order line."
+                    "The purchase request '%s' already has a Purchase Order."
                 ) % line.display_name)
 
         return super().make_purchase_order()
