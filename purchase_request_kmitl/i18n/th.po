@@ -1,9 +1,9 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
+# 	* purchase_request_exception
+# 	* purchase_request_kmitl
 # 	* purchase_request_substate
 # 	* purchase_request_to_requisition
-# 	* purchase_request_kmitl
-# 	* purchase_request_exception
 # 	* l10n_th_gov_purchase_request
 # 	* purchase_request
 #
@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-04 08:34+0000\n"
-"PO-Revision-Date: 2025-09-04 15:35+0700\n"
+"POT-Creation-Date: 2025-09-04 09:10+0000\n"
+"PO-Revision-Date: 2025-09-04 16:10+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -397,7 +397,7 @@ msgstr "หมวดหมู่"
 #. module: l10n_th_gov_purchase_request
 #: model:ir.model.fields.selection,name:l10n_th_gov_purchase_request.selection__procurement_committee__approve_role__chairman
 msgid "Chairman"
-msgstr ""
+msgstr "ประธาน"
 
 #. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_product_product__purchase_request
@@ -504,7 +504,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_line_make_purchase_order
 msgid "Create RFQ"
-msgstr "สร้างใบจัดซื้อจัดจ้าง"
+msgstr "สร้างโดย"
 
 #. module: l10n_th_gov_purchase_request
 #: model:ir.model.fields,help:l10n_th_gov_purchase_request.field_purchase_request__to_create
@@ -1834,8 +1834,8 @@ msgstr "รีเซ็ต"
 msgid "Responsible User"
 msgstr "ผู้ใช้ที่รับผิดชอบ"
 
-#. modules: l10n_th_gov_purchase_request, purchase_request_kmitl
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__approve_role
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_committee__approve_role
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
 msgid "Role"
 msgstr "บทบาท"
@@ -1856,6 +1856,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
 msgid "Search Purchase Request"
 msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__procurement_committee__approve_role__secretary
+msgid "Secretary"
+msgstr "กรรมการและเลขานุการ"
 
 #. module: l10n_th_gov_purchase_request
 #. odoo-python
@@ -2360,11 +2365,6 @@ msgstr "เหตุผล/ความจำเป็น"
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__title
 msgid "title"
 msgstr "ชื่อเรื่อง"
-
-#. module: purchase_request_kmitl
-#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__date_validated
-msgid "validate Date"
-msgstr "ตรวจสอบข้อมูลเมื่อ"
 
 #. module: l10n_th_gov_purchase_request
 #: model:exception.rule,description:l10n_th_gov_purchase_request.purchase_exception_amount_not_exceed_pr
