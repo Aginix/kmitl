@@ -8,5 +8,5 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
 
     def make_purchase_order(self):
         purchase_requests = self.item_ids.mapped("request_id")
-        purchase_requests.action_set_egp_waiting()
+        purchase_requests.action_egp_in_progress()
         return super().make_purchase_order()
