@@ -11,7 +11,7 @@
                 <field name="is_egp" invisible="1"/>
             </xpath>
             <xpath expr="//sheet/notebook" position="inside">
-                <page string="e-GP" attrs="{'invisible': [('is_egp', '=', False)]}">
+                <page string="e-GP" name="egp_page" attrs="{'invisible': [('is_egp', '=', False)]}">
                     <group>
                         <field name="egp_project_id" />
                         <field name="egp_project_url" widget="url" />
