@@ -71,18 +71,3 @@ class PurchaseRequest(models.Model):
     def _compute_current_user(self):
         for rec in self:
             rec.current_user = self.env.user
-
-    @api.depends("state")
-    def _compute_is_editable(self):
-        for rec in self:
-            if rec.state in (
-                "to_approve",
-                "approved",
-                "in_progress",
-                "rejected",
-                "done",
-            ):
-                rec.is_editable = False
-            else:
-                rec.is_editable = True
-
