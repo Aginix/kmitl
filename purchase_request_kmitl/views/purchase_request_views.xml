@@ -77,6 +77,7 @@
             <xpath expr="//button[@name='button_rejected']" position="attributes">
                 <attribute name="states"></attribute>
                 <attribute name="attrs">{'invisible': [('state', 'in', ['draft', 'approved', 'in_progress', 'done', 'rejected'])]}</attribute>
+                <attribute name="groups">purchase_request.group_purchase_request_manager</attribute>
             </xpath>
             <xpath expr="//button[@name='button_to_approve']" position="attributes">
                 <attribute name="string">Submit Approval</attribute>
@@ -99,10 +100,15 @@
             <xpath expr="//field[@name='approved_by']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//field[@name='procurement_type_id']" position="attributes">
+                <attribute name="widget">selection</attribute>
+            </xpath>
+            <xpath expr="//field[@name='procurement_method_id']" position="attributes">
+                <attribute name="widget">selection</attribute>
+            </xpath>
             <field name="requested_by" position="before">
                 <field name="payment_type" required="True" attrs="{'readonly': [('is_editable','=', False)]}" />
                 <field name="contract_type" attrs="{'readonly': [('is_editable','=', False)]}" />
-                <field name="procurement_method_ids" invisible="True" />
             </field>
             <field name="description" position="before">
                 <field name="title" attrs="{'readonly': [('is_editable','=', False)]}" />
