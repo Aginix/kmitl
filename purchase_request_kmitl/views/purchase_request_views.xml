@@ -62,7 +62,7 @@
             </xpath>
             <xpath expr="//button[@type='action']" position="attributes">
                 <attribute name="states"/>
-                <attribute name="attrs">{'invisible':[ '|', ('purchase_count', '!=', 0), ('state', '!=', 'approved')]}</attribute>
+                <attribute name="attrs">{'invisible':[ '|', ('purchase_count', '!=', 0), ('state', 'not in', ['approved', 'in_progress'])]}</attribute>
             </xpath>
             <xpath expr="//button[@name='button_draft']" position="attributes">
                 <attribute name="states"></attribute>
@@ -79,7 +79,6 @@
             </xpath>
             <xpath expr="//button[@name='button_to_approve']" position="attributes">
                 <attribute name="string">Submit Approval</attribute>
-                <attribute name="states">draft</attribute>
             </xpath>
             <xpath expr="//field[@name='origin']" position="attributes">
                 <attribute name="invisible">1</attribute>
@@ -173,16 +172,6 @@
                             <field name="email" string="Work Email" />
                             <field name="phone" string="Work Phone" />
                             <field name="note" string="Note" />
-                        </tree>
-                    </field>
-                </page>
-                <page name="document" string="Attachment">
-                    <field name="attachment_ids" attrs="{'readonly': [('is_editable','=', False)]}">
-                        <tree editable="bottom">
-                            <field name="attachment_type" required="1"/>
-                            <field name="file_name"/>
-                            <field name="upload_file" filename="file_name" required="1"/>
-                            <field name="description"/>
                         </tree>
                     </field>
                 </page>

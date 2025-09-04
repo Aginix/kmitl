@@ -27,12 +27,6 @@ class PurchaseRequest(models.Model):
         domain=[("committee_type", "=", "evaluation")],
         copy=True,
     )
-    attachment_ids = fields.One2many(
-        comodel_name="purchase.request.attachment",
-        inverse_name="request_id",
-        string="Attachments",
-        copy=True,
-    )
     title = fields.Char(
         string="title",
         required=True
