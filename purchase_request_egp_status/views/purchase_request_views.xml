@@ -20,13 +20,14 @@
         }
                 </attribute>
             </xpath>
-
             <xpath expr="//button[@name='button_done']" position="after">
                 <button name="action_egp_in_progress" type="object" string="อยู่ในกระบวนการ e-GP" attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('egp_status', '!=', 'waiting')]}" class="btn-primary"/>
             </xpath>
             <xpath expr="//button[@type='action']" position="attributes">
-                <attribute name="name">action_create_rfq</attribute>
-                <attribute name="type">object</attribute>
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@type='action']" position="after">
+                <button name="action_create_rfq" type="object" string="สร้างใบจัดซื้อ/จ้าง" attrs="{'invisible': ['|', ('state', 'not in', ('approved', 'in_progress')), ('purchase_count', '!=', 0)]}" class="btn-primary"/>
             </xpath>
         </field>
     </record>
