@@ -40,6 +40,20 @@ class PurchaseRequest(models.Model):
         compute="_compute_can_edit_budget",
     )
 
+    def action_open_budget_commitment(self):
+        self.ensure_one()
+        if not self.budget_commitment_id:
+            raise UserError("ยังไม่มี Budget Commitment สำหรับเอกสารนี้")
+
+        return {
+            "type": "ir.actions.act_window",
+            "name": "Budget Commitment",
+            "res_model": "budget.commitment",
+            "view_mode": "form",
+            "res_id": self.budget_commitment_id.id,
+            "target": "current",
+        }
+
     @api.depends("state")
     def _compute_can_edit_budget(self):
         for rec in self:
