@@ -5,7 +5,7 @@
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request_egp.view_purchase_request_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='requested_by']" position="after">
+            <xpath expr="//field[@name='origin']" position="before">
                 <field name="egp_status" readonly="1" widget="badge" decoration-info="egp_status == 'waiting'" decoration-warning="egp_status == 'in_progress'" decoration-success="egp_status == 'done'" />
                 <field name="can_edit_egp" invisible="1" />
             </xpath>

@@ -22,6 +22,11 @@ class PurchaseRequest(models.Model):
         default=False,
     )
 
+    def button_draft(self):
+        res = super().button_draft()
+        self.write({"egp_status": False})
+        return res
+
     def action_egp_in_progress(self):
         for record in self:
             if record.is_egp:
