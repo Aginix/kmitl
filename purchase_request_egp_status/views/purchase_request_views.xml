@@ -18,7 +18,7 @@
             <xpath expr="//button[@name='button_done']" position="after">
                 <button name="action_egp_in_progress" type="object" string="อยู่ในกระบวนการ e-GP" attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('egp_status', '!=', 'waiting')]}" class="btn-primary"/>
             </xpath>
-            <xpath expr="//button[@name='%(action_purchase_request_line_make_purchase_order)d']" position="attributes">
+            <xpath expr="//button[@type='action']" position="attributes">
                 <attribute name="name">action_create_rfq</attribute>
                 <attribute name="type">object</attribute>
             </xpath>
