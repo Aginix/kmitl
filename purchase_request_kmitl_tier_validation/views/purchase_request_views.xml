@@ -8,6 +8,10 @@
             <button name="button_to_approve" position="attributes">
                 <attribute name="invisible">0</attribute>
             </button>
+            <button name="button_approved" position="attributes">
+                <attribute name="states" />
+                <attribute name="invisible">1</attribute>
+            </button>
             <button name="button_draft" position="after">
                 <field name="is_current_user_requester" invisible="1" />
                 <field name="rejected" invisible="1" />
@@ -19,6 +23,10 @@
         ('rejected', '=', True),
         ('is_current_user_requester', '=', False)
     ]}" type="object" />
+                <button name="restart_validation" string="Restart Validation" class="btn-primary" attrs="{'invisible': ['|',
+        ('need_validation', '!=', True),
+        ('validation_status', '!=', 'pending'),
+    ]}" type="object" groups="purchase_request.group_purchase_request_manager" />
             </button>
         </field>
     </record>
