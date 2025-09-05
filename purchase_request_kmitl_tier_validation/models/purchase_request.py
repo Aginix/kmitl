@@ -32,3 +32,12 @@ class PurchaseRequest(models.Model):
         )
         if not reviews:
             return self.write({'state': 'approved'})
+
+    @api.model
+    def _get_after_validation_exceptions(self):
+        res = super()._get_after_validation_exceptions()
+        res.append("state")
+        res.append("egp_project_id")
+        res.append("substate_id")
+        res.append("egp_status")
+        return res
