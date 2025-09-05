@@ -8,7 +8,7 @@
             <button name="button_to_approve" position="attributes">
                 <attribute name="invisible">0</attribute>
             </button>
-            
+
         </field>
     </record>
 </odoo>
