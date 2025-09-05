@@ -8,7 +8,14 @@
             <button name="button_to_approve" position="attributes">
                 <attribute name="invisible">0</attribute>
             </button>
-
+            <button name="button_draft" position="after">
+                <button name="request_validation" string="Request Validation" class="btn-primary" attrs="{'invisible': ['|', '|', '|',
+        ('need_validation', '!=', True),
+        ('validation_status', '=', 'pending'),
+        ('rejected', '=', True),
+        ('is_current_user_requester', '=', False)
+    ]}" type="object" />
+            </button>
         </field>
     </record>
 </odoo>
