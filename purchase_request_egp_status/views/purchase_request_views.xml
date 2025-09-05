@@ -16,7 +16,7 @@
                 <attribute name="attrs">
         {
             'readonly': [('can_edit_egp', '=', False)],
-            'required': [('is_egp', '=', True)]
+            'required': [('egp_status', '!=', False)]
         }
                 </attribute>
             </xpath>
