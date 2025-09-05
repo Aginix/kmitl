@@ -2,7 +2,7 @@
 {
     'name': 'Purchase Request Budget Security',
     'version': '16.0.1.0.0',
-    'summary': """ Purchase Request Budget Security Summary """,
+    'summary': """ Purchase Request Budget Security """,
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
