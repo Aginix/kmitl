@@ -24,3 +24,11 @@ class PurchaseRequest(models.Model):
             new_node = etree.fromstring(str_element)
             return new_node
         return etree.Element("div")
+
+    def _validate_tier(self, tiers=False):
+        super()._validate_tier(tiers)
+        reviews = self.review_ids.filtered(
+            lambda r: r.status == "pending" and (self.env.user in r.reviewer_ids)
+        )
+        if not reviews:
+            return self.write({'state': 'approved'})
