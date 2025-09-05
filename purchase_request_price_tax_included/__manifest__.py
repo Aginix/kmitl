@@ -7,7 +7,8 @@
     "website": "https://github.com/aginix/kmitl",
     "depends": ["purchase_request"],
     "data": [
-        "views/purchase_request_views.xml"
+        "views/purchase_request_views.xml",
+        "wizard/wizard_views.xml"
     ],
 
     "application": True,
