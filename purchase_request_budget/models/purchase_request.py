@@ -125,15 +125,7 @@ class PurchaseRequest(models.Model):
 
     @api.depends("state")
     def _compute_is_editable(self):
-        for rec in self:
-            if rec.state in (
-                "budget_validate",
-                "to_approve",
-                "approved",
-                "rejected",
-                "in_progress",
-                "done",
-            ):
-                rec.is_editable = False
-            else:
-                rec.is_editable = True
+        res = super()._compute_is_editable()
+        for record in self:
+            if record.state in ("budget_validate"):
+                record.is_editable = False
