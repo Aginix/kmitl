@@ -28,6 +28,8 @@
             </field>
             <xpath expr="//group[hasclass('oe_subtotal_footer')]" position="replace">
                 <group class="oe_subtotal_footer oe_right">
+                    <field name="currency_id" invisible="1" />
+                    <field name="estimated_cost" invisible="1" />
                     <field name="tax_totals" widget="account-tax-totals-field" nolabel="1" colspan="2" readonly="1"/>
                 </group>
             </xpath>
