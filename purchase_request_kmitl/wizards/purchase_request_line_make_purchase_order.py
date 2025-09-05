@@ -29,12 +29,12 @@ class PurchaseRequestLineMakePurchaseOrderItem(models.TransientModel):
         help="Set true if you want to keep the "
         "descriptions provided in the "
         "wizard in the new PO.",
-        default=True
+        default=True,
     )
     keep_estimated_cost = fields.Boolean(
         string="Copy estimative cost to new PO",
         help="Set true if you want to keep the "
         "estimated cost provided in the "
         "wizard in the new PO.",
-        default=True
+        default=True,
     )
