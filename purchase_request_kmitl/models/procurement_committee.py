@@ -21,3 +21,6 @@ class ProcurementCommittee(models.Model):
         default="committee",
     )
 
+    mobile_phone = fields.Char(
+        related='employee_id.mobile_phone'
+    )

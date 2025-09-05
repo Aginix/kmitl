@@ -2132,6 +2132,11 @@ msgstr "รอการอนุมัติ"
 msgid "Tor Committee"
 msgstr "คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน"
 
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+msgid "Mobile Phone"
+msgstr "เบอร์โทรศัพท์"
+
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__estimated_cost
 msgid "Total Estimated Cost"

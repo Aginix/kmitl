@@ -137,9 +137,9 @@
                             <field name="employee_id" string="Employee" options="{'no_create': True, 'no_open': True}" />
                             <field name="name" string="Committee Name" />
                             <field name="approve_role" string="Role" />
-                            <field name="department_id" string="Department" readonly="1" />
-                            <field name="email" string="Work Email" readonly="1" />
-                            <field name="phone" string="Work Phone" readonly="1" />
+                            <field name="department_id" string="Department" readonly="1"/>
+                            <field name="email" string="Work Email" readonly="1"/>
+                            <field name="mobile_phone" string="Mobile Phone" readonly="1"/>
                         </tree>
                     </field>
                     <separator string="Tor Committee" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"/>
@@ -149,10 +149,9 @@
                             <field name="employee_id" string="Employee" options="{'no_create': True, 'no_open': True}" />
                             <field name="name" string="Committee Name" />
                             <field name="approve_role" string="Role" />
-                            <field name="department_id" string="Department" />
-                            <field name="email" string="Work Email" />
-                            <field name="phone" string="Work Phone" />
-                            <field name="note" string="Note" />
+                            <field name="department_id" string="Department" readonly="1"/>
+                            <field name="email" string="Work Email" readonly="1"/>
+                            <field name="mobile_phone" string="Mobile Phone" readonly="1"/>
                         </tree>
                     </field>
                     <separator string="Price Determine Committee" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"/>
@@ -163,9 +162,8 @@
                             <field name="name" string="Committee Name" />
                             <field name="approve_role" string="Role" />
                             <field name="department_id" string="Department" />
-                            <field name="email" string="Work Email" />
-                            <field name="phone" string="Work Phone" />
-                            <field name="note" string="Note" />
+                            <field name="email" string="Work Email" readonly="1"/>
+                            <field name="mobile_phone" string="Mobile Phone" readonly="1"/>
                         </tree>
                     </field>
                     <separator string="Evaluation Committee" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"/>
@@ -176,9 +174,8 @@
                             <field name="name" string="Committee Name" />
                             <field name="approve_role" string="Role" />
                             <field name="department_id" string="Department" />
-                            <field name="email" string="Work Email" />
-                            <field name="phone" string="Work Phone" />
-                            <field name="note" string="Note" />
+                            <field name="email" string="Work Email" readonly="1"/>
+                            <field name="mobile_phone" string="Mobile Phone" readonly="1"/>
                         </tree>
                     </field>
                 </page>
@@ -244,6 +241,9 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//field[@name='activity_ids']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='purchase_type_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
         </field>
