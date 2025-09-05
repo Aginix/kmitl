@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
 from datetime import datetime
-from odoo import models, fields, api, _
+
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -29,10 +30,7 @@ class PurchaseRequest(models.Model):
         project_id = self.egp_project_id
         return f"https://process.gprocurement.go.th/egp2procmainWeb/jsp/FPRO9951A_3.jsp?tor_project_id={project_id}&invite_templateType=D2&invite_announceFlag=A&invite_itemNo=0&invite_seqno=0&invite_methodId=16&intvite_docAnnounceType=D0&invite_announceId=&_={ts}"
 
-    @api.depends("estimated_cost", "state")
+    @api.depends("estimated_cost")
     def _compute_is_egp(self):
         for record in self:
-            if record.state == "approved":
-                record.is_egp = record.estimated_cost > 100000
-            else:
-                record.is_egp = False
+            record.is_egp = record.estimated_cost > 100000
