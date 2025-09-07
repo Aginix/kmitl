@@ -11,7 +11,7 @@
                 <group>
                     <group>
                         <field name="vat_included" />
-                        <field name="tax_id" widget="selection" attrs="{'invisible': [('vat_included', '=', 'exclusive')], 'required': [('vat_included', '=', 'inclusive')]}" />
+                        <field name="tax_id" widget="selection" attrs="{'invisible': [('vat_included', '=', 'exclusive')], 'required': [('vat_included', '=', 'inclusive')], 'readonly': [('is_editable','=', False)]}" />
                     </group>
                 </group>
             </xpath>

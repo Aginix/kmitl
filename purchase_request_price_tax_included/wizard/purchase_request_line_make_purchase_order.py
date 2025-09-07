@@ -13,7 +13,9 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     def _prepare_purchase_order_line(self, po, item):
         res = super()._prepare_purchase_order_line(po, item)
         res["price_unit"] = item.line_id.price_unit
-        res["taxes_id"] = [(4, item.line_id.tax_id.id)] if item.line_id.tax_id else False
+        res["taxes_id"] = (
+            [(4, item.line_id.tax_id.id)] if item.line_id.tax_id else False
+        )
         return res
 
     @api.model
@@ -31,10 +33,9 @@ class PurchaseRequestLineMakePurchaseOrderItem(models.TransientModel):
         string="Unit Price",
         required=True,
         digits="Product Price",
-        compute="_compute_amount",
-        readonly=False,
     )
 
+    estimated_cost = fields.Monetary(compute="_compute_amount")
     price_subtotal = fields.Monetary(compute="_compute_amount", string="Subtotal")
     price_total = fields.Monetary(compute="_compute_amount", string="Total")
     price_tax = fields.Float(compute="_compute_amount", string="Tax")
