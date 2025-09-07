@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="many2many_binary_enhance.Many2ManyBinaryField.attachment_preview" 
+       t-inherit="web.Many2ManyBinaryField.attachment_preview" 
+       t-inherit-mode="extension">
+       <xpath expr="//div[contains(@class,'o_attachment_uploaded')]" position="before">
+            <t t-if="editable">
+                <div class="o_attachment_edit">
+                    <button class="btn btn-sm btn-link" 
+                            t-on-click="() => this.onEditAttachment(file.id)"
+                            title="Edit attachment">
+                        <i class="fa fa-pencil text-primary"/>
+                    </button>
+                </div>
+            </t>
+        </xpath>
+    </t>
+</templates>

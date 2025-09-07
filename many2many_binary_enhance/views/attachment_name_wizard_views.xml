@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_attachment_name_wizard_form" model="ir.ui.view">
+        <field name="name">attachment.name.wizard.form</field>
+        <field name="model">attachment.name.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Edit Attachment">
+                <sheet>
+                    <group>
+                        <field name="attachment_id" invisible="1"/>
+                        <field name="name" placeholder="Enter file name..."/>
+                        <field name="description" placeholder="Enter description..."/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_save" type="object" string="Save" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_attachment_name_wizard" model="ir.actions.act_window">
+        <field name="name">Edit Attachment</field>
+        <field name="res_model">attachment.name.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
