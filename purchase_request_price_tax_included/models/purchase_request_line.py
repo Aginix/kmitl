@@ -14,11 +14,9 @@ class PurchaseRequestLine(models.Model):
         string="Unit Price",
         required=True,
         digits="Product Price",
-        compute="_compute_amount",
-        readonly=False,
-        store=True,
     )
 
+    estimated_cost = fields.Monetary(compute="_compute_amount", store=True)
     price_subtotal = fields.Monetary(
         compute="_compute_amount", string="Subtotal", store=True
     )

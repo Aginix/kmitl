@@ -15,11 +15,8 @@
                     </group>
                 </group>
             </xpath>
-            <xpath expr="//field[@name='line_ids']/tree/field[@name='estimated_cost']" position="attributes">
-                <attribute name="readonly">1</attribute>
-            </xpath>
             <xpath expr="//field[@name='line_ids']/tree" position="inside">
-                <field name="price_subtotal" widget="monetary" optional="hide" />
+                <field name="price_subtotal" widget="monetary" invisible="1" />
                 <field name="price_total" widget="monetary" invisible="1"/>
                 <field name="price_tax" widget="monetary" optional="hide" />
             </xpath>
