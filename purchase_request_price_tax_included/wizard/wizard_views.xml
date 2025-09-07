@@ -12,9 +12,9 @@
             <field name="product_uom_id" position="after">
                 <field name="price_unit" />
                 <field name="estimated_cost" widget="monetary" sum="รวม" />
-                <field name="price_subtotal" widget="monetary" invisible="1" />
-                <field name="price_tax" widget="monetary" invisible="1" />
-                <field name="price_total" widget="monetary" invisible="1"/>
+                <field name="price_subtotal" invisible="1" />
+                <field name="price_tax" invisible="1" />
+                <field name="price_total" invisible="1"/>
             </field>
         </field>
     </record>
