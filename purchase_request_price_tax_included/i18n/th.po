@@ -1,0 +1,101 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_request_price_tax_included
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-07 05:41+0000\n"
+"PO-Revision-Date: 2025-09-07 12:47+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.7\n"
+
+#. module: purchase_request_price_tax_included
+#: model:ir.model,name:purchase_request_price_tax_included.model_purchase_request
+msgid "Purchase Request"
+msgstr "คำขอซื้อขอจ้าง"
+
+#. module: purchase_request_price_tax_included
+#: model:ir.model,name:purchase_request_price_tax_included.model_purchase_request_line
+msgid "Purchase Request Line"
+msgstr "คำขอซื้อขอจ้างไลน์"
+
+#. module: purchase_request_price_tax_included
+#: model:ir.model,name:purchase_request_price_tax_included.model_purchase_request_line_make_purchase_order
+msgid "Purchase Request Line Make Purchase Order"
+msgstr ""
+
+#. module: purchase_request_price_tax_included
+#: model:ir.model,name:purchase_request_price_tax_included.model_purchase_request_line_make_purchase_order_item
+msgid "Purchase Request Line Make Purchase Order Item"
+msgstr ""
+
+#. module: purchase_request_price_tax_included
+#: model:ir.model.fields,field_description:purchase_request_price_tax_included.field_purchase_request_line__price_subtotal
+#: model:ir.model.fields,field_description:purchase_request_price_tax_included.field_purchase_request_line_make_purchase_order_item__price_subtotal
+msgid "Subtotal"
+msgstr "รวม"
+
+#. module: purchase_request_price_tax_included
+#: model:ir.model.fields,field_description:purchase_request_price_tax_included.field_purchase_request__tax_id
+#: model:ir.model.fields,field_description:purchase_request_price_tax_included.field_purchase_request_line__price_tax
+#: model:ir.model.fields,field_description:purchase_request_price_tax_included.field_purchase_request_line__tax_id
+#: model:ir.model.fields,field_description:purchase_request_price_tax_included.field_purchase_request_line_make_purchase_order_item__price_tax
+#: model:ir.model.fields,field_description:purchase_request_price_tax_included.field_purchase_request_line_make_purchase_order_item__tax_id
+msgid "Tax"
+msgstr "ภาษี"
+
+#. module: purchase_request_price_tax_included
+#: model:ir.model.fields,field_description:purchase_request_price_tax_included.field_purchase_request__tax_totals
+msgid "Tax Totals"
+msgstr "ยอดรวมภาษี"
+
+#. module: purchase_request_price_tax_included
+#: model:ir.model.fields,field_description:purchase_request_price_tax_included.field_purchase_request__amount_tax
+msgid "Taxes"
+msgstr "ภาษี"
+
+#. module: purchase_request_price_tax_included
+#: model:ir.model.fields,field_description:purchase_request_price_tax_included.field_purchase_request__amount_total
+#: model:ir.model.fields,field_description:purchase_request_price_tax_included.field_purchase_request_line__price_total
+#: model:ir.model.fields,field_description:purchase_request_price_tax_included.field_purchase_request_line_make_purchase_order_item__price_total
+msgid "Total"
+msgstr "รวม"
+
+#. module: purchase_request_price_tax_included
+#: model:ir.model.fields,field_description:purchase_request_price_tax_included.field_purchase_request_line__price_unit
+#: model:ir.model.fields,field_description:purchase_request_price_tax_included.field_purchase_request_line_make_purchase_order_item__price_unit
+msgid "Unit Price"
+msgstr "ราคาต่อหน่วย"
+
+#. module: purchase_request_price_tax_included
+#: model:ir.model.fields,field_description:purchase_request_price_tax_included.field_purchase_request__amount_untaxed
+msgid "Untaxed Amount"
+msgstr "จำนวนเงินไม่รวมภาษี"
+
+#. module: purchase_request_price_tax_included
+#: model:ir.model.fields.selection,name:purchase_request_price_tax_included.selection__purchase_request__vat_included__exclusive
+msgid "VAT Exclusive"
+msgstr "ไม่รวมภาษีมูลค่าเพิ่ม"
+
+#. module: purchase_request_price_tax_included
+#: model:ir.model.fields.selection,name:purchase_request_price_tax_included.selection__purchase_request__vat_included__inclusive
+msgid "VAT Inclusive"
+msgstr "รวมภาษีมูลค่าเพิ่ม"
+
+#. module: purchase_request_price_tax_included
+#: model:ir.model.fields,field_description:purchase_request_price_tax_included.field_purchase_request__vat_included
+msgid "Vat Included"
+msgstr "ภาษีมูลค่าเพิ่ม"
+
+#. module: purchase_request_price_tax_included
+#: model_terms:ir.ui.view,arch_db:purchase_request_price_tax_included.view_purchase_request_line_make_purchase_order
+msgid "รวม"
+msgstr ""
