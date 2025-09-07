@@ -12,7 +12,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     @api.model
     def _prepare_purchase_order_line(self, po, item):
         res = super()._prepare_purchase_order_line(po, item)
-        res["price_unit"] = item.line_id.price_unit
+        res["price_unit"] = item.price_unit
         res["taxes_id"] = (
             [(4, item.line_id.tax_id.id)] if item.line_id.tax_id else False
         )
