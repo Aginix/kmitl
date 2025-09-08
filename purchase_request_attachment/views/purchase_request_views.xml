@@ -13,7 +13,7 @@
                       <tree editable="bottom">
                           <field name="attachment_type" required="1"/>
                           <field name="file_name"/>
-                          <field name="upload_file" filename="file_name" required="1"/>
+                          <field name="attachment_id" filename="file_name" required="1"/>
                           <field name="description"/>
                       </tree>
                   </field>

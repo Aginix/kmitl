@@ -19,6 +19,6 @@ class PurchaseRequestAttachment(models.Model):
             ("etc", "Etc"),
         ],
     )
-    upload_file = fields.Binary(string="Upload File", attachment=True)
+    attachment_id = fields.Binary(string="Upload File", attachment=True)
     file_name = fields.Char(string="Filename")
     description = fields.Char(string="Description")
