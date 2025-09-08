@@ -1,17 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
-    <record id="view_purchase_request_attachment_tree" model="ir.ui.view">
-        <field name="name">view.purchase.request.attachment.tree</field>
-        <field name="model">purchase.request.attachment</field>
-        <field name="arch" type="xml">
-            <tree>
-                <field name="attachment_type" />
-                <field name="description" string="คำอธิบาย" />
-            </tree>
-        </field>
-    </record>
-
     <record id="view_purchase_request_attachment_form" model="ir.ui.view">
         <field name="name">view.purchase.request.attachment.form</field>
         <field name="model">purchase.request.attachment</field>
@@ -20,9 +8,8 @@
                 <sheet>
                     <group>
                         <field name="request_id" readonly="1" />
-                        <field name="attachment_type" invisible="1" />
+                        <field name="attachment_type"/>
                         <field name="attachment_id" filename="file_name"/>
-                        <field name="file_name"/>
                         <field name="description"/>
                     </group>
                 </sheet>
