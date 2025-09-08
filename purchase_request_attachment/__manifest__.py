@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Purchase_request_attachment',
+    'name': 'Purchase Request Attachment',
     'version': '16.0.1.0.0',
-    'summary': """ Purchase_request_attachment Summary """,
-    'author': '',
-    'website': '',
-    'category': '',
+    'summary': """ Purchase Request Attachment """,
+    'author': 'Aginix Technologies',
+    'website': 'https://github.com/aginix/kmitl',
+    'category': 'KMITL',
     'depends': ['purchase_request_kmitl'],
     "data": [
         "security/ir.model.access.csv",
