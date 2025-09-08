@@ -41,4 +41,6 @@
             </field>
         </field>
     </record>
+
+    <menuitem action="base_tier_validation.tier_validation_exception_action" id="menu_purchase_request_tier_validation_exception" parent="purchase.menu_purchase_config" />
 </odoo>
