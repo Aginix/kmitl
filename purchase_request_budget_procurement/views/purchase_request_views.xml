@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View purchase.request form -->
+    <record id="view_purchase_request_form" model="ir.ui.view">
+        <field name="name">view.purchase.request.form</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='origin']" position="before">
+                <field name="use_procurement_plan" />
+                <field
+                    name="procurement_plan_id"
+                    options="{'no_create_edit': True}"
+                    domain="[('state', '=', 'pending')]"
+                    attrs="{'invisible': [('use_procurement_plan', '=', False)], 'required': [('use_procurement_plan', '=', True)]}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
