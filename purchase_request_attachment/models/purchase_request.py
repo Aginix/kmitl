@@ -13,5 +13,6 @@ class PurchaseRequest(models.Model):
     attachment_ids = fields.One2many(
         'purchase.request.attachment',
         'request_id',
-        string='Document Attachments'
+        string='Document Attachments',
+        tracking=True,
     )

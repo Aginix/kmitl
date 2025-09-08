@@ -22,3 +22,4 @@ class PurchaseRequestAttachment(models.Model):
     attachment_id = fields.Binary(string="Upload File", attachment=True)
     file_name = fields.Char(string="Filename")
     description = fields.Char(string="Description")
+    sequence = fields.Integer(string="sequence")

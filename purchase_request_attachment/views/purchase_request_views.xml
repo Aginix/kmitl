@@ -9,15 +9,16 @@
         <field name="arch" type="xml">
             <xpath expr="//page[@name='logs']" position="before">
               <page name="document" string="Attachment">
-                  <field name="attachment_ids" attrs="{'readonly': [('is_editable','=', False)]}">
-                      <tree editable="bottom">
-                          <field name="attachment_type" required="1"/>
-                          <field name="file_name"/>
-                          <field name="attachment_id" filename="file_name" required="1"/>
-                          <field name="description"/>
+                  <field name="attachment_ids" attrs="{'readonly': [('is_editable','=', False)]}" context="{'default_request_id': 'active_id'}">
+                      <tree>
+                        <field name="sequence" widget="handle"/>
+                        <field name="attachment_type" required="1"/>
+                        <field name="file_name"/>
+                        <field name="attachment_id" filename="file_name" required="1"/>
+                        <field name="description"/>
                       </tree>
                   </field>
-                </page>
+              </page>
             </xpath>
         </field>
     </record>
