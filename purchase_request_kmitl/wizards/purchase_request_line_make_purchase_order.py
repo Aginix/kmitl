@@ -19,3 +19,14 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
                 ) % line.display_name)
 
         return super().make_purchase_order()
+
+
+class PurchaseRequestLineMakePurchaseOrderItem(models.TransientModel):
+    _inherit = 'purchase.request.line.make.purchase.order.item'
+
+    keep_description = fields.Boolean(
+        default=True,
+    )
+    keep_estimated_cost = fields.Boolean(
+        default=True,
+    )
