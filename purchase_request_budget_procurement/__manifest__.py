@@ -7,7 +7,8 @@
     "website": "https://github.com/aginix/kmitl",
     "depends": ["procurement_plan_budget", "purchase_request_budget"],
     "data": [
-        "views/purchase_request_views.xml"
+        "views/purchase_request_views.xml",
+        "views/procurement_plan_views.xml",
     ],
     "application": False,
     "installable": True,
