@@ -24,7 +24,7 @@
                                     <field name="res_model" invisible="1" readonly="0"/>
                                     <field name="res_id" invisible="1" readonly="0"/>
                                     <field name="attachment_type" required="1"/>
-                                    <field name="name" placeholder="File Name (auto-filled from upload)" required="1"/>
+                                    <field name="name" placeholder="File Name (auto-filled from upload)" required="1" invisible="1"/>
                                     <field name="datas" filename="name" required="1"/>
                                     <field name="description" placeholder="Description"/>
                                 </group>
