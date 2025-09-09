@@ -11,8 +11,8 @@ class PurchaseRequest(models.Model):
     _inherit = 'purchase.request'
 
     attachment_ids = fields.One2many(
-        'purchase.request.attachment',
-        'request_id',
+        'ir.attachment',
+        'res_id',
         string='Document Attachments',
         tracking=True,
     )

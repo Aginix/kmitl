@@ -9,16 +9,30 @@
         <field name="arch" type="xml">
             <xpath expr="//page[@name='logs']" position="before">
               <page name="document" string="Attachment">
-                  <field name="attachment_ids" attrs="{'readonly': [('is_editable','=', False)]}" context="{'default_request_id': 'active_id'}">
-                      <tree>
-                        <field name="sequence" widget="handle"/>
-                        <field name="attachment_type" required="1"/>
-                        <field name="file_name"/>
-                        <field name="attachment_id" filename="file_name" required="1"/>
-                        <field name="description"/>
-                      </tree>
-                  </field>
-              </page>
+                    <field name="attachment_ids" 
+                          attrs="{'readonly': [('is_editable','=', False)]}" 
+                          context="{'default_res_model': 'purchase.request'}">
+                        <tree>
+                            <field name="sequence" widget="handle"/>
+                            <field name="attachment_type" required="1"/>
+                            <field name="name" string="File Name" required="1"/>
+                            
+                            <field name="description"/>
+                        </tree>
+                        <form>
+                            <sheet>
+                                <group>
+                                    <field name="res_model" invisible="1" readonly="0"/>
+                                    <field name="res_id" invisible="1" readonly="0"/>
+                                    <field name="attachment_type" required="1"/>
+                                    <field name="name" placeholder="File Name (auto-filled from upload)" required="1"/>
+                                    <field name="datas" filename="name" required="1"/>
+                                    <field name="description" placeholder="Description"/>
+                                </group>
+                            </sheet>
+                        </form>
+                    </field>
+                </page>
             </xpath>
         </field>
     </record>
