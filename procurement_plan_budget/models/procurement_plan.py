@@ -46,8 +46,5 @@ class ProcurementPlan(models.Model):
             'type': 'ir.actions.act_window',
             'res_model': 'budget.commitment',
             'view_mode': 'tree,form',
-            'views': [(self.env.ref('budget.budget_commitment_tree_view').id, 'tree'),
-                      (False, 'form')],
             'domain': [('procurement_plan_id', '=', self.id)],
-            'context': dict(self.env.context, default_procurement_plan_id=self.id),
         }
