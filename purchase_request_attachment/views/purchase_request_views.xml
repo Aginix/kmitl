@@ -12,11 +12,10 @@
                     <field name="attachment_ids" 
                           attrs="{'readonly': [('is_editable','=', False)]}" 
                           context="{'default_res_model': 'purchase.request'}">
-                        <tree>
+                        <tree default_order="attachment_type, sequence">
                             <field name="sequence" widget="handle"/>
                             <field name="attachment_type" required="1"/>
                             <field name="name" string="File Name" required="1"/>
-                            
                             <field name="description"/>
                         </tree>
                         <form>
