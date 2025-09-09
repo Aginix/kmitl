@@ -154,21 +154,10 @@ class ProcurementPlan(models.Model):
 
     def action_view_purchase_requests(self):
         self.ensure_one()
-        action = self.env["ir.actions.actions"]._for_xml_id("purchase_request.purchase_request_form_action")
-        if len(self.purchase_request_ids) > 1:
-            action["domain"] = [("id", "in", self.purchase_request_ids.ids)]
-        elif len(self.purchase_request_ids) == 1:
-            form_view = [(self.env.ref("purchase_request.view_purchase_request_form").id, "form")]
-            if "views" in action:
-                action["views"] = form_view + [(state, view) for state, view in action["views"] if view != "form"]
-            else:
-                action["views"] = form_view
-            action["res_id"] = self.purchase_request_ids.ids[0]
-        else:
-            action = {"type": "ir.actions.act_window_close"}
-        context = {
-            "default_use_procurement_plan": True,
-            "default_procurement_plan_id": self.id,
+        return {
+            'name': 'Purchase Request',
+            'type': 'ir.actions.act_window',
+            'res_model': 'purchase.request',
+            'view_mode': 'tree,form',
+            'domain': [("id", "in", self.purchase_request_ids.ids)],
         }
-        action["context"] = context
-        return action
