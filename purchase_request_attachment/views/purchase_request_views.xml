@@ -7,7 +7,7 @@
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request_kmitl.view_purchase_request_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//page[@name='logs']" position="before">
+            <xpath expr="//notebook" position="inside">
               <page name="document" string="Attachment">
                     <field name="attachment_ids" 
                           attrs="{'readonly': [('is_editable','=', False)]}" 
@@ -24,7 +24,7 @@
                                     <field name="res_model" invisible="1" readonly="0"/>
                                     <field name="res_id" invisible="1" readonly="0"/>
                                     <field name="attachment_type" required="1"/>
-                                    <field name="name" placeholder="File Name (auto-filled from upload)" required="1" invisible="1"/>
+                                    <field name="name" required="1" invisible="1"/>
                                     <field name="datas" filename="name" required="1"/>
                                     <field name="description" placeholder="Description"/>
                                 </group>
