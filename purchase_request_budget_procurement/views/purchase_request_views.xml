@@ -8,10 +8,10 @@
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form"/>
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
-                <button 
-                    name="action_view_procurement_plan" 
-                    type="object" 
-                    class="oe_stat_button" 
+                <button
+                    name="action_view_procurement_plan"
+                    type="object"
+                    class="oe_stat_button"
                     icon="fa-list-alt"
                     attrs="{'invisible': [('procurement_plan_id', '=', False)]}">
                     <div class="o_field_widget o_stat_info">
@@ -24,7 +24,7 @@
                 <field
                     name="procurement_plan_id"
                     options="{'no_create_edit': True}"
-                    domain="[('state', '=', 'pending')]"
+                    domain="[('state', '=', 'pending'), ('date_range_fy_id', '=', date_range_fy_id)]"
                     attrs="{'invisible': [('use_procurement_plan', '=', False)], 'required': [('use_procurement_plan', '=', True)]}"
                 />
             </xpath>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -41,6 +41,19 @@ class PurchaseRequest(models.Model):
                 rec.fund_analytic_id = rec.procurement_plan_id.fund_analytic_id.id
                 rec.source_analytic_id = rec.procurement_plan_id.source_analytic_id.id
                 rec.procurement_plan_analytic_id = rec.procurement_plan_id.procurement_plan_analytic_id.id
+            else:
+                rec.procurement_plan_id = False
+                rec.budget_account_id = False
+                rec.activity_analytic_id = False
+                rec.department_analytic_id = False
+                rec.fund_analytic_id = False
+                rec.source_analytic_id = False
+                rec.procurement_plan_analytic_id = False
+
+    @api.onchange("date_range_fy_id")
+    def _onchange_date_range_fy_id(self):
+        if self.procurement_plan_id:
+            self.procurement_plan_id = False
 
     def action_view_procurement_plan(self):
         self.ensure_one()
