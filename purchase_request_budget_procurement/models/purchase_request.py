@@ -68,6 +68,70 @@ class PurchaseRequest(models.Model):
             "target": "current",
         }
 
+    def action_reserve_budget(self):
+        """Reserve budget by creating commitment"""
+        self.ensure_one()
+        if not self.budget_account_id:
+            raise ValidationError(_("Please specify budget account"))
+
+        if not all([self.activity_analytic_id, self.department_analytic_id, self.fund_analytic_id, self.source_analytic_id]):
+            raise ValidationError(_("Please specify analytic dimensions for budget commitment"))
+
+        amount = sum(self.line_ids.mapped("estimated_cost"))
+
+        check_result = self._check_budget_availability(
+            amount=amount,
+            activity_analytic_id=self.activity_analytic_id.id,
+            department_analytic_id=self.department_analytic_id.id,
+            fund_analytic_id=self.fund_analytic_id.id,
+            source_analytic_id=self.source_analytic_id.id,
+        )
+
+        if not check_result['is_sufficient']:
+            raise UserError(_("Cannot reserve budget due to insufficient funds: %s") % check_result['message'])
+
+        try:
+            commitment = self._create_budget_commitment(
+                amount=amount,
+                activity_analytic_id=self.activity_analytic_id.id,
+                department_analytic_id=self.department_analytic_id.id,
+                fund_analytic_id=self.fund_analytic_id.id,
+                source_analytic_id=self.source_analytic_id.id,
+                procurement_plan_id=self.procurement_plan_id.id if self.procurement_plan_id else False,
+                ref=self.name,
+                description=f"Purchase Request: {self.name}",
+                date=self.date_start,
+                auto_reserve=True
+            )
+            self.message_post(body=_("Budget reserved: %s for amount %s") % (commitment.name, amount))
+            self.state = 'to_approve'
+            return {
+                "type": "ir.actions.act_window",
+                "res_model": "purchase.request",
+                "view_mode": "form",
+                "res_id": self.id,
+                "target": "current",
+                "context": self.env.context,
+            }
+
+        except UserError as e:
+            raise UserError(_("Cannot reserve budget: %s") % str(e))
+
+    def _prepare_commitment_vals(
+        self, amount, activity_analytic_id, fund_analytic_id,
+        department_analytic_id, source_analytic_id, ref, description,
+        budget_account_id, include_company=True, **kwargs
+    ):
+        commitment_vals = super()._prepare_commitment_vals(
+            amount, activity_analytic_id, fund_analytic_id,
+            department_analytic_id, source_analytic_id, ref, description,
+            budget_account_id, include_company=include_company, **kwargs
+        )
+
+        if kwargs.get("procurement_plan_id"):
+            commitment_vals["procurement_plan_id"] = kwargs["procurement_plan_id"]
+
+        return commitment_vals
 
 class ProcurementPlan(models.Model):
     _inherit = "procurement.plan"
