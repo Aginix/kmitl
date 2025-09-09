@@ -20,6 +20,9 @@
                     <field name="procurement_plan_id" options="{'no_create_edit': True, 'no_open': True}" domain="[('state', '=', 'pending'), ('date_range_fy_id', '=', date_range_fy_id)]" attrs="{'invisible': [('use_procurement_plan', '=', False)], 'required': [('use_procurement_plan', '=', True)], 'readonly': [('is_editable','=', False)]}" />
                 </group>
             </xpath>
+            <field name="budget_account_id" position="attributes">
+                <attribute name="domain">[('procurement_plan', '=', False)]</attribute>
+            </field>
         </field>
     </record>
 

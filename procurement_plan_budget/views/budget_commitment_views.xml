@@ -21,7 +21,7 @@
                 </button>
             </xpath>
             <xpath expr="//field[@name='ref']" position="after">
-                <field name="procurement_plan_id" />
+                <field name="procurement_plan_id" string="แผนจัดซื้อจัดจ้าง" />
             </xpath>
         </field>
     </record>
