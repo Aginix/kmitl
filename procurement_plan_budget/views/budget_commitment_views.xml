@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
   <odoo>
-
-    <!-- View budget.commitment form -->
     <record id="view_budget_commitment_form" model="ir.ui.view">
         <field name="name">view.budget.commitment.form</field>
         <field name="model">budget.commitment</field>
@@ -21,9 +19,8 @@
                 </button>
             </xpath>
             <xpath expr="//field[@name='ref']" position="after">
-                <field name="procurement_plan_id" string="แผนจัดซื้อจัดจ้าง" />
+                <field name="procurement_plan_id" string="แผนจัดซื้อจัดจ้าง" options="{'no_open': True}" />
             </xpath>
         </field>
     </record>
-
   </odoo>

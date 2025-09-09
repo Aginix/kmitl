@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    "name": "Purchase_request_budget_procurement",
+    "name": "Purchase Request Budget Procurement",
     "version": "16.0.1.0.1",
     "category": "KMITL",
     "author": "Aginix Technologies",
