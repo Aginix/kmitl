@@ -104,7 +104,19 @@ class PurchaseRequest(models.Model):
                 auto_reserve=True
             )
             self.message_post(body=_("Budget reserved: %s for amount %s") % (commitment.name, amount))
-            self.state = 'to_approve'
+            if substate == False:
+                self.state = 'to_approve'
+            else:
+                substate = self.env["base.substate"].search(
+                    [("model", "=", "purchase.request"), ("sequence", "=", 20)], limit=1
+                )
+                self.write(
+                    {
+                        "substate_id": substate.id,
+                        "verified_by": self.env.user.id,
+                        "date_verified": fields.Date.context_today(self),
+                    }
+                )
             return {
                 "type": "ir.actions.act_window",
                 "res_model": "purchase.request",
