@@ -60,6 +60,13 @@ class PurchaseRequest(models.Model):
         store=True,
         readonly=True,
     )
+    date_range_fy_id = fields.Many2one(
+        comodel_name="account.fiscal.year",
+        string="ปีงบประมาณ",
+        required=True,
+        tracking=True,
+        readonly=False,
+    )
 
     @api.depends('requested_by')
     def _compute_is_current_user_requester(self):
