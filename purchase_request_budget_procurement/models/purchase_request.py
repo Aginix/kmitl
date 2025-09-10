@@ -104,7 +104,7 @@ class PurchaseRequest(models.Model):
                 auto_reserve=True
             )
             self.message_post(body=_("Budget reserved: %s for amount %s") % (commitment.name, amount))
-            if substate == False:
+            if self.substate_id == False:
                 self.state = 'to_approve'
             else:
                 substate = self.env["base.substate"].search(
