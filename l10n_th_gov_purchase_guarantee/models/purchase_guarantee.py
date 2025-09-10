@@ -81,27 +81,27 @@ class PurchaseGuarantee(models.Model):
     date_guarantee_receive = fields.Date(
         string="Guarantee Receive Date",
     )
-    # analytic_account_id = fields.Many2one(
-    #     comodel_name="account.analytic.account",
-    #     compute="_compute_analytic",
-    #     store=True,
-    #     readonly=False,
-    #     compute_sudo=True,
-    # )
-    # domain_analytic_account_ids = fields.Many2many(
-    #     comodel_name="account.analytic.account",
-    #     compute="_compute_analytic",
-    #     string="Domain Analytic Account",
-    #     compute_sudo=True,
-    # )
-    # analytic_tag_ids = fields.Many2many(
-    #     comodel_name="account.analytic.tag",
-    #     string="Analytic Tags",
-    #     compute="_compute_analytic",
-    #     store=True,
-    #     readonly=False,
-    #     compute_sudo=True,
-    # )
+    analytic_account_id = fields.Many2one(
+        comodel_name="account.analytic.account",
+        compute="_compute_analytic",
+        store=True,
+        readonly=False,
+        compute_sudo=True,
+    )
+    domain_analytic_account_ids = fields.Many2many(
+        comodel_name="account.analytic.account",
+        compute="_compute_analytic",
+        string="Domain Analytic Account",
+        compute_sudo=True,
+    )
+    analytic_tag_ids = fields.Many2many(
+        comodel_name="account.analytic.tag",
+        string="Analytic Tags",
+        compute="_compute_analytic",
+        store=True,
+        readonly=False,
+        compute_sudo=True,
+    )
     invoice_ids = fields.Many2many(
         comodel_name="account.move",
         relation="account_move_guarantee_rel",
@@ -220,6 +220,7 @@ class PurchaseGuarantee(models.Model):
         for rec in self.filtered("purchase_id"):
             rec.partner_id = rec.purchase_id.partner_id.id
 
+    # 15
     # @api.depends("reference")
     # def _compute_analytic(self):
     #     for rec in self:
@@ -234,6 +235,35 @@ class PurchaseGuarantee(models.Model):
     #         rec.analytic_tag_ids = origin and origin.mapped("analytic_tag_ids") or False
     #         if analytics and len(analytics) == 1:
     #             rec.analytic_account_id = analytics
+
+    # รองรับ 16
+    @api.depends("reference")
+    def _compute_analytic(self):
+        for rec in self:
+            origin = False
+            if rec.reference:
+                if rec.reference._name == "purchase.requisition":
+                    origin = rec.reference.line_ids
+                elif rec.reference._name == "purchase.order":
+                    origin = rec.reference.order_line
+
+            analytics = self.env["account.analytic.account"]
+            tags = self.env["account.analytic.tag"]
+
+            if origin and "analytic_distribution" in origin._fields:
+                for line in origin:
+                    if line.analytic_distribution:
+                        analytics |= self.env["account.analytic.account"].browse(
+                            [int(x) for x in line.analytic_distribution.keys()]
+                        )
+            elif origin and "account_analytic_id" in origin._fields:
+                analytics = origin.mapped("account_analytic_id")
+                tags = origin.mapped("analytic_tag_ids")
+
+            rec.domain_analytic_account_ids = analytics
+            rec.analytic_tag_ids = tags
+            if analytics and len(analytics) == 1:
+                rec.analytic_account_id = analytics[0]
 
     @api.depends("invoice_ids")
     def _compute_amount_received(self):

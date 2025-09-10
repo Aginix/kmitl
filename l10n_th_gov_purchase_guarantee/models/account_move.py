@@ -45,10 +45,13 @@ class AccountMove(models.Model):
             new_lines = rec.env["account.move.line"]
             for guarantee in rec.guarantee_ids:
                 new_line = new_lines.new(rec._prepare_guarantee_move_line(guarantee))
-                new_line._onchange_price_subtotal()
+                # 15
+                # new_line._onchange_price_subtotal()
+                new_line._compute_amount()
                 new_lines += new_line
-            new_lines._onchange_mark_recompute_taxes()
-            rec._onchange_currency()
+            # 15
+            # new_lines._onchange_mark_recompute_taxes()
+            # rec._onchange_currency()
 
     @api.onchange("return_guarantee_ids")
     def _onchange_return_guarantee_ids(self):
@@ -62,10 +65,13 @@ class AccountMove(models.Model):
                     {field: line[field] for field in list(line._fields.keys())}
                 )
                 new_line["move_id"] = rec.id
-                new_line._onchange_price_subtotal()
+                # 15
+                # new_line._onchange_price_subtotal()
+                new_line._compute_amount()
                 new_lines += new_line
-            new_lines._onchange_mark_recompute_taxes()
-            rec._onchange_currency()
+            # 15
+            # new_lines._onchange_mark_recompute_taxes()
+            # rec._onchange_currency()
 
     @api.onchange("partner_id")
     def _onchange_partner_id(self):
