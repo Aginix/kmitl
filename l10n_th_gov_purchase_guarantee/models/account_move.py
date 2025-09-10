@@ -24,6 +24,7 @@ class AccountMove(models.Model):
         ondelete="restrict",
     )
 
+    # ver 16 ไม่มี analytic_account_id & analytic_tag_ids
     def _prepare_guarantee_move_line(self, guarantee):
         self.ensure_one()
         return {
@@ -39,6 +40,7 @@ class AccountMove(models.Model):
             "move_id": self.id,
         }
 
+    # ไม่ได้ใช้
     @api.onchange("guarantee_ids")
     def _onchange_guarantee_ids(self):
         for rec in self:
@@ -56,6 +58,7 @@ class AccountMove(models.Model):
             # new_lines._onchange_mark_recompute_taxes()
             # rec._onchange_currency()
 
+    # ไม่ได้ใช้ + still error
     @api.onchange("return_guarantee_ids")
     def _onchange_return_guarantee_ids(self):
         for rec in self:
@@ -64,12 +67,12 @@ class AccountMove(models.Model):
             # New invoice lines
             new_lines = rec.env["account.move.line"]
             for line in rec.return_guarantee_ids.mapped("invoice_ids.invoice_line_ids"):
-                new_line = new_lines.new(
+                new_line += new_lines.new(
                     {field: line[field] for field in list(line._fields.keys())}
                 )
-                new_line["move_id"] = rec.id
                 # 15
                 # new_line._onchange_price_subtotal()
+                new_line["move_id"] = rec.id
                 new_line._compute_totals()
                 new_lines += new_line
             # 15

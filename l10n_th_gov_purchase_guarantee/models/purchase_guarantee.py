@@ -94,7 +94,7 @@ class PurchaseGuarantee(models.Model):
         string="Domain Analytic Account",
         compute_sudo=True,
     )
-    # 16 no more tag
+    # ver 16 ไม่มี analytic_tag_ids
     # analytic_tag_ids = fields.Many2many(
     #     comodel_name="account.analytic.tag",
     #     string="Analytic Tags",
