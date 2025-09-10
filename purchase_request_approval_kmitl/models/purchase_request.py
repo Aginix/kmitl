@@ -26,6 +26,9 @@ class PurchaseRequest(models.Model):
         "to_verify": "set default",
         }
     )
+    can_edit_budget = fields.Boolean(
+        compute="_compute_can_edit_budget",
+    )
 
     def _compute_is_purchase_request(self):
         for rec in self:
@@ -96,5 +99,5 @@ class PurchaseRequest(models.Model):
         )
         for rec in self:
             rec.can_edit_budget = bool(
-                user_in_group and rec.state == "budget_validate"
+                user_in_group and rec.substate_sequence == 10
             )

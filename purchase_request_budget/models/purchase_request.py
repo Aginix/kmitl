@@ -20,9 +20,6 @@ class PurchaseRequest(models.Model):
         domain=[('budgetable', '=', True), ('budget_type', '=', 'expense')],
         help="Budget account to be used for commitment"
     )
-    # can_edit_budget = fields.Boolean(
-    #     compute="_compute_can_edit_budget",
-    # )
 
     def action_open_budget_commitment(self):
         self.ensure_one()
