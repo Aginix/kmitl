@@ -11,10 +11,7 @@ class PurchaseGuarantee(models.Model):
     _inherit = 'purchase.guarantee'
 
     reference = fields.Reference(
-        selection=[
-            ("purchase.request", "Purchase Request"),
-            ("purchase.order", "Purchase Order"),
-        ],
+        selection='_reference_selection',
     )
 
     request_id = fields.Many2one(
@@ -25,6 +22,13 @@ class PurchaseGuarantee(models.Model):
         store=True,
         ondelete="restrict",
     )
+
+    @api.model
+    def _reference_selection(self):
+        return [
+            ("purchase.request", "Purchase Request"),
+            ("purchase.order", "Purchase Order"),
+        ]
 
     @api.depends("reference")
     def _compute_reference(self):
