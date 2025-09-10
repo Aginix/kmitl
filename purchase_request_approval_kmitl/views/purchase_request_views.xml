@@ -37,6 +37,11 @@
                 <button id="button_substate_verify" name="action_to_substate" type="object" string="Verify" context="{'to_substate_sequence': 20}" attrs="{'invisible': ['|', ('substate_sequence', '!=', 10), ('state', '!=', 'to_verify')]}" groups="purchase_request_approval_kmitl.group_purchase_request_budget" class="oe_highlight" />
                 <button id="button_substate_verify" name="action_to_substate" type="object" string="Verify" context="{'to_substate_sequence': 30}" attrs="{'invisible': ['|', ('substate_sequence', '!=', 20), ('state', '!=', 'to_verify')]}" groups="purchase_request_security.group_purchase_request_user_all" class="oe_highlight" />
             </button>
+
+            <xpath expr="//button[@name='action_reserve_budget']" position="attributes">
+                <attribute name="groups">purchase_request_security.group_purchase_request_user_all</attribute>
+                <attribute name="states">to_verify</attribute>
+            </xpath>
         </field>
     </record>
 </odoo>
