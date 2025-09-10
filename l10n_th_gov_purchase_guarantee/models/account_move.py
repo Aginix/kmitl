@@ -24,6 +24,7 @@ class AccountMove(models.Model):
         ondelete="restrict",
     )
 
+    # ver 16 ไม่มี analytic_account_id & analytic_tag_ids
     def _prepare_guarantee_move_line(self, guarantee):
         self.ensure_one()
         return {
@@ -31,11 +32,15 @@ class AccountMove(models.Model):
             "account_id": guarantee.guarantee_method_id.account_id.id,
             "quantity": 1,
             "price_unit": guarantee.amount,
-            "analytic_account_id": guarantee.analytic_account_id.id,
-            "analytic_tag_ids": [(6, 0, guarantee.analytic_tag_ids.ids)],
+            'analytic_distribution': {
+                guarantee.analytic_account_id.id: 1.0
+            } if guarantee.analytic_account_id else False,
+            # "analytic_account_id": guarantee.analytic_account_id.id,
+            # "analytic_tag_ids": [(6, 0, guarantee.analytic_tag_ids.ids)],
             "move_id": self.id,
         }
 
+    # ไม่ได้ใช้
     @api.onchange("guarantee_ids")
     def _onchange_guarantee_ids(self):
         for rec in self:
@@ -45,11 +50,15 @@ class AccountMove(models.Model):
             new_lines = rec.env["account.move.line"]
             for guarantee in rec.guarantee_ids:
                 new_line = new_lines.new(rec._prepare_guarantee_move_line(guarantee))
-                new_line._onchange_price_subtotal()
+                # 15
+                # new_line._onchange_price_subtotal()
+                new_line._compute_totals()
                 new_lines += new_line
-            new_lines._onchange_mark_recompute_taxes()
-            rec._onchange_currency()
+            # 15
+            # new_lines._onchange_mark_recompute_taxes()
+            # rec._onchange_currency()
 
+    # ไม่ได้ใช้ + still error
     @api.onchange("return_guarantee_ids")
     def _onchange_return_guarantee_ids(self):
         for rec in self:
@@ -58,14 +67,17 @@ class AccountMove(models.Model):
             # New invoice lines
             new_lines = rec.env["account.move.line"]
             for line in rec.return_guarantee_ids.mapped("invoice_ids.invoice_line_ids"):
-                new_line = new_lines.new(
+                new_line += new_lines.new(
                     {field: line[field] for field in list(line._fields.keys())}
                 )
+                # 15
+                # new_line._onchange_price_subtotal()
                 new_line["move_id"] = rec.id
-                new_line._onchange_price_subtotal()
+                new_line._compute_totals()
                 new_lines += new_line
-            new_lines._onchange_mark_recompute_taxes()
-            rec._onchange_currency()
+            # 15
+            # new_lines._onchange_mark_recompute_taxes()
+            # rec._onchange_currency()
 
     @api.onchange("partner_id")
     def _onchange_partner_id(self):
