@@ -31,8 +31,11 @@ class AccountMove(models.Model):
             "account_id": guarantee.guarantee_method_id.account_id.id,
             "quantity": 1,
             "price_unit": guarantee.amount,
-            "analytic_account_id": guarantee.analytic_account_id.id,
-            "analytic_tag_ids": [(6, 0, guarantee.analytic_tag_ids.ids)],
+            'analytic_distribution': {
+                guarantee.analytic_account_id.id: 1.0
+            } if guarantee.analytic_account_id else False,
+            # "analytic_account_id": guarantee.analytic_account_id.id,
+            # "analytic_tag_ids": [(6, 0, guarantee.analytic_tag_ids.ids)],
             "move_id": self.id,
         }
 
@@ -47,7 +50,7 @@ class AccountMove(models.Model):
                 new_line = new_lines.new(rec._prepare_guarantee_move_line(guarantee))
                 # 15
                 # new_line._onchange_price_subtotal()
-                new_line._compute_amount()
+                new_line._compute_totals()
                 new_lines += new_line
             # 15
             # new_lines._onchange_mark_recompute_taxes()
@@ -67,7 +70,7 @@ class AccountMove(models.Model):
                 new_line["move_id"] = rec.id
                 # 15
                 # new_line._onchange_price_subtotal()
-                new_line._compute_amount()
+                new_line._compute_totals()
                 new_lines += new_line
             # 15
             # new_lines._onchange_mark_recompute_taxes()
