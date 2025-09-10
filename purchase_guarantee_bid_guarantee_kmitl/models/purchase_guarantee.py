@@ -29,9 +29,6 @@ class PurchaseGuarantee(models.Model):
     @api.depends("reference")
     def _compute_reference(self):
         for rec in self.filtered("reference"):
-            # if rec.reference._name == "purchase.requisition":
-            #     rec.requisition_id = rec.reference
-            #     rec.reference_model = rec.reference._name
             if rec.reference._name == "purchase.request":
                 rec.request_id = rec.reference
                 rec.reference_model = rec.reference._name
@@ -47,10 +44,8 @@ class PurchaseGuarantee(models.Model):
         self.ensure_one()
         if self.reference:
             states = []
-            # if self.reference._name == "purchase.requisition":
-            #     states.extend(["in_progress", "open"])
             if self.reference._name == "purchase.request":
-                states.extend(["approved"])
+                states.extend(["approved", "in_progress"])
             elif self.reference._name == "purchase.order":
                 states.extend(["draft", "sent", "purchase"])
             if states and self.reference.state not in states:
@@ -76,8 +71,6 @@ class PurchaseGuarantee(models.Model):
         GuaranteeMethod = self.env["purchase.guarantee.method"]
         for rec in self.filtered("reference"):
             dom = []
-            # if rec.reference._name == "purchase.requisition":
-            #     dom = [("default_for_model", "=", rec.reference._name)]
             if rec.reference._name == "purchase.request":
                 dom = [("default_for_model", "=", rec.reference._name)]
             elif rec.reference._name == "purchase.order":

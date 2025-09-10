@@ -6,11 +6,12 @@
     'author': 'Aginix Technologies',
     'website': 'https://github.com/aginix/kmitl',
     'category': 'KMITL',
-    'depends': ['l10n_th_gov_purchase_guarantee', 'purchase_request_kmitl'],
-    'data': [
-        "data/purchase_guarantee_rules.xml",
+    'depends': ['l10n_th_gov_purchase_guarantee', 'purchase_request'],
+    "data": [
         "data/purchase_guarantee_method_data.xml",
+        "data/purchase_guarantee_rules.xml",
         "data/purchase_guarantee_type_data.xml",
+        "views/purchase_request_views.xml"
     ],
     'installable': True,
     'auto_install': False,
