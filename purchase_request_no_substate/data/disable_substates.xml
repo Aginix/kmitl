@@ -1,9 +1,0 @@
-<odoo>
-    <record id="l10n_th_gov_purchase_request.base_substate_to_verify" model="base.substate">
-        <field name="active" eval="False"/>
-    </record>
-
-    <record id="l10n_th_gov_purchase_request.base_substate_verified" model="base.substate">
-        <field name="active" eval="False"/>
-    </record>
-</odoo>
