@@ -56,7 +56,7 @@ class PurchaseGuarantee(models.Model):
                 raise UserError(
                     _("%(ref)s must be in status: %(state)s")
                     % {
-                        "ref": dict(self._fields["reference"].selection).get(
+                        "ref": dict(self._reference_selection()).get(
                             self.reference._name
                         ),
                         "state": ", ".join(
