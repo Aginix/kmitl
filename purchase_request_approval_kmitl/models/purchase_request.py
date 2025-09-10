@@ -10,7 +10,7 @@ class PurchaseRequest(models.Model):
     _state_from = ["to_verify", "to_approve"]
 
     _STATES = [
-        ("to_verify", "to be verified"),
+        ("to_verify", "To be verified"),
         ("to_approve",)
     ]
 

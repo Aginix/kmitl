@@ -10,7 +10,8 @@
     "data": [
         "data/substate.xml",
         "data/tier_definition.xml",
-        "views/purchase_request_views.xml"
+        "security/purchase_request_group.xml",
+        "views/purchase_request_views.xml",
     ],
     'installable': True,
     'auto_install': False,

@@ -5,20 +5,23 @@
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form"/>
         <field name="arch" type="xml">
+            <!-- tier validation -->
             <button name="button_draft" position="after">
                 <field name="rejected" invisible="1" />
                 <field name="validation_status" invisible="1" />
                 <field name="need_validation" invisible="1" />
-                <button name="request_validation" string="Request Validation" class="btn-primary" attrs="{'invisible': ['|', '|',
+                <button name="request_validation" string="Request Validation" class="btn-primary" attrs="{'invisible': ['|', '|', '|',
         ('need_validation', '!=', True),
         ('validation_status', '=', 'pending'),
-        ('rejected', '=', True)
+        ('rejected', '=', True),
+        ('substate_sequence', '!=', 30)
     ]}" type="object" />
                 <button name="restart_validation" string="Restart Validation" class="btn-primary" attrs="{'invisible': ['|',
         ('need_validation', '!=', True),
         ('validation_status', '!=', 'pending'),
     ]}" type="object" groups="purchase_request.group_purchase_request_manager" />
             </button>
+            <!-- state change -->
             <field name="state" position="attributes">
                 <attribute name="statusbar_visible">draft,to_verify,to_approve,approved,done,in_progress</attribute>
             </field>
@@ -27,6 +30,12 @@
             </button>
             <button name="button_approved" position="attributes">
                 <attribute name="invisible">1</attribute>
+            </button>
+            <!-- substate btn -->
+            <button name="button_draft" position="before">
+                <field name="substate_sequence" invisible="1" />
+                <button id="button_substate_verify" name="action_to_substate" type="object" string="Verify" context="{'to_substate_sequence': 20}" attrs="{'invisible': ['|', ('substate_sequence', '!=', 10), ('state', '!=', 'to_verify')]}" groups="purchase_request_approval_kmitl.group_purchase_request_budget" class="oe_highlight" />
+                <button id="button_substate_verify" name="action_to_substate" type="object" string="Verify" context="{'to_substate_sequence': 30}" attrs="{'invisible': ['|', ('substate_sequence', '!=', 20), ('state', '!=', 'to_verify')]}" groups="purchase_request_security.group_purchase_request_user_all" class="oe_highlight" />
             </button>
         </field>
     </record>
