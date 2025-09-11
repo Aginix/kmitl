@@ -106,6 +106,33 @@ class PurchaseGuarantee(models.Model):
                     ]
             rec.guarantee_method_id = GuaranteeMethod.search(dom)[:1]
 
+    @api.depends("reference")
+    def _compute_analytic(self):
+        AnalyticAccount = self.env["account.analytic.account"]
+
+        for rec in self:
+            rec.analytic_account_id = False
+            rec.domain_analytic_account_ids = False
+
+            origin = False
+            if rec.reference:
+                if rec.reference._name == "purchase.request":
+                    origin = rec.reference.line_ids
+                elif rec.reference._name == "purchase.order":
+                    origin = rec.reference.order_line
+
+            analytics = AnalyticAccount.browse()
+
+            if origin and "analytic_distribution" in origin._fields:
+                for line in origin:
+                    distribution = line.analytic_distribution
+                    if distribution:
+                        analytics |= AnalyticAccount.browse([int(aid) for aid in distribution.keys()])
+
+            rec.domain_analytic_account_ids = analytics
+            if len(analytics) == 1:
+                rec.analytic_account_id = analytics[0]
+
     def action_view_purchase_request(self):
         self.ensure_one()
         if not self.request_id:
