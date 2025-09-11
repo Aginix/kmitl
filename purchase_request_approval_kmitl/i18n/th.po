@@ -73,7 +73,7 @@ msgstr "คำขอซื้อขอจ้าง"
 #. module: purchase_request_approval_kmitl
 #: model:res.groups,name:purchase_request_approval_kmitl.group_purchase_request_budget
 msgid "Purchase Request Budget"
-msgstr "คำขอซื้อขอจ้าง งบประมาณ"
+msgstr "สามารถจองงบประมาณได้"
 
 #. module: purchase_request_approval_kmitl
 #: model:ir.model,name:purchase_request_approval_kmitl.model_purchase_request_exception_confirm
