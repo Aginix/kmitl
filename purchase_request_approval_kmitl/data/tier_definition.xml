@@ -10,5 +10,9 @@
         <field name="approve_sequence">True</field>
         <field name="has_comment">True</field>
         <field name="active">True</field>
+        <field name="notify_on_create">True</field>
+        <field name="notify_on_accepted">True</field>
+        <field name="notify_on_rejected">True</field>
+        <field name="notify_on_restarted">True</field>
     </record>
 </odoo>
