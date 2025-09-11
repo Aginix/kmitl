@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Purchase Request Budget Security',
+    'name': 'Purchase Guarantee No Invoice Bill',
     'version': '16.0.1.0.0',
-    'summary': """ Purchase Request Budget Security """,
+    'summary': """ Purchase Guarantee No Invoice Bill Summary """,
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['purchase_request_budget', 'purchase_request_security'],
+    'depends': ['l10n_th_gov_purchase_guarantee'],
     "data": [
-        "views/purchase_request_views.xml",
+        "views/account_move_views.xml",
+        "views/purchase_guarantee_views.xml"
     ],
     'installable': True,
     'auto_install': False,
