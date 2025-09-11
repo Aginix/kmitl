@@ -38,11 +38,6 @@ class PurchaseRequest(models.Model):
         compute='_compute_current_user',
         store=True,
     )
-    is_current_user_requester = fields.Boolean(
-        string="Is Current User Requester",
-        compute="_compute_is_current_user_requester",
-        store=False,
-    )
     payment_type = fields.Selection([
         ("direct", "Direct paid"),
         ("loan", "Loan"),
@@ -67,12 +62,6 @@ class PurchaseRequest(models.Model):
         tracking=True,
         readonly=False,
     )
-
-    @api.depends('requested_by')
-    def _compute_is_current_user_requester(self):
-        current_uid = self.env.uid
-        for rec in self:
-            rec.is_current_user_requester = rec.requested_by.id == current_uid
 
     @api.depends_context('uid')
     def _compute_current_user(self):
