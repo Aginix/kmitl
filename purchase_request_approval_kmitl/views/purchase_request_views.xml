@@ -35,13 +35,13 @@
             <button name="button_draft" position="before">
                 <field name="substate_sequence" invisible="1" />
                 <field name="can_edit_budget" invisible="1" />
-                <button id="button_substate_verify" name="action_to_substate" type="object" string="Verify" context="{'to_substate_sequence': 20}" attrs="{'invisible': ['|', ('substate_sequence', '!=', 10), ('state', '!=', 'to_verify')]}" groups="purchase_request_approval_kmitl.group_purchase_request_budget" class="oe_highlight" />
+                <!-- ปุ่มเลื่อน substate กดมือ
+                <button id="button_substate_verify" name="action_to_substate" type="object" string="Verify" context="{'to_substate_sequence': 20}" attrs="{'invisible': ['|', ('substate_sequence', '!=', 10), ('state', '!=', 'to_verify')]}" groups="purchase_request_approval_kmitl.group_purchase_request_budget" class="oe_highlight" /> -->
                 <button id="button_substate_verify" name="action_to_substate" type="object" string="Verify" context="{'to_substate_sequence': 30}" attrs="{'invisible': ['|', ('substate_sequence', '!=', 20), ('state', '!=', 'to_verify')]}" groups="purchase_request_security.group_purchase_request_user_all" class="oe_highlight" />
             </button>
-
             <xpath expr="//button[@name='action_reserve_budget']" position="attributes">
-                <attribute name="groups">purchase_request_security.group_purchase_request_user_all</attribute>
-                <attribute name="states">to_verify</attribute>
+                <attribute name="groups">purchase_request_approval_kmitl.group_purchase_request_budget</attribute>
+                <attribute name="attrs">{'invisible':['|', ('state','!=','to_verify'), ('substate_sequence', '!=', 10)]}</attribute>
             </xpath>
             <field name="budget_account_id" position="attributes">
                 <attribute name="attrs">{'readonly':[('can_edit_budget','=',False)]}</attribute>
@@ -57,6 +57,9 @@
             </field>
             <field name="source_analytic_id" position="attributes">
                 <attribute name="attrs">{'readonly':[('can_edit_budget','=',False)]}</attribute>
+            </field>
+            <field name="substate_id" position="attributes">
+                <attribute name="attrs">{'invisible':[('state','!=','to_verify')]}</attribute>
             </field>
         </field>
     </record>

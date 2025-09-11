@@ -95,7 +95,7 @@ class PurchaseRequest(models.Model):
     @api.depends_context("uid")
     def _compute_can_edit_budget(self):
         user_in_group = self.env.user.has_group(
-            "purchase_request_security.group_purchase_request_user_all"
+            "purchase_request_approval_kmitl.group_purchase_request_budget"
         )
         for rec in self:
             rec.can_edit_budget = bool(
