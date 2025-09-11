@@ -18,8 +18,7 @@
                         icon="fa-shopping-cart"
                         attrs="{'invisible': ['|', ('is_purchase_request', '=', False), ('request_id', '=', False)]}">
                     <div class="o_field_widget o_stat_info">
-                        <span class="o_stat_text">Purchase</span>
-                        <span class="o_stat_text">Request</span>
+                        <span class="o_stat_text">Purchase Request</span>
                     </div>
                 </button>
             </xpath>

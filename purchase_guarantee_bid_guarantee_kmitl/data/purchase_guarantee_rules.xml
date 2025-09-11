@@ -2,7 +2,7 @@
 <odoo>
 
     <function name="write" model="ir.model.data">
-        <value model="ir.model.data" search="[('module', '=', 'l10n_th_gov_purchase_guarantee'), ('name', 'in',['bid_guarantee','performance_bond','advance_payment_guarantee', 'cheque_draft', 'cash', 'bank_guarantee', 'thai_government_bond', 'collateral', 'electronic_guarantee'])]" />
+        <value model="ir.model.data" search="[('module', '=', 'l10n_th_gov_purchase_guarantee'), ('name', 'in',['bid_guarantee'])]" />
         <value eval="{'noupdate': False}" />
     </function>
 

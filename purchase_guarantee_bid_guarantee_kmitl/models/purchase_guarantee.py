@@ -26,7 +26,7 @@ class PurchaseGuarantee(models.Model):
     is_purchase_request = fields.Boolean(
         string="Is Purchase Request",
         compute="_compute_reference",
-        store=True,
+        store=False,
         help="True if reference is purchase.request"
     )
 
@@ -39,29 +39,28 @@ class PurchaseGuarantee(models.Model):
 
     @api.depends("reference")
     def _compute_reference(self):
-        for rec in self.filtered("reference"):
+        res = super()._compute_reference()
+        for rec in self:
             rec.request_id = False
             rec.is_purchase_request = False
-            if rec.reference._name == "purchase.request":
-                rec.request_id = rec.reference
-                rec.reference_model = rec.reference._name
-                rec.is_purchase_request = True
-            elif rec.reference._name == "purchase.order":
-                rec.purchase_id = rec.reference
-                if rec.reference.state in ["draft", "sent"]:
-                    rec.reference_model = "{}.{}".format(rec.reference._name, "rfq")
-                elif rec.reference.state in ["purchase"]:
-                    rec.reference_model = "{}.{}".format(rec.reference._name, "po")
-            rec._check_reference_status()
+
+            if rec.reference:
+                if rec.reference._name == "purchase.request":
+                    rec.request_id = rec.reference
+                    rec.reference_model = rec.reference._name
+                    rec.is_purchase_request = True
+                rec._check_reference_status()
+        return res
 
     def _check_reference_status(self):
-        self.ensure_one()
+        super()._check_reference_status()
         if self.reference:
             states = []
             if self.reference._name == "purchase.request":
-                states.extend(["approved", "in_progress"])
-            elif self.reference._name == "purchase.order":
-                states.extend(["draft", "sent", "purchase"])
+                if self.id:
+                    states.extend(["approved", "in_progress", "done"])
+                else:
+                    states.extend(["approved", "in_progress"])
             if states and self.reference.state not in states:
                 raise UserError(
                     _("%(ref)s must be in status: %(state)s")
@@ -83,27 +82,11 @@ class PurchaseGuarantee(models.Model):
     @api.depends("reference")
     def _compute_guarantee_method_id(self):
         GuaranteeMethod = self.env["purchase.guarantee.method"]
+        super()._compute_guarantee_method_id()
         for rec in self.filtered("reference"):
             dom = []
             if rec.reference._name == "purchase.request":
                 dom = [("default_for_model", "=", rec.reference._name)]
-            elif rec.reference._name == "purchase.order":
-                if rec.reference.state in ["draft", "sent"]:
-                    dom = [
-                        (
-                            "default_for_model",
-                            "=",
-                            "{}.{}".format(rec.reference._name, "rfq"),
-                        )
-                    ]
-                elif rec.reference.state in ["purchase"]:
-                    dom = [
-                        (
-                            "default_for_model",
-                            "=",
-                            "{}.{}".format(rec.reference._name, "po"),
-                        )
-                    ]
             rec.guarantee_method_id = GuaranteeMethod.search(dom)[:1]
 
     @api.depends("reference")

@@ -6,8 +6,4 @@
         <field name="default_for_model">purchase.request</field>
     </record>
 
-    <record id="l10n_th_gov_purchase_guarantee.advance_payment_guarantee" model="purchase.guarantee.method">
-        <field name="name">หลักประกันสัญญา</field>
-    </record>
-
 </odoo>
