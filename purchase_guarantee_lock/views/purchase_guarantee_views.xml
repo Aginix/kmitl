@@ -54,9 +54,6 @@
             <xpath expr="//field[@name='document_ref']" position="attributes">
               <attribute name="attrs">{'readonly': [('is_editable', '=', False)]}</attribute>
             </xpath>
-            <xpath expr="//field[@name='date_due_guarantee']" position="attributes">
-              <attribute name="attrs">{'readonly': [('is_editable', '=', False)]}</attribute>
-            </xpath>
         </field>
     </record>
 
