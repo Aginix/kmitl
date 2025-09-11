@@ -29,6 +29,7 @@ class PurchaseRequest(models.Model):
     can_edit_budget = fields.Boolean(
         compute="_compute_can_edit_budget",
     )
+    can_request = fields.Boolean(compute="_compute_can_request")
 
     def _compute_is_purchase_request(self):
         for rec in self:
@@ -159,3 +160,10 @@ class PurchaseRequest(models.Model):
 
         except UserError as e:
             raise UserError(_("Cannot reserve budget: %s") % str(e))
+
+    @api.depends("requested_by")
+    def _compute_can_request(self):
+        current_user = self.env.user
+        is_manager = current_user.has_group("purchase_request.group_purchase_request_manager")
+        for rec in self:
+            rec.can_request = (rec.requested_by.id == current_user.id) or is_manager
