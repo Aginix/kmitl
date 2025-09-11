@@ -1,0 +1,33 @@
+<odoo>
+    <!-- disible -->
+    <record id="l10n_th_gov_purchase_request.base_substate_to_verify" model="base.substate">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="l10n_th_gov_purchase_request.base_substate_verified" model="base.substate">
+        <field name="active" eval="False"/>
+    </record>
+
+    <!-- new category substate -->
+    <record id="target_state_value_approved" model="target.state.value">
+        <field name="name">To be verified</field>
+        <field name="base_substate_type_id" ref="purchase_request_substate.base_substate_type_purchase_request" />
+        <field name="target_state_value">to_verify</field>
+    </record>
+
+    <!-- new substate -->
+    <record id="base_substate_budget_validaition" model="base.substate">
+        <field name="name">Budget Validation</field>
+        <field name="sequence">10</field>
+        <field name="target_state_value_id" ref="target_state_value_approved" />
+    </record>
+    <record id="base_substate_to_be_verified" model="base.substate">
+        <field name="name">To be Verified</field>
+        <field name="sequence">20</field>
+        <field name="target_state_value_id" ref="target_state_value_approved" />
+    </record>
+    <record id="base_substate_waiting_for_approval" model="base.substate">
+        <field name="name">Waiting for request approval</field>
+        <field name="sequence">30</field>
+        <field name="target_state_value_id" ref="target_state_value_approved" />
+    </record>
+</odoo>

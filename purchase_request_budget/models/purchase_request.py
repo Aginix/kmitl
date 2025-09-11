@@ -7,22 +7,6 @@ class PurchaseRequest(models.Model):
     _name = 'purchase.request'
     _inherit = ['purchase.request', 'budget.commitment.mixin', 'analytic.distribution.mixin']
 
-    _STATES = [
-        ("budget_validate", "Validate"),
-        ("to_approve",)
-    ]
-
-    state = fields.Selection(
-        selection_add=_STATES,
-        string="Status",
-        index=True,
-        tracking=True,
-        required=True,
-        copy=False,
-        ondelete={
-        "budget_validate": "set default",
-        }
-    )
     budget_commitment_id = fields.Many2one(
         'budget.commitment',
         string='Budget Commitment',
@@ -35,9 +19,6 @@ class PurchaseRequest(models.Model):
         string='Budget Account',
         domain=[('budgetable', '=', True), ('budget_type', '=', 'expense')],
         help="Budget account to be used for commitment"
-    )
-    can_edit_budget = fields.Boolean(
-        compute="_compute_can_edit_budget",
     )
 
     def action_open_budget_commitment(self):
@@ -53,17 +34,6 @@ class PurchaseRequest(models.Model):
             "res_id": self.budget_commitment_id.id,
             "target": "current",
         }
-
-    @api.depends("state")
-    def _compute_can_edit_budget(self):
-        for rec in self:
-            rec.can_edit_budget = (rec.state == 'budget_validate')
-
-    def button_to_budget_validate(self):
-        self.ensure_one()
-        if self.detect_exceptions() and not self.ignore_exception:
-            return self._popup_exceptions()
-        self.write({"state": "budget_validate"})
 
     def action_reserve_budget(self):
         """Reserve budget by creating commitment"""
@@ -136,10 +106,3 @@ class PurchaseRequest(models.Model):
                     record.message_post(body=_("Warning: Could not cancel budget commitment: %s") % str(e))
 
         return super().button_rejected()
-
-    @api.depends("state")
-    def _compute_is_editable(self):
-        res = super()._compute_is_editable()
-        for record in self:
-            if record.state in ("budget_validate"):
-                record.is_editable = False
