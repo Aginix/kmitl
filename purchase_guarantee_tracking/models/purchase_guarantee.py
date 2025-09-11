@@ -10,9 +10,6 @@ _logger = logging.getLogger(__name__)
 class PurchaseGuarantee(models.Model):
     _inherit = 'purchase.guarantee'
 
-    name = fields.Char(
-        tracking=True,
-    )
     reference = fields.Reference(
         tracking=True,
     )
@@ -46,9 +43,6 @@ class PurchaseGuarantee(models.Model):
     analytic_account_id = fields.Many2one(
         tracking=True,
     )
-    domain_analytic_account_ids = fields.Many2many(
-        tracking=True,
-    )
     amount_received = fields.Monetary(
         tracking=True,
     )
@@ -65,9 +59,6 @@ class PurchaseGuarantee(models.Model):
         tracking=True,
     )
     note = fields.Text(
-        tracking=True,
-    )
-    can_edit_guarantee_method = fields.Boolean(
         tracking=True,
     )
     active = fields.Boolean(
