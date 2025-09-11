@@ -10,6 +10,7 @@
                 <field name="rejected" invisible="1" />
                 <field name="validation_status" invisible="1" />
                 <field name="need_validation" invisible="1" />
+                <field name="can_request" invisible="1" />
                 <button name="request_validation" string="Request Validation" class="btn-primary" attrs="{'invisible': ['|', '|', '|', '|',
         ('need_validation', '!=', True),
         ('validation_status', '=', 'pending'),
