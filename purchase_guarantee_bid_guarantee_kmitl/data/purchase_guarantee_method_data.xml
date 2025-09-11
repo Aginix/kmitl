@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_th_gov_purchase_guarantee.bid_guarantee" model="purchase.guarantee.method">
+        <field name="name">หลักประกันการเสนอราคา</field>
+        <field name="default_for_model">purchase.request</field>
+    </record>
+
+</odoo>
