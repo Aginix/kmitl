@@ -114,7 +114,7 @@ msgstr "ตรวจสอบข้อมูล"
 #. module: purchase_request_approval_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval_kmitl.view_purchase_request_form
 msgid "Verify"
-msgstr "ตรวจสอบ"
+msgstr "ยืนยันข้อมูล"
 
 #. module: purchase_request_approval_kmitl
 #: model:base.substate,name:purchase_request_approval_kmitl.base_substate_waiting_for_approval
