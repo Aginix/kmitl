@@ -1,0 +1,147 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_request_budget
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-11 07:50+0000\n"
+"PO-Revision-Date: 2025-09-11 07:50+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: purchase_request_budget
+#: model_terms:ir.ui.view,arch_db:purchase_request_budget.view_purchase_request_form
+msgid "<span>Budget</span>"
+msgstr "<span>งบประมาณ</span>"
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__analytic_distribution
+msgid "Analytic"
+msgstr "การวิเคราะห์"
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__analytic_distribution_search
+msgid "Analytic Distribution Search"
+msgstr ""
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__analytic_precision
+msgid "Analytic Precision"
+msgstr ""
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__budget_account_id
+msgid "Budget Account"
+msgstr "รหัสงบประมาณ"
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__budget_commitment_id
+msgid "Budget Commitment"
+msgstr "การจองงบประมาณ"
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,help:purchase_request_budget.field_purchase_request__budget_account_id
+msgid "Budget account to be used for commitment"
+msgstr "งบประมาณที่จะใช้สำหรับการจอง"
+
+#. module: purchase_request_budget
+#. odoo-python
+#: code:addons/purchase_request_budget/models/purchase_request.py:0
+#: code:addons/purchase_request_budget/models/purchase_request.py:0
+#, python-format
+msgid "Budget commitment %s has been cancelled"
+msgstr "งบประมาณ %s ได้ถูกยกเลิกแล้ว"
+
+#. module: purchase_request_budget
+#. odoo-python
+#: code:addons/purchase_request_budget/models/purchase_request.py:0
+#, python-format
+msgid "Budget reserved: %s for amount %s"
+msgstr "การจองงบประมาณ: %s สำหรับจำนวนเงิน %s"
+
+#. module: purchase_request_budget
+#. odoo-python
+#: code:addons/purchase_request_budget/models/purchase_request.py:0
+#, python-format
+msgid "Cannot reserve budget due to insufficient funds: %s"
+msgstr "ไม่สามารถจองงบประมาณได้เนื่องจากเงินไม่เพียงพอ: %s"
+
+#. module: purchase_request_budget
+#. odoo-python
+#: code:addons/purchase_request_budget/models/purchase_request.py:0
+#, python-format
+msgid "Cannot reserve budget: %s"
+msgstr "ไม่สามารถจองงบประมาณได้: %s"
+
+#. module: purchase_request_budget
+#. odoo-python
+#: code:addons/purchase_request_budget/models/purchase_request.py:0
+#, python-format
+msgid "Please specify analytic dimensions for budget commitment"
+msgstr "โปดระบุรายละเอียดการวิเคราะห์สำหรับการจองงบประมาณ"
+
+#. module: purchase_request_budget
+#. odoo-python
+#: code:addons/purchase_request_budget/models/purchase_request.py:0
+#, python-format
+msgid "Please specify budget account"
+msgstr "โปดระบุรหัสงบประมาณ"
+
+#. module: purchase_request_budget
+#: model:ir.model,name:purchase_request_budget.model_purchase_request
+msgid "Purchase Request"
+msgstr "คำขอซื้อขอจ้าง"
+
+#. module: purchase_request_budget
+#: model:ir.model,name:purchase_request_budget.model_purchase_request_exception_confirm
+msgid "Purchase request exception wizard"
+msgstr "คำขอซื้อขอจ้าง ตัวช่วยข้อยกเว้น"
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,help:purchase_request_budget.field_purchase_request__budget_commitment_id
+msgid "Related budget commitment for this purchase request"
+msgstr "การจองงบประมาณที่เกี่ยวข้องกับคำขอซื้อขอจ้างนี้"
+
+#. module: purchase_request_budget
+#: model_terms:ir.ui.view,arch_db:purchase_request_budget.view_purchase_request_form
+msgid "Reserve Budget"
+msgstr "จองงบประมาณ"
+
+#. module: purchase_request_budget
+#. odoo-python
+#: code:addons/purchase_request_budget/models/purchase_request.py:0
+#: code:addons/purchase_request_budget/models/purchase_request.py:0
+#, python-format
+msgid "Warning: Could not cancel budget commitment: %s"
+msgstr "ระวัง: ไม่สามารถยกเลิกการจองงบประมาณได้: %s"
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__fund_analytic_id
+msgid "กองทุน"
+msgstr ""
+
+#. module: purchase_request_budget
+#: model_terms:ir.ui.view,arch_db:purchase_request_budget.view_purchase_request_form
+msgid "จองงบประมาณ"
+msgstr ""
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__activity_analytic_id
+msgid "ด้าน/แผนงาน/กิจกรรม"
+msgstr ""
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__department_analytic_id
+msgid "ส่วนงาน"
+msgstr ""
+
+#. module: purchase_request_budget
+#: model:ir.model.fields,field_description:purchase_request_budget.field_purchase_request__source_analytic_id
+msgid "แหล่งเงิน"
+msgstr ""
