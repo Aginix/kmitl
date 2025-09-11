@@ -37,9 +37,6 @@ class PurchaseGuarantee(models.Model):
     company_id = fields.Many2one(
         tracking=True,
     )
-    currency_id = fields.Many2one(
-        tracking=True,
-    )
     amount = fields.Monetary(
         tracking=True,
     )
@@ -52,9 +49,6 @@ class PurchaseGuarantee(models.Model):
     domain_analytic_account_ids = fields.Many2many(
         tracking=True,
     )
-    invoice_ids = fields.Many2many(
-        tracking=True,
-    )
     amount_received = fields.Monetary(
         tracking=True,
     )
@@ -62,9 +56,6 @@ class PurchaseGuarantee(models.Model):
         tracking=True,
     )
     date_return = fields.Date(
-        tracking=True,
-    )
-    bill_ids = fields.Many2many(
         tracking=True,
     )
     amount_returned = fields.Monetary(
