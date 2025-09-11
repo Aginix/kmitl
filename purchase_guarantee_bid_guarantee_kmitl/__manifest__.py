@@ -11,6 +11,7 @@
         "data/purchase_guarantee_method_data.xml",
         "data/purchase_guarantee_rules.xml",
         "data/purchase_guarantee_type_data.xml",
+        "views/purchase_guarantee_views.xml",
         "views/purchase_request_views.xml"
     ],
     'installable': True,

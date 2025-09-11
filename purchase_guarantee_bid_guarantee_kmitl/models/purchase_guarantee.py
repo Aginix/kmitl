@@ -23,6 +23,13 @@ class PurchaseGuarantee(models.Model):
         ondelete="restrict",
     )
 
+    is_purchase_request = fields.Boolean(
+        string="Is Purchase Request",
+        compute="_compute_reference",
+        store=True,
+        help="True if reference is purchase.request"
+    )
+
     @api.model
     def _reference_selection(self):
         return [
@@ -33,9 +40,12 @@ class PurchaseGuarantee(models.Model):
     @api.depends("reference")
     def _compute_reference(self):
         for rec in self.filtered("reference"):
+            rec.request_id = False
+            rec.is_purchase_request = False
             if rec.reference._name == "purchase.request":
                 rec.request_id = rec.reference
                 rec.reference_model = rec.reference._name
+                rec.is_purchase_request = True
             elif rec.reference._name == "purchase.order":
                 rec.purchase_id = rec.reference
                 if rec.reference.state in ["draft", "sent"]:
@@ -95,3 +105,19 @@ class PurchaseGuarantee(models.Model):
                         )
                     ]
             rec.guarantee_method_id = GuaranteeMethod.search(dom)[:1]
+
+    def action_view_purchase_request(self):
+        self.ensure_one()
+        if not self.request_id:
+            return
+            
+        return {
+            'name': _('Purchase Request'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'purchase.request',
+            'res_id': self.request_id.id,
+            'view_mode': 'form',
+            'view_type': 'form',
+            'target': 'current',
+            'context': self.env.context,
+        }
