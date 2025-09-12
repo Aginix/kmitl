@@ -52,9 +52,6 @@
             <field name="activity_analytic_id" position="attributes">
                 <attribute name="attrs">{'readonly':[('can_edit_budget','=',False)]}</attribute>
             </field>
-            <field name="department_analytic_id" position="attributes">
-                <attribute name="attrs">{'readonly':[('can_edit_budget','=',False)]}</attribute>
-            </field>
             <field name="fund_analytic_id" position="attributes">
                 <attribute name="attrs">{'readonly':[('can_edit_budget','=',False)]}</attribute>
             </field>

@@ -5,8 +5,8 @@
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='procurement_type_id']" position="after">
-                <field name="department_analytic_id" />
+            <xpath expr="//field[@name='procurement_type_id']" position="before">
+                <field name="department_analytic_id" required="1" />
             </xpath>
         </field>
     </record>
