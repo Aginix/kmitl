@@ -31,6 +31,22 @@ class PurchaseGuarantee(models.Model):
                     rec.is_purchase_order = True
                 rec._check_reference_status()
         return res
+    
+    @api.depends("reference")
+    def _compute_guarantee_method_id(self):
+        GuaranteeMethod = self.env["purchase.guarantee.method"]
+        super()._compute_guarantee_method_id()
+        for rec in self.filtered("reference"):
+            dom = []
+            if rec.reference._name == "purchase.order":
+                dom = [
+                    (
+                            "default_for_model",
+                            "=",
+                            "{}.{}".format(rec.reference._name, "po"),
+                    )
+                ]
+            rec.guarantee_method_id = GuaranteeMethod.search(dom)[:1]
 
     def action_view_purchase_order(self):
         self.ensure_one()
