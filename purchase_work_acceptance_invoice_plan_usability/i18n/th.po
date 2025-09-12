@@ -21,7 +21,7 @@ msgstr ""
 #. module: purchase_work_acceptance_invoice_plan_usability
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_invoice_plan_usability.selection__purchase_invoice_plan__wa_state__accept
 msgid "Accepted"
-msgstr ""
+msgstr "ตรวจรับแล้ว"
 
 #. module: purchase_work_acceptance_invoice_plan
 #: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan.field_select_work_acceptance_invoice_plan_wizard__active_installment_ids
