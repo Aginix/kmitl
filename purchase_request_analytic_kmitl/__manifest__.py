@@ -7,6 +7,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     'depends': ['account_analytic_kmitl', 'l10n_th_gov_purchase_request'],
+    "data": [],
     'installable': True,
     'auto_install': False,
     'license': 'LGPL-3',
