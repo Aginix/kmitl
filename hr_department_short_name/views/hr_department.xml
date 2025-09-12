@@ -5,7 +5,7 @@
         <field name="model">hr.department</field>
         <field name="inherit_id" ref="hr.view_department_form"/>
         <field name="arch" type="xml">
-            <field name="code" position="after">
+            <field name="name" position="before">
                 <field name="short_name"/>
             </field>
         </field>
