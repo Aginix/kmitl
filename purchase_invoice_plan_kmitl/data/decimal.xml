@@ -1,0 +1,13 @@
+<odoo>
+    <function name="write" model="ir.model.data">
+        <value
+            model="ir.model.data"
+            search="[('module', '=', 'purchase_invoice_plan'), ('name', 'in',['decimal_price'])]"
+        />
+        <value eval="{'noupdate': False}" />
+    </function>
+
+    <record id="purchase_invoice_plan.decimal_price" model="decimal.precision">
+        <field name="digits">0</field>
+    </record>
+</odoo>
