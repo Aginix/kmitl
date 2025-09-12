@@ -6,7 +6,7 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['purchase_request_analytic_kmitl'],
+    'depends': ['purchase_request_analytic_kmitl', 'purchase_request_operating_unit'],
     "data": [
         "views/purchase_request_views.xml"
     ],
