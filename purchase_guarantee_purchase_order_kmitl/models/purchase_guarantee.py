@@ -21,13 +21,29 @@ class PurchaseGuarantee(models.Model):
     def _compute_reference(self):
         res = super()._compute_reference()
         for rec in self:
-            rec.request_id = False
-            rec.is_purchase_request = False
+            rec.purchase_id = False
+            rec.is_purchase_order = False
 
             if rec.reference:
-                if rec.reference._name == "purchase.request":
-                    rec.request_id = rec.reference
-                    rec.reference_model = rec.reference._name
-                    rec.is_purchase_request = True
+                if rec.reference._name == "purchase.order":
+                    rec.purchase_id = rec.reference
+                    rec.reference_model = "{}.{}".format(rec.reference._name, "po")
+                    rec.is_purchase_order = True
                 rec._check_reference_status()
         return res
+
+    def action_view_purchase_order(self):
+        self.ensure_one()
+        if not self.purchase_id:
+            return
+            
+        return {
+            'name': _('Purchase Order'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'purchase.order',
+            'res_id': self.purchase_id.id,
+            'view_mode': 'form',
+            'view_type': 'form',
+            'target': 'current',
+            'context': self.env.context,
+        }
