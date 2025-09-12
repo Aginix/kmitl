@@ -58,7 +58,6 @@ class PurchaseRequest(models.Model):
     date_range_fy_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="ปีงบประมาณ",
-        required=True,
         tracking=True,
         readonly=False,
     )
