@@ -12,25 +12,20 @@ class PurchaseGuarantee(models.Model):
 
     is_purchase_order = fields.Boolean(
         string="Is Purchase Order",
-        compute="_compute_reference",
+        compute="_compute_is_purchase_order",
         store=False,
         help="True if reference is purchase.order"
     )
 
     @api.depends("reference")
-    def _compute_reference(self):
-        res = super()._compute_reference()
+    def _compute_is_purchase_order(self):
         for rec in self:
-            rec.purchase_id = False
-            rec.is_purchase_order = False
-
-            if rec.reference:
-                if rec.reference._name == "purchase.order":
-                    rec.purchase_id = rec.reference
-                    rec.reference_model = "{}.{}".format(rec.reference._name, "po")
-                    rec.is_purchase_order = True
-                rec._check_reference_status()
-        return res
+            if not rec.reference:
+                rec.is_purchase_order = False
+            elif rec.reference._name == "purchase.order":
+                rec.is_purchase_order = True
+            else:
+                rec.is_purchase_order = False
     
     @api.depends("reference")
     def _compute_guarantee_method_id(self):
