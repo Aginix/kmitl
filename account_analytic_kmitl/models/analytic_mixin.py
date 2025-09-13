@@ -44,6 +44,14 @@ class AnalyticDistributionMixin(models.AbstractModel):
         domain=[("root_plan_id.code", "=", "sources")],
     )
 
+    analytic_distribution = fields.Json(
+        "Analytic",
+        inverse="_inverse_analytic_distribution",
+        store=True,
+        copy=True,
+        readonly=False,
+    )
+
     @api.depends(lambda self: self._analytic_fields())
     def _compute_analytic_distribution(self):
         for record in self:
@@ -57,18 +65,42 @@ class AnalyticDistributionMixin(models.AbstractModel):
 
             record.analytic_distribution = distribution if distribution else False
 
-    def _analytic_fields(self):
-        return ["department_analytic_id", "activity_analytic_id", "fund_analytic_id", "source_analytic_id"]
-
-    @api.onchange("department_analytic_id", "activity_analytic_id", "fund_analytic_id", "source_analytic_id")
-    def _onchange_analytic_fields(self):
-        """Update analytic distribution when individual fields change"""
+    def _process_analytic_distribution(self):
         distribution = {}
 
-        # Add each dimension to distribution with 100% allocation
         for field_name in self._analytic_fields():
             analytic_account = getattr(self, field_name)
             if analytic_account:
                 distribution[str(analytic_account.id)] = 100.0
 
         self.analytic_distribution = distribution if distribution else False
+
+    def _analytic_fields(self):
+        return list(self._analytic_keys().values())
+
+    def write(self, vals):
+        res = super().write(vals)
+        return res
+
+    def _inverse_analytic_distribution(self):
+        """When set analytic_distribution set analytic ids"""
+        for rec in self.filtered("analytic_distribution"):
+            rec._process_analytic_distribution_ids()
+
+    def _analytic_keys(self):
+        return {
+            "activities": "activity_analytic_id",
+            "departments": "department_analytic_id",
+            "funds": "fund_analytic_id",
+            "sources": "source_analytic_id",
+        }
+
+    def _process_analytic_distribution_ids(self):
+        keys = self._analytic_keys()
+        data = {}
+        for account_analytic_id in self.analytic_distribution.keys():
+            aa = self.env["account.analytic.account"].browse(int(account_analytic_id))
+            if aa and keys.get(aa.plan_id.code, False):
+                data[keys.get(aa.plan_id.code)] = aa.id
+        if data:
+            self.write(data)
