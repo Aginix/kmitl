@@ -11,6 +11,7 @@
                 <page string="จองงบประมาณ">
                     <group attrs="{'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}">
                         <field name="analytic_distribution" widget="analytic_distribution" invisible="1" />
+                        <field name="analytic_distribution" widget="analytic_distribution" invisible="0" groups="base.group_erp_manager" />
                         <field name="budget_account_id" domain="[('procurement_plan', '=', False)]" />
                         <field name="activity_analytic_id" />
                         <field name="department_analytic_id" />
@@ -42,6 +43,9 @@
             </xpath>
             <xpath expr="//field[@name='order_line']/tree/field[@name='analytic_distribution']" position="attributes">
                 <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='analytic_distribution']" position="after">
+                <field name="analytic_distribution" widget="analytic_distribution" invisible="0" optional="hide" groups="base.group_erp_manager" />
             </xpath>
         </field>
     </record>

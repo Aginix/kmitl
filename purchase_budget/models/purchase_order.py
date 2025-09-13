@@ -33,25 +33,21 @@ class PurchaseOrder(models.Model):
     )
 
     procurement_plan_id = fields.Many2one(
-        comodel_name="procurement.plan", string="รายการแผนจัดซื้อจัดจ้าง", tracking=True
+        comodel_name="procurement.plan",
+        string="รายการแผนจัดซื้อจัดจ้าง",
+        tracking=True,
+        inverse="_inverse_procurement_plan_id",
     )
 
-    @api.depends("procurement_plan_id")
-    def _compute_procurement_plan_analytic_id(self):
+    def _inverse_procurement_plan_id(self):
         for rec in self:
             if rec.procurement_plan_id:
                 rec.budget_account_id = rec.procurement_plan_id.budget_account_id.id
-                rec.activity_analytic_id = (
-                    rec.procurement_plan_id.activity_analytic_id.id
-                )
-                rec.department_analytic_id = (
-                    rec.procurement_plan_id.department_analytic_id.id
-                )
+                rec.activity_analytic_id = rec.procurement_plan_id.activity_analytic_id.id
+                rec.department_analytic_id = rec.procurement_plan_id.department_analytic_id.id
                 rec.fund_analytic_id = rec.procurement_plan_id.fund_analytic_id.id
                 rec.source_analytic_id = rec.procurement_plan_id.source_analytic_id.id
-                rec.procurement_plan_analytic_id = (
-                    rec.procurement_plan_id.analytic_account_id.id
-                )
+                rec.procurement_plan_analytic_id = rec.procurement_plan_id.analytic_account_id.id
             else:
                 rec.procurement_plan_id = False
                 rec.budget_account_id = False
@@ -60,6 +56,24 @@ class PurchaseOrder(models.Model):
                 rec.fund_analytic_id = False
                 rec.source_analytic_id = False
                 rec.procurement_plan_analytic_id = False
+
+    @api.onchange("procurement_plan_id")
+    def _onchange_procurement_plan_id(self):
+        if self.procurement_plan_id:
+            self.budget_account_id = self.procurement_plan_id.budget_account_id.id
+            self.activity_analytic_id = self.procurement_plan_id.activity_analytic_id.id
+            self.department_analytic_id = self.procurement_plan_id.department_analytic_id.id
+            self.fund_analytic_id = self.procurement_plan_id.fund_analytic_id.id
+            self.source_analytic_id = self.procurement_plan_id.source_analytic_id.id
+            self.procurement_plan_analytic_id = self.procurement_plan_id.analytic_account_id.id
+        else:
+            self.procurement_plan_id = False
+            self.budget_account_id = False
+            self.activity_analytic_id = False
+            self.department_analytic_id = False
+            self.fund_analytic_id = False
+            self.source_analytic_id = False
+            self.procurement_plan_analytic_id = False
 
     def action_open_budget_commitment(self):
         self.ensure_one()
@@ -95,3 +109,16 @@ class PurchaseOrder(models.Model):
             self.order_line.update(
                 {"analytic_distribution": self.analytic_distribution}
             )
+        else:
+            self.order_line.update(
+                {"analytic_distribution": False}
+            )
+
+    def _prepare_invoice(self):
+        vals = super()._prepare_invoice()
+        # vals["date_range_fy_id"] = purchase_request.date_range_fy_id.id
+        vals["analytic_distribution"] = self.analytic_distribution
+        vals["budget_commitment_id"] = self.budget_commitment_id.id
+        vals["budget_account_id"] = self.budget_account_id.id
+        vals["procurement_plan_analytic_id"] = self.procurement_plan_analytic_id.id
+        return vals
