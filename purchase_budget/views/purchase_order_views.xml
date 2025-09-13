@@ -40,6 +40,9 @@
                     </div>
                 </button>
             </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='analytic_distribution']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
         </field>
     </record>
 
