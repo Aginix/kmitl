@@ -40,7 +40,7 @@ class PurchaseRequest(models.Model):
                 rec.department_analytic_id = rec.procurement_plan_id.department_analytic_id.id
                 rec.fund_analytic_id = rec.procurement_plan_id.fund_analytic_id.id
                 rec.source_analytic_id = rec.procurement_plan_id.source_analytic_id.id
-                rec.procurement_plan_analytic_id = rec.procurement_plan_id.procurement_plan_analytic_id.id
+                rec.procurement_plan_analytic_id = rec.procurement_plan_id.analytic_account_id.id
             else:
                 rec.procurement_plan_id = False
                 rec.budget_account_id = False
@@ -85,6 +85,7 @@ class PurchaseRequest(models.Model):
             department_analytic_id=self.department_analytic_id.id,
             fund_analytic_id=self.fund_analytic_id.id,
             source_analytic_id=self.source_analytic_id.id,
+            procurement_plan_analytic_id=self.procurement_plan_analytic_id.id,
         )
 
         if not check_result['is_sufficient']:
