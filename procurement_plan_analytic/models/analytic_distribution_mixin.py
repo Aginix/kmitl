@@ -19,15 +19,11 @@ class AnalyticDistributionMixin(models.AbstractModel):
         domain=[("root_plan_id.code", "=", "procurement_plan")],
     )
 
-    def _analytic_fields(self):
-        fields = super()._analytic_fields()
-        fields.append('procurement_plan_analytic_id')
-        return fields
-
-    @api.onchange("procurement_plan_analytic_id")
-    def _onchange_procurement_plan_analytic_id(self):
-        self._onchange_analytic_fields()
-
     @api.depends("procurement_plan_analytic_id")
     def _compute_procurement_plan_analytic_id(self):
         super()._compute_analytic_distribution()
+
+    def _analytic_keys(self):
+        res = super()._analytic_keys()
+        res['procurement_plan'] = 'procurement_plan_analytic_id'
+        return res
