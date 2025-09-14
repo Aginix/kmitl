@@ -10,9 +10,28 @@
             <field name="partner_id" position="before">
                 <field name="date_range_fy_id" widget="selection" required="1" />
             </field>
+            <xpath expr="//button[@name='action_rfq_send' and @states='draft']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_rfq_send' and @states='sent']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_rfq_send' and @states='purchase']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
         </field>
     </record>
 
+    <record id="view_purchase_order_form_inherit" model="ir.ui.view">
+        <field name="name">view.purchase.order.form.inherit</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase_requisition.purchase_order_form_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='alternative_pos']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
 
     <!-- View purchase.order tree -->
     <record id="view_purchase_order_tree" model="ir.ui.view">

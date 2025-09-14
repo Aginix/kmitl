@@ -32,6 +32,10 @@ class PurchaseOrder(models.Model):
         help="Budget account to be used for commitment",
     )
 
+    use_procurement_plan = fields.Boolean(
+        string="เลือกใช้รายการจากแผนจัดซื้อจัดจ้าง", default=False
+    )
+
     procurement_plan_id = fields.Many2one(
         comodel_name="procurement.plan",
         string="รายการแผนจัดซื้อจัดจ้าง",
@@ -41,25 +45,17 @@ class PurchaseOrder(models.Model):
 
     def _inverse_procurement_plan_id(self):
         for rec in self:
-            if rec.procurement_plan_id:
+            if rec.use_procurement_plan and rec.procurement_plan_id:
                 rec.budget_account_id = rec.procurement_plan_id.budget_account_id.id
                 rec.activity_analytic_id = rec.procurement_plan_id.activity_analytic_id.id
                 rec.department_analytic_id = rec.procurement_plan_id.department_analytic_id.id
                 rec.fund_analytic_id = rec.procurement_plan_id.fund_analytic_id.id
                 rec.source_analytic_id = rec.procurement_plan_id.source_analytic_id.id
                 rec.procurement_plan_analytic_id = rec.procurement_plan_id.analytic_account_id.id
-            else:
-                rec.procurement_plan_id = False
-                rec.budget_account_id = False
-                rec.activity_analytic_id = False
-                rec.department_analytic_id = False
-                rec.fund_analytic_id = False
-                rec.source_analytic_id = False
-                rec.procurement_plan_analytic_id = False
 
-    @api.onchange("procurement_plan_id")
+    @api.onchange("use_procurement_plan", "procurement_plan_id")
     def _onchange_procurement_plan_id(self):
-        if self.procurement_plan_id:
+        if self.use_procurement_plan and self.procurement_plan_id:
             self.budget_account_id = self.procurement_plan_id.budget_account_id.id
             self.activity_analytic_id = self.procurement_plan_id.activity_analytic_id.id
             self.department_analytic_id = self.procurement_plan_id.department_analytic_id.id
