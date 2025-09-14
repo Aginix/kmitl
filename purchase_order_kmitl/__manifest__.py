@@ -5,7 +5,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    "depends": ["purchase", "purchase_requisition", "account_fiscal_year"],
+    "depends": ["purchase", "purchase_requisition", "purchase_no_rfq", "account_fiscal_year"],
     "data": ["views/purchase_order_views.xml"],
     "application": False,
     "installable": True,
