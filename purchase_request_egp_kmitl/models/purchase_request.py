@@ -32,6 +32,11 @@ class PurchaseRequest(models.Model):
             if record.is_egp:
                 record.egp_status = "in_progress"
 
+    def action_del_egp_status(self):
+        for record in self:
+            if record.is_egp:
+                record.egp_status = False
+
     @api.depends_context("uid")
     def _compute_can_edit_egp(self):
         user_in_group = self.env.user.has_group(
@@ -51,8 +56,6 @@ class PurchaseRequest(models.Model):
             if 'state' in vals and record.is_egp:
                 if record.state == "approved":
                     record.egp_status = "waiting"
-                elif record.state == "done":
-                    record.egp_status = "done"
         return res
 
     def action_create_rfq(self):
