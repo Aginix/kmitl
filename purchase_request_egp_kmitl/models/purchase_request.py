@@ -22,12 +22,6 @@ class PurchaseRequest(models.Model):
         default=False,
     )
 
-    @api.depends('line_ids.purchase_lines')
-    def _compute_egp_status(self):
-        for rec in self:
-            if rec.line_ids.mapped('purchase_lines'):
-                rec.egp_status = False
-
     def button_draft(self):
         res = super().button_draft()
         self.write({"egp_status": False})
@@ -37,6 +31,11 @@ class PurchaseRequest(models.Model):
         for record in self:
             if record.is_egp:
                 record.egp_status = "in_progress"
+
+    def action_del_egp_status(self):
+        for record in self:
+            if record.is_egp:
+                record.egp_status = False
 
     @api.depends_context("uid")
     def _compute_can_edit_egp(self):
@@ -57,8 +56,6 @@ class PurchaseRequest(models.Model):
             if 'state' in vals and record.is_egp:
                 if record.state == "approved":
                     record.egp_status = "waiting"
-                elif record.state == "done":
-                    record.egp_status = "done"
         return res
 
     def action_create_rfq(self):
