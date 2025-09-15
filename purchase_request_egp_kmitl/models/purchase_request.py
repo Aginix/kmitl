@@ -22,6 +22,12 @@ class PurchaseRequest(models.Model):
         default=False,
     )
 
+    @api.depends('line_ids.purchase_lines.order_id')
+    def _compute_egp_status(self):
+        for rec in self:
+            if rec.line_ids.mapped('purchase_lines.order_id'):
+                rec.egp_status = False
+
     def button_draft(self):
         res = super().button_draft()
         self.write({"egp_status": False})
