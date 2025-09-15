@@ -8,33 +8,32 @@ _logger = logging.getLogger(__name__)
 
 
 class ProjectStrategicPlan(models.Model):
-    _name = _description = 'project.strategic.plan'
+    _name = _description = "project.strategic.plan"
     _inherit = ["mail.thread"]
     _order = "hierarchy_level asc, code asc"
     _parent_store = True
 
-    name = fields.Char(string='ชื่อแผนยุทธศาสตร์', required=True, tracking=True)
-    code = fields.Char(string='รหัสอ้างอิง', required=True, tracking=True)
+    name = fields.Char(string="ชื่อแผนยุทธศาสตร์", required=True, tracking=True)
+    code = fields.Char(string="รหัสอ้างอิง", required=True, tracking=True)
+    level = fields.Integer(string="ระดับแผน", required=True, tracking=True)
     hierarchy_level = fields.Integer(
         string="ระดับแผน",
         compute="_compute_hierarchy_level",
-        store=True,
+        store=False,
         recursive=True,
     )
     parent_path = fields.Char(index=True, unaccent=False)
 
     parent_id = fields.Many2one(
-        'project.strategic.plan',
-        string='แผนยุทธศาสตร์หลัก',
-        ondelete='cascade',
+        "project.strategic.plan",
+        string="แผนยุทธศาสตร์หลัก",
+        ondelete="cascade",
         index=True,
-        tracking=True
+        tracking=True,
     )
 
     child_ids = fields.One2many(
-        'project.strategic.plan',
-        'parent_id',
-        string='แผนยุทธศาสตร์ย่อย'
+        "project.strategic.plan", "parent_id", string="แผนยุทธศาสตร์ย่อย"
     )
 
     note = fields.Text("Internal Notes", tracking=True)
@@ -88,7 +87,9 @@ class ProjectStrategicPlan(models.Model):
     @api.constrains("parent_id")
     def _check_parent_id(self):
         if not self._check_recursion():
-            raise ValidationError(_("You cannot create recursive project strategic plan."))
+            raise ValidationError(
+                _("You cannot create recursive project strategic plan.")
+            )
 
     def action_view_children_accounts(self):
         result = {

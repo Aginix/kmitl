@@ -7,11 +7,12 @@
         <field name="model">project.strategic.plan</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="code"/>
-                <field name="name"/>
-                <field name="hierarchy_level"/>
-                <field name="parent_id"/>
-                <field name="deprecated"/>
+                <field name="code" />
+                <field name="name" />
+                <field name="hierarchy_level" optional="hide" />
+                <field name="level" optional="hide" />
+                <field name="parent_id" />
+                <field name="deprecated" />
             </tree>
         </field>
     </record>
@@ -25,25 +26,11 @@
                 <field name="active" invisible="1" />
                 <sheet>
                     <div name="button_box" class="oe_button_box">
-                        <button
-                            name="action_view_children_accounts"
-                            type="object"
-                            class="oe_stat_button"
-                            icon="fa-bars"
-                        >
-                            <field
-                                string="Sub plans"
-                                name="children_count"
-                                widget="statinfo"
-                            />
+                        <button name="action_view_children_accounts" type="object" class="oe_stat_button" icon="fa-bars">
+                            <field string="Sub plans" name="children_count" widget="statinfo" />
                         </button>
                     </div>
-                    <widget
-                        name="web_ribbon"
-                        title="Archived"
-                        bg_color="bg-danger"
-                        attrs="{'invisible': [('active', '=', True)]}"
-                    />
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}" />
                     <div class="oe_title">
                         <label for="name"/>
                         <h1>
@@ -74,32 +61,12 @@
             <search>
                 <field name="parent_id" string="Parent Account" />
                 <separator />
-                <filter
-                    string="Top Level Accounts"
-                    name="top_level"
-                    domain="[('parent_id', '=', False)]"
-                />
-                <filter
-                    string="Child Accounts"
-                    name="child_accounts"
-                    domain="[('parent_id', '!=', False)]"
-                />
+                <filter string="Top Level Accounts" name="top_level" domain="[('parent_id', '=', False)]" />
+                <filter string="Child Accounts" name="child_accounts" domain="[('parent_id', '!=', False)]" />
                 <separator />
-                <filter
-                    string="Active"
-                    name="active"
-                    domain="[('active', '=', True)]"
-                />
-                <filter
-                    string="Archived"
-                    name="archived"
-                    domain="[('active', '=', False)]"
-                />
-                <filter
-                    string="Deprecated"
-                    name="deprecated"
-                    domain="[('deprecated', '=', True)]"
-                />
+                <filter string="Active" name="active" domain="[('active', '=', True)]" />
+                <filter string="Archived" name="archived" domain="[('active', '=', False)]" />
+                <filter string="Deprecated" name="deprecated" domain="[('deprecated', '=', True)]" />
                 <group expand="1" string="Group By">
                     <filter string="Deprecated" name="deprecated" domain="[]" context="{'group_by':'deprecated'}"/>
                     <filter string="Parent" name="parent_id" domain="[]" context="{'group_by':'parent_id'}"/>
@@ -116,7 +83,7 @@
         <field name="name">Project Strategic Plan</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">project.strategic.plan</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree</field>
         <field name="domain">[]</field>
         <field name="context">{}</field>
         <field name="help" type="html">
@@ -126,4 +93,5 @@
         </field>
     </record>
 
+    <menuitem id="project_strategic_plan_config_menu" name="ความสอดคล้องกับยุทธศาสตร์" action="action_project_strategic_plan" parent="project_kmitl_config_menu" sequence="10" />
 </odoo>

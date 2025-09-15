@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View project.evaluation View Tree -->
+    <record id="view_project_evaluation_tree" model="ir.ui.view">
+        <field name="name">view.project.evaluation.tree</field>
+        <field name="model">project.evaluation</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- View project.evaluation form -->
+    <record id="view_project_evaluation_form" model="ir.ui.view">
+        <field name="name">view.project.evaluation.form</field>
+        <field name="model">project.evaluation</field>
+        <field name="arch" type="xml">
+            <form string="Project Evaluation">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Name..."/>
+                        </h1>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- View project.evaluation search -->
+    <record id="view_project_evaluation_search" model="ir.ui.view">
+        <field name="name">view.project.evaluation.search</field>
+        <field name="model">project.evaluation</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action project.evaluation -->
+    <record id="action_project_evaluation" model="ir.actions.act_window">
+        <field name="name">Project Evaluation</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">project.evaluation</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Project Evaluation.
+            </p>
+        </field>
+    </record>
+
+</odoo>
