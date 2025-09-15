@@ -10,6 +10,7 @@
             <xpath expr="//sheet" position="inside">
               <notebook>
                 <page name="document" string="Attachment">
+                    <field name="is_editable" invisible="1"/>
                     <field name="attachment_ids" 
                           attrs="{'readonly': [('is_editable','=', False)]}" 
                           context="{'default_res_model': 'purchase.guarantee'}">
