@@ -16,7 +16,6 @@
         "security/ir.model.access.csv",
         "views/menus.xml",
         "views/project_evaluation_views.xml",
-        "views/project_expected_outcome_views.xml",
         "views/project_fight_views.xml",
         "views/project_global_index_views.xml",
         "views/project_impact_views.xml",
