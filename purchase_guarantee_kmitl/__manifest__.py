@@ -10,7 +10,6 @@
     "data": [
         "data/purchase_guarantee_method_data.xml",
         "data/purchase_guarantee_rules.xml",
-        "data/purchase_guarantee_sequence.xml",
         "data/purchase_guarantee_type_data.xml",
         "views/purchase_guarantee_views.xml"
     ],
