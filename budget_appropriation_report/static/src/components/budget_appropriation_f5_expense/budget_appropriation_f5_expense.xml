@@ -1,183 +1,151 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <templates xml:space="preserve">
     <t t-name="budget_appropriation_report.BudgetAppropriationF5Expense" owl="1">
         <div class="o_action budget_appropriation_f5_expense">
-            <ControlPanel
-                display="controlPanelDisplay"
-            >
-                 <t t-set-slot="control-panel-bottom-left-buttons">
+            <ControlPanel display="controlPanelDisplay">
+                <t t-set-slot="control-panel-bottom-left-buttons">
                     <div class="o_cp_buttons">
                         <div class="btn-group me-2">
-                            <button
-                                type="button"
-                                class="btn btn-secondary"
-                                t-on-click="onRefresh"
-                                title="รีเฟรช"
-                            >
+                            <button type="button" class="btn btn-secondary" t-on-click="onRefresh" title="รีเฟรช">
                                 <i class="fa fa-refresh" />
                             </button>
                         </div>
                         <div class="btn-group">
-                            <button
-                                type="button"
-                                class="btn btn-primary"
-                                t-on-click="onPrint"
-                                title="พิมพ์"
-                            >
+                            <button type="button" class="btn btn-primary" t-on-click="onPrint" title="พิมพ์">
                                 <i class="fa fa-print" />
                                 พิมพ์
                             </button>
                         </div>
                     </div>
-                </t> <t t-set-slot="control-panel-top-right">
+                </t>
+                <t t-set-slot="control-panel-top-right">
                     <div class="d-flex flex-wrap gap-3 align-items-center">
+                        <div>
+                            <label class="form-label-sm mb-1">ปีงบประมาณ:</label>
+                            <div class="o_mobile_search_filter o_search_options">
+                                <select class="form-select form-select-sm" t-model="state.filters.fiscal_year_id" t-on-change="onFiscalYearChange">
+                                    <t t-foreach="state.filterOptions.fiscal_years" t-as="fy" t-key="fy.id">
+                                        <option t-att-value="fy.id" t-esc="fy.name" />
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="form-label-sm mb-1">แหล่งเงิน:</label>
+                            <div class="o_mobile_search_filter o_search_options">
+                                <select class="form-select form-select-sm" t-model="state.filters.source_analytic_id" t-on-change="onSourceChange">
+                                    <t t-foreach="state.filterOptions.sources" t-as="source" t-key="source.id">
+                                        <option t-att-value="source.id">[<t t-esc="source.code"/>] <t t-esc="source.name"/></option>
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="form-label-sm mb-1">หน่วยงาน:</label>
+                            <div class="o_mobile_search_filter o_search_options">
+                                <select class="form-select form-select-sm" t-model="state.filters.department_id" t-on-change="onDepartmentChange">
+                                    <option value="">ทุกหน่วยงาน</option>
+                                    <t t-foreach="flatDepartmentOptions" t-as="dept" t-key="dept.id">
+                                        <option t-att-value="dept.id" t-esc="dept.name"/>
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </t>
             </ControlPanel>
-
-            <div class="budget_f5_content">
-                <!-- Filter Panel -->
-                <div t-if="state.showFilters" class="filter-panel card mb-3">
-                    <div class="card-header">
-                        <h5><i class="fa fa-filter"/> ตัวกรองข้อมูล</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <label>ปีงบประมาณ</label>
-                                <select class="form-control" t-on-change="onFiscalYearChange" t-model="state.filters.fiscal_year_id">
-                                    <option value="">-- เลือกปีงบประมาณ --</option>
-                                    <t t-foreach="state.filterOptions.fiscal_years" t-as="fy" t-key="fy.id">
-                                        <option t-att-value="fy.id" t-att-selected="state.filters.fiscal_year_id === fy.id">
-                                            <t t-esc="fy.name"/>
-                                        </option>
-                                    </t>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label>แหล่งเงิน</label>
-                                <select class="form-control" t-on-change="onSourceChange" t-model="state.filters.source_analytic_id">
-                                    <option value="">-- เลือกแหล่งเงิน --</option>
-                                    <t t-foreach="state.filterOptions.sources" t-as="source" t-key="source.id">
-                                        <option t-att-value="source.id" t-att-selected="state.filters.source_analytic_id === source.id">
-                                            [<t t-esc="source.code"/>] <t t-esc="source.name"/>
-                                        </option>
-                                    </t>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label>วันที่เริ่มต้น</label>
-                                <input type="date" class="form-control"
-                                       t-att-value="state.filters.date_from"
-                                       t-on-change="onDateFromChange"/>
-                            </div>
-                            <div class="col-md-3">
-                                <label>วันที่สิ้นสุด</label>
-                                <input type="date" class="form-control"
-                                       t-att-value="state.filters.date_to"
-                                       t-on-change="onDateToChange"/>
-                            </div>
-                        </div>
-
-                        <div class="row mt-3">
-                            <div class="col-md-6">
-                                <label>หน่วยงาน</label>
-                                <div class="department-filter" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 10px;">
-                                    <t t-foreach="flatDepartmentOptions" t-as="dept" t-key="dept.id">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox"
-                                                   t-att-id="'dept_' + dept.id"
-                                                   t-att-checked="state.filters.department_ids.includes(dept.id)"
-                                                   t-on-change="(ev) => this.onDepartmentChange(dept.id, ev.target.checked)"/>
-                                            <label class="form-check-label" t-att-for="'dept_' + dept.id">
-                                                <t t-esc="dept.name"/>
-                                            </label>
-                                        </div>
-                                    </t>
-                                </div>
-                            </div>
-                            <div class="col-md-6 d-flex align-items-end">
-                                <button class="btn btn-primary me-2" t-on-click="onApplyFilters">
-                                    <i class="fa fa-search"/> ค้นหา
-                                </button>
-                                <button class="btn btn-secondary" t-on-click="onResetFilters">
-                                    <i class="fa fa-refresh"/> รีเซ็ต
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Loading State -->
-                <div t-if="state.loading" class="text-center p-4">
-                    <i class="fa fa-spinner fa-spin fa-2x"/>
-                    <p>กำลังโหลดข้อมูล...</p>
-                </div>
-
-                <!-- Error State -->
-                <div t-if="state.error" class="alert alert-danger">
-                    <i class="fa fa-exclamation-triangle"/> <t t-esc="state.error"/>
-                </div>
-
-                <!-- Report Content -->
-                <div t-if="!state.loading and !state.error" class="report-content">
-                    <!-- Report Header -->
-                    <div class="report-header card mb-3">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <h4>รายงาน F5 - งบประมาณรายจ่าย</h4>
-                                    <p class="mb-1"><strong>ปีงบประมาณ:</strong> <t t-esc="selectedFiscalYear?.name || '-'"/></p>
-                                    <p class="mb-1"><strong>แหล่งเงิน:</strong> <t t-esc="selectedSource ? '[' + selectedSource.code + '] ' + selectedSource.name : '-'"/></p>
-                                    <p class="mb-1" t-if="selectedDepartments.length > 0">
-                                        <strong>หน่วยงาน:</strong>
-                                        <t t-foreach="selectedDepartments" t-as="dept" t-key="dept.id">
-                                            <span class="badge badge-secondary me-1"><t t-esc="dept.complete_name || dept.name"/></span>
-                                        </t>
+            <div class="o_content">
+                <div t-if="!state.loading" class="budget_appropriation_content">
+                    <div class="row justify-content-center">
+                        <div class="col-12" style="max-width: 960px">
+                            <div class="budget-report-container">
+                                <div class="report-header text-center mb-4">
+                                    <h3>
+                                        รายงาน F5 - งบประมาณรายจ่าย ประจำปีงบประมาณ พ.ศ.
+                                        <t t-esc="selectedFiscalYear?.name || '-'"/>
+                                    </h3>
+                                    <h3>
+                                        สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง
+                                    </h3>
+                                    <p t-if="selectedSource">
+                                        แหล่งเงิน: [<t t-esc="selectedSource.code"/>] <t t-esc="selectedSource.name"/>
+                                    </p>
+                                    <p t-if="selectedDepartment">
+                                        หน่วยงาน: <t t-esc="selectedDepartment.name"/>
                                     </p>
                                 </div>
-                                <div class="col-md-4 text-end">
-                                    <p class="mb-1"><strong>วันที่พิมพ์:</strong> <t t-esc="currentDate"/></p>
-                                    <h5 class="text-primary">
-                                        <strong>รวมทั้งหมด: <t t-esc="formatCurrency(summary.total_amount || 0)"/> บาท</strong>
-                                    </h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Summary Statistics -->
-                    <div class="summary-stats card mb-3">
-                        <div class="card-body">
-                            <div class="row text-center">
-                                <div class="col-md-4">
-                                    <h3 class="text-info"><t t-esc="summary.activities_count || 0"/></h3>
-                                    <p>กิจกรรม</p>
-                                </div>
-                                <div class="col-md-4">
-                                    <h3 class="text-success"><t t-esc="summary.total_lines || 0"/></h3>
-                                    <p>รายการทั้งหมด</p>
-                                </div>
-                                <div class="col-md-4">
-                                    <h3 class="text-primary"><t t-esc="formatCurrency(summary.total_amount || 0)"/></h3>
-                                    <p>จำนวนเงิน (บาท)</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                                <!-- Report Table -->
+                                <div class="table-responsive">
+                                    <t t-set="row_no" t-value="1" />
+                                    <t t-if="hierarchy.length > 0">
+                                        <t t-foreach="hierarchy" t-as="activity" t-key="activity.key">
+                                            <div style="margin-bottom: 24px">
+                                                <div>
+                                                    <span style="font-weight: bold; text-decoration: underline; font-size: 16px;">
+                                                        <t t-esc="`${row_no}. [${activity.code}] ${activity.complete_name || activity.name}`"/>
+                                                    </span>
+                                                </div>
 
-                    <!-- Hierarchical Tree -->
-                    <div class="budget-tree card">
-                        <div class="card-body">
-                            <div t-if="hierarchy.length === 0" class="text-center p-4">
-                                <i class="fa fa-info-circle fa-2x text-muted"/>
-                                <p class="text-muted mt-2">ไม่พบข้อมูลตามเงื่อนไขที่เลือก</p>
-                            </div>
-
-                            <div t-if="hierarchy.length > 0" class="tree-container">
-                                <t t-call="budget_appropriation_report.TreeNode" t-foreach="hierarchy" t-as="node" t-key="node.key">
-                                    <t t-set="node" t-value="node"/>
-                                </t>
+                                                <table class="table budget-report-table">
+                                                    <tbody>
+                                                        <t t-foreach="activity.children" t-as="fund" t-key="fund.key">
+                                                            <!-- Fund header -->
+                                                            <tr>
+                                                                <td colspan="2" style="font-weight: bold; background-color: #f8f9fa; padding-left: 16px;">
+                                                                    [<t t-esc="fund.code"/>] <t t-esc="fund.complete_name || fund.name"/>
+                                                                </td>
+                                                            </tr>
+                                                            <!-- Account rows -->
+                                                            <t t-foreach="fund.children" t-as="account" t-key="account.key">
+                                                                <tr>
+                                                                    <td style="width: 60%">
+                                                                        <div style="padding-left: 32px;">
+                                                                            - [<t t-esc="account.code"/>] <t t-esc="account.complete_name || account.name"/>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td class="amount-cell" style="text-align: right; width: 20%;">
+                                                                        <t t-esc="formatCurrency(account.total_amount)"/>
+                                                                    </td>
+                                                                </tr>
+                                                            </t>
+                                                            <!-- Fund total -->
+                                                            <tr>
+                                                                <td style="text-align: right; font-weight: bold; padding-left: 32px;">
+                                                                    รวม [<t t-esc="fund.code"/>] <t t-esc="fund.complete_name || fund.name"/>
+                                                                </td>
+                                                                <td class="amount-cell" style="text-align: right; font-weight: bold;">
+                                                                    <span style="text-decoration: underline;">
+                                                                        <t t-esc="formatCurrency(fund.total_amount)"/>
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                        </t>
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <tr>
+                                                            <td colspan="2" class="amount-cell" style="text-align: right; font-weight: bold;">
+                                                                รวม
+                                                                <span style="text-decoration: underline;">
+                                                                    <t t-esc="formatCurrency(activity.total_amount)"/>
+                                                                </span>
+                                                                บาท
+                                                            </td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                            <t t-set="row_no" t-value="row_no + 1" />
+                                        </t>
+                                    </t>
+                                    <div style="text-align: right; font-weight: bold; font-size: 16px; padding-right: 6px;">
+                                        รวมทั้งสิ้น
+                                        <span class="amount-cell" style="text-decoration: underline; text-decoration-style: double;">
+                                            <t t-esc="formatCurrency(totalBalance)" />
+                                        </span>
+                                        บาท
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -185,51 +153,4 @@
             </div>
         </div>
     </t>
-
-    <!-- Tree Node Template -->
-    <t t-name="budget_appropriation_report.TreeNode" owl="1">
-        <div t-att-class="getNodeClass(node.type, node.level)">
-            <div class="node-header" t-att-style="getMarginStyle(node)" t-on-click="() => this.onToggleNode(node.key)">
-                <span class="node-toggle">
-                    <i t-if="node.children and node.children.length > 0"
-                       t-att-class="isNodeExpanded(node.key) ? 'fa fa-minus-square-o' : 'fa fa-plus-square-o'"/>
-                    <i t-else class="fa fa-circle-o"/>
-                </span>
-                <span class="node-icon">
-                    <i t-att-class="'fa ' + getNodeIcon(node.type)"/>
-                </span>
-                <span class="node-info">
-                    <span class="node-code" t-if="node.code">[<t t-esc="node.code"/>]</span>
-                    <span class="node-name"><t t-esc="node.complete_name || node.name"/></span>
-                    <span class="node-type-label">(<t t-esc="getNodeTypeLabel(node.type)"/>)</span>
-                </span>
-                <span class="node-amount">
-                    <t t-esc="formatCurrency(node.total_amount)"/> บาท
-                </span>
-            </div>
-
-            <!-- Line Details for Account nodes -->
-            <div t-if="node.type === 'account' and node.line_details and node.line_details.length > 0 and isNodeExpanded(node.key)"
-                 class="line-details" t-att-style="'margin-left: ' + (48) + 'px;'">
-                <div class="line-details-header">
-                    <small class="text-muted">รายละเอียดรายการ:</small>
-                </div>
-                <t t-foreach="node.line_details" t-as="line" t-key="line.id">
-                    <div class="line-detail-item">
-                        <span class="line-name"><t t-esc="line.name"/></span>
-                        <span class="line-appropriation">(<t t-esc="line.appropriation_name"/> - <t t-esc="line.appropriation_date"/>)</span>
-                        <span class="line-amount"><t t-esc="formatCurrency(line.amount)"/> บาท</span>
-                    </div>
-                </t>
-            </div>
-
-            <!-- Children Nodes -->
-            <div t-if="node.children and node.children.length > 0 and isNodeExpanded(node.key)" class="node-children">
-                <t t-call="budget_appropriation_report.TreeNode" t-foreach="node.children" t-as="childNode" t-key="childNode.key">
-                    <t t-set="node" t-value="childNode"/>
-                </t>
-            </div>
-        </div>
-    </t>
-
 </templates>
