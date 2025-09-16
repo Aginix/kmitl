@@ -130,109 +130,208 @@ class BudgetAppropriationF5Expense(models.AbstractModel):
         }
 
     def _build_hierarchy(self, appropriation_lines):
-        """Build hierarchical tree: Activity → Fund → Budget Account → Lines"""
+        """Build complete hierarchical tree from root to leaf including all intermediate nodes"""
         if not appropriation_lines:
             return []
 
-        hierarchy = {}
+        # Step 1: Get all activities and build complete tree structure
+        all_activities = self._get_complete_activity_hierarchy(appropriation_lines)
+        all_funds = self._get_all_funds()
+        all_accounts = self._get_all_budget_accounts()
+
+        # Step 2: Build data mapping from appropriation lines
+        line_data_map = self._build_line_data_map(appropriation_lines)
+
+        # Step 3: Build complete hierarchy tree
+        hierarchy = self._build_complete_tree(all_activities, all_funds, all_accounts, line_data_map)
+
+        return hierarchy
+
+    def _get_complete_activity_hierarchy(self, appropriation_lines):
+        """Get complete activity hierarchy including all parent nodes"""
+        # Get all activities mentioned in the lines
+        activity_ids = set()
+        for line in appropriation_lines:
+            if line.activity_analytic_id:
+                activity_ids.add(line.activity_analytic_id.id)
+
+        if not activity_ids:
+            return []
+
+        # Get all activities and their complete parent hierarchy
+        activities = self.env["account.analytic.account"].browse(list(activity_ids))
+        complete_activity_ids = set(activity_ids)
+
+        # Add all parent activities to ensure complete hierarchy
+        for activity in activities:
+            if activity.parent_path:
+                parent_ids = [int(pid) for pid in activity.parent_path.strip('/').split('/') if pid]
+                complete_activity_ids.update(parent_ids)
+
+        # Get all activities in hierarchy order
+        all_activities = self.env["account.analytic.account"].browse(list(complete_activity_ids))
+        return all_activities.sorted(key=lambda a: (a.parent_path or '', a.code or ''))
+
+    def _get_all_funds(self):
+        """Get all funds"""
+        return self.env["account.analytic.account"].search([
+            ("root_plan_id.code", "=", "funds")
+        ], order="code")
+
+    def _get_all_budget_accounts(self):
+        """Get all budget accounts"""
+        return self.env["budget.account"].search([
+            ("budget_type", "=", "expense")
+        ], order="code")
+
+    def _build_line_data_map(self, appropriation_lines):
+        """Build mapping of line data by activity, fund, and account"""
+        line_data_map = {}
 
         for line in appropriation_lines:
-            # Get dimensions
-            activity = line.activity_analytic_id
-            fund = line.fund_analytic_id
-            account = line.account_id
+            activity_id = line.activity_analytic_id.id if line.activity_analytic_id else None
+            fund_id = line.fund_analytic_id.id if line.fund_analytic_id else None
+            account_id = line.budget_account_id.id if line.budget_account_id else None
 
-            # Build hierarchy path
-            activity_key = f"activity_{activity.id}" if activity else "activity_none"
-            fund_key = f"fund_{fund.id}" if fund else "fund_none"
-            account_key = f"account_{account.id}" if account else "account_none"
+            key = (activity_id, fund_id, account_id)
 
-            # Initialize activity level
-            if activity_key not in hierarchy:
-                hierarchy[activity_key] = {
-                    "key": activity_key,
-                    "type": "activity",
-                    "id": activity.id if activity else None,
-                    "code": activity.code if activity else "",
-                    "name": activity.name if activity else _("No Activity"),
-                    "complete_name": self._get_complete_name_without_codes(activity) if activity else _("No Activity"),
-                    "amount": 0.0,
-                    "total_amount": 0.0,
-                    "level": 0,
-                    "children": {},
-                    "line_details": [],
+            if key not in line_data_map:
+                line_data_map[key] = {
+                    'amount': 0.0,
+                    'lines': []
                 }
 
-            # Initialize fund level
-            if fund_key not in hierarchy[activity_key]["children"]:
-                hierarchy[activity_key]["children"][fund_key] = {
-                    "key": f"{activity_key}_{fund_key}",
-                    "type": "fund",
-                    "id": fund.id if fund else None,
-                    "code": fund.code if fund else "",
-                    "name": fund.name if fund else _("No Fund"),
-                    "complete_name": self._get_complete_name_without_codes(fund) if fund else _("No Fund"),
-                    "amount": 0.0,
-                    "total_amount": 0.0,
-                    "level": 1,
-                    "children": {},
-                    "line_details": [],
-                }
-
-            # Initialize account level
-            if account_key not in hierarchy[activity_key]["children"][fund_key]["children"]:
-                hierarchy[activity_key]["children"][fund_key]["children"][account_key] = {
-                    "key": f"{activity_key}_{fund_key}_{account_key}",
-                    "type": "account",
-                    "id": account.id if account else None,
-                    "code": account.code if account else "",
-                    "name": account.name if account else _("No Account"),
-                    "complete_name": account.name if account else _("No Account"),
-                    "amount": 0.0,
-                    "total_amount": 0.0,
-                    "level": 2,
-                    "children": [],
-                    "line_details": [],
-                }
-
-            # Add line details to account
-            account_node = hierarchy[activity_key]["children"][fund_key]["children"][account_key]
-            line_data = {
+            line_data_map[key]['amount'] += line.balance
+            line_data_map[key]['lines'].append({
                 "id": line.id,
                 "name": line.name or _("Appropriation Line"),
                 "amount": line.balance,
                 "appropriation_name": line.appropriation_id.name,
                 "appropriation_date": line.appropriation_id.date.strftime("%d/%m/%Y") if line.appropriation_id.date else "",
+            })
+
+        return line_data_map
+
+    def _build_complete_tree(self, all_activities, all_funds, all_accounts, line_data_map):
+        """Build complete hierarchical tree structure"""
+        # Build activity hierarchy first
+        activity_tree = self._build_activity_tree(all_activities, line_data_map, all_funds, all_accounts)
+        return activity_tree
+
+    def _build_activity_tree(self, all_activities, line_data_map, all_funds, all_accounts):
+        """Build activity tree with complete hierarchy"""
+        activity_nodes = {}
+        root_activities = []
+
+        # Create all activity nodes
+        for activity in all_activities:
+            node = {
+                "key": f"activity_{activity.id}",
+                "type": "activity",
+                "id": activity.id,
+                "code": activity.code or "",
+                "name": activity.name or "",
+                "complete_name": self._get_complete_name_without_codes(activity),
+                "amount": 0.0,
+                "total_amount": 0.0,
+                "level": len(activity.parent_path.strip('/').split('/')) - 1 if activity.parent_path else 0,
+                "children": [],
+                "line_details": [],
+                "parent_id": activity.parent_id.id if activity.parent_id else None,
             }
-            account_node["line_details"].append(line_data)
-            account_node["amount"] += line.balance
+            activity_nodes[activity.id] = node
 
-            # Update parent amounts
-            hierarchy[activity_key]["children"][fund_key]["amount"] += line.balance
-            hierarchy[activity_key]["amount"] += line.balance
+        # Build parent-child relationships
+        for activity in all_activities:
+            node = activity_nodes[activity.id]
+            if activity.parent_id and activity.parent_id.id in activity_nodes:
+                activity_nodes[activity.parent_id.id]["children"].append(node)
+            else:
+                root_activities.append(node)
 
-        # Convert to list format and calculate totals
-        result = []
-        for activity_node in hierarchy.values():
-            # Convert fund children
-            fund_children = []
-            for fund_node in activity_node["children"].values():
-                # Convert account children
-                account_children = []
-                for account_node in fund_node["children"].values():
-                    account_node["total_amount"] = account_node["amount"]
-                    account_children.append(account_node)
+        # Add funds and accounts to leaf activities that have data
+        for activity in all_activities:
+            if self._has_data_for_activity(activity.id, line_data_map):
+                self._add_funds_to_activity(activity_nodes[activity.id], all_funds, all_accounts, line_data_map, activity.id)
 
-                fund_node["children"] = sorted(account_children, key=lambda x: x["code"])
+        # Calculate totals bottom-up
+        for node in root_activities:
+            self._calculate_totals(node)
+
+        # Sort children at each level
+        for node in root_activities:
+            self._sort_tree_children(node)
+
+        return root_activities
+
+    def _has_data_for_activity(self, activity_id, line_data_map):
+        """Check if activity has any data"""
+        for (act_id, fund_id, account_id), data in line_data_map.items():
+            if act_id == activity_id and data['amount'] != 0:
+                return True
+        return False
+
+    def _add_funds_to_activity(self, activity_node, all_funds, all_accounts, line_data_map, activity_id):
+        """Add funds and accounts to activity node"""
+        for fund in all_funds:
+            fund_has_data = False
+            fund_node = {
+                "key": f"{activity_node['key']}_fund_{fund.id}",
+                "type": "fund",
+                "id": fund.id,
+                "code": fund.code or "",
+                "name": fund.name or "",
+                "complete_name": self._get_complete_name_without_codes(fund),
+                "amount": 0.0,
+                "total_amount": 0.0,
+                "level": activity_node["level"] + 1,
+                "children": [],
+                "line_details": [],
+            }
+
+            # Add accounts to fund
+            for account in all_accounts:
+                key = (activity_id, fund.id, account.id)
+                if key in line_data_map and line_data_map[key]['amount'] != 0:
+                    fund_has_data = True
+                    account_node = {
+                        "key": f"{fund_node['key']}_account_{account.id}",
+                        "type": "account",
+                        "id": account.id,
+                        "code": account.code or "",
+                        "name": account.name or "",
+                        "complete_name": account.name or "",
+                        "amount": line_data_map[key]['amount'],
+                        "total_amount": line_data_map[key]['amount'],
+                        "level": fund_node["level"] + 1,
+                        "children": [],
+                        "line_details": line_data_map[key]['lines'],
+                    }
+                    fund_node["children"].append(account_node)
+                    fund_node["amount"] += account_node["amount"]
+
+            # Only add fund if it has data
+            if fund_has_data:
                 fund_node["total_amount"] = fund_node["amount"]
-                fund_children.append(fund_node)
+                activity_node["children"].append(fund_node)
+                activity_node["amount"] += fund_node["amount"]
 
-            activity_node["children"] = sorted(fund_children, key=lambda x: x["code"])
-            activity_node["total_amount"] = activity_node["amount"]
-            result.append(activity_node)
+    def _calculate_totals(self, node):
+        """Calculate totals recursively bottom-up"""
+        total = node.get("amount", 0.0)
 
-        # Sort activities by code
-        return sorted(result, key=lambda x: x["code"])
+        for child in node.get("children", []):
+            total += self._calculate_totals(child)
+
+        node["total_amount"] = total
+        return total
+
+    def _sort_tree_children(self, node):
+        """Sort children at each level by code"""
+        if "children" in node and node["children"]:
+            node["children"].sort(key=lambda x: x.get("code", ""))
+            for child in node["children"]:
+                self._sort_tree_children(child)
 
     def _get_department_with_children(self, department_ids):
         """Get department IDs including all children"""
