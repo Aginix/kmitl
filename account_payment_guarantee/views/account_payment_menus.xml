@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Configuration Menu for Account Payment -->
+        <menuitem id="account_payment_config_menu" 
+                  name="Payment" 
+                  parent="account.account_management_menu"
+                  sequence="30"
+                  groups="account.group_account_manager"/>
+
+        <!-- Payment Guarantee Types Menu -->
+        <menuitem id="payment_guarantee_type_menu" 
+                  name="Payment Guarantee Types"
+                  parent="account_payment_config_menu"
+                  action="action_account_payment_guarantee_type"
+                  sequence="10"
+                  groups="account.group_account_manager"/>
+    </data>
+</odoo>
