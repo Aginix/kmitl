@@ -12,28 +12,30 @@ class PurchaseRequest(models.Model):
 
     @api.model
     def create(self, vals):
-        if not vals.get("department_id") and vals.get("operating_unit_id"):
+        if vals.get("operating_unit_id"):
             ou = self.env["operating.unit"].browse(vals["operating_unit_id"])
             if ou.department_id:
                 vals["department_id"] = ou.department_id.id
 
-        if vals.get("name", "/") == "/":
-            fy = self.env["account.fiscal.year"].browse(vals.get("date_range_fy_id"))
-            year = fy.name[-2:] if fy else fields.Date.today().strftime("%y")
+        fy_id = self.env["account.fiscal.year"].browse(vals.get("date_range_fy_id"))
+        fiscal_year = fy_id.name[-2:] if fy_id else fields.Date.today().strftime("%y")
 
-            dept = self.env["hr.department"].browse(vals.get("department_id"))
-            short_name = dept.short_name or "XXX"
+        department = self.env["hr.department"].browse(vals.get("department_id"))
+        short_name = department.short_name or "XXX"
 
-            prefix = f"PR1/{year}/{short_name}/"
-            last = self.search([("name", "like", prefix + "%")], order="name desc", limit=1)
+        if not self.env['ir.sequence'].search([('code', 'like', f"purchase.request.{fiscal_year}.{short_name}")]):
+            self.env['ir.sequence'].create({
+                'name': f'Purchase Request {fiscal_year} {short_name}',
+                'code': f'purchase.request.{fiscal_year}.{short_name}',
+                'prefix': f'PR1/{fiscal_year}/{short_name}/',
+                'padding': 4,
+                'number_increment': 1,
+            })
 
-            if last:
-                last_seq = int(last.name.split("/")[-1])
-                new_seq = str(last_seq + 1).zfill(4)
-            else:
-                new_seq = "0001"
+        sequence = self.env['ir.sequence'].next_by_code(f"purchase.request.{fiscal_year}.{short_name}") or _('New')
+        vals['name'] = sequence
+        record = super().create(vals)
 
-            vals["name"] = prefix + new_seq
-
-        return super().create(vals)
-
+        if record.operating_unit_id and record.operating_unit_id.department_id:
+            record.department_id = record.operating_unit_id.department_id.id
+        return record
