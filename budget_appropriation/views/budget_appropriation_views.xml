@@ -87,9 +87,16 @@
                         <page string="Preview" name="preview" attrs="{'invisible': [('id', '=', False)]}">
                             <div class="o_budget_preview_container">
                                 <div class="text-center p-3">
-                                    <button type="object" name="action_open_f5_preview" class="btn btn-primary btn-lg">
+                                    <!-- F5 Preview for Expense -->
+                                    <button type="object" name="action_open_f5_preview" class="btn btn-primary btn-lg me-2" attrs="{'invisible': [('budget_type', '!=', 'expense')]}">
                                         <i class="fa fa-eye" />
                                         เปิดดูตัวอย่างแบบละเอียด (F5)
+                                    </button>
+                                    
+                                    <!-- F4 Preview for Revenue -->
+                                    <button type="object" name="action_open_f4_preview" class="btn btn-success btn-lg" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}">
+                                        <i class="fa fa-eye" />
+                                        เปิดดูตัวอย่างรายรับ (F4)
                                     </button>
                                 </div>
                             </div>
