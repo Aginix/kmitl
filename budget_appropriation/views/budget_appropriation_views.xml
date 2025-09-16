@@ -52,7 +52,6 @@
                             <field name="user_id" widget="many2one_avatar_user" required="1" />
                             <field name="ref" />
                             <field name="note" />
-                            <field name="total_amount" readonly="1" />
                         </group>
                         <group string="มิติบัญชี">
                             <field name="date_range_fy_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
@@ -75,10 +74,15 @@
                                     <field name="fund_analytic_id" options='{"no_open": True}' required="1" />
                                     <field name="source_analytic_id" invisible="1" />
                                     <field name="account_id" options='{"no_open": True}' required="1" />
-                                    <field name="balance" sum="Total" required="1" />
+                                    <field name="balance" required="1" />
                                     <field name="note" />
                                 </tree>
                             </field>
+                            <group>
+                                <group class="oe_subtotal_footer oe_right">
+                                    <field name="total_amount" string="งบประมาณทั้งหมด" />
+                                </group>
+                            </group>
                         </page>
                         <page string="Preview" name="preview" attrs="{'invisible': [('id', '=', False)]}">
                             <div class="o_budget_preview_container">
