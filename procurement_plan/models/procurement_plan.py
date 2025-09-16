@@ -1,5 +1,6 @@
 import logging
 
+from odoo.tools.misc import format_amount
 from odoo import _, api, fields, models
 
 _logger = logging.getLogger(__name__)
@@ -155,6 +156,8 @@ class ProcurementPlan(models.Model):
         readonly=True,
     )
 
+    display_name = fields.Char(string="ชื่อแสดง", compute="_compute_display_name")
+
     @api.depends("state", "name")
     def _compute_name(self):
         self = self.sorted(lambda m: m.id)
@@ -172,6 +175,15 @@ class ProcurementPlan(models.Model):
                 record.name = self.env["ir.sequence"].next_by_code(
                     "procurement.plan"
                 ) or _("New")
+
+    @api.depends("name", "description", "amount", "unit", "price_per_unit", "total_price")
+    def _compute_display_name(self):
+        for record in self:
+            description = record.description if record.description else "{}"
+            amount = record.amount
+            unit = record.unit if record.unit else "{}"
+            total_price = format_amount(self.env, record.total_price, record.currency_id, False)
+            record.display_name = f"{description} จำนวน {amount} {unit} งบประมาณ {total_price} บาท"
 
     @api.depends("amount", "price_per_unit")
     def _compute_total_price(self):
