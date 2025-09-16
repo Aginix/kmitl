@@ -28,6 +28,7 @@ class BudgetAppropriationOffset(models.Model):
             ("cancelled", "Cancelled"),
         ],
         string="สถานะ",
+        default="draft",
         readonly=True,
         tracking=True,
     )
@@ -36,9 +37,9 @@ class BudgetAppropriationOffset(models.Model):
     appropriation_id = fields.Many2one("budget.appropriation", related="appropriation_line_id.appropriation_id", store=True)
     appropriation_line_id = fields.Many2one("budget.appropriation.line")
     from_department_analytic_id = fields.Many2one(
-        "account.analytic.account", domain=[("root_plan_id.code", "=", "departments")]
+        "account.analytic.account", string="ส่วนงานต้นทาง", domain=[("root_plan_id.code", "=", "departments")]
     )
     to_department_analytic_id = fields.Many2one(
-        "account.analytic.account", domain=[("root_plan_id.code", "=", "departments")]
+        "account.analytic.account", string="ส่วนงานปลายทาง", domain=[("root_plan_id.code", "=", "departments")]
     )
     source_analytic_id = fields.Many2one("account.analytic.account")

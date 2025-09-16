@@ -8,12 +8,13 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="account_fiscal_year_id" />
-                <field name="amount" />
                 <field name="name"/>
                 <field name="from_department_analytic_id"/>
                 <field name="to_department_analytic_id"/>
+                <field name="amount" />
                 <field name="source_analytic_id" />
                 <field name="appropriation_id" />
+                <field name="state" widget="badge" />
             </tree>
         </field>
     </record>
@@ -89,4 +90,5 @@
         </field>
     </record>
 
+    <menuitem id="menu_budget_appropriation_offset_menu" name="หักโอน" parent="budget_appropriation.menu_budget_appropriation_root" action="action_budget_appropriation_offset" sequence="25" />
 </odoo>
