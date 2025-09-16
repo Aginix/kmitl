@@ -9,52 +9,50 @@ class BudgetProject(models.Model):
     _order = "create_date desc, id desc"
     _rec_name = "name"
 
+    READONLY_STATES = {
+        "validate": [("readonly", True)],
+        "in_progress": [("readonly", True)],
+        "done": [("readonly", True)],
+        "cancel": [("readonly", True)],
+    }
+
     name = fields.Char(
-        string="Project/Activity Name",
+        string="ชื่อ",
         required=True,
         tracking=True,
     )
     description = fields.Text(
-        string="Description",
+        string="รายละเอียด",
         tracking=True,
     )
-    budget_amount = fields.Float(
-        string="Budget Amount",
+    amount = fields.Float(
+        string="งบประมาณ",
         required=True,
         tracking=True,
         digits="Budget",
     )
 
-    # Budget integration
-    budget_move_line_id = fields.Many2one(
-        "budget.move.line",
-        string="Budget Move Line",
-        ondelete="cascade",
-        index=True,
-    )
-    budget_move_id = fields.Many2one(
-        "budget.move",
-        string="Budget Move",
-        related="budget_move_line_id.move_id",
+    budget_appropriation_id = fields.Many2one(
+        "budget.appropriation",
+        related="budget_appropriation_line_id.appropriation_id",
         store=True,
         readonly=True,
     )
+    budget_appropriation_line_id = fields.Many2one("budget.appropriation.line")
     budget_account_id = fields.Many2one(
-        "budget.account",
-        string="Budget Account",
-        required=True,
-        domain="[('project_enabled', '=', True)]",
-        tracking=True,
+        "budget.account", string="รหัสงบประมาณ", states=READONLY_STATES
     )
-
-    # Financial dimensions - inherited from AnalyticDistributionMixin
-    # department_analytic_id, activity_analytic_id, fund_analytic_id, source_analytic_id
+    activity_analytic_id = fields.Many2one(states=READONLY_STATES)
+    department_analytic_id = fields.Many2one(states=READONLY_STATES)
+    fund_analytic_id = fields.Many2one(states=READONLY_STATES)
+    source_analytic_id = fields.Many2one(states=READONLY_STATES)
 
     # Additional fields
     state = fields.Selection(
         [
             ("draft", "Draft"),
-            ("confirmed", "Confirmed"),
+            ("validate", "To Approve"),
+            ("in_progress", "In Progress"),
             ("done", "Done"),
             ("cancel", "Cancelled"),
         ],
@@ -83,70 +81,25 @@ class BudgetProject(models.Model):
     date_range_fy_id = fields.Many2one(
         "account.fiscal.year",
         string="Fiscal Year",
-        related="budget_move_line_id.date_range_fy_id",
+        related="budget_appropriation_line_id.date_range_fy_id",
         store=True,
         readonly=True,
     )
 
-    @api.constrains("budget_amount")
-    def _check_budget_amount(self):
+    @api.constrains("amount")
+    def _check_amount(self):
         for project in self:
-            if project.budget_amount < 0:
+            if project.amount < 0:
                 raise ValidationError(_("Budget amount cannot be negative."))
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        """Override to set default analytic values from budget move line if created from there"""
-        for vals in vals_list:
-            if vals.get("budget_move_line_id"):
-                line = self.env["budget.move.line"].browse(vals["budget_move_line_id"])
-                # Set default analytic dimensions from budget move line
-                if (
-                    not vals.get("department_analytic_id")
-                    and line.department_analytic_id
-                ):
-                    vals["department_analytic_id"] = line.department_analytic_id.id
-                if not vals.get("activity_analytic_id") and line.activity_analytic_id:
-                    vals["activity_analytic_id"] = line.activity_analytic_id.id
-                if not vals.get("fund_analytic_id") and line.fund_analytic_id:
-                    vals["fund_analytic_id"] = line.fund_analytic_id.id
-                if not vals.get("source_analytic_id") and line.source_analytic_id:
-                    vals["source_analytic_id"] = line.source_analytic_id.id
-                # Set budget account from line if not provided
-                if not vals.get("budget_account_id") and line.account_id:
-                    vals["budget_account_id"] = line.account_id.id
-        return super().create(vals_list)
-
-    def action_confirm(self):
-        """Confirm the project"""
-        self.ensure_one()
-        if self.state != "draft":
-            raise ValidationError(_("Only draft projects can be confirmed."))
-        self.state = "confirmed"
-
-    def action_done(self):
-        """Mark project as done"""
-        self.ensure_one()
-        if self.state != "confirmed":
-            raise ValidationError(_("Only confirmed projects can be marked as done."))
-        self.state = "done"
-
-    def action_cancel(self):
-        """Cancel the project"""
-        self.ensure_one()
-        if self.state == "done":
-            raise ValidationError(_("Cannot cancel a completed project."))
-        self.state = "cancel"
-
-    def action_draft(self):
-        """Reset to draft"""
-        self.ensure_one()
-        if self.state != "cancel":
-            raise ValidationError(_("Only cancelled projects can be reset to draft."))
-        self.state = "draft"
 
     @api.ondelete(at_uninstall=False)
     def _unlink_except_done(self):
         for project in self:
             if project.state == "done":
                 raise ValidationError(_("Cannot delete a completed project."))
+
+    def action_validate(self):
+        self.write({"state": "validate"})
+
+    def action_draft(self):
+        self.write({"state": "draft"})

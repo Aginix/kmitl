@@ -36,6 +36,22 @@
                             <i class="fa fa-compress"/>
                         </button>
                     </div>
+                    <div class="btn-group me-2">
+                        <button
+                            type="button"
+                            t-att-class="state.showProjects ? 'btn btn-info' : 'btn btn-outline-info'"
+                            t-on-click="onToggleProjects"
+                            title="แสดง/ซ่อน โครงการ/กิจกรรม">
+                            <i class="fa fa-tasks"/> โครงการ
+                        </button>
+                        <button
+                            type="button"
+                            t-att-class="state.showProcurementPlans ? 'btn btn-success' : 'btn btn-outline-success'"
+                            t-on-click="onToggleProcurementPlans"
+                            title="แสดง/ซ่อน แผนจัดซื้อจัดจ้าง">
+                            <i class="fa fa-shopping-cart"/> แผนจัดซื้อ
+                        </button>
+                    </div>
                     <div class="btn-group">
                         <button
                             type="button"
@@ -157,6 +173,59 @@
                                             <div class="text-muted" style="white-space: pre-line;"><t t-esc="detail.note"/></div>
                                         </t>
                                     </t>
+                                </t>
+                                
+                                <!-- โครงการ/กิจกรรม -->
+                                <t t-if="state.showProjects and node.projects and node.projects.length > 0">
+                                    <div class="mt-2 project-details">
+                                        <div class="detail-header">
+                                            <i class="fa fa-tasks text-info"/> 
+                                            <small class="fw-bold text-info">โครงการ/กิจกรรม:</small>
+                                        </div>
+                                        <t t-foreach="node.projects" t-as="project" t-key="project.id">
+                                            <div class="detail-item">
+                                                <div class="detail-content">
+                                                    <span class="detail-name"><t t-esc="project.name"/></span>
+                                                    <span class="detail-amount">(<t t-esc="formatCurrency(project.amount)"/> บาท)</span>
+                                                    <t t-if="project.state !== 'draft'">
+                                                        <span t-att-class="'detail-state state-' + project.state">
+                                                            <t t-esc="project.state_label"/>
+                                                        </span>
+                                                    </t>
+                                                </div>
+                                                <t t-if="project.description">
+                                                    <div class="detail-description"><t t-esc="project.description"/></div>
+                                                </t>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </t>
+                                
+                                <!-- แผนจัดซื้อจัดจ้าง -->
+                                <t t-if="state.showProcurementPlans and node.procurement_plans and node.procurement_plans.length > 0">
+                                    <div class="mt-2 procurement-details">
+                                        <div class="detail-header">
+                                            <i class="fa fa-shopping-cart text-success"/> 
+                                            <small class="fw-bold text-success">แผนจัดซื้อจัดจ้าง:</small>
+                                        </div>
+                                        <t t-foreach="node.procurement_plans" t-as="plan" t-key="plan.id">
+                                            <div class="detail-item">
+                                                <div class="detail-content">
+                                                    <span class="detail-name"><t t-esc="plan.description"/></span>
+                                                    <span class="detail-specs">
+                                                        จำนวน <t t-esc="plan.amount"/> <t t-esc="plan.unit"/> 
+                                                        @ <t t-esc="formatCurrency(plan.price_per_unit)"/> บาท
+                                                    </span>
+                                                    <span class="detail-amount">= <t t-esc="formatCurrency(plan.total_price)"/> บาท</span>
+                                                    <t t-if="plan.state !== 'draft'">
+                                                        <span t-att-class="'detail-state state-' + plan.state">
+                                                            <t t-esc="plan.state_label"/>
+                                                        </span>
+                                                    </t>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </div>
                                 </t>
                             </t>
                             <t t-else="">
