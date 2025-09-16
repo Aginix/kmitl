@@ -37,6 +37,53 @@
             </t>
         </xpath>
 
+        <!-- Replace footer with summary for revenue with offsets -->
+        <xpath expr="//tfoot//tr" position="replace">
+            <!-- Show simple total if no offsets -->
+            <tr class="table-active fw-bold" t-if="!hasOffsetsData()">
+                <td class="text-end">
+                    <strong>ยอดรวมทั้งหมด</strong>
+                </td>
+                <td class="text-end">
+                    <strong>
+                        <t t-esc="formatCurrency(totalAmount)"/> บาท
+                    </strong>
+                </td>
+            </tr>
+            
+            <!-- Show detailed summary if has offsets -->
+            <tr class="table-secondary" t-if="hasOffsetsData()">
+                <td class="text-end">
+                    <strong>งบประมาณทั้งหมด</strong>
+                </td>
+                <td class="text-end">
+                    <strong>
+                        <t t-esc="formatCurrency(totalAmount)"/> บาท
+                    </strong>
+                </td>
+            </tr>
+            <tr class="table-warning" t-if="hasOffsetsData()">
+                <td class="text-end">
+                    <strong>หักโอน</strong>
+                </td>
+                <td class="text-end">
+                    <strong class="text-danger">
+                        <t t-esc="formatCurrency(getOffsetTotal())"/> บาท
+                    </strong>
+                </td>
+            </tr>
+            <tr class="table-success fw-bold" t-if="hasOffsetsData()">
+                <td class="text-end">
+                    <strong>รายรับสุทธิ</strong>
+                </td>
+                <td class="text-end">
+                    <strong class="text-success">
+                        <t t-esc="formatCurrency(getTotalRevenueNet())"/> บาท
+                    </strong>
+                </td>
+            </tr>
+        </xpath>
+
     </t>
 
 </templates>
