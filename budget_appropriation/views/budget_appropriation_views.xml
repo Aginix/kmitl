@@ -66,7 +66,7 @@
                     </group>
                     <notebook>
                         <page name="line_ids" string="Appropriation Lines">
-                            <field name="line_ids" style="max-width: 100%; display: block;" attrs="{'readonly': [('state', 'in', ['review', 'posted', 'cancel'])]}">
+                            <field name="line_ids" style="max-width: 100%; display: block;" attrs="{'readonly': [('state', 'in', ['review', 'posted', 'cancel'])]}" widget="budget_appropriation_line">
                                 <tree limit="1000">
                                     <field name="appropriation_id" invisible="1" />
                                     <field name="budget_type" invisible="1" />
@@ -131,11 +131,11 @@
                         <field name="date_range_fy_id" invisible="1" />
                         <field name="appropriation_id" invisible="1" />
                         <field name="budget_type" invisible="1" />
-                        <field name="department_analytic_id" options='{"no_open": True}' readonly="1" />
-                        <field name="source_analytic_id" options='{"no_open": True}' readonly="1" />
-                        <field name="activity_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
+                        <field name="department_analytic_id" options='{"no_open": True}' widget="helper_text" readonly="1" />
+                        <field name="source_analytic_id" options='{"no_open": True}' widget="helper_text" readonly="1" />
+                        <field name="activity_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' widget="helper_text" required="1" />
                         <field name="fund_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
-                        <field name="account_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
+                        <field name="account_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' widget="helper_text" required="1" />
                         <field name="balance" required="1" />
                         <field name="note" />
                     </group>

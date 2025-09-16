@@ -10,6 +10,17 @@ _logger = logging.getLogger(__name__)
 class BudgetAppropriation(models.Model):
     _inherit = 'budget.appropriation'
 
+    procurement_plan_ids = fields.Many2many(
+        comodel_name='procurement.plan',
+        compute='_compute_procurement_plan_ids',
+        string='รายการแผนจัดซื้อจัดจ้าง',
+        store=False,
+    )
+
+    def _compute_procurement_plan_ids(self):
+        for record in self:
+            record.procurement_plan_ids = record.line_ids.mapped('procurement_plan_ids')
+
     def action_review(self):
         super().action_review()
         for line in self.line_ids:
