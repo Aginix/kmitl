@@ -4,22 +4,30 @@
     <!-- Menu items for Budget Appropriation -->
     <menuitem
         id="menu_budget_appropriation_root"
-        name="Budget Appropriation"
+        name="จัดสรรงบประมาณ"
         parent="budget.budget_root_menu"
         sequence="10"
     />
 
     <menuitem
-        id="menu_budget_appropriation"
-        name="Appropriations"
+        id="menu_budget_appropriation_expense"
+        name="งบประมาณรายจ่าย"
         parent="menu_budget_appropriation_root"
-        action="action_budget_appropriation"
+        action="action_budget_appropriation_expense"
         sequence="10"
     />
 
     <menuitem
+        id="menu_budget_appropriation_revenue"
+        name="งบประมาณรายรับ"
+        parent="menu_budget_appropriation_root"
+        action="action_budget_appropriation_revenue"
+        sequence="15"
+    />
+
+    <menuitem
         id="menu_budget_appropriation_line"
-        name="Appropriation Lines"
+        name="รายการการจัดสรรงบประมาณ"
         parent="menu_budget_appropriation_root"
         action="action_budget_appropriation_line"
         sequence="20"

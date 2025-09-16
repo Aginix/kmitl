@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- View budget.appropriation.line form -->
+    <record id="view_budget_appropriation_line_form_offset" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.line.form.procurement.plan</field>
+        <field name="model">budget.appropriation.line</field>
+        <field name="inherit_id" ref="budget_appropriation.view_budget_appropriation_line_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='balance']" position="after">
+                <field name="date_range_fy_id" invisible="1" />
+                <field name="offset_ids" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}" context="{
+                    'default_account_fiscal_year_id': date_range_fy_id,
+                    'default_from_department_analytic_id': department_analytic_id,
+                    'default_source_analytic_id': source_analytic_id
+                }">
+                    <tree editable="bottom" limit="1000">
+                        <field name="account_fiscal_year_id" invisible="1" />
+                        <field name="appropriation_id" invisible="1" />
+                        <field name="appropriation_line_id" invisible="1" />
+                        <field name="from_department_analytic_id" invisible="1" />
+                        <field name="source_analytic_id" invisible="1" />
+                        <field name="name" required="1" />
+                        <field name="amount" sum="จำนวนเงิน" required="1" />
+                        <field name="to_department_analytic_id" required="1" />
+                        <field name="note" />
+                    </tree>
+                </field>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- View budget.appropriation form -->
+    <record id="view_budget_appropriation_form" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.form</field>
+        <field name="model">budget.appropriation</field>
+        <field name="inherit_id" ref="budget_appropriation.view_budget_appropriation_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[hasclass('oe_subtotal_footer')]" position="inside">
+                <field name="offset_total" string="หักโอน" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}" style="text-decoration: underline;" />
+                <field name="total_revenue_net" string="รายรับสุทธิ" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}" style="text-decoration-line: underline; text-decoration-style: double;" />
+            </xpath>
+            <xpath expr="//page[@name='line_ids']" position="after">
+                <page name="offset_ids" string="หักโอน" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}">
+                    <field name="offset_ids" context="{'default_account_fiscal_year_id': date_range_fy_id, 'default_from_department_analytic_id': department_analytic_id, 'default_source_analytic_id': source_analytic_id}">
+                        <tree editable="bottom" limit="1000">
+                            <field name="appropriation_id" invisible="1" />
+                            <field name="appropriation_line_id" invisible="1" />
+                            <field name="from_department_analytic_id" invisible="1" />
+                            <field name="source_analytic_id" invisible="1" />
+                            <field name="name" />
+                            <field name="amount" />
+                            <field name="to_department_analytic_id" />
+                            <field name="note" optional="hide" />
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View budget.appropriation.offset View Tree -->
+    <record id="view_budget_appropriation_offset_tree" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.offset.tree</field>
+        <field name="model">budget.appropriation.offset</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="account_fiscal_year_id" />
+                <field name="name"/>
+                <field name="from_department_analytic_id"/>
+                <field name="to_department_analytic_id"/>
+                <field name="amount" />
+                <field name="source_analytic_id" />
+                <field name="appropriation_id" />
+                <field name="state" widget="badge" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- View budget.appropriation.offset form -->
+    <record id="view_budget_appropriation_offset_form" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.offset.form</field>
+        <field name="model">budget.appropriation.offset</field>
+        <field name="arch" type="xml">
+            <form string="หักโอน">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,waiting_to_process,done" />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Name..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="account_fiscal_year_id" />
+                            <field name="source_analytic_id" />
+                            <field name="amount" />
+                            <field name="note" />
+                        </group>
+                        <group>
+                            <field name="appropriation_id" />
+                            <field name="appropriation_line_id" />
+                        </group>
+                    </group>
+                    <group string="">
+                        <group string="From">
+                            <field name="from_analytic_distribution" invisible="1" />
+                            <field name="from_department_analytic_id"/>
+                        </group>
+                        <group string="To">
+                            <field name="to_analytic_distribution" invisible="1" />
+                            <field name="to_department_analytic_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- View budget.appropriation.offset search -->
+    <record id="view_budget_appropriation_offset_search" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.offset.search</field>
+        <field name="model">budget.appropriation.offset</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action budget.appropriation.offset -->
+    <record id="action_budget_appropriation_offset" model="ir.actions.act_window">
+        <field name="name">หักโอน</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">budget.appropriation.offset</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Budget Appropriation Offset.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_budget_appropriation_offset_menu" name="หักโอน" parent="budget_appropriation.menu_budget_appropriation_root" action="action_budget_appropriation_offset" sequence="25" />
+</odoo>
