@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 {
     "name": "Budget Appropriation Offset",
-    "version": "",
-    "author": "",
-    "website": "",
-    "category": "",
+    "version": "16.0.1.0.0",
+    "category": "KMITL/Budgeting",
+    "author": "Aginix Technologies",
+    "website": "https://github.com/aginix/kmitl",
     "depends": ["budget_appropriation"],
     "data": [
         "security/ir.model.access.csv",
