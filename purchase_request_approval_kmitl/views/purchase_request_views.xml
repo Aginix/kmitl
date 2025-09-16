@@ -15,13 +15,11 @@
         ('need_validation', '!=', True),
         ('validation_status', '=', 'pending'),
         ('rejected', '=', True),
-        ('substate_sequence', '!=', 30),
-        ('can_request','=',False)
+        ('substate_sequence', '!=', 30), ('can_request','=',False)
     ]}" type="object" />
                 <button name="restart_validation" string="Restart Validation" class="btn-primary" attrs="{'invisible': ['|', '|',
         ('need_validation', '!=', True),
-        ('validation_status', '!=', 'pending'),
-        ('can_request','=',False)
+        ('validation_status', '!=', 'pending'), ('can_request','=',False)
     ]}" type="object" groups="purchase_request.group_purchase_request_manager" />
             </button>
             <!-- state change -->
@@ -50,6 +48,9 @@
                 <attribute name="attrs">{'readonly':[('can_edit_budget','=',False)]}</attribute>
             </field>
             <field name="activity_analytic_id" position="attributes">
+                <attribute name="attrs">{'readonly':[('can_edit_budget','=',False)]}</attribute>
+            </field>
+            <field name="department_analytic_id" position="attributes">
                 <attribute name="attrs">{'readonly':[('can_edit_budget','=',False)]}</attribute>
             </field>
             <field name="fund_analytic_id" position="attributes">
