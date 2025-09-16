@@ -20,9 +20,7 @@ class PurchaseGuarantee(models.Model):
     @api.depends("reference")
     def _compute_is_purchase_order(self):
         for rec in self:
-            if not rec.reference:
-                rec.is_purchase_order = False
-            elif rec.reference._name == "purchase.order":
+            if rec.reference and rec.reference._name == "purchase.order":
                 rec.is_purchase_order = True
             else:
                 rec.is_purchase_order = False
