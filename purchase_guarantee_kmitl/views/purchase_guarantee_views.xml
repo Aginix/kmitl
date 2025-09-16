@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+
+    <menuitem
+        id="kmitl_guarantee_purchase"
+        name="Guarantee"
+        parent="purchase.menu_purchase_root"
+        action="l10n_th_gov_purchase_guarantee.purchase_guarantee_action"
+        sequence="10"/>
+
+  </odoo>
