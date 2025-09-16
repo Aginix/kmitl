@@ -42,4 +42,4 @@ class BudgetAppropriationOffset(models.Model):
     to_department_analytic_id = fields.Many2one(
         "account.analytic.account", string="ส่วนงานปลายทาง", domain=[("root_plan_id.code", "=", "departments")]
     )
-    source_analytic_id = fields.Many2one("account.analytic.account")
+    source_analytic_id = fields.Many2one("account.analytic.account", string="แหล่งเงิน")
