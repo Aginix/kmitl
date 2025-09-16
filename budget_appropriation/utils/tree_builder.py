@@ -152,6 +152,13 @@ class TreeNode:
         if 'line_details' in self.metadata:
             data['line_details'] = self.metadata['line_details']
         
+        # Add project and procurement plan data
+        if 'projects' in self.metadata:
+            data['projects'] = self.metadata['projects']
+        
+        if 'procurement_plans' in self.metadata:
+            data['procurement_plans'] = self.metadata['procurement_plans']
+        
         # Add children if requested
         if include_children and self.children:
             data['children'] = [
@@ -388,6 +395,47 @@ class BudgetTreeBuilder:
             'balance': amount,
             'amount': amount
         })
+        
+        # Add project and procurement plan data if available
+        self._add_project_data(node, line)
+        self._add_procurement_data(node, line)
+    
+    def _add_project_data(self, node: TreeNode, line):
+        """Add budget project data to node"""
+        if hasattr(line, 'project_ids') and line.project_ids:
+            if 'projects' not in node.metadata:
+                node.metadata['projects'] = []
+            
+            for project in line.project_ids:
+                project_data = {
+                    'id': project.id,
+                    'name': project.name,
+                    'description': getattr(project, 'description', ''),
+                    'amount': project.amount,
+                    'state': project.state,
+                    'state_label': dict(project._fields['state'].selection).get(project.state, project.state)
+                }
+                node.metadata['projects'].append(project_data)
+    
+    def _add_procurement_data(self, node: TreeNode, line):
+        """Add procurement plan data to node"""
+        if hasattr(line, 'procurement_plan_ids') and line.procurement_plan_ids:
+            if 'procurement_plans' not in node.metadata:
+                node.metadata['procurement_plans'] = []
+            
+            for plan in line.procurement_plan_ids:
+                plan_data = {
+                    'id': plan.id,
+                    'name': plan.name or plan.description,
+                    'description': plan.description,
+                    'amount': plan.amount,
+                    'unit': plan.unit,
+                    'price_per_unit': plan.price_per_unit,
+                    'total_price': plan.total_price,
+                    'state': plan.state,
+                    'state_label': dict(plan._fields['state'].selection).get(plan.state, plan.state)
+                }
+                node.metadata['procurement_plans'].append(plan_data)
     
     def _get_line_amount(self, line) -> float:
         """Get amount from line based on configuration"""
