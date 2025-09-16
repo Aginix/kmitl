@@ -228,11 +228,11 @@
     </record>
 
     <record id="action_budget_appropriation_expense" model="ir.actions.act_window">
-        <field name="name">Appropriations - รายจ่าย</field>
+        <field name="name">งบประมาณรายจ่าย</field>
         <field name="res_model">budget.appropriation</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('budget_type', '=', 'expense')]</field>
-        <field name="context">{'default_journal_id': %(budget.budget_move_expense_journal)d}</field>
+        <field name="context">{'default_journal_id': 'expense'}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a new expense budget appropriation!
@@ -245,11 +245,11 @@
     </record>
 
     <record id="action_budget_appropriation_revenue" model="ir.actions.act_window">
-        <field name="name">Appropriations - รายรับ</field>
+        <field name="name">งบประมาณรายรับ</field>
         <field name="res_model">budget.appropriation</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('budget_type', '=', 'revenue')]</field>
-        <field name="context">{'default_journal_id': %(budget.budget_move_revenue_journal)d}</field>
+        <field name="context">{'default_journal_id': 'revenue'}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a new revenue budget appropriation!
