@@ -1,40 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates xml:space="preserve">
-    
+
     <!-- Simple extension to show offset info in header -->
     <div t-name="budget_appropriation_offset.BudgetAppropriationF4PreviewOffset" class="o_action budget_appropriation_f4_preview" owl="1" t-inherit="budget_appropriation.BudgetAppropriationF4Preview" t-inherit-mode="extension">
 
         <!-- Show net revenue in header if there are offsets -->
         <xpath expr="//h3[contains(text(), 'วงเงิน')]" position="after">
             <h3 t-if="hasOffsetsData()">รายรับสุทธิ <t t-esc="formatCurrency(getTotalRevenueNet())"/> บาท</h3>
-        </xpath>
-
-    </div>
-
-    <!-- Simple override of F4TableRow to show offset details -->
-    <t t-name="budget_appropriation.F4TableRow" owl="1" t-inherit="budget_appropriation.F4TableRow" t-inherit-mode="extension">
-        
-        <!-- Add offset details after line details -->
-        <xpath expr="//t[@t-if='node.line_details and node.line_details.length > 0']" position="after">
-            <!-- Simple offset display -->
-            <t t-if="hasNodeOffsets(node)">
-                <t t-foreach="node.offsets" t-as="offset" t-key="offset.id">
-                    <div class="text-muted small" style="margin-left: 20px;">
-                        หักโอน: <t t-esc="offset.name"/> -<t t-esc="formatCurrency(offset.amount)"/> บาท
-                        <t t-if="offset.note"> (<t t-esc="offset.note"/>)</t>
-                    </div>
-                </t>
-            </t>
-        </xpath>
-
-        <!-- Update amount display to show net amount if there are offsets -->
-        <xpath expr="//t[@t-esc='formatCurrency(node.total_amount)']" position="replace">
-            <t t-if="!hasNodeOffsets(node)" t-esc="formatCurrency(node.total_amount)"/>
-            <t t-if="hasNodeOffsets(node)">
-                <div><t t-esc="formatCurrency(node.total_amount)"/></div>
-                <div class="text-danger small">หัก <t t-esc="formatCurrency(node.offset_total)"/></div>
-                <div class="text-success small">คงเหลือ <t t-esc="formatCurrency(node.net_amount)"/></div>
-            </t>
         </xpath>
 
         <!-- Add offset summary rows after the existing footer -->
@@ -60,6 +32,33 @@
                     </strong>
                 </td>
             </tr>
+        </xpath>
+    </div>
+
+    <!-- Simple override of F4TableRow to show offset details -->
+    <t t-name="budget_appropriation.F4TableRow" owl="1" t-inherit="budget_appropriation.F4TableRow" t-inherit-mode="extension">
+
+        <!-- Add offset details after line details -->
+        <xpath expr="//t[@t-if='node.line_details and node.line_details.length > 0']" position="after">
+            <!-- Simple offset display -->
+            <t t-if="hasNodeOffsets(node)">
+                <t t-foreach="node.offsets" t-as="offset" t-key="offset.id">
+                    <div class="text-muted small" style="margin-left: 20px;">
+                        หักโอน: <t t-esc="offset.name"/> -<t t-esc="formatCurrency(offset.amount)"/> บาท
+                        <t t-if="offset.note"> (<t t-esc="offset.note"/>)</t>
+                    </div>
+                </t>
+            </t>
+        </xpath>
+
+        <!-- Update amount display to show net amount if there are offsets -->
+        <xpath expr="//t[@t-esc='formatCurrency(node.total_amount)']" position="replace">
+            <t t-if="!hasNodeOffsets(node)" t-esc="formatCurrency(node.total_amount)"/>
+            <t t-if="hasNodeOffsets(node)">
+                <div><t t-esc="formatCurrency(node.total_amount)"/></div>
+                <div class="text-danger small">หัก <t t-esc="formatCurrency(node.offset_total)"/></div>
+                <div class="text-success small">คงเหลือ <t t-esc="formatCurrency(node.net_amount)"/></div>
+            </t>
         </xpath>
 
     </t>
