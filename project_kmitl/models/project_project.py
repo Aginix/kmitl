@@ -19,6 +19,23 @@ class ProjectProject(models.Model):
         copy=False,
     )
 
+    state = fields.Selection(
+        selection=[
+            ("draft", "Draft"),
+            ("cancel", "Cancelled"),
+            ("confirm", "Confirmed"),
+            ("validate", "Validated"),
+            ("done", "Done"),
+        ],
+        string="Status",
+        default="draft",
+        index=True,
+        required=True,
+        readonly=True,
+        copy=False,
+        tracking=True,
+    )
+
     total_budget = fields.Monetary(
         string="จำนวนงบประมาณ",
         tracking=True,
@@ -90,23 +107,59 @@ class ProjectProject(models.Model):
 
     location = fields.Text(string="สถานที่/พื้นที่ดำเนินโครงการ", copy=True, tracking=True)
 
-    objective_ids = fields.One2many('project.objective', 'project_id', string='วัตถุประสงค์ของโครงการ')
+    objective_ids = fields.One2many(
+        "project.objective", "project_id", string="วัตถุประสงค์ของโครงการ"
+    )
 
-    target_ids = fields.One2many('project.target', 'project_id', string='กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ', domain=[("line_type", "=", "target")])
+    target_ids = fields.One2many(
+        "project.target",
+        "project_id",
+        string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ",
+        domain=[("line_type", "=", "target")],
+    )
 
-    participant_ids = fields.One2many('project.target', 'project_id', string='กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ', domain=[("line_type", "=", "participant")])
+    participant_ids = fields.One2many(
+        "project.target",
+        "project_id",
+        string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ",
+        domain=[("line_type", "=", "participant")],
+    )
 
-    organizer_ids = fields.One2many('project.target', 'project_id', string='กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ', domain=[("line_type", "=", "organizer")])
+    organizer_ids = fields.One2many(
+        "project.target",
+        "project_id",
+        string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ",
+        domain=[("line_type", "=", "organizer")],
+    )
 
-    output_ids = fields.One2many('project.output', 'project_id', string='ผลผลิต', domain=[("line_type", "=", "output")],)
+    output_ids = fields.One2many(
+        "project.output",
+        "project_id",
+        string="ผลผลิต",
+        domain=[("line_type", "=", "output")],
+    )
 
-    outcome_ids = fields.One2many('project.output', 'project_id', string='ผลลัพธ์', domain=[("line_type", "=", "outcome")],)
+    outcome_ids = fields.One2many(
+        "project.output",
+        "project_id",
+        string="ผลลัพธ์",
+        domain=[("line_type", "=", "outcome")],
+    )
 
-    plan_ids = fields.One2many('project.plan', 'project_id', string='แผนการดำเนินงานและแผนการใช้จ่ายงบประมาณ')
+    plan_ids = fields.One2many(
+        "project.plan", "project_id", string="แผนการดำเนินงานและแผนการใช้จ่ายงบประมาณ"
+    )
 
-    attachment_ids = fields.One2many('ir.attachment', 'res_id', domain=[('res_model', '=', 'project.project')], string='Attachments')
+    attachment_ids = fields.One2many(
+        "ir.attachment",
+        "res_id",
+        domain=[("res_model", "=", "project.project")],
+        string="Attachments",
+    )
 
-    expected_outcome_ids = fields.One2many('project.expected.outcome', 'project_id', string='ผลที่คาดว่าจะได้รับ')
+    expected_outcome_ids = fields.One2many(
+        "project.expected.outcome", "project_id", string="ผลที่คาดว่าจะได้รับ"
+    )
 
     evaluation_ids = fields.Many2many(
         comodel_name="project.evaluation",
@@ -115,4 +168,6 @@ class ProjectProject(models.Model):
         tracking=True,
     )
 
-    evaluation_detail = fields.Text("วิธีการ/เครื่องมือติดตามและประเมินผล (รายละเอียด)", copy=True, tracking=True)
+    evaluation_detail = fields.Text(
+        "วิธีการ/เครื่องมือติดตามและประเมินผล (รายละเอียด)", copy=True, tracking=True
+    )
