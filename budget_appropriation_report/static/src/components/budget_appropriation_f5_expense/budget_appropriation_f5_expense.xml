@@ -75,24 +75,45 @@
                                     </p>
                                 </div>
 
-                                <!-- Hierarchical Tree Display -->
-                                <div class="budget-tree">
-                                    <div t-if="hierarchy.length === 0" class="text-center p-4">
-                                        <p class="text-muted mt-2">ไม่พบข้อมูลตามเงื่อนไขที่เลือก</p>
-                                    </div>
-                                    
-                                    <div t-if="hierarchy.length > 0" class="tree-container">
-                                        <t t-call="budget_appropriation_report.TreeNode" t-foreach="hierarchy" t-as="node" t-key="node.key">
-                                            <t t-set="node" t-value="node"/>
-                                        </t>
-                                    </div>
-                                    
-                                    <div t-if="hierarchy.length > 0" class="total-summary" style="text-align: right; font-weight: bold; font-size: 16px; padding: 20px 0; border-top: 2px solid #000; margin-top: 20px;">
-                                        รวมทั้งสิ้น
-                                        <span style="text-decoration: underline; text-decoration-style: double;">
-                                            <t t-esc="formatCurrency(totalBalance)" />
-                                        </span>
-                                        บาท
+                                <!-- Report Table -->
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-sm budget-report-table">
+                                        <thead>
+                                            <tr class="table-active">
+                                                <th width="80%">รายการ</th>
+                                                <th width="20%" class="text-end">จำนวนเงิน</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-if="hierarchy.length > 0">
+                                                <t t-foreach="hierarchy" t-as="rootNode" t-key="rootNode.key">
+                                                    <t t-call="budget_appropriation_report.F5TableRow">
+                                                        <t t-set="node" t-value="rootNode"/>
+                                                        <t t-set="level" t-value="0"/>
+                                                    </t>
+                                                </t>
+                                            </t>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="table-active fw-bold">
+                                                <td class="text-end">
+                                                    <strong>ยอดรวมทั้งหมด</strong>
+                                                </td>
+                                                <td class="text-end">
+                                                    <strong>
+                                                        <t t-esc="formatCurrency(totalBalance)"/> บาท
+                                                    </strong>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+
+                                <!-- Empty State -->
+                                <div t-if="hierarchy.length === 0" class="text-center py-5">
+                                    <div class="text-muted">
+                                        <h4>ไม่มีข้อมูล</h4>
+                                        <p>ไม่พบรายการจัดสรรงบประมาณ</p>
                                     </div>
                                 </div>
                             </div>
@@ -103,33 +124,51 @@
         </div>
     </t>
 
-    <!-- Tree Node Template -->
-    <t t-name="budget_appropriation_report.TreeNode" owl="1">
-        <div t-att-class="getNodeClass(node.type, node.level)">
-            <div class="node-header" t-att-style="getMarginStyle(node)" t-on-click="() => this.onToggleNode(node.key)">
-                <span class="node-toggle">
-                    <t t-if="node.children and node.children.length > 0">
-                        <t t-if="isNodeExpanded(node.key)">-</t>
-                        <t t-else>+</t>
-                    </t>
-                    <t t-else> </t>
-                </span>
-                <span class="node-info">
-                    <span class="node-code" t-if="node.code">[<t t-esc="node.code"/>]</span>
-                    <span class="node-name"><t t-esc="node.complete_name || node.name"/></span>
-                </span>
-                <span class="node-amount">
+    <!-- Table Row Template -->
+    <t t-name="budget_appropriation_report.F5TableRow" owl="1">
+        <tr t-attf-class="{{node.type}} {{node.type !== 'account' ? 'font-weight-bold' : ''}}">
+            <td>
+                <div t-att-style="getMarginStyle(node)">
+                    <div class="d-flex align-items-center">
+                        <button
+                            t-if="node.children and node.children.length > 0"
+                            type="button"
+                            class="btn btn-sm btn-link p-0 me-2"
+                            t-on-click="() => this.onToggleNode(node.key)"
+                            style="width: 20px;">
+                            <i t-att-class="isNodeExpanded(node.key) ? 'fa fa-minus-square-o' : 'fa fa-plus-square-o'"/>
+                        </button>
+                        <div t-else="" style="width: 20px; display: inline-block;" class="me-2"></div>
+                        <span>
+                            <t t-if="node.type === 'account'">
+                                <t t-esc="node.code"/> - <t t-esc="node.name"/>
+                            </t>
+                            <t t-else="">
+                                <t t-esc="node.name"/>
+                                <t t-if="node.code">
+                                    <span class="text-muted"> (<t t-esc="node.code"/>)</span>
+                                </t>
+                            </t>
+                        </span>
+                    </div>
+                </div>
+            </td>
+            <td class="text-end">
+                <t t-if="node.total_amount != 0">
                     <t t-esc="formatCurrency(node.total_amount)"/>
-                </span>
-            </div>
-
-            <!-- Children Nodes -->
-            <div t-if="node.children and node.children.length > 0 and isNodeExpanded(node.key)" class="node-children">
-                <t t-call="budget_appropriation_report.TreeNode" t-foreach="node.children" t-as="childNode" t-key="childNode.key">
-                    <t t-set="node" t-value="childNode"/>
                 </t>
-            </div>
-        </div>
+            </td>
+        </tr>
+
+        <!-- Children Rows -->
+        <t t-if="isNodeExpanded(node.key) and node.children and node.children.length > 0">
+            <t t-foreach="node.children" t-as="childNode" t-key="childNode.key">
+                <t t-call="budget_appropriation_report.F5TableRow">
+                    <t t-set="node" t-value="childNode"/>
+                    <t t-set="level" t-value="level + 1"/>
+                </t>
+            </t>
+        </t>
     </t>
 
 </templates>
