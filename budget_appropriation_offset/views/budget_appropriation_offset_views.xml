@@ -24,7 +24,7 @@
         <field name="name">view.budget.appropriation.offset.form</field>
         <field name="model">budget.appropriation.offset</field>
         <field name="arch" type="xml">
-            <form string="Budget Appropriation Offset">
+            <form string="หักโอน">
                 <header>
                     <field name="state" widget="statusbar" statusbar_visible="draft,waiting_to_process,done" />
                 </header>
@@ -77,7 +77,7 @@
 
     <!-- Action budget.appropriation.offset -->
     <record id="action_budget_appropriation_offset" model="ir.actions.act_window">
-        <field name="name">Budget Appropriation Offset</field>
+        <field name="name">หักโอน</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">budget.appropriation.offset</field>
         <field name="view_mode">tree,form</field>
