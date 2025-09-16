@@ -145,6 +145,14 @@ export class BudgetAppropriationF5Expense extends Component {
         }
     }
 
+    onExpandAll() {
+        const allKeys = this.getAllNodeKeys(this.hierarchy);
+        allKeys.forEach(key => this.state.expandedNodes.add(key));
+    }
+
+    onCollapseAll() {
+        this.state.expandedNodes.clear();
+    }
 
     onPrint() {}
 
