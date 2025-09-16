@@ -41,43 +41,46 @@
             }
         }
 
-        // Simple Tree
-        .budget-tree {
-            .budget-tree-node {
-                .node-header {
-                    display: flex;
-                    align-items: center;
-                    padding: 2px 0;
-                    cursor: pointer;
-                    
-                    .node-toggle {
-                        width: 16px;
-                        margin-right: 4px;
-                        text-align: center;
-                        
-                        .fa {
-                            color: #000;
-                            font-size: 12px;
-                        }
-                    }
-                    
-                    .node-info {
-                        flex: 1;
-                        
-                        .node-code {
-                            color: #000;
-                        }
-                        
-                        .node-name {
-                            color: #000;
-                        }
-                    }
-                    
-                    .node-amount {
-                        color: #000;
-                        text-align: right;
-                        min-width: 120px;
-                    }
+        // Simple Table
+        .budget-report-table {
+            border: 1px solid #dee2e6;
+            
+            th, td {
+                border: 1px solid #dee2e6;
+                padding: 8px 12px;
+                vertical-align: middle;
+            }
+            
+            thead th {
+                background-color: #f8f9fa;
+                font-weight: 600;
+                text-align: center;
+            }
+            
+            tbody tr {
+                &.activity {
+                    font-weight: bold;
+                }
+                
+                &.fund {
+                    font-weight: 600;
+                }
+                
+                &.account {
+                    font-weight: normal;
+                }
+            }
+            
+            .btn-link {
+                color: #007bff;
+                text-decoration: none;
+                
+                &:hover {
+                    color: #0056b3;
+                }
+                
+                .fa {
+                    font-size: 14px;
                 }
             }
         }

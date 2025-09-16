@@ -191,7 +191,7 @@ class BudgetAppropriationF5Expense(models.AbstractModel):
         for line in appropriation_lines:
             activity_id = line.activity_analytic_id.id if line.activity_analytic_id else None
             fund_id = line.fund_analytic_id.id if line.fund_analytic_id else None
-            account_id = line.budget_account_id.id if line.budget_account_id else None
+            account_id = line.account_id.id if line.account_id else None
 
             key = (activity_id, fund_id, account_id)
 
