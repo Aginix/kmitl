@@ -1,4 +1,4 @@
-// Budget Appropriation F5 Expense - Plain Style matching Revenue Report
+// Budget Appropriation F5 Expense - Plain Style
 
 .budget_appropriation_f5_expense {
     background-color: #f5f5f5;
@@ -6,26 +6,6 @@
     .budget_appropriation_content {
         padding: 1rem;
         min-height: 100vh;
-    }
-
-    // Form Controls Styling
-    .form-check-label {
-        font-size: 0.875rem;
-        color: #666;
-        margin-left: 0.25rem;
-        white-space: nowrap;
-    }
-
-    .form-check-input {
-        &:checked {
-            background-color: #0d6efd;
-            border-color: #0d6efd;
-        }
-        &:focus {
-            border-color: #86b7fe;
-            outline: 0;
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-        }
     }
 
     .form-label-sm {
@@ -54,13 +34,6 @@
                 line-height: 1.5;
             }
 
-            h4 {
-                margin: 0.5rem 0 0 0;
-                font-size: 1.2rem;
-                font-weight: normal;
-                color: #666;
-            }
-
             p {
                 margin: 0.5rem 0;
                 font-size: 1rem;
@@ -68,12 +41,44 @@
             }
         }
 
-        td, th {
-            padding: 4px 6px !important;
-            font-size: 16px;
-
-            .amount-cell {
-                text-align: right;
+        // Simple Tree
+        .budget-tree {
+            .budget-tree-node {
+                .node-header {
+                    display: flex;
+                    align-items: center;
+                    padding: 2px 0;
+                    cursor: pointer;
+                    
+                    .node-toggle {
+                        width: 16px;
+                        margin-right: 4px;
+                        text-align: center;
+                        
+                        .fa {
+                            color: #000;
+                            font-size: 12px;
+                        }
+                    }
+                    
+                    .node-info {
+                        flex: 1;
+                        
+                        .node-code {
+                            color: #000;
+                        }
+                        
+                        .node-name {
+                            color: #000;
+                        }
+                    }
+                    
+                    .node-amount {
+                        color: #000;
+                        text-align: right;
+                        min-width: 120px;
+                    }
+                }
             }
         }
     }

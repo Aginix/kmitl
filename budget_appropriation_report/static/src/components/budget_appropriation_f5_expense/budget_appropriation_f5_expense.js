@@ -145,14 +145,6 @@ export class BudgetAppropriationF5Expense extends Component {
         }
     }
 
-    onExpandAll() {
-        const allKeys = this.getAllNodeKeys(this.state.data.hierarchy || []);
-        allKeys.forEach(key => this.state.expandedNodes.add(key));
-    }
-
-    onCollapseAll() {
-        this.state.expandedNodes.clear();
-    }
 
     onPrint() {}
 
@@ -202,6 +194,15 @@ export class BudgetAppropriationF5Expense extends Component {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0
         }).format(amount);
+    }
+
+    getMarginStyle(node) {
+        const marginLeft = node.level * 20;
+        return `margin-left: ${marginLeft}px;`;
+    }
+
+    getNodeClass(nodeType, level) {
+        return "budget-tree-node";
     }
 
     _renderDepartmentOption(dept, level = 0) {
