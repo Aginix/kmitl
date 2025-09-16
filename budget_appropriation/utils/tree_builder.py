@@ -72,6 +72,16 @@ class TreeConfig:
             calculate_rollups=True,
             amount_field='amount'
         )
+    
+    @classmethod
+    def for_f4_report(cls):
+        """Predefined config for F4 reports (revenue - accounts only)"""
+        return cls(
+            dimensions=['account'],
+            include_empty=False,
+            calculate_rollups=True,
+            amount_field='balance'
+        )
 
 
 class TreeNode:
