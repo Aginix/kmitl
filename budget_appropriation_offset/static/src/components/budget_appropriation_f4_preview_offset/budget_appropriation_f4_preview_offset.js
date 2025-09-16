@@ -6,21 +6,19 @@ import { patch } from "@web/core/utils/patch";
 // Simple patch for F4 Preview to show offset information
 patch(BudgetAppropriationF4Preview.prototype, "budget_appropriation_offset.BudgetAppropriationF4PreviewOffset", {
     
-    // ---- Simple Getters ----
+    // ---- Simple Helper Methods ----
 
-    get hasOffsets() {
+    hasOffsetsData() {
         return this.appropriation.has_offsets || false;
     },
 
-    get offsetTotal() {
+    getOffsetTotal() {
         return this.appropriation.offset_total || 0;
     },
 
-    get totalRevenueNet() {
+    getTotalRevenueNet() {
         return this.appropriation.total_revenue_net || this.totalAmount;
     },
-
-    // ---- Simple Helper Methods ----
 
     hasNodeOffsets(node) {
         return node.has_offsets && node.offsets && node.offsets.length > 0;
