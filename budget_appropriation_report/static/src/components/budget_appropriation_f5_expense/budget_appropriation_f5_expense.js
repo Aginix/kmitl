@@ -20,17 +20,14 @@ export class BudgetAppropriationF5Expense extends Component {
             expandedNodes: new Set(),
             filters: {
                 fiscal_year_id: null,
-                department_ids: [],
+                department_id: null,
                 source_analytic_id: null,
-                date_from: null,
-                date_to: null,
             },
             filterOptions: {
                 fiscal_years: [],
                 departments: [],
                 sources: [],
             },
-            showFilters: true,
         });
 
         this.orm = useService("orm");
@@ -127,9 +124,15 @@ export class BudgetAppropriationF5Expense extends Component {
         );
     }
 
-    get selectedDepartments() {
-        if (!this.state.filters.department_ids.length) return [];
-        return this._findDepartmentsByIds(this.state.filters.department_ids);
+    get selectedDepartment() {
+        if (!this.state.filters.department_id) return null;
+        return this.flatDepartmentOptions.find(
+            dept => dept.id === this.state.filters.department_id
+        );
+    }
+
+    get totalBalance() {
+        return this.summary.total_amount || 0;
     }
 
     // ---- Event Handlers ----
@@ -151,79 +154,30 @@ export class BudgetAppropriationF5Expense extends Component {
         this.state.expandedNodes.clear();
     }
 
-    onToggleFilters() {
-        this.state.showFilters = !this.state.showFilters;
-    }
-
-    onPrint() {
-        // Expand all nodes before printing
-        const allKeys = this.getAllNodeKeys(this.state.data.hierarchy || []);
-        allKeys.forEach(key => this.state.expandedNodes.add(key));
-
-        // Small delay to ensure DOM is updated before printing
-        setTimeout(() => {
-            window.print();
-        }, 100);
-    }
+    onPrint() {}
 
     onRefresh() {
         this.loadData();
     }
 
-    async onApplyFilters() {
+    async onFilterChange() {
         await this.loadData();
     }
 
-    onResetFilters() {
-        this.state.filters = {
-            fiscal_year_id: this.state.filterOptions.fiscal_years[0]?.id || null,
-            department_ids: [],
-            source_analytic_id: this.state.filterOptions.sources.find(s => s.code === "1")?.id ||
-                               this.state.filterOptions.sources[0]?.id || null,
-            date_from: null,
-            date_to: null,
-        };
-        this.loadData();
+    async onFiscalYearChange(e) {
+        const fiscalYearId = e.target.value ? Number(e.target.value) : null;
+        this.state.filters.fiscal_year_id = fiscalYearId;
+        await this.onFilterChange();
     }
 
-    // Filter change handlers
-    onFiscalYearChange(event) {
-        const value = event.target.value;
-        this.state.filters.fiscal_year_id = value ? parseInt(value) : null;
-
-        // Auto-set date range based on fiscal year
-        if (value) {
-            const fy = this.state.filterOptions.fiscal_years.find(f => f.id === parseInt(value));
-            if (fy) {
-                this.state.filters.date_from = fy.date_from;
-                this.state.filters.date_to = fy.date_to;
-            }
-        }
+    async onSourceChange(e) {
+        this.state.filters.source_analytic_id = e.target.value ? Number(e.target.value) : null;
+        await this.onFilterChange();
     }
 
-    onSourceChange(event) {
-        const value = event.target.value;
-        this.state.filters.source_analytic_id = value ? parseInt(value) : null;
-    }
-
-    onDateFromChange(event) {
-        this.state.filters.date_from = event.target.value || null;
-    }
-
-    onDateToChange(event) {
-        this.state.filters.date_to = event.target.value || null;
-    }
-
-    onDepartmentChange(departmentId, checked) {
-        if (checked) {
-            if (!this.state.filters.department_ids.includes(departmentId)) {
-                this.state.filters.department_ids.push(departmentId);
-            }
-        } else {
-            this.state.filters.department_ids = this.state.filters.department_ids.filter(
-                id => id !== departmentId
-            );
-        }
+    async onDepartmentChange(e) {
+        this.state.filters.department_id = e.target.value ? Number(e.target.value) : null;
+        await this.onFilterChange();
     }
 
     // ---- Helper Methods ----
@@ -248,60 +202,6 @@ export class BudgetAppropriationF5Expense extends Component {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0
         }).format(amount);
-    }
-
-    getMarginStyle(node) {
-        if (node.type === 'fund') {
-            return 'margin-left: 16px;';
-        } else if (node.type === 'account') {
-            const marginLeft = 32; // 16px for fund + 16px for account
-            return `margin-left: ${marginLeft}px;`;
-        }
-        return '';
-    }
-
-    getNodeIcon(nodeType) {
-        const icons = {
-            activity: "fa-tasks",
-            fund: "fa-coins",
-            account: "fa-file-text",
-            line: "fa-list-ul"
-        };
-        return icons[nodeType] || "fa-folder";
-    }
-
-    getNodeClass(nodeType, level) {
-        const baseClass = "budget-tree-node";
-        const typeClass = `node-${nodeType}`;
-        const levelClass = `level-${level}`;
-        return `${baseClass} ${typeClass} ${levelClass}`;
-    }
-
-    getNodeTypeLabel(nodeType) {
-        const labels = {
-            activity: "กิจกรรม",
-            fund: "กองทุน",
-            account: "รหัสงบประมาณ",
-            line: "รายการ"
-        };
-        return labels[nodeType] || "";
-    }
-
-    _findDepartmentsByIds(ids, departments = null) {
-        if (!departments) {
-            departments = this.state.filterOptions.departments;
-        }
-
-        const result = [];
-        for (const dept of departments) {
-            if (ids.includes(dept.id)) {
-                result.push(dept);
-            }
-            if (dept.children && dept.children.length > 0) {
-                result.push(...this._findDepartmentsByIds(ids, dept.children));
-            }
-        }
-        return result;
     }
 
     _renderDepartmentOption(dept, level = 0) {
