@@ -1,204 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates xml:space="preserve">
+    
+    <!-- Simple extension to show offset info in header -->
     <div t-name="budget_appropriation_offset.BudgetAppropriationF4PreviewOffset" class="o_action budget_appropriation_f4_preview" owl="1" t-inherit="budget_appropriation.BudgetAppropriationF4Preview" t-inherit-mode="extension">
 
-        <!-- Enhanced Control Panel with Offset Controls -->
-        <xpath expr="//div[hasclass('btn-group')][2]" position="after">
-            <div class="btn-group me-2" t-if="hasOffsets">
-                <button
-                    type="button"
-                    t-att-class="state.showOffsets ? 'btn btn-warning' : 'btn btn-outline-warning'"
-                    t-on-click="onToggleOffsets"
-                    title="แสดง/ซ่อน รายการหักโอน">
-                    <i class="fa fa-exchange"/> หักโอน
-                </button>
-                <button
-                    type="button"
-                    t-att-class="state.showNetAmounts ? 'btn btn-info' : 'btn btn-outline-info'"
-                    t-on-click="onToggleNetAmounts"
-                    title="แสดง/ซ่อน จำนวนสุทธิ">
-                    <i class="fa fa-calculator"/> สุทธิ
-                </button>
-            </div>
-        </xpath>
-
-        <!-- Enhanced Report Header with Offset Information -->
+        <!-- Show net revenue in header if there are offsets -->
         <xpath expr="//h3[contains(text(), 'วงเงิน')]" position="after">
-            <div t-if="hasOffsets" class="mt-2">
-                <h4 class="text-muted">หักโอน <t t-esc="formatCurrency(offsetTotal)"/> บาท</h4>
-                <h4 class="text-success">รายรับสุทธิ <t t-esc="formatCurrency(totalRevenueNet)"/> บาท</h4>
-            </div>
-        </xpath>
-
-        <!-- Enhanced Table Headers -->
-        <xpath expr="//th[contains(text(), 'จำนวนเงิน')]" position="replace">
-            <th width="15%" class="text-end" t-if="!hasOffsets or !state.showNetAmounts">จำนวนเงิน</th>
-            <th width="12%" class="text-end" t-if="hasOffsets and state.showNetAmounts">จำนวนเงิน</th>
-            <th width="12%" class="text-end" t-if="hasOffsets and state.showNetAmounts">หักโอน</th>
-            <th width="12%" class="text-end" t-if="hasOffsets and state.showNetAmounts">สุทธิ</th>
-        </xpath>
-
-        <!-- Enhanced Footer with Net Totals -->
-        <xpath expr="//tfoot//tr" position="replace">
-            <tr class="table-active fw-bold">
-                <td class="text-end">
-                    <strong t-if="!hasOffsets or !state.showNetAmounts">ยอดรวมทั้งหมด</strong>
-                    <strong t-if="hasOffsets and state.showNetAmounts">ยอดรวมทั้งหมด</strong>
-                </td>
-                <td class="text-end" t-if="!hasOffsets or !state.showNetAmounts">
-                    <strong>
-                        <t t-esc="formatCurrency(totalAmount)"/> บาท
-                    </strong>
-                </td>
-                <td class="text-end" t-if="hasOffsets and state.showNetAmounts">
-                    <strong>
-                        <t t-esc="formatCurrency(totalAmount)"/> บาท
-                    </strong>
-                </td>
-                <td class="text-end" t-if="hasOffsets and state.showNetAmounts">
-                    <strong class="text-danger">
-                        <t t-esc="formatCurrency(offsetTotal)"/> บาท
-                    </strong>
-                </td>
-                <td class="text-end" t-if="hasOffsets and state.showNetAmounts">
-                    <strong class="text-success">
-                        <t t-esc="formatCurrency(totalRevenueNet)"/> บาท
-                    </strong>
-                </td>
-            </tr>
+            <h3 t-if="hasOffsets">รายรับสุทธิ <t t-esc="formatCurrency(totalRevenueNet)"/> บาท</h3>
         </xpath>
 
     </div>
 
-    <!-- Enhanced Table Row Template with Offset Support -->
-    <t t-name="budget_appropriation_offset.F4TableRowWithOffsets" owl="1">
-        <tr t-attf-class="{{node.type}} {{node.type !== 'line' ? 'font-weight-bold' : ''}}">
-            <td>
-                <div t-att-style="getMarginStyle(node)">
-                    <div class="d-flex align-items-center">
-                        <button
-                            t-if="node.children and node.children.length > 0"
-                            type="button"
-                            class="btn btn-sm btn-link p-0 me-2"
-                            t-on-click="() => this.onToggleNode(node.key)"
-                            style="width: 20px;">
-                            <i t-att-class="isNodeExpanded(node.key) ? 'fa fa-minus-square-o' : 'fa fa-plus-square-o'"/>
-                        </button>
-                        <div t-else="" style="width: 20px; display: inline-block;" class="me-2"></div>
-                        <span>
-                            <t t-if="node.type === 'account'">
-                                <t t-esc="node.code"/> - <t t-esc="node.name"/>
-                                <t t-if="hasNodeOffsets(node) and state.showOffsets">
-                                    <span class="badge badge-warning ms-2">
-                                        <i class="fa fa-exchange"/> มีหักโอน
-                                    </span>
-                                </t>
-                                
-                                <!-- Line Details -->
-                                <t t-if="node.line_details and node.line_details.length > 0">
-                                    <t t-foreach="node.line_details" t-as="detail" t-key="detail.id">
-                                        <t t-if="detail.note">
-                                            <div class="text-muted" style="white-space: pre-line;"><t t-esc="detail.note"/></div>
-                                        </t>
-                                    </t>
-                                </t>
-                                
-                                <!-- Offset Details -->
-                                <t t-if="hasNodeOffsets(node) and state.showOffsets">
-                                    <div class="mt-2 offset-details">
-                                        <div class="detail-header">
-                                            <i class="fa fa-exchange text-warning"/> 
-                                            <small class="fw-bold text-warning">รายการหักโอน:</small>
-                                        </div>
-                                        <t t-foreach="node.offsets" t-as="offset" t-key="offset.id">
-                                            <div class="detail-item">
-                                                <div class="detail-content">
-                                                    <span class="detail-name">
-                                                        <i t-att-class="'fa ' + getOffsetIcon(offset)"/>
-                                                        <t t-esc="offset.name"/>
-                                                    </span>
-                                                    <span class="detail-amount text-danger">
-                                                        -<t t-esc="formatCurrency(offset.amount)"/> บาท
-                                                    </span>
-                                                    <span t-att-class="'detail-state badge ' + getOffsetStateClass(offset.state)">
-                                                        <t t-esc="offset.state_label"/>
-                                                    </span>
-                                                </div>
-                                                <t t-if="offset.from_department or offset.to_department">
-                                                    <div class="detail-description">
-                                                        <t t-if="offset.from_department">
-                                                            จาก: <t t-esc="offset.from_department.name"/>
-                                                        </t>
-                                                        <t t-if="offset.to_department">
-                                                            → <t t-esc="offset.to_department.name"/>
-                                                        </t>
-                                                    </div>
-                                                </t>
-                                                <t t-if="offset.note">
-                                                    <div class="detail-description"><t t-esc="offset.note"/></div>
-                                                </t>
-                                            </div>
-                                        </t>
-                                    </div>
-                                </t>
-                            </t>
-                            <t t-else="">
-                                <t t-esc="node.name"/>
-                                <t t-if="node.code">
-                                    <span class="text-muted"> (<t t-esc="node.code"/>)</span>
-                                </t>
-                            </t>
-                        </span>
-                    </div>
-                </div>
-            </td>
-            
-            <!-- Amount Columns -->
-            <t t-set="displayAmount" t-value="getNodeDisplayAmount(node)"/>
-            
-            <!-- Single Amount Column (when not showing breakdown) -->
-            <td class="text-end" t-if="!displayAmount.showBreakdown">
-                <t t-if="node.total_amount != 0 or node.type !== 'line'">
-                    <t t-esc="formatCurrency(displayAmount.gross)"/>
-                </t>
-            </td>
-            
-            <!-- Triple Amount Columns (when showing breakdown) -->
-            <td class="text-end" t-if="displayAmount.showBreakdown">
-                <t t-if="node.total_amount != 0 or node.type !== 'line'">
-                    <t t-esc="formatCurrency(displayAmount.gross)"/>
-                </t>
-            </td>
-            <td class="text-end text-danger" t-if="displayAmount.showBreakdown">
-                <t t-if="displayAmount.offset != 0">
-                    <t t-esc="formatCurrency(displayAmount.offset)"/>
-                </t>
-            </td>
-            <td class="text-end text-success" t-if="displayAmount.showBreakdown">
-                <t t-if="node.total_amount != 0 or node.type !== 'line'">
-                    <t t-esc="formatCurrency(displayAmount.net)"/>
-                </t>
-            </td>
-        </tr>
-
-        <!-- Children Rows -->
-        <t t-if="isNodeExpanded(node.key) and node.children and node.children.length > 0">
-            <t t-foreach="node.children" t-as="childNode" t-key="childNode.key">
-                <t t-call="budget_appropriation_offset.F4TableRowWithOffsets">
-                    <t t-set="node" t-value="childNode"/>
-                    <t t-set="level" t-value="level + 1"/>
-                </t>
-            </t>
-        </t>
-    </t>
-
-    <!-- Override the original F4TableRow to use the enhanced version -->
+    <!-- Simple override of F4TableRow to show offset details -->
     <t t-name="budget_appropriation.F4TableRow" owl="1" t-inherit="budget_appropriation.F4TableRow" t-inherit-mode="extension">
-        <xpath expr="." position="replace">
-            <t t-call="budget_appropriation_offset.F4TableRowWithOffsets">
-                <t t-set="node" t-value="node"/>
-                <t t-set="level" t-value="level"/>
+        
+        <!-- Add offset details after line details -->
+        <xpath expr="//t[@t-if='node.line_details and node.line_details.length > 0']" position="after">
+            <!-- Simple offset display -->
+            <t t-if="hasNodeOffsets(node)">
+                <t t-foreach="node.offsets" t-as="offset" t-key="offset.id">
+                    <div class="text-muted small" style="margin-left: 20px;">
+                        หักโอน: <t t-esc="offset.name"/> -<t t-esc="formatCurrency(offset.amount)"/> บาท
+                        <t t-if="offset.note"> (<t t-esc="offset.note"/>)</t>
+                    </div>
+                </t>
             </t>
         </xpath>
+
+        <!-- Update amount display to show net amount if there are offsets -->
+        <xpath expr="//t[@t-esc='formatCurrency(node.total_amount)']" position="replace">
+            <t t-if="!hasNodeOffsets(node)" t-esc="formatCurrency(node.total_amount)"/>
+            <t t-if="hasNodeOffsets(node)">
+                <div><t t-esc="formatCurrency(node.total_amount)"/></div>
+                <div class="text-danger small">หัก <t t-esc="formatCurrency(node.offset_total)"/></div>
+                <div class="text-success small">คงเหลือ <t t-esc="formatCurrency(node.net_amount)"/></div>
+            </t>
+        </xpath>
+
     </t>
+
 </templates>

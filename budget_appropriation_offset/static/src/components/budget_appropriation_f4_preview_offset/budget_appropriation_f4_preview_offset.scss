@@ -1,198 +1,25 @@
-// Budget Appropriation F4 Preview with Offset Support
+// Simple styling for F4 Preview with Offset Support
 
 .budget_appropriation_f4_preview {
     
-    // Offset Details Styling
-    .offset-details {
-        margin-top: 0.75rem;
-        padding: 0.5rem;
-        background-color: #fff8e1;
-        border-radius: 4px;
-        border-left: 3px solid #ff9800;
-        font-size: 0.9rem;
-
-        .detail-header {
-            margin-bottom: 0.5rem;
-            font-size: 0.85rem;
-            
-            i {
-                margin-right: 0.25rem;
-            }
-        }
-
-        .detail-item {
-            margin-bottom: 0.4rem;
-            padding: 0.3rem;
-            background-color: white;
-            border-radius: 3px;
-            border: 1px solid #ffcc02;
-
-            &:last-child {
-                margin-bottom: 0;
-            }
-
-            .detail-content {
-                display: flex;
-                flex-wrap: wrap;
-                align-items: center;
-                gap: 0.5rem;
-                font-size: 0.8rem;
-
-                .detail-name {
-                    font-weight: 500;
-                    color: #212529;
-                    flex: 1;
-                    min-width: 150px;
-                    
-                    i {
-                        margin-right: 0.25rem;
-                        color: #ff9800;
-                    }
-                }
-
-                .detail-amount {
-                    font-weight: 600;
-                    white-space: nowrap;
-                }
-
-                .detail-state {
-                    font-size: 0.7rem;
-                    padding: 0.1rem 0.4rem;
-                    border-radius: 10px;
-                    font-weight: 500;
-                    text-transform: uppercase;
-                    
-                    &.badge-secondary {
-                        background-color: #f8f9fa;
-                        color: #6c757d;
-                    }
-                    
-                    &.badge-warning {
-                        background-color: #fff3cd;
-                        color: #856404;
-                    }
-                    
-                    &.badge-success {
-                        background-color: #d1e7dd;
-                        color: #0f5132;
-                    }
-                    
-                    &.badge-danger {
-                        background-color: #f8d7da;
-                        color: #721c24;
-                    }
-                }
-            }
-
-            .detail-description {
-                margin-top: 0.3rem;
-                font-size: 0.75rem;
-                color: #6c757d;
-                font-style: italic;
-                padding-left: 0.5rem;
-                border-left: 2px solid #ffcc02;
-            }
-        }
+    // Simple offset text styling
+    .text-danger.small {
+        font-size: 0.85rem;
     }
-
-    // Enhanced table styling for offset columns
-    .budget-report-table {
-        thead th {
-            &:nth-last-child(3) {
-                background-color: #f8f9fa;
-            }
-            &:nth-last-child(2) {
-                background-color: #fff8e1;
-            }
-            &:nth-last-child(1) {
-                background-color: #e8f5e8;
-            }
-        }
-
-        tbody {
-            tr {
-                td.text-danger {
-                    background-color: rgba(255, 193, 7, 0.1);
-                }
-                
-                td.text-success {
-                    background-color: rgba(40, 167, 69, 0.1);
-                }
-            }
-        }
-
-        tfoot {
-            tr {
-                td.text-danger {
-                    background-color: rgba(255, 193, 7, 0.2);
-                    border-top: 2px solid #ffc107;
-                }
-                
-                td.text-success {
-                    background-color: rgba(40, 167, 69, 0.2);
-                    border-top: 2px solid #28a745;
-                }
-            }
-        }
-    }
-
-    // Offset badge styling
-    .badge-warning {
-        background-color: #ffc107;
-        color: #212529;
-        
-        i {
-            margin-right: 0.25rem;
-        }
+    
+    .text-success.small {
+        font-size: 0.85rem;
+        font-weight: 500;
     }
 }
 
-// Print styles for offset information
+// Print styles
 @media print {
     .budget_appropriation_f4_preview {
-        .offset-details {
-            background-color: #f5f5f5 !important;
-            border-left: 2px solid #333 !important;
-            
-            .detail-item {
-                background-color: white !important;
-                border: 1px solid #333 !important;
-                
-                .detail-content {
-                    font-size: 8pt !important;
-                }
-                
-                .detail-state {
-                    background-color: #e9ecef !important;
-                    color: #000 !important;
-                }
-            }
-        }
-
-        .budget-report-table {
-            thead th {
-                &:nth-last-child(3),
-                &:nth-last-child(2),
-                &:nth-last-child(1) {
-                    background-color: #f8f9fa !important;
-                }
-            }
-
-            tbody td.text-danger,
-            tbody td.text-success {
-                background-color: white !important;
-            }
-
-            tfoot td.text-danger,
-            tfoot td.text-success {
-                background-color: #f8f9fa !important;
-                border-top: 2px solid #333 !important;
-            }
-        }
-
-        .badge-warning {
-            background-color: #e9ecef !important;
+        .text-danger.small,
+        .text-success.small {
             color: #000 !important;
+            font-size: 8pt !important;
         }
     }
 }
