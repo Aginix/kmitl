@@ -217,4 +217,53 @@
         </field>
     </record>
 
+    <record id="view_form_project_plan" model="ir.ui.view">
+        <field name="name">project.plan.form</field>
+        <field name="model">project.plan</field>
+        <field name="arch" type="xml">
+            <form string="กิจกรรม / ขั้นตอน">
+                <sheet>
+                    <group>
+                        <field name="name" />
+                        <field name="sequence" invisible="1" />
+                        <field name="amount" />
+                        <field name="percentage" />
+                        <field name="project_id" invisible="1" />
+                    </group>
+
+                    <group string="ระบุเดือนที่ดำเนินการ">
+                        <group>
+                            <separator string="ไตรมาสที่ 1 (ต.ค. - ธ.ค.)" />
+                            <field name="m10" />
+                            <field name="m11" />
+                            <field name="m12" />
+                        </group>
+
+                        <group>
+                            <separator string="ไตรมาสที่ 2 (ม.ค. - มี.ค.)" />
+                            <field name="m1" />
+                            <field name="m2" />
+                            <field name="m3" />
+                        </group>
+                    </group>
+
+                    <group>
+                        <group>
+                            <separator string="ไตรมาสที่ 3 (เม.ย. - มิ.ย.)" />
+                            <field name="m4" />
+                            <field name="m5" />
+                            <field name="m6" />
+                        </group>
+                        <group>
+                            <separator string="ไตรมาสที่ 4 (ก.ค. - ก.ย.)" />
+                            <field name="m7" />
+                            <field name="m8" />
+                            <field name="m9" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
 </odoo>
