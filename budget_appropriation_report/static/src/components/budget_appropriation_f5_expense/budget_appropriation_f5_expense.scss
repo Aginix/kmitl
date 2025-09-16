@@ -1,0 +1,342 @@
+.budget_appropriation_f5_expense {
+    .budget_f5_content {
+        max-width: none;
+        padding: 20px;
+    }
+
+    // Filter Panel Styling
+    .filter-panel {
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            
+            h5 {
+                margin: 0;
+                color: #495057;
+                
+                .fa {
+                    margin-right: 8px;
+                }
+            }
+        }
+
+        .department-filter {
+            background-color: #fff;
+            border-radius: 4px;
+            
+            .form-check {
+                margin-bottom: 5px;
+                
+                .form-check-label {
+                    font-size: 0.9rem;
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+
+    // Report Header
+    .report-header {
+        .card-body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            
+            h4 {
+                margin-bottom: 15px;
+                font-weight: 600;
+            }
+            
+            p {
+                margin-bottom: 5px;
+                opacity: 0.9;
+            }
+            
+            .text-primary {
+                color: #ffffff !important;
+            }
+        }
+    }
+
+    // Summary Statistics
+    .summary-stats {
+        .card-body {
+            background-color: #f8f9fa;
+        }
+        
+        h3 {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        p {
+            margin: 0;
+            font-weight: 500;
+            color: #6c757d;
+        }
+    }
+
+    // Budget Tree Styling
+    .budget-tree {
+        .tree-container {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+        }
+
+        .budget-tree-node {
+            margin-bottom: 2px;
+            
+            .node-header {
+                display: flex;
+                align-items: center;
+                padding: 8px 12px;
+                cursor: pointer;
+                border-radius: 4px;
+                transition: all 0.2s ease;
+                background-color: #fff;
+                border: 1px solid transparent;
+                
+                &:hover {
+                    background-color: #f8f9fa;
+                    border-color: #dee2e6;
+                }
+                
+                .node-toggle {
+                    width: 20px;
+                    margin-right: 8px;
+                    text-align: center;
+                    
+                    .fa {
+                        color: #6c757d;
+                        cursor: pointer;
+                    }
+                }
+                
+                .node-icon {
+                    width: 20px;
+                    margin-right: 8px;
+                    text-align: center;
+                }
+                
+                .node-info {
+                    flex: 1;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    
+                    .node-code {
+                        font-weight: 600;
+                        color: #007bff;
+                        font-size: 0.9rem;
+                    }
+                    
+                    .node-name {
+                        font-weight: 500;
+                        color: #495057;
+                    }
+                    
+                    .node-type-label {
+                        font-size: 0.8rem;
+                        color: #6c757d;
+                        font-style: italic;
+                    }
+                }
+                
+                .node-amount {
+                    font-weight: 600;
+                    color: #28a745;
+                    min-width: 120px;
+                    text-align: right;
+                }
+            }
+        }
+
+        // Node Type Specific Styling
+        .node-activity {
+            .node-header {
+                background-color: #e3f2fd;
+                border-color: #2196f3;
+                
+                .node-icon .fa {
+                    color: #1976d2;
+                }
+                
+                .node-name {
+                    font-weight: 600;
+                    font-size: 1.1rem;
+                }
+                
+                .node-amount {
+                    font-size: 1.1rem;
+                    font-weight: 700;
+                }
+            }
+        }
+
+        .node-fund {
+            .node-header {
+                background-color: #fff3e0;
+                border-color: #ff9800;
+                
+                .node-icon .fa {
+                    color: #f57c00;
+                }
+                
+                .node-name {
+                    font-weight: 600;
+                }
+            }
+        }
+
+        .node-account {
+            .node-header {
+                background-color: #f3e5f5;
+                border-color: #9c27b0;
+                
+                .node-icon .fa {
+                    color: #7b1fa2;
+                }
+            }
+        }
+
+        // Line Details Styling
+        .line-details {
+            margin-top: 8px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border-left: 3px solid #28a745;
+            
+            .line-details-header {
+                margin-bottom: 8px;
+                font-weight: 600;
+            }
+            
+            .line-detail-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 6px 0;
+                border-bottom: 1px solid #e9ecef;
+                font-size: 0.9rem;
+                
+                &:last-child {
+                    border-bottom: none;
+                }
+                
+                .line-name {
+                    flex: 1;
+                    font-weight: 500;
+                    color: #495057;
+                }
+                
+                .line-appropriation {
+                    flex: 1;
+                    color: #6c757d;
+                    font-size: 0.8rem;
+                    text-align: center;
+                }
+                
+                .line-amount {
+                    min-width: 120px;
+                    text-align: right;
+                    font-weight: 600;
+                    color: #28a745;
+                }
+            }
+        }
+    }
+
+    // Print Styles
+    @media print {
+        .o_cp_top, .o_cp_bottom {
+            display: none !important;
+        }
+        
+        .filter-panel {
+            display: none !important;
+        }
+        
+        .budget_f5_content {
+            padding: 0;
+        }
+        
+        .card {
+            border: none;
+            box-shadow: none;
+        }
+        
+        .report-header .card-body {
+            background: #f8f9fa !important;
+            color: #000 !important;
+            -webkit-print-color-adjust: exact;
+        }
+        
+        .budget-tree-node .node-header {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        
+        .line-details {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+    }
+
+    // Responsive Design
+    @media (max-width: 768px) {
+        .budget_f5_content {
+            padding: 10px;
+        }
+        
+        .summary-stats .row {
+            text-align: center;
+        }
+        
+        .budget-tree-node .node-header {
+            flex-direction: column;
+            align-items: flex-start;
+            
+            .node-amount {
+                margin-top: 8px;
+                min-width: auto;
+                text-align: left;
+            }
+        }
+        
+        .line-detail-item {
+            flex-direction: column;
+            align-items: flex-start;
+            
+            .line-appropriation,
+            .line-amount {
+                text-align: left;
+                margin-top: 4px;
+            }
+        }
+    }
+
+    // Loading and Error States
+    .text-center {
+        .fa-spinner {
+            color: #007bff;
+        }
+        
+        .fa-info-circle {
+            color: #6c757d;
+        }
+    }
+    
+    .alert {
+        border-radius: 6px;
+        
+        .fa-exclamation-triangle {
+            margin-right: 8px;
+        }
+    }
+
+    // Badge styling for department filter
+    .badge {
+        font-size: 0.8rem;
+        padding: 4px 8px;
+        margin: 2px;
+    }
+}
