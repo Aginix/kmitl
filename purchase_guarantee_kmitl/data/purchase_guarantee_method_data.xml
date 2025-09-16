@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_th_gov_purchase_guarantee.advance_payment_guarantee" model="purchase.guarantee.method">
+        <field name="name">หลักประกันสัญญา</field>
+    </record>
+
+    <record id="l10n_th_gov_purchase_guarantee.performance_bond" model="purchase.guarantee.method">
+        <field name="active">False</field>
+    </record>
+</odoo>
