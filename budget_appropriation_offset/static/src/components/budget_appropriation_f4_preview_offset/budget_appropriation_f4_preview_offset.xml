@@ -6,7 +6,7 @@
 
         <!-- Show net revenue in header if there are offsets -->
         <xpath expr="//h3[contains(text(), 'วงเงิน')]" position="after">
-            <h3 t-if="hasOffsets">รายรับสุทธิ <t t-esc="formatCurrency(totalRevenueNet)"/> บาท</h3>
+            <h3 t-if="hasOffsetsData()">รายรับสุทธิ <t t-esc="formatCurrency(getTotalRevenueNet())"/> บาท</h3>
         </xpath>
 
     </div>
