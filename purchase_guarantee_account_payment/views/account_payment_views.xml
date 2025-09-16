@@ -10,7 +10,7 @@
                 <!-- Add guarantee fields after partner_id -->
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="is_guarantee_payment" widget="boolean_toggle"/>
-                    <field name="guarantee_type_id" attrs="{'invisible': [('is_guarantee_payment', '=', False)]}"/>
+                    <field name="purchase_guarantee_method_id" attrs="{'invisible': [('is_guarantee_payment', '=', False)]}"/>
 
                 </xpath>
 
@@ -26,7 +26,7 @@
                 <!-- Add guarantee flag column after partner -->
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="is_guarantee_payment" widget="boolean_toggle"/>
-                    <field name="guarantee_type_id" optional="hide"/>
+                    <field name="purchase_guarantee_method_id" optional="hide"/>
                 </xpath>
             </field>
         </record>
@@ -34,3 +34,4 @@
 
     </data>
 </odoo>
+

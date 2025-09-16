@@ -15,10 +15,10 @@ class AccountPayment(models.Model):
         readonly=False,
     )
 
-    guarantee_type_id = fields.Many2one(
-        comodel_name="account.payment.guarantee.type",
-        string="Guarantee Type",
-        help="Type of guarantee transaction",
+    purchase_guarantee_method_id = fields.Many2one(
+        comodel_name="purchase.guarantee.method",
+        string="Purchase Guarantee Method",
+        help="Purchase guarantee method for this payment",
         store=True,
         readonly=False,
     )
@@ -27,7 +27,7 @@ class AccountPayment(models.Model):
         return (
             *super()._get_trigger_fields_to_synchronize(),
             'is_guarantee_payment',
-            'guarantee_type_id'
+            'purchase_guarantee_method_id'
         )
 
     def _prepare_move_line_default_vals(self, write_off_line_vals=None):
@@ -35,9 +35,10 @@ class AccountPayment(models.Model):
         # Get standard payment lines from parent method
         line_vals_list = super()._prepare_move_line_default_vals(write_off_line_vals)
 
-        # Apply guarantee account logic if guarantee type has an account specified
-        if self.is_guarantee_payment and self.guarantee_type_id.account_id:
+        # Apply guarantee account logic if purchase guarantee method has an account specified
+        if self.is_guarantee_payment and self.purchase_guarantee_method_id.account_id:
             editing_val = line_vals_list[1]
-            editing_val['account_id'] = self.guarantee_type_id.account_id.id
+            editing_val['account_id'] = self.purchase_guarantee_method_id.account_id.id
 
         return line_vals_list
+
