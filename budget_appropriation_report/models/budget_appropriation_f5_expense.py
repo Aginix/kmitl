@@ -318,10 +318,14 @@ class BudgetAppropriationF5Expense(models.AbstractModel):
 
     def _calculate_totals(self, node):
         """Calculate totals recursively bottom-up"""
-        total = node.get("amount", 0.0)
-
-        for child in node.get("children", []):
-            total += self._calculate_totals(child)
+        # For leaf nodes (accounts), use their amount
+        if not node.get("children"):
+            total = node.get("amount", 0.0)
+        else:
+            # For parent nodes, sum only children amounts (no double counting)
+            total = 0.0
+            for child in node.get("children", []):
+                total += self._calculate_totals(child)
 
         node["total_amount"] = total
         return total
