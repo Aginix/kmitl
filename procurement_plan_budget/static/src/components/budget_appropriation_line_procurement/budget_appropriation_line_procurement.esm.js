@@ -12,12 +12,6 @@ patch(
             this._super(...arguments);
             this.orm = useService("orm");
         },
-        generateId(obj) {
-            return (
-                (obj && obj.id) ||
-                `${Date.now()}-${Math.random().toString(36).substring(2, 10)}`
-            );
-        },
         getProcurementRows(record) {
             return this.env.model.root.data.procurement_plan_ids.records.filter(
                 (procurement) =>
