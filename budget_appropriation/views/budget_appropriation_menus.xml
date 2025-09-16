@@ -10,11 +10,19 @@
     />
 
     <menuitem
-        id="menu_budget_appropriation"
-        name="Appropriations"
+        id="menu_budget_appropriation_expense"
+        name="Appropriations - รายจ่าย"
         parent="menu_budget_appropriation_root"
-        action="action_budget_appropriation"
+        action="action_budget_appropriation_expense"
         sequence="10"
+    />
+
+    <menuitem
+        id="menu_budget_appropriation_revenue"
+        name="Appropriations - รายรับ"
+        parent="menu_budget_appropriation_root"
+        action="action_budget_appropriation_revenue"
+        sequence="15"
     />
 
     <menuitem
@@ -22,7 +30,7 @@
         name="Appropriation Lines"
         parent="menu_budget_appropriation_root"
         action="action_budget_appropriation_line"
-        sequence="20"
+        sequence="30"
     />
 
 

@@ -164,12 +164,10 @@
                 <separator />
                 <group expand="0" string="Group By">
                     <filter name="group_by_state" string="สถานะ" context="{'group_by': 'state'}" />
-                    <filter name="group_by_journal" string="ประเภท" context="{'group_by': 'journal_id'}" />
                     <filter name="group_by_fiscal_year" string="ปีงบประมาณ" context="{'group_by': 'date_range_fy_id'}" />
                     <filter name="group_by_source" string="แหล่งเงิน" context="{'group_by': 'source_analytic_id'}" />
                 </group>
                 <searchpanel>
-                    <field name="journal_id" icon="fa-book" enable_counters="1" />
                     <field name="date_range_fy_id" icon="fa-calendar" enable_counters="1" />
                     <field name="source_analytic_id" icon="fa-money" enable_counters="1" order="code asc" />
                     <field name="department_analytic_id" icon="fa-users" enable_counters="1" order="code asc" />
@@ -217,6 +215,40 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a new budget appropriation!
+            </p>
+            <p>
+                Budget appropriations allow you to plan budget allocations before creating actual budget moves.
+                This provides a preliminary stage for budget planning without affecting the accounting records.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_budget_appropriation_expense" model="ir.actions.act_window">
+        <field name="name">Appropriations - รายจ่าย</field>
+        <field name="res_model">budget.appropriation</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('budget_type', '=', 'expense')]</field>
+        <field name="context">{'default_journal_id': %(budget.budget_move_expense_journal)d}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new expense budget appropriation!
+            </p>
+            <p>
+                Budget appropriations allow you to plan budget allocations before creating actual budget moves.
+                This provides a preliminary stage for budget planning without affecting the accounting records.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_budget_appropriation_revenue" model="ir.actions.act_window">
+        <field name="name">Appropriations - รายรับ</field>
+        <field name="res_model">budget.appropriation</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('budget_type', '=', 'revenue')]</field>
+        <field name="context">{'default_journal_id': %(budget.budget_move_revenue_journal)d}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new revenue budget appropriation!
             </p>
             <p>
                 Budget appropriations allow you to plan budget allocations before creating actual budget moves.
