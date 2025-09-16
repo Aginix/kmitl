@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Budget Transfer Form View - Add Procurement Plan Field -->
+    <record id="view_budget_transfer_form_procurement_plan" model="ir.ui.view">
+        <field name="name">budget.transfer.form.procurement.plan</field>
+        <field name="model">budget.transfer</field>
+        <field name="inherit_id" ref="budget.view_budget_transfer_form"/>
+        <field name="arch" type="xml">
+            <!-- Add procurement plan field after source_analytic_id -->
+            <field name="source_analytic_id" position="after">
+                <field name="procurement_plan_analytic_id" 
+                       options='{"no_create": true, "no_open": true}'
+                       attrs="{'readonly': [('state', 'in', ['submitted', 'approved', 'posted', 'rejected', 'cancelled'])]}"
+                />
+            </field>
+        </field>
+    </record>
+
+    <!-- Budget Transfer Tree View - Add Procurement Plan Column -->
+    <record id="view_budget_transfer_tree_procurement_plan" model="ir.ui.view">
+        <field name="name">budget.transfer.tree.procurement.plan</field>
+        <field name="model">budget.transfer</field>
+        <field name="inherit_id" ref="budget.view_budget_transfer_tree"/>
+        <field name="arch" type="xml">
+            <!-- Add procurement plan column after source analytic -->
+            <field name="source_analytic_id" position="after">
+                <field name="procurement_plan_analytic_id" optional="hide"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Budget Transfer Search View - Add Procurement Plan Filter -->
+    <record id="view_budget_transfer_search_procurement_plan" model="ir.ui.view">
+        <field name="name">budget.transfer.search.procurement.plan</field>
+        <field name="model">budget.transfer</field>
+        <field name="inherit_id" ref="budget.view_budget_transfer_search"/>
+        <field name="arch" type="xml">
+            <!-- Add procurement plan search and filter -->
+            <field name="source_analytic_id" position="after">
+                <field name="procurement_plan_analytic_id"/>
+            </field>
+            
+            <!-- Add procurement plan group by -->
+            <filter name="group_by_source" position="after">
+                <filter name="group_by_procurement_plan" 
+                        string="Procurement Plan" 
+                        context="{'group_by': 'procurement_plan_analytic_id'}"/>
+            </filter>
+        </field>
+    </record>
+
+    <!-- Budget Transfer Line Form View - Show Procurement Plan -->
+    <record id="view_budget_transfer_line_form_procurement_plan" model="ir.ui.view">
+        <field name="name">budget.transfer.line.form.procurement.plan</field>
+        <field name="model">budget.transfer.line</field>
+        <field name="inherit_id" ref="budget.view_budget_transfer_line_form"/>
+        <field name="arch" type="xml">
+            <!-- Add procurement plan field as readonly reference -->
+            <field name="source_analytic_id" position="after">
+                <field name="procurement_plan_analytic_id" readonly="1"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Budget Transfer Line Tree View - Show Procurement Plan -->
+    <record id="view_budget_transfer_line_tree_procurement_plan" model="ir.ui.view">
+        <field name="name">budget.transfer.line.tree.procurement.plan</field>
+        <field name="model">budget.transfer.line</field>
+        <field name="inherit_id" ref="budget.view_budget_transfer_line_tree"/>
+        <field name="arch" type="xml">
+            <!-- Add procurement plan column -->
+            <field name="source_analytic_id" position="after">
+                <field name="procurement_plan_analytic_id" optional="hide"/>
+            </field>
+        </field>
+    </record>
+</odoo>
