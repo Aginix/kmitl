@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="budget_appropriation_offset.BudgetAppropriationLineOffsetRenderer" t-inherit="budget_appropriation.ListRenderer.RecordRow" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('o_col_account_id')]" position="inside">
+            <div t-if="getOffsetRows(record).length" class="o_field_offset_ids">
+                <div>
+                    <b>หักโอน</b>
+                </div>
+                <ul>
+                    <li t-foreach="getOffsetRows(record)" t-as="record" t-key="record.data.id">
+                        <span t-esc="record.data.name" />
+                        <span t-esc="` ให้กับ ${record.data.to_department_analytic_id[1]} `" />
+                        <span t-esc="`จำนวนเงิน ${formatCurrency(record.data.amount)} บาท`" style="text-decoration-line: underline;" />
+                    </li>
+                </ul>
+            </div>
+        </xpath>
+        <xpath expr="//t[@t-foreach='getColumns(record)']/t/td" position="inside">
+            <div t-if="column.name == 'balance' and getOffsetRows(record).length" style="width: 100%;" class="o_col_balance">
+                <div class="text-muted mt-2">
+                    <div>หักโอน</div>
+                    <div style="text-decoration-line: underline;" t-esc="`${formatCurrency(getTotalOffset(record))} บาท`" />
+                </div>
+                <div class="text-muted mt-2">
+                    <div>เหลือสุทธิ</div>
+                    <div>
+                        (<span style="text-decoration-line: underline; text-decoration-style: double;" t-esc="formatCurrency(getRevenueBalance(record))" />)
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </t>
+
+</templates>
