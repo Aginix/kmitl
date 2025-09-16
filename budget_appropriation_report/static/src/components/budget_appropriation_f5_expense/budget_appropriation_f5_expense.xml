@@ -75,72 +75,21 @@
                                     </p>
                                 </div>
 
-                                <!-- Report Table -->
-                                <div class="table-responsive">
-                                    <t t-set="row_no" t-value="1" />
-                                    <t t-if="hierarchy.length > 0">
-                                        <t t-foreach="hierarchy" t-as="activity" t-key="activity.key">
-                                            <div style="margin-bottom: 24px">
-                                                <div>
-                                                    <span style="font-weight: bold; text-decoration: underline; font-size: 16px;">
-                                                        <t t-esc="`${row_no}. [${activity.code}] ${activity.complete_name || activity.name}`"/>
-                                                    </span>
-                                                </div>
-
-                                                <table class="table budget-report-table">
-                                                    <tbody>
-                                                        <t t-foreach="activity.children" t-as="fund" t-key="fund.key">
-                                                            <!-- Fund header -->
-                                                            <tr>
-                                                                <td colspan="2" style="font-weight: bold; background-color: #f8f9fa; padding-left: 16px;">
-                                                                    [<t t-esc="fund.code"/>] <t t-esc="fund.complete_name || fund.name"/>
-                                                                </td>
-                                                            </tr>
-                                                            <!-- Account rows -->
-                                                            <t t-foreach="fund.children" t-as="account" t-key="account.key">
-                                                                <tr>
-                                                                    <td style="width: 60%">
-                                                                        <div style="padding-left: 32px;">
-                                                                            - [<t t-esc="account.code"/>] <t t-esc="account.complete_name || account.name"/>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td class="amount-cell" style="text-align: right; width: 20%;">
-                                                                        <t t-esc="formatCurrency(account.total_amount)"/>
-                                                                    </td>
-                                                                </tr>
-                                                            </t>
-                                                            <!-- Fund total -->
-                                                            <tr>
-                                                                <td style="text-align: right; font-weight: bold; padding-left: 32px;">
-                                                                    รวม [<t t-esc="fund.code"/>] <t t-esc="fund.complete_name || fund.name"/>
-                                                                </td>
-                                                                <td class="amount-cell" style="text-align: right; font-weight: bold;">
-                                                                    <span style="text-decoration: underline;">
-                                                                        <t t-esc="formatCurrency(fund.total_amount)"/>
-                                                                    </span>
-                                                                </td>
-                                                            </tr>
-                                                        </t>
-                                                    </tbody>
-                                                    <tfoot>
-                                                        <tr>
-                                                            <td colspan="2" class="amount-cell" style="text-align: right; font-weight: bold;">
-                                                                รวม
-                                                                <span style="text-decoration: underline;">
-                                                                    <t t-esc="formatCurrency(activity.total_amount)"/>
-                                                                </span>
-                                                                บาท
-                                                            </td>
-                                                        </tr>
-                                                    </tfoot>
-                                                </table>
-                                            </div>
-                                            <t t-set="row_no" t-value="row_no + 1" />
+                                <!-- Hierarchical Tree Display -->
+                                <div class="budget-tree">
+                                    <div t-if="hierarchy.length === 0" class="text-center p-4">
+                                        <p class="text-muted mt-2">ไม่พบข้อมูลตามเงื่อนไขที่เลือก</p>
+                                    </div>
+                                    
+                                    <div t-if="hierarchy.length > 0" class="tree-container">
+                                        <t t-call="budget_appropriation_report.TreeNode" t-foreach="hierarchy" t-as="node" t-key="node.key">
+                                            <t t-set="node" t-value="node"/>
                                         </t>
-                                    </t>
-                                    <div style="text-align: right; font-weight: bold; font-size: 16px; padding-right: 6px;">
+                                    </div>
+                                    
+                                    <div t-if="hierarchy.length > 0" class="total-summary" style="text-align: right; font-weight: bold; font-size: 16px; padding: 20px 0; border-top: 2px solid #000; margin-top: 20px;">
                                         รวมทั้งสิ้น
-                                        <span class="amount-cell" style="text-decoration: underline; text-decoration-style: double;">
+                                        <span style="text-decoration: underline; text-decoration-style: double;">
                                             <t t-esc="formatCurrency(totalBalance)" />
                                         </span>
                                         บาท
@@ -153,4 +102,34 @@
             </div>
         </div>
     </t>
+
+    <!-- Tree Node Template -->
+    <t t-name="budget_appropriation_report.TreeNode" owl="1">
+        <div t-att-class="getNodeClass(node.type, node.level)">
+            <div class="node-header" t-att-style="getMarginStyle(node)" t-on-click="() => this.onToggleNode(node.key)">
+                <span class="node-toggle">
+                    <t t-if="node.children and node.children.length > 0">
+                        <t t-if="isNodeExpanded(node.key)">-</t>
+                        <t t-else>+</t>
+                    </t>
+                    <t t-else> </t>
+                </span>
+                <span class="node-info">
+                    <span class="node-code" t-if="node.code">[<t t-esc="node.code"/>]</span>
+                    <span class="node-name"><t t-esc="node.complete_name || node.name"/></span>
+                </span>
+                <span class="node-amount">
+                    <t t-esc="formatCurrency(node.total_amount)"/>
+                </span>
+            </div>
+
+            <!-- Children Nodes -->
+            <div t-if="node.children and node.children.length > 0 and isNodeExpanded(node.key)" class="node-children">
+                <t t-call="budget_appropriation_report.TreeNode" t-foreach="node.children" t-as="childNode" t-key="childNode.key">
+                    <t t-set="node" t-value="childNode"/>
+                </t>
+            </div>
+        </div>
+    </t>
+
 </templates>
