@@ -125,6 +125,7 @@ class BudgetMoveLine(models.Model):
     )
     date_range_fy_id = fields.Many2one(related="move_id.date_range_fy_id", store=True)
     parent_state = fields.Selection(related="move_id.state", store=True)
+    move_type = fields.Selection(related="move_id.move_type", store=True)
     journal_id = fields.Many2one(
         related="move_id.journal_id",
         store=True,
