@@ -9,7 +9,6 @@ class PurchaseRequest(models.Model):
         comodel_name="purchase.request.line",
         inverse_name="request_id",
         string="Products to Purchase",
-        readonly=True,
         copy=True,
         tracking=True,
     )
