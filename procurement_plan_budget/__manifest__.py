@@ -15,6 +15,11 @@
         "views/procurement_plan_menu.xml",
         "views/procurement_plan_views.xml"
     ],
+    "assets": {
+        "web.assets_backend": [
+            "procurement_plan_budget/static/src/**/*",
+        ],
+    },
     'application': False,
     'installable': True,
     'auto_install': False,
