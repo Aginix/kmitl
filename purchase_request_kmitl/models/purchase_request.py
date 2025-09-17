@@ -62,14 +62,6 @@ class PurchaseRequest(models.Model):
         tracking=True,
         readonly=False,
     )
-    line_ids = fields.One2many(
-        comodel_name="purchase.request.line",
-        inverse_name="request_id",
-        string="Products to Purchase",
-        readonly=True,
-        copy=True,
-        tracking=True,
-    )
 
     @api.depends_context('uid')
     def _compute_current_user(self):
