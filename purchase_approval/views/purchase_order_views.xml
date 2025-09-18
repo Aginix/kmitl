@@ -134,7 +134,7 @@
         <field name="act_window_id" ref="action_purchase_approval" />
     </record>
 
-    <menuitem id="menu_purchase_approval" name="PR2" parent="purchase.menu_purchase_root" action="action_purchase_approval" sequence="0" />
+    <menuitem id="menu_purchase_approval" name="PR2" parent="purchase.menu_purchase_root" action="action_purchase_approval" sequence="2" />
 
     <record id="purchase.purchase_form_action" model="ir.actions.act_window">
         <field name="domain">[('state','in',('purchase', 'done'))]</field>
