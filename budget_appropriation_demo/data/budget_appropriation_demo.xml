@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Budget Appropriation Demo Data -->
+        
+        <!-- Engineering Faculty Appropriations -->
+        <record id="budget_appropriation_demo_dept02_source2_y2568" model="budget.appropriation">
+            <field name="date">2024-10-01</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_02"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="journal_id" ref="budget.budget_move_expense_journal"/>
+        </record>
+        
+        <record id="budget_appropriation_demo_dept01160_source2_y2568" model="budget.appropriation">
+            <field name="date">2024-10-01</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01160"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="journal_id" ref="budget.budget_move_expense_journal"/>
+        </record>
+        
+        <record id="budget_appropriation_demo_dept01130_source2_y2568" model="budget.appropriation">
+            <field name="date">2024-10-01</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01130"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="journal_id" ref="budget.budget_move_expense_journal"/>
+        </record>
+        
+        <record id="budget_appropriation_demo_dept01120_source2_y2568" model="budget.appropriation">
+            <field name="date">2024-10-01</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01120"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="journal_id" ref="budget.budget_move_expense_journal"/>
+        </record>
+        
+        <record id="budget_appropriation_demo_dept01050_source2_y2568" model="budget.appropriation">
+            <field name="date">2024-10-01</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01050"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="journal_id" ref="budget.budget_move_expense_journal"/>
+        </record>
+        
+        <record id="budget_appropriation_demo_dept01070_source2_y2568" model="budget.appropriation">
+            <field name="date">2024-10-01</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01070"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="journal_id" ref="budget.budget_move_expense_journal"/>
+        </record>
+        
+        <record id="budget_appropriation_demo_dept01060_source2_y2568" model="budget.appropriation">
+            <field name="date">2024-10-01</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01060"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="journal_id" ref="budget.budget_move_expense_journal"/>
+        </record>
+        
+        <record id="budget_appropriation_demo_dept01080_source2_y2568" model="budget.appropriation">
+            <field name="date">2024-10-01</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01080"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="journal_id" ref="budget.budget_move_expense_journal"/>
+        </record>
+        
+        <record id="budget_appropriation_demo_dept01290_source2_y2568" model="budget.appropriation">
+            <field name="date">2024-10-01</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01290"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="journal_id" ref="budget.budget_move_expense_journal"/>
+        </record>
+        
+        <record id="budget_appropriation_demo_dept01041_source2_y2568" model="budget.appropriation">
+            <field name="date">2024-10-01</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01041"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="journal_id" ref="budget.budget_move_expense_journal"/>
+        </record>
+        
+        <record id="budget_appropriation_demo_dept01043_source2_y2568" model="budget.appropriation">
+            <field name="date">2024-10-01</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01043"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="journal_id" ref="budget.budget_move_expense_journal"/>
+        </record>
+        
+        <record id="budget_appropriation_demo_dept01_source2_y2568" model="budget.appropriation">
+            <field name="date">2024-10-01</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="journal_id" ref="budget.budget_move_expense_journal"/>
+        </record>
+        
+        <record id="budget_appropriation_demo_dept01280_source2_y2568" model="budget.appropriation">
+            <field name="date">2024-10-01</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01280"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="journal_id" ref="budget.budget_move_expense_journal"/>
+        </record>
+        
+        <!-- Revenue Appropriations -->
+        <record id="dept40_source2_68_rev" model="budget.appropriation">
+            <field name="date">2025-07-02</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_40"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="journal_id" ref="budget.budget_move_revenue_journal"/>
+        </record>
+        
+        <record id="dept03_source2_68_rev" model="budget.appropriation">
+            <field name="date">2025-07-02</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_03"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="journal_id" ref="budget.budget_move_revenue_journal"/>
+        </record>
+        
+        <record id="dept89380_source2_68_rev" model="budget.appropriation">
+            <field name="date">2025-07-02</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_89380"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="journal_id" ref="budget.budget_move_revenue_journal"/>
+        </record>
+        
+        <record id="dept89340_source2_68_rev" model="budget.appropriation">
+            <field name="date">2025-07-02</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_89340"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="journal_id" ref="budget.budget_move_revenue_journal"/>
+        </record>
+        
+        <record id="dept09_source2_68_rev" model="budget.appropriation">
+            <field name="date">2025-07-02</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_09"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="journal_id" ref="budget.budget_move_revenue_journal"/>
+        </record>
+        
+        <record id="dept10_source2_68_rev" model="budget.appropriation">
+            <field name="date">2025-07-02</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_10"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="journal_id" ref="budget.budget_move_revenue_journal"/>
+        </record>
+        
+        <record id="dept41_source2_68_rev" model="budget.appropriation">
+            <field name="date">2025-07-02</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_41"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="journal_id" ref="budget.budget_move_revenue_journal"/>
+        </record>
+        
+        <record id="dept06_source2_68_rev" model="budget.appropriation">
+            <field name="date">2025-07-02</field>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="journal_id" ref="budget.budget_move_revenue_journal"/>
+        </record>
+        
+        <!-- State Transitions: Move some appropriations to review state -->
+        <function model="budget.appropriation" name="action_review">
+            <value model="budget.appropriation" eval="[ref('budget_appropriation_demo_dept01_source2_y2568'), ref('budget_appropriation_demo_dept02_source2_y2568')]"/>
+        </function>
+        
+        <!-- State Transitions: Move some appropriations to posted state -->
+        <function model="budget.appropriation" name="action_review">
+            <value model="budget.appropriation" eval="[ref('dept03_source2_68_rev'), ref('dept40_source2_68_rev')]"/>
+        </function>
+        <function model="budget.appropriation" name="action_post">
+            <value model="budget.appropriation" eval="[ref('dept03_source2_68_rev'), ref('dept40_source2_68_rev')]"/>
+        </function>
+        
+    </data>
+</odoo>

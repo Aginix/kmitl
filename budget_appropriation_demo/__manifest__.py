@@ -7,8 +7,8 @@
     "website": "https://github.com/aginix/kmitl",
     "depends": ["account_analytic_kmitl", "budget_appropriation", "kmitl_demo"],
     "data": [
-        "data/budget.appropriation.csv",
-        "data/budget.appropriation.line.csv",
+        "data/budget_appropriation_demo.xml",
+        "data/budget_appropriation_line_demo.xml",
     ],
     "auto_install": False,
     "application": True,
