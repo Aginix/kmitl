@@ -49,6 +49,7 @@
                             </div>
                             <field name="total_price" string="รวมทั้งสิ้น" />
                             <field name="note" placeholder="Notes..." />
+                            <field name="display_name" string="ตัวอย่างการแสดงผลข้อมูล" />
                         </group>
                         <group>
                             <field name="date_range_fy_id" required="1" options="{'no_create': True, 'no_open': True}" />

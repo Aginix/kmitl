@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="budget_appropriation.BudgetAppropriationLineRenderer" t-inherit="web.ListRenderer" t-inherit-mode="primary" owl="1">
+        <xpath expr="//t[@t-foreach='state.columns']/th" position="attributes">
+            <attribute name="t-if">column.type === 'field' and column.name != 'note'</attribute>
+        </xpath>
+    </t>
+
+    <t t-name="budget_appropriation.ListRenderer.RecordRow" t-inherit="web.ListRenderer.RecordRow" t-inherit-mode="primary" owl="1">
+        <xpath expr="//t[@t-foreach='getColumns(record)']/t/td" position="attributes">
+            <attribute name="t-if">column.name != 'note'</attribute>
+        </xpath>
+        <xpath expr="//t[@t-foreach='getColumns(record)']/t/td" position="inside">
+            <div t-if="column.name == 'account_id'" style="width: 100%;" class="o_note_textarea o_col_account_id text-muted d-flex flex-column gap-2">
+                <t t-if="record.data.note">
+                    <div class="o_field_note">
+                        <div class="fw-medium">
+                            <b>หมายเหตุ</b>
+                        </div>
+                        <div class="fw-medium" t-esc="record.data.note" />
+                    </div>
+                </t>
+            </div>
+        </xpath>
+    </t>
+</templates>

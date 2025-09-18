@@ -19,8 +19,7 @@ class BudgetAppropriationLine(models.Model):
 
     procurement_plan = fields.Boolean(
         related="account_id.procurement_plan",
-        store=False,
-        readonly=True,
+        store=True,
     )
 
     # TODO: แยกเงินลอยเป็นอีกโมดูลเนื่องจากมีการใช้ร่วมกับ project_budget
@@ -34,7 +33,7 @@ class BudgetAppropriationLine(models.Model):
     )
 
     hide_unallocated_balance = fields.Boolean(
-        compute="_compute_hide_unallocated_balance", readonly=True
+        compute="_compute_hide_unallocated_balance",
     )
 
     @api.depends(
