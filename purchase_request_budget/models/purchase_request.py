@@ -20,6 +20,14 @@ class PurchaseRequest(models.Model):
         domain=[('budgetable', '=', True), ('budget_type', '=', 'expense')],
         help="Budget account to be used for commitment"
     )
+    line_ids = fields.One2many(
+        comodel_name="purchase.request.line",
+        inverse_name="request_id",
+        string="Products to Purchase",
+        copy=True,
+        tracking=True,
+        readonly=False,
+    )
 
     def action_open_budget_commitment(self):
         self.ensure_one()
