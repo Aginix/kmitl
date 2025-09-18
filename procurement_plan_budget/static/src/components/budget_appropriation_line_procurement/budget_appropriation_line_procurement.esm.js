@@ -30,7 +30,6 @@ patch(
                     procurement.data.budget_appropriation_line_id[0] === record.data.id
             );
             const sum = procurement_plan_ids.map(record => record.data.total_price).reduce((p, c) => p + c, 0)
-            // return sum + super.getAllocationAmount()
 
             const _super = this._super.bind(this);
             return sum + _super(...arguments)

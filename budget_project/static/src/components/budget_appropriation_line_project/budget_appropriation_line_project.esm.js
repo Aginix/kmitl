@@ -30,7 +30,6 @@ patch(
                     project.data.budget_appropriation_line_id[0] === record.data.id
             );
             const sum = project_ids.map(record => record.data.amount).reduce((p, c) => p + c, 0)
-            // return sum + this._super.getAllocationAmount()
 
             const _super = this._super.bind(this);
             return sum + _super(...arguments)
