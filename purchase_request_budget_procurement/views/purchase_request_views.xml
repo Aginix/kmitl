@@ -21,9 +21,9 @@
                     <field name="procurement_plan_analytic_id" invisible="1" />
                 </group>
             </xpath>
-            <field name="budget_account_id" position="attributes">
+            <!-- <field name="budget_account_id" position="attributes">
                 <attribute name="domain">[('procurement_plan', '=', False)]</attribute>
-            </field>
+            </field> -->
         </field>
     </record>
 
