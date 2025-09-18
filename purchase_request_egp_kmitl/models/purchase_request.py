@@ -22,6 +22,8 @@ class PurchaseRequest(models.Model):
         default=False,
     )
 
+    show_egp_create_purchase_order_button = fields.Boolean(compute="_show_egp_create_purchase_order_button")
+
     def button_draft(self):
         res = super().button_draft()
         self.write({"egp_status": False})
@@ -58,10 +60,22 @@ class PurchaseRequest(models.Model):
                     record.egp_status = "waiting"
         return res
 
-    def action_create_rfq(self):
+    def action_egp_create_purchase_order(self):
         for record in self:
             if record.is_egp and record.egp_status not in ['in_progress']:
                 raise UserError("ท่านสามารถสร้างใบสั่งซื้อ/จ้างได้เมื่ออยู่ในกระบวนการ e-GP เท่านั้น")
 
         action = self.env.ref("purchase_request.action_purchase_request_line_make_purchase_order").sudo().read()[0]
         return action
+
+    def _show_egp_create_purchase_order_button(self):
+        for rec in self:
+            rec.show_egp_create_purchase_order_button = False
+            if rec.is_egp and rec.state in ('approved', 'in_progress') and rec.purchase_count == 0:
+                rec.show_egp_create_purchase_order_button = True
+
+    def _hide_create_po_button(self):
+        super()._hide_create_po_button()
+        for rec in self:
+            if rec.is_egp:
+                rec.hide_create_po_button = True
