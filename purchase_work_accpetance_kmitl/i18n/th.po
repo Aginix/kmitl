@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-18 05:10+0000\n"
-"PO-Revision-Date: 2025-09-18 12:33+0700\n"
+"PO-Revision-Date: 2025-09-18 15:44+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -37,7 +37,7 @@ msgstr ""
 #. module: purchase_work_acceptance_late_fines
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_late_fines.view_work_acceptance_fines_late_tab_form
 msgid "(Approximately)"
-msgstr ""
+msgstr "วัน"
 
 #. module: l10n_th_gov_work_acceptance
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_work_acceptance.view_work_acceptance_form_tier_validation
@@ -70,7 +70,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_form
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_accepted_date_wizard
 msgid "Accept"
-msgstr ""
+msgstr "ตอบรับ"
 
 #. module: purchase_work_acceptance
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
@@ -87,7 +87,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_evaluation.work_acceptance_evaluation_report_search_view
 msgid "Accepted"
-msgstr ""
+msgstr "ตอบรับแล้ว"
 
 #. module: purchase_work_acceptance
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
@@ -163,13 +163,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_accepted_date_wizard
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_late_fines.view_wa_create_fines
 msgid "Cancel"
-msgstr ""
+msgstr "ยกเลิก"
 
 #. modules: purchase_work_acceptance, purchase_work_acceptance_evaluation
 #: model:ir.model.fields.selection,name:purchase_work_acceptance.selection__work_acceptance__state__cancel
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_evaluation.selection__work_acceptance_evaluation_report__wa_state__cancel
 msgid "Cancelled"
-msgstr ""
+msgstr "ยกเลิก"
 
 #. module: purchase_work_acceptance_evaluation
 #: model:ir.model.fields,field_description:purchase_work_acceptance_evaluation.field_work_acceptance_evaluation__name
@@ -183,7 +183,7 @@ msgstr "หัวข้อ"
 #. module: l10n_th_gov_work_acceptance
 #: model:ir.model.fields.selection,name:l10n_th_gov_work_acceptance.selection__work_acceptance_committee__approve_role__chairman
 msgid "Chairman"
-msgstr ""
+msgstr "ประธาน"
 
 #. module: l10n_th_gov_work_acceptance
 #: model:ir.model.fields.selection,name:l10n_th_gov_work_acceptance.selection__work_acceptance_committee__approve_role__committee
@@ -338,7 +338,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_evaluation.selection__work_acceptance_evaluation_report__wa_state__draft
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
 msgid "Draft"
-msgstr ""
+msgstr "แบบร่าง"
 
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__date_due
@@ -666,7 +666,7 @@ msgstr ""
 #. module: l10n_th_gov_work_acceptance
 #: model:ir.model.fields.selection,name:l10n_th_gov_work_acceptance.selection__work_acceptance_committee__status__not_accept
 msgid "No Accepted"
-msgstr ""
+msgstr "ไม่ให้ผ่าน"
 
 #. module: purchase_work_acceptance_late_fines
 #. odoo-python
@@ -740,14 +740,14 @@ msgstr ""
 #: model:ir.model.fields.selection,name:l10n_th_gov_work_acceptance.selection__work_acceptance_committee__status__other
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_work_acceptance.view_work_acceptance_form_tier_validation
 msgid "Other"
-msgstr ""
+msgstr "อิ้นๆ"
 
 #. module: l10n_th_gov_work_acceptance
 #: model:ir.model.fields,field_description:l10n_th_gov_work_acceptance.field_purchase_order__wa_tier_validation
 #: model:ir.model.fields,field_description:l10n_th_gov_work_acceptance.field_work_acceptance__wa_tier_validation
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_work_acceptance.view_work_acceptance_search
 msgid "Paperless WA"
-msgstr ""
+msgstr "จัดทำการตรวจรับ"
 
 #. module: l10n_th_gov_work_acceptance
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_work_acceptance.view_work_acceptance_search
@@ -835,7 +835,7 @@ msgstr "รหัสใบตรวจรับ"
 #. module: l10n_th_gov_work_acceptance
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_work_acceptance.view_work_acceptance_form_tier_validation
 msgid "Request Validation"
-msgstr ""
+msgstr "ส่งคำขออนุมัติ"
 
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_account_bank_statement_line__require_wa
@@ -860,7 +860,7 @@ msgstr ""
 #. module: l10n_th_gov_work_acceptance
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_work_acceptance.view_work_acceptance_form_tier_validation
 msgid "Restart Validation"
-msgstr ""
+msgstr "เริ่มการขออนุมัติใหม่"
 
 #. module: l10n_th_gov_work_acceptance
 #: model:ir.model.fields,field_description:l10n_th_gov_work_acceptance.field_work_acceptance_committee__approve_role
@@ -1256,6 +1256,11 @@ msgstr "อีเมลที่ทำงาน"
 msgid "Work Phone"
 msgstr "เบอร์โทรศัพท์"
 
+#. module: l10n_th_gov_work_acceptance
+#: model:ir.model.fields,field_description:l10n_th_gov_work_acceptance.field_work_acceptance_committee__mobile_phone
+msgid "Work Phone"
+msgstr "เบอร์โทรศัพท์"
+
 #. module: purchase_work_acceptance_late_fines
 #: model:ir.model.constraint,message:purchase_work_acceptance_late_fines.constraint_work_acceptance_fines_late
 msgid "Wrong Fines Amount, it must be positive!"
@@ -1294,4 +1299,4 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_late_fines.res_config_settings_view_form_purchase
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_late_fines.view_work_acceptance_fines_late_tab_form
 msgid "per day"
-msgstr ""
+msgstr "ต่อวัน"
