@@ -32,14 +32,7 @@ class PurchaseRequest(models.Model):
     def write(self, vals):
         if 'analytic_distribution' in vals:
             for rec in self:
-                line_commands = []
-                for line in rec.line_ids:
-                    line_commands.append((1, line.id, {
-                        'analytic_distribution': vals['analytic_distribution']
-                    }))
-                if line_commands:
-                    vals.setdefault('line_ids', [])
-                    vals['line_ids'] += line_commands
+                rec.line_ids.update({ 'analytic_distribution': vals['analytic_distribution']})
         return super().write(vals)
 
     def action_open_budget_commitment(self):
