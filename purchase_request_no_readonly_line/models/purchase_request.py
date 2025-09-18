@@ -11,4 +11,5 @@ class PurchaseRequest(models.Model):
         string="Products to Purchase",
         copy=True,
         tracking=True,
+        readonly=False,
     )
