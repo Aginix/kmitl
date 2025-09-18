@@ -20,20 +20,6 @@ class PurchaseRequest(models.Model):
         domain=[('budgetable', '=', True), ('budget_type', '=', 'expense')],
         help="Budget account to be used for commitment"
     )
-    line_ids = fields.One2many(
-        comodel_name="purchase.request.line",
-        inverse_name="request_id",
-        string="Products to Purchase",
-        copy=True,
-        tracking=True,
-        readonly=False,
-    )
-
-    def write(self, vals):
-        if 'analytic_distribution' in vals:
-            for rec in self:
-                rec.line_ids.update({ 'analytic_distribution': vals['analytic_distribution']})
-        return super().write(vals)
 
     def action_open_budget_commitment(self):
         self.ensure_one()
