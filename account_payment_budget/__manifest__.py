@@ -26,7 +26,8 @@ budget controls and financial tracking requirements.
     "website": "https://github.com/aginix/kmitl",
     "depends": [
         "account",
-        "budget"
+        "budget",
+        "account_move_budget_commitment"
     ],
     "data": [
         "security/ir.model.access.csv",

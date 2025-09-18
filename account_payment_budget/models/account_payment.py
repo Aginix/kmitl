@@ -26,31 +26,10 @@ class AccountPayment(models.Model):
     - Link payments to existing budget commitments
     - Auto-populate budget account from selected commitment
     - View linked budget commitment details
-    - Integration with analytic distribution for tracking
-    - Standard payment behavior with budget tracking integration
+    - Simple budget tracking integration for payments
     """
     _name = 'account.payment'
-    _inherit = ['account.payment', 'budget.commitment.mixin',
-                'analytic.distribution.mixin']
-
-    # Configure mixin field names
-    _commitment_id_field = 'budget_commitment_id'
-    _commitment_account_id_field = 'budget_account_id'
-
-    # Budget Integration Fields
-    budget_commitment_id = fields.Many2one(
-        'budget.commitment',
-        string='Budget Commitment',
-        copy=False,
-        help="Related budget commitment for this payment"
-    )
-
-    budget_account_id = fields.Many2one(
-        'budget.account',
-        string='Budget Account',
-        domain=[('budgetable', '=', True), ('budget_type', '=', 'expense')],
-        help="Budget account to be used for commitment"
-    )
+    _inherit = ['account.payment','budget.commitment.mixin']
 
     @api.onchange('budget_commitment_id')
     def _onchange_budget_commitment_id(self):
@@ -79,18 +58,8 @@ class AccountPayment(models.Model):
             if analytic_accounts:
                 self.analytic_distribution = analytic_accounts
 
-    def action_view_budget_commitment(self):
-        """View related budget commitment."""
-        self.ensure_one()
+    def action_post(self):
+        if self.budget_commitment_id and self.payment_type == 'outbound':
+            self._consume_commitment(amount=self.amount)
 
-        if not self.budget_commitment_id:
-            raise UserError(_("No budget commitment linked to this payment"))
-
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('Budget Commitment'),
-            'res_model': 'budget.commitment',
-            'res_id': self.budget_commitment_id.id,
-            'view_mode': 'form',
-            'target': 'current',
-        }
+        return super().action_post()

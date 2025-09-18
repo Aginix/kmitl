@@ -9,36 +9,25 @@
         <field name="arch" type="xml">
 
             <!-- Add Budget tab -->
-            <xpath expr="//notebook" position="inside">
-                <page string="Budget" name="budget">
-
-                    <group string="Budget">
-                        <group name="budget_info">
-                            <field name="budget_commitment_id" attrs="{'readonly': [('state', '!=', 'draft')]}" />
-                            <field name="analytic_distribution" widget="analytic_distribution" readonly="1"/>
+            <xpath expr="//sheet" position="inside">
+                <notebook>
+                    <page string="Budget" name="budget" attrs="{'invisible': [('payment_type', '!=', 'outbound')]}">
+                        <group string="Budget">
+                            <group name="budget_info">
+                                <field name="budget_commitment_id" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                                <field name="analytic_distribution" widget="analytic_distribution" readonly="1"/>
+                            </group>
+                            <group name="analytic_dimensions">
+                                <field name="activity_analytic_id" domain="[('plan_id.code', '=', 'activities')]" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="department_analytic_id" domain="[('plan_id.code', '=', 'departments')]" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="fund_analytic_id" domain="[('plan_id.code', '=', 'funds')]" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="source_analytic_id" domain="[('plan_id.code', '=', 'sources')]" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="budget_account_id" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            </group>
                         </group>
-
-                        <group name="analytic_dimensions">
-                            <field name="activity_analytic_id" domain="[('plan_id.code', '=', 'activities')]" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="department_analytic_id" domain="[('plan_id.code', '=', 'departments')]" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="fund_analytic_id" domain="[('plan_id.code', '=', 'funds')]" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="source_analytic_id" domain="[('plan_id.code', '=', 'sources')]" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="budget_account_id" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                        </group>
-                    </group>
-
-                    <div class="oe_button_box" name="button_box_budget">
-                        <button name="action_view_budget_commitment" type="object" class="oe_stat_button" icon="fa-calculator" attrs="{'invisible': [('budget_commitment_id', '=', False)]}">
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_text">View</span>
-                                <span class="o_stat_text">Budget Commitment</span>
-                            </div>
-                        </button>
-                    </div>
-
-                </page>
+                    </page>
+                </notebook>
             </xpath>
-
         </field>
     </record>
 
