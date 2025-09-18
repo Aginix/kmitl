@@ -29,6 +29,19 @@ class PurchaseRequest(models.Model):
         readonly=False,
     )
 
+    def write(self, vals):
+        if 'analytic_distribution' in vals:
+            for rec in self:
+                line_commands = []
+                for line in rec.line_ids:
+                    line_commands.append((1, line.id, {
+                        'analytic_distribution': vals['analytic_distribution']
+                    }))
+                if line_commands:
+                    vals.setdefault('line_ids', [])
+                    vals['line_ids'] += line_commands
+        return super().write(vals)
+
     def action_open_budget_commitment(self):
         self.ensure_one()
         if not self.budget_commitment_id:
