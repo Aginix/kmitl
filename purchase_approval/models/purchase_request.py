@@ -39,7 +39,3 @@ class PurchaseRequest(models.Model):
     def _compute_purchase_approval_count(self):
         for rec in self:
             rec.purchase_approval_count = len(rec.mapped("line_ids.purchase_lines.order_id").filtered("request_id"))
-
-    def _compute_purchase_count(self):
-        for rec in self:
-            rec.purchase_count = len(rec.mapped("line_ids.purchase_lines.order_id").filtered(lambda x: not x.request_id or (x.request_id and x.state in ('purchase', 'done', 'cancel'))))
