@@ -9,6 +9,8 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     def make_purchase_order(self):
         res = super().make_purchase_order()
         res_id = res['domain'][0][2].pop()
+        purchase_requests = self.item_ids.mapped("request_id")
+        purchase_requests.action_del_egp_status()
         return {
             "name": _("Purchase Order"),
             "type": "ir.actions.act_window",
