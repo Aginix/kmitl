@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Bruce Wayne (Batman) -->
+        <record id="partner_bruce_wayne" model="res.partner">
+            <field name="name">Bruce Wayne</field>
+            <field name="company_name">Wayne Enterprises</field>
+            <field name="street">1007 Mountain Drive</field>
+            <field name="city">Gotham City</field>
+            <field name="state_id" model="res.country.state" search="[('code','ilike','NJ')]"/>
+            <field name="zip">08701</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="tz">America/New_York</field>
+            <field name="email">bruce.wayne@wayneenterprises.com</field>
+            <field name="phone">(555) 123-4567</field>
+            <field name="function">CEO</field>
+        </record>
+
+        <record id="user_batman" model="res.users">
+            <field name="partner_id" ref="partner_bruce_wayne"/>
+            <field name="login">batman</field>
+            <field name="password">batman</field>
+            <field name="signature" type="html"><span>-- <br/>Bruce Wayne<br/>CEO, Wayne Enterprises</span></field>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="groups_id" eval="[Command.set([ref('base.group_system'), ref('base.group_partner_manager')])]"/>
+        </record>
+
+        <!-- Clark Kent (Superman) -->
+        <record id="partner_clark_kent" model="res.partner">
+            <field name="name">Clark Kent</field>
+            <field name="company_name">Daily Planet</field>
+            <field name="street">1000 Daily Planet Plaza</field>
+            <field name="city">Metropolis</field>
+            <field name="state_id" model="res.country.state" search="[('code','ilike','NY')]"/>
+            <field name="zip">10001</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="tz">America/New_York</field>
+            <field name="email">clark.kent@dailyplanet.com</field>
+            <field name="phone">(555) 987-6543</field>
+            <field name="function">Journalist</field>
+        </record>
+
+        <record id="user_superman" model="res.users">
+            <field name="partner_id" ref="partner_clark_kent"/>
+            <field name="login">superman</field>
+            <field name="password">superman</field>
+            <field name="signature" type="html"><span>-- <br/>Clark Kent<br/>Journalist, Daily Planet</span></field>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="groups_id" eval="[Command.set([ref('base.group_user'), ref('base.group_partner_manager')])]"/>
+        </record>
+
+        <!-- Diana Prince (Wonder Woman) -->
+        <record id="partner_diana_prince" model="res.partner">
+            <field name="name">Diana Prince</field>
+            <field name="company_name">Themyscira Embassy</field>
+            <field name="street">2000 Embassy Row</field>
+            <field name="city">Washington</field>
+            <field name="state_id" model="res.country.state" search="[('code','ilike','DC')]"/>
+            <field name="zip">20008</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="tz">America/New_York</field>
+            <field name="email">diana.prince@themyscira.gov</field>
+            <field name="phone">(555) 456-7890</field>
+            <field name="function">Ambassador</field>
+        </record>
+
+        <record id="user_wonderwoman" model="res.users">
+            <field name="partner_id" ref="partner_diana_prince"/>
+            <field name="login">wonderwoman</field>
+            <field name="password">wonderwoman</field>
+            <field name="signature" type="html"><span>-- <br/>Diana Prince<br/>Ambassador, Themyscira Embassy</span></field>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="groups_id" eval="[Command.set([ref('base.group_user'), ref('base.group_partner_manager')])]"/>
+        </record>
+
+        <!-- Barry Allen (The Flash) -->
+        <record id="partner_barry_allen" model="res.partner">
+            <field name="name">Barry Allen</field>
+            <field name="company_name">Central City Police Department</field>
+            <field name="street">1400 Police Plaza</field>
+            <field name="city">Central City</field>
+            <field name="state_id" model="res.country.state" search="[('code','ilike','MO')]"/>
+            <field name="zip">64102</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="tz">America/Chicago</field>
+            <field name="email">barry.allen@ccpd.gov</field>
+            <field name="phone">(555) 234-5678</field>
+            <field name="function">Forensic Scientist</field>
+        </record>
+
+        <record id="user_flash" model="res.users">
+            <field name="partner_id" ref="partner_barry_allen"/>
+            <field name="login">flash</field>
+            <field name="password">flash</field>
+            <field name="signature" type="html"><span>-- <br/>Barry Allen<br/>Forensic Scientist, CCPD</span></field>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="groups_id" eval="[Command.set([ref('base.group_user')])]"/>
+        </record>
+
+        <!-- Arthur Curry (Aquaman) -->
+        <record id="partner_arthur_curry" model="res.partner">
+            <field name="name">Arthur Curry</field>
+            <field name="company_name">Atlantean Royal Court</field>
+            <field name="street">1 Ocean Drive</field>
+            <field name="city">Amnesty Bay</field>
+            <field name="state_id" model="res.country.state" search="[('code','ilike','ME')]"/>
+            <field name="zip">04901</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="tz">America/New_York</field>
+            <field name="email">arthur.curry@atlantis.gov</field>
+            <field name="phone">(555) 345-6789</field>
+            <field name="function">King of Atlantis</field>
+        </record>
+
+        <record id="user_aquaman" model="res.users">
+            <field name="partner_id" ref="partner_arthur_curry"/>
+            <field name="login">aquaman</field>
+            <field name="password">aquaman</field>
+            <field name="signature" type="html"><span>-- <br/>Arthur Curry<br/>King of Atlantis</span></field>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="groups_id" eval="[Command.set([ref('base.group_user'), ref('base.group_partner_manager')])]"/>
+        </record>
+
+        <!-- Victor Stone (Cyborg) -->
+        <record id="partner_victor_stone" model="res.partner">
+            <field name="name">Victor Stone</field>
+            <field name="company_name">S.T.A.R. Labs</field>
+            <field name="street">1000 Innovation Drive</field>
+            <field name="city">Detroit</field>
+            <field name="state_id" model="res.country.state" search="[('code','ilike','MI')]"/>
+            <field name="zip">48201</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="tz">America/Detroit</field>
+            <field name="email">victor.stone@starlabs.com</field>
+            <field name="phone">(555) 567-8901</field>
+            <field name="function">Cybernetic Engineer</field>
+        </record>
+
+        <record id="user_cyborg" model="res.users">
+            <field name="partner_id" ref="partner_victor_stone"/>
+            <field name="login">cyborg</field>
+            <field name="password">cyborg</field>
+            <field name="signature" type="html"><span>-- <br/>Victor Stone<br/>Cybernetic Engineer, S.T.A.R. Labs</span></field>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="groups_id" eval="[Command.set([ref('base.group_user')])]"/>
+        </record>
+
+        <!-- Hal Jordan (Green Lantern) -->
+        <record id="partner_hal_jordan" model="res.partner">
+            <field name="name">Hal Jordan</field>
+            <field name="company_name">Ferris Aircraft</field>
+            <field name="street">2800 Airport Boulevard</field>
+            <field name="city">Coast City</field>
+            <field name="state_id" model="res.country.state" search="[('code','ilike','CA')]"/>
+            <field name="zip">90210</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="tz">America/Los_Angeles</field>
+            <field name="email">hal.jordan@ferrisaircraft.com</field>
+            <field name="phone">(555) 678-9012</field>
+            <field name="function">Test Pilot</field>
+        </record>
+
+        <record id="user_greenlantern" model="res.users">
+            <field name="partner_id" ref="partner_hal_jordan"/>
+            <field name="login">greenlantern</field>
+            <field name="password">greenlantern</field>
+            <field name="signature" type="html"><span>-- <br/>Hal Jordan<br/>Test Pilot, Ferris Aircraft</span></field>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="groups_id" eval="[Command.set([ref('base.group_user')])]"/>
+        </record>
+
+        <!-- Portal User - Oliver Queen (Green Arrow) -->
+        <record id="partner_oliver_queen_portal" model="res.partner">
+            <field name="name">Oliver Queen</field>
+            <field name="company_name">Queen Industries</field>
+            <field name="street">1500 Queen Street</field>
+            <field name="city">Star City</field>
+            <field name="state_id" model="res.country.state" search="[('code','ilike','WA')]"/>
+            <field name="zip">98101</field>
+            <field name="country_id" ref="base.us"/>
+            <field name="email">oliver.queen@queenindustries.com</field>
+            <field name="phone">(555) 789-0123</field>
+            <field name="function">CEO</field>
+        </record>
+
+        <record id="portal_user_greenarrow" model="res.users" context="{'no_reset_password': True}">
+            <field name="partner_id" ref="partner_oliver_queen_portal"/>
+            <field name="login">greenarrow</field>
+            <field name="password">greenarrow</field>
+            <field name="signature"><![CDATA[<span>-- <br/>Oliver Queen<br/>CEO, Queen Industries</span>]]></field>
+            <field name="groups_id" eval="[Command.clear()]"/>
+        </record>
+
+        <record id="base.group_portal" model="res.groups">
+            <field name="users" eval="[Command.link(ref('portal_user_greenarrow'))]"/>
+        </record>
+
+    </data>
+</odoo>

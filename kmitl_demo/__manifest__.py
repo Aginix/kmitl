@@ -24,6 +24,7 @@
         "data/product.category.xml",
         "data/product.product.xml",
         "data/product.computer.xml",
+        "data/dc_users_demo.xml",
     ],
     "post_init_hook": "post_init",
     "uninstall_hook": "uninstall_hook",
