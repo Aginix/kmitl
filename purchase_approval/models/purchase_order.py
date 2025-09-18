@@ -94,3 +94,6 @@ class PurchaseOrder(models.Model):
         ]
         action["res_id"] = self.id
         return action
+
+    def _get_tier_validation_readonly_domain(self):
+        return [(1, "!=", 1)]
