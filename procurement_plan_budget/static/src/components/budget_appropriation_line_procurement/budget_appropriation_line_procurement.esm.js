@@ -24,16 +24,19 @@ patch(
                 maximumFractionDigits: 0,
             }).format(amount);
         },
-        getTotalBalance(record) {
+        getAllocationAmount(record) {
             const procurement_plan_ids = this.env.model.root.data.procurement_plan_ids.records.filter(
                 (procurement) =>
                     procurement.data.budget_appropriation_line_id[0] === record.data.id
             );
             const sum = procurement_plan_ids.map(record => record.data.total_price).reduce((p, c) => p + c, 0)
-            return sum
+            // return sum + super.getAllocationAmount()
+
+            const _super = this._super.bind(this);
+            return sum + _super(...arguments)
         },
-        getRemainingBalance(record) {
-            return record.data.balance - this.getTotalBalance(record)
+        getAvailableAmount(record) {
+            return record.data.balance - this.getAllocationAmount(record)
         }
     }
 );

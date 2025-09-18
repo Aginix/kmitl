@@ -17,12 +17,12 @@
             <div t-if="column.name == 'balance' and record.data.procurement_plan" style="width: 100%;" class="o_col_balance">
                 <div class="text-muted mt-2">
                     <div>จัดสรรแล้ว</div>
-                    <div style="text-decoration-line: underline;" t-esc="formatCurrency(getTotalBalance(record))" />
+                    <div style="text-decoration-line: underline;" t-esc="formatCurrency(getAllocationAmount(record))" />
                 </div>
                 <div class="text-muted mt-2">
                     <div>คงเหลือ</div>
                     <div>
-                        (<span style="text-decoration-line: underline; text-decoration-style: double;" t-esc="formatCurrency(getRemainingBalance(record))" />)
+                        (<span style="text-decoration-line: underline; text-decoration-style: double;" t-esc="formatCurrency(getAvailableAmount(record))" />)
                     </div>
                 </div>
             </div>

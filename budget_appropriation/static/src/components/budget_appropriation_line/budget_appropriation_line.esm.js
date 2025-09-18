@@ -16,6 +16,14 @@ export class BudgetAppropriationLineRenderer extends ListRenderer {
     get note() {
         return "asdfasdfijsaidfjioaj";
     }
+
+    getAllocationAmount(record) {
+        return 0
+    }
+
+    getAvailableAmount(record) {
+        return record.data.balance - this.getAllocationAmount(record)
+    }
 }
 BudgetAppropriationLineRenderer.template =
     "budget_appropriation.BudgetAppropriationLineRenderer";
