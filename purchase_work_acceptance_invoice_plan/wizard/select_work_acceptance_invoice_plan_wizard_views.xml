@@ -65,7 +65,7 @@
                         class="oe_highlight"
                         context="{'create_wa': True}"
                         attrs="{'invisible': ['|', ('valid_amount', '=', True), ('order_line_ids', '=', [])]}"
-                        confirm="Total amount not equal to installment amount, are you sure to continue?"
+                        
                     />
                     <button special="cancel" string="Cancel" class="oe_link" />
                 </footer>
