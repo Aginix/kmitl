@@ -891,7 +891,7 @@ msgstr ""
 #. module: purchase_work_accpetance_kmitl
 #: model:ir.model.fields.selection,name:purchase_work_accpetance_kmitl.selection__work_acceptance_committee__approve_role__secretary
 msgid "Secretary"
-msgstr ""
+msgstr "กรรมการและเลขานุการ"
 
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__access_token
