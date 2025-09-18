@@ -644,6 +644,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
         move_vals = {
             'name': reference or _("Consumption of %s") % commitment.name,
             'date': fields.Date.today(),
+            'date_range_fy_id': commitment.date_range_fy_id.id,
             'commitment_id': commitment.id,
             'move_type': 'consume',
             'line_ids': [(0, 0, {
