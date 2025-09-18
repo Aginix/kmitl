@@ -60,10 +60,13 @@
             <xpath expr="//button[@name='button_done']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//form" position="inside">
+                <field name="hide_create_po_button" invisible="1" />
+            </xpath>
             <xpath expr="//button[@type='action']" position="attributes">
                 <attribute name="states"/>
                 <attribute name="string">Create PO</attribute>
-                <attribute name="attrs">{'invisible':[ '|', ('purchase_count', '!=', 0), ('state', 'not in', ['approved', 'in_progress'])]}</attribute>
+                <attribute name="attrs">{'invisible':[('hide_create_po_button', '=', True)]}</attribute>
             </xpath>
             <xpath expr="//button[@name='button_draft']" position="attributes">
                 <attribute name="states"></attribute>
