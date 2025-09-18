@@ -95,5 +95,15 @@ class PurchaseOrder(models.Model):
         action["res_id"] = self.id
         return action
 
-    def _get_tier_validation_readonly_domain(self):
-        return [(1, "!=", 1)]
+    def _get_all_validation_exceptions(self):
+        res = super()._get_all_validation_exceptions()
+        fields = self.env['ir.model.fields'].search([('model', '=', 'purchase.order'), ('readonly', '=', False)]).mapped("name")
+        return res + fields
+
+    def name_get(self):
+        res = super().name_get()
+        name_mapping = dict(res)
+        for rec in self:
+            if self.env.context.get('purchase_approval') and rec.approval_ref:
+                name_mapping[rec.id] = rec.approval_ref
+        return list(name_mapping.items())
