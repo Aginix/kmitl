@@ -24,16 +24,18 @@ patch(
                 maximumFractionDigits: 0,
             }).format(amount);
         },
-        getTotalBalance(record) {
+        getAllocationAmount(record) {
             const project_ids = this.env.model.root.data.project_ids.records.filter(
                 (project) =>
                     project.data.budget_appropriation_line_id[0] === record.data.id
             );
             const sum = project_ids.map(record => record.data.amount).reduce((p, c) => p + c, 0)
-            return sum
+
+            const _super = this._super.bind(this);
+            return sum + _super(...arguments)
         },
-        getRemainingBalance(record) {
-            return record.data.balance - this.getTotalBalance(record)
+        getAvailableAmount(record) {
+            return record.data.balance - this.getAllocationAmount(record)
         }
     }
 );
