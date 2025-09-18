@@ -1,16 +1,17 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # 	* purchase_work_acceptance_evaluation
-# 	* purchase_work_acceptance_late_fines
+# 	* purchase_work_accpetance_kmitl
 # 	* purchase_work_acceptance
+# 	* purchase_work_acceptance_late_fines
 # 	* l10n_th_gov_work_acceptance
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-18 05:10+0000\n"
-"PO-Revision-Date: 2025-09-18 15:44+0700\n"
+"POT-Creation-Date: 2025-09-18 09:32+0000\n"
+"PO-Revision-Date: 2025-09-18 16:38+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -87,7 +88,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_evaluation.work_acceptance_evaluation_report_search_view
 msgid "Accepted"
-msgstr "ตอบรับแล้ว"
+msgstr "ได้รับการตอบรับ"
 
 #. module: purchase_work_acceptance
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
@@ -862,8 +863,8 @@ msgstr ""
 msgid "Restart Validation"
 msgstr "เริ่มการขออนุมัติใหม่"
 
-#. module: l10n_th_gov_work_acceptance
-#: model:ir.model.fields,field_description:l10n_th_gov_work_acceptance.field_work_acceptance_committee__approve_role
+#. module: purchase_work_accpetance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_accpetance_kmitl.field_work_acceptance_committee__approve_role
 msgid "Role"
 msgstr "บทบาท"
 
@@ -885,6 +886,11 @@ msgstr "คะแนน"
 #. module: purchase_work_acceptance_evaluation
 #: model:ir.model.fields,field_description:purchase_work_acceptance_evaluation.field_work_acceptance_evaluation_report__score_id
 msgid "Score ID"
+msgstr ""
+
+#. module: purchase_work_accpetance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_accpetance_kmitl.selection__work_acceptance_committee__approve_role__secretary
+msgid "Secretary"
 msgstr ""
 
 #. module: purchase_work_acceptance
@@ -1183,8 +1189,8 @@ msgstr ""
 msgid "Work Acceptance"
 msgstr "การตรวจรับ"
 
-#. module: l10n_th_gov_work_acceptance
-#: model:ir.model,name:l10n_th_gov_work_acceptance.model_work_acceptance_committee
+#. module: purchase_work_accpetance_kmitl
+#: model:ir.model,name:purchase_work_accpetance_kmitl.model_work_acceptance_committee
 msgid "Work Acceptance Committee"
 msgstr ""
 
@@ -1251,13 +1257,13 @@ msgstr ""
 msgid "Work Email"
 msgstr "อีเมลที่ทำงาน"
 
-#. module: l10n_th_gov_work_acceptance
-#: model:ir.model.fields,field_description:l10n_th_gov_work_acceptance.field_work_acceptance_committee__phone
-msgid "Work Phone"
+#. module: purchase_work_accpetance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_accpetance_kmitl.field_work_acceptance_committee__mobile_phone
+msgid "Work Mobile"
 msgstr "เบอร์โทรศัพท์"
 
 #. module: l10n_th_gov_work_acceptance
-#: model:ir.model.fields,field_description:l10n_th_gov_work_acceptance.field_work_acceptance_committee__mobile_phone
+#: model:ir.model.fields,field_description:l10n_th_gov_work_acceptance.field_work_acceptance_committee__phone
 msgid "Work Phone"
 msgstr "เบอร์โทรศัพท์"
 
