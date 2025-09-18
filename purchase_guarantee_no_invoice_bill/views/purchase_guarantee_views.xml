@@ -22,4 +22,19 @@
         </field>
     </record>
 
+    <record id="view_purchase_guarantee_inherit_view_tree" model="ir.ui.view">
+        <field name="name">view.purchase.guarantee.inherit.view.tree</field>
+        <field name="model">purchase.guarantee</field>
+        <field name="inherit_id" ref="l10n_th_gov_purchase_guarantee.view_purchase_guarantee_tree" />
+        <field name="arch" type="xml">
+          <xpath expr="//field[@name='invoice_ids']" position="attributes">
+              <attribute name="invisible">1</attribute>
+          </xpath>
+
+          <xpath expr="//field[@name='bill_ids']" position="attributes">
+              <attribute name="invisible">1</attribute>
+          </xpath>
+        </field>
+    </record>
+
   </odoo>
