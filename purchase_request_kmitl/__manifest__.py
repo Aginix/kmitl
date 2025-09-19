@@ -6,7 +6,7 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['l10n_th_gov_purchase_request'],
+    'depends': ['l10n_th_gov_purchase_request', 'account_fiscal_year'],
     "data": [
         "data/purchase_request_exception.xml",
         "data/purchase_request_rules.xml",

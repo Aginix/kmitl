@@ -6,7 +6,7 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['purchase_request_egp', 'purchase_request_security'],
+    'depends': ['purchase_request_egp', 'purchase_request_security', 'purchase_request_tier_validation'],
     "data": [
         "data/tier_validation_exception.xml",
         "views/purchase_request_views.xml"
