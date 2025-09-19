@@ -70,7 +70,7 @@ class BudgetNode:
                 # Use credit for consumption (money spent)
                 # Only count consume type moves
                 if line.get("move_type") == "consume":
-                    total += line["credit"] if line.get("credit") else 0
+                    total += line["balance"]
         return total
 
     def total_balance(self):

@@ -1,6 +1,11 @@
+# -*- coding: utf-8 -*-
+import logging
+
 from datetime import datetime
 
 from odoo import api, fields, models
+
+_logger = logging.getLogger(__name__)
 
 
 class PurchaseRequest(models.Model):
@@ -63,7 +68,16 @@ class PurchaseRequest(models.Model):
         readonly=False,
     )
 
+    hide_create_po_button = fields.Boolean(compute="_hide_create_po_button")
+
     @api.depends_context('uid')
     def _compute_current_user(self):
         for rec in self:
             rec.current_user = self.env.user
+
+    @api.depends('state')
+    def _hide_create_po_button(self):
+        for rec in self:
+            rec.hide_create_po_button = True
+            if rec.state in ('approved', 'in_progress') and rec.purchase_count == 0:
+                rec.hide_create_po_button = False

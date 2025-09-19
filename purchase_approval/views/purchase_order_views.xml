@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View purchase.order View Tree -->
+    <record id="view_purchase_approval_tree" model="ir.ui.view">
+        <field name="name">view.purchase.approval.tree</field>
+        <field name="model">purchase.order</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="state == 'cancel'" decoration-warning="state == 'to approve'" decoration-success="state in ('purchase', 'done')" create="0">
+                <field name="request_id"/>
+                <field name="approval_ref"/>
+                <field name="request_date" optional="show"/>
+                <field name="request_title"/>
+                <field name="request_cost" />
+                <field name="activity_ids" widget="list_activity" optional="show"/>
+                <field name="procurement_type_id" optional="show" />
+                <field name="procurement_method_id" optional="show" />
+                <field name="payment_type" optional="show" />
+                <field name="contract_type" optional="hide" />
+                <field name="requested_by" widget="many2one_avatar_user" optional="show" />
+                <field name="state" widget="badge" decoration-success="state in ('purchase', 'done')" decoration-muted="state == 'draft'" decoration-warning="state == 'to approve'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- View purchase.order form -->
+    <record id="view_purchase_approval_form" model="ir.ui.view">
+        <field name="name">view.purchase.approval.form</field>
+        <field name="model">purchase.order</field>
+        <field name="arch" type="xml">
+            <form string="Purchase Order">
+                <header>
+                    <button name="button_draft" states="cancel" string="Set to Draft" type="object" data-hotkey="o"/>
+                    <button name="button_cancel" states="draft,to approve,sent" string="Cancel" type="object" data-hotkey="x" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,to approve,purchase" readonly="1"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button type="object" name="action_view_purchase_order_from_approval" class="oe_stat_button" attrs="{'invisible':[('state', 'not in', ('purchase', 'done', 'cancel'))]}" icon="fa-shopping-cart" string="Purchase Order" />
+                    </div>
+                    <widget name="web_ribbon" title="Approved" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'purchase')]}" />
+                    <div class="oe_title">
+                        <span class="o_form_label" attrs="{'invisible': [('state','not in',('draft','sent'))]}">Purchase Approval </span>
+                        <h1 class="d-flex">
+                            <field name="approval_ref" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id" widget="res_partner_many2one" context="{'res_partner_search_mode': 'supplier', 'show_vat': True}" placeholder="Name, TIN, Email, or Reference" />
+                            <field name="currency_id" groups="base.group_multi_currency" force_save="1" invisible="1" />
+                            <field name="procurement_type_id" options="{'no_open': True}" />
+                            <field name="procurement_method_id" options="{'no_open': True}" />
+                            <field name="payment_type" />
+                            <field name="contract_type" />
+                            <field name="requested_by" widget="many2one_avatar_user" />
+                            <field name="request_cost" />
+                            <field name="id" invisible="1"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="currency_id" invisible="1" groups="!base.group_multi_currency"/>
+                        </group>
+                        <group>
+                            <field name="request_date" />
+                            <field name="request_title" />
+                            <field name="request_description" />
+                            <field name="request_id" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Products" name="products">
+                            <field name="request_line_ids">
+                                <tree string="Request Lines">
+                                    <field name="product_id" />
+                                    <field name="name" />
+                                    <field name="product_qty" />
+                                    <field name="product_uom_category_id" invisible="1" />
+                                    <field name="product_uom_id" invisible="1" groups="!uom.group_uom" />
+                                    <field name="product_uom_id" groups="uom.group_uom" />
+                                    <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting" options="{'product_field': 'product_id', 'business_domain': 'purchase_order'}" optional="hide" />
+                                    <field name="estimated_cost" widget="monetary" />
+                                    <field name="currency_id" invisible="1" />
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" />
+                    <field name="activity_ids" widget="mail_activity" />
+                    <field name="message_ids" widget="mail_thread" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- View purchase.order search -->
+    <record id="view_purchase_approval_search" model="ir.ui.view">
+        <field name="name">view.purchase.approval.search</field>
+        <field name="model">purchase.order</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action purchase.order -->
+    <record id="action_purchase_approval" model="ir.actions.act_window">
+        <field name="name">Purchase Approval</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('request_id', '!=', False)]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Purchase Order.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_purchase_approval_tree" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1" />
+        <field name="view_id" ref="view_purchase_approval_tree" />
+        <field name="view_mode">tree</field>
+        <field name="act_window_id" ref="action_purchase_approval" />
+    </record>
+    <record id="action_purchase_approval_form" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2" />
+        <field name="view_id" ref="view_purchase_approval_form" />
+        <field name="view_mode">form</field>
+        <field name="act_window_id" ref="action_purchase_approval" />
+    </record>
+
+    <menuitem id="menu_purchase_approval" name="PR2" parent="purchase.menu_purchase_root" action="action_purchase_approval" sequence="2" />
+
+    <record id="purchase.purchase_form_action" model="ir.actions.act_window">
+        <field name="domain">[('state','in',('purchase', 'done'))]</field>
+    </record>
+
+    <record id="view_purchase_order_form_inherit" model="ir.ui.view">
+        <field name="name">view.purchase.order.form.inherit</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <field name="state" position="attributes">
+                <attribute name="statusbar_visible">sent,purchase</attribute>
+            </field>
+        </field>
+    </record>
+</odoo>
