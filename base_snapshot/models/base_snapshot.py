@@ -19,7 +19,7 @@ class BaseSnapshot(models.Model):
     )
     old_snapshot_ids = fields.One2many(
         comodel_name="base.snapshot",
-        inverse_name="current_revision_id",
+        inverse_name="current_snapshot_id",
         string="Old snapshots",
         readonly=True,
         domain=["|", ("active", "=", False), ("active", "=", True)],
