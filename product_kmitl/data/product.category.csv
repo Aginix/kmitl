@@ -1,0 +1,595 @@
+id,name,code,parent_id/id
+product_category_23000000,ยานพาหนะพื้นดิน ยานยนต์  รถพ่วง  และจักรยาน,23000000,
+product_category_23100000,ยานยนต์โดยสาร,23100000,product_category_23000000
+product_category_23100300,รถยนต์นั่งเก๋ง,23100300,product_category_23100000
+product_category_23100500,รถโดยสาร,23100500,product_category_23100000
+product_category_23101100,รถกะบะโดยสาร,23101100,product_category_23100000
+product_category_23200000,รถบรรทุกและรถลากจูงใช้ล้อ,23200000,product_category_23000000
+product_category_23204500,รถบรรทุก,23204500,product_category_23200000
+product_category_23400000,รถจักรยานยนต์และจักรยาน,23400000,product_category_23000000
+product_category_23400200,รถจักรยาน,23400200,product_category_23400000
+product_category_23400500,รถจักรยานยนต์,23400500,product_category_23400000
+product_category_23400800,รถสามล้อ,23400800,product_category_23400000
+product_category_25000000,ส่วนประกอบของยานพาหนะ,25000000,
+product_category_25400000,เครื่องใช้และเครื่องตกแต่งยานพาหนะ,25400000,product_category_25000000
+product_category_25402900,หลังคารถ,25402900,product_category_25400000
+product_category_25403100,เก้าอี้ปรับเอนนอน,25403100,product_category_25400000
+product_category_28000000,เครื่องยนต์  เทอร์ไบน์ และส่วนประกอบ,28000000,
+product_category_28950000,เครื่องยนต์อื่นๆ,28950000,product_category_28000000
+product_category_28950300,เครื่องยนต์เบนซิน,28950300,product_category_28950000
+product_category_28950400,เครื่องยนต์ดีเซล,28950400,product_category_28950000
+product_category_32000000,อุปกรณ์และเครื่องจักรงานไม้,32000000,
+product_category_32100000,เครื่องจักรหนักใสไม้  แลเครื่องจักรเลื่อยไม้,32100000,product_category_32000000
+product_category_32200000,เครื่องจักรเบางานไม้,32200000,product_category_32000000
+product_category_32200900,เครื่องขัดกระดาษทรายใช้ไฟฟ้า  ชนิดมือถือ,32200900,product_category_32200000
+product_category_32201000,เครื่องขัดกระดาษทราย  ชนิดตั้งพื้น,32201000,product_category_32200000
+product_category_34000000,เครื่องจักรงานโลหะ,34000000,
+product_category_34160000,เครื่องกลึง,34160000,product_category_34000000
+product_category_34170000,เครื่องกัด,34170000,product_category_34000000
+product_category_34300000,เครื่องเชื่อม,34300000,product_category_34000000
+product_category_34300100,เครื่องเชื่อมไฟฟ้า,34300100,product_category_34300000
+product_category_34300200,เครื่องเชื่อมด้วยแก๊ส,34300200,product_category_34300000
+product_category_34300300,เครื่องเชื่อมด้วยอาร์กอน,34300300,product_category_34300000
+product_category_34410000,เครื่องดัดและขึ้นรูป,34410000,product_category_34000000
+product_category_34410100,เครื่องตัดแบบต่าง ๆ,34410100,product_category_34410000
+product_category_34490000,เครื่องตัดและขึ้นรูปโลหะอื่นๆ,34490000,product_category_34000000
+product_category_34490400,เครื่องลับแบบต่างๆ,34490400,product_category_34490000
+product_category_34490600,เครื่องตัดเหล็ก,34490600,product_category_34490000
+product_category_34500000,เครื่องมือกลเคลื่อนย้ายได้,34500000,product_category_34000000
+product_category_34500200,สว่านแบบต่างๆ,34500200,product_category_34500000
+product_category_35000000,อุปกรณ์การบริการ,35000000,
+product_category_35100000,อุปกรณ์การซักล้าง  และการซักแห้ง,35100000,product_category_35000000
+product_category_35100500,เครื่องรีดแบบต่างๆ,35100500,product_category_35100000
+product_category_35101100,เครื่องซักผ้า,35101100,product_category_35100000
+product_category_35101200,เครื่องอบผ้า,35101200,product_category_35100000
+product_category_35170000,เครื่องกัด,35170000,product_category_35000000
+product_category_36000000,เครื่องจักรกลเฉพาะงานอุตสาหกรรม,36000000,
+product_category_36100000,อุปกรณ์การพิมพ์  เข้าเล่ม  และเย็บเล่ม,36100000,product_category_36000000
+product_category_36100100,เครื่องพิมพ์เขียว,36100100,product_category_36100000
+product_category_36100400,กล้องถ่ายภาพ,36100400,product_category_36100000
+product_category_36100700,เครื่องตัดกระดาษ,36100700,product_category_36100000
+product_category_36102100,เครื่องเข้าเล่มและเย็บเล่ม,36102100,product_category_36100000
+product_category_36102200,เครื่องเจาะกระดาษ,36102200,product_category_36100000
+product_category_36102300,เครื่องพิมพ์ออปเซ็ท,36102300,product_category_36100000
+product_category_36102400,เครื่องถ่ายเพลท,36102400,product_category_36100000
+product_category_36102500,เครื่องอบเพลท,36102500,product_category_36100000
+product_category_36200000,เครื่องจักรงานยางและพลาสติก,36200000,product_category_36000000
+product_category_36200300,เครื่องรีดยาง,36200300,product_category_36200000
+product_category_36200700,เครื่องผสมพลาสติก TWO-ROLL  MILL,36200700,product_category_36200000
+product_category_36200800,เครื่องฉีดพลาสติก,36200800,product_category_36200000
+product_category_36200900,เครื่องขัดพลาสติก,36200900,product_category_36200000
+product_category_36550000,ระบบผลิตและจ่ายแก๊สประจำที่และเคลี่อนที่,36550000,product_category_36000000
+product_category_36550300,ถังบรรจุแก๊สต่างๆ,36550300,product_category_36550000
+product_category_37000000,เครื่องจักรและอุปกรณ์การเกษตร,37000000,
+product_category_37400000,อุปกรณ์กำจัดแมลง  เชื้อโรค  และโรคหิมะ,37400000,product_category_37000000
+product_category_37400200,เครื่องพ่นยาฆ่าแมลง,37400200,product_category_37400000
+product_category_37500000,เครื่องมือเครื่องใช้ในการทำสวน,37500000,product_category_37000000
+product_category_37500200,เครื่องตัดหญ้า,37500200,product_category_37500000
+product_category_37501100,คราด,37501100,product_category_37500000
+product_category_37600000,ยานพาหนะเทียลาก  และรถพ่วงงานไร่นา,37600000,product_category_37000000
+product_category_37600500,รถพ่วง,37600500,product_category_37600000
+product_category_37600600,รถไถ,37600600,product_category_37600000
+product_category_37600700,พานไถ,37600700,product_category_37600000
+product_category_37600800,ใบมีดหน้า,37600800,product_category_37600000
+product_category_37600900,ชุดตัดหญ้า,37600900,product_category_37600000
+product_category_37700000,อานม้า  เครื่องลากจูง  เครื่องเทียม,37700000,product_category_37000000
+product_category_37700100,กรงสัตว์,37700100,product_category_37700000
+product_category_37701100,เครื่องตัดแต่งซาก,37701100,product_category_37700000
+product_category_37701200,เครื่องตัดปากไก่,37701200,product_category_37700000
+product_category_37800000,เครื่องจักรและอุปกรณ์การเกษตรอื่นๆ,37800000,product_category_37000000
+product_category_37800100,เครื่องจักรและอุปกรณ์การเกษตร,37800100,product_category_37800000
+product_category_37800200,เครื่องมือวัดและเครื่องทดสอบทางการเกษตร,37800200,product_category_37800000
+product_category_38000000,อุปกรณ์ก่อสร้าง การเหมืองแร่  การขุดดิน และการซ่อม,38000000,
+product_category_38050000,อุปกรณ์ขุดและขนดิน,38050000,product_category_38000000
+product_category_38050800,รถแทรกเตอร์,38050800,product_category_38050000
+product_category_38051200,รถฟาร์มแทรกเตอร์,38051200,product_category_38050000
+product_category_38200000,อุปกรณ์การเหมืองแร่  การเจาะหิน  การเจาะดิน,38200000,product_category_38000000
+product_category_38201000,เครื่องเจาะดิน,38201000,product_category_38200000
+product_category_38950000,อุปกรณ์การก่อสร้างอื่น ๆ,38950000,product_category_38000000
+product_category_38950200,เครื่องผสมคอนกรีต,38950200,product_category_38950000
+product_category_38951200,เครื่องแหย่คอนกรีต,38951200,product_category_38950000
+product_category_38951300,เครื่องเจาะคอนกรีต,38951300,product_category_38950000
+product_category_38951400,เครื่องตบดิน,38951400,product_category_38950000
+product_category_38951500,เครื่องปาดดิน,38951500,product_category_38950000
+product_category_39000000,อุปกรณ์การยกขนพัสดุ,39000000,
+product_category_39200000,อุปกรณ์ยกขนพัสดุ ไม่มีการขับเคลื่อน,39200000,product_category_39000000
+product_category_39200500,รถเข็นแบบต่างๆ,39200500,product_category_39200000
+product_category_39300000,รถบรรทุก  รกลากจูงใช้ในคลังขับเคลื่อนด้วยตนเอง,39300000,product_category_39000000
+product_category_39300100,รถยก,39300100,product_category_39300000
+product_category_39400000,รอกขอ  เครื่องยกของหนักและสาแหรก,39400000,product_category_39000000
+product_category_39400500,เครื่องยกของหนัก,39400500,product_category_39400000
+product_category_39600000,บันไดไฟฟ้า  และลิฟท์,39600000,product_category_39000000
+product_category_39600200,ลิฟท์แบบต่างๆ,39600200,product_category_39600000
+product_category_41000000,อุปกรณ์ตู้เย็น เครื่องปรับอากาศ  และเครื่องถ่ายเท,41000000,
+product_category_41100000,อุปกรณ์ตู้เย็น,41100000,product_category_41000000
+product_category_41100100,ตู้เย็น,41100100,product_category_41100000
+product_category_41100300,"ตู้เย็น,เครื่องทำน้ำเย็น",41100300,product_category_41100000
+product_category_41100800,ตู้เก็บอาหารแช่แข็ง,41100800,product_category_41100000
+product_category_41200000,อุปกรณ์เครื่องปรับอากาศ,41200000,product_category_41000000
+product_category_41200100,เครื่องปรับอากาศแบบต่าง ๆ,41200100,product_category_41200000
+product_category_41200200,ชิ้นส่วนและส่วนประกอบเครื่องปรับอากาศ,41200200,product_category_41200000
+product_category_41400000,พัดลม  เครื่องถ่ายเทอากาศ  และเครื่องเป่าลม,41400000,product_category_41000000
+product_category_41400200,พัดลม,41400200,product_category_41400000
+product_category_42000000,อุปกรณ์ผจญเพลิง  เครื่องช่วยชีวิตและความปลอดภัย,42000000,
+product_category_42100000,อุปกรณ์ผจญเพลิง,42100000,product_category_42000000
+product_category_42100700,เครื่องดับเพลิงเคมี,42100700,product_category_42100000
+product_category_42200000,อุปกรณ์ดำน้ำและช่วยชีวิตทางทะเล,42200000,product_category_42000000
+product_category_42200100,อุปกรณ์ประดาน้ำ,42200100,product_category_42200000
+product_category_43000000,สูบและเครื่องอัด,43000000,
+product_category_43100000,เครื่องอัดและสูญญากาศ,43100000,product_category_43000000
+product_category_43100100,เครื่องอัดอากาศแบบต่างๆ,43100100,product_category_43100000
+product_category_43200000,สูบมือและสูบเครือง,43200000,product_category_43000000
+product_category_43300000,เครื่องสูบ  เครื่องแยก  และเครื่องอัด,43300000,product_category_43000000
+product_category_43300100,เครื่องสูบน้ำ,43300100,product_category_43300000
+product_category_44000000,เตาหลอมโรงไอน้ำ และอุปกรณ์ทำให้แห้ง และปฏิกรณ์นิว,44000000,
+product_category_44300000,เตาหลอม  เตาเผา  และเตาอบ,44300000,product_category_44000000
+product_category_44300100,เตาหลอม,44300100,product_category_44300000
+product_category_44300300,เตาเผา,44300300,product_category_44300000
+product_category_44600000,อุปกรณ์ทำให้อากาศบริสุทธิ์,44600000,product_category_44000000
+product_category_44600100,เครื่องทำอากาศให้สะอาด,44600100,product_category_44600000
+product_category_45000000,อุปกรณ์สุขภัณฑ์ เครื่องให้ความร้อน และการสุขาภิบาล,45000000,
+product_category_45100000,เครื่องสุขภัรฑ์และส่วนประกอบ,45100000,product_category_45000000
+product_category_45100300,"อ่างล้างหน้า , อ่างล้างมือ",45100300,product_category_45100000
+product_category_45101600,อุปกรณ์อื่นๆ,45101600,product_category_45100000
+product_category_46000000,เครื่องกรองน้ำ  และเครื่องขจัดสิ่งโสโครก,46000000,
+product_category_46100000,อุปกรณ์เครื่องกรองน้ำ,46100000,product_category_46000000
+product_category_46100800,เครื่องกรองน้ำแบบต่างๆ,46100800,product_category_46100000
+product_category_46100900,ชุดอุปกรณ์การประปา,46100900,product_category_46100000
+product_category_46200000,อุปกรณ์เครื่องกลั่น้ำสำหรับงานอุตสาหกรรม,46200000,product_category_46000000
+product_category_46200100,เครื่องกลั่นน้ำ,46200100,product_category_46200000
+product_category_46300000,อุปกรณ์ระบายสิ่งโสโครก,46300000,product_category_46000000
+product_category_46300500,อุปกรณ์กำจัดสิ่งอุดตัน,46300500,product_category_46300000
+product_category_46320000,อุปกรณ์เครื่องฉีดน้ำ,46320000,product_category_46000000
+product_category_46320100,เครื่องฉีดน้ำ,46320100,product_category_46320000
+product_category_46320200,ชุดระบบชลประทานในแปลงพืช,46320200,product_category_46320000
+product_category_47000000,ท่อหลอด ท่อยาง และจุกอัด,47000000,
+product_category_47300000,จุกอัด และ ท่อโลหะ ท่อยาง พิเศษ,47300000,product_category_47000000
+product_category_47300800,หัวฉีดต่างๆ,47300800,product_category_47300000
+product_category_49000000,อุปกรณ์การซ่อมบำรุงและโรงงานซ่อม,49000000,
+product_category_49400000,อุปกรณ์โรงงานซ่อมและซ่อมบำรุงอื่นๆ,49400000,product_category_49000000
+product_category_49400400,บันได,49400400,product_category_49400000
+product_category_49400500,เครื่องพ่นสีและส่วนประกอบ,49400500,product_category_49400000
+product_category_51000000,เครื่องมือ,51000000,
+product_category_51100000,เครื่องมือ  มีคม  ไม่ใช่กำลังกล,51100000,product_category_51000000
+product_category_51200000,เครื่องมือ ไม่มีคม  ไม่ใช้กำลังกล,51200000,product_category_51000000
+product_category_51200500,กุญแจปากตายแบบต่าง ๆ,51200500,product_category_51200000
+product_category_53000000,เครื่องใช้และวัสดุขัด,53000000,
+product_category_53150000,ตะปู ลิ่ม และสลัก,53150000,product_category_53000000
+product_category_53150100,ตะปูแบบต่างๆ,53150100,product_category_53150000
+product_category_53400000,เครื่องใช้อื่นๆ,53400000,product_category_53000000
+product_category_53400800,ส่วนประกอบบานประตู,53400800,product_category_53400000
+product_category_53401000,มือถือต่างๆ,53401000,product_category_53400000
+product_category_53401100,บานพับต่างๆ,53401100,product_category_53400000
+product_category_53401200,กลอนต่างๆ,53401200,product_category_53400000
+product_category_53401300,กุญแจต่างๆ,53401300,product_category_53400000
+product_category_53401600,ลูกบิด,53401600,product_category_53400000
+product_category_53500000,วัสดุขัด,53500000,product_category_53000000
+product_category_53500700,กระดาษทราย,53500700,product_category_53500000
+product_category_54000000,โครงสร้างถอดประกอบได้และนั่งร้าน,54000000,
+product_category_55000000,กระดาน ไม้อัด ไม้แปรรูปและไม้เคลือบ (วีเนีย),55000000,
+product_category_55300000,ไม้อัดและไม้เคลือบ (วีเนีย),55300000,product_category_55000000
+product_category_55300400,ไม้อัด,55300400,product_category_55300000
+product_category_56000000,วัสดุการสร้างอาคารและสิ่งก่อสร้าง,56000000,
+product_category_56700000,ผลิตภัณฑ์ทางสถาปัตยกรรมและผลิตภัณฑ์โลหะที่เกี่ยวข้อง,56700000,product_category_56000000
+product_category_56700100,ประตูโลหะแบบต่างๆ,56700100,product_category_56700000
+product_category_58000000,อุปกรณ์คมนาคม การค้นหาและการกระจายคลื่น,58000000,
+product_category_58050000,อุปกรณ์เครื่องโทรศัพท์และโทรเลข,58050000,product_category_58000000
+product_category_58050200,เครื่องโทรศัพท์แบบต่างๆ,58050200,product_category_58050000
+product_category_58051000,ชุมสายโทรศัพท์,58051000,product_category_58050000
+product_category_58200000,อุปกรณ์สื่อสารทางโทรทัศน์  วิทยุและโทรคมนาคม,58200000,product_category_58000000
+product_category_58200100,แอมฟลิฟลาย และอุปกรณ์เครื่องแอมฟลิฟลาย,58200100,product_category_58200000
+product_category_58201300,เครื่องมอนิเตอร์,58201300,product_category_58200000
+product_category_58201500,อุปกรณ์สื่อสารทางโทรทัศน์,58201500,product_category_58200000
+product_category_58201600,อุปกรณ์สื่อสารทางวิทยุ,58201600,product_category_58200000
+product_category_58201700,อุปกรณ์สื่อสารทางโทรคมนาคมอื่นๆ,58201700,product_category_58200000
+product_category_58300000,อุปกรณ์การติดต่อภายใน  เว้นหน่วยทางอากาศ,58300000,product_category_58000000
+product_category_58300700,ชุดติดต่อสื่อสารภายใน,58300700,product_category_58300000
+product_category_59000000,อุปกรณ์และส่วนประกอบเครื่องไฟฟ้า และเครื่องอิเลคฯ,59000000,
+product_category_59200000,ฟิวส์และเครื่องกันฟ้าผ่า,59200000,product_category_59000000
+product_category_59200100,ฟิวส์ชนิดต่างๆ,59200100,product_category_59200000
+product_category_59250000,เครื่องตัดวงจร,59250000,product_category_59000000
+product_category_59250100,เครื่องตัดวงจรชนิดต่าง ๆ,59250100,product_category_59250000
+product_category_59350000,ขั้วต่อสายไฟ,59350000,product_category_59000000
+product_category_59350100,ขั้วต่อสายไฟแบบและชนิดต่างๆ,59350100,product_category_59350000
+product_category_59350200,ขาเสียบ,59350200,product_category_59350000
+product_category_59350300,ขั้วเสียบ,59350300,product_category_59350000
+product_category_59350400,ปลั๊กเสียบ,59350400,product_category_59350000
+product_category_59350500,ปลั๊กขาหลอด,59350500,product_category_59350000
+product_category_59350600,ส่วนประกอบในการต่อสายไฟอื่นๆ,59350600,product_category_59350000
+product_category_59450000,รีเรย์ตัวต่อ ทางไฟและขดลวดแม่เหล็กไฟฟ้า,59450000,product_category_59000000
+product_category_59450600,แมกเนติก คอนแทคเตอร์,59450600,product_category_59450000
+product_category_59650000,ชุดปากพูด  หูฟัง  ไมโครโฟนและลำโพง,59650000,product_category_59000000
+product_category_59650100,ไมโครโฟนแบบต่าง ๆ,59650100,product_category_59650000
+product_category_59650200,ลำโพงแบบต่างๆ,59650200,product_category_59650000
+product_category_59650600,ส่วนประกอบและชิ้นส่วนของไมโครโฟน,59650600,product_category_59650000
+product_category_59650800,หูฟัง,59650800,product_category_59650000
+product_category_59650900,เครื่องขยายเสียง,59650900,product_category_59650000
+product_category_59651000,ชุดเครื่องเสียง,59651000,product_category_59650000
+product_category_59651100,เครื่องบันทึกเสียง,59651100,product_category_59650000
+product_category_59651200,ชุดอุปกรณ์ต่างๆ เพื่อการสอบภาษา,59651200,product_category_59650000
+product_category_59651300,เครื่องเล่นแผ่นเสียง,59651300,product_category_59650000
+product_category_59651400,เครื่องเล่นเทป,59651400,product_category_59650000
+product_category_59700000,ฉนวนและวัสดุที่เป็นฉนวน,59700000,product_category_59000000
+product_category_59700100,เทปอาบน้ำยา,59700100,product_category_59700000
+product_category_59700200,เทปพันสายไฟ,59700200,product_category_59700000
+product_category_59700300,ฉนวนชนิดต่าง ๆ,59700300,product_category_59700000
+product_category_59700400,ผ้าชุบวานิช,59700400,product_category_59700000
+product_category_59700500,เทปยาง,59700500,product_category_59700000
+product_category_59700600,แผ่นเอสเบส.เอส,59700600,product_category_59700000
+product_category_59700700,กระดาษฉนวน,59700700,product_category_59700000
+product_category_59700800,หลอดฉนวน,59700800,product_category_59700000
+product_category_59750000,เครื่องใช้และครุภัณฑ์ไฟฟ้า,59750000,product_category_59000000
+product_category_59750200,รางนำสาย,59750200,product_category_59750000
+product_category_59750600,อุปกรณ์และเครื่องใช้การเดินสายต่างๆ,59750600,product_category_59750000
+product_category_59950000,"สายเคเบิล, คอร์ดและสายไฟที่ใชกับเครื่องสื่อสาร",59950000,product_category_59000000
+product_category_59950600,สายโทรศัพท์,59950600,product_category_59950000
+product_category_59950700,ตลับต่อโทรศัพท์,59950700,product_category_59950000
+product_category_59990000,องค์ประกอบไฟฟ้าและอีเลคโทรนิคอื่นๆ,59990000,product_category_59000000
+product_category_59990400,สวิทช์ไฟ,59990400,product_category_59990000
+product_category_61000000,สายไฟ  เครื่องกำเนิดไฟฟ้า และอุปกรณ์จ่ายไฟฟ้า,61000000,
+product_category_61050000,มอเตอร์ไฟฟ้า,61050000,product_category_61000000
+product_category_61050100,มอเตอร์ไฟตรง (DC MOTOR),61050100,product_category_61050000
+product_category_61050200,มอเตอร์ไฟสลับ (AC MOTOR),61050200,product_category_61050000
+product_category_61050300,มอเตอร์ต่อลำดับ (SERIAL  MOTOR),61050300,product_category_61050000
+product_category_61050400,ชิ้นส่วนและส่วนประกอบของมอเตอร์ไฟฟ้า,61050400,product_category_61050000
+product_category_61450000,ลวดสายไฟและสายเคเบิล,61450000,product_category_61000000
+product_category_61451200,สายไฟ,61451200,product_category_61450000
+product_category_61451300,สายลำโพง,61451300,product_category_61450000
+product_category_62000000,หลอดไฟ  และอุปกรณ์ติดตั้งเครื่องให้แสงสว่าง,62000000,
+product_category_62100000,หลอดไฟและอุปกรณ์ติดตั้งเครื่องให้แสงสว่าง,62100000,product_category_62000000
+product_category_62100700,อุปกรณ์ที่ใช้ติดตั้งเครื่องใช้แสง,62100700,product_category_62100000
+product_category_62300000,เครื่องให้แสงสว่างชนิดมือถือและนำไปมาได้,62300000,product_category_62000000
+product_category_62301200,ไฟส่องสนาม (SPORT  LIGHT),62301200,product_category_62300000
+product_category_62400000,หลอดไฟฟ้า,62400000,product_category_62000000
+product_category_62400100,หลอดไฟชนิดต่างๆ,62400100,product_category_62400000
+product_category_62400200,หลอดไฟนีออน,62400200,product_category_62400000
+product_category_62400300,หลอดฟลูออเรสเซนต์,62400300,product_category_62400000
+product_category_62500000,บาลลาสต์ ที่ยึดหลอด และ สตาร์ทเตอร์บาลลาสต์,62500000,product_category_62000000
+product_category_62500100,สตาร์ทเตอร์,62500100,product_category_62500000
+product_category_62500700,บาลลาสต์,62500700,product_category_62500000
+product_category_62500800,ขาหลอดไฟ,62500800,product_category_62500000
+product_category_63000000,เครื่องเตือนภัยและสัญญาณ,63000000,
+product_category_63100000,ระบบสัญญาณจราจรและสัญญาณผ่าน,63100000,product_category_63000000
+product_category_63100400,เครื่องควบคุมการผ่านเข้าออก,63100400,product_category_63100000
+product_category_63500000,ระบบสัญญาณและเตือนภัยอื่นๆ,63500000,product_category_63000000
+product_category_63500800,เครื่องตัดไฟอัตโนมัติ,63500800,product_category_63500000
+product_category_65000000,อุปกรณ์และเครื่องทางการแพทย์  ทันตแพทย์  สัตวแพทย์,65000000,
+product_category_65300000,เครื่องตกแต่ง  อุปกรณ์  เครื่องใช้ในโรงพยาบาล,65300000,product_category_65000000
+product_category_65300400,เครื่องนึ่งฆ่าเชื้อ,65300400,product_category_65300000
+product_category_65301200,เครื่องช่วยหูฟัง,65301200,product_category_65300000
+product_category_65301300,เครื่องวัดความดันโลหิต,65301300,product_category_65300000
+product_category_65301400,ตู้ยา,65301400,product_category_65300000
+product_category_65301500,เครื่องมือตรวจหู-ตา (OPHTALMOSCOPE),65301500,product_category_65300000
+product_category_66000000,เครื่องมือและอุปกรณ์ห้องปฏิบัติการ(ทดลอง),66000000,
+product_category_66220000,เครื่องมือและอุปกรณ์ในห้องทดลองวิทยาศาสตร์,66220000,product_category_66000000
+product_category_66220100,เครื่องมือและอุปกรณ์ทางเคมี,66220100,product_category_66220000
+product_category_66220200,เครื่องมือและอุปกรณ์ทางชีวภาพ,66220200,product_category_66220000
+product_category_66220300,เครื่องมือและอุปกรณ์ทางฟิสิกส์,66220300,product_category_66220000
+product_category_66220400,เครื่องชั่งและเครื่องมือวัดในห้องทดลอง,66220400,product_category_66220000
+product_category_66220500,เครื่องมือและอุปกรณ์อื่น ๆ ในห้องทดลอง,66220500,product_category_66220000
+product_category_66220600,เครื่องมือทดสอบและวิเคราะห์ทางพอลิเมอร์,66220600,product_category_66220000
+product_category_66250000,เครื่องมือและอุปกรณ์ทางไฟฟ้าและอิเลคโทรนิค,66250000,product_category_66000000
+product_category_66250100,เครื่องวัดและเครื่องตรวจสอบทางไฟฟ้าและอิเลคฯ,66250100,product_category_66250000
+product_category_66250200,อุปกรณ์กำเนิดสัญญาณทางไฟฟ้า,66250200,product_category_66250000
+product_category_66250300,เครื่องมือและอุปกรณ์ทางไฟฟ้ากำลัง,66250300,product_category_66250000
+product_category_66250400,เครื่องมือและอุปกรณ์ทางไฟฟ้า,66250400,product_category_66250000
+product_category_66250500,เครื่องมือและอุปกรณ์ทางอิเลคโทรนิค,66250500,product_category_66250000
+product_category_66250600,"เครื่องมือ,อุปกรณ์ทางไฟฟ้าและอิเลคโทรนิคอื่นๆ",66250600,product_category_66250000
+product_category_66260000,เครื่องมือและอุปกรณต่างๆ  ทางวิศวกรรม,66260000,product_category_66000000
+product_category_66260100,เครื่องมือและอุปกรณ์ทางโยธา,66260100,product_category_66260000
+product_category_66280000,ชุดทดลองและชุดทดสอบต่างๆ  ทางวิศกรรม,66280000,product_category_66000000
+product_category_66280100,ชุดทดลองและชุดทดสอบทางไฟฟ้าและอิเลคโทรนิค,66280100,product_category_66280000
+product_category_66280200,ชุดทดลองและชุดทดสอบทางสื่อสารโทรคมนาคม,66280200,product_category_66280000
+product_category_66280300,ชุดทดลองและชุดทดสอบทางโยธา,66280300,product_category_66280000
+product_category_66280400,ชุดทดลองและชุดทดสอบทางเครื่องกล,66280400,product_category_66280000
+product_category_66300000,เครื่องมือวิเคราะห์ทางเคมี,66300000,product_category_66000000
+product_category_66450000,เครื่องวัดบอกเวลา,66450000,product_category_66000000
+product_category_66450800,นาฬิกาบอกเวลา,66450800,product_category_66450000
+product_category_66451300,นาฬิกาจับเวลา,66451300,product_category_66450000
+product_category_66500000,เครื่องมือทางทัศนะ,66500000,product_category_66000000
+product_category_66500300,กล้องจุลทรรศน์,66500300,product_category_66500000
+product_category_66600000,เครื่องมืออุตุนิยม,66600000,product_category_66000000
+product_category_66602200,เครื่องวัดความเร็วลม (ANEMOMETER),66602200,product_category_66600000
+product_category_66750000,เครื่องมือเขียยแบบ  สำรวจและทำแผนที่,66750000,product_category_66000000
+product_category_66850000,เครื่องมือวัดและเครื่องควบคุมความดันอุณหภูมิ,66850000,product_category_66000000
+product_category_66850100,เครื่องวัดอุณหภูมิ,66850100,product_category_66850000
+product_category_67000000,อุปกรณ์การภาพ,67000000,
+product_category_67100000,กล้องถ่ายภาพยนต์และส่วนประกอบ,67100000,product_category_67000000
+product_category_67100200,กล้องถ่ายภาพยนตร์,67100200,product_category_67100000
+product_category_67100500,กล้องถ่ายวีดีโอ,67100500,product_category_67100000
+product_category_67100600,เครื่องตัดต่อภาพยนตร์,67100600,product_category_67100000
+product_category_67100700,เครื่องบันทึกเทป,67100700,product_category_67100000
+product_category_67200000,กล้องถ่ายภาพนิ่ง,67200000,product_category_67000000
+product_category_67200300,กล้องถ่ายไมโครฟิล์ม,67200300,product_category_67200000
+product_category_67200500,กล้องถ่ายรูป (ไม่รวมกล้องเอ็กซ์เรย์),67200500,product_category_67200000
+product_category_67300000,อุปกรณ์  เครื่องฉายภาพ,67300000,product_category_67000000
+product_category_67300200,จอ,67300200,product_category_67300000
+product_category_67300300,เครื่องฉายภาพยนต์ ทั้งมีเสียงและไม่มีเสียง,67300300,product_category_67300000
+product_category_67300400,เครื่องฉายสไลด์  และอุปกรณ์อื่นๆ ที่เกี่ยวข้อง,67300400,product_category_67300000
+product_category_67300500,เครื่องอ่านไมโครฟิล์ม,67300500,product_category_67300000
+product_category_67300700,เครื่องฉายภาพข้ามศรีษะ (OVERHEAD   PROJECTOR),67300700,product_category_67300000
+product_category_67300800,เครื่องแยภาพทึบแสง (OPAQUE PROJECTOR),67300800,product_category_67300000
+product_category_67300900,เครื่องเทปซิงโครไนซ์,67300900,product_category_67300000
+product_category_67301000,เครื่องฉายภาพผ่านวีดีโอ (VEDIO  PROJECTOR),67301000,product_category_67300000
+product_category_67400000,อุปกรณ์การล้าง  และอัดภาพ,67400000,product_category_67000000
+product_category_67400100,ถาดหรืออ่างล้างรูป,67400100,product_category_67400000
+product_category_67400900,เครื่องทำให้แห้งและขัดมันภาพ,67400900,product_category_67400000
+product_category_67401200,"เครื่องขยายภาพ,เครื่องอัดขยายภาพ",67401200,product_category_67400000
+product_category_67401400,เครื่องล้างฟิล์ม,67401400,product_category_67400000
+product_category_67402000,อ่างผสมน้ำยาล้างรูป,67402000,product_category_67400000
+product_category_67500000,อุปกรณ์การภาพ,67500000,product_category_67000000
+product_category_67500100,น้ำยาล้างฟิล์ม,67500100,product_category_67500000
+product_category_67500600,ฟิล์มสี,67500600,product_category_67500000
+product_category_67600000,อุปกรณ์การภาพ  และสิ่งอื่นๆ,67600000,product_category_67000000
+product_category_67600100,เครื่องวัดแสง,67600100,product_category_67600000
+product_category_67600200,ขาตั้งกล้อง,67600200,product_category_67600000
+product_category_67600400,เลนส์แบบต่าง ๆ,67600400,product_category_67600000
+product_category_67600600,ขาตั้งเครื่องให้แสง,67600600,product_category_67600000
+product_category_67600900,ไฟถ่ายภาพ,67600900,product_category_67600000
+product_category_67602400,กระจกขยายภาพ,67602400,product_category_67600000
+product_category_67602500,แท่นถ่ายภาพ (COPY  STAND),67602500,product_category_67600000
+product_category_67602600,เครื่องหรี่แสง,67602600,product_category_67600000
+product_category_67602700,เครื่องทำเทคนิคพิเศษทางภาพ,67602700,product_category_67600000
+product_category_67602800,เครื่องทำเทคนิคพิเศษทางเสียง,67602800,product_category_67600000
+product_category_71000000,เครื่องตกแต่ง,71000000,
+product_category_71050000,เครื่องตกแต่งบ้าน,71050000,product_category_71000000
+product_category_71050400,เตียงนอนแบบต่าง ๆ (ไม่รวมเตียงพยาบาล),71050400,product_category_71050000
+product_category_71100000,เครื่องตกแต่งสำนักงาน,71100000,product_category_71000000
+product_category_71100200,ตู้เก็บเอกสาร,71100200,product_category_71100000
+product_category_71100300,ตู้นิรภัย,71100300,product_category_71100000
+product_category_71100400,กระดานชนิดต่าง ๆ,71100400,product_category_71100000
+product_category_71100500,เก้าอี้ขชนิดต่างๆ,71100500,product_category_71100000
+product_category_71100600,โต๊ะชนิดต่าง ๆ,71100600,product_category_71100000
+product_category_71101100,ชั้นเก็บแบบต่าง ๆ,71101100,product_category_71100000
+product_category_71101800,ชั้นวางของแบบต่าง ๆ,71101800,product_category_71100000
+product_category_71101900,เครื่องเคลือบบัตร,71101900,product_category_71100000
+product_category_71102000,เครื่องพิมพ์บัตร,71102000,product_category_71100000
+product_category_71102200,ฉากกั้นหนังสือ,71102200,product_category_71100000
+product_category_71250000,ตู้ หีบ  ช่องเก็บของ  หิ้งเก็บของ,71250000,product_category_71000000
+product_category_71250100,ตู้ช่องเก็บของ,71250100,product_category_71250000
+product_category_71950000,เครื่องประดับและเครื่องตกแต่งอื่นๆ,71950000,product_category_71000000
+product_category_71950100,กระดานประกาศแจ้งความ,71950100,product_category_71950000
+product_category_71950400,เก้าอี้ยาว,71950400,product_category_71950000
+product_category_71950700,เคาน์เตอร์,71950700,product_category_71950000
+product_category_71950900,เครื่องตกแต่งห้องสมุด,71950900,product_category_71950000
+product_category_71951100,ที่วางหนังสือพิมพ์,71951100,product_category_71950000
+product_category_71951400,โต๊ะเอนกประสงค์แบบต่าง ๆ,71951400,product_category_71950000
+product_category_71951700,ต้แบบต่าง ๆ,71951700,product_category_71950000
+product_category_71951800,ชุดม้าหิน,71951800,product_category_71950000
+product_category_71951900,ชุดรับแขก,71951900,product_category_71950000
+product_category_71952000,แท่นยืนบรรยาย,71952000,product_category_71950000
+product_category_71952100,พระบรมฉายาลักษณ์,71952100,product_category_71950000
+product_category_71952200,ป้ายต่าง ๆ,71952200,product_category_71950000
+product_category_72000000,เครื่องใช้และเครื่องตกแต่งบ้าน  และร้านค้า,72000000,
+product_category_72200000,เครื่องปูพื้น,72200000,product_category_72000000
+product_category_72200100,พรมชนิดต่าง ๆ ยกเว้นพรมพื้นรถ,72200100,product_category_72200000
+product_category_72300000,ฉากกั้น  ผ้าม่าน  และบังตา,72300000,product_category_72000000
+product_category_72300200,ม่าน,72300200,product_category_72300000
+product_category_72300300,ฉากกั้นแบบต่าง ๆ,72300300,product_category_72300000
+product_category_72300900,มู่ลี่,72300900,product_category_72300000
+product_category_72400000,ภาชนะที่ใช้ประโยชน์ในบ้านและร้านค้า,72400000,product_category_72000000
+product_category_72400200,ถังขยะ,72400200,product_category_72400000
+product_category_72400400,ถับแบบต่าง ๆ,72400400,product_category_72400000
+product_category_73000000,อุปกรณ์ประกอบอาหารและเลี้ยงดู,73000000,
+product_category_73100000,เครื่องครัว  เครื่องทำขนมปังและเครื่องเลี้ยงดู,73100000,product_category_73000000
+product_category_73100100,โต๊ะอุ่นอาหารชนิดต่าง ๆ,73100100,product_category_73100000
+product_category_73100200,"เตาอบ,ตู้อบแบบต่าง ๆ",73100200,product_category_73100000
+product_category_73100800,รถเข็นบริการอาหารร้อนชนิดต่าง ๆ,73100800,product_category_73100000
+product_category_73101000,"เครื่องต้มน้ำ,กาแฟ",73101000,product_category_73100000
+product_category_73101100,เตาแบบต่าง ๆ,73101100,product_category_73100000
+product_category_73200000,อุปกรณ์เครื่องใช้ในครัว,73200000,product_category_73000000
+product_category_73200900,ขาตั้งวางถาด,73200900,product_category_73200000
+product_category_73201100,เครื่องผสมไอศครีม,73201100,product_category_73200000
+product_category_73201300,เครื่องอัดไส้กรอก,73201300,product_category_73200000
+product_category_73201400,เครื่องล้างข้าว,73201400,product_category_73200000
+product_category_73201500,เครื่องทำน้ำแข็ง,73201500,product_category_73200000
+product_category_73201600,ที่กรองน้ำมัน,73201600,product_category_73200000
+product_category_73201700,โต๊ะวางของ,73201700,product_category_73200000
+product_category_73201800,ตู้แสตนเลส,73201800,product_category_73200000
+product_category_73201900,อ่างล้างจาน,73201900,product_category_73200000
+product_category_73300000,เครื่องมือและภาชนะในครัว,73300000,product_category_73000000
+product_category_73300100,หม้อ,73300100,product_category_73300000
+product_category_73300200,กะทะ,73300200,product_category_73300000
+product_category_73300500,เครื่องบดอาหาร,73300500,product_category_73300000
+product_category_73301000,เขียง,73301000,product_category_73300000
+product_category_73301100,เครื่องตีไข่,73301100,product_category_73300000
+product_category_73301800,เครื่องปั่นละเอียด,73301800,product_category_73300000
+product_category_73500000,ของใช้สำหรับโต๊ะอาหาร,73500000,product_category_73000000
+product_category_73500100,ถ้วย ชาม จานกระเบื้องเคลือบและดินเผา,73500100,product_category_73500000
+product_category_73500200,เครื่องแก้ว,73500200,product_category_73500000
+product_category_73500300,ถ้วย ชาม จานกระดาษ,73500300,product_category_73500000
+product_category_73501500,กระดาษกรองกาแฟ,73501500,product_category_73500000
+product_category_74000000,เครื่องกลสำนักงานและอุปกรณ์กรรมวิธีบันทึกลงข้อมูล,74000000,
+product_category_74200000,เครื่องคำนวณและทำบัญชี,74200000,product_category_74000000
+product_category_74200400,เครื่องคำนวณ,74200400,product_category_74200000
+product_category_74200500,เครื่องทำบัญชี,74200500,product_category_74200000
+product_category_74300000,เครื่องพิมพ์ดีดและเครื่องอัดสำเนา,74300000,product_category_74000000
+product_category_74300100,เครื่องพิมพ์ดีด,74300100,product_category_74300000
+product_category_74300300,เครื่องอัดสำเนา,74300300,product_category_74300000
+product_category_74300600,เครื่องถ่ายแผ่นใส,74300600,product_category_74300000
+product_category_74300700,เครื่องถ่ายเอกสาร,74300700,product_category_74300000
+product_category_74300800,เครื่องเรียงหน้ากระดาษ,74300800,product_category_74300000
+product_category_74400000,ระบบกรรมวิธีข้อมูลอัตโนมัติเพื่ออุตฯวิทย์ สนง,74400000,product_category_74000000
+product_category_74400100,เครื่องคอมพิวเตอร์,74400100,product_category_74400000
+product_category_74400900,อุปกรณ์และส่วนประกอบอื่น ๆ,74400900,product_category_74400000
+product_category_74401000,เครื่องอ่านและบันทึกข้อมูล,74401000,product_category_74400000
+product_category_74401100,จอภาพคอมพิวเตอร์,74401100,product_category_74400000
+product_category_74401200,เครื่องพิมพ์คอมพิวเตอร์,74401200,product_category_74400000
+product_category_74401300,พลีอตเตอร์(PLOTTER),74401300,product_category_74400000
+product_category_74401400,แผงวงจรควบคุม (CONTROLLER CARD),74401400,product_category_74400000
+product_category_74401500,อุปกรณ์สำหรับเชื่อมโยง(INTERFACE),74401500,product_category_74400000
+product_category_74401600,โปรแกรมหรือซอฟท์แวร์(SOFTWARE),74401600,product_category_74400000
+product_category_74401700,สแกนเนอร์ SCANNER,74401700,product_category_74400000
+product_category_74401800,ดิจิไทเซอร์ (DIGITIZER),74401800,product_category_74400000
+product_category_74401900,เครื่องขับเทปแม่เหล็ก(CATRIDE  TAPE  DRIVE),74401900,product_category_74400000
+product_category_74402000,DIGITAL  AUDIO TYPE,74402000,product_category_74400000
+product_category_74900000,เครื่องกลสำนักงานอื่นๆ,74900000,product_category_74000000
+product_category_74900200,เครื่องปรุอักษร,74900200,product_category_74900000
+product_category_74900300,เครื่องประทับตรา,74900300,product_category_74900000
+product_category_74900400,ที่ตัดกระดาษ,74900400,product_category_74900000
+product_category_74901700,เครื่องปรุกระดาษไข,74901700,product_category_74900000
+product_category_74901800,เครื่องปรุไข่ปลา,74901800,product_category_74900000
+product_category_74901900,เครื่องเย็บกระดาษ,74901900,product_category_74900000
+product_category_74902000,เครื่องยิงลวดเย็บ,74902000,product_category_74900000
+product_category_74902100,เครื่องทำลายเอกสาร,74902100,product_category_74900000
+product_category_75000000,พัสดุและเครื่องใช้สำนักงาน,75000000,
+product_category_75100000,พัสดุสำนักงาน,75100000,product_category_75000000
+product_category_75100100,แถบยาง,75100100,product_category_75100000
+product_category_75100200,แฟ้ม ปก  เก็บกระดาษ,75100200,product_category_75100000
+product_category_75100300,ปฏิทิน,75100300,product_category_75100000
+product_category_75100400,สมุด,75100400,product_category_75100000
+product_category_75100500,ดินสอ,75100500,product_category_75100000
+product_category_75100600,ดินสอสี,75100600,product_category_75100000
+product_category_75100700,สีน้ำ,75100700,product_category_75100000
+product_category_75100800,ลวดเสียบกระดาษ,75100800,product_category_75100000
+product_category_75100900,ไม้บรรทัด,75100900,product_category_75100000
+product_category_75101000,ซอง,75101000,product_category_75100000
+product_category_75101100,หมึกเขียน,75101100,product_category_75100000
+product_category_75101200,หมึกพิมพ์,75101200,product_category_75100000
+product_category_75101300,หัวปากกา,75101300,product_category_75100000
+product_category_75101400,ด้ามปากกา,75101400,product_category_75100000
+product_category_75101500,เครื่องวาดเขียน,75101500,product_category_75100000
+product_category_75101600,ยางลบ,75101600,product_category_75100000
+product_category_75101700,น้ำยาลบ,75101700,product_category_75100000
+product_category_75101800,ดินสอเขียนผ้า,75101800,product_category_75100000
+product_category_75101900,แถบกระดาษ,75101900,product_category_75100000
+product_category_75102000,เข็มหมุด,75102000,product_category_75100000
+product_category_75102100,ที่ทับกระดาษ,75102100,product_category_75100000
+product_category_75102200,ที่วางปากกา,75102200,product_category_75100000
+product_category_75102300,กาว,75102300,product_category_75100000
+product_category_75102400,ที่กลัดและผูกรัดต่าง ๆ,75102400,product_category_75100000
+product_category_75102500,ลวดเย็บกระดาษ,75102500,product_category_75100000
+product_category_75102600,หมึกเติม,75102600,product_category_75100000
+product_category_75102700,วัสดุประชาสัมพันธ์,75102700,product_category_75100000
+product_category_75102800,ขี้ผึ้งนับกระดาษ,75102800,product_category_75100000
+product_category_75102900,ชอล์ค,75102900,product_category_75100000
+product_category_75103000,ฟิวเจอร์บอร์ด,75103000,product_category_75100000
+product_category_75200000,เครื่องใช้และเครื่องประกอบสำนักงาน,75200000,product_category_75000000
+product_category_75200100,ที่เก็บต้นฉบับพิมพ์,75200100,product_category_75200000
+product_category_75200200,ปากกาหมึกซึม,75200200,product_category_75200000
+product_category_75200300,เครื่องเหลาดินสอ,75200300,product_category_75200000
+product_category_75200400,เครื่องเย็บกระดาษ,75200400,product_category_75200000
+product_category_75200500,ตระกร้าหนังสือบนโต๊ะ,75200500,product_category_75200000
+product_category_75200600,ที่เปิดซอง,75200600,product_category_75200000
+product_category_75200700,ที่ถอนลวดเย็บกระดาษ,75200700,product_category_75200000
+product_category_75200800,ปากกาลูกลื่น,75200800,product_category_75200000
+product_category_75200900,ลูกกลิ้งหมึก,75200900,product_category_75200000
+product_category_75201000,ที่แขวนและวางต่าง ๆ,75201000,product_category_75200000
+product_category_75201100,ตรายาง,75201100,product_category_75200000
+product_category_75201200,แท่นหมึกประทับตรายาง,75201200,product_category_75200000
+product_category_75201300,ชั้นเก็บของ,75201300,product_category_75200000
+product_category_75201400,หิ้ง,75201400,product_category_75200000
+product_category_75201500,ตราวันที่,75201500,product_category_75200000
+product_category_75201600,ขาตั้ง,75201600,product_category_75200000
+product_category_75201700,กะบะหนังสือบนโต๊ะ,75201700,product_category_75200000
+product_category_75201800,กะบะใส่ดินสอปากกา,75201800,product_category_75200000
+product_category_75201900,กล่องใส่คลิป,75201900,product_category_75200000
+product_category_75202000,แท่นใส่สก๊อตเทป,75202000,product_category_75200000
+product_category_75202100,ที่เจาะกระดาษ,75202100,product_category_75200000
+product_category_75202200,คัทเตอร์,75202200,product_category_75200000
+product_category_75202300,กรรไกร,75202300,product_category_75200000
+product_category_75202400,เชือก,75202400,product_category_75200000
+product_category_75202500,โฟม,75202500,product_category_75200000
+product_category_75202600,INDEX TABS,75202600,product_category_75200000
+product_category_75202700,แผ่นใส,75202700,product_category_75200000
+product_category_75202800,เหล็กแหลม,75202800,product_category_75200000
+product_category_75202900,แผ่นดิสเก็ต,75202900,product_category_75200000
+product_category_75203000,แปลงลบกระดาน,75203000,product_category_75200000
+product_category_75203100,เครื่องตอกตัวเลข,75203100,product_category_75200000
+product_category_75203200,แผ่นยางรองตัด,75203200,product_category_75200000
+product_category_75300000,แบบพิมพ์สำหรับบันทึก,75300000,product_category_75000000
+product_category_75300100,สมุดบันทึกต่าง ๆ,75300100,product_category_75300000
+product_category_75300200,บัตรบันทึกต่าง ๆ,75300200,product_category_75300000
+product_category_75300300,บัตร อี เอ เอ็ม,75300300,product_category_75300000
+product_category_75300400,กระดาษเครื่องคำนวณ,75300400,product_category_75300000
+product_category_75300500,กระดาษเขียนแบบ,75300500,product_category_75300000
+product_category_75300600,แฟ้มบันทึกต่าง ๆ,75300600,product_category_75300000
+product_category_75300700,กระดาษเขียนหนังสือ,75300700,product_category_75300000
+product_category_75300800,แถบกระดาษบันทึก,75300800,product_category_75300000
+product_category_75300900,บัตรตารางบันทึก,75300900,product_category_75300000
+product_category_75301000,แถบสลาก,75301000,product_category_75300000
+product_category_75301100,แบบฟอร์มธุรกิจ,75301100,product_category_75300000
+product_category_75301200,กระดาษใช้งานอื่น ๆ,75301200,product_category_75300000
+product_category_75301300,สมุดบันทึกความจำ,75301300,product_category_75300000
+product_category_75301400,ซองจดหมาย,75301400,product_category_75300000
+product_category_75301500,กระดาษร่าง,75301500,product_category_75300000
+product_category_75301600,แบบพิมพ์บันทึกอื่น ๆ,75301600,product_category_75300000
+product_category_75400000,แบบพิมพ์มาตราฐาน,75400000,product_category_75000000
+product_category_75400100,แบบพิมพ์ทางราชการต่าง ๆ,75400100,product_category_75400000
+product_category_75400200,แบบพิมพ์บัญชีมาตราฐาน,75400200,product_category_75400000
+product_category_75400300,แฟ้มเก็บเอกสารมาตราฐาน,75400300,product_category_75400000
+product_category_75400400,ซองเก็บเอกสารราชการ,75400400,product_category_75400000
+product_category_75400500,แบบพิมพ์มาตรฐานสำนักงบประมาณ,75400500,product_category_75400000
+product_category_75700000,ฉนวนและวัสดที่เป็นฉนวน,75700000,product_category_75000000
+product_category_76000000,หนังสือแผนที่และสิ่งพิมพ์,76000000,
+product_category_76500000,แผนแบบและข้อกำหนด,76500000,product_category_76000000
+product_category_77000000,เครื่องดนตรี เครื่องเล่นแผ่นเสียงและวิทยุใช้ในบ้าน,77000000,
+product_category_77100000,เครื่องดนตรี,77100000,product_category_77000000
+product_category_77102400,ทรัมเปต,77102400,product_category_77100000
+product_category_77200000,ชิ้นส่วนและส่วนประกอบเครื่องดนตรี,77200000,product_category_77000000
+product_category_77200700,เครื่องเทียบเสียง,77200700,product_category_77200000
+product_category_77300000,เครื่องเล่นแผ่นเสียง วิทยุ  โทรทัศน์ใช้ในบ้าน,77300000,product_category_77000000
+product_category_77300200,เครื่องรับวิทยุ,77300200,product_category_77300000
+product_category_77300300,เครื่องรับโทรทัศน์,77300300,product_category_77300000
+product_category_77300600,เครื่องเล่นวีดีโอ,77300600,product_category_77300000
+product_category_78000000,อุปกรณ์สันทนาการและการกีฬา,78000000,
+product_category_78100000,อุปกรณ์กีฬา,78100000,product_category_78000000
+product_category_78100200,อุปกรณ์บาสเกตบอลล์,78100200,product_category_78100000
+product_category_78100500,อุปกรณ์วอลเล่ย์บอล,78100500,product_category_78100000
+product_category_78100700,อุปกรณ์แบทมินตัน,78100700,product_category_78100000
+product_category_78101200,อุปกรณ์เทบิลเทนนิส,78101200,product_category_78100000
+product_category_78101400,อุปกรณ์ยูโด,78101400,product_category_78100000
+product_category_78101500,ชุดทดสอบสมรรถภาพทางกาย,78101500,product_category_78100000
+product_category_78101600,ชุดเสริมสร้างสมรรถภาพทางกาย,78101600,product_category_78100000
+product_category_79000000,อุปกรณ์และอุปกรณ์ทำความสะอาด,79000000,
+product_category_79100000,เครื่องขัดพื้นและเครื่องดูดฝุ่น,79100000,product_category_79000000
+product_category_79100100,เครื่องขัดพื้น,79100100,product_category_79100000
+product_category_79100300,เครื่องดูดฝุ่น,79100300,product_category_79100000
+product_category_79200000,ไม้กวาด แปรง ที่เช็ดพื้นและฟองน้ำ,79200000,product_category_79000000
+product_category_79200100,ไม้กวาดต่าง ๆ,79200100,product_category_79200000
+product_category_79200200,แปรงถูพื้นต่างๆ,79200200,product_category_79200000
+product_category_79200300,ผ้าทำความสะอาด,79200300,product_category_79200000
+product_category_79200400,ผ้าขัด,79200400,product_category_79200000
+product_category_79200500,ผ้าเช็ดฝุ่น,79200500,product_category_79200000
+product_category_79200600,ผ้าเช็ดพื้น,79200600,product_category_79200000
+product_category_79200700,ผ้าขี้ริ้ว,79200700,product_category_79200000
+product_category_79200800,ฟองน้ำ,79200800,product_category_79200000
+product_category_79200900,อื่นๆ,79200900,product_category_79200000
+product_category_79300000,ยาขัดและยาทำความสะอาด,79300000,product_category_79000000
+product_category_79300100,ยาขัดพื้น,79300100,product_category_79300000
+product_category_79300200,น้ำยาซักล้าง,79300200,product_category_79300000
+product_category_79300300,สบู่,79300300,product_category_79300000
+product_category_79300400,ยาขัด (ไม่รวมยาขัดโลหะ),79300400,product_category_79300000
+product_category_79300500,ขี้ผึ้ง,79300500,product_category_79300000
+product_category_79300600,ตัวยาชำระล้าง,79300600,product_category_79300000
+product_category_79300700,วัสดุและอุปกรณ์ทำความสะอาด,79300700,product_category_79300000
+product_category_79300800,น้ำยาทำความสะอาดกระจก,79300800,product_category_79300000
+product_category_79300900,น้ำด่าง,79300900,product_category_79300000
+product_category_79301000,ยาขัดรองเท้า,79301000,product_category_79300000
+product_category_79301100,ยาฉีดแมลง,79301100,product_category_79300000
+product_category_79301200,น้ำยาดับกลิ่น,79301200,product_category_79300000
+product_category_79301300,น้ำยาอเนกประสงค์,79301300,product_category_79300000
+product_category_80000000,แปรงและภู่กัน สี วัสดุ ยาอุด และผนึก,80000000,
+product_category_80100000,สี-กาว วาร์นิช และผลิตภัณฑ์ที่เกี่ยวข้อง,80100000,product_category_80000000
+product_category_80101700,อื่นๆ,80101700,product_category_80100000
+product_category_80200000,แปรงทาสีและภู่กัน,80200000,product_category_80000000
+product_category_80200100,แปรงทาสีต่างๆ,80200100,product_category_80200000
+product_category_80200600,เกรียงโป๊วสี,80200600,product_category_80200000
+product_category_85000000,เครื่องสุขภัณฑ์และเครื่องสำอางค์,85000000,
+product_category_85400000,ผลิตภัณฑ์กระดาษทำความสะอาด,85400000,product_category_85000000
+product_category_85400100,กระดาษชำระ,85400100,product_category_85400000
+product_category_85400200,กระดาษเยื่อ,85400200,product_category_85400000
+product_category_85400300,กระดาษเช็ดมือ,85400300,product_category_85400000
+product_category_88000000,สัตว์เลี้ยง,88000000,
+product_category_88100000,สัตว์เลี้ยง,88100000,product_category_88000000
+product_category_89000000,อาหาร,89000000,
+product_category_89550000,กาแฟ ชา และโกโก้,89550000,product_category_89000000
+product_category_89550100,กาแฟบด,89550100,product_category_89550000
+product_category_89550300,ชา,89550300,product_category_89550000
+product_category_89550800,ขิง,89550800,product_category_89550000
+product_category_89550900,คอฟฟี่เมต,89550900,product_category_89550000
+product_category_89551000,น้ำตาล,89551000,product_category_89550000
+product_category_89551100,ไมโล,89551100,product_category_89550000
+product_category_89551200,โอวัลติน,89551200,product_category_89550000
+product_category_99000000,เบ็ดเตล็ด,99000000,
+product_category_99250000,บริภัณฑ์พิธีทางศาสนา,99250000,product_category_99000000
