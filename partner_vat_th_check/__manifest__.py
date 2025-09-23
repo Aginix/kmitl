@@ -10,7 +10,6 @@
     'external_dependencies': {
         'python': ['thai-citizen-id'],
     },
-    'application': True,
     'installable': True,
     'auto_install': False,
     'license': 'LGPL-3',
