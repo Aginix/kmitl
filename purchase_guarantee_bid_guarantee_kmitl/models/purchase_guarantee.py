@@ -21,7 +21,7 @@ class PurchaseGuarantee(models.Model):
         index=True,
         store=True,
         ondelete="restrict",
-        compute_sudo=True
+        compute_sudo=False
     )
 
     is_purchase_request = fields.Boolean(
@@ -29,7 +29,7 @@ class PurchaseGuarantee(models.Model):
         compute="_compute_reference",
         store=False,
         help="True if reference is purchase.request",
-        compute_sudo=True
+        compute_sudo=False
     )
 
     @api.model

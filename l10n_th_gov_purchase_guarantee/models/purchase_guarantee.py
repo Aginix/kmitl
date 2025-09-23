@@ -23,7 +23,7 @@ class PurchaseGuarantee(models.Model):
     reference_model = fields.Char(
         compute="_compute_reference",
         store=True,
-        compute_sudo=True
+        compute_sudo=False
     )
     requisition_id = fields.Many2one(
         comodel_name="purchase.requisition",
@@ -32,7 +32,7 @@ class PurchaseGuarantee(models.Model):
         index=True,
         store=True,
         ondelete="restrict",
-        compute_sudo=True
+        compute_sudo=False
     )
     purchase_id = fields.Many2one(
         comodel_name="purchase.order",
@@ -41,7 +41,7 @@ class PurchaseGuarantee(models.Model):
         index=True,
         store=True,
         ondelete="restrict",
-        compute_sudo=True
+        compute_sudo=False
     )
     guarantee_method_id = fields.Many2one(
         comodel_name="purchase.guarantee.method",
