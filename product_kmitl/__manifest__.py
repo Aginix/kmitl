@@ -46,6 +46,7 @@ The classification system covers:
     # Data Files
     "data": [
         "data/product.category.csv",      # Thai government equipment classification master data
+        "data/product.template.csv",
     ],
     
     # Demo Data (none for production module)

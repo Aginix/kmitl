@@ -1,0 +1,1361 @@
+default_code,name,categ_id/id,detailed_type,uom_id/id,uom_po_id/id
+41100101,ตู้เย็น,product_category_41100100,product,uom.product_uom_unit,uom.product_uom_unit
+41100301,เครื่องทำน้ำเย็น  แบบขวดพลาสติกครอบ,product_category_41100300,product,uom.product_uom_unit,uom.product_uom_unit
+41100302,เครื่องทำน้ำเย็น แบบต่อท่อน้ำเย็น,product_category_41100300,product,uom.product_uom_unit,uom.product_uom_unit
+41100801,ตู้แช่,product_category_41100800,product,uom.product_uom_unit,uom.product_uom_unit
+74400103,เครื่องมินิคอมพิวเตอร์,product_category_74400100,product,uom.product_uom_unit,uom.product_uom_unit
+74400104,เครื่องเมนเฟรมคอมพิวเตอร์,product_category_74400100,product,uom.product_uom_unit,uom.product_uom_unit
+74400105,เครื่องไมโครคอมพิวเตอร์ 8 บิท,product_category_74400100,product,uom.product_uom_unit,uom.product_uom_unit
+74400106,คอมพิวเตอร์จำลอง,product_category_74400100,product,uom.product_uom_unit,uom.product_uom_unit
+74400107,คอมพิวเตอร์แบบกระเป๋าหิ้ว,product_category_74400100,product,uom.product_uom_unit,uom.product_uom_unit
+74400901,เครื่องฉายภาพจากคอมพิวเตอร์,product_category_74400900,product,uom.product_uom_unit,uom.product_uom_unit
+74400902,เครื่องเก็บภาพและจอแสดงผล,product_category_74400900,product,uom.product_uom_unit,uom.product_uom_unit
+74401001,เครื่องอ่านและบันทึกข้อมูล แบบ DISK,product_category_74401000,product,uom.product_uom_unit,uom.product_uom_unit
+74401002,เครื่องอ่านและบันทึกข้อมูล แบบ HARDDISK,product_category_74401000,product,uom.product_uom_unit,uom.product_uom_unit
+45101601,ก๊อกซิงค์คอยาว,product_category_45101600,product,uom.product_uom_unit,uom.product_uom_unit
+45101602,ก๊อกอ่างน้ำทิ้งโลหะ (ปัสสาวะน้ำทิ้ง K 1200),product_category_45101600,product,uom.product_uom_unit,uom.product_uom_unit
+45101603,"ก๊อกโถปัสสาวะแบบกด 1/2 (UF45 , AE197)",product_category_45101600,product,uom.product_uom_unit,uom.product_uom_unit
+45101604,ก๊อกสนาม 1/2 นิ้ว,product_category_45101600,product,uom.product_uom_unit,uom.product_uom_unit
+45101605,ก๊อกอ่างล้างหน้า,product_category_45101600,product,uom.product_uom_unit,uom.product_uom_unit
+45101606,ก๊อกบอลวาล์ว 1/2 นิ้ว (4 หุน),product_category_45101600,product,uom.product_uom_unit,uom.product_uom_unit
+45101607,ก๊อกบอลวาล์ว 3/4 นิ้ว (6 หุน),product_category_45101600,product,uom.product_uom_unit,uom.product_uom_unit
+45101608,ก๊อกน้ำแบบหัวแก้ว,product_category_45101600,product,uom.product_uom_unit,uom.product_uom_unit
+45101609,ก๊อกบอลวาล์วกุญแจ 1/2 นิ้ว,product_category_45101600,product,uom.product_uom_unit,uom.product_uom_unit
+45101610,อะไหล่ชักโครก,product_category_45101600,product,uom.product_uom_unit,uom.product_uom_unit
+45101611,ชุดน้ำทิ้ง,product_category_45101600,product,uom.product_uom_unit,uom.product_uom_unit
+45101612,ถ้วยทองเหลืองอุปกรณ์ปัสสาวะชาย,product_category_45101600,product,uom.product_uom_unit,uom.product_uom_unit
+45101613,ฟลัชวาล์วชักโครก (CF 50 L),product_category_45101600,product,uom.product_uom_unit,uom.product_uom_unit
+45101614,สายน้ำดี ยาว 14 นิ้ว,product_category_45101600,product,uom.product_uom_unit,uom.product_uom_unit
+45101615,สายน้ำดี ยาว 16 นิ้ว,product_category_45101600,product,uom.product_uom_unit,uom.product_uom_unit
+45101616,สายน้ำดี ยาว 18 นิ้ว,product_category_45101600,product,uom.product_uom_unit,uom.product_uom_unit
+45101617,ลูกลอย 4 หุน,product_category_45101600,product,uom.product_uom_unit,uom.product_uom_unit
+46100801,เครื่องกรองน้ำ,product_category_46100800,product,uom.product_uom_unit,uom.product_uom_unit
+46100802,เครื่องทำน้ำเย็นบริสุทธิ์,product_category_46100800,product,uom.product_uom_unit,uom.product_uom_unit
+46100901,เทปพันเกลียว,product_category_46100900,product,uom.product_uom_unit,uom.product_uom_unit
+46200101,เครื่องกลั่นน้ำ,product_category_46200100,product,uom.product_uom_unit,uom.product_uom_unit
+46200102,ชุดกลั่น  DISTILLATION  SET,product_category_46200100,product,uom.product_uom_unit,uom.product_uom_unit
+46300501,เครื่องยิงสิ่งอุดตัน แบบใช้ลม,product_category_46300500,product,uom.product_uom_unit,uom.product_uom_unit
+46300502,เครื่องยิงสิ่งอุดตัน  แบบขดลวด,product_category_46300500,product,uom.product_uom_unit,uom.product_uom_unit
+46300503,เครื่องป้องกัน  และกำจัดตะกรันในท่อน้ำ,product_category_46300500,product,uom.product_uom_unit,uom.product_uom_unit
+46320101,เครื่องฉีดน้ำขนาด 100 บาร์,product_category_46320100,product,uom.product_uom_unit,uom.product_uom_unit
+46320201,ชุดระบบชลประทานในแปลงพืช,product_category_46320200,product,uom.product_uom_unit,uom.product_uom_unit
+47300801,หัวฉีดชำระ,product_category_47300800,product,uom.product_uom_unit,uom.product_uom_unit
+47300802,หัวฉีดชำระพร้อมสาย,product_category_47300800,product,uom.product_uom_unit,uom.product_uom_unit
+49400401,บันได แบบพับ มี 4 ขา,product_category_49400400,product,uom.product_uom_unit,uom.product_uom_unit
+49400402,บันได แบบเลื่อน มี 2 ขา,product_category_49400400,product,uom.product_uom_unit,uom.product_uom_unit
+49400501,เครื่องพ่นสี,product_category_49400500,product,uom.product_uom_unit,uom.product_uom_unit
+49400502,กาพ่นสี,product_category_49400500,product,uom.product_uom_unit,uom.product_uom_unit
+51200501,ประแจแหวนและปากตาย,product_category_51200500,product,uom.product_uom_unit,uom.product_uom_unit
+53150101,สกรูเทเปอร์ 3/4 นิ้ว (3/16*3/4 นิ้ว),product_category_53150100,product,uom.product_uom_unit,uom.product_uom_unit
+53150102,สกรูเทเปอร์ 1 นิ้ว (3/16*1 นิ้ว),product_category_53150100,product,uom.product_uom_unit,uom.product_uom_unit
+53400801,สายยู 2 นิ้ว,product_category_53400800,product,uom.product_uom_unit,uom.product_uom_unit
+53400802,สายยู 3 นิ้ว,product_category_53400800,product,uom.product_uom_unit,uom.product_uom_unit
+53400803,สายยู 3 ตอน,product_category_53400800,product,uom.product_uom_unit,uom.product_uom_unit
+53401001,มือจับ,product_category_53401000,product,uom.product_uom_unit,uom.product_uom_unit
+53401101,บานพับประตู 4 นิ้ว,product_category_53401100,product,uom.product_uom_unit,uom.product_uom_unit
+53401201,กลอน 4 นิ้ว,product_category_53401200,product,uom.product_uom_unit,uom.product_uom_unit
+53401202,กลอน 5 นิ้ว,product_category_53401200,product,uom.product_uom_unit,uom.product_uom_unit
+53401203,กลอน 6 นิ้ว,product_category_53401200,product,uom.product_uom_unit,uom.product_uom_unit
+53401204,กลอนห้องน้ำ,product_category_53401200,product,uom.product_uom_unit,uom.product_uom_unit
+53401301,กุญแจโต๊ะทำงาน,product_category_53401300,product,uom.product_uom_unit,uom.product_uom_unit
+53401302,กุญแจประตูอลูมิเนียม,product_category_53401300,product,uom.product_uom_unit,uom.product_uom_unit
+53401601,ลูกบิดประตู,product_category_53401600,product,uom.product_uom_unit,uom.product_uom_unit
+53500701,กระดาษทรายขัดไม้,product_category_53500700,product,uom.product_uom_unit,uom.product_uom_unit
+53500702,กระดาษทรายขัดเหล็ก,product_category_53500700,product,uom.product_uom_unit,uom.product_uom_unit
+55300401,ไม้อัดยาง 10 มม.,product_category_55300400,product,uom.product_uom_unit,uom.product_uom_unit
+55300402,ไม้อัดยาง 20  มม.,product_category_55300400,product,uom.product_uom_unit,uom.product_uom_unit
+55300403,ไม้อัดยาง 4  มม.,product_category_55300400,product,uom.product_uom_unit,uom.product_uom_unit
+56700101,ประตูกล,product_category_56700100,product,uom.product_uom_unit,uom.product_uom_unit
+58050201,เครื่องโทรศัพท์ แบบหมุน,product_category_58050200,product,uom.product_uom_unit,uom.product_uom_unit
+58050202,เครื่องโทรศัพท์  แบบกด,product_category_58050200,product,uom.product_uom_unit,uom.product_uom_unit
+58050203,เครื่องโทรศัพท์  แบบมือถือ,product_category_58050200,product,uom.product_uom_unit,uom.product_uom_unit
+58051001,ชุมสายโทรศัพท์,product_category_58051000,product,uom.product_uom_unit,uom.product_uom_unit
+58200101,เครื่องขยายสัญญาณ  หรือ  แอมพลิฟาย (AMPLIFIER),product_category_58200100,product,uom.product_uom_unit,uom.product_uom_unit
+58201301,"เครื่องมอนิเตอร์ภาพโทรทัศน์ (TV,VIDEO  MONITOR)",product_category_58201300,product,uom.product_uom_unit,uom.product_uom_unit
+58201302,เครื่องกระจายสัญญาณ,product_category_58201300,product,uom.product_uom_unit,uom.product_uom_unit
+58201303,เครื่องเลือกสัญญาณภาพและเสียง,product_category_58201300,product,uom.product_uom_unit,uom.product_uom_unit
+58201501,เครื่องมือตรวจสอบหลอดภาพโทรทัศน์,product_category_58201500,product,uom.product_uom_unit,uom.product_uom_unit
+58201502,เครื่องมือวัดความเข้มของสนามสัญญาณโทรทัศน์,product_category_58201500,product,uom.product_uom_unit,uom.product_uom_unit
+58201503,เครื่องถ่ายทอดภาพขาว- ดำ,product_category_58201500,product,uom.product_uom_unit,uom.product_uom_unit
+58201504,เครื่องถ่ายทอดภาพสี,product_category_58201500,product,uom.product_uom_unit,uom.product_uom_unit
+58201601,เครื่องรับส่งวิทยุ (RADIO TRNSCEIVER),product_category_58201600,product,uom.product_uom_unit,uom.product_uom_unit
+58201602,เครื่องหาทิศทางคลื่นวิทยุ (DIRECTION  FINDER),product_category_58201600,product,uom.product_uom_unit,uom.product_uom_unit
+58201603,ตัวลดทอนสัญญาณวิทยุ  (ATTENUATOR),product_category_58201600,product,uom.product_uom_unit,uom.product_uom_unit
+58201604,เครื่องวัดอัตราคลื่น,product_category_58201600,product,uom.product_uom_unit,uom.product_uom_unit
+58201605,ตู้ชาร์ทไฟ,product_category_58201600,product,uom.product_uom_unit,uom.product_uom_unit
+58201606,วิทยุติดตามตัว,product_category_58201600,product,uom.product_uom_unit,uom.product_uom_unit
+58201701,เครื่องมอดูเลทพัลซ์ (PLUSE  MODULATOR),product_category_58201700,product,uom.product_uom_unit,uom.product_uom_unit
+58201702,ชุดปฏิบัติการับสัญญาณดาวเทียม,product_category_58201700,product,uom.product_uom_unit,uom.product_uom_unit
+58201703,เครื่องโทรภาพ  หรือโทรสาร FAX,product_category_58201700,product,uom.product_uom_unit,uom.product_uom_unit
+58201704,อุปกรณ์แปลงสัญญาณให้คอมฯส่งผ่านโทรศัพท์ 2400EXT,product_category_58201700,product,uom.product_uom_unit,uom.product_uom_unit
+58201705,อุปกรณ์แปลงสัญญาณให้คอมฯส่งผ่านโทรศัพท์ 14400EXT,product_category_58201700,product,uom.product_uom_unit,uom.product_uom_unit
+58300701,อินเตอร์คอม,product_category_58300700,product,uom.product_uom_unit,uom.product_uom_unit
+59200101,ฟิวส์กระบอกใหญ่ (30 A 600 V),product_category_59200100,product,uom.product_uom_unit,uom.product_uom_unit
+59200102,ฟิวส์กระบอกเล็ก (30 A 250 V),product_category_59200100,product,uom.product_uom_unit,uom.product_uom_unit
+59200103,ฟิวส์แก้ว 3 แอมป์,product_category_59200100,product,uom.product_uom_unit,uom.product_uom_unit
+59200104,ฟิวส์แก้ว 5 แอมป์,product_category_59200100,product,uom.product_uom_unit,uom.product_uom_unit
+59250101, SARETY  SWITCH,product_category_59250100,product,uom.product_uom_unit,uom.product_uom_unit
+59350401,ปลั๊ก 3 ตา ไม่มีสายพ่วง,product_category_59350400,product,uom.product_uom_unit,uom.product_uom_unit
+59350402,ปลั๊กตัวเมีย 3 ช่อง,product_category_59350400,product,uom.product_uom_unit,uom.product_uom_unit
+59350403,ปลั๊กตัวเมีย (2 P ),product_category_59350400,product,uom.product_uom_unit,uom.product_uom_unit
+59350404,ปลั๊กตัวเมีย (3 P ),product_category_59350400,product,uom.product_uom_unit,uom.product_uom_unit
+59350405,ปลั๊กตัวผู้ (แบน),product_category_59350400,product,uom.product_uom_unit,uom.product_uom_unit
+59350406,ปลั๊กตัวเมีย 2 ช่อง,product_category_59350400,product,uom.product_uom_unit,uom.product_uom_unit
+59350407,ปลั๊กตัวผู้ (กลม),product_category_59350400,product,uom.product_uom_unit,uom.product_uom_unit
+59350408,ปลั๊กตัวเมียแบบมีกราวน์ 2 ช่อง,product_category_59350400,product,uom.product_uom_unit,uom.product_uom_unit
+59350409,ปลั๊กคอมพิวเตอร์ 3 เมตร,product_category_59350400,product,uom.product_uom_unit,uom.product_uom_unit
+59350410,ปลั๊กคอมพิวเตอร์ 5 เมตร,product_category_59350400,product,uom.product_uom_unit,uom.product_uom_unit
+59350411,ปลั๊กอเนกประสงค์ (ตลับสายไฟ),product_category_59350400,product,uom.product_uom_unit,uom.product_uom_unit
+59350601,กล่องลอย (บล๊อคลอย),product_category_59350600,product,uom.product_uom_unit,uom.product_uom_unit
+59350602,หน้ากากพร้อมกล่อง,product_category_59350600,product,uom.product_uom_unit,uom.product_uom_unit
+59350603,ฝาพลาสติก 1 ช่อง,product_category_59350600,product,uom.product_uom_unit,uom.product_uom_unit
+59350604,ฝาพลาสติก 2 ช่อง,product_category_59350600,product,uom.product_uom_unit,uom.product_uom_unit
+59350605,ฝาพลาสติก 3 ช่อง,product_category_59350600,product,uom.product_uom_unit,uom.product_uom_unit
+59350606,ฝาอลูมิเนียม 4 ช่อง,product_category_59350600,product,uom.product_uom_unit,uom.product_uom_unit
+59450601,แมกเนติก คอนแทคเตอร์,product_category_59450600,product,uom.product_uom_unit,uom.product_uom_unit
+59650101,ไมโครโฟนมีสาย,product_category_59650100,product,uom.product_uom_unit,uom.product_uom_unit
+59650102,ไม่โครโฟนไร้สาย (ลอย),product_category_59650100,product,uom.product_uom_unit,uom.product_uom_unit
+59650103,ไมโครโฟนแบบหนีบเสื้อ,product_category_59650100,product,uom.product_uom_unit,uom.product_uom_unit
+59650104,เครื่องช่วยพูดชนิดไร้สาย,product_category_59650100,product,uom.product_uom_unit,uom.product_uom_unit
+59650201,ลำโพงแบบกรวยโลหะ,product_category_59650200,product,uom.product_uom_unit,uom.product_uom_unit
+59650202,ลำโพงแบบกรวยกระดาษ,product_category_59650200,product,uom.product_uom_unit,uom.product_uom_unit
+59650601,ขาตั้งไมโครโฟน  แบบตั้งโต๊ะ,product_category_59650600,product,uom.product_uom_unit,uom.product_uom_unit
+59650602,ขาตั้งไมโครโฟน  แบบตั้งพื้น,product_category_59650600,product,uom.product_uom_unit,uom.product_uom_unit
+59650603,เครื่อง  MIXER สำหรับไมโครโฟน,product_category_59650600,product,uom.product_uom_unit,uom.product_uom_unit
+59650801,หูฟัง,product_category_59650800,product,uom.product_uom_unit,uom.product_uom_unit
+59650901,เครื่องขยายเสียงแบบมือถือ  หรือสะพายไหล่,product_category_59650900,product,uom.product_uom_unit,uom.product_uom_unit
+59650902,เครื่องบันทึกเสียงขนาด 100 คน,product_category_59650900,product,uom.product_uom_unit,uom.product_uom_unit
+59650903,เครื่องบันทึกเสียงขนาด 200 คน,product_category_59650900,product,uom.product_uom_unit,uom.product_uom_unit
+59650904,เครื่องขยายเสียงเพื่อการประชุมและใช้งานกลางแจ้ง,product_category_59650900,product,uom.product_uom_unit,uom.product_uom_unit
+59651001,ชุดเครื่องเสียง,product_category_59651000,product,uom.product_uom_unit,uom.product_uom_unit
+59651002,ระบบกระจายเสียงสาธารณะ,product_category_59651000,product,uom.product_uom_unit,uom.product_uom_unit
+59651101,เครื่องบันทึกเสียงแบบตั้งโต๊ะ,product_category_59651100,product,uom.product_uom_unit,uom.product_uom_unit
+59651102,เครื่องบันทึกเสียงแบบกระเป๋าหิ้ว  ซาวด์อเบาด์,product_category_59651100,product,uom.product_uom_unit,uom.product_uom_unit
+59651103,เครื่องบันทึกเสียงแบบ OPEN REEL,product_category_59651100,product,uom.product_uom_unit,uom.product_uom_unit
+59651201,เครื่องช่วยสอนภาษาในห้องซาวด์แลป,product_category_59651200,product,uom.product_uom_unit,uom.product_uom_unit
+59651202,"ชุดอุปกรณ์เพื่อการศึกษา (เทป,หนังสือ)",product_category_59651200,product,uom.product_uom_unit,uom.product_uom_unit
+59651301,เครื่องแล่นแผ่นเสียง,product_category_59651300,product,uom.product_uom_unit,uom.product_uom_unit
+59651401,เครื่องเล่นเทปใบ้  CASSETTE  TAPE  DECK,product_category_59651400,product,uom.product_uom_unit,uom.product_uom_unit
+59651402,เครื่องเล่น  CD,product_category_59651400,product,uom.product_uom_unit,uom.product_uom_unit
+59700201,เทปพันสายไฟ,product_category_59700200,product,uom.product_uom_unit,uom.product_uom_unit
+59750201,รางโทรศัพท์ เบอร์ 1 (รางหลังเต่า),product_category_59750200,product,uom.product_uom_unit,uom.product_uom_unit
+59750202,รางโทรศัพท์ เบอร์ 2 (รางหลังเต่า),product_category_59750200,product,uom.product_uom_unit,uom.product_uom_unit
+59750203,รางโทรศัพท์ เบอร์ 3 (รางหลังเต่า),product_category_59750200,product,uom.product_uom_unit,uom.product_uom_unit
+59750204,รางโทรศัพท์ เบอร์ 7 (รางหลังเต่า),product_category_59750200,product,uom.product_uom_unit,uom.product_uom_unit
+59750205,ราง EM 1632 (1.6*3.2 ซม.),product_category_59750200,product,uom.product_uom_unit,uom.product_uom_unit
+59750206,ราง EM 1225 (1.2*2.5 ซม.),product_category_59750200,product,uom.product_uom_unit,uom.product_uom_unit
+59750207,ราง EM 2040 (2*4 ซม.),product_category_59750200,product,uom.product_uom_unit,uom.product_uom_unit
+59750208,ราง EM (1.6*1.6 ซม.),product_category_59750200,product,uom.product_uom_unit,uom.product_uom_unit
+59750601,เต๋าต่อสาย 10 ตร.มม.,product_category_59750600,product,uom.product_uom_unit,uom.product_uom_unit
+59750602,เต๋าต่อสาย 6 ตร.มม.,product_category_59750600,product,uom.product_uom_unit,uom.product_uom_unit
+41200101,เครื่องปรับอากาศ แบบติดหน้าต่าง,product_category_41200100,product,uom.product_uom_unit,uom.product_uom_unit
+41200102,เครื่องปรับอากาศ  แบบแยกส่วน,product_category_41200100,product,uom.product_uom_unit,uom.product_uom_unit
+41200103,เครื่องปรับอากาศ  รถยนต์,product_category_41200100,product,uom.product_uom_unit,uom.product_uom_unit
+41200104,เครื่องปรับอากาศ แบบอื่น ๆ,product_category_41200100,product,uom.product_uom_unit,uom.product_uom_unit
+41200201,FAN  COIL,product_category_41200200,product,uom.product_uom_unit,uom.product_uom_unit
+41400201,พัดลม  แบบตั้งพื้น,product_category_41400200,product,uom.product_uom_unit,uom.product_uom_unit
+41400202,พัดลมแบบติดเพดาน,product_category_41400200,product,uom.product_uom_unit,uom.product_uom_unit
+41400203,พัดลม  แบบตั้งโต๊ะ,product_category_41400200,product,uom.product_uom_unit,uom.product_uom_unit
+41400204,พัดลมระบายอากาศ,product_category_41400200,product,uom.product_uom_unit,uom.product_uom_unit
+41400205,พัดลมติดรถยนต์,product_category_41400200,product,uom.product_uom_unit,uom.product_uom_unit
+41400206,พัดลมดูดควัน,product_category_41400200,product,uom.product_uom_unit,uom.product_uom_unit
+42100701,เครื่องดับเพลิง,product_category_42100700,product,uom.product_uom_unit,uom.product_uom_unit
+42200101,อุปกรณ์ดำน้ำ,product_category_42200100,product,uom.product_uom_unit,uom.product_uom_unit
+43100101,ปั๊มลม,product_category_43100100,product,uom.product_uom_unit,uom.product_uom_unit
+43100102,ชุดเครื่องอัดอากาศ,product_category_43100100,product,uom.product_uom_unit,uom.product_uom_unit
+43300101,เครื่องสูบน้ำ  แบบลูกสูบหรือแกนชัก,product_category_43300100,product,uom.product_uom_unit,uom.product_uom_unit
+43300102,เครื่องสูบน้ำ  แบบหอยโข่งหรือใบพัด,product_category_43300100,product,uom.product_uom_unit,uom.product_uom_unit
+44300101,เตาหลอมโลหะด้วยความร้อนสูง,product_category_44300100,product,uom.product_uom_unit,uom.product_uom_unit
+44300301,เตาเผาเซรามิก  แบบไฟฟ้า,product_category_44300300,product,uom.product_uom_unit,uom.product_uom_unit
+44300302,เตาเผาเซรามิก  แบบแก๊ส,product_category_44300300,product,uom.product_uom_unit,uom.product_uom_unit
+44300303,เตาเผาสารตัวอย่างสารเคมี FURNACE,product_category_44300300,product,uom.product_uom_unit,uom.product_uom_unit
+44600101,เครื่องฟอกอากาศ,product_category_44600100,product,uom.product_uom_unit,uom.product_uom_unit
+44600102,เครื่องผลิตโอโซน,product_category_44600100,product,uom.product_uom_unit,uom.product_uom_unit
+45100301,"อ่างล้างหน้า,อ่างล้างมือ",product_category_45100300,product,uom.product_uom_unit,uom.product_uom_unit
+61451201,สายไฟ THW 1*6 (1 ขด = 100 เมตร),product_category_61451200,product,uom.product_uom_unit,uom.product_uom_unit
+61451202,สายไฟ 2*1.5 VFF (1 ขด = 100 เมตร),product_category_61451200,product,uom.product_uom_unit,uom.product_uom_unit
+61451203,สายไฟ VCT 2*2.5,product_category_61451200,product,uom.product_uom_unit,uom.product_uom_unit
+61451204,สายไฟ TWH 1.5 ตร.มม.,product_category_61451200,product,uom.product_uom_unit,uom.product_uom_unit
+61451205,สายไฟ THW 4 ตร.มม.,product_category_61451200,product,uom.product_uom_unit,uom.product_uom_unit
+61451206,สายไฟ 2*1.5 VAF,product_category_61451200,product,uom.product_uom_unit,uom.product_uom_unit
+61451207,สายไฟ 2*1 VAF,product_category_61451200,product,uom.product_uom_unit,uom.product_uom_unit
+61451208,สายไฟ 2*2.5 VAF,product_category_61451200,product,uom.product_uom_unit,uom.product_uom_unit
+61451209,สายไฟ TWH 2.5 ตร.มม.,product_category_61451200,product,uom.product_uom_unit,uom.product_uom_unit
+61451210,สายไฟ VAF 2*4,product_category_61451200,product,uom.product_uom_unit,uom.product_uom_unit
+61451211,สายไฟ VFF 2*2.5,product_category_61451200,product,uom.product_uom_unit,uom.product_uom_unit
+61451212,สายไฟ VFF 2*1,product_category_61451200,product,uom.product_uom_unit,uom.product_uom_unit
+61451213,สายไฟ VFF 2*1.5,product_category_61451200,product,uom.product_uom_unit,uom.product_uom_unit
+61451301,สายลำโพงใหญ่ ( 1 ขด = 70 เมตร),product_category_61451300,product,uom.product_uom_unit,uom.product_uom_unit
+61451302,สายลำโพงเล็ก (1 ขด = 70 เมตร),product_category_61451300,product,uom.product_uom_unit,uom.product_uom_unit
+62100701,ไฟฉุกเฉิน,product_category_62100700,product,uom.product_uom_unit,uom.product_uom_unit
+62100702,ป้ายไฟคอมพิวเตอร์,product_category_62100700,product,uom.product_uom_unit,uom.product_uom_unit
+62301201,ไฟส่องสนาม (SPORT LIGHT),product_category_62301200,product,uom.product_uom_unit,uom.product_uom_unit
+62400101,หลอดเครื่องฉายภาพข้ามศรีษะ(ENX 82 V 360 W),product_category_62400100,product,uom.product_uom_unit,uom.product_uom_unit
+62400102,หลอดอโอดีน 1500 W (Halogen Lampj  220 V),product_category_62400100,product,uom.product_uom_unit,uom.product_uom_unit
+62400103,หลอดเครื่องฉายภาพข้ามศรีษะ 36 V 400 W (3 M รุ่น 9550),product_category_62400100,product,uom.product_uom_unit,uom.product_uom_unit
+62400104,หลอดเครื่องฉายภาพข้ามศรีษะ 24 V 275 W (3 M รุ่น 9200),product_category_62400100,product,uom.product_uom_unit,uom.product_uom_unit
+62400105,หลอดซิลวาเนีย 230 V 650 W (Projector Lamp),product_category_62400100,product,uom.product_uom_unit,uom.product_uom_unit
+62400106,หลอดโอเวอร์เฮด 24 V 250 W (Projectoe Lamp),product_category_62400100,product,uom.product_uom_unit,uom.product_uom_unit
+62400107,โคมฟิลิปท์เซ็ท 18 วัตต์,product_category_62400100,product,uom.product_uom_unit,uom.product_uom_unit
+62400108,โคมฟิลิปท์เซ้ท 36 วัตต์,product_category_62400100,product,uom.product_uom_unit,uom.product_uom_unit
+62400109,โคมนีออนอกไก่ 1*36 วัตต์,product_category_62400100,product,uom.product_uom_unit,uom.product_uom_unit
+62400110,โคมนีออนอกไก่ 2*36 วัตต์,product_category_62400100,product,uom.product_uom_unit,uom.product_uom_unit
+62400111,หลอดแสงจันทร์ 400 วัตต์,product_category_62400100,product,uom.product_uom_unit,uom.product_uom_unit
+62400112,หลอดแสงจันทร์ 125 วัตต์,product_category_62400100,product,uom.product_uom_unit,uom.product_uom_unit
+62400201,หลอดไฟกลม 100 วัตต์ (ขั้วเกลียว),product_category_62400200,product,uom.product_uom_unit,uom.product_uom_unit
+62400202,หลอดไฟกลม 60 วัตต์ (ขั้วเกลียว),product_category_62400200,product,uom.product_uom_unit,uom.product_uom_unit
+62400203,หลอดไฟกลม 5 วัตต์ (ขั้วเกลียว),product_category_62400200,product,uom.product_uom_unit,uom.product_uom_unit
+62400204,หลอดไฟกลม 100 วัตต์ (ขั้วเขี้ยว),product_category_62400200,product,uom.product_uom_unit,uom.product_uom_unit
+62400205,หลอดนีออน 10 วัตต์,product_category_62400200,product,uom.product_uom_unit,uom.product_uom_unit
+62400301,หลอดฟลูออเรสเซนต์ 36 วัตต์,product_category_62400300,product,uom.product_uom_unit,uom.product_uom_unit
+62400302,หลอดฟลูออเรสเซนต์ 18 วัตต์,product_category_62400300,product,uom.product_uom_unit,uom.product_uom_unit
+62400303,โคมฟลูออเรสเซนต์ขาสปริง 36 วัตต์,product_category_62400300,product,uom.product_uom_unit,uom.product_uom_unit
+62400304,โคมฟลูออเรสเซนต์ขาสปริง 18 วัตต์ (1*18 วัตต์),product_category_62400300,product,uom.product_uom_unit,uom.product_uom_unit
+62400305,หลอดฟลูออเรสเซนต์ 32 วัตต์,product_category_62400300,product,uom.product_uom_unit,uom.product_uom_unit
+62500101,สตาร์ทเตอร์ 18 วัตต์,product_category_62500100,product,uom.product_uom_unit,uom.product_uom_unit
+62500102,สตาร์ทเตอร์ 36 วัตต์,product_category_62500100,product,uom.product_uom_unit,uom.product_uom_unit
+62500701,บาลลาสต์ไฟฟ้า 18 วัตต์,product_category_62500700,product,uom.product_uom_unit,uom.product_uom_unit
+62500702,บาลลาสต์ไฟฟ้า 32 วัตต์,product_category_62500700,product,uom.product_uom_unit,uom.product_uom_unit
+62500703,บาลลาสต์ไฟฟ้า 36 วัตต์,product_category_62500700,product,uom.product_uom_unit,uom.product_uom_unit
+62500704,บาลลาสต์ไฮพาวเวอร์,product_category_62500700,product,uom.product_uom_unit,uom.product_uom_unit
+62500801,ขาหลอดนีออน,product_category_62500800,product,uom.product_uom_unit,uom.product_uom_unit
+62500802,ขาหลอดนีออนสปริง,product_category_62500800,product,uom.product_uom_unit,uom.product_uom_unit
+63100401,ระบบป้องกันหนังสือหาย,product_category_63100400,product,uom.product_uom_unit,uom.product_uom_unit
+63500801,เครื่องตัดไฟอัตโนมัติ (เซฟทีคัท),product_category_63500800,product,uom.product_uom_unit,uom.product_uom_unit
+65300401,หม้อนึ่งฆ่าเชื้อโรค,product_category_65300400,product,uom.product_uom_unit,uom.product_uom_unit
+65300402,หม้อต้มเครื่องมือแพทย์,product_category_65300400,product,uom.product_uom_unit,uom.product_uom_unit
+65301201,เครื่องช่วยหูฟัง,product_category_65301200,product,uom.product_uom_unit,uom.product_uom_unit
+65301301,เครื่องวัดความดับโลหิต,product_category_65301300,product,uom.product_uom_unit,uom.product_uom_unit
+65301401,ตู้ยา,product_category_65301400,product,uom.product_uom_unit,uom.product_uom_unit
+65301501,เครื่องมือตรวจหู-ตา,product_category_65301500,product,uom.product_uom_unit,uom.product_uom_unit
+66220101,เครื่องวัดกรด-ด่าง (PH METER),product_category_66220100,product,uom.product_uom_unit,uom.product_uom_unit
+66220102,เครื่องวัดความเข้มข้นของสารละลาย (EC METER),product_category_66220100,product,uom.product_uom_unit,uom.product_uom_unit
+66220103,เครื่องควบคุมกรด-ด่าง (PH   CONTROLLER),product_category_66220100,product,uom.product_uom_unit,uom.product_uom_unit
+66220104,เครื่องควบคุมความเข้มข้นของสารละลาย,product_category_66220100,product,uom.product_uom_unit,uom.product_uom_unit
+66220105,เครื่องวิเคราะห์สารพิษตกค้าง,product_category_66220100,product,uom.product_uom_unit,uom.product_uom_unit
+66220106,SPLIT/SPLITLESS  SAMPLE  INJECTOR,product_category_66220100,product,uom.product_uom_unit,uom.product_uom_unit
+66220107,ELECTRON CAPTURE  DETECTOR AND  INJECTION UNIT,product_category_66220100,product,uom.product_uom_unit,uom.product_uom_unit
+66220108,"เครื่องบันทึก,ประมวลวิเคราะห์  DATA PROCESSOR",product_category_66220100,product,uom.product_uom_unit,uom.product_uom_unit
+66220109,ชุดเครื่องวิเคราะห์น้ำ,product_category_66220100,product,uom.product_uom_unit,uom.product_uom_unit
+66220110,ชุดอิเลคโทรด ELECTRODES,product_category_66220100,product,uom.product_uom_unit,uom.product_uom_unit
+66220111,ชุดวิเคราะห์หาขนาดของอนุภาค,product_category_66220100,product,uom.product_uom_unit,uom.product_uom_unit
+66220112,ชุดยูวี วิซสเปิลสเปคโทรโฟโทรมิเตอร์,product_category_66220100,product,uom.product_uom_unit,uom.product_uom_unit
+66220113,เครื่องสเปคโทรนิค 21  (SECTRONIC  21),product_category_66220100,product,uom.product_uom_unit,uom.product_uom_unit
+66220114,เครื่องวิเคราะห์ธาตุ ATOMIC  OBSORPTION  SPEC,product_category_66220100,product,uom.product_uom_unit,uom.product_uom_unit
+66220115,เครื่องมือแยกและวิเคราะห์สาร,product_category_66220100,product,uom.product_uom_unit,uom.product_uom_unit
+66220116,เครื่องระเหยสารระบบสูญญากาศ,product_category_66220100,product,uom.product_uom_unit,uom.product_uom_unit
+66220117,เครื่องวัดอุรหภูมิสารละลาย THERMOMETER,product_category_66220100,product,uom.product_uom_unit,uom.product_uom_unit
+66220118,เครื่องวัดความร้นของการระเบิด BOMB-CALORIMETER,product_category_66220100,product,uom.product_uom_unit,uom.product_uom_unit
+66220119,อ่างเครื่องวัดความหนืดที่อุณหภูมิคงที่,product_category_66220100,product,uom.product_uom_unit,uom.product_uom_unit
+66220120,เครื่องวัดจุดหลอมเหลว,product_category_66220100,product,uom.product_uom_unit,uom.product_uom_unit
+66220121,เครื่องทำน้ำแข็งแห้ง  DRY-ICE  FREEZE,product_category_66220100,product,uom.product_uom_unit,uom.product_uom_unit
+66220201,เครื่องรวมเซลล์โดยวิธีทางไฟฟ้า,product_category_66220200,product,uom.product_uom_unit,uom.product_uom_unit
+66220202,เครื่องปั่นแยกสารพร้อมชุดอบแห้ง,product_category_66220200,product,uom.product_uom_unit,uom.product_uom_unit
+66220203,ตู้ควบคุมอุณหภูมิพร้อมเครื่องเขย่า,product_category_66220200,product,uom.product_uom_unit,uom.product_uom_unit
+66220204,ตู้ควบคุมอุณหภูมิและความชื้นสัมพันธ์,product_category_66220200,product,uom.product_uom_unit,uom.product_uom_unit
+66220205,อุปกรณ์เครื่องไฮเพอร์ฟอร์แมนซ์ลิควิดโรมาโตรฯ,product_category_66220200,product,uom.product_uom_unit,uom.product_uom_unit
+66220206,SPECTROPHOTOMETER,product_category_66220200,product,uom.product_uom_unit,uom.product_uom_unit
+66220207,เครื่องล้างหลอดทดสอบแบบหมุน,product_category_66220200,product,uom.product_uom_unit,uom.product_uom_unit
+66220208,เครื่องล้างหลอด  (PIPETTE  WASHER),product_category_66220200,product,uom.product_uom_unit,uom.product_uom_unit
+66220209,เครื่องชั่งไฟฟ้า  (ELECTRONIC  BALANCE),product_category_66220200,product,uom.product_uom_unit,uom.product_uom_unit
+66220210,เครื่องปั่นแยกสารด้วยความเร็วสูง,product_category_66220200,product,uom.product_uom_unit,uom.product_uom_unit
+66220211,เครื่องสอนวิชาว่าด้วยการถ่ายทอดทางพันธุกรรม,product_category_66220200,product,uom.product_uom_unit,uom.product_uom_unit
+66220212,ชั้นเพาะชำ (GROWTH  CHAMBER),product_category_66220200,product,uom.product_uom_unit,uom.product_uom_unit
+66220213,เครื่องต้มกลั่นและแยกก๊าซไนโตรเจน,product_category_66220200,product,uom.product_uom_unit,uom.product_uom_unit
+66220301,เครื่องมือวัดอิมพิแดนซ์,product_category_66220300,product,uom.product_uom_unit,uom.product_uom_unit
+66220302,เครื่องวัดตัวแปรเอส,product_category_66220300,product,uom.product_uom_unit,uom.product_uom_unit
+66220303,ชุดทดลองแฟรงด์เอิร์ตซ์,product_category_66220300,product,uom.product_uom_unit,uom.product_uom_unit
+66220304,ชุดทดลองการเคลื่อนที่เชิงมุม,product_category_66220300,product,uom.product_uom_unit,uom.product_uom_unit
+66220305,ชุดทดลองเคลื่อนที่แบบฮาร์โมนิค,product_category_66220300,product,uom.product_uom_unit,uom.product_uom_unit
+66220306,ชุดทดลองศึกษาการหมุนของอิเลคตรอน,product_category_66220300,product,uom.product_uom_unit,uom.product_uom_unit
+66220307,ชุดทดลองการวัดค่าแรงเนื่องจากกระแสไฟฟ้า,product_category_66220300,product,uom.product_uom_unit,uom.product_uom_unit
+66220308,แหล่งกำเนิดแสง,product_category_66220300,product,uom.product_uom_unit,uom.product_uom_unit
+66220309,ชุดวิเคราะห์รังสี,product_category_66220300,product,uom.product_uom_unit,uom.product_uom_unit
+66220310,เครื่องวัดอุณหภูมิสูง,product_category_66220300,product,uom.product_uom_unit,uom.product_uom_unit
+66220311,ชุดแหล่งกำเนิดเลเซอร์,product_category_66220300,product,uom.product_uom_unit,uom.product_uom_unit
+66220312,เครื่องควบคุมอุณหภูมิต่ำ,product_category_66220300,product,uom.product_uom_unit,uom.product_uom_unit
+66220313,ชุดปฏิการฟิสิกส์เบื้องต้น,product_category_66220300,product,uom.product_uom_unit,uom.product_uom_unit
+66220314,เครื่องวัดอัตราความสิ้นเปลืองของน้ำ,product_category_66220300,product,uom.product_uom_unit,uom.product_uom_unit
+66220315,เครื่องตรวจสอบไอเสีย,product_category_66220300,product,uom.product_uom_unit,uom.product_uom_unit
+66220316,เครื่องวัดไฮดรอลิค,product_category_66220300,product,uom.product_uom_unit,uom.product_uom_unit
+66220401,เครื่องชั่งไฟฟ้าอิเลคโทรนิค  อย่างละเอียด,product_category_66220400,product,uom.product_uom_unit,uom.product_uom_unit
+66220402,เครื่องชั่งไฟฟ้าฯอย่างละเอียด  1  ตำแหน่ง,product_category_66220400,product,uom.product_uom_unit,uom.product_uom_unit
+66220403,เครื่องชั่งไฟฟ้าฯอย่างละเอียด  2  ตำแหน่ง),product_category_66220400,product,uom.product_uom_unit,uom.product_uom_unit
+66220501,หม้อนึ่งความดันไอ (AUTOCLAVE),product_category_66220500,product,uom.product_uom_unit,uom.product_uom_unit
+66220502,หม้ออบไอน้ำ (STEAMER),product_category_66220500,product,uom.product_uom_unit,uom.product_uom_unit
+67200502,กล้องถ่ายรูป โฟลารอยด์,product_category_67200500,product,uom.product_uom_unit,uom.product_uom_unit
+66220503,ตู้เขี่ยเชื้อ  (LAMINAR  FLOW  CARBINET),product_category_66220500,product,uom.product_uom_unit,uom.product_uom_unit
+66220504,ตู้เพาะเชื้อ (INCUBATOR),product_category_66220500,product,uom.product_uom_unit,uom.product_uom_unit
+66220505,ตู้อบฆ่าเชื้ออุณหภูมิสูง (STERILIZER OVEN),product_category_66220500,product,uom.product_uom_unit,uom.product_uom_unit
+66220506,ตู้อบแห้งด้วยลมร้อม (HOT AIR OVEN),product_category_66220500,product,uom.product_uom_unit,uom.product_uom_unit
+66220507,เครื่องเขย่า (SHAKER),product_category_66220500,product,uom.product_uom_unit,uom.product_uom_unit
+66220508,เตาให้ความร้อน HEATING MANTLE,product_category_66220500,product,uom.product_uom_unit,uom.product_uom_unit
+66220509,เครื่องกวนแบบให้ความร้อน,product_category_66220500,product,uom.product_uom_unit,uom.product_uom_unit
+66220510,ชุดอ่างอังไอน้ำ WATER BATH AND SHAKING BATH,product_category_66220500,product,uom.product_uom_unit,uom.product_uom_unit
+66220511,อ่างควบคุมอุณหภูมิพร้อมเครื่องกวน,product_category_66220500,product,uom.product_uom_unit,uom.product_uom_unit
+66220512,ชุดทดสอบโครมาโตรกราฟฟี,product_category_66220500,product,uom.product_uom_unit,uom.product_uom_unit
+66220513,เครื่องลดความดันโดยใช้น้ำ WATER ASPIRATOR,product_category_66220500,product,uom.product_uom_unit,uom.product_uom_unit
+66220514,เครื่องทำความเย็นแบบหมุนเวียน COOLING TRAP,product_category_66220500,product,uom.product_uom_unit,uom.product_uom_unit
+66220515,เครื่องดูดความชื้น,product_category_66220500,product,uom.product_uom_unit,uom.product_uom_unit
+66220516,อ่างควบคุมอุณหภูมิ WATER BATH,product_category_66220500,product,uom.product_uom_unit,uom.product_uom_unit
+66220517,ชุดระบายความเย็น COOLING  SYSTEM,product_category_66220500,product,uom.product_uom_unit,uom.product_uom_unit
+66220518,ตู้ดูดควัน FUME HOOD,product_category_66220500,product,uom.product_uom_unit,uom.product_uom_unit
+66220519,เตาอบสูญญากาศ VACUMM  OVEN,product_category_66220500,product,uom.product_uom_unit,uom.product_uom_unit
+66220520,เครื่องผสม MOTAR STIRRER,product_category_66220500,product,uom.product_uom_unit,uom.product_uom_unit
+66220521,เตา STIRRING HOT PLATE,product_category_66220500,product,uom.product_uom_unit,uom.product_uom_unit
+66220601,ชุดวัดความทนทานต่อการสึกหรอ,product_category_66220600,product,uom.product_uom_unit,uom.product_uom_unit
+66220602,เครื่องผ่านวัสดุบางชนิดทำความเย็น,product_category_66220600,product,uom.product_uom_unit,uom.product_uom_unit
+66220603,เครื่องวัดสมบัติทางพลาสติกของยางไม่คงรูป,product_category_66220600,product,uom.product_uom_unit,uom.product_uom_unit
+66220604,ชุดวัดสมบัติการสลายตัวของพอลิเมอร์,product_category_66220600,product,uom.product_uom_unit,uom.product_uom_unit
+66220605,เครื่องทดสอบการกระทบ,product_category_66220600,product,uom.product_uom_unit,uom.product_uom_unit
+66220606,เครื่องทดสอบความบกพร่อง,product_category_66220600,product,uom.product_uom_unit,uom.product_uom_unit
+66220607,เครื่องทดสอบความแข็งแรง,product_category_66220600,product,uom.product_uom_unit,uom.product_uom_unit
+66250101,มัลติมิเตอร์ (MULTIMETER),product_category_66250100,product,uom.product_uom_unit,uom.product_uom_unit
+66250102,เครื่องมือวัดกระแสไฟฟ้า (AMP METET),product_category_66250100,product,uom.product_uom_unit,uom.product_uom_unit
+66250103,เครื่องมือวัดแรงดันไฟฟ้า (VOLT METER),product_category_66250100,product,uom.product_uom_unit,uom.product_uom_unit
+66250104,เครื่องมือวัดำลังไฟฟ้า (POWER METER),product_category_66250100,product,uom.product_uom_unit,uom.product_uom_unit
+66250105,เครื่องมือวัดกระแส หรือกัลวานอมิเตอร์,product_category_66250100,product,uom.product_uom_unit,uom.product_uom_unit
+66250106,เครื่องมือวัด RLC (RLC METER),product_category_66250100,product,uom.product_uom_unit,uom.product_uom_unit
+66250107,เครื่องมือวัดความเร็วรอบ (TECHOMETER),product_category_66250100,product,uom.product_uom_unit,uom.product_uom_unit
+66250108,เครื่องนับจำนวน  (COUNTER),product_category_66250100,product,uom.product_uom_unit,uom.product_uom_unit
+66250109,เครื่องนับความถี่ (FREQUENCY COUNTER),product_category_66250100,product,uom.product_uom_unit,uom.product_uom_unit
+66250110,เครื่องบันทึก (RECORDER),product_category_66250100,product,uom.product_uom_unit,uom.product_uom_unit
+66250111,ออสซิลโลสโคป (OSCILLOSCOPE),product_category_66250100,product,uom.product_uom_unit,uom.product_uom_unit
+66250112,สายวัดของ STORAGE OS CILLOSCOPE (PROBE),product_category_66250100,product,uom.product_uom_unit,uom.product_uom_unit
+66250113,เครื่องวิเคราะห์สัญญาณทางลอจิก  LOGIC ANALYZER,product_category_66250100,product,uom.product_uom_unit,uom.product_uom_unit
+66250114,เครื่องตรวจสอบสายเคเบิ้ล (CABLE FAULT TESTER),product_category_66250100,product,uom.product_uom_unit,uom.product_uom_unit
+66250115,เครื่องตรวจสอบการทำงานอุปกรณ์ดิจิตอล,product_category_66250100,product,uom.product_uom_unit,uom.product_uom_unit
+66250116,การ์ดโลจิกอนาไลเซอร์,product_category_66250100,product,uom.product_uom_unit,uom.product_uom_unit
+66250117,การด์ดาต้าแอคควิซิตชั่น,product_category_66250100,product,uom.product_uom_unit,uom.product_uom_unit
+66250118,โลจิกโพรบ,product_category_66250100,product,uom.product_uom_unit,uom.product_uom_unit
+66250120,เครื่องทดสอบและโปรแกรมอุปกรณ์ไอซี,product_category_66250100,product,uom.product_uom_unit,uom.product_uom_unit
+66250202,สวิปออสซิลเลเตอร์ (SWEEP OSCILLATOR),product_category_66250200,product,uom.product_uom_unit,uom.product_uom_unit
+66250203,กันน์ออสซิลเลอเตอร์ (GUNN OSCILLATOR),product_category_66250200,product,uom.product_uom_unit,uom.product_uom_unit
+66250204,เครื่องกำเนิดสัญญาณความถี่ FUNCTION GENERATOR,product_category_66250200,product,uom.product_uom_unit,uom.product_uom_unit
+66250205,เครื่องกำเนิดสัญญาณความถี่เสียง,product_category_66250200,product,uom.product_uom_unit,uom.product_uom_unit
+66250206,เครื่องสังเคราะห์ความถี่ FREQUENCY SYNTHESISER,product_category_66250200,product,uom.product_uom_unit,uom.product_uom_unit
+66250207,เครื่องขยายสัญญาณ AMPLIFIER,product_category_66250200,product,uom.product_uom_unit,uom.product_uom_unit
+66250301,หม้อแปลงไฟฟ้า (TRANSFORMER),product_category_66250300,product,uom.product_uom_unit,uom.product_uom_unit
+66250302,แวริแอค ชนิด 3 เฟส (THREE PHASE VARIAC),product_category_66250300,product,uom.product_uom_unit,uom.product_uom_unit
+66250303,แวริแอค (SINGLE PHASE VARIAC),product_category_66250300,product,uom.product_uom_unit,uom.product_uom_unit
+66250401,แหล่งจ่ายไฟตรง (DC POWER SUPPLY),product_category_66250400,product,uom.product_uom_unit,uom.product_uom_unit
+66250402,แหล่งจ่ายไฟสำรอง (UPS),product_category_66250400,product,uom.product_uom_unit,uom.product_uom_unit
+66250403,เครื่องปรับและรักษาแรงดันไฟฟ้าคงที่ STABILIZER,product_category_66250400,product,uom.product_uom_unit,uom.product_uom_unit
+66250404,เครื่องปรับแรงดันไฟฟ้า (VOLTAGE REGULATOR),product_category_66250400,product,uom.product_uom_unit,uom.product_uom_unit
+66250405,เครื่องควบคุมและจ่ายกำลังไฟฟ้า,product_category_66250400,product,uom.product_uom_unit,uom.product_uom_unit
+66250501,อุปกรณ์แปลงสัญญาณดิจิตอลเป็นอนาลอก (D/A),product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250502,อุปกรณ์แปลงสัญญาณอนาลอกเป้นดิจิตอล (A/D),product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250503,เครื่องบัดกรีและถอนบัดกรี,product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250504,หัวแร้งบัดกรี,product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250505,ที่ดูดตะกั่ว,product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250506,เครื่องดูดตะกั่ว,product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250507,เครื่องดูดควันตะกั่ว,product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250508,เครื่องตัดและดัดขาอุปกรณ์อิเลคโทรนิค,product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250509,"UNIVERSAL DEVICE PROGRAMMER เช่น PRPO,PLD",product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250510,อิเลคตรอนิคนูจ อินดิเคเตอร์,product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250511,ชุดอุปกรณ์ขยาย ชุดอุปกรณ์ในการออกแบบ,product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250512,ชุดทดลองนิวเมติกส์,product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250513,เครื่องมือการสร้างชั้นฟิล์ม,product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250514,ตัวควบคุมที่โปรแกรมได้,product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250515,ออโตเมติคการ์ดโพเทเชียลแรกกูเรเตอร์,product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250516,ชุดฝึกการทำงานวงจรทรานซิสเตอร์,product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250517,ชุดฝึกวงจรพลัสส์  PULSE CIRCUIT TRAINER,product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250518,ชุดผึกวงจรดิจิตอล DIGITAL CIRCUIT TRAINER,product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250519,ชุดฝึกวงจรแหล่งจ่ายไฟ,product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250520,ชุดฝึก THYRISTOR (THYRISTOR TRAINER),product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250521,ชุดฝึกวงจรแมกเนติก (MAGNETIC CIRCUIT TRAINER),product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250522,ตัวควบคุมด้วยวงจรซีแควนเชียล,product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250523,ชุดฝึกมอส/ดีมอส (MOD/DEMOD TRAINER),product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250524,ชุดฝึกวงจร AD/DA (AD/DA TRAINER),product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250525,เครื่องวัดกำลังทางแสง OPTICAL POWER METER,product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250526,เครื่องทดสอบแสง (OPTICAL TESTER),product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250527,เครื่องลดแสง (OPTICAL ATTENUATOR),product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250528,เครื่องวัดความเข้มแสง,product_category_66250500,product,uom.product_uom_unit,uom.product_uom_unit
+66250601,ชุดเครื่องมือสำหรับซ่อมบำรุง ทางอิเลคโทรนิค,product_category_66250600,product,uom.product_uom_unit,uom.product_uom_unit
+66260101,เครื่องมือทดสอบรูปร่างลักษณะเสาเข็ม ดินและหิน,product_category_66260100,product,uom.product_uom_unit,uom.product_uom_unit
+66260102,ชุดทดสอบการทรุดตัวของดินแข็ง,product_category_66260100,product,uom.product_uom_unit,uom.product_uom_unit
+66260103,เครื่องมือทดสอบความแข็งแรงของคอนกรีต,product_category_66260100,product,uom.product_uom_unit,uom.product_uom_unit
+66280401,ชุดทดลองระบบมอเตอร์ชนิดต่างๆ,product_category_66280400,product,uom.product_uom_unit,uom.product_uom_unit
+66280402,ชุดทดลอง CHOPPER แบบTHYRISTER,product_category_66280400,product,uom.product_uom_unit,uom.product_uom_unit
+66280403,ชุดทดลองมอเตอร์ด้วย THYRISTER,product_category_66280400,product,uom.product_uom_unit,uom.product_uom_unit
+66280404, ชุดทดลอง INVERTER  แบบ   THYRISTER,product_category_66280400,product,uom.product_uom_unit,uom.product_uom_unit
+66280405,ชุดทดลอง THYRISTER   ชนิด  PHASE SHIFT,product_category_66280400,product,uom.product_uom_unit,uom.product_uom_unit
+66280406,ชุดทดสอบ  RELAY แบบกระเป๋าหิ้ว,product_category_66280400,product,uom.product_uom_unit,uom.product_uom_unit
+66280407,ชุดทดลองวงจร BRIDGE,product_category_66280400,product,uom.product_uom_unit,uom.product_uom_unit
+66280408,เครื่องวัด LCR แบบตัวเลข,product_category_66280400,product,uom.product_uom_unit,uom.product_uom_unit
+66280409,เครื่องวัดความร้อนจากไอเสีย,product_category_66280400,product,uom.product_uom_unit,uom.product_uom_unit
+66280410,อุปกรณ์สาธิตการไหลของอากาศ,product_category_66280400,product,uom.product_uom_unit,uom.product_uom_unit
+66280411,เครื่องอ่านความดันในของเหลวหรือแก๊ส,product_category_66280400,product,uom.product_uom_unit,uom.product_uom_unit
+66280412,ชุดเครื่องทดสอบเครื่องสูบน้ำชนิดใช้ลูกสูบ,product_category_66280400,product,uom.product_uom_unit,uom.product_uom_unit
+66280413,เครื่องแลกเปลี่อนความร้อนแบบไหลขวาง,product_category_66280400,product,uom.product_uom_unit,uom.product_uom_unit
+66280414,อุปกรณ์  VENTURI,product_category_66280400,product,uom.product_uom_unit,uom.product_uom_unit
+66280415,เครื่องปิดฝากระป๋อง,product_category_66280400,product,uom.product_uom_unit,uom.product_uom_unit
+73201702,โตีะวางของแสตนเลสบานเลื่อนทึบ,product_category_73201700,product,uom.product_uom_unit,uom.product_uom_unit
+73201703,โต๊ะขนาดเล็กวางของ,product_category_73201700,product,uom.product_uom_unit,uom.product_uom_unit
+66450801,วัสดุถาวร,product_category_66450800,product,uom.product_uom_unit,uom.product_uom_unit
+66451301,นาฬิกาจับเวลา,product_category_66451300,product,uom.product_uom_unit,uom.product_uom_unit
+66500301,กล้องจุลทรรศน์,product_category_66500300,product,uom.product_uom_unit,uom.product_uom_unit
+66500302,กล้องจุลทรรศน์ชนิด 2 ตา,product_category_66500300,product,uom.product_uom_unit,uom.product_uom_unit
+66500303,กล้องจุลทรรศน์ชนิด 3 ตา ชนิดคอมเปาด์,product_category_66500300,product,uom.product_uom_unit,uom.product_uom_unit
+66500304,กล้องจุลทรรศน์ชนิด 2 ตา ดูได้ 2 มิติ,product_category_66500300,product,uom.product_uom_unit,uom.product_uom_unit
+66602201,เครื่องวัดความเร็วลม (ANEMOMETER),product_category_66602200,product,uom.product_uom_unit,uom.product_uom_unit
+66850101,ชุดศึกษาการถ่ายเทความร้อน,product_category_66850100,product,uom.product_uom_unit,uom.product_uom_unit
+67100201,กล้องถ่ายภาพยนตร์,product_category_67100200,product,uom.product_uom_unit,uom.product_uom_unit
+67100501,กล้องถ่ายวีดีโอ แบบธรรมดา,product_category_67100500,product,uom.product_uom_unit,uom.product_uom_unit
+67100502,กล้องถ่ายวีดีโอ แบบบันทึกเทปในตัวได้,product_category_67100500,product,uom.product_uom_unit,uom.product_uom_unit
+67100503,ชุดถ่ายทำวีดีโอ,product_category_67100500,product,uom.product_uom_unit,uom.product_uom_unit
+67100504,กล้องถ่ายวีดีโอระบบดิจิตอล,product_category_67100500,product,uom.product_uom_unit,uom.product_uom_unit
+67100601,เครื่องตัดต่อภาพยนต์,product_category_67100600,product,uom.product_uom_unit,uom.product_uom_unit
+67100602,ชุดตัดต่อวีดีโอเทป,product_category_67100600,product,uom.product_uom_unit,uom.product_uom_unit
+67100701,เครื่องบันทึกเทปวีดีโอแบบยูเมติก,product_category_67100700,product,uom.product_uom_unit,uom.product_uom_unit
+67100702,เครื่องบันทึกเทปวิดีโอแบบ VHS,product_category_67100700,product,uom.product_uom_unit,uom.product_uom_unit
+67100703,เครื่องบันทึกเทปวีดีโอแบบธรรมดา,product_category_67100700,product,uom.product_uom_unit,uom.product_uom_unit
+67100704,เครื่องบันทึกเทปแบบ BETACAM (ติดท้ายกล้อง),product_category_67100700,product,uom.product_uom_unit,uom.product_uom_unit
+67200301,กล้องถ่ายไมโครฟิล์ม,product_category_67200300,product,uom.product_uom_unit,uom.product_uom_unit
+67200501,กล้องถ่ายรูป แบบธรรมดา,product_category_67200500,product,uom.product_uom_unit,uom.product_uom_unit
+67600601,ขาตั้งเครื่องให้แสง,product_category_67600600,product,uom.product_uom_unit,uom.product_uom_unit
+67600901,ไฟส่องถ่ายภาพ แบบธรรมดา,product_category_67600900,product,uom.product_uom_unit,uom.product_uom_unit
+67600902,"ไฟแวบ,ไฟแฟลต,ไฟถ่ายภาพอิเล็กทรอนิกส์",product_category_67600900,product,uom.product_uom_unit,uom.product_uom_unit
+67602401,กระจกขยายภาพ,product_category_67602400,product,uom.product_uom_unit,uom.product_uom_unit
+67602501,แท่นถ่ายภาพ,product_category_67602500,product,uom.product_uom_unit,uom.product_uom_unit
+67602601,เครื่องหรี่แสง,product_category_67602600,product,uom.product_uom_unit,uom.product_uom_unit
+67602701,เครื่องทำเทคนิคพิเศษทางภาพ,product_category_67602700,product,uom.product_uom_unit,uom.product_uom_unit
+67602801,เครื่องทำเทคนิคพิเศษทางเสียง,product_category_67602800,product,uom.product_uom_unit,uom.product_uom_unit
+71050401,เตียงนอนแบบชั้นเดียว,product_category_71050400,product,uom.product_uom_unit,uom.product_uom_unit
+71050402,เตียงนอนแบบสองชั้น,product_category_71050400,product,uom.product_uom_unit,uom.product_uom_unit
+71050403,เตียงนอนสระน้ำ,product_category_71050400,product,uom.product_uom_unit,uom.product_uom_unit
+71100201,ตู้เก็บเอกสาร 2 บาน,product_category_71100200,product,uom.product_uom_unit,uom.product_uom_unit
+71100202,ตู้เก็บเอกสาร 2 ลิ้นชัก,product_category_71100200,product,uom.product_uom_unit,uom.product_uom_unit
+71100203,ตู้เก็บเอกสาร 3 ลิ้นชัก,product_category_71100200,product,uom.product_uom_unit,uom.product_uom_unit
+71100204,ตู้เก็บเอกสาร 4 ลิ้นชัก,product_category_71100200,product,uom.product_uom_unit,uom.product_uom_unit
+71100205,ตู้เก็บเอกสาร 10-15 ลิ้นชัก,product_category_71100200,product,uom.product_uom_unit,uom.product_uom_unit
+71100206,ตู้เก็บเอกสาร 2 ตอน,product_category_71100200,product,uom.product_uom_unit,uom.product_uom_unit
+71100207,ตู้เก็บเอกสาร แบบมือผลัก,product_category_71100200,product,uom.product_uom_unit,uom.product_uom_unit
+71100208,ตู้เก็บเอกสาร แบบบานเลื่อน,product_category_71100200,product,uom.product_uom_unit,uom.product_uom_unit
+71100209,ตู้เหล้กเก็บเอกสารตั้งโต๊ะ 5 ลิ้นชัก,product_category_71100200,product,uom.product_uom_unit,uom.product_uom_unit
+71100301,ตู้นิรภัย,product_category_71100300,product,uom.product_uom_unit,uom.product_uom_unit
+71100401,กระดานดำ,product_category_71100400,product,uom.product_uom_unit,uom.product_uom_unit
+71100402,กระดาษไวท์บอร์ด,product_category_71100400,product,uom.product_uom_unit,uom.product_uom_unit
+71100501,เก้าอี้ ระดับ 1-2,product_category_71100500,product,uom.product_uom_unit,uom.product_uom_unit
+71100502,เก้าอี้ ระดับ 3-6,product_category_71100500,product,uom.product_uom_unit,uom.product_uom_unit
+71100503,เก้าอี้ ระดับ 7-8,product_category_71100500,product,uom.product_uom_unit,uom.product_uom_unit
+71100504,เก้าอี้ ระดับ 9-11,product_category_71100500,product,uom.product_uom_unit,uom.product_uom_unit
+71100505,"เก้าอี้ โพลีพลาสติก ,ไฟเบอร์กลาส",product_category_71100500,product,uom.product_uom_unit,uom.product_uom_unit
+71100506,เก้าอี้ พับได้,product_category_71100500,product,uom.product_uom_unit,uom.product_uom_unit
+71100507,"เก้าอี้ บุนวม,บุฟองน้ำ",product_category_71100500,product,uom.product_uom_unit,uom.product_uom_unit
+71100508,เก้าอี้ ฟังคำบรรยาย แบบไม้,product_category_71100500,product,uom.product_uom_unit,uom.product_uom_unit
+71100509,เก้าอี้ ปรับระดับได้,product_category_71100500,product,uom.product_uom_unit,uom.product_uom_unit
+71100510,เก้าอี้ ฟังคำบรรยาย ทำดวยไฟเบอร์กลาส,product_category_71100500,product,uom.product_uom_unit,uom.product_uom_unit
+71100511,เก้าอี้ห้องปฏิบัติการ,product_category_71100500,product,uom.product_uom_unit,uom.product_uom_unit
+71100512,เก้าอี้ฟังคำบรรยายไฟเบอร์ฯฐานติดกันเป็นชุด,product_category_71100500,product,uom.product_uom_unit,uom.product_uom_unit
+71100513,เก้าอี้หวายสาน,product_category_71100500,product,uom.product_uom_unit,uom.product_uom_unit
+71100514,เก้าอี้คอมพิวเตอร์,product_category_71100500,product,uom.product_uom_unit,uom.product_uom_unit
+71100515,เก้าอี้กรรมการตัดสิน,product_category_71100500,product,uom.product_uom_unit,uom.product_uom_unit
+71100601,โต๊ะทำงานพร้อมเก้าอี้ ระดับ 1-2,product_category_71100600,product,uom.product_uom_unit,uom.product_uom_unit
+71100602,โต๊ะทำงานพร้อมเก้าอี้ ระดับ 3-6,product_category_71100600,product,uom.product_uom_unit,uom.product_uom_unit
+71100603,โต๊ะทำงานพร้อมเก้าอี้ ระดับ 7-9,product_category_71100600,product,uom.product_uom_unit,uom.product_uom_unit
+71100604,โต๊ะทำงานพร้อมเก้าอี้ ระดับ 10-11,product_category_71100600,product,uom.product_uom_unit,uom.product_uom_unit
+71100605,โต๊ะพิมพ์ดีด พร้อมเก้าอี้,product_category_71100600,product,uom.product_uom_unit,uom.product_uom_unit
+71100606,โต๊ะวางคอมพิวเตอร์หรือเครื่องพิมพ์พร้อมเก้าอี้,product_category_71100600,product,uom.product_uom_unit,uom.product_uom_unit
+71100607,โต๊ะประชุม,product_category_71100600,product,uom.product_uom_unit,uom.product_uom_unit
+71100608,โต๊ะฟังคำบรรยาย พร้อมเก้าอี้,product_category_71100600,product,uom.product_uom_unit,uom.product_uom_unit
+71100609,โต๊ะปฏิบัติการ,product_category_71100600,product,uom.product_uom_unit,uom.product_uom_unit
+71100610,โต๊ะอาหาร,product_category_71100600,product,uom.product_uom_unit,uom.product_uom_unit
+71100611,"โต๊ะวางของ,โทรศัพท์,เครื่องคิดเลข",product_category_71100600,product,uom.product_uom_unit,uom.product_uom_unit
+71100612,โต๊ะเขียบแบบพร้อมเก้าอี้,product_category_71100600,product,uom.product_uom_unit,uom.product_uom_unit
+71100613,โต๊ะและเก้าอี้เรียน,product_category_71100600,product,uom.product_uom_unit,uom.product_uom_unit
+71100614,โต๊ะสมดุลย์,product_category_71100600,product,uom.product_uom_unit,uom.product_uom_unit
+71100615,โต๊ะปฏิบัติการผังแม่บท,product_category_71100600,product,uom.product_uom_unit,uom.product_uom_unit
+71100616,โต๊ะทำงานพร้อมเก้าอี้,product_category_71100600,product,uom.product_uom_unit,uom.product_uom_unit
+71100617,โต๊ะและเก้าอี้สำหรับอาจารย์,product_category_71100600,product,uom.product_uom_unit,uom.product_uom_unit
+71100618,โต๊ะควบคุมระบบภาพและเสียง,product_category_71100600,product,uom.product_uom_unit,uom.product_uom_unit
+71100619,โต๊ะใส่เครื่องรับวิทยุ,product_category_71100600,product,uom.product_uom_unit,uom.product_uom_unit
+71100620,โต๊ะเอนกประสงค์พร้อมเก้าอี้,product_category_71100600,product,uom.product_uom_unit,uom.product_uom_unit
+71101101,ชั้นเก็บแฟ้มเอกสาร มีล้อเลื่อน,product_category_71101100,product,uom.product_uom_unit,uom.product_uom_unit
+71101801,ชั้นวางของ แบบมีล้อเลื่อน,product_category_71101800,product,uom.product_uom_unit,uom.product_uom_unit
+71101802,ชั้นวางของแบบไม่มีล้อเลื่อน,product_category_71101800,product,uom.product_uom_unit,uom.product_uom_unit
+71101901,เครื่องเคลือบบัตร,product_category_71101900,product,uom.product_uom_unit,uom.product_uom_unit
+71102001,เครื่องพิมพ์บัตร,product_category_71102000,product,uom.product_uom_unit,uom.product_uom_unit
+71250101,ตู้ช่องเก็บของ แบบไม้,product_category_71250100,product,uom.product_uom_unit,uom.product_uom_unit
+71250102,"ตู้ช่องเก็บของ แบบเหล็ก ,ตู้ล๊อกเกอร์",product_category_71250100,product,uom.product_uom_unit,uom.product_uom_unit
+71250103,ตู้เก็บแผนที่,product_category_71250100,product,uom.product_uom_unit,uom.product_uom_unit
+71250104,ตู้ชิดผนังแบบมีลิ้นชัก,product_category_71250100,product,uom.product_uom_unit,uom.product_uom_unit
+71250105,ตู้นักศึกษา,product_category_71250100,product,uom.product_uom_unit,uom.product_uom_unit
+71250106,ตู้แม่บ้านแบบไม้,product_category_71250100,product,uom.product_uom_unit,uom.product_uom_unit
+71950101,กระดานติดประกาศ,product_category_71950100,product,uom.product_uom_unit,uom.product_uom_unit
+71950102,บอร์ดชานอ้อย,product_category_71950100,product,uom.product_uom_unit,uom.product_uom_unit
+71950103,ตู้ติดประกาศ,product_category_71950100,product,uom.product_uom_unit,uom.product_uom_unit
+71950401,เก้าอี้ยาว,product_category_71950400,product,uom.product_uom_unit,uom.product_uom_unit
+71950701,เคาน์เตอร์,product_category_71950700,product,uom.product_uom_unit,uom.product_uom_unit
+71950702,เคาน์เตอร์พร้อมเก้าอี้,product_category_71950700,product,uom.product_uom_unit,uom.product_uom_unit
+71950901,ตู้เก็บหนังสือห้องสมุด,product_category_71950900,product,uom.product_uom_unit,uom.product_uom_unit
+71950902,"ตู้ดรรชนี,ตู้เก็บรายการ",product_category_71950900,product,uom.product_uom_unit,uom.product_uom_unit
+71950903,"ชั้นวางหนังสือ,วารสาร",product_category_71950900,product,uom.product_uom_unit,uom.product_uom_unit
+71950904,โต๊ะอ่านหนังสือ พร้อมเก้าอี้,product_category_71950900,product,uom.product_uom_unit,uom.product_uom_unit
+71950905,แท่นอ่านหนังสือ,product_category_71950900,product,uom.product_uom_unit,uom.product_uom_unit
+71951101,ที่วางหนังสือพิมพ์,product_category_71951100,product,uom.product_uom_unit,uom.product_uom_unit
+71951401,โต๊ะทำงาน,product_category_71951400,product,uom.product_uom_unit,uom.product_uom_unit
+71951402,โตีะอ่านหนังสือ,product_category_71951400,product,uom.product_uom_unit,uom.product_uom_unit
+71951403,"โต๊ะข้างแบบกลม,เหลี่ยม",product_category_71951400,product,uom.product_uom_unit,uom.product_uom_unit
+71951701,"ตู้แสดง, ตู้โชว์, ตู้กระจก",product_category_71951700,product,uom.product_uom_unit,uom.product_uom_unit
+71951702,"ตู้วางทีวี, วีดีโอ, สเตอริโอ /ชั้นวาง",product_category_71951700,product,uom.product_uom_unit,uom.product_uom_unit
+71951703,ตู้ใส่รองเท้า,product_category_71951700,product,uom.product_uom_unit,uom.product_uom_unit
+71951704,ตู้เก็บอาหาร,product_category_71951700,product,uom.product_uom_unit,uom.product_uom_unit
+71951705,ตู้ใส่พวงกุญแจ,product_category_71951700,product,uom.product_uom_unit,uom.product_uom_unit
+71951801,ชุดม้าหิน,product_category_71951800,product,uom.product_uom_unit,uom.product_uom_unit
+71951802,ม้านั่งหินอ่อน,product_category_71951800,product,uom.product_uom_unit,uom.product_uom_unit
+71951901,ชุดรับแขก,product_category_71951900,product,uom.product_uom_unit,uom.product_uom_unit
+71951902,โซฟายาว,product_category_71951900,product,uom.product_uom_unit,uom.product_uom_unit
+71951903,เก้าอี้รับแขกบุนวม,product_category_71951900,product,uom.product_uom_unit,uom.product_uom_unit
+71952001,แท่นยืนบรรยาย,product_category_71952000,product,uom.product_uom_unit,uom.product_uom_unit
+71952101,พระบรมฉายาลักษณ์,product_category_71952100,product,uom.product_uom_unit,uom.product_uom_unit
+71952201,ป้ายคณะฯ แกะสลักหินอ่อน,product_category_71952200,product,uom.product_uom_unit,uom.product_uom_unit
+72200101,พรมอัดเรียบ,product_category_72200100,product,uom.product_uom_unit,uom.product_uom_unit
+72300201,ม่าน,product_category_72300200,product,uom.product_uom_unit,uom.product_uom_unit
+72300301,ผนังกั่นสำเร็จรูป,product_category_72300300,product,uom.product_uom_unit,uom.product_uom_unit
+72300901,มู่ลี่,product_category_72300900,product,uom.product_uom_unit,uom.product_uom_unit
+72400201,ถังขยะ,product_category_72400200,product,uom.product_uom_unit,uom.product_uom_unit
+72400401,ถังน้ำสแตนเลส,product_category_72400400,product,uom.product_uom_unit,uom.product_uom_unit
+72400402,ถังน้ำไฟเบอร์กลาส,product_category_72400400,product,uom.product_uom_unit,uom.product_uom_unit
+72400403,ถังน้ำอลูมิเนียม,product_category_72400400,product,uom.product_uom_unit,uom.product_uom_unit
+72400404,ถังน้ำแบบถังเหล็ก,product_category_72400400,product,uom.product_uom_unit,uom.product_uom_unit
+73100101,โต๊ะอุ่นอาหาร,product_category_73100100,product,uom.product_uom_unit,uom.product_uom_unit
+73100201,"เตาอบ, ตู้อบ แบบไฟฟ้า",product_category_73100200,product,uom.product_uom_unit,uom.product_uom_unit
+73100202,"เตาอบ, ตู้อบ แบบแก๊ส",product_category_73100200,product,uom.product_uom_unit,uom.product_uom_unit
+73100203,ตู้อบ MICROWAVE,product_category_73100200,product,uom.product_uom_unit,uom.product_uom_unit
+73100801,รถเข็นของชนิด 9 ชั้น,product_category_73100800,product,uom.product_uom_unit,uom.product_uom_unit
+73100802,รถเข็นของชนิด 4 ชั้น,product_category_73100800,product,uom.product_uom_unit,uom.product_uom_unit
+73101001,หม้อต้มน้ำ,product_category_73101000,product,uom.product_uom_unit,uom.product_uom_unit
+73101002,กาต้มน้ำ,product_category_73101000,product,uom.product_uom_unit,uom.product_uom_unit
+73101003,"หม้อต้มกาแฟ, ชา",product_category_73101000,product,uom.product_uom_unit,uom.product_uom_unit
+73101004,กาต้มกาแฟ,product_category_73101000,product,uom.product_uom_unit,uom.product_uom_unit
+73101005,เครื่องทำน้ำร้อน,product_category_73101000,product,uom.product_uom_unit,uom.product_uom_unit
+73101101,เตาแก๊ส,product_category_73101100,product,uom.product_uom_unit,uom.product_uom_unit
+73101102,เตาไฟฟ้า,product_category_73101100,product,uom.product_uom_unit,uom.product_uom_unit
+73200901,ที่วางถาดใส่อาหารพร้อมช้อนส้อม,product_category_73200900,product,uom.product_uom_unit,uom.product_uom_unit
+73201101,เครื่องผสมไอศครีม,product_category_73201100,product,uom.product_uom_unit,uom.product_uom_unit
+73201301,เครื่องอัดไส้กรอก,product_category_73201300,product,uom.product_uom_unit,uom.product_uom_unit
+73201401,เครื่องล้างข้าว,product_category_73201400,product,uom.product_uom_unit,uom.product_uom_unit
+73201501,เครื่องทำน้ำแข็ง,product_category_73201500,product,uom.product_uom_unit,uom.product_uom_unit
+73201601,ที่กรองน้ำมัน,product_category_73201600,product,uom.product_uom_unit,uom.product_uom_unit
+73201701,โต๊ะวางของ 2 ชั้นไม่มีบานเลื่อน,product_category_73201700,product,uom.product_uom_unit,uom.product_uom_unit
+59750603,เต๋าต่อสาย 2.5 ตร.มม.,product_category_59750600,product,uom.product_uom_unit,uom.product_uom_unit
+59950601,สายโทรศัพท์ดรอปวายส์,product_category_59950600,product,uom.product_uom_unit,uom.product_uom_unit
+59950602,สายโทรศัพท์อินดอร์ (4 C ),product_category_59950600,product,uom.product_uom_unit,uom.product_uom_unit
+59950603,สายโทรศัพท์อินดอร์ (2 C ),product_category_59950600,product,uom.product_uom_unit,uom.product_uom_unit
+59950604,สายต่อโทรศัพท์,product_category_59950600,product,uom.product_uom_unit,uom.product_uom_unit
+59950701,ตลับต่อโทรศัพท์,product_category_59950700,product,uom.product_uom_unit,uom.product_uom_unit
+59990401,สวิทช์ฝัง B,product_category_59990400,product,uom.product_uom_unit,uom.product_uom_unit
+59990402,สวิทช์ทางเดียว (ช่องเดียว),product_category_59990400,product,uom.product_uom_unit,uom.product_uom_unit
+61050101,มอเตอร์ไฟตรงทั่วไป (DC  MOTOR),product_category_61050100,product,uom.product_uom_unit,uom.product_uom_unit
+61050102,STEPPING  MOTOR,product_category_61050100,product,uom.product_uom_unit,uom.product_uom_unit
+61050103,SERVO  MOTOR,product_category_61050100,product,uom.product_uom_unit,uom.product_uom_unit
+61050201,มอเตอร์เหนี่ยวนำ (INDUCTION MOTOR),product_category_61050200,product,uom.product_uom_unit,uom.product_uom_unit
+61050202,SYNCRONOUS MOTOR,product_category_61050200,product,uom.product_uom_unit,uom.product_uom_unit
+61050301,มอเตอร์ต่อลำดับ (SERIAL  MOTOR),product_category_61050300,product,uom.product_uom_unit,uom.product_uom_unit
+23100301,รถยนต์นั่ง แบบเก๋ง,product_category_23100300,product,uom.product_uom_unit,uom.product_uom_unit
+23100501,รถโดยสารตู้ขนาด  12 ที่นั่ง,product_category_23100500,product,uom.product_uom_unit,uom.product_uom_unit
+23100502,รถโดยสารตู้ ขนาด 15 ที่นั่ง,product_category_23100500,product,uom.product_uom_unit,uom.product_uom_unit
+23100503,รถโดยสาร ขนาด 30 ที่นั่ง,product_category_23100500,product,uom.product_uom_unit,uom.product_uom_unit
+23100504,รถโดยสาร ขนาด 40-45 ที่นั่ง,product_category_23100500,product,uom.product_uom_unit,uom.product_uom_unit
+23100505,รถโดยสาร ขนาดไม่น้อยกว่า 45 ที่นั่ง,product_category_23100500,product,uom.product_uom_unit,uom.product_uom_unit
+23101101,รถกะบะโดยสาร,product_category_23101100,product,uom.product_uom_unit,uom.product_uom_unit
+23204501,รถกะบะบรรทุก,product_category_23204500,product,uom.product_uom_unit,uom.product_uom_unit
+23204502,รถยนต์บรรทุก,product_category_23204500,product,uom.product_uom_unit,uom.product_uom_unit
+23400201,รถจักรยาน 2 ล้อ,product_category_23400200,product,uom.product_uom_unit,uom.product_uom_unit
+23400501,รถจักยานยนต์,product_category_23400500,product,uom.product_uom_unit,uom.product_uom_unit
+23400801,รถสามล้อถีบ,product_category_23400800,product,uom.product_uom_unit,uom.product_uom_unit
+25402901,หลังคารถ แบบไฟเบอร์กลาส,product_category_25402900,product,uom.product_uom_unit,uom.product_uom_unit
+25402902,หลังคารถ  แบบอลูมิเนียม,product_category_25402900,product,uom.product_uom_unit,uom.product_uom_unit
+25402903,หลังคารถ  แบบโครงเหล็ก,product_category_25402900,product,uom.product_uom_unit,uom.product_uom_unit
+25403101,เก้าอี้ปรับเอนนอน,product_category_25403100,product,uom.product_uom_unit,uom.product_uom_unit
+28950301,เครื่องยนต์เบนซิน,product_category_28950300,product,uom.product_uom_unit,uom.product_uom_unit
+28950401,เครื่องยนต์ดีเซล,product_category_28950400,product,uom.product_uom_unit,uom.product_uom_unit
+32200901,เครื่องขัดกระดาษทราย  ชนิดมือถือ  แบบจาน,product_category_32200900,product,uom.product_uom_unit,uom.product_uom_unit
+32200902,เครื่องขัดกระดาษทราย  ชนิดมือถือ แบบสายพาน,product_category_32200900,product,uom.product_uom_unit,uom.product_uom_unit
+32200903,เครื่องขัดกระดาษทรายชนิดมือถือ แบบสั่นสะเทือน,product_category_32200900,product,uom.product_uom_unit,uom.product_uom_unit
+32201001,เครื่องขัดกระดาษทราย ชนิดตั้งพื้น  แบบจาน,product_category_32201000,product,uom.product_uom_unit,uom.product_uom_unit
+32201002,"เครื่องขัดกระดาษทราย ตั้งพื้น แบบจาน,สายพาน",product_category_32201000,product,uom.product_uom_unit,uom.product_uom_unit
+32201003,เครื่องขัดกระดาษทราย  ชนิดตั้งพื้น แบบสายพาน,product_category_32201000,product,uom.product_uom_unit,uom.product_uom_unit
+32201004,เครื่องขัดกระดาษทราย ชนิดตั้งพื้น แบบเพลาตั้ง,product_category_32201000,product,uom.product_uom_unit,uom.product_uom_unit
+32201005,เครื่องขัดกระดาษทรายตั้งพื้น  สายพานอัตโนมัติ,product_category_32201000,product,uom.product_uom_unit,uom.product_uom_unit
+34300101,เครื่องเชื่อมไฟฟ้าเป็นจุด,product_category_34300100,product,uom.product_uom_unit,uom.product_uom_unit
+34300102,เครื่องเชื่อมไฟฟ้าด้วยอาร์ค,product_category_34300100,product,uom.product_uom_unit,uom.product_uom_unit
+34410101,เครื่องดัดหล็กไฟฟ้า,product_category_34410100,product,uom.product_uom_unit,uom.product_uom_unit
+34490401,เครื่องลับคมใบมีด,product_category_34490400,product,uom.product_uom_unit,uom.product_uom_unit
+34490601,เครื่องตัดเหล็กไฟฟ้า,product_category_34490600,product,uom.product_uom_unit,uom.product_uom_unit
+34490602,เครื่องตัดเหล็กใช้มือโยก,product_category_34490600,product,uom.product_uom_unit,uom.product_uom_unit
+34490603,เครื่องตัดเหล็กด้วยแก๊ส,product_category_34490600,product,uom.product_uom_unit,uom.product_uom_unit
+34490604,เครื่องตัดเหล็ก แบบ SHEAR,product_category_34490600,product,uom.product_uom_unit,uom.product_uom_unit
+34500201,สว่านมือ,product_category_34500200,product,uom.product_uom_unit,uom.product_uom_unit
+34500202,สว่านไฟฟ้า  แบบมือถือ,product_category_34500200,product,uom.product_uom_unit,uom.product_uom_unit
+34500203,สว่านไฟฟ้า  แบบแท่น,product_category_34500200,product,uom.product_uom_unit,uom.product_uom_unit
+35100501,เตารีดไฟฟ้า แบบธรรมดา,product_category_35100500,product,uom.product_uom_unit,uom.product_uom_unit
+35101101,เครื่องซักผ้า,product_category_35101100,product,uom.product_uom_unit,uom.product_uom_unit
+35101201,เครื่องอบผ้า,product_category_35101200,product,uom.product_uom_unit,uom.product_uom_unit
+36100101,เครื่องถ่ายพิมพ์เขียว,product_category_36100100,product,uom.product_uom_unit,uom.product_uom_unit
+36100401,กล้องถ่ายภาพทางการพิมพ์,product_category_36100400,product,uom.product_uom_unit,uom.product_uom_unit
+36100701,เครื่องตัดกระดาษ,product_category_36100700,product,uom.product_uom_unit,uom.product_uom_unit
+36102101,เครื่องเข้าเล่ม  แบบเย็บ,product_category_36102100,product,uom.product_uom_unit,uom.product_uom_unit
+36102102,เครื่องเข้าเล่ม  แบสไสกาว,product_category_36102100,product,uom.product_uom_unit,uom.product_uom_unit
+36102103,เครื่องเข้าเล่ม แบบห่วง,product_category_36102100,product,uom.product_uom_unit,uom.product_uom_unit
+36102104,เครื่องเข้าเล่ม  แบบเทป,product_category_36102100,product,uom.product_uom_unit,uom.product_uom_unit
+36102202,เครื่องเจาะกระดาษ  แบบไฟฟ้า,product_category_36102200,product,uom.product_uom_unit,uom.product_uom_unit
+36102222,เครื่องเจาะกระดาษ แบบมือ,product_category_36102200,product,uom.product_uom_unit,uom.product_uom_unit
+36102301,เครื่องพิมพ์ออฟเซ็ท,product_category_36102300,product,uom.product_uom_unit,uom.product_uom_unit
+36102401,เครื่องถ่ายเพลท  กระดาษ,product_category_36102400,product,uom.product_uom_unit,uom.product_uom_unit
+36102402,เครื่องถ่ายเพลท อลูมิเนียม,product_category_36102400,product,uom.product_uom_unit,uom.product_uom_unit
+36102501,เครื่องอบเพลท,product_category_36102500,product,uom.product_uom_unit,uom.product_uom_unit
+36200301,จักรรีดยางขนาดใหญ่,product_category_36200300,product,uom.product_uom_unit,uom.product_uom_unit
+36200701,เครื่องผสมพลาสติก TWO-ROLL MILL,product_category_36200700,product,uom.product_uom_unit,uom.product_uom_unit
+36200801,เครื่องฉีดพลาสติก,product_category_36200800,product,uom.product_uom_unit,uom.product_uom_unit
+36200901,เครื่องขัดพลาสติก,product_category_36200900,product,uom.product_uom_unit,uom.product_uom_unit
+36550301,ถังบรรจุแก๊สหุงต้ม,product_category_36550300,product,uom.product_uom_unit,uom.product_uom_unit
+36550302,ถังบรรจุแก๊สแบบอื่นๆ,product_category_36550300,product,uom.product_uom_unit,uom.product_uom_unit
+36550303,ถังบรรจุไนโตรแจนเหลว LIQUID NITROGEN TANK,product_category_36550300,product,uom.product_uom_unit,uom.product_uom_unit
+36550304,ถังเก็บรักษาแก๊สเหลว LIQUID GAS TANK,product_category_36550300,product,uom.product_uom_unit,uom.product_uom_unit
+37400201,เครื่องพ่นยาฆ่าแมลง  แบบสูบโยก,product_category_37400200,product,uom.product_uom_unit,uom.product_uom_unit
+37400202,เครื่องพ่นยาฆ่าแมลง  แบบใช้แรงลม,product_category_37400200,product,uom.product_uom_unit,uom.product_uom_unit
+37400203,เครื่องพ่นยาฆ่าแมลง  แบบใช้แรงดันของเหลว,product_category_37400200,product,uom.product_uom_unit,uom.product_uom_unit
+37500201,เครื่องตัดหญ้า  แบบสะพาย  ชนิดข้อแข็ง,product_category_37500200,product,uom.product_uom_unit,uom.product_uom_unit
+37500202,เครื่องตัดหญ้า  แบบสะพาย  ชนิดข้ออ่อน,product_category_37500200,product,uom.product_uom_unit,uom.product_uom_unit
+37500203,เครื่องตัดหญ้า  แบบเข็น  ชนิดสูบนอน,product_category_37500200,product,uom.product_uom_unit,uom.product_uom_unit
+37500204,เครื่องตัดหญ้า  แบบเข้นล้อจักรยาน,product_category_37500200,product,uom.product_uom_unit,uom.product_uom_unit
+37500205,เครื่องตัดหญ้า  แบบนั่งขับ,product_category_37500200,product,uom.product_uom_unit,uom.product_uom_unit
+37501101,คราดมือเสือ,product_category_37501100,product,uom.product_uom_unit,uom.product_uom_unit
+37600501,รถเทเลอร์ลากจูง,product_category_37600500,product,uom.product_uom_unit,uom.product_uom_unit
+37600601,รถไถเดินตาม,product_category_37600600,product,uom.product_uom_unit,uom.product_uom_unit
+37600701,พานไถชนิด 7 จาน,product_category_37600700,product,uom.product_uom_unit,uom.product_uom_unit
+37600801,ใบมีดหน้า,product_category_37600800,product,uom.product_uom_unit,uom.product_uom_unit
+37600901,ชุดตัดหญ้าขนาด 60 นิ้ว,product_category_37600900,product,uom.product_uom_unit,uom.product_uom_unit
+37700101,ซองสุกร,product_category_37700100,product,uom.product_uom_unit,uom.product_uom_unit
+37700102,กรงทดลองเลี้ยงสัตว์,product_category_37700100,product,uom.product_uom_unit,uom.product_uom_unit
+37700103,กรงใส่แมลง,product_category_37700100,product,uom.product_uom_unit,uom.product_uom_unit
+37701101,เครื่องตักแต่งซาก,product_category_37701100,product,uom.product_uom_unit,uom.product_uom_unit
+37701201,เครื่องตัดปากไก่,product_category_37701200,product,uom.product_uom_unit,uom.product_uom_unit
+37800101,เครื่องเกี่ยวข้าว(HARVESTER),product_category_37800100,product,uom.product_uom_unit,uom.product_uom_unit
+37800102,เครื่องนวดข้าวแบบเก็บเมล้ดอัตโนมัติ,product_category_37800100,product,uom.product_uom_unit,uom.product_uom_unit
+37800103,เครื่องดำนา (TRANSPLANTER),product_category_37800100,product,uom.product_uom_unit,uom.product_uom_unit
+37800104,เครื่องคัดเมล็ดพันธุ์ (SEED  SEPARATOR),product_category_37800100,product,uom.product_uom_unit,uom.product_uom_unit
+37800105,เครื่องมือขยายพันธุ์พืช,product_category_37800100,product,uom.product_uom_unit,uom.product_uom_unit
+37800106,เครื่องนวดแป้ง (KNEADER),product_category_37800100,product,uom.product_uom_unit,uom.product_uom_unit
+37800107,เครื่องผสมอาหารสัตว์(FEED  MINER),product_category_37800100,product,uom.product_uom_unit,uom.product_uom_unit
+37800108,เครื่องปั่นอาหารสัตว์(BLENDER),product_category_37800100,product,uom.product_uom_unit,uom.product_uom_unit
+37800109,เครื่องบดอาหารสัตว์ (GRINDER),product_category_37800100,product,uom.product_uom_unit,uom.product_uom_unit
+37800110,คีมช๊อกสุกรด้วยไฟฟ้า,product_category_37800100,product,uom.product_uom_unit,uom.product_uom_unit
+37800111,เครื่องผสมเทียมผึ้ง (ARTIFICTAL INSEMMINATION),product_category_37800100,product,uom.product_uom_unit,uom.product_uom_unit
+37800112,ถังกรวยฟักไขปลา (HATCHING  TANK),product_category_37800100,product,uom.product_uom_unit,uom.product_uom_unit
+37800113,ถังเก็บน้ำเชื้อเหลว,product_category_37800100,product,uom.product_uom_unit,uom.product_uom_unit
+37800114,เครื่องรีดนม (MILKING  MACHINE),product_category_37800100,product,uom.product_uom_unit,uom.product_uom_unit
+37800115,เครื่องบดอาหารพืช(CUTTING  MILL),product_category_37800100,product,uom.product_uom_unit,uom.product_uom_unit
+37800116,ถังใส่นม,product_category_37800100,product,uom.product_uom_unit,uom.product_uom_unit
+37800117,เครื่องกวดดินด้วยมอเตอร์,product_category_37800100,product,uom.product_uom_unit,uom.product_uom_unit
+37800201,เครื่องตรวจลักษณะผักและผลไม้ (RICE QUALITY METER),product_category_37800200,product,uom.product_uom_unit,uom.product_uom_unit
+37800202,เครื่องตรวจลักษณะผักและผลไม้  (TEXTUROMETER),product_category_37800200,product,uom.product_uom_unit,uom.product_uom_unit
+37800203,เครื่องวัความหนาใบไม้,product_category_37800200,product,uom.product_uom_unit,uom.product_uom_unit
+37800204,เครื่องมือ  PLANIMETER,product_category_37800200,product,uom.product_uom_unit,uom.product_uom_unit
+37800205,เครื่องวัดสีของเนื้อ (GOFO  METER),product_category_37800200,product,uom.product_uom_unit,uom.product_uom_unit
+37800206,เครื่องวัดความหวานของน้ำผึ้ง,product_category_37800200,product,uom.product_uom_unit,uom.product_uom_unit
+37800207,ชุดปฏิบัติการวิเคราะห์อาหารสัตว์,product_category_37800200,product,uom.product_uom_unit,uom.product_uom_unit
+37800208,ชุดอุปกรณ์ศ่กษาระบบควบคุมอุตสาหกรรม,product_category_37800200,product,uom.product_uom_unit,uom.product_uom_unit
+37800209,เครื่องตรวจการตั้งท้องแบบอุลตร้าซาวด์,product_category_37800200,product,uom.product_uom_unit,uom.product_uom_unit
+37800210,เครื่องนับจำนวนเชื้อโรค  COLONY  COUNTER,product_category_37800200,product,uom.product_uom_unit,uom.product_uom_unit
+37800211,เครื่องหาเวลาในการฆ่าเชื้อของอาหารกระป๋อง,product_category_37800200,product,uom.product_uom_unit,uom.product_uom_unit
+38050801,รถแทรกเตอร์,product_category_38050800,product,uom.product_uom_unit,uom.product_uom_unit
+38050802,ROTARY  HOE สำหรับติดรถแทรกเตอร์,product_category_38050800,product,uom.product_uom_unit,uom.product_uom_unit
+38051201,รถฟาร์มแทรกเตอร์,product_category_38051200,product,uom.product_uom_unit,uom.product_uom_unit
+38201001,เครื่องเจาะดิน,product_category_38201000,product,uom.product_uom_unit,uom.product_uom_unit
+38950202,เครื่องผสมคอนกรีต,product_category_38950200,product,uom.product_uom_unit,uom.product_uom_unit
+38951201,เครื่องแหย่คอนกรีต,product_category_38951200,product,uom.product_uom_unit,uom.product_uom_unit
+38951301,เครื่องเจาะคอนกรีต,product_category_38951300,product,uom.product_uom_unit,uom.product_uom_unit
+38951401,เครื่องตบดิน,product_category_38951400,product,uom.product_uom_unit,uom.product_uom_unit
+38951501,เครื่องปาดดิน,product_category_38951500,product,uom.product_uom_unit,uom.product_uom_unit
+39200501,รถเข็นหนังสือ,product_category_39200500,product,uom.product_uom_unit,uom.product_uom_unit
+39200502,รถเข็นปูน,product_category_39200500,product,uom.product_uom_unit,uom.product_uom_unit
+39200503,รถเข็นของ,product_category_39200500,product,uom.product_uom_unit,uom.product_uom_unit
+39200504,รถเข็นอาหาร,product_category_39200500,product,uom.product_uom_unit,uom.product_uom_unit
+39200505,รถเข็นแบบ  พร้อมก้านหนีบกระดาษ,product_category_39200500,product,uom.product_uom_unit,uom.product_uom_unit
+39300101,รถยก,product_category_39300100,product,uom.product_uom_unit,uom.product_uom_unit
+39400501,"เครน,ลิฟท์",product_category_39400500,product,uom.product_uom_unit,uom.product_uom_unit
+39600201,ลิฟท์,product_category_39600200,product,uom.product_uom_unit,uom.product_uom_unit
+75102705,ถ่าน ALKALINE ขนาด AA,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102706,ถ่านไฟฉายก้อนใหญ่,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102707,ผ้าดิบฟอกขาว,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102708,ถ่าน  ALKALINE  ขนาด  N,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102709,เทปบันทึกเสียงขนาดจิ๋ว 60 นาที,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102710,ผ้าดิบไม่ฟอกขาว,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102711,ม้วน VDO  20 นาที,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102712,ม้วน VDO  30 นาที,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102713,ม้วน VDO   60 นาที,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102714,ม้วน VDO  90 นาที,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102715,ม้วน VDO  120 นาที,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102716,ม้วน VDO  180 นาที,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102717,ชุดทำความสะอาดเทปคาสเซ็ท,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102718,ถ่าน ALKALINE ขนาด 9 โวลต์,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102719,ม้วน VDO ขนาด 8 มม. 60 นาที,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102720,ม้วน VDO ขนาด 8 มม. 120 นาที,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102801,ขี้ผึ้งนับกระดาษ,product_category_75102800,product,uom.product_uom_unit,uom.product_uom_unit
+75102901,ชอล์คสี,product_category_75102900,product,uom.product_uom_unit,uom.product_uom_unit
+75102902,ชอล์คขาว,product_category_75102900,product,uom.product_uom_unit,uom.product_uom_unit
+75103001,ฟิวเจอร์บอร์ด,product_category_75103000,product,uom.product_uom_unit,uom.product_uom_unit
+75103002,MDF BOARD  ขนาด 10 มม.,product_category_75103000,product,uom.product_uom_unit,uom.product_uom_unit
+75103003,MDF BOARD ขนาด 15 มม.,product_category_75103000,product,uom.product_uom_unit,uom.product_uom_unit
+75103004,MDF Board 19 มม.,product_category_75103000,product,uom.product_uom_unit,uom.product_uom_unit
+75200301,กบเหลาดินสอ,product_category_75200300,product,uom.product_uom_unit,uom.product_uom_unit
+75200401,เครื่องเย็บกระดาษ เบอร์ 10,product_category_75200400,product,uom.product_uom_unit,uom.product_uom_unit
+75200402,เครื่องเย็บกระดาษ เบอร์ 8,product_category_75200400,product,uom.product_uom_unit,uom.product_uom_unit
+75200403,"เครื่องเย็บกระดาษ เบอร์ 35 , 50",product_category_75200400,product,uom.product_uom_unit,uom.product_uom_unit
+75200501,ตะแกรงใส่เอกสาร 2 ชั้น,product_category_75200500,product,uom.product_uom_unit,uom.product_uom_unit
+75200502,ตะแกรงใส่เอกสาร 1 ชั้น,product_category_75200500,product,uom.product_uom_unit,uom.product_uom_unit
+75200503,ตะแกรงใส่เอกสาร 3 ชั้น,product_category_75200500,product,uom.product_uom_unit,uom.product_uom_unit
+75200701,ที่แกะลวดเย็บกระดาษก้ามปู,product_category_75200700,product,uom.product_uom_unit,uom.product_uom_unit
+75200702,ที่แกะลวดเย็บกระดาษแบบงัด,product_category_75200700,product,uom.product_uom_unit,uom.product_uom_unit
+75200801,ปากกาน้ำเงิน,product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75200802,ปากกาดำ,product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75200803,ปากกาแดง,product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75200804,ปากกาเน้นข้อความ,product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75200805,ปากกาเมจิ 2 หัว,product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75200806,ปากกาเมจิปากตัดแบบนิจิ,product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75200807,ปากกาเขียนไวท์บอร์ดสีน้ำเงิน,product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75200808,ปากกาเมจิ 12 สี (ปากตัด),product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75200809,ปากกาเขียนแผ่นในแบบลบได้ เบอร์ M,product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75200810,ปากกาเขียนแผ่นในแบบลบไม่ได้ เบอร์ M,product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75200811,ปากกาเขียนไข,product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75200812,ปากกาเขียนไวท์บอร์ดสีดำ,product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75200813,ปากกาเขียนไวท์บอร์ดสีแดง,product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75200814,ปากกาเขียนไวท์บอร์ดสีเขียว,product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75200815,ปากกา ARTLINE,product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75200816,ปากกาเมจิ PILOT,product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75201001,ที่แขวนตรายาง 2 ชั้น,product_category_75201000,product,uom.product_uom_unit,uom.product_uom_unit
+75201002,ที่แขวนตรายาง 1 ชั้น,product_category_75201000,product,uom.product_uom_unit,uom.product_uom_unit
+75201201,แท่นประทับตราสีดำ,product_category_75201200,product,uom.product_uom_unit,uom.product_uom_unit
+75201202,แท่นประทับตราสีน้ำเงิน,product_category_75201200,product,uom.product_uom_unit,uom.product_uom_unit
+75201203,แท่นประทับตราสีแดง,product_category_75201200,product,uom.product_uom_unit,uom.product_uom_unit
+75201204,แท่นประทับตราสีเขียว,product_category_75201200,product,uom.product_uom_unit,uom.product_uom_unit
+75201501,ตรายางวันที่ภาษาไทย,product_category_75201500,product,uom.product_uom_unit,uom.product_uom_unit
+75201502,ตรายางวันที่ภาษาอังกฤษ,product_category_75201500,product,uom.product_uom_unit,uom.product_uom_unit
+75201901,กล่องใส่ลวดเสียบกระดาษ,product_category_75201900,product,uom.product_uom_unit,uom.product_uom_unit
+75202001,แท่นใส่สก๊อตเทปขนาดเล็ก,product_category_75202000,product,uom.product_uom_unit,uom.product_uom_unit
+75202002,แกนใส่แท่นสก๊อตเทป,product_category_75202000,product,uom.product_uom_unit,uom.product_uom_unit
+75202003,แท่นใส่สก๊อตเทปขนาดกลาง,product_category_75202000,product,uom.product_uom_unit,uom.product_uom_unit
+75202004,แท่นใส่สก๊อตเทปขนาดใหญ่,product_category_75202000,product,uom.product_uom_unit,uom.product_uom_unit
+75202101,ที่เจาะกระดาษขนาดเล็ก,product_category_75202100,product,uom.product_uom_unit,uom.product_uom_unit
+75202102,ที่เจาะกระดาษขนาดกลาง,product_category_75202100,product,uom.product_uom_unit,uom.product_uom_unit
+75202103,ที่เจาะกระดาษขนาดใหญ่,product_category_75202100,product,uom.product_uom_unit,uom.product_uom_unit
+75202201,คัทเตอร์เล็ก,product_category_75202200,product,uom.product_uom_unit,uom.product_uom_unit
+75202202,คัทเตอร์ใหญ่,product_category_75202200,product,uom.product_uom_unit,uom.product_uom_unit
+75202203,ใบมีดคัทเตอร์เล็ก,product_category_75202200,product,uom.product_uom_unit,uom.product_uom_unit
+75202204,ใบมีดคัทเตอร์ใหญ่,product_category_75202200,product,uom.product_uom_unit,uom.product_uom_unit
+75202301,กรรไกร,product_category_75202300,product,uom.product_uom_unit,uom.product_uom_unit
+75202401,เชือกฟาง,product_category_75202400,product,uom.product_uom_unit,uom.product_uom_unit
+75202402,เชือกขาว-แดง,product_category_75202400,product,uom.product_uom_unit,uom.product_uom_unit
+75202403,เชือกฟอกขาว,product_category_75202400,product,uom.product_uom_unit,uom.product_uom_unit
+75202501,โฟม 0.5 นิ้ว,product_category_75202500,product,uom.product_uom_unit,uom.product_uom_unit
+75202502,โฟม 1 นิ้ว,product_category_75202500,product,uom.product_uom_unit,uom.product_uom_unit
+75202503,โฟม 2 นิ้ว,product_category_75202500,product,uom.product_uom_unit,uom.product_uom_unit
+75202601,INDEX TABS,product_category_75202600,product,uom.product_uom_unit,uom.product_uom_unit
+75202701,แผ่นใส A4 ชนิดถ่ายเอกสาร,product_category_75202700,product,uom.product_uom_unit,uom.product_uom_unit
+75202702,แผ่นใส A4 ชนิดเขียนธรรมดา,product_category_75202700,product,uom.product_uom_unit,uom.product_uom_unit
+75202801,เหล็กแหลมเสียบกระดาษ,product_category_75202800,product,uom.product_uom_unit,uom.product_uom_unit
+75202901,แผ่นดิสเก็ต ขนาด 3.5 นิ้ว,product_category_75202900,product,uom.product_uom_unit,uom.product_uom_unit
+75202902,แผ่นดิสเก็ต ขนาด 5 1/4 นิ้ว,product_category_75202900,product,uom.product_uom_unit,uom.product_uom_unit
+75202903,แผ่น ZIP - DISK,product_category_75202900,product,uom.product_uom_unit,uom.product_uom_unit
+75202904,แผ่น CD - R,product_category_75202900,product,uom.product_uom_unit,uom.product_uom_unit
+75202905,แผ่น CD - RW,product_category_75202900,product,uom.product_uom_unit,uom.product_uom_unit
+75202906,กล่องใส่แผ่นดิสเก็ต ขนาด 3.5 นิ้ว,product_category_75202900,product,uom.product_uom_unit,uom.product_uom_unit
+75202907,กล่องใส่แผ่นดิสเก็ต ขนาด 5 1/4 นิ้ว,product_category_75202900,product,uom.product_uom_unit,uom.product_uom_unit
+75202908,แผ่นล้างเครื่องดิสก์ไดร์ฟ ขนาด 3.5 นิ้ว,product_category_75202900,product,uom.product_uom_unit,uom.product_uom_unit
+75202909,แผ่นล้างเครื่องดิสก์ไดร์ฟ ขนาด 5 1/4 นิ้ว,product_category_75202900,product,uom.product_uom_unit,uom.product_uom_unit
+75202910,แผ่นรองเมาส์,product_category_75202900,product,uom.product_uom_unit,uom.product_uom_unit
+75202911,น้ำยาทำความสะอาดคอมพิวเตอร์,product_category_75202900,product,uom.product_uom_unit,uom.product_uom_unit
+75203001,แปรงลบกระดานไวท์บอร์ด,product_category_75203000,product,uom.product_uom_unit,uom.product_uom_unit
+75203002,แปรงลบกระดานดำ,product_category_75203000,product,uom.product_uom_unit,uom.product_uom_unit
+75203101,เครื่องตอกตัวเลข,product_category_75203100,product,uom.product_uom_unit,uom.product_uom_unit
+75300401,กระดาษบวกเลข 2 1/4 นิ้ว,product_category_75300400,product,uom.product_uom_unit,uom.product_uom_unit
+75301201,กระดาษโรเนียว A4 60 แกรม,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301202,กระดาษโรเนียว A4 70 แกรม,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301203,กระดาษถ่ายเอกสาร A4  80 แกรม,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301204,กระดาษถ่ายเอกสารขนาดยาว 80 แกรม,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301205,กระดาษถ่ายเอกสาร A3 80 แกรม,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301206,กระดาษถ่ายเอกสาร B4 70 แกรม,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301207,กระดาษบันทึกข้อความมีเส้น A5,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301208,กระดาษบันทึกข้อความมีเส้น  A4,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301209,กระดาษบันทึกข้อความไม่มีเส้น A4,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301210,กระดาษครุฑ A4,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301211,กระดาษทำปกสี A4,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301212,กระดาษทำปกสีขนาดยาว,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301213,กระดาษโปรสเตอร์สี,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301214,กระดาษเทา-ขาว,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301215,กระดาษห่อปกสีน้ำตาล,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301216,กระดาษโปรสเตอร์สีสะท้อนแสง,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301217,กระดาษคาร์บอนสีดำ,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301218,กระดาษคาร์บอนสีน้ำเงิน,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301219,กระดาษแฟกซ์ 100 เมตร (210*100 ซม. แกน 1 นิ้ว),product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301220,กระดาษแฟกซ์ 30 เมตร (216*30 ซม. แกน 1 ซม.),product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301221,กระดาษไขเขียนแบบ A4,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301222,กระดาษโน๊ตขนาดเล็ก,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301223,กระดาษพิมพ์ต่อเนื่อง 9 X11 นิ้ว,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301224,กระดาษพิมพ์ต่อเนื่อง  15x11 นิ้ว,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301225,กระดาษแบงค์สี 55 แกรม,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301226,กระดาษไขเครื่องอัดสำเนา,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301227,กระดาษตราสถาบันฯ,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301228,กระดาษอาร์ตมัน 2 หน้า,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301229,กระดาษโน๊ตขนาดกลาง,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301230,กระดาษโน๊ตขนาดใหญ่,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301231,กระดาษปอนด์ 80 แกรม ขนาด 24 x 17.5 นิ้ว,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301232,กระดาษบันทึกข้อความไม่มีเส้น  A5,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301233,กระดาษโรเนียว A4  80 แกรม,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301234,กระดาษถ่ายเอกสาร A4  70 แกรม,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301235,กระดาษถ่ายเอกสารขนาดยาว 70 แกรม,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301236,กระดาษถ่ายเอกสาร B4  80 แกรม,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301237,กระดาษถ่ายเอกสาร A3  70 แกรม,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301238,กระดาษสี A4 80 แกรม,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301239,กระดาษสี A4  70 แกรม,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301240,กระดาษเลเซอร์  A4  80 แกรม,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301241,กระดาษพิมพ์ต่อเนื่อง  11 x 11  นิ้ว,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301242,กระดาษพิมพ์ต่อเนื่อง  9 x 12  นิ้ว,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301243,กระดาษไขเครื่องพิมพ์สำเนาดิจิตอล,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301244,กระดาษไขเครื่องคอมพิวเตอร์,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301245,กระดาษวาดเขียน 100 ปอนด์,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301246,กระดาษชานอ้อย,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301247,ฐานชานอ้อย,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+77102401,ทรัมเปต,product_category_77102400,product,uom.product_uom_unit,uom.product_uom_unit
+77200701,เครื่องเทียงเสียงดนตรี,product_category_77200700,product,uom.product_uom_unit,uom.product_uom_unit
+77300201,"วิทยุ AM,FM",product_category_77300200,product,uom.product_uom_unit,uom.product_uom_unit
+77300202,วิทยุ-เทป,product_category_77300200,product,uom.product_uom_unit,uom.product_uom_unit
+73201704,โต๊ะวางของ 3 ชั้น,product_category_73201700,product,uom.product_uom_unit,uom.product_uom_unit
+73201801,ตู้แสตนเลสบานเลื่อนทึบ 2 ชั้น,product_category_73201800,product,uom.product_uom_unit,uom.product_uom_unit
+73201901,อ่างล้างจานชนิด 1 ช่อง,product_category_73201900,product,uom.product_uom_unit,uom.product_uom_unit
+73201902,อ่างล้างจานชนิด 2 ช่อง,product_category_73201900,product,uom.product_uom_unit,uom.product_uom_unit
+73201903,อ่างล้างจานชนิด 3 ช่อง,product_category_73201900,product,uom.product_uom_unit,uom.product_uom_unit
+73300101,หม้อหุงข้าว แบบไฟฟ้า,product_category_73300100,product,uom.product_uom_unit,uom.product_uom_unit
+73300102,หม้อหุงข้าว แบบแก๊ส,product_category_73300100,product,uom.product_uom_unit,uom.product_uom_unit
+73300103,หม้อนึ่ง,product_category_73300100,product,uom.product_uom_unit,uom.product_uom_unit
+73300201,กะทะสำหับทอดมีล้อเลื่อน,product_category_73300200,product,uom.product_uom_unit,uom.product_uom_unit
+73300501,เครื่องบดอาหาร,product_category_73300500,product,uom.product_uom_unit,uom.product_uom_unit
+73301001,เขียง,product_category_73301000,product,uom.product_uom_unit,uom.product_uom_unit
+73301101,เครื่องตีไข่,product_category_73301100,product,uom.product_uom_unit,uom.product_uom_unit
+73301801,เครื่องปั่นละเอียด,product_category_73301800,product,uom.product_uom_unit,uom.product_uom_unit
+73500301,กรวยกระดาษ,product_category_73500300,product,uom.product_uom_unit,uom.product_uom_unit
+74200401,เครื่องคำนวณแบบธรรมดา,product_category_74200400,product,uom.product_uom_unit,uom.product_uom_unit
+74200402,เครื่องคำนวณ ชนิดมีกระดาษบันทึก,product_category_74200400,product,uom.product_uom_unit,uom.product_uom_unit
+74200501,เครื่องบันทึกเงินสดและสต๊อกสินค้า,product_category_74200500,product,uom.product_uom_unit,uom.product_uom_unit
+74300101,เครื่องพิมพ์ดีดธรรมดา  ภาษาไทย,product_category_74300100,product,uom.product_uom_unit,uom.product_uom_unit
+74300102,เครื่องพิมพ์ดีดธรรมดา  ภาษาอังกฤษ,product_category_74300100,product,uom.product_uom_unit,uom.product_uom_unit
+74300103,เครื่องพิมพ์ดีดไฟฟ้า 2 ภาษา (ไทย/อังกฤษ),product_category_74300100,product,uom.product_uom_unit,uom.product_uom_unit
+74300301,เครื่องอัดสำเนา,product_category_74300300,product,uom.product_uom_unit,uom.product_uom_unit
+74300302,เครื่องพิมพ์โรเนียว COPY  PRINTER,product_category_74300300,product,uom.product_uom_unit,uom.product_uom_unit
+74300601,เครื่องถ่ายแผ่นใส,product_category_74300600,product,uom.product_uom_unit,uom.product_uom_unit
+74300701,เครื่องถ่ายเอกสาร,product_category_74300700,product,uom.product_uom_unit,uom.product_uom_unit
+74300801,เครื่องเรียงหน้ากระดาษ,product_category_74300800,product,uom.product_uom_unit,uom.product_uom_unit
+74400101,เครื่องไมโครคอมพิวเตอร์ 16 บิท,product_category_74400100,product,uom.product_uom_unit,uom.product_uom_unit
+74400102,เครื่องไมโครคอมพิวเตอร์ 32 บิท หรือมากกว่า,product_category_74400100,product,uom.product_uom_unit,uom.product_uom_unit
+77300203,"วิทยุ,เทปติดรถยนต์",product_category_77300200,product,uom.product_uom_unit,uom.product_uom_unit
+77300301,โทรทัศน์ขาว-ดำ,product_category_77300300,product,uom.product_uom_unit,uom.product_uom_unit
+77300302,โทรทัศน์สี,product_category_77300300,product,uom.product_uom_unit,uom.product_uom_unit
+77300601,เครื่องเล่นวีดีโอ,product_category_77300600,product,uom.product_uom_unit,uom.product_uom_unit
+77300602,เครื่องเล่นวีดีโอ แบบบันทึกภาพได้,product_category_77300600,product,uom.product_uom_unit,uom.product_uom_unit
+78100201,แป้นบาสเกตบอลล์,product_category_78100200,product,uom.product_uom_unit,uom.product_uom_unit
+78100501,เสาวอลเล่ย์บอล,product_category_78100500,product,uom.product_uom_unit,uom.product_uom_unit
+78100701,โต๊ะเทเบิลเทนนิส แบบไม่มีล้อเลื่อน,product_category_78100700,product,uom.product_uom_unit,uom.product_uom_unit
+78101401,เบาะยูโด,product_category_78101400,product,uom.product_uom_unit,uom.product_uom_unit
+78101501,ชุดทดสอบสมรรถภาพทางกาย,product_category_78101500,product,uom.product_uom_unit,uom.product_uom_unit
+78101601,ชุดเสริมสร้างสมรรถภาพทางกาย,product_category_78101600,product,uom.product_uom_unit,uom.product_uom_unit
+79100101,เครื่องขัดพื้น,product_category_79100100,product,uom.product_uom_unit,uom.product_uom_unit
+79100301,เครื่องดูดฝุ่น,product_category_79100300,product,uom.product_uom_unit,uom.product_uom_unit
+79200101,ไม้กวาดอ่อน,product_category_79200100,product,uom.product_uom_unit,uom.product_uom_unit
+79200102,ไม้กวาดทางมะพร้าว,product_category_79200100,product,uom.product_uom_unit,uom.product_uom_unit
+79200103,ไม้ถูพื้น,product_category_79200100,product,uom.product_uom_unit,uom.product_uom_unit
+79200104,ไม้ปัดขนไก่,product_category_79200100,product,uom.product_uom_unit,uom.product_uom_unit
+79200105,ไม้กวาดเพดาน,product_category_79200100,product,uom.product_uom_unit,uom.product_uom_unit
+79200201,แปรงขัดพื้นด้ามยาว 1.5  เมตร,product_category_79200200,product,uom.product_uom_unit,uom.product_uom_unit
+79200202,แปรงขัดคอห่าน,product_category_79200200,product,uom.product_uom_unit,uom.product_uom_unit
+79200203,แปรงกลมดำ,product_category_79200200,product,uom.product_uom_unit,uom.product_uom_unit
+79200301,ผ้าดิบ,product_category_79200300,product,uom.product_uom_unit,uom.product_uom_unit
+79200302,เศษผ้า,product_category_79200300,product,uom.product_uom_unit,uom.product_uom_unit
+79200601,ผ้าห่มถูพื้น,product_category_79200600,product,uom.product_uom_unit,uom.product_uom_unit
+79200602,เชือกถูพื้น,product_category_79200600,product,uom.product_uom_unit,uom.product_uom_unit
+79200801,ฟองน้ำ,product_category_79200800,product,uom.product_uom_unit,uom.product_uom_unit
+79300101,ผงซักฟอก,product_category_79300100,product,uom.product_uom_unit,uom.product_uom_unit
+79300102,วิม,product_category_79300100,product,uom.product_uom_unit,uom.product_uom_unit
+79300103,วิกซอล,product_category_79300100,product,uom.product_uom_unit,uom.product_uom_unit
+79300104,นำยาดันฝุ่น,product_category_79300100,product,uom.product_uom_unit,uom.product_uom_unit
+79300201,น้ำยาล้างจาน,product_category_79300200,product,uom.product_uom_unit,uom.product_uom_unit
+79300301,สบู่ก้อน,product_category_79300300,product,uom.product_uom_unit,uom.product_uom_unit
+79300401,คาร์โก้,product_category_79300400,product,uom.product_uom_unit,uom.product_uom_unit
+79300402,แว๊กซี่,product_category_79300400,product,uom.product_uom_unit,uom.product_uom_unit
+79300403,น้ำมันครอบจักรวาล SONIX,product_category_79300400,product,uom.product_uom_unit,uom.product_uom_unit
+79300701,ตะกร้าใส่ขยะ,product_category_79300700,product,uom.product_uom_unit,uom.product_uom_unit
+79300702,ที่โกยผง,product_category_79300700,product,uom.product_uom_unit,uom.product_uom_unit
+79300703,ขันน้ำพลาสติก,product_category_79300700,product,uom.product_uom_unit,uom.product_uom_unit
+79300704,ถังน้ำพลาสติก,product_category_79300700,product,uom.product_uom_unit,uom.product_uom_unit
+79300705,ถุงดำใส่ขยะ,product_category_79300700,product,uom.product_uom_unit,uom.product_uom_unit
+79300706,ถุงมือ,product_category_79300700,product,uom.product_uom_unit,uom.product_uom_unit
+79300707,สก๊อตไบร์ท,product_category_79300700,product,uom.product_uom_unit,uom.product_uom_unit
+79300708,ที่เช็ดกระจก,product_category_79300700,product,uom.product_uom_unit,uom.product_uom_unit
+79300709,เข่งใส่ขยะ,product_category_79300700,product,uom.product_uom_unit,uom.product_uom_unit
+79300710,ผ้าปิดจมูก,product_category_79300700,product,uom.product_uom_unit,uom.product_uom_unit
+79300801,น้ำยาเช็ดกระจก,product_category_79300800,product,uom.product_uom_unit,uom.product_uom_unit
+79301101,สเปรย์ฉีดยุง,product_category_79301100,product,uom.product_uom_unit,uom.product_uom_unit
+79301201,สเปรย์ปรับอากาศ,product_category_79301200,product,uom.product_uom_unit,uom.product_uom_unit
+79301202,ก้อนดับกลิ่น,product_category_79301200,product,uom.product_uom_unit,uom.product_uom_unit
+79301203,น้ำยาดับกลิ่น,product_category_79301200,product,uom.product_uom_unit,uom.product_uom_unit
+80101701,สีสเปรย์,product_category_80101700,product,uom.product_uom_unit,uom.product_uom_unit
+80101702,สีน้ำมัน,product_category_80101700,product,uom.product_uom_unit,uom.product_uom_unit
+80200101,แปรงทาสี 2.5 นิ้ว,product_category_80200100,product,uom.product_uom_unit,uom.product_uom_unit
+80200601,เกรียงโป๊วสี 2.5 นิ้ว,product_category_80200600,product,uom.product_uom_unit,uom.product_uom_unit
+85400101,กระดาษชำระแบบม้วน,product_category_85400100,product,uom.product_uom_unit,uom.product_uom_unit
+85400102,กระดาษชำระแบบกล่อง,product_category_85400100,product,uom.product_uom_unit,uom.product_uom_unit
+85400103,กระดาษชำระแบบแผ่น,product_category_85400100,product,uom.product_uom_unit,uom.product_uom_unit
+89550101,กาแฟซอง,product_category_89550100,product,uom.product_uom_unit,uom.product_uom_unit
+89550102,กาแฟ,product_category_89550100,product,uom.product_uom_unit,uom.product_uom_unit
+89550301,ใบชามะลิ,product_category_89550300,product,uom.product_uom_unit,uom.product_uom_unit
+79301301,น้ำยาอเนกประสงค์ (น้ำยา SONAX),product_category_79301300,product,uom.product_uom_unit,uom.product_uom_unit
+75200817,ปากกาเมจิปากกลม SDR 200,product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75100413,สมุดคำตอบ,product_category_75100400,product,uom.product_uom_unit,uom.product_uom_unit
+75102348,ตาไก่สติ๊กเกอร์,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102722,ถ่านชาร์จ   (ใช้กับกล้องดิจิตอล),product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102723,ถ่าน  BIOS   Computer  (CR2032)  3  โวลล์,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75202602,อินเด็กซ์พลาสติก  (ใช้กับแฟ้มแขวน),product_category_75202600,product,uom.product_uom_unit,uom.product_uom_unit
+75100909,ไม้บรรทัดอลูมิเนียม  12  นิ้ว,product_category_75100900,product,uom.product_uom_unit,uom.product_uom_unit
+75200821,ปากกาเพ้นท์สีน้ำเงิน  (ใช้เขียนครุภัณฑ์),product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75200818,ปากกาเพ้นท์สีขาว  (ใช้เขียนครุภัณฑ์),product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75200819,ปากกาเพ้นท์สีเขียว  (ใช้เขียนครุภัณฑ์),product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75200820,ปากกาเพ้นท์สีเงิน  (ใช้เขียนครุภัณฑ์),product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75102349,สติ๊กเกอร์ใส,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102347,กาวยาง  (ใช้กับกระเบื้องยาง),product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75201003,ที่วางป้ายชื่อตั้งโต๊ะ,product_category_75201000,product,uom.product_uom_unit,uom.product_uom_unit
+75101237,หมึกพริ้นเตอร์  LASER   JET   1010/1015 (Q2612A),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101238,หมึกพริ้นเตอร์  INK  JET   สี  1120C  (C1823DA),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101239,หมึกพริ้นเตอร์  INK  JET  สีดำ  9300  (51645A),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101240,หมึกพริ้นเตอร์  INK  JET  สี  9300  (C6578DA),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75200822,ปากกาเมจิ 12 สี (ปากกลม),product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75100223,แฟ้มใสกระดาษคอมพิวเตอร์  ขนาด  9 x 11  นิ้ว,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75101254,หมึกพริ้นเตอร์  LASER  JET  1300  (Q2613A),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101241,หมึกพริ้นเตอร์ LASER  JET  2300 (Q2610A),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101242,หมึกพริ้นเตอร์ HP  COLOR  LASER  JET  2550L  (BLACK) (Q3960A),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101243,หมึกพริ้นเตอร์ HP  COLOR  LASER  JET  2550L  (CYAN) (Q3971A),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101244,หมึกพริ้นเตอร์ HP  COLOR  LASER  JET  2550L  (YELLOW) (Q3972A),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101245,หมึกพริ้นเตอร์ HP  COLOR  LASER  JET  2550L  (MAGENTA) (Q3973A),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101246,หมึกพริ้นเตอร์ HP  COLOR  LASER  JET  2550L  (IMAGING  DRUM  ) (Q3964A),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101247,หมึกพริ้นเตอร์  EPSON  C900/C1900  (BLACK)  (SO50100),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101248,หมึกพริ้นเตอร์  EPSON  C900/C1900  (CYAN)  (SO50099),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101249,หมึกพริ้นเตอร์  EPSON  C900/C1900  (YELLOW)  (SO50098),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101250,หมึกพริ้นเตอร์  EPSON  C900/C1900  (MAGENTA)  (SO50097),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75102721,ถ่าน ALKALINE  ขนาด C,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75203201,แผ่นยางรองตัด,product_category_75203200,product,uom.product_uom_unit,uom.product_uom_unit
+75102724,เทปบันทึกภาพขนาดจิ๋ว 60 นาที,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102725,เทปบันทึกภาพขนาดจิ๋ว 90 นาที,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102726,เทปบันทึกภาพขนาดจิ๋ว 120 นาที,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102727,เทปบันทึกภาพขนาดจิ๋ว 180 นาที,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102728,ถ่านเลเซอร์พอยท์,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102729,ถ่านรีโมทเครื่องฉายภาพโปรเจคเตอร์,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102730,ถ่านเครื่องโทรศัพท์ไร้สาย,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75101251,หมึกพริ้นเตอร์  LASER  JET   5100  (C4129X),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101252,หมึกพริ้นเตอร์  LASER  JET   4100  (C8061X),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101253,หมึกพริ้นเตอร์ฟูจิซึ,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75102350,เทปใสพร้อมที่ติดในตัว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75100414,สมุดทะเบียนวัสดุ,product_category_75100400,product,uom.product_uom_unit,uom.product_uom_unit
+75100415,สมุดทะเบียนครุภัณฑ์ ,product_category_75100400,product,uom.product_uom_unit,uom.product_uom_unit
+75101014,ซองพลาสติกใส่ซีดี,product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75100232,แผ่นเติม  Slide  Album,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100233,กรอบใส่แผ่นใส,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75101279,ผ้าหมึกพิมพ์ดีดไฟฟ้า   รุ่น  Comfort  md,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101029,ซองประกวดราคาขยายข้าง   ขนาด C4,product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75200504,ถาดใส่เอกสารแบบเคลือบ 2  ชั้น,product_category_75200500,product,uom.product_uom_unit,uom.product_uom_unit
+75200505,ตะแกรงเหลี่ยมพลาสติกใส่เอกสาร,product_category_75200500,product,uom.product_uom_unit,uom.product_uom_unit
+75101264,หมึกพริ้นเตอร์  CANNON  BCJ - 21  สีดำ,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101265,หมึกพริ้นเตอร์  CANNON  BCJ - 21  สี,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101266,หมึกพริ้นเตอร์  CANNON  BCI - 3eC  สีฟ้า,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101267,หมึกพริ้นเตอร์  CANNON  BCI - 3eM  สีชมพู,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101268,หมึกพริ้นเตอร์  CANNON  BCI - 3eY   สีเหลือง,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101269,หมึกพริ้นเตอร์  CANNON  BCI - 3eBK   สีดำ,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101270,หมึกพริ้นเตอร์  HP  INKJET  27  สีดำ  (C8727A),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101271,หมึกพริ้นเตอร์  HP  INKJET  28  สามสี  (C8728A),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101272,หมึกพริ้นเตอร์  HP  INKJET  56  สีดำ  (C6656A),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101273,หมึกพริ้นเตอร์  HP  INKJET  57  สีดำ  (C6657A),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101274,หมึกพริ้นเตอร์  HP  INKJET  15  สีดำ  (C6615DA),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101275,หมึกพริ้นเตอร์  HP  No. 78  ECONOMIC  สามสี   (C6578DA),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101276,หมึกพริ้นเตอร์  EPSON  LQ  #  300,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+74400909,CARD  LAN,product_category_74400900,product,uom.product_uom_unit,uom.product_uom_unit
+74400908,แป้นพิมพ์คอมพิวเตอร์  (KEYBORAD),product_category_74400900,product,uom.product_uom_unit,uom.product_uom_unit
+75101277,หมึกพริ้นเตอร์  LEXMARK  27  สี,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101278,หมึกพริ้นเตอร์  LEXMARK  17  สีดำ,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75102624,หมึกเติมปากกาเมจิ 2 หัว  สีน้ำเงิน,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75100234,แฟ้มห่วงดำ   ขนาด  C5,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100235,แฟ้มโชว์เอกสาร,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75101262,หมึกพริ้นเตอร์  LASER  BROTHER  TN  6600,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101263,หมึกพริ้นเตอร์  CANNON  BC - 20  สีดำ,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75301261,กระดาษเขียนคำตอบ,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+89550103,กาแฟบด,product_category_89550100,product,uom.product_uom_unit,uom.product_uom_unit
+73501501,กระดาษกรอง  กาแฟ  ชา  และโกโก้,product_category_73501500,product,uom.product_uom_unit,uom.product_uom_unit
+75101280,หมึกพริ้นเตอร์   HP  LASER JET 1160(Q5949A),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101281,หมึกพริ้นเตอร์  FUJI  XEROX  รุ่น  DODUPRINT 205,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75202302,กรรไกร  ขนาด  6.5  นิ้ว,product_category_75202300,product,uom.product_uom_unit,uom.product_uom_unit
+75102351,กระดาษกาวย่น  2.5  นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75200404,ที่ยิงลวดตัวใหญ่  ยี่ห้อ  MAX  รุ่น  TGD,product_category_75200400,product,uom.product_uom_unit,uom.product_uom_unit
+75102352,เทปปิดกล่อง  2  นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75200823,ปากกาเขียนแผ่นใสแบบลบไม่ได้   เบอร์  F,product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75200824,ปากกาเขียนแผ่นใสแบบลบได้   เบอร์  F,product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75102526,ลวดเย็บกระดาษ  T3 - 13M,product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75301251,กระดาษถ่ายเอกสาร  13.5  นิ้ว  ชนิด  70  แกรม  พับ 4,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301252,กระดาษถ่ายเอกสาร  13.5  นิ้ว  ชนิด  80  แกรม  พับ 4,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301253,กระดาษถ่ายเอกสาร  14  นิ้ว  ชนิด  70  แกรม  พับ 4,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301254,กระดาษแฟกซ์  แกน  1  นิ้ว   ยาว  30  หลา,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301255,กระดาษแฟกซ์  แกน  CM  ขนาดสั้น   ยาว  30  หลา,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75102353,กาวหัวฟองน้ำ,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75101015,ซองครุฑขาวมีคณะ (DL)  80  แกรม   (ภาษาอังกฤษ),product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101016,ซองครุฑสีน้ำตาลมีคณะ (DL)  80  แกรม   (ภาษาอังกฤษ),product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101017,ซองครุฑสีขาวมีคณะ  ขนาด  6 x 9  นิ้ว,product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101018,ซองน้ำตาลมีคณะไม่ขยายข้าง  ขนาด  ซี  4,product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101028,ซองครุฑสีน้ำตาลมีคณะ  ขนาด  6 x 9  นิ้ว,product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101019,ซองน้ำตาลมีคณะไม่ขยายข้าง  ขนาด  ซี  4  (ภาษาอังกฤษ),product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101020,ซองน้ำตาลมีคณะขยายข้าง  ขนาด  ซี  4 ,product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101021,ซองสีน้ำตาลมีคณะ  ขนาด  10 x 17  นิ้ว,product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101022,ซองสีน้ำตาลมีคณะไม่ขยายข้าง  ขนาด  10 x 14  นิ้ว,product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101023,ซองสีน้ำตาลมีคณะขยายข้าง  ขนาด  10 x 14  นิ้ว,product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101024,ซองสีน้ำตาลมีคณะไม่ขยายข้าง  ขนาด  11 x 16  นิ้ว,product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101025,ซองสีน้ำตาลมีคณะขยายข้าง  ขนาด  11 x 16  นิ้ว,product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101026,ซองสีน้ำตาลไม่มีคณะไม่ขยายข้าง  ขนาด  11 x 17  นิ้ว,product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101027,ซองสีน้ำตาลไม่มีคณะขยายข้าง  ขนาด  11 x 17  นิ้ว,product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75100506,ดินสอดำลายการ์ตูน,product_category_75100500,product,uom.product_uom_unit,uom.product_uom_unit
+75200825,ปากกาอาร์ตไลน์  เบอร์  70 ,product_category_75200800,product,uom.product_uom_unit,uom.product_uom_unit
+75100224,แฟ้ม  120F  (แฟ้มห่วง  3  นิ้ว),product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100225,แฟ้ม  125F  (แฟ้มห่วง  2  นิ้ว),product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100226,แฟ้มเจาะอ่อน  (ชนิด  500  แกรม),product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100227,แฟ้มตราช้างคละสี  420F,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100228,แฟ้มพับ  ขนาด  A4,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100229,แฟ้มหนีบ  490F,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100230,แฟ้มหนีบ  491F,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100416,สมุดทะเบียนหนังสือรับ,product_category_75100400,product,uom.product_uom_unit,uom.product_uom_unit
+75100417,สมุดทะเบียนหนังสือส่ง,product_category_75100400,product,uom.product_uom_unit,uom.product_uom_unit
+75101255,ผงหมึก  ซีร็อกซ์   3985,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101256,โทนเนอร์วิวาเช่  330,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75301248,กระดาษโปรสเตอร์สี  บางหน้าเดียว,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301249,กระดาษโปรสเตอร์สี  หนาสะท้อนแสง,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301250,กระดาษโปรสเตอร์สี  หนาหน้าเดียว,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75202912,แผ่นดิสเก็ต  ขนาด  3.5  นิ้ว  (กล่องกระดาษ),product_category_75202900,product,uom.product_uom_unit,uom.product_uom_unit
+74401103,จอกรองแสง  ขนาด  14 - 15  นิ้ว,product_category_74401100,product,uom.product_uom_unit,uom.product_uom_unit
+74401104,จอกรองแสง  ขนาด  17  นิ้ว,product_category_74401100,product,uom.product_uom_unit,uom.product_uom_unit
+74400907,เมาส์,product_category_74400900,product,uom.product_uom_unit,uom.product_uom_unit
+75101257,หมึกพริ้นเตอร์   EPSON   FX - 2170/2180  LQ,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75103007,แผ่นพลาสติกลูกฟูก  3  มม.  ขนาด  65 x 122  ซม.,product_category_75100300,product,uom.product_uom_unit,uom.product_uom_unit
+75103005,แผ่นพลาสติกลูกฟูก  3  มม.  ขนาด  65 x 49  ซม.,product_category_75100300,product,uom.product_uom_unit,uom.product_uom_unit
+75103006,แผ่นพลาสติกลูกฟูก  3  มม.  ขนาด  65 x 61  ซม.,product_category_75100300,product,uom.product_uom_unit,uom.product_uom_unit
+75102354,เทปโฟม  2  หน้า  ขนาด  1  นิ้ว   ยาว  3  เมตร,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75100231,แฟ้มกระดาษแบบกระเป๋า,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75202404,เชือกพูกพัสดุสีน้ำตาล,product_category_75202400,product,uom.product_uom_unit,uom.product_uom_unit
+75203301,แผ่นพลาสติกเคลือบบัตร  ขนาด  A4,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75101258,หมึกพริ้นเตอร์  HP  LASER  JET  4350  DTN  (Q5942A),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101261,หมึกพริ้นเตอร์  HP  COLOR  LASER  JET  2550N  (MAGENTA)  (Q3963A),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101260,หมึกพริ้นเตอร์  HP  COLOR  LASER  JET  2550N  (YELLOW)  (Q3962A),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101259,หมึกพริ้นเตอร์  HP  COLOR  LASER  JET  2550N  (CYAN)  (Q3961A),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75102355,สติ๊กเกอร์กระดาษขาวด้าน  ขนาด  A4,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102356,สติ๊กเกอร์แผ่นใหญ่   คละสี,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75301256,กระดาษ  SECURITY  NO.  1,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301257,กระดาษ  SECURITY  NO.  2,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75101709,ที่ลบคำผิดชนิดเทป,product_category_75101700,product,uom.product_uom_unit,uom.product_uom_unit
+75301258,กระดาษแบงค์สี  70  แกรม   ขนาด  A3,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301259,กระดาษแบงค์สี  80  แกรม   ขนาด  A4,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+75301260,กระดาษคองเกอร์เลอร์  100  แกรม   ขนาด  A4,product_category_75301200,product,uom.product_uom_unit,uom.product_uom_unit
+59750209,รางโทรศัพท์  เบอร์  4  (รางหลังเต่า),product_category_59750200,product,uom.product_uom_unit,uom.product_uom_unit
+71102201,ฉากกั้นหนังสือขนาดเล็ก,product_category_71102200,product,uom.product_uom_unit,uom.product_uom_unit
+71102202,ฉากกั้นหนังสือขนาดกลาง,product_category_71102200,product,uom.product_uom_unit,uom.product_uom_unit
+71102203,ฉากกั้นหนังสือขนาดใหญ่,product_category_71102200,product,uom.product_uom_unit,uom.product_uom_unit
+75101282,หมึกพริ้นเตอร์     LASER  92298A,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75202704,แผ่นใส  A4  ชนิดถ่ายเอกสาร,product_category_75202700,product,uom.product_uom_unit,uom.product_uom_unit
+75202703,แผ่นใส  A4  ชนิดเขียนธรรมดา,product_category_75202700,product,uom.product_uom_unit,uom.product_uom_unit
+67200503,กล้องถ่ายรูป ดิจิตอล,product_category_67200500,product,uom.product_uom_unit,uom.product_uom_unit
+67300201,จอภาพยนตร์,product_category_67300200,product,uom.product_uom_unit,uom.product_uom_unit
+67300202,จอรับภาพ,product_category_67300200,product,uom.product_uom_unit,uom.product_uom_unit
+67300301,เครื่องฉายภาพยนตร์,product_category_67300300,product,uom.product_uom_unit,uom.product_uom_unit
+67300302,เครื่องฉายภาพยนต์ขนาด 8 มม.,product_category_67300300,product,uom.product_uom_unit,uom.product_uom_unit
+67300303,เครื่องฉายภาพยนต์ขนาด 16 มม.,product_category_67300300,product,uom.product_uom_unit,uom.product_uom_unit
+67300304,เครื่องประกอบเครื่องฉายภาพยนต์,product_category_67300300,product,uom.product_uom_unit,uom.product_uom_unit
+67300401,เครื่องฉายสไลด์ แบบถาดกลมแนวนอน,product_category_67300400,product,uom.product_uom_unit,uom.product_uom_unit
+67300402,เครื่องฉายสไลด์  แบบถาดตรง,product_category_67300400,product,uom.product_uom_unit,uom.product_uom_unit
+67300403,เครื่องฉายสไลด์ ระบบมัลติวิชั่น,product_category_67300400,product,uom.product_uom_unit,uom.product_uom_unit
+67300404,มอเตอร์ไดร์ฟสปินเนอร์ (MOTOR DRIVE SPINNER),product_category_67300400,product,uom.product_uom_unit,uom.product_uom_unit
+67300501,เครื่องอ่านไมโครฟิล์ม,product_category_67300500,product,uom.product_uom_unit,uom.product_uom_unit
+67300701,เครื่องฉายภาพข้ามศรีษะ (OVERHEAD PROJECTOR),product_category_67300700,product,uom.product_uom_unit,uom.product_uom_unit
+67300801,เครื่องฉายภาพทึบแสง (OPAQUE PROJECTOR),product_category_67300800,product,uom.product_uom_unit,uom.product_uom_unit
+67300802,เครื่องฉายภาพแบบ 3 มิติ,product_category_67300800,product,uom.product_uom_unit,uom.product_uom_unit
+67300901,เครื่องเทปซิงโครไนซ์ แบบธรรมดา,product_category_67300900,product,uom.product_uom_unit,uom.product_uom_unit
+67300902,เครื่องเทปซิงโครไนซ์ แบบ DISSOLVES,product_category_67300900,product,uom.product_uom_unit,uom.product_uom_unit
+67301001,เครื่องฉายภาพผ่านวีดีโอ (VEDIO PROJECTOR),product_category_67301000,product,uom.product_uom_unit,uom.product_uom_unit
+67400101,ถาดหรืออ่างล้างรูป,product_category_67400100,product,uom.product_uom_unit,uom.product_uom_unit
+67400901,เครื่องทำให้แห้งและขัดมันภาพ,product_category_67400900,product,uom.product_uom_unit,uom.product_uom_unit
+67401201,"เครื่องขยายภาพ,เครื่องอัดขยายภาพ",product_category_67401200,product,uom.product_uom_unit,uom.product_uom_unit
+67401401,เครื่องล้างฟิล์ม,product_category_67401400,product,uom.product_uom_unit,uom.product_uom_unit
+67402001,อ่างผสมน้ำยาล้างรูป,product_category_67402000,product,uom.product_uom_unit,uom.product_uom_unit
+67500101,น้ำยาล้างฟิล์มสี,product_category_67500100,product,uom.product_uom_unit,uom.product_uom_unit
+67500102,น้ำยาล้างฟิล์มขาว - ดำ,product_category_67500100,product,uom.product_uom_unit,uom.product_uom_unit
+67500601,ฟิล์มสี,product_category_67500600,product,uom.product_uom_unit,uom.product_uom_unit
+67500602,ฟิล์มขาว - ดำ,product_category_67500600,product,uom.product_uom_unit,uom.product_uom_unit
+67500603,ฟิล์มลีท,product_category_67500600,product,uom.product_uom_unit,uom.product_uom_unit
+67500604,ฟิล์มสไลด์,product_category_67500600,product,uom.product_uom_unit,uom.product_uom_unit
+67500605,ฟิล์มแต่งแผ่นใส,product_category_67500600,product,uom.product_uom_unit,uom.product_uom_unit
+67600101,เครื่องวัดแสง,product_category_67600100,product,uom.product_uom_unit,uom.product_uom_unit
+67600201,ขาตั้งกล้องถ่ายรูป,product_category_67600200,product,uom.product_uom_unit,uom.product_uom_unit
+67600202,ข้าตั้งกล้องถ่ายวีดีโอ,product_category_67600200,product,uom.product_uom_unit,uom.product_uom_unit
+67600401,เลนส์มาตราฐาน  ประมาณ 50 มม.,product_category_67600400,product,uom.product_uom_unit,uom.product_uom_unit
+67600402,"เลนส์ซูม,เลนส์ถ่ายภาพระยะไกล",product_category_67600400,product,uom.product_uom_unit,uom.product_uom_unit
+67600403,"เลนส์มาโคร, เลนส์ถ่ายภาพระยะใกล้",product_category_67600400,product,uom.product_uom_unit,uom.product_uom_unit
+89550302,ชาลิปตัน,product_category_89550300,product,uom.product_uom_unit,uom.product_uom_unit
+89550801,ขิงผงสำเร็จรูป,product_category_89550800,product,uom.product_uom_unit,uom.product_uom_unit
+89550901,คอฟฟี่เมตซอง,product_category_89550900,product,uom.product_uom_unit,uom.product_uom_unit
+89551001,น้ำตาลซอง,product_category_89551000,product,uom.product_uom_unit,uom.product_uom_unit
+89551101,ไมโล,product_category_89551100,product,uom.product_uom_unit,uom.product_uom_unit
+89551201,โอวัลติน,product_category_89551200,product,uom.product_uom_unit,uom.product_uom_unit
+74401003,เครื่องอ่านและบันทึกข้อมูล แบบ เทปแม่เหล็ก,product_category_74401000,product,uom.product_uom_unit,uom.product_uom_unit
+74401004,เครื่องอ่านและบันทึกข้อมูล แบบ CD,product_category_74401000,product,uom.product_uom_unit,uom.product_uom_unit
+74401101,จอคอมพิวเตอร์ที่มีความละเอียดสูง,product_category_74401100,product,uom.product_uom_unit,uom.product_uom_unit
+74401102,จอคอมพิวเตอร์,product_category_74401100,product,uom.product_uom_unit,uom.product_uom_unit
+74401201,เครื่องพิมพ์ ดอทเมทริกซ์ (DOT MATRIX PRINTER),product_category_74401200,product,uom.product_uom_unit,uom.product_uom_unit
+74401202,เครื่องพิมพ์ เลเซอร์ (LASER PRINTER),product_category_74401200,product,uom.product_uom_unit,uom.product_uom_unit
+74401203,เครื่องพิมพ์ ดอทเมทริกซ์ ความเร็วสูง,product_category_74401200,product,uom.product_uom_unit,uom.product_uom_unit
+74401204,เครื่องพิมพ์สีแบบ INK-JET/DISK JET,product_category_74401200,product,uom.product_uom_unit,uom.product_uom_unit
+74401301,X-Y พล๊อตเตอร์ แบบ FLAT,product_category_74401300,product,uom.product_uom_unit,uom.product_uom_unit
+74401302,X-Y พล๊อตเตอร์ แบบ DRUM,product_category_74401300,product,uom.product_uom_unit,uom.product_uom_unit
+74401401,แผงวงจรแสดงกราฟฟิคความละเอียดสูง,product_category_74401400,product,uom.product_uom_unit,uom.product_uom_unit
+74401402,แผงวงจรเชื่อมต่อระบบเครือข่ายแบบอีเธอร์เนท,product_category_74401400,product,uom.product_uom_unit,uom.product_uom_unit
+74401403,ซิงเกิลบอร์ดไมโครคอมพิวเตอร์,product_category_74401400,product,uom.product_uom_unit,uom.product_uom_unit
+74401404,แผงวงจรควบคุมเครือข่ายแบบ FDDI,product_category_74401400,product,uom.product_uom_unit,uom.product_uom_unit
+74401405,แผงวงจรเชื่อมต่อเครือข่ายแบบ FDDI,product_category_74401400,product,uom.product_uom_unit,uom.product_uom_unit
+74401406,แผงวงจรเลือกเส้นทางข้อมูล,product_category_74401400,product,uom.product_uom_unit,uom.product_uom_unit
+74401407,แผงวงจรเชื่อมต่อเครือข่ายระยะทางไกล WAN World area net work,product_category_74401400,product,uom.product_uom_unit,uom.product_uom_unit
+74401501,อุปกรณ์สำหรับเชื่อมโยงระบบเครือข่าย LAN = Local Srea net work,product_category_74401500,product,uom.product_uom_unit,uom.product_uom_unit
+74401502,อุปกรณ์ให้บริการการติดต่อสื่อสาร (FAX MODEM),product_category_74401500,product,uom.product_uom_unit,uom.product_uom_unit
+74401503,ชุดทดลองระบบควบคุมที่ต่อกับคอมพิวเตอร์ได้,product_category_74401500,product,uom.product_uom_unit,uom.product_uom_unit
+74401504,เครื่องสร้างภาพจากสัญญาณคอมพิวเตอร์,product_category_74401500,product,uom.product_uom_unit,uom.product_uom_unit
+74401505,เครื่องมัลติมีเดีย,product_category_74401500,product,uom.product_uom_unit,uom.product_uom_unit
+74401601,ซอฟท์แวร์ต่าง ๆ ของระบบคอมพิวเตอร์ WORKSTATION,product_category_74401600,product,uom.product_uom_unit,uom.product_uom_unit
+74401701,สแกนเนอร์ SCANNER   แบบมือถือ,product_category_74401700,product,uom.product_uom_unit,uom.product_uom_unit
+74401702,สแกนเนอร์ SCANNER แบบตั้งโต๊ะ,product_category_74401700,product,uom.product_uom_unit,uom.product_uom_unit
+74401801,ดีจิไทเซอร์ (DIGITIZER),product_category_74401800,product,uom.product_uom_unit,uom.product_uom_unit
+74401901,เครื่องขับเทปแม่เหล็ก (CATRIDE TAPE DRIVE),product_category_74401900,product,uom.product_uom_unit,uom.product_uom_unit
+74402001,DIGITAL AUDIO TYPE,product_category_74402000,product,uom.product_uom_unit,uom.product_uom_unit
+74900201,เครื่องปรุอักษร,product_category_74900200,product,uom.product_uom_unit,uom.product_uom_unit
+74900301,เครื่องประทับตรา,product_category_74900300,product,uom.product_uom_unit,uom.product_uom_unit
+74900401,ที่ตัดกระดาษ,product_category_74900400,product,uom.product_uom_unit,uom.product_uom_unit
+74901701,เครื่องปรุกระดาษไข,product_category_74901700,product,uom.product_uom_unit,uom.product_uom_unit
+74901801,เครื่องปรุไข่ปลา,product_category_74901800,product,uom.product_uom_unit,uom.product_uom_unit
+74901901,เครื่องเย็บกระดาษ,product_category_74901900,product,uom.product_uom_unit,uom.product_uom_unit
+74902001,เครื่องยิงลวดเย็บ,product_category_74902000,product,uom.product_uom_unit,uom.product_uom_unit
+74902101,เครื่องทำลายเอกสาร,product_category_74902100,product,uom.product_uom_unit,uom.product_uom_unit
+75100201,แฟ้มห่วงดำ ( 2 ห่วง ),product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100202,ลิ้นแฟ้ม,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100203,แฟ้มเจาะอ่อน,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100204,แฟ้มแขวน,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100205,แฟ้มเสนอเซ็นต์,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100206,แฟ้มหนีบดำ,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100207,แฟ้มสันกว้าง 2 นิ้ว,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100208,แฟ้มสันกว้าง 3 นิ้ว,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100209,แฟ้มสามหัว,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100210,แฟ้มใสกระดาษคอมพิวเตอร์  ขนาด  15 x 11  นิ้ว,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100211,แฟ้มเจาะอ่อน A4,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100212,แฟ้มซองพลาสติก,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100213,แฟ้มใส่แผ่นใส,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100214,แฟ้มหยักกลาง,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100215,แฟ้มประวัติข้าราชการ,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100216,แฟ้ม 3 ห่วง,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100217,กล่องใส่แฟ้ม 1 ช่อง,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100218,กล่องใส่แฟ้ม 2 ช่อง,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100219,กล่องใส่แฟ้ม 3 ช่อง,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100220,ซองใส่แผ่นใส,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100221,คลิ๊ปบอร์ด,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100222,ไส้แฟ้มใส่แผ่นใส,product_category_75100200,product,uom.product_uom_unit,uom.product_uom_unit
+75100401,สมุดปกแข็งเล่มเล็ก,product_category_75100400,product,uom.product_uom_unit,uom.product_uom_unit
+75100402,สมุดปกแข็งเล่มใหญ่,product_category_75100400,product,uom.product_uom_unit,uom.product_uom_unit
+75100403,ทะเบียนรับ-ส่ง เล่มใหญ่,product_category_75100400,product,uom.product_uom_unit,uom.product_uom_unit
+75100404,สมุดส่งหนังสือเล่มเล็ก,product_category_75100400,product,uom.product_uom_unit,uom.product_uom_unit
+75100405,สมุดปกแข็ง เบอร์  4 เล่มใหญ่พิเศษ,product_category_75100400,product,uom.product_uom_unit,uom.product_uom_unit
+75100406,สมุดปกอ่อน,product_category_75100400,product,uom.product_uom_unit,uom.product_uom_unit
+75100407,สมุดส่งหนังสือ A4,product_category_75100400,product,uom.product_uom_unit,uom.product_uom_unit
+75100408,สมุดทะเบียนรับ  A4,product_category_75100400,product,uom.product_uom_unit,uom.product_uom_unit
+75100409,ทะเบียนรับเล่มใหญ่,product_category_75100400,product,uom.product_uom_unit,uom.product_uom_unit
+75100410,ทะเบียนส่งเล่มใหญ่,product_category_75100400,product,uom.product_uom_unit,uom.product_uom_unit
+75100411,สมุดมุมมัน,product_category_75100400,product,uom.product_uom_unit,uom.product_uom_unit
+75100412,สมุดฉีก,product_category_75100400,product,uom.product_uom_unit,uom.product_uom_unit
+75100501,ดินสอดำ HB,product_category_75100500,product,uom.product_uom_unit,uom.product_uom_unit
+75100502,ดินสอแดง,product_category_75100500,product,uom.product_uom_unit,uom.product_uom_unit
+75100503,ดินสอดำ 2 B,product_category_75100500,product,uom.product_uom_unit,uom.product_uom_unit
+75100504,ดินสอกด,product_category_75100500,product,uom.product_uom_unit,uom.product_uom_unit
+75100505,ไส้ดินสอกด,product_category_75100500,product,uom.product_uom_unit,uom.product_uom_unit
+75100601,สีไม้,product_category_75100600,product,uom.product_uom_unit,uom.product_uom_unit
+75100801,ลวดเสียบกระดาษ เบอร์ 1,product_category_75100800,product,uom.product_uom_unit,uom.product_uom_unit
+75100802,ลวดเสียบกระดาษ เบอร์ 0,product_category_75100800,product,uom.product_uom_unit,uom.product_uom_unit
+75100803,คลิปหนีบหูขาว เบอร์ 108,product_category_75100800,product,uom.product_uom_unit,uom.product_uom_unit
+75100804,คลิปหนีบหูขาว เบอร์ 109,product_category_75100800,product,uom.product_uom_unit,uom.product_uom_unit
+75100805,คลิปหนีบหูขาว เบอร์ 110,product_category_75100800,product,uom.product_uom_unit,uom.product_uom_unit
+75100806,คลิปหนีบหูขาว เบอร์ 111,product_category_75100800,product,uom.product_uom_unit,uom.product_uom_unit
+75100807,คลิปหนีบหูขาว เบอร์ 112,product_category_75100800,product,uom.product_uom_unit,uom.product_uom_unit
+75100808,ลวดเสียบกระดาษเบอร์ 5,product_category_75100800,product,uom.product_uom_unit,uom.product_uom_unit
+75100809,คลิปหนีบหูขาว เบอร์ 113,product_category_75100800,product,uom.product_uom_unit,uom.product_uom_unit
+75100901,ไม้บรรทัดพลาสติก 12 นิ้ว,product_category_75100900,product,uom.product_uom_unit,uom.product_uom_unit
+75100902,ไม้บรรทัดพลาสติก 18 นิ้ว,product_category_75100900,product,uom.product_uom_unit,uom.product_uom_unit
+75100903,ไม้บรรทัดพลาสติก 24 นิ้ว,product_category_75100900,product,uom.product_uom_unit,uom.product_uom_unit
+75100904,ไม้บรรทัดเหล็ก 12 นิ้ว,product_category_75100900,product,uom.product_uom_unit,uom.product_uom_unit
+75100905,ไม้บรรทัดเหล็ก 18 นิ้ว,product_category_75100900,product,uom.product_uom_unit,uom.product_uom_unit
+75100906,ไม้บรรทัดเหล็ก 24 นิ้ว,product_category_75100900,product,uom.product_uom_unit,uom.product_uom_unit
+75100907,ไม้บรรทัดพลาสติก 8 นิ้ว,product_category_75100900,product,uom.product_uom_unit,uom.product_uom_unit
+75100908,ไม้บรรทัดเหล็ก 36 นิ้ว,product_category_75100900,product,uom.product_uom_unit,uom.product_uom_unit
+75101001,ซองครุฑขาว,product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101002,ซองสีน้ำตาล C4 ไม่ขยายข้าง (229*324 มม.),product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101003,ซองสีน้ำตาล C4 ขยายข้าง (229*324 มม.),product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101004,ซองสีน้ำตาลขยายข้างขนาดใหญ่,product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101005,ซองสีน้ำตาล C5 (162*229 มม.),product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101006,ซองครุฑสีน้ำตาล,product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101007,ซองแอร์เมล์,product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101008,ซองข้อสอบขยายข้าง,product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101009,ซองครุฑขาวมีชื่อคณะ,product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101010,ซองครุฑน้ำตาลมีชื่อคณะ,product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101011,ซองขาว C 5 (162*229 มม.),product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101012,ซองสีน้ำตาลไม่ขยายข้างขนาดใหญ่,product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101013,ซองขาว DL,product_category_75101000,product,uom.product_uom_unit,uom.product_uom_unit
+75101101,หมึกร็อตติ้งสีดำ,product_category_75101100,product,uom.product_uom_unit,uom.product_uom_unit
+75101201,ผ้าหมึกพิมพ์ดีดธรรมดา,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101202,ผ้าหมึกเครื่องคิดเลข,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101203,ผ้าหมึกเครื่องพิมพ์ดีดไฟฟ้า ES 100,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101204,ผ้าหมึกเครื่องพิมพ์ดีดไฟฟ้า  ST 200 (200 BT),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101205,ผ้าหมึกพริ้นเตอร์ EPSON  LQ1170 i (#7754),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101206,ผ้าหมึกพิมพ์ดีดไฟฟ้าแคนนอน,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101207,ผ้าหมึกพริ้นเตอร์ NEC P5300,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101208,ผ้าหมึกพิมพ์ดีดโอลิมเปีย 72 BT,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101209,หมึกพริ้นเตอร์ LASER 6P,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101210,ผ้าหมึกพิมพ์ดีดไฟฟ้า IBM,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101211,ผ้าหมึกพริ้นเตอร์  OKI,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101212,หมึกปริ้นเตอร์ LASER JET 4050 / 4000,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101213,หมึกปริ้นเตอร์ LASER JET 2100,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101214,หมึกปริ้นเตอร์ LASER JET 4 L / 4 P,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101215,หมึกพริ้นเตอร์ INJET / DISKJET,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101216,หมึกเครื่องพริ้นเตอร์ (REFILL),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101217,หมึกพริ้นเตอร์ LASER  5 L / 6 L,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101218,หมึกพริ้นเตอร์ LASER  5 M,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101219,หมึกพริ้นเตอร์ LASER C3900 A (4 MV),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101220,หมึกพริ้นเตอร์ LASER 92295 A,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101221,ผงหมึกฟูจิซึ,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101222,หมึกพริ้นเตอร์ LASER  DESIGN  JET,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101223,ผงหมึกแคนนอน BC - 02  สีดำ,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101224,ผงหมึกแคนนอน BC - 02  สีเหลือง,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101225,ผงหมึกแคนนอน  BC - 02  สีน้ำเงิน,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101226,ผงหมึกแคนนอน  BC - 02  สีแดง,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101227,หมึกพริ้นเตอร์ LASER  C 3105 A สีดำ,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101228,หมึกพริ้นเตอร์  LASER C 3105 A  สีเหลือง,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101229,หมึกพริ้นเตอร์ LASER C 3105 A  สีแดง,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101230,หมึกพริ้นเตอร์  LASER C 3105 A  สีน้ำเงิน,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101231,หมึกพริ้นเตอร์ LASER C 4096 A,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101232,หมึกพริ้นเตอร์ LASER C 4127 X,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101233,หมึกพริ้นเตอร์ LASER 92274 A,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101234,หมึกพริ้นเตอร์ LASER C7115A (1200),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101235,หมึกพริ้นเตอร์ LASER JET 1100-3200 (C4092A),product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101236,หมึกพริ้นเตอร์ LASER LEXMARK Optra,product_category_75101200,product,uom.product_uom_unit,uom.product_uom_unit
+75101601,ยางลบดินสอ,product_category_75101600,product,uom.product_uom_unit,uom.product_uom_unit
+75101602,ยางลบหมึก,product_category_75101600,product,uom.product_uom_unit,uom.product_uom_unit
+75101701,น้ำยาลบคำผิดแบบขวด,product_category_75101700,product,uom.product_uom_unit,uom.product_uom_unit
+75101702,น้ำยาลบไข,product_category_75101700,product,uom.product_uom_unit,uom.product_uom_unit
+75101703,เทปลบคำผิดโอลิมเปีย,product_category_75101700,product,uom.product_uom_unit,uom.product_uom_unit
+75101704,ทินเนอร์,product_category_75101700,product,uom.product_uom_unit,uom.product_uom_unit
+75101705,เทปลบคำผิดแคนนอน,product_category_75101700,product,uom.product_uom_unit,uom.product_uom_unit
+75101706,เทปลบคำผิด  IBM,product_category_75101700,product,uom.product_uom_unit,uom.product_uom_unit
+75101707,ปากกาลบคำผิด,product_category_75101700,product,uom.product_uom_unit,uom.product_uom_unit
+75101708,ยางลบพิมพ์ดีดชนิดแท่ง,product_category_75101700,product,uom.product_uom_unit,uom.product_uom_unit
+75102001,เข็มหมุด,product_category_75102000,product,uom.product_uom_unit,uom.product_uom_unit
+75102301,กาวแท่งขนาดเล็ก,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102302,กาวน้ำขนาดเล็ก,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102303,กาวลาเท็กซ์ขนาดเล็ก,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102304,กาวยางขนาดเล็ก,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102305,เทปใสขนาด 1 นิ้ว 36 หลา,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102306,กระดาษกาวย่น  1 นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102307,กระดาษกาวย่น 1.5 นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102308,เทปติดสันปก 2 นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102309,เทปติดสันปก 2.5 นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102310,เทปโฟม 2 หน้าขนาด 1 นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102311,กาวตราช้าง,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102312,เทปใส ขนาด 0.5 นิ้ว 36 หลา,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102313,เทปใส ขนาด 3/4 นิ้ว 36 หลา,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102314,กระดาษกาวย่น 0.5 นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102315,กระดาษกาวย่น 2 นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102316,กระดาษกาวย่น 3 นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102317,เทปโฟม 2 หน้า ขนาด 0.5 นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102318,เทปโฟม 2 หน้า ขนาด 1.5 นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102319,เทปโฟม 2 หน้า ขนาด 2 นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102320,เทปติดสันปก  1  นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102321,เทปติดสันปก  1.5  นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102322,เทปติดสันปก  3  นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102323,กาวแท่งขนาดกลาง,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102324,กาวแท่งขนาดใหญ่,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102325,กาวลาเท็กซ์ขนาดกลาง,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102326,กาวลาเท็กขนาดใหญ่,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102327,กาวน้ำขนาดกลาง,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102328,กาวน้ำขนาดใหญ่,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102329,กาวสเปรย์,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102330,เทปปิดกล่อง,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102331,เทปเยื่อ  0.5 นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102332,เทปเยื่อ 3/4 นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102333,เทปเยื่อ 1 นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102334,เทปพิมพ์อักษร,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102335,กระดาษกาวน้ำ 1.5  นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102336,กระดาษกาวน้ำ 3 นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102337,เทปใสขนาด 0.5 นิ้ว 72 หลา,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102338,เทปใสขนาด 3/4 นิ้ว 72 หลา,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102339,เทปใสขนาด 1 นิ้ว 72 หลา,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102340,สติ๊กเกอร์ PVC,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102341,กาวยางขนาดใหญ่,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102342,กาวยางขนาดกลาง,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102343,เทปเยื่อ 2 นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102344,เทปเยื่อ 1.5 นิ้ว,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102345,กาวสเปรย์ เบอร์ 77,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102346,กาวสเปรย์ เบอร์ 75,product_category_75102300,product,uom.product_uom_unit,uom.product_uom_unit
+75102501,ลวดเย็บกระดาษราปิค 9/10,product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102502,ลวดเย็บกระดาษ เบอร์ 3 (24/6),product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102503,ลวดเย็บกระดาษ เบอร์ 8,product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102504,ลวดเย็บกระดาษ เบอร์ 10,product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102505,ลวดเย็บกระดาษ เบอร์ 35 (26/6),product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102506,ลวดเย็บกระดาษ เบอร์ 1210 (10 มม.),product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102507,ลวดเย็บกระดาษ เบอร์ 1213 (13 มม.),product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102508,ลวดเย็บกระดาษ เบอร์ 1215 (15 มม.),product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102509,ลวดเย็บกระดาษ เบอร์ 1217 (17 มม.),product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102510,ลวดเย็บกระดาษแม็กซ์ T3-10M,product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102511,ลวดยิงกระดาษราปิค เบอร์ 13/6,product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102512,เป็กดอกจันทร์ 3 นิ้ว,product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102513,เป็กดอกจันทร์ 2 นิ้ว,product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102514,เป็กดอกจันทร์ 1 นิ้ว,product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102515,เป็กกดกระดาษ,product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102516,ลวดเย็บกระดาษ เบอร์ 8 STCR 2115,product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102517,ลวดเย็บกระดาษ เบอร์ 1220  FA-H,product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102518,ลวดเย็บกระดาษราปิค  9/8,product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102519,ลวดเย็บกระดาษราปิค  9/12,product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102520,ลวดเย็บกระดาษราปิค  9/14,product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102521,ลวดยิงกระดาษ เบอร์ 13/8,product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102522,ลวดยิงกระดาษ เบอร์ 13/10,product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102523,ลวดยิงกระดาษ เบอร์ 13/14,product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102524,ลวดเย็บกระดาษ ขนาด 8  มม.,product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102525,ลวดเย็บกระดาษ เบอร์ 1208,product_category_75102500,product,uom.product_uom_unit,uom.product_uom_unit
+75102601,หมึกเติมแท่นประทับตราสีแดง,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102602,หมึกเติมแท่นประทับตราสีดำ,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102603,หมึกเติมแท่นประทับตราสีน้ำเงิน,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102604,หมึกเติมเครื่องตอกตัวเลข,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102605,ผงหมึกเครื่องถ่ายเอกสารซีร็อกซ์,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102606,ผงหมึกมินอลต้า EP 410 Z,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102607,ผงหมึกมินอลต้า EP 450 Z,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102608,หมึกโรเนียวสีดำ,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102609,หมึกโรเนียวสีแดง,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102610,หมึกโรเนียวสีน้ำเงิน,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102611,หมึกโรเนียวสีทอง,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102612,หมึกโรเนียวสีเขียว,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102613,หมึกเติมแท่นประทับตราสีเขียว,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102614,หมึกพิมพ์เครื่องสำเนาดิจิตอล,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102615,หมึกเครื่องโทรสาร PANASONIC,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102616,ผงหมึกเครื่องถ่ายเอกสารแคนนอน,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102617,ผงหมึกเครื่องถ่ายเอกสารชาร์ป,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102618,ผงหมึกเครื่องถ่ายเอกสารลิโก้,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102619,หมึกเติมปากกาไวท์บอร์ดสีแดง,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102620,หมึกเติมปากกาไวท์บอร์ดสีดำ,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102621,หมึกเติมปากกาไวท์บอร์ดสีน้ำเงิน,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102622,หมึกเติมปากกาไวท์บอร์ดสีเขียว,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102623,ม้วนฟิล์มเครืองโทรสาร PANASONIC,product_category_75102600,product,uom.product_uom_unit,uom.product_uom_unit
+75102701,เทปบันทึกเสียง 60 นาที,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102702,เทปบันทึกเสียง 90 นาที,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102703,เทปบันทึกเสียง 120 นาที,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
+75102704,ถ่าน ALKALINE  ขนาด  AAA,product_category_75102700,product,uom.product_uom_unit,uom.product_uom_unit
