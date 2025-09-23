@@ -14,6 +14,5 @@ class ResPartner(models.Model):
     @api.constrains('vat', 'company_type')
     def _check_thai_citizen_id_for_person(self):
         for record in self:
-            if record.company_type == 'person':
-                if not validate(record.vat):
-                    raise ValidationError("Tax ID Incorrect")
+            if record.company_type == 'person' and not validate(record.vat):
+                raise ValidationError("Tax ID Incorrect")
