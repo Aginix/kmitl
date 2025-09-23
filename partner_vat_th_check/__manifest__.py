@@ -8,7 +8,7 @@
     "website": "https://github.com/aginix/kmitl",
     'depends': ['base'],
     'external_dependencies': {
-        'python': ['thai_citizen_id'],
+        'python': ['thai-citizen-id'],
     },
     'application': True,
     'installable': True,
