@@ -12,9 +12,14 @@ class PurchaseOrderLine(models.Model):
 
     @api.ondelete(at_uninstall=False)
     def _unlink_restrict_qty_accepted(self):
-        restricted = self.filtered(lambda l: l.qty_accepted > 1)
-        if restricted:
-            raise UserError(_(
-                "You cannot delete order lines that have accepted quantity greater than 1.\n"
-                "Affected lines: %s"
-            ) % ", ".join(restricted.mapped("name")))
+       for line in self:
+           if line.qty_accepted > 0:
+               raise UserError(
+                   _(
+                       "You cannot delete a purchase order line with accepted quantity. "
+                   )
+               )
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_purchase_or_done(self):
+        return
