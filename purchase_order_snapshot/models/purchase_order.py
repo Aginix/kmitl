@@ -14,8 +14,10 @@ class PurchaseOrder(models.Model):
     current_snapshot_id = fields.Many2one(
         comodel_name="purchase.order",
     )
-    old_snapshot_ids = fields.One2many(
+    snapshot_ids = fields.One2many(
         comodel_name="purchase.order",
+        inverse_name="current_snapshot_id",
+        string="Old snapshots",
     )
 
     # ต้องการให้ copy fields ไหนใส่ในนี้
@@ -27,16 +29,11 @@ class PurchaseOrder(models.Model):
         })
         return res
 
-    def action_create_snapshot(self):
-        for order in self:
-            snapshot = order.copy()
-        return True
-
     def action_view_snapshots(self):
         return {
             "type": "ir.actions.act_window",
             "name": "Snapshots",
             "res_model": "purchase.order",
             "view_mode": "tree,form",
-            "context": {"default_current_snapshot_id": self.id},
+            "domain": [("current_snapshot_id", "=", self.id), ("active", "=", False)],
         }
