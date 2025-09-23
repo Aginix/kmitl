@@ -81,19 +81,20 @@ class WorkAcceptanceCommittee(models.Model):
         return True
 
     @api.model
-    def create(self, vals):
-        wa_id = vals.get("wa_id", False)
-        if wa_id:
-            work_acceptance = self.env["work.acceptance"].browse(wa_id)
-            if (
-                work_acceptance.state == "draft"
-                and work_acceptance.review_ids
-                and not work_acceptance.validated
-                and not work_acceptance.rejected
-                and not self._check_allow_write_under_validation(vals)
-            ):
-                raise ValidationError(_("The work acceptance is under validation."))
-        return super().create(vals)
+    def create(self, vals_list):
+        for vals in vals_list:
+            wa_id = vals.get("wa_id", False)
+            if wa_id:
+                work_acceptance = self.env["work.acceptance"].browse(wa_id)
+                if (
+                    work_acceptance.state == "draft"
+                    and work_acceptance.review_ids
+                    and not work_acceptance.validated
+                    and not work_acceptance.rejected
+                    and not self._check_allow_write_under_validation(vals)
+                ):
+                    raise ValidationError(_("The work acceptance is under validation."))
+        return super().create(vals_list)
 
     def write(self, vals):
         for rec in self:
