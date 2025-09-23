@@ -80,7 +80,7 @@ class WorkAcceptanceCommittee(models.Model):
             return False
         return True
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
             wa_id = vals.get("wa_id", False)

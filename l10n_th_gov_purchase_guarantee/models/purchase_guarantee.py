@@ -282,12 +282,12 @@ class PurchaseGuarantee(models.Model):
                 rec.bill_ids.mapped("amount_residual")
             )
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get("name", "/") == "/":
                 vals["name"] = self.env["ir.sequence"].next_by_code("purchase.guarantee")
-        return super().create(vals_list) 
+        return super().create(vals_list)
 
     def name_get(self):
         result = []
