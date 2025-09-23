@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="po_exception_02" model="exception.rule">
-        <field name="name">ยอดรวมภาษีเกิน 500,000 ต้องมีหลักประกัน</field>
+        <field name="name">มูลค่ามากกว่า 500,000 บาท จะต้องบันทึกหลักประกันสัญญา</field>
         <field name="description">
-            พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560
+            ใบสั่งซื้อ/จ้าง/สัญญา มูลค่ามากกว่า 500,000 บาท จะต้องบันทึกหลักประกันสัญญา
         </field>
         <field name="model">purchase.order</field>
         <field name="exception_type">by_py_code</field>
