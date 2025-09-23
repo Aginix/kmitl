@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
-import logging
-
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
 
 
 class BaseSnapshot(models.Model):
@@ -75,3 +71,44 @@ class BaseSnapshot(models.Model):
             rec.write({"unsnapshoted_name": rec[name_field]})
 
         return rec
+
+    def _get_new_snapshot_data(self, new_number):
+        self.ensure_one()
+        return {
+            "snapshot_number": new_number,
+            "unsnapshoted_name": self.unsnapshoted_name,
+            "name": "%s-%02d" % (self.unsnapshoted_name, new_number),
+            "old_snapshot_ids": [(4, self.id, False)],
+        }
+
+    def _prepare_snapshot_data(self, new_snapshot):
+        return {"active": False, "current_snapshot_id": new_snapshot.id}
+
+    def copy_snapshot_with_context(self):
+        default_data = self.default_get([])
+        new_number = self.snapshot_number + 1
+        vals = self._get_new_snapshot_data(new_number)
+        default_data.update(vals)
+        new_snapshot = self.copy(default_data)
+        self.old_snapshot_ids.write({"current_snapshot_id": new_snapshot.id})
+        self.write(self._prepare_snapshot_data(new_snapshot))
+        return new_snapshot
+
+    def create_snapshot(self):
+        snapshot_ids = []
+        for rec in self:
+            copied_rec = rec.copy_snapshot_with_context()
+            if hasattr(self, "message_post"):
+                msg = _("New snapshot created: %s") % copied_rec.name
+                copied_rec.message_post(body=msg)
+                rec.message_post(body=msg)
+            snapshot_ids.append(copied_rec.id)
+
+        return {
+            "type": "ir.actions.act_window",
+            "view_mode": "tree,form",
+            "name": _("New Snapshots"),
+            "res_model": self._name,
+            "domain": [("id", "in", snapshot_ids)],
+            "target": "current",
+        }
