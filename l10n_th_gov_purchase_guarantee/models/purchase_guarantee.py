@@ -287,7 +287,7 @@ class PurchaseGuarantee(models.Model):
         for vals in vals_list:
             if vals.get("name", "/") == "/":
                 vals["name"] = self.env["ir.sequence"].next_by_code("purchase.guarantee")
-        return super().create(vals_list)
+        return super().create(vals_list) 
 
     def name_get(self):
         result = []
