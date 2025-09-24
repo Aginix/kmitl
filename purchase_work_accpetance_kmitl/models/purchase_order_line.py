@@ -14,10 +14,14 @@ class PurchaseOrderLine(models.Model):
                     _("ไม่สามารถลบรายการเนื่องจากมีการรับสินค้าแล้ว")
                 )
             if line.wa_line_ids:
-                raise UserError(
-                    _("ไม่าสามารถลบรายการเนื่องจากมีการตรวจรับสินค้าแล้ว")
+                valid_wa_lines = line.wa_line_ids.filtered(
+                    lambda wa: wa.state != 'cancel' and wa.active
                 )
-
+                if valid_wa_lines:
+                    raise UserError(
+                        _("ไม่าสามารถลบรายการเนื่องจากมีการตรวจรับสินค้าแล้ว")
+                    )
+                    
     @api.ondelete(at_uninstall=False)
     def _unlink_except_purchase_or_done(self):
         return
