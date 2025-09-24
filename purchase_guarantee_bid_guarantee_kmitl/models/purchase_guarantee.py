@@ -21,13 +21,15 @@ class PurchaseGuarantee(models.Model):
         index=True,
         store=True,
         ondelete="restrict",
+        compute_sudo=False
     )
 
     is_purchase_request = fields.Boolean(
         string="Is Purchase Request",
         compute="_compute_reference",
         store=False,
-        help="True if reference is purchase.request"
+        help="True if reference is purchase.request",
+        compute_sudo=False
     )
 
     @api.model
