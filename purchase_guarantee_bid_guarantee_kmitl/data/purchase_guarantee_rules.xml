@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <function name="write" model="ir.model.data">
+        <value model="ir.model.data" search="[('module', '=', 'l10n_th_gov_purchase_guarantee'), ('name', 'in',['bid_guarantee'])]" />
+        <value eval="{'noupdate': False}" />
+    </function>
+
+</odoo>

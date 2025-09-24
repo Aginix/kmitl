@@ -16,6 +16,7 @@ export class BudgetReportSummary extends Component {
 
         this.orm = useService("orm");
         this.notification = useService("notification");
+        this.actionService = useService("action");
 
         this.state = useState({
             filters: {
@@ -189,6 +190,338 @@ export class BudgetReportSummary extends Component {
     getExpandIcon(row) {
         if (!row || !row.has_children || !row.row_key) return '';
         return this.isRowExpanded(row.row_key) ? 'fa fa-caret-down' : 'fa fa-caret-right';
+    }
+
+    // Drill-down functionality
+    // Helper to check if a cell value is clickable (not zero)
+    isClickable(value) {
+        return value && value !== 0;
+    }
+
+    // Helper to find row by row_key
+    _findRowByKey(rowKey) {
+        return this.state.rows.find(row => row.row_key === rowKey);
+    }
+
+    // Handler for งบประมาณ (Appropriation) column
+    async onAppropriationClick(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        
+        const rowKey = event.currentTarget.getAttribute('data-row-key');
+        const row = this._findRowByKey(rowKey);
+        if (!row) return;
+        
+        const domain = await this._buildMoveLineDomain(row, ['appropriation', 'entry']);
+        
+        await this.actionService.doAction({
+            type: 'ir.actions.act_window',
+            name: `งบประมาณ - ${row.code} ${row.name}`,
+            res_model: 'budget.move.line',
+            views: [[false, 'tree'], [false, 'form'], [false, 'pivot']],
+            domain: domain,
+            context: {
+                search_default_group_by_account: 1,
+                search_default_group_by_move: 1,
+            },
+            target: 'current',
+        });
+    }
+
+    // Handler for เงินจอง (Commitment) column  
+    async onCommitmentClick(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        
+        const rowKey = event.currentTarget.getAttribute('data-row-key');
+        const row = this._findRowByKey(rowKey);
+        if (!row) return;
+        
+        const domain = await this._buildCommitmentDomain(row, 'reserved');
+        
+        await this.actionService.doAction({
+            type: 'ir.actions.act_window',
+            name: `เงินจอง - ${row.code} ${row.name}`,
+            res_model: 'budget.commitment',
+            views: [[false, 'tree'], [false, 'form'], [false, 'pivot']],
+            domain: domain,
+            context: {
+                search_default_state_reserved: 1,
+            },
+            target: 'current',
+        });
+    }
+
+    // Handler for ผูกพัน (Obligation) column
+    async onObligationClick(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        
+        const rowKey = event.currentTarget.getAttribute('data-row-key');
+        const row = this._findRowByKey(rowKey);
+        if (!row) return;
+        
+        const domain = await this._buildCommitmentDomain(row, 'obligated');
+        
+        await this.actionService.doAction({
+            type: 'ir.actions.act_window',
+            name: `ผูกพัน - ${row.code} ${row.name}`,
+            res_model: 'budget.commitment',
+            views: [[false, 'tree'], [false, 'form'], [false, 'pivot']],
+            domain: domain,
+            context: {
+                search_default_state_obligated: 1,
+            },
+            target: 'current',
+        });
+    }
+
+    // Handler for เบิกจ่ายแล้ว (Expenditure) column
+    async onExpenditureClick(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        
+        const rowKey = event.currentTarget.getAttribute('data-row-key');
+        const row = this._findRowByKey(rowKey);
+        if (!row) return;
+        
+        const domain = await this._buildMoveLineDomain(row, ['consume']);
+        
+        await this.actionService.doAction({
+            type: 'ir.actions.act_window',
+            name: `เบิกจ่ายแล้ว - ${row.code} ${row.name}`,
+            res_model: 'budget.move.line',
+            views: [[false, 'tree'], [false, 'form'], [false, 'pivot']],
+            domain: domain,
+            context: {
+                search_default_group_by_move: 1,
+            },
+            target: 'current',
+        });
+    }
+
+    // Build domain for budget.move.line queries
+    async _buildMoveLineDomain(row, moveTypes) {
+        const domain = [
+            ['parent_state', '=', 'posted'],
+            ['date_range_fy_id', '=', this.state.filters.fiscal_year_id],
+        ];
+        
+        // Add source analytic filter
+        if (this.state.filters.source_analytic_id) {
+            domain.push(['source_analytic_id', '=', this.state.filters.source_analytic_id]);
+        }
+        
+        // Add department filter from report filters
+        if (this.state.filters.department_ids && this.state.filters.department_ids.length > 0) {
+            const deptIds = await this._getDepartmentWithChildren(this.state.filters.department_ids);
+            domain.push(['department_analytic_id', 'in', deptIds]);
+        }
+        
+        // Add move type filter
+        if (moveTypes && moveTypes.length > 0) {
+            domain.push(['move_type', 'in', moveTypes]);
+        }
+        
+        // Add row-specific analytic filters based on row type
+        await this._addRowAnalyticFilters(domain, row);
+        
+        console.log('Final move line domain:', domain, 'Row:', row);
+        return domain;
+    }
+
+    // Build domain for budget.commitment queries
+    async _buildCommitmentDomain(row, state) {
+        const domain = [
+            ['state', '=', state],
+            ['date_range_fy_id', '=', this.state.filters.fiscal_year_id],
+        ];
+        
+        // Add source analytic filter
+        if (this.state.filters.source_analytic_id) {
+            domain.push(['source_analytic_id', '=', this.state.filters.source_analytic_id]);
+        }
+        
+        // Add department filter from report filters
+        if (this.state.filters.department_ids && this.state.filters.department_ids.length > 0) {
+            const deptIds = await this._getDepartmentWithChildren(this.state.filters.department_ids);
+            domain.push(['department_analytic_id', 'in', deptIds]);
+        }
+        
+        // Add row-specific analytic filters
+        await this._addRowAnalyticFilters(domain, row);
+        
+        console.log('Final commitment domain:', domain, 'Row:', row);
+        return domain;
+    }
+
+    // Add analytic filters based on row context using code-based filtering
+    async _addRowAnalyticFilters(domain, row) {
+        console.log('Adding analytic filters for row:', row);
+        
+        // Use code-based filtering with ilike for simpler and more reliable filtering
+        if (row.type === 'activity') {
+            // For activity rows, filter by activity code and its children using prefix
+            if (row.code) {
+                // Use analytic account code prefix matching
+                await this._addAnalyticCodeFilter(domain, 'activity_analytic_id', row.code);
+                
+                // Also get budget accounts that start with this activity code
+                await this._addBudgetAccountCodeFilter(domain, row.code);
+            }
+        } else if (row.type === 'fund') {
+            // For fund rows, filter by fund code and parent activity if exists
+            if (row.parent_activity_code) {
+                await this._addAnalyticCodeFilter(domain, 'activity_analytic_id', row.parent_activity_code);
+            }
+            if (row.code) {
+                await this._addAnalyticCodeFilter(domain, 'fund_analytic_id', row.code);
+                
+                // Also get budget accounts for this fund
+                await this._addBudgetAccountCodeFilter(domain, row.code, row.parent_activity_code);
+            }
+        } else if (row.type === 'account') {
+            // For account rows, filter by parent analytic codes and account code
+            if (row.parent_activity_code) {
+                await this._addAnalyticCodeFilter(domain, 'activity_analytic_id', row.parent_activity_code);
+            }
+            if (row.parent_fund_code) {
+                await this._addAnalyticCodeFilter(domain, 'fund_analytic_id', row.parent_fund_code);
+            }
+            if (row.code) {
+                // Filter budget accounts by code prefix
+                const accountIds = await this._getBudgetAccountsByCode(row.code);
+                if (accountIds && accountIds.length > 0) {
+                    domain.push(['account_id', 'in', accountIds]);
+                }
+            }
+        }
+    }
+
+    // Get analytic IDs including children (for hierarchical filtering)
+    async _getAnalyticWithChildren(analyticId, dimension) {
+        try {
+            const children = await this.orm.call(
+                "budget.report.summary", 
+                "get_analytic_children", 
+                [analyticId, dimension]
+            );
+            return children;
+        } catch (error) {
+            console.warn("Failed to get analytic children, using single ID:", error);
+            return [analyticId];
+        }
+    }
+
+    // Get budget account IDs including children
+    async _getBudgetAccountWithChildren(accountId) {
+        try {
+            const children = await this.orm.call(
+                "budget.report.summary", 
+                "get_budget_account_children", 
+                [accountId]
+            );
+            return children;
+        } catch (error) {
+            console.warn("Failed to get budget account children, using single ID:", error);
+            return [accountId];
+        }
+    }
+
+    // Get budget account IDs for a specific activity
+    async _getBudgetAccountsForActivity(activityId) {
+        try {
+            const accountIds = await this.orm.call(
+                "budget.report.summary", 
+                "get_budget_accounts_for_activity", 
+                [activityId]
+            );
+            return accountIds;
+        } catch (error) {
+            console.warn("Failed to get budget accounts for activity:", error);
+            return [];
+        }
+    }
+
+    // Get budget account IDs for a specific fund and optional parent activity
+    async _getBudgetAccountsForFund(fundId, parentActivityId = null) {
+        try {
+            const accountIds = await this.orm.call(
+                "budget.report.summary", 
+                "get_budget_accounts_for_fund", 
+                [fundId, parentActivityId]
+            );
+            return accountIds;
+        } catch (error) {
+            console.warn("Failed to get budget accounts for fund:", error);
+            return [];
+        }
+    }
+
+    // Add analytic filter using code prefix matching
+    async _addAnalyticCodeFilter(domain, field_name, code) {
+        try {
+            const analyticIds = await this.orm.call(
+                "budget.report.summary", 
+                "get_analytic_ids_by_code_prefix", 
+                [code, field_name]
+            );
+            console.log(`${field_name} IDs for code ${code}:`, analyticIds);
+            
+            if (analyticIds && analyticIds.length > 0) {
+                domain.push([field_name, 'in', analyticIds]);
+            }
+        } catch (error) {
+            console.warn(`Failed to get analytic IDs for ${field_name} with code ${code}:`, error);
+        }
+    }
+
+    // Add budget account filter using code prefix
+    async _addBudgetAccountCodeFilter(domain, code, parentCode = null) {
+        try {
+            const accountIds = await this.orm.call(
+                "budget.report.summary", 
+                "get_budget_account_ids_by_code_prefix", 
+                [code, parentCode]
+            );
+            console.log(`Account IDs for code ${code}:`, accountIds);
+            
+            if (accountIds && accountIds.length > 0) {
+                domain.push(['account_id', 'in', accountIds]);
+            }
+        } catch (error) {
+            console.warn(`Failed to get account IDs for code ${code}:`, error);
+        }
+    }
+
+    // Get budget account IDs by code prefix
+    async _getBudgetAccountsByCode(code) {
+        try {
+            const accountIds = await this.orm.call(
+                "budget.report.summary", 
+                "get_budget_account_ids_by_code_prefix", 
+                [code]
+            );
+            return accountIds;
+        } catch (error) {
+            console.warn(`Failed to get budget accounts by code ${code}:`, error);
+            return []; 
+        }
+    }
+
+    // Get department IDs including children
+    async _getDepartmentWithChildren(departmentIds) {
+        try {
+            const allDeptIds = [];
+            for (const deptId of departmentIds) {
+                const children = await this._getAnalyticWithChildren(deptId, 'departments');
+                allDeptIds.push(...children);
+            }
+            return [...new Set(allDeptIds)]; // Remove duplicates
+        } catch (error) {
+            console.warn("Failed to get department children, using original IDs:", error);
+            return departmentIds;
+        }
     }
 }
 

@@ -1,0 +1,86 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_guarantee_bid_guarantee_kmitl
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-15 04:36+0000\n"
+"PO-Revision-Date: 2025-09-15 11:38+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.6\n"
+
+#. module: purchase_guarantee_bid_guarantee_kmitl
+#. odoo-python
+#: code:addons/purchase_guarantee_bid_guarantee_kmitl/models/purchase_guarantee.py:0
+#, python-format
+msgid "%(ref)s must be in status: %(state)s"
+msgstr ""
+
+#. module: purchase_guarantee_bid_guarantee_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_bid_guarantee_kmitl.view_purchase_guarantee_form
+msgid "<span class=\"o_stat_text\">Purchase Request</span>"
+msgstr "คำขอซื้อขอจ้าง"
+
+#. module: purchase_guarantee_bid_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_bid_guarantee_kmitl.field_purchase_guarantee_method__default_for_model
+msgid "Default method for"
+msgstr ""
+
+#. module: purchase_guarantee_bid_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_bid_guarantee_kmitl.field_purchase_request__purchase_guarantee_ids
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_bid_guarantee_kmitl.view_purchase_request_form
+msgid "Guarantee"
+msgstr "หลักประกัน"
+
+#. module: purchase_guarantee_bid_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_bid_guarantee_kmitl.field_purchase_request__purchase_guarantee_count
+msgid "Guarantee Count"
+msgstr ""
+
+#. module: purchase_guarantee_bid_guarantee_kmitl
+#: model:ir.model.fields,help:purchase_guarantee_bid_guarantee_kmitl.field_purchase_guarantee_method__default_for_model
+msgid "Guarantee created from which document model, will use this method"
+msgstr ""
+
+#. module: purchase_guarantee_bid_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_bid_guarantee_kmitl.field_purchase_guarantee__is_purchase_request
+msgid "Is Purchase Request"
+msgstr ""
+
+#. module: purchase_guarantee_bid_guarantee_kmitl
+#: model:ir.model,name:purchase_guarantee_bid_guarantee_kmitl.model_purchase_guarantee
+msgid "Purchase Guarantee"
+msgstr ""
+
+#. module: purchase_guarantee_bid_guarantee_kmitl
+#: model:ir.model,name:purchase_guarantee_bid_guarantee_kmitl.model_purchase_guarantee_method
+msgid "Purchase Guarantee Method"
+msgstr ""
+
+#. module: purchase_guarantee_bid_guarantee_kmitl
+#. odoo-python
+#: code:addons/purchase_guarantee_bid_guarantee_kmitl/models/purchase_guarantee.py:0
+#: model:ir.model,name:purchase_guarantee_bid_guarantee_kmitl.model_purchase_request
+#: model:ir.model.fields,field_description:purchase_guarantee_bid_guarantee_kmitl.field_purchase_guarantee__request_id
+#: model:ir.model.fields.selection,name:purchase_guarantee_bid_guarantee_kmitl.selection__purchase_guarantee_method__default_for_model__purchase_request
+#, python-format
+msgid "Purchase Request"
+msgstr "คำขอซื้อขอจ้าง"
+
+#. module: purchase_guarantee_bid_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_bid_guarantee_kmitl.field_purchase_guarantee__reference
+msgid "Reference"
+msgstr ""
+
+#. module: purchase_guarantee_bid_guarantee_kmitl
+#: model:ir.model.fields,help:purchase_guarantee_bid_guarantee_kmitl.field_purchase_guarantee__is_purchase_request
+msgid "True if reference is purchase.request"
+msgstr ""

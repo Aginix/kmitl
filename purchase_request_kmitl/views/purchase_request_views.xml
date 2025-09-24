@@ -28,7 +28,7 @@
                 <attribute name="readonly">1</attribute>
             </field>
             <xpath expr="//form/header/field[@name='state']" position="attributes">
-                <attribute name="statusbar_visible">draft,to_approve,validation,approved,done</attribute>
+                <attribute name="statusbar_visible">draft,to_approve,approved,in_progress,done</attribute>
             </xpath>
             <xpath expr="//field[@name='picking_type_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
@@ -42,9 +42,6 @@
             <xpath expr="//field[@name='group_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-            <xpath expr="//field[@name='date_required']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
             <xpath expr="//field[@name='purchased_qty']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
@@ -54,40 +51,39 @@
             <xpath expr="//button[@name='action_show_details']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//button[@name='action_view_purchase_request_line']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
             <xpath expr="//button[@name='button_in_progress']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-            <xpath expr="//field[@name='date_start']" position="attributes">
+            <xpath expr="//button[@name='button_done']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-            <xpath expr="//field[@name='department_id']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//button[@name='button_approved']" position="after">
-                <button name='button_approved' string="Approve" states="validation" class="btn-primary o_button_approved" type="object" groups="purchase_request.group_purchase_request_manager" />
-            </xpath>
-            <xpath expr="//button[@name='button_draft']" position="before">
-                <button name='button_validate' string="Validate" class="btn-primary" attrs="{'invisible': [('state', '!=', 'to_approve')]}" type="object" groups="purchase_request.group_purchase_request_manager,purchase_request_kmitl.group_purchase_request_user_all" />
-            </xpath>
-            <xpath expr="//button[@name='button_draft']" position="attributes">
-                <attribute name="states">to_approve,validation,approved,rejected,done</attribute>
-            </xpath>
-            <xpath expr="//button[@name='button_approved']" position="attributes">
-                <attribute name="invisible">1</attribute>
+            <xpath expr="//form" position="inside">
+                <field name="hide_create_po_button" invisible="1" />
             </xpath>
             <xpath expr="//button[@type='action']" position="attributes">
-                <attribute name="invisible">1</attribute>
+                <attribute name="states"/>
+                <attribute name="string">Create PO</attribute>
+                <attribute name="attrs">{'invisible':[('hide_create_po_button', '=', True)]}</attribute>
             </xpath>
             <xpath expr="//button[@name='button_draft']" position="attributes">
                 <attribute name="states"></attribute>
-                <attribute name="attrs">{'invisible': [('state', 'in', ['draft', 'to_approve', 'validation', 'approved'])]}</attribute>
+                <attribute name="attrs">{'invisible': [('state', 'in', ['draft', 'to_approve', 'approved', 'in_progress', 'done'])]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_approved']" position="attributes">
+                <attribute name="attrs">{'invisible': [('state', '!=', 'to_approve')]}</attribute>
+                <attribute name="groups">purchase_request.group_purchase_request_manager</attribute>
+                <attribute name="class">btn-primary o_button_approved</attribute>
             </xpath>
             <xpath expr="//button[@name='button_rejected']" position="attributes">
                 <attribute name="states"></attribute>
-                <attribute name="attrs">{'invisible': [('state', 'in', ['draft', 'to_approve', 'validation' ,'rejected'])]}</attribute>
+                <attribute name="attrs">{'invisible': [('state', 'in', ['draft', 'approved', 'in_progress', 'done', 'rejected'])]}</attribute>
+                <attribute name="groups">purchase_request.group_purchase_request_manager</attribute>
             </xpath>
             <xpath expr="//button[@name='button_to_approve']" position="attributes">
-                <attribute name="string">ส่งคำขออนุมัติ</attribute>
+                <attribute name="string">Submit Approval</attribute>
             </xpath>
             <xpath expr="//field[@name='origin']" position="attributes">
                 <attribute name="invisible">1</attribute>
@@ -107,12 +103,18 @@
             <xpath expr="//field[@name='approved_by']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//field[@name='procurement_type_id']" position="attributes">
+                <attribute name="widget">selection</attribute>
+            </xpath>
+            <xpath expr="//field[@name='procurement_type_id']" position="before">
+                <field name="date_range_fy_id" attrs="{'readonly': [('is_editable','=', False)]}" widget="selection" />
+            </xpath>
+            <xpath expr="//field[@name='procurement_method_id']" position="attributes">
+                <attribute name="widget">selection</attribute>
+            </xpath>
             <field name="requested_by" position="before">
                 <field name="payment_type" required="True" attrs="{'readonly': [('is_editable','=', False)]}" />
                 <field name="contract_type" attrs="{'readonly': [('is_editable','=', False)]}" />
-                <field name="purchase_type_id"
-                    invisible = "1" attrs="{'readonly': [('is_editable','=', False)]}" />
-                <field name="procurement_method_ids" invisible="True" />
             </field>
             <field name="description" position="before">
                 <field name="title" attrs="{'readonly': [('is_editable','=', False)]}" />
@@ -123,37 +125,42 @@
             <xpath expr="//field[@name='product_uom_id']" position="attributes">
                 <attribute name="invisible">0</attribute>
             </xpath>
+            <xpath expr="//field[@name='date_required']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']//tree" position="attributes">
+                <attribute name="no_open">1</attribute>
+            </xpath>
             <xpath expr="//page[@name='committee']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//form/sheet/notebook" position="inside">
                 <page name="committee" string="Committee">
-                    <separator string="คณะกรรมการตรวจรับพัสดุ" />
+                    <separator string="Work Acceptance Committee" />
                     <field name="work_acceptance_committee_ids" nolabel="1" context="{'default_committee_type': 'work_acceptance'}" attrs="{'readonly': [('is_editable', '=', False)]}">
                         <tree editable="bottom">
                             <field name="committee_type" invisible="1" />
                             <field name="employee_id" string="Employee" options="{'no_create': True, 'no_open': True}" />
                             <field name="name" string="Committee Name" />
                             <field name="approve_role" string="Role" />
-                            <field name="department_id" string="Department" readonly="1" />
-                            <field name="email" string="Work Email" readonly="1" />
-                            <field name="phone" string="Work Phone" readonly="1" />
+                            <field name="department_id" string="Department" readonly="1"/>
+                            <field name="email" string="Work Email" readonly="1"/>
+                            <field name="mobile_phone" string="Mobile Phone" readonly="1"/>
                         </tree>
                     </field>
-                    <separator string="คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"/>
+                    <separator string="Tor Committee" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"/>
                     <field name="tor_committee_ids" nolabel="1" context="{'default_committee_type': 'tor_committee'}" attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}">
                         <tree editable="bottom">
                             <field name="committee_type" invisible="1" />
                             <field name="employee_id" string="Employee" options="{'no_create': True, 'no_open': True}" />
                             <field name="name" string="Committee Name" />
                             <field name="approve_role" string="Role" />
-                            <field name="department_id" string="Department" />
-                            <field name="email" string="Work Email" />
-                            <field name="phone" string="Work Phone" />
-                            <field name="note" string="Note" />
+                            <field name="department_id" string="Department" readonly="1"/>
+                            <field name="email" string="Work Email" readonly="1"/>
+                            <field name="mobile_phone" string="Mobile Phone" readonly="1"/>
                         </tree>
                     </field>
-                    <separator string="คณะกรรมการกำหนดราคากลาง" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"/>
+                    <separator string="Price Determine Committee" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"/>
                     <field name="price_determine_committee_ids" nolabel="1" context="{'default_committee_type': 'price_determine'}" attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}">
                         <tree editable="bottom">
                             <field name="committee_type" invisible="1" />
@@ -161,12 +168,11 @@
                             <field name="name" string="Committee Name" />
                             <field name="approve_role" string="Role" />
                             <field name="department_id" string="Department" />
-                            <field name="email" string="Work Email" />
-                            <field name="phone" string="Work Phone" />
-                            <field name="note" string="Note" />
+                            <field name="email" string="Work Email" readonly="1"/>
+                            <field name="mobile_phone" string="Mobile Phone" readonly="1"/>
                         </tree>
                     </field>
-                    <separator string="คณะกรรมการพิจารณาผล" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"/>
+                    <separator string="Evaluation Committee" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"/>
                     <field name="evaluation_committee_ids" nolabel="1" context="{'default_committee_type': 'evaluation'}" attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}">
                         <tree editable="bottom">
                             <field name="committee_type" invisible="1" />
@@ -174,32 +180,16 @@
                             <field name="name" string="Committee Name" />
                             <field name="approve_role" string="Role" />
                             <field name="department_id" string="Department" />
-                            <field name="email" string="Work Email" />
-                            <field name="phone" string="Work Phone" />
-                            <field name="note" string="Note" />
+                            <field name="email" string="Work Email" readonly="1"/>
+                            <field name="mobile_phone" string="Mobile Phone" readonly="1"/>
                         </tree>
                     </field>
                 </page>
-                <page name="document" string="เอกสารแนบ">
-                    <separator string="ข้อกำหนดคุณลักษณะ (TOR)" />
-                    <field name="tor_document_ids" attrs="{'readonly': [('is_editable','=', False)]}" context="{'default_attachment_type': 'tor'}">
-                    </field>
-                    <separator string="ใบเสนอราคา" />
-                    <field name="rfq_attachment_ids" attrs="{'readonly': [('is_editable','=', False)]}" context="{'default_attachment_type': 'rfq'}">
-                    </field>
-                    <separator string="อื่นๆ" />
-                    <field name="etc_document_ids" attrs="{'readonly': [('is_editable','=', False)]}" context="{'default_attachment_type': 'etc'}">
-                    </field>
-                </page>
-                <page name="logs" string="การดำเนินงาน">
+                <page name="logs" string="Operation">
                     <group>
                         <field name="requested_by" widget="many2one_avatar_user" readonly="1" />
                         <field name="date_start" readonly="1" />
                         <field name="department_id" readonly="1" />
-                        <field name="validated_by" readonly="1" widget="many2one_avatar_user" />
-                        <field name="date_validated" readonly="1" />
-                        <field name="approved_by" readonly="1" widget="many2one_avatar_user" />
-                        <field name="date_approved" readonly="1" />
                     </group>
                 </page>
             </xpath>
@@ -259,9 +249,31 @@
             <xpath expr="//field[@name='activity_ids']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//field[@name='purchase_type_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_requisition_inherit_view_form" model="ir.ui.view">
+        <field name="name">view.purchase.request.requisition.inherit.view.form</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request_to_requisition.view_purchase_request_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='requisition_qty']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='requisition_state']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
         </field>
     </record>
 
     <!-- menu -->
-    <menuitem id="purchase_request_kmitl_root_menu" name="Pruchase Request" parent="purchase.menu_purchase_root" action="purchase_request.purchase_request_form_action" sequence="1" />
+    <menuitem id="purchase_request_kmitl_root_menu" name="PR1" parent="purchase.menu_purchase_root" action="purchase_request.purchase_request_form_action" sequence="1" />
+
+    <function name="write" model="ir.actions.act_window">
+        <value model="ir.actions.act_window" search="[('id', '=', ref('purchase_request.purchase_request_form_action'))]" />
+        <value eval="{'context': '{}'}"/>
+    </function>
 </odoo>

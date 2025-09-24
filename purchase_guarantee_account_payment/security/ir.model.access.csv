@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_purchase_guarantee_payment_user,purchase.guarantee.payment.user,l10n_th_gov_purchase_guarantee.model_purchase_guarantee,account.group_account_user,1,0,0,0
+access_purchase_guarantee_payment_invoice,purchase.guarantee.payment.invoice,l10n_th_gov_purchase_guarantee.model_purchase_guarantee,account.group_account_invoice,1,1,1,0
+access_purchase_guarantee_payment_manager,purchase.guarantee.payment.manager,l10n_th_gov_purchase_guarantee.model_purchase_guarantee,account.group_account_manager,1,1,1,1

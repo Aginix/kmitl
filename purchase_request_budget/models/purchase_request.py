@@ -20,56 +20,20 @@ class PurchaseRequest(models.Model):
         domain=[('budgetable', '=', True), ('budget_type', '=', 'expense')],
         help="Budget account to be used for commitment"
     )
-    can_edit_budget = fields.Boolean(
-        compute="_compute_can_edit_budget",
-    )
 
-    @api.depends("substate_id")
-    def _compute_can_edit_budget(self):
-        for rec in self:
-            xml_id = rec.substate_id.get_external_id().get(rec.substate_id.id)
-            rec.can_edit_budget = xml_id == "l10n_th_gov_purchase_request.base_substate_to_verify"
-
-    def action_check_budget(self):
-        """Action to check budget availability"""
+    def action_open_budget_commitment(self):
         self.ensure_one()
-
-        if not all([
-            self.budget_account_id,
-            self.activity_analytic_id,
-            self.department_analytic_id,
-            self.fund_analytic_id,
-            self.source_analytic_id,
-        ]):
-            raise UserError(_("Please specify budget account and all required analytic dimensions"))
-
-        amount = sum(self.line_ids.mapped("estimated_cost"))
-
-        result = self._check_budget_availability(
-            amount=amount,
-            activity_analytic_id=self.activity_analytic_id.id,
-            department_analytic_id=self.department_analytic_id.id,
-            fund_analytic_id=self.fund_analytic_id.id,
-            source_analytic_id=self.source_analytic_id.id,
-        )
+        if not self.budget_commitment_id:
+            raise UserError("ยังไม่มี Budget Commitment สำหรับเอกสารนี้")
 
         return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': _('Budget Check'),
-                'message': result['message'],
-                'type': 'success' if result['is_sufficient'] else 'warning',
-                'sticky': False,
-            }
+            "type": "ir.actions.act_window",
+            "name": "Budget Commitment",
+            "res_model": "budget.commitment",
+            "view_mode": "form",
+            "res_id": self.budget_commitment_id.id,
+            "target": "current",
         }
-
-    def _action_purchase_reserve(self):
-        self.ensure_one()
-        substate = self.env["base.substate"].browse(self.env.ref('l10n_th_gov_purchase_request.base_substate_verified').id)
-        self.substate_id = substate.id
-        self.verified_by = self.env.user.id
-        self.date_verified = fields.Date.context_today(self)
 
     def action_reserve_budget(self):
         """Reserve budget by creating commitment"""
@@ -102,12 +66,12 @@ class PurchaseRequest(models.Model):
                 fund_analytic_id=self.fund_analytic_id.id,
                 source_analytic_id=self.source_analytic_id.id,
                 ref=self.name,
-                description=f"Purchase Request: {self.name}\\nVendor: {self.title}",
+                description=f"Purchase Request: {self.name}",
                 date=self.date_start,
                 auto_reserve=True
             )
             self.message_post(body=_("Budget reserved: %s for amount %s") % (commitment.name, amount))
-            self._action_purchase_reserve()
+            self.state = 'to_approve'
             return {
                 "type": "ir.actions.act_window",
                 "res_model": "purchase.request",
@@ -142,3 +106,11 @@ class PurchaseRequest(models.Model):
                     record.message_post(body=_("Warning: Could not cancel budget commitment: %s") % str(e))
 
         return super().button_rejected()
+
+    @api.onchange("analytic_distribution")
+    def _onchange_analytic_distribution(self):
+        """When change analytic_distribution set analytic distribution on all order lines"""
+        if self.analytic_distribution:
+            self.line_ids.update(
+                {"analytic_distribution": self.analytic_distribution}
+            )

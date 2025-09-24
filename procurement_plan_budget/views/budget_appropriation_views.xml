@@ -6,7 +6,7 @@
         <field name="model">budget.appropriation.line</field>
         <field name="inherit_id" ref="budget_appropriation.view_budget_appropriation_line_form" />
         <field name="arch" type="xml">
-            <xpath expr="//form" position="inside">
+            <xpath expr="//form/sheet" position="inside">
                 <field name="company_id" invisible="1" />
                 <field name="currency_id" invisible="1" />
                 <field name="procurement_plan" invisible="1" />
@@ -25,7 +25,9 @@
                         'default_currency_id': currency_id,
                     }">
                     <tree>
+                        <field name="state" invisible="1" />
                         <field name="name" invisible="1" />
+                        <field name="display_name" invisible="1" />
                         <field name="description" />
                         <field name="amount" />
                         <field name="unit" />
@@ -35,6 +37,42 @@
                     </tree>
                 </field>
                 <field name="unallocated_balance" attrs="{'invisible': [('procurement_plan', '=', False)]}" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- View budget.appropriation form -->
+    <record id="view_budget_appropriation_form_procurement_plan" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.form.procurement.plan</field>
+        <field name="model">budget.appropriation</field>
+        <field name="inherit_id" ref="budget_appropriation.view_budget_appropriation_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='line_ids']/tree" position="inside">
+                <field name="procurement_plan" invisible="1" />
+            </xpath>
+            <xpath expr="//sheet/notebook" position="inside">
+                <page string="แผนจัดซื้อจัดจ้าง" attrs="{'invisible': [('budget_type', '!=', 'expense')]}">
+                    <field name="procurement_plan_ids">
+                        <tree create="0" delete="0" limit="1000">
+                            <field name="state" invisible="1" />
+                            <field name="department_analytic_id" invisible="1" />
+                            <field name="budget_appropriation_id" invisible="1" />
+                            <field name="budget_appropriation_line_id" invisible="1" />
+                            <field name="source_analytic_id" invisible="1" />
+                            <field name="activity_analytic_id" optional="show" />
+                            <field name="fund_analytic_id" optional="show" />
+                            <field name="budget_account_id" optional="show" />
+                            <field name="display_name" invisible="1" />
+                            <field name="name" invisible="1" />
+                            <field name="description" />
+                            <field name="amount" />
+                            <field name="unit" />
+                            <field name="price_per_unit" />
+                            <field name="total_price" sum="รวมทั้งหมด" />
+                            <field name="procurement_method_id" />
+                        </tree>
+                    </field>
+                </page>
             </xpath>
         </field>
     </record>
