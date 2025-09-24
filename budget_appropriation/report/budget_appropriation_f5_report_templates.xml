@@ -165,23 +165,25 @@
 
 
             <div class="page budget-appropriation-f5-report">
+                <t t-set="report_obj" t-value="o.env['budget.appropriation.f5.report']"/>
+                <t t-set="data" t-value="report_obj.get_f5_data(o.id)"/>
                 <div class="report-header">
                     <div class="document-ref">
                         <div>F5-P-วง-003</div>
                     </div>
 
                     <div class="institution-info">
-                        <h3 t-esc="o.source_analytic_id.name" />
-                        <h3>ประมาณการ<t t-esc="o.journal_id.name" /> <t t-esc="o.date_range_fy_id.name" /></h3>
+                        <h3 t-esc="data['source']" />
+                        <h3>ประมาณการ<t t-esc="data['type']" /> <t t-esc="data['fiscal_year']" /></h3>
                         <h3>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
-                        <h3 t-esc="o.department_analytic_id.complete_name" />
+                        <h3 t-esc="data['department']" />
                         <div style="margin: 0 auto;">
                             <table class="table-borderless" border="0" style="margin: 0 auto;">
                                 <tbody>
                                     <tr>
                                         <td align="right">วงเงิน</td>
                                         <td align="right">
-                                            <t t-esc="'{:,}'.format(int(o.total_amount))" />
+                                            <t t-esc="'{:,}'.format(int(data['total_amount']))" />
                                         </td>
                                         <td>บาท</td>
                                     </tr>
@@ -207,12 +209,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <t t-set="report_obj" t-value="o.env['budget.appropriation.f5.report']"/>
-                        <t t-set="hierarchy_data" t-value="report_obj.get_f5_data(o.id)"/>
 
-                        <t t-if="hierarchy_data.get('hierarchy')">
+                        <t t-if="data.get('hierarchy')">
                             <t t-call="budget_appropriation.report_f5_hierarchy_rows">
-                                <t t-set="nodes" t-value="hierarchy_data['hierarchy']"/>
+                                <t t-set="nodes" t-value="data['hierarchy']"/>
                                 <t t-set="level" t-value="0"/>
                             </t>
                         </t>
@@ -237,7 +237,7 @@
                             <t t-if="node.get('line_details')">
                                 <t t-foreach="node.get('line_details', [])" t-as="detail">
                                     <t t-if="detail.get('note')">
-                                        <div class="line-note" t-esc="detail.get('note', '')"/>
+                                        <div style="line-height: 20px;" class="line-note" t-esc="detail.get('note', '')"/>
                                     </t>
                                 </t>
                             </t>
