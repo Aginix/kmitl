@@ -32,6 +32,7 @@ The classification system covers:
     "depends": [
         "product",
         "product_category_code_unique",
+        "stock",
     ],
     "data": [
         "data/product.category.csv",
