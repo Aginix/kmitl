@@ -314,3 +314,19 @@ class BudgetAppropriation(models.Model):
                 "active_model": "budget.appropriation",
             },
         }
+
+    def action_open_f4_preview(self):
+        """Open the budget appropriation F4 preview for revenue in full screen"""
+        self.ensure_one()
+        return {
+            "name": _("Budget Appropriation F4 Preview"),
+            "type": "ir.actions.client",
+            "tag": "budget_appropriation_f4_preview",
+            "target": "current",
+            "res_id": self.id,
+            "res_model": "budget.appropriation",
+            "context": {
+                "active_id": self.id,
+                "active_model": "budget.appropriation",
+            },
+        }

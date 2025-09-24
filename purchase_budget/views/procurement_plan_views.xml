@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View procurement.plan form - Add Smart Button -->
+    <record id="view_procurement_plan_form_purchase_order" model="ir.ui.view">
+        <field name="name">view.procurement.plan.form.purchase.order</field>
+        <field name="model">procurement.plan</field>
+        <field name="inherit_id" ref="procurement_plan.view_procurement_plan_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <field name="purchase_order_count" invisible="1" />
+                <button name="action_view_purchase_orders" type="object" class="oe_stat_button" icon="fa-shopping-cart" attrs="{'invisible': [('purchase_order_count', '=', 0)]}">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Purchase Order</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

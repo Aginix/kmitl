@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Inherit budget account form view to add project_enabled field -->
+    <!-- Inherit budget account form view to add is_project field -->
     <record id="view_budget_account_form_inherit_project" model="ir.ui.view">
         <field name="name">budget.account.form.inherit.project</field>
         <field name="model">budget.account</field>
         <field name="inherit_id" ref="budget.view_budget_account_form"/>
         <field name="arch" type="xml">
-            <field name="deprecated" position="after">
-                <field name="project_enabled"/>
-            </field>
+            <xpath expr="//field[@name='budgetable']" position="after">
+                <field name="is_project" attrs="{'invisible': [('budget_type', '!=', 'expense')]}" />
+            </xpath>
         </field>
     </record>
 
-    <!-- Inherit budget account tree view to add project_enabled field -->
+    <!-- Inherit budget account tree view to add is_project field -->
     <record id="view_budget_account_tree_inherit_project" model="ir.ui.view">
         <field name="name">budget.account.tree.inherit.project</field>
         <field name="model">budget.account</field>
         <field name="inherit_id" ref="budget.view_budget_account_tree"/>
         <field name="arch" type="xml">
-            <field name="deprecated" position="after">
-                <field name="project_enabled" optional="show"/>
-            </field>
+            <xpath expr="//field[@name='budgetable']" position="after">
+                <field name="is_project" attrs="{'invisible': [('budget_type', '!=', 'expense')]}" />
+            </xpath>
         </field>
     </record>
 

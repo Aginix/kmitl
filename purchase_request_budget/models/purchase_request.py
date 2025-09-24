@@ -106,3 +106,11 @@ class PurchaseRequest(models.Model):
                     record.message_post(body=_("Warning: Could not cancel budget commitment: %s") % str(e))
 
         return super().button_rejected()
+
+    @api.onchange("analytic_distribution")
+    def _onchange_analytic_distribution(self):
+        """When change analytic_distribution set analytic distribution on all order lines"""
+        if self.analytic_distribution:
+            self.line_ids.update(
+                {"analytic_distribution": self.analytic_distribution}
+            )

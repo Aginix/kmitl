@@ -13,22 +13,26 @@ Features:
 ---------
 * Create and manage budget projects/activities
 * Link projects to specific budget accounts
-* Track project budgets with financial dimensions
-* Integrate with budget move lines for project allocation
+* Integrate with budget appropriation for project allocation
     """,
     "author": "KMITL",
     "website": "https://www.kmitl.ac.th",
     "depends": [
-        "budget",
+        "budget_appropriation",
         "account_analytic_kmitl",
     ],
     "data": [
         "security/ir.model.access.csv",
         "views/budget_account_views.xml",
         "views/budget_project_views.xml",
-        "views/budget_move_views.xml",
+        "views/budget_appropriation_views.xml",
         "views/menu_views.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "budget_project/static/src/**/*",
+        ],
+    },
     "installable": True,
     "auto_install": False,
     "application": False,

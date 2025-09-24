@@ -24,7 +24,7 @@ class PurchaseOrderLine(models.Model):
 
 class PurchaseInvoicePlan(models.Model):
     _inherit = "purchase.invoice.plan"
-
+    _rec_name = "installment"
     def name_get(self):
         result = []
         for rec in self:

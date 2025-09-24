@@ -17,6 +17,8 @@ export class BudgetAppropriationF5Preview extends Component {
             loading: true,
             error: null,
             expandedNodes: new Set(),
+            showProjects: true,
+            showProcurementPlans: true,
         });
 
         this.orm = useService("orm");
@@ -135,6 +137,14 @@ export class BudgetAppropriationF5Preview extends Component {
 
     onRefresh() {
         this.loadData();
+    }
+
+    onToggleProjects() {
+        this.state.showProjects = !this.state.showProjects;
+    }
+
+    onToggleProcurementPlans() {
+        this.state.showProcurementPlans = !this.state.showProcurementPlans;
     }
 
     onBack() {
