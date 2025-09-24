@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
-import logging
-
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
 
 
 class PurchaseRequest(models.Model):
@@ -27,7 +23,7 @@ class PurchaseRequest(models.Model):
             self.env['ir.sequence'].create({
                 'name': f'Purchase Request {fiscal_year} {short_name}',
                 'code': f'purchase.request.{fiscal_year}.{short_name}',
-                'prefix': f'PR1/{fiscal_year}/{short_name}/',
+                'prefix': f'PR/{fiscal_year}/{short_name}/',
                 'padding': 4,
                 'number_increment': 1,
             })
