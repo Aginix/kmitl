@@ -1,7 +1,4 @@
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
-
 {
-    # Module Information
     "name": "Product KMITL",
     "version": "16.0.1.0.0",
     "category": "Product",
@@ -28,36 +25,20 @@ The classification system covers:
 - Furniture and Office Equipment (71000000-79000000)
 - Consumables and Supplies (75000000-99000000)
     """,
-    
-    # Author and Contact Information
     "author": "KMITL",
     "website": "https://www.kmitl.ac.th",
     "maintainer": "KMITL Development Team",
-    
-    # Legal Information
     "license": "AGPL-3",
-    
-    # Dependencies
     "depends": [
-        "product",                        # Base Odoo product management
-        "product_category_code_unique",   # Provides unique code functionality for categories
+        "product",
+        "product_category_code_unique",
     ],
-    
-    # Data Files
     "data": [
-        "data/product.category.csv",      # Thai government equipment classification master data
+        "data/product.category.csv",
         "data/product.template.csv",
     ],
-    
-    # Demo Data (none for production module)
     "demo": [],
-    
-    # Technical Settings
-    "installable": True,                  # Module can be installed
-    "auto_install": False,                # Manual installation required
-    "application": False,                 # Not a standalone application
-    "development_status": "Beta",         # Maturity level
-    
-    # Version Information
-    # 16.0.1.0.0 = Odoo 16.0, Module version 1.0.0
+    "installable": True,
+    "auto_install": False,
+    "application": False,
 }
