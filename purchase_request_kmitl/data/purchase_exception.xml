@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+    <record id="l10n_th_gov_purchase_request.purchase_exception_amount_not_exceed_pr" model="exception.rule">
+        <field
+            name="name"
+        >ยอดเงินของเอกสารนี้ เกินยอดเงินในเอกสาร PR</field>
+        <field name="code">
+pr_total = sum(self.order_line.mapped("purchase_request_lines.estimated_cost"))
+if pr_total:
+    po_total = self.amount_total
+    failed = po_total &gt; pr_total
+        </field>
+    </record>
+</odoo>
