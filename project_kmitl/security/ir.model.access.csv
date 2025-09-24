@@ -1,0 +1,12 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_project_strategic_plan_manager,project_strategic_plan_manager,model_project_strategic_plan,,1,1,1,1
+access_project_impact_manager,project_impact_manager,model_project_impact,,1,1,1,1
+access_project_global_index_manager,project_global_index_manager,model_project_global_index,,1,1,1,1
+access_project_fight_manager,project_fight_manager,model_project_fight,,1,1,1,1
+access_project_methodology_manager,project_methodology_manager,model_project_methodology,,1,1,1,1
+access_project_objective_manager,project_objective_manager,model_project_objective,,1,1,1,1
+access_project_plan_manager,project_plan_manager,model_project_plan,,1,1,1,1
+access_project_output_manager,project_output_manager,model_project_output,,1,1,1,1
+access_project_target_manager,project_target_manager,model_project_target,,1,1,1,1
+access_project_expected_outcome_manager,project_expected_outcome_manager,model_project_expected_outcome,,1,1,1,1
+access_project_evaluation_manager,project_evaluation_manager,model_project_evaluation,,1,1,1,1
