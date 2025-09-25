@@ -494,7 +494,7 @@ class BudgetTransfer(models.Model):
         self.write({"state": "submitted"})
 
         # Send notification to approvers
-        self._notify_approvers()
+        # self._notify_approvers()
 
         return True
 
@@ -512,7 +512,7 @@ class BudgetTransfer(models.Model):
         )
 
         # Notify requestor
-        self._notify_approval()
+        # self._notify_approval()
 
         return True
 
@@ -532,7 +532,7 @@ class BudgetTransfer(models.Model):
         self.write({"state": "posted"})
 
         # Notify completion
-        self._notify_completion()
+        # self._notify_completion()
 
         return True
 
