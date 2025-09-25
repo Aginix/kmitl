@@ -18,6 +18,8 @@
         "views/budget_move_views.xml",
         "data/budget_appropriation_sequence.xml",
         "data/budget_appropriation_f5_action.xml",
+        "data/budget_appropriation_f5_pdf_report.xml",
+        "report/budget_appropriation_f5_report_templates.xml",
     ],
     "assets": {
         "web.assets_backend": [

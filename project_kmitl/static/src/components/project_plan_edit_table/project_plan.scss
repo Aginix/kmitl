@@ -1,0 +1,54 @@
+div[name="plan_ids"].o_field_widget.o_field_project_plan {
+    th .o_resize {
+        display: none;
+    }
+    th[data-name="name"] .o_resize,
+    th[data-name="amount"] .o_resize {
+        display: block;
+    }
+
+    td {
+        &[name="m1"],
+        &[name="m2"],
+        &[name="m3"],
+        &[name="m4"],
+        &[name="m5"],
+        &[name="m6"],
+        &[name="m7"],
+        &[name="m8"],
+        &[name="m9"],
+        &[name="m10"],
+        &[name="m11"],
+        &[name="m12"] {
+            text-align: center;
+        }
+    }
+
+    th.o_column_sortable {
+        i {
+            display: none;
+        }
+
+        .d-flex {
+            text-align: center;
+        }
+    }
+
+    th[data-name="name"] {
+        width: 210px !important;
+        min-width: 210px !important;
+        max-width: 210px !important;
+    }
+
+    th[data-name="percentage"] {
+        width: 50px !important;
+        min-width: 50px !important;
+        max-width: 50px !important;
+    }
+
+    th.quarterly {
+        width: 165px !important;
+        min-width: 165px !important;
+        max-width: 165px !important;
+    }
+}
