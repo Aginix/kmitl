@@ -1,5 +1,5 @@
 <odoo>
-    <template id="portal_my_purchase" name="My Purchases">
+    <template id="purchase_portal_template" name="Purchases Portal">
         <t t-call="portal.portal_layout">
             <t t-set="no_breadcrumbs" t-value="1"/>
             <div class="container mt-4">
