@@ -8,9 +8,7 @@
     "website": "https://github.com/aginix/kmitl",
     'depends': ['l10n_th_gov_work_acceptance', 'purchase_order_kmitl', 'portal'],
     "data": [
-        "views/purchase_order_views.xml",
         "views/templates.xml",
-        "views/work_acceptance_views.xml"
     ],
     'installable': True,
     'auto_install': False,
