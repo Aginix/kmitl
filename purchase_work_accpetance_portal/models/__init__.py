@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
-from . import work_acceptance
 from . import purchase_order
+from . import work_acceptance
