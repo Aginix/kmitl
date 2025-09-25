@@ -7,7 +7,7 @@
                     <div class="card shadow-sm mb-4">
                         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                             <h3 class="mb-0">
-                                <i class="fa fa-shopping-cart"></i> Purchase Order <t t-esc="purchase.name"/>
+                                <i class="fa fa-shopping-cart"></i> การจัดซื้อ                                <t t-esc="purchase.name"/>
                             </h3>
                             <span class="badge badge-light">
                                 <t t-esc="purchase.state"/>
@@ -16,19 +16,60 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <p>
-                                        <strong>Date:</strong>
-                                        <t t-esc="purchase.date_order"/>
-                                    </p>
-                                    <p>
-                                        <strong>Vendor:</strong>
-                                        <t t-esc="purchase.partner_id.display_name"/>
-                                    </p>
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <td>
+                                                <strong>ปีงบประมาณ</strong>
+                                            </td>
+                                            <td>
+                                                <t t-esc="purchase.date_range_fy_id.name"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <strong>ผู้ขาย</strong>
+                                            </td>
+                                            <td>
+                                                <t t-esc="purchase.partner_id.display_name"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <strong>อ้างอิงผู้ขาย</strong>
+                                            </td>
+                                            <td>
+                                                <t t-esc="purchase.partner_ref"/>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </div>
-                                <div class="col-md-6 text-md-right">
-                                    <h4 class="text-success">
-              Total: <t t-esc="purchase.amount_total"/>
-                                    </h4>
+                                <div class="col-md-6">
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <td>
+                                                <strong>กำหนดเวลาการสั่งซื้อ</strong>
+                                            </td>
+                                            <td>
+                                                <t t-esc="purchase.date_order"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <strong>วันที่คาดว่าจะมาถึง</strong>
+                                            </td>
+                                            <td>
+                                                <t t-esc="purchase.date_planned"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <strong>สกุลเงิน</strong>
+                                            </td>
+                                            <td>
+                                                <t t-esc="purchase.currency_id.name"/>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -36,17 +77,17 @@
 
                     <div class="card shadow-sm">
                         <div class="card-header bg-secondary text-white">
-                            <h5 class="mb-0">Order Lines</h5>
+                            <h5 class="mb-0">รายการสินค้า</h5>
                         </div>
                         <div class="card-body p-0">
                             <table class="table table-striped table-hover mb-0">
                                 <thead class="thead-dark">
                                     <tr>
-                                        <th>Product</th>
-                                        <th>Description</th>
-                                        <th class="text-right">Qty</th>
-                                        <th class="text-right">Unit Price</th>
-                                        <th class="text-right">Subtotal</th>
+                                        <th>สินค้า</th>
+                                        <th>รายละเอียด</th>
+                                        <th class="text-right">จำนวน</th>
+                                        <th class="text-right">ราคาต่อหน่วย</th>
+                                        <th class="text-right">ราคาย่อย</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -72,6 +113,11 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                    <div class="col-md-12 text-end mt-2">
+                        <h4 class="text-success">
+        ราคารวม :                            <t t-esc="purchase.amount_total"/>
+                        </h4>
                     </div>
                 </div>
             </div>
