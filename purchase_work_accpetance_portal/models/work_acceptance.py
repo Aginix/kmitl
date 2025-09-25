@@ -10,6 +10,12 @@ _logger = logging.getLogger(__name__)
 class WorkAcceptance(models.Model):
     _inherit = 'work.acceptance'
 
+    def get_portal_link(self):
+        self.ensure_one()
+        self._portal_ensure_token()
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        return f"{base_url}/wa/portal/{self.id}/{self.access_token}"
+
     def request_validation(self):
         res = super().request_validation()
         odoobot = self.env.ref("base.partner_root")
