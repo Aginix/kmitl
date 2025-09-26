@@ -3,7 +3,7 @@ from odoo.http import request
 
 
 class PurchaseOrder(http.Controller):
-    @http.route(['/purchase/portal/<int:order_id>/<string:access_token>'],
+    @http.route(['/purchase/view/<int:order_id>'],
                 type='http', auth="public", website=True)
     def portal_my_purchase_form(self, order_id, access_token=None, **kw):
         purchase = request.env['purchase.order'].sudo().browse(order_id)
@@ -17,4 +17,4 @@ class PurchaseOrder(http.Controller):
         values = {
             'purchase': purchase,
         }
-        return request.render("purchase_work_accpetance_portal.purchase_portal_template", values)
+        return request.render("purchase_work_acceptance_portal.purchase_portal_template", values)
