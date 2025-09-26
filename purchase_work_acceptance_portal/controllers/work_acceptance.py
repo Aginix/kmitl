@@ -35,6 +35,31 @@ class WorkAcceptance(http.Controller):
         }
         return request.render("purchase_work_acceptance_portal.work_acceptance_portal_template", values)
 
+    @http.route(['/wa/view/confirm'], type='http', auth="public", methods=['POST'], website=True, csrf=False)
+    def work_acceptance_committee_confirm(self, committee_id=None, access_token=None, **post):
+        committee = request.env['work.acceptance.committee'].sudo().browse(int(committee_id))
+
+        if not committee.exists() or access_token != committee.access_token:
+            return request.not_found()
+
+        wa = committee.wa_id
+        wa.validate_tier()
+
+        return request.render("purchase_work_acceptance_portal.work_acceptance_committee_confirmed", {
+            'work_acceptance': wa,
+            'committee': committee,
+        })
+
+        # <button
+        #                     name="validate_tier"
+        #                     string="Not Accept"
+        #                     attrs="{'invisible': [('can_review', '=', False)]}"
+        #                     type="object"
+        #                     class="btn-icon btn-danger"
+        #                     icon="fa-thumbs-down"
+        #                     context="{'validate_as_not_accept': True, 'default_comment': 'ไม่รับเพราะ...'}"
+        #                 />
+
     # @http.route(['/wa/portal/<int:wa_id>'],
     #             type='http', auth="public", website=True)
     # def work_acceptance_portal_all(self, wa_id, **kw):
