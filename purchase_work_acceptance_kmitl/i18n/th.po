@@ -1,7 +1,7 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # 	* purchase_work_acceptance_evaluation
-# 	* purchase_work_accpetance_kmitl
+# 	* purchase_work_acceptance_kmitl
 # 	* purchase_work_acceptance
 # 	* purchase_work_acceptance_late_fines
 # 	* l10n_th_gov_work_acceptance
@@ -863,8 +863,8 @@ msgstr ""
 msgid "Restart Validation"
 msgstr "เริ่มการขออนุมัติใหม่"
 
-#. module: purchase_work_accpetance_kmitl
-#: model:ir.model.fields,field_description:purchase_work_accpetance_kmitl.field_work_acceptance_committee__approve_role
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance_committee__approve_role
 msgid "Role"
 msgstr "บทบาท"
 
@@ -888,8 +888,8 @@ msgstr "คะแนน"
 msgid "Score ID"
 msgstr ""
 
-#. module: purchase_work_accpetance_kmitl
-#: model:ir.model.fields.selection,name:purchase_work_accpetance_kmitl.selection__work_acceptance_committee__approve_role__secretary
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__approve_role__secretary
 msgid "Secretary"
 msgstr "กรรมการและเลขานุการ"
 
@@ -1189,8 +1189,8 @@ msgstr ""
 msgid "Work Acceptance"
 msgstr "การตรวจรับ"
 
-#. module: purchase_work_accpetance_kmitl
-#: model:ir.model,name:purchase_work_accpetance_kmitl.model_work_acceptance_committee
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model,name:purchase_work_acceptance_kmitl.model_work_acceptance_committee
 msgid "Work Acceptance Committee"
 msgstr ""
 
@@ -1257,8 +1257,8 @@ msgstr ""
 msgid "Work Email"
 msgstr "อีเมลที่ทำงาน"
 
-#. module: purchase_work_accpetance_kmitl
-#: model:ir.model.fields,field_description:purchase_work_accpetance_kmitl.field_work_acceptance_committee__mobile_phone
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance_committee__mobile_phone
 msgid "Work Mobile"
 msgstr "เบอร์โทรศัพท์"
 
