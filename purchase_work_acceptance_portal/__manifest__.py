@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Purchase Work Accpetance Portal',
+    'name': 'Purchase Work Acceptance Portal',
     'version': '16.0.1.0.0',
-    'summary': """ Purchase Work Accpetance Portal Summary """,
+    'summary': """ Purchase Work Acceptance Portal Summary """,
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",

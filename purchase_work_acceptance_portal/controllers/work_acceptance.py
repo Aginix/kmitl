@@ -3,7 +3,7 @@ from odoo.http import request
 
 
 class WorkAcceptance(http.Controller):
-    @http.route(['/wa/portal/<int:wa_id>/<string:access_token>'],
+    @http.route(['/wa/view/<int:wa_id>'],
                 type='http', auth="public", website=True)
     def work_acceptance_portal(self, wa_id, access_token=None, **kw):
         work_acceptance = request.env['work.acceptance'].sudo().browse(wa_id)
@@ -17,7 +17,7 @@ class WorkAcceptance(http.Controller):
         values = {
             'work_acceptance': work_acceptance,
         }
-        return request.render("purchase_work_accpetance_portal.work_acceptance_portal_template", values)
+        return request.render("purchase_work_acceptance_portal.work_acceptance_portal_template", values)
 
     # @http.route(['/wa/portal/<int:wa_id>'],
     #             type='http', auth="public", website=True)
@@ -30,4 +30,4 @@ class WorkAcceptance(http.Controller):
     #     values = {
     #         'work_acceptance': work_acceptance,
     #     }
-    #     return request.render("purchase_work_accpetance_portal.work_acceptance_portal_template", values)
+    #     return request.render("purchase_work_acceptance_portal.work_acceptance_portal_template", values)
