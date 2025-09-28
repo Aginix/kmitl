@@ -38,14 +38,24 @@ class WorkAcceptance(http.Controller):
     @http.route(['/wa/view/confirm'], type='http', auth="public", methods=['POST'], website=True, csrf=False)
     def work_acceptance_committee_confirm(self, committee_id=None, access_token=None, **post):
         committee = request.env['work.acceptance.committee'].sudo().browse(int(committee_id))
-
         if not committee.exists() or access_token != committee.access_token:
             return request.not_found()
 
         wa = committee.wa_id
-        wa.validate_tier()
+        user = committee.employee_id.user_id
+        if not user:
+            return request.not_found()
 
-        return request.render("purchase_work_acceptance_portal.work_acceptance_committee_confirmed", {
+
+        ctx = {
+            "active_id": wa.id,
+            "active_model": "work.acceptance",
+            "validate_as_not_accept": False,   # ตอน Accept
+        }
+
+        wa.with_user(user).with_context(**ctx).validate_tier()
+
+        return request.render("purchase_work_acceptance_portal.work_acceptance_portal_template", {
             'work_acceptance': wa,
             'committee': committee,
         })
