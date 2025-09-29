@@ -13,6 +13,7 @@
                                 <form t-att-action="'/wa/view/%s/accept' % committee.id" method="post">
                                     <input type="hidden" name="committee_id" t-att-value="committee.id"/>
                                     <input type="hidden" name="access_token" t-att-value="committee.access_token"/>
+                                    <textarea name="comment" class="form-control" placeholder="ใส่เหตุผล"></textarea>
                                     <button type="submit" class="btn btn-success">ยืนยันการอนุมัติ</button>
                                 </form>
                                 <form action="/wa/view/reject" method="post">
