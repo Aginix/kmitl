@@ -41,12 +41,20 @@ class WorkAcceptance(http.Controller):
         if not committee.exists() or access_token != committee.access_token:
             return request.not_found()
         user = committee.employee_id.user_id.id
+        user2 = committee.employee_id.user_id
         if not user:
             return request.not_found()
         env = request.env(user=user)
         wa_id = committee.wa_id.id
         wa = env['work.acceptance'].browse(wa_id)
-
+        comment = post.get("comment") or "อนุมัติ"
+        reviews = wa.review_ids.filtered(
+            lambda r: r.status == "pending" and (user2 in r.reviewer_ids)
+        )
+        if reviews:
+            reviews.write({"comment": comment})
+            wa.with_user(user2)._validate_tier(reviews)
+            wa._update_counter({"review_deleted": True})
         ctx = {
             "active_id": wa.id,
             "active_model": "work.acceptance",
@@ -54,7 +62,7 @@ class WorkAcceptance(http.Controller):
             "comment": "ทดสอบๆ"
         }
 
-        wa.with_context(**ctx).validate_tier()
+        # wa.with_context(**ctx).validate_tier()
 
         # wa.with_user(user).with_context(**ctx).validate_tier()
 
