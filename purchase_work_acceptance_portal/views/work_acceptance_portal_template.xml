@@ -9,11 +9,16 @@
                             <h3 class="mb-0">
                                การยืนยันคณะกรรมการตรวจรับ                                <t t-esc="committee.name"/>
                             </h3>
-                            <form action="/wa/view/confirm" method="post">
-                                <input type="hidden" name="committee_id" t-att-value="committee.id"/>
-                                <input type="hidden" name="access_token" t-att-value="committee.access_token"/>
-                                <button type="submit" class="btn btn-success">ยืนยันการอนุมัติ</button>
-                            </form>
+                            <div class="d-flex gap-2">
+                                <form action="/wa/view/confirm" method="post">
+                                    <input type="hidden" name="committee_id" t-att-value="committee.id"/>
+                                    <input type="hidden" name="access_token" t-att-value="committee.access_token"/>
+                                    <button type="submit" class="btn btn-success">ยืนยันการอนุมัติ</button>
+                                </form>
+                                <form action="/wa/view/reject" method="post">
+                                    <button type="submit" class="btn btn-danger">ปฎิเสธการอนุมัติ</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>

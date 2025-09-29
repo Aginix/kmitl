@@ -60,6 +60,32 @@ class WorkAcceptance(http.Controller):
             'committee': committee,
         })
 
+    @http.route(['/wa/view/reject'], type='http', auth="public", methods=['POST'], website=True, csrf=False)
+    def work_acceptance_committee_reject(self, committee_id=None, access_token=None, **post):
+        committee = request.env['work.acceptance.committee'].sudo().browse(int(committee_id))
+        if not committee.exists() or access_token != committee.access_token:
+            return request.not_found()
+
+        wa = committee.wa_id
+        user = committee.employee_id.user_id
+        if not user:
+            return request.not_found()
+
+
+        ctx = {
+            "active_id": wa.id,
+            "active_model": "work.acceptance",
+            "validate_as_not_accept": True,
+            "default_comment": post.get('comment', 'ไม่รับเพราะ...'),
+        }
+
+        wa.with_user(user).with_context(**ctx).validate_tier()
+
+        return request.render("purchase_work_acceptance_portal.work_acceptance_portal_template", {
+            'work_acceptance': wa,
+            'committee': committee,
+        })
+
         # <button
         #                     name="validate_tier"
         #                     string="Not Accept"
