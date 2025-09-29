@@ -1,4 +1,4 @@
-from odoo import http
+from odoo import api, http
 from odoo.http import request
 
 
@@ -35,28 +35,32 @@ class WorkAcceptance(http.Controller):
         }
         return request.render("purchase_work_acceptance_portal.work_acceptance_portal_template", values)
 
-    @http.route(['/wa/view/confirm'], type='http', auth="public", methods=['POST'], website=True, csrf=False)
+    @http.route(['/wa/view/<int:committee_id>/accept'], type='http', auth="public", methods=['POST'], website=True, csrf=False)
     def work_acceptance_committee_confirm(self, committee_id=None, access_token=None, **post):
         committee = request.env['work.acceptance.committee'].sudo().browse(int(committee_id))
         if not committee.exists() or access_token != committee.access_token:
             return request.not_found()
-
-        wa = committee.wa_id
-        user = committee.employee_id.user_id
+        user = committee.employee_id.user_id.id
         if not user:
             return request.not_found()
-
+        env = request.env(user=user)
+        wa_id = committee.wa_id.id
+        wa = env['work.acceptance'].browse(wa_id)
 
         ctx = {
             "active_id": wa.id,
             "active_model": "work.acceptance",
-            "validate_as_not_accept": False,   # ตอน Accept
+            "validate_as_not_accept": False,
+            "comment": "ทดสอบๆ"
         }
 
-        wa.with_user(user).with_context(**ctx).validate_tier()
+        wa.with_context(**ctx).validate_tier()
+
+        # wa.with_user(user).with_context(**ctx).validate_tier()
+
 
         return request.render("purchase_work_acceptance_portal.work_acceptance_portal_template", {
-            'work_acceptance': wa,
+            'work_acceptance': committee.wa_id,
             'committee': committee,
         })
 
