@@ -27,7 +27,7 @@ msgstr ""
 #. module: purchase_guarantee_bid_guarantee_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_guarantee_bid_guarantee_kmitl.view_purchase_guarantee_form
 msgid "<span class=\"o_stat_text\">Purchase Request</span>"
-msgstr ""
+msgstr "คำขอซื้อขอจ้าง"
 
 #. module: purchase_guarantee_bid_guarantee_kmitl
 #: model:ir.model.fields,field_description:purchase_guarantee_bid_guarantee_kmitl.field_purchase_guarantee_method__default_for_model
