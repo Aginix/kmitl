@@ -57,10 +57,12 @@
                                         </tr>
                                         <tr>
                                             <td>
-                                                <strong>ใบสั่งซื้อ</strong>
+                                                <strong>สัญญา/ใบสั่งซื้อ/จ้าง</strong>
                                             </td>
                                             <td>
-                                                <t t-esc="work_acceptance.purchase_id.name"/>
+                                                <a t-att-href="work_acceptance.purchase_id.get_portal_link()">
+                                                    <t t-esc="work_acceptance.purchase_id.name"/>
+                                                </a>
                                             </td>
                                         </tr>
                                     </table>
