@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem
+        id="parent_menu_assets"
+        name="Assets"
+        sequence="22"
+    />
+
+    <menuitem
+        id="menu_assets"
+        name="Assets"
+        parent="parent_menu_assets"
+        action="account_asset_management.account_asset_action"
+    />
+
+    <menuitem
+        id="menu_assets_act"
+        name="Asset"
+        parent="menu_assets"
+        action="account_asset_management.account_asset_action"
+    />
+
+    <menuitem
+        id="asset_parent_menu"
+        name="Parent Asset"
+        parent="menu_assets"
+        action="l10n_th_account_asset_management.action_account_asset_parent"
+    />
+
+    <menuitem
+        id="asset_compute_menuuuu"
+        name="Computed Assets"
+        parent="menu_assets"
+        action="account_asset_management.account_asset_compute_action"
+    />
+
+    <menuitem 
+        id="asset_configuration" 
+        name="Configuration" 
+        parent="parent_menu_assets"
+        groups="account.group_account_manager"
+    />
+
+    <menuitem 
+        id="asset_profile_menu" 
+        name="Asset Profiles" 
+        parent="asset_configuration"
+        action="account_asset_management.account_asset_profile_action"
+    />
+
+    <menuitem 
+        id="asset_group_menu" 
+        name="Asset Groups" 
+        parent="asset_configuration"
+        action="account_asset_management.account_asset_group_action"
+    />
+
+    <menuitem 
+        id="asset_sub_status_menu" 
+        name="Asset Sub-Status" 
+        parent="asset_configuration"
+        action="l10n_th_account_asset_management.action_account_asset_sub_state"
+    />
+
+    <menuitem 
+        id="asset_location_menu" 
+        name="Asset Locations" 
+        parent="asset_configuration"
+        action="l10n_th_gov_account_asset_management.action_account_asset_location"
+    />
+
+</odoo>
