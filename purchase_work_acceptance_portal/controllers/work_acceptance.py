@@ -35,7 +35,7 @@ class WorkAcceptance(http.Controller):
 
         work_acceptance = request.env(user=committee_user.id)['work.acceptance'].browse(committee.wa_id.id)
 
-        comment_text = post.get("comment") or "อนุมัติ"
+        comment_text = "อนุมัติ"
 
         pending_reviews = work_acceptance.review_ids.filtered(
             lambda review: review.status == "pending" and (committee_user in review.reviewer_ids)
