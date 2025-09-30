@@ -2,15 +2,16 @@
 <odoo>
 
     <menuitem
-        id="parent_menu_assets"
+        id="menu_assets_management"
         name="Assets"
+        web_icon="account_asset_usability_kmitl,static/description/icon.png"
         sequence="22"
     />
 
     <menuitem
         id="menu_assets"
         name="Assets"
-        parent="parent_menu_assets"
+        parent="menu_assets_management"
         action="account_asset_management.account_asset_action"
     />
 
@@ -38,7 +39,7 @@
     <menuitem 
         id="asset_configuration" 
         name="Configuration" 
-        parent="parent_menu_assets"
+        parent="menu_assets_management"
         groups="account.group_account_manager"
     />
 
