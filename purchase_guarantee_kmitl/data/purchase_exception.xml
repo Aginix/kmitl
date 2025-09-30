@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="po_exception_02" model="exception.rule">
+        <field name="name">มูลค่ามากกว่า 500,000 บาท จะต้องบันทึกหลักประกันสัญญา</field>
+        <field name="description">
+            ใบสั่งซื้อ/จ้าง/สัญญา มูลค่ามากกว่า 500,000 บาท จะต้องบันทึกหลักประกันสัญญา
+        </field>
+        <field name="model">purchase.order</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+if self.tax_totals and self.amount_total &gt; 500000 and not self.purchase_guarantee_ids:
+    failed = True
+        </field>
+    </record>
+</odoo>

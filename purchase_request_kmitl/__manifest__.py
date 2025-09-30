@@ -8,8 +8,9 @@
     "website": "https://github.com/aginix/kmitl",
     'depends': ['l10n_th_gov_purchase_request', 'account_fiscal_year'],
     "data": [
-        "data/purchase_request_exception.xml",
         "data/purchase_request_rules.xml",
+        "data/purchase_request_exception.xml",
+        "data/purchase_exception.xml",
         "views/purchase_request_views.xml",
         "wizards/purchase_request_line_make_purchase_order_views.xml",
     ],

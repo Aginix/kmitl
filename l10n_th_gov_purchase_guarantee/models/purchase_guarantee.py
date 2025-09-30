@@ -23,6 +23,7 @@ class PurchaseGuarantee(models.Model):
     reference_model = fields.Char(
         compute="_compute_reference",
         store=True,
+        compute_sudo=False
     )
     requisition_id = fields.Many2one(
         comodel_name="purchase.requisition",
@@ -31,6 +32,7 @@ class PurchaseGuarantee(models.Model):
         index=True,
         store=True,
         ondelete="restrict",
+        compute_sudo=False
     )
     purchase_id = fields.Many2one(
         comodel_name="purchase.order",
@@ -39,6 +41,7 @@ class PurchaseGuarantee(models.Model):
         index=True,
         store=True,
         ondelete="restrict",
+        compute_sudo=False
     )
     guarantee_method_id = fields.Many2one(
         comodel_name="purchase.guarantee.method",
@@ -279,11 +282,12 @@ class PurchaseGuarantee(models.Model):
                 rec.bill_ids.mapped("amount_residual")
             )
 
-    @api.model
-    def create(self, vals):
-        if vals.get("name", "/") == "/":
-            vals["name"] = self.env["ir.sequence"].next_by_code("purchase.guarantee")
-        return super().create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get("name", "/") == "/":
+                vals["name"] = self.env["ir.sequence"].next_by_code("purchase.guarantee")
+        return super().create(vals_list)
 
     def name_get(self):
         result = []

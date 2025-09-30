@@ -741,7 +741,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:l10n_th_gov_work_acceptance.selection__work_acceptance_committee__status__other
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_work_acceptance.view_work_acceptance_form_tier_validation
 msgid "Other"
-msgstr "อิ้นๆ"
+msgstr "อื่นๆ"
 
 #. module: l10n_th_gov_work_acceptance
 #: model:ir.model.fields,field_description:l10n_th_gov_work_acceptance.field_purchase_order__wa_tier_validation
