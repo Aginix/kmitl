@@ -1,3 +1,5 @@
+from werkzeug.utils import redirect
+
 from odoo import api, http
 from odoo.http import request
 
@@ -59,13 +61,7 @@ class WorkAcceptance(http.Controller):
             work_acceptance.with_user(committee_user)._validate_tier(pending_reviews)
             work_acceptance._update_counter({"review_deleted": True})
 
-        return request.render(
-            "purchase_work_acceptance_portal.work_acceptance_portal_template",
-            {
-                'work_acceptance': committee.wa_id,
-                'committee': committee,
-            }
-        )
+        return redirect(f"/wa/view/{committee.id}?access_token={committee.access_token}")
 
     @http.route(['/wa/view/<int:committee_id>/reject'], type='http', auth="public", methods=['POST'], website=True, csrf=False)
     def work_acceptance_committee_reject(self, committee_id=None, access_token=None, **post):
@@ -91,11 +87,5 @@ class WorkAcceptance(http.Controller):
             work_acceptance._update_counter({"review_deleted": True})
             committee.write({"status": "not_accept", "note": comment_text})
 
-        return request.render(
-            "purchase_work_acceptance_portal.work_acceptance_portal_template",
-            {
-                'work_acceptance': committee.wa_id,
-                'committee': committee,
-            }
-        )
+        return redirect(f"/wa/view/{committee.id}?access_token={committee.access_token}")
 
