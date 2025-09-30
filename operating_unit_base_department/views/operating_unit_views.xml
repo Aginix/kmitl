@@ -10,4 +10,15 @@
             </xpath>
         </field>
     </record>
+
+    <record id="view_operating_unit_tree" model="ir.ui.view">
+        <field name="name">view.operating.unit.tree</field>
+        <field name="model">operating.unit</field>
+        <field name="inherit_id" ref="operating_unit.view_operating_unit_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="department_id"/>
+            </xpath>
+        </field>
+    </record>
   </odoo>
