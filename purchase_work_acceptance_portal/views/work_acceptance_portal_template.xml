@@ -10,15 +10,14 @@
                                การยืนยันคณะกรรมการตรวจรับ                                <t t-esc="committee.name"/>
                             </h3>
                             <div class="d-flex gap-2">
-                                <form t-att-action="'/wa/view/%s/accept' % committee.id" method="post">
-                                    <input type="hidden" name="committee_id" t-att-value="committee.id"/>
-                                    <input type="hidden" name="access_token" t-att-value="committee.access_token"/>
-                                    <textarea name="comment" class="form-control" placeholder="ใส่เหตุผล"></textarea>
-                                    <button type="submit" class="btn btn-success">ยืนยันการอนุมัติ</button>
-                                </form>
-                                <form action="/wa/view/reject" method="post">
-                                    <button type="submit" class="btn btn-danger">ปฎิเสธการอนุมัติ</button>
-                                </form>
+                                <!-- Accept Button -->
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#acceptModal">
+        ยืนยันการอนุมัติ
+                                </button>
+                                <!-- Reject Button -->
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal">
+        ปฏิเสธการอนุมัติ
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -130,5 +129,49 @@
                 </div>
             </div>
         </t>
+
+        <!-- Modal Accept -->
+        <div class="modal fade" id="acceptModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form t-att-action="'/wa/view/%s/accept' % committee.id" method="post">
+                        <div class="modal-header">
+                            <h5 class="modal-title">เหตุผลการอนุมัติ</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="committee_id" t-att-value="committee.id"/>
+                            <input type="hidden" name="access_token" t-att-value="committee.access_token"/>
+                            <textarea name="comment" class="form-control" placeholder="ใส่เหตุผล"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">ยืนยัน</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Reject -->
+        <div class="modal fade" id="rejectModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form t-att-action="'/wa/view/%s/reject' % committee.id" method="post">
+                        <div class="modal-header">
+                            <h5 class="modal-title">เหตุผลการปฏิเสธ</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="committee_id" t-att-value="committee.id"/>
+                            <input type="hidden" name="access_token" t-att-value="committee.access_token"/>
+                            <textarea name="comment" class="form-control" placeholder="ใส่เหตุผล"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-danger">ปฏิเสธ</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </template>
 </odoo>
