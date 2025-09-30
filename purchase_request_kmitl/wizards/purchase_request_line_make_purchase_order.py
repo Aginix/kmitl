@@ -14,8 +14,8 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     def _prepare_purchase_order(self, picking_type, group_id, company, origin):
         vals = super()._prepare_purchase_order(picking_type, group_id, company, origin)
         vals.update({
-            "operating_unit_id": self.purchase_order_id.operating_unit_id,
-            "date_range_fy_id": self.purchase_order_id.date_range_fy_id
+            "operating_unit_id": self.item_ids.request_id.operating_unit_id,
+            "date_range_fy_id": self.item_ids.request_id.date_range_fy_id
         })
         return vals
 
