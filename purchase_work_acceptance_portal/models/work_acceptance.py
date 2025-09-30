@@ -14,7 +14,7 @@ class WorkAcceptance(models.Model):
         self.ensure_one()
         self._portal_ensure_token()
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-        return f"{base_url}/wa/portal/{self.id}/{self.access_token}"
+        return f"{base_url}/wa/view/{self.id}?access_token={self.access_token}"
 
     def request_validation(self):
         res = super().request_validation()
