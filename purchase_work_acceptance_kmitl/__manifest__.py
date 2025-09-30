@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Purchase Work Accpetance Kmitl',
+    'name': 'Purchase Work Acceptance Kmitl',
     'version': '16.0.1.0.0',
-    'summary': """ Purchase Work Accpetance Kmitl Summary """,
+    'summary': """ Purchase Work Acceptance Kmitl Summary """,
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
