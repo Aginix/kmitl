@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -9,6 +9,15 @@ _logger = logging.getLogger(__name__)
 
 class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     _inherit = 'purchase.request.line.make.purchase.order'
+
+    @api.model
+    def _prepare_purchase_order(self, picking_type, group_id, company, origin):
+        vals = super()._prepare_purchase_order(self, picking_type, group_id, company, origin)
+        vals.update({
+            "operating_unit_id": self.operating_unit_id,
+            "date_range_fy_id": self.date_range_fy_id
+        })
+        return vals
 
     def make_purchase_order(self):
         for item in self.item_ids:
