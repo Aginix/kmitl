@@ -75,7 +75,7 @@ class BudgetAppropriationLine(models.Model):
         readonly=False,
         tracking=True,
     )
-    note = fields.Char(
+    note = fields.Text(
         "หมายเหตุ",
         help="Additional notes for this appropriation line",
         tracking=True,
