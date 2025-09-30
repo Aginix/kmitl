@@ -46,11 +46,9 @@
                                                 <strong>การตรวจรับ</strong>
                                             </td>
                                             <td>
-                                                <t t-foreach="purchase.wa_ids" t-as="wa">
-                                                    <a t-att-href="wa.get_portal_link()">
-                                                        <t t-esc="wa.name"/>
-                                                    </a>
-                                                </t>
+                                                <a t-att-href="committee.get_portal_link()">
+                                                    <t t-esc="committee.wa_id.name"/>
+                                                </a>
                                             </td>
                                         </tr>
                                     </table>

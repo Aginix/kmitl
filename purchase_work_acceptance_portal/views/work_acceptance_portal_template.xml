@@ -60,7 +60,7 @@
                                                 <strong>สัญญา/ใบสั่งซื้อ/จ้าง</strong>
                                             </td>
                                             <td>
-                                                <a t-att-href="work_acceptance.purchase_id.get_portal_link()">
+                                                <a t-att-href="'%s&amp;committee_id=%s' % (work_acceptance.purchase_id.get_portal_link(), committee.id)">
                                                     <t t-esc="work_acceptance.purchase_id.name"/>
                                                 </a>
                                             </td>
