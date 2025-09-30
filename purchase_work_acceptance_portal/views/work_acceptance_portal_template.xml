@@ -1,211 +1,419 @@
 <odoo>
-    <template id="work_acceptance_portal_template" name="Purchases Portal">
-        <t t-call="portal.portal_layout">
-            <t t-set="no_breadcrumbs" t-value="1"/>
-            <div class="container">
-                <div class="container o_portal_wrap mt-4">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-                            <h3 class="mb-0">
-                               การยืนยันคณะกรรมการตรวจรับของ                                <t t-esc="committee.name"/>
-                            </h3>
-                            <div class="d-flex gap-2" t-if="not committee.status">
-                                <form t-att-action="'/wa/view/%s/accept' % committee.id" method="post">
-                                    <input type="hidden" name="committee_id" t-att-value="committee.id"/>
-                                    <input type="hidden" name="access_token" t-att-value="committee.access_token"/>
-                                    <button type="submit" class="btn btn-success">ยืนยันการอนุมัติ</button>
+    <template
+        id="work_acceptance_portal_template"
+        name="Work Acceptance Portal Template"
+        inherit_id="portal.portal_sidebar"
+        primary="True"
+    >
+        <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">
+            <style>
+                @import url("https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&amp;display=swap");
+            </style>
+            <style>
+                body {
+                    font-family: "Bai Jamjuree", sans-serif;
+                }
+            </style>
+            <t t-set="no_breadcrumbs" t-value="1" />
+
+            <t t-set="o_portal_fullwidth_alert">
+                <!-- Uses backend_url provided in rendering values -->
+                <div class="text-center">
+                ท่านกำลังอยู่ในกระบวนการตรวจรับ ภายใต้ชื่อผู้ใช้ "<t
+                    t-esc="committee.name"
+                />"</div>
+            </t>
+
+            <div class="row mt16 o_portal_sale_sidebar">
+                <!-- Sidebar -->
+                <t t-call="portal.portal_record_sidebar">
+                    <t t-set="classes" t-value="'col-lg-auto d-print-none'" />
+
+                    <t t-set="title">
+                        <h3>ตรวจรับ</h3>
+                    </t>
+                    <t t-set="entries">
+                        <ul
+                            class="list-group list-group-flush flex-wrap flex-row flex-lg-column"
+                        >
+                            <li class="list-group-item flex-grow-1">
+                                <div
+                                    class="o_download_pdf btn-toolbar flex-sm-nowrap gap-2"
+                                    t-if="not committee.status"
+                                >
+                                    <div class="btn-group flex-grow-1 mb-1">
+                                        <form
+                                            t-att-action="'/wa/view/%s/accept' % committee.id"
+                                            method="post"
+                                            class="w-100"
+                                        >
+                                            <input
+                                                type="hidden"
+                                                name="committee_id"
+                                                t-att-value="committee.id"
+                                            />
+                                            <input
+                                                type="hidden"
+                                                name="access_token"
+                                                t-att-value="committee.access_token"
+                                            />
+                                            <button
+                                                type="submit"
+                                                class="btn btn-success btn-block w-100"
+                                            >
+                                                ยืนยันการอนุมัติ
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="btn-group flex-grow-1 mb-1">
+                                        <button
+                                            type="button"
+                                            class="btn btn-danger btn-block"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modaldecline"
+                                        >
+                                            ปฏิเสธการอนุมัติ
+                                        </button>
+                                    </div>
+                                </div>
+                                <h4
+                                    class="text-center p-2 fs-6 badge text-bg-info"
+                                    t-if="committee.status"
+                                >
+                                    <i class="fa fa-fw fa-check"></i> ท่านดำเนินการแล้ว
+                                </h4>
+                            </li>
+
+                            <li
+                                t-if="work_acceptance.responsible_id"
+                                class="list-group-item flex-grow-1"
+                            >
+                                <div class="small mb-1">
+                                    <strong class="text-muted">Responsible User</strong>
+                                </div>
+                                <div class="row flex-nowrap">
+                                    <div class="col flex-grow-0 pe-2">
+                                        <img
+                                            class="rounded-circle mr4 float-start o_portal_contact_img"
+                                            t-att-src="image_data_uri(work_acceptance.responsible_id.avatar_128)"
+                                            alt="Contact"
+                                        />
+                                    </div>
+                                    <div class="col ps-0" style="min-width: 150px">
+                                        <span
+                                            t-field="work_acceptance.responsible_id"
+                                            t-options='{"widget": "contact", "fields": ["name", "phone"], "no_marker": True}'
+                                        />
+                                        <a href="#discussion" class="small">
+                                            <i class="fa fa-comment"></i> Send message
+                                        </a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </t>
+                </t>
+
+                <!-- Page content -->
+                <div id="quote_content" class="col-12 col-lg justify-content-end">
+                    <!-- modal relative to the actions sign and pay -->
+                    <div
+                        role="dialog"
+                        class="modal fade"
+                        id="modaldecline"
+                        tabindex="-1"
+                    >
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form
+                                    t-att-action="'/wa/view/%s/reject' % committee.id"
+                                    method="post"
+                                >
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">เหตุผลการปฏิเสธ</h5>
+                                        <button
+                                            type="button"
+                                            class="btn-close"
+                                            data-bs-dismiss="modal"
+                                        ></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input
+                                            type="hidden"
+                                            name="committee_id"
+                                            t-att-value="committee.id"
+                                        />
+                                        <input
+                                            type="hidden"
+                                            name="access_token"
+                                            t-att-value="committee.access_token"
+                                        />
+                                        <textarea
+                                            name="comment"
+                                            class="form-control"
+                                            placeholder="ใส่เหตุผล"
+                                        ></textarea>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-danger">
+                                            ยืนยัน
+                                        </button>
+                                    </div>
                                 </form>
-                                <!-- Reject Button -->
-                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal">
-        ปฏิเสธการอนุมัติ
-                                </button>
                             </div>
-                            <span class="p-2" t-if="committee.status">ท่านได้ดำเนินการแล้ว</span>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="container mt-2">
-                <div class="container o_portal_wrap mt-2">
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+
+                    <div class="card pb-5" id="portal_work_acceptance_content">
+                        <div
+                            class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+                        >
                             <h3 class="mb-0">
-                                <i class="fa fa-file"></i> การตรวจรับ                                <t t-esc="work_acceptance.name"/>
+                                <i class="fa fa-file"></i> Work Acceptance:
+                                <em t-out="work_acceptance.name" />
                             </h3>
-                            <span class="badge badge-light">
-                                <t t-esc="work_acceptance.state"/>
+                            <span class="fs-5 badge badge-light">
+                                <t t-esc="work_acceptance.state" />
                             </span>
                         </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <table class="table table-borderless">
-                                        <tr>
-                                            <td>
-                                                <strong>ผู้ขาย</strong>
-                                            </td>
-                                            <td>
-                                                <t t-esc="work_acceptance.partner_id.display_name"/>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <strong>ผู้รับผิดชอบ</strong>
-                                            </td>
-                                            <td>
-                                                <t t-esc="work_acceptance.responsible_id.display_name"/>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <strong>สัญญา/ใบสั่งซื้อ/จ้าง</strong>
-                                            </td>
-                                            <td>
-                                                <a t-att-href="'%s&amp;committee_id=%s' % (work_acceptance.purchase_id.get_portal_link(), committee.id)">
-                                                    <t t-esc="work_acceptance.purchase_id.name"/>
-                                                </a>
-                                            </td>
-                                        </tr>
+
+                        <div id="content" class="card-body">
+                            <div id="informations" class="row">
+                                <span id="transaction_info" />
+                                <span id="work_acceptance_info_title">
+                                    <h4 class="mb-1">ข้อมูลการตรวจรับ</h4>
+                                    <hr class="mt-1 mb-2" />
+                                </span>
+                                <div
+                                    id="work_acceptance_info"
+                                    class="col-12 col-lg-6 mb-4"
+                                >
+                                    <table class="table table-borderless table-sm">
+                                        <tbody
+                                            style="white-space: nowrap"
+                                            id="work_acceptance_info_table"
+                                        >
+                                            <tr>
+                                                <th class="ps-0 pb-0">ปีงบประมาณ:</th>
+                                                <td class="w-100 pb-0 text-wrap">
+                                                    <t
+                                                        t-esc="work_acceptance.purchase_id.date_range_fy_id.name"
+                                                    />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="ps-0 pb-0">
+                                                    เลขที่ใบตรวจรับ:
+                                                </th>
+                                                <td class="w-100 pb-0 text-wrap">
+                                                    <t t-esc="work_acceptance.name" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="ps-0 pb-0">
+                                                    สัญญา/ใบสั่งซื้อ/จ้าง
+                                                </th>
+                                                <td class="w-100 pb-0 text-wrap">
+                                                    <a
+                                                        t-att-href="'%s&amp;committee_id=%s' % (work_acceptance.purchase_id.get_portal_link(), committee.id)"
+                                                    >
+                                                        <t
+                                                            t-esc="work_acceptance.purchase_id.name"
+                                                        />
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="ps-0 pb-0">ชื่อคู่ค้า:</th>
+                                                <td class="w-100 pb-0 text-wrap">
+                                                    <t
+                                                        t-esc="work_acceptance.partner_id.display_name"
+                                                    />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="ps-0 pb-0">หมายเหตุ:</th>
+                                                <td class="w-100 pb-0 text-wrap">
+                                                    <t t-esc="work_acceptance.notes" />
+                                                </td>
+                                            </tr>
+                                        </tbody>
                                     </table>
                                 </div>
-                                <div class="col-md-6">
-                                    <table class="table table-borderless">
-                                        <tr>
-                                            <td>
-                                                <strong>เวลาที่สิ้นสุด</strong>
-                                            </td>
-                                            <td>
-                                                <t t-esc="work_acceptance.date_due"/>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <strong>วันครบกำหนด</strong>
-                                            </td>
-                                            <td>
-                                                <t t-esc="work_acceptance.date_receive"/>
-                                            </td>
-                                        </tr>
+                                <div
+                                    id="work_acceptance_info_r"
+                                    class="col-12 col-lg-6 mb-4"
+                                >
+                                    <table class="table table-borderless table-sm">
+                                        <tbody
+                                            style="white-space: nowrap"
+                                            id="work_acceptance_info_table_r"
+                                        >
+                                            <tr>
+                                                <th class="ps-0 pb-0">
+                                                    เวลาที่สิ้นสุด
+                                                </th>
+                                                <td class="w-100 pb-0 text-wrap">
+                                                    <t
+                                                        t-esc="work_acceptance.date_due"
+                                                    />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="ps-0 pb-0">วันครบกำหนด</th>
+                                                <td class="w-100 pb-0 text-wrap">
+                                                    <t
+                                                        t-esc="work_acceptance.date_receive"
+                                                    />
+                                                </td>
+                                            </tr>
+                                        </tbody>
                                     </table>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-secondary text-white">
-                            <h5 class="mb-0">รายการสินค้า</h5>
-                        </div>
-                        <div class="card-body p-0">
-                            <table class="table table-striped table-hover mb-0">
-                                <thead class="thead-dark">
-                                    <tr>
-                                        <th>สินค้า</th>
-                                        <th>รายละเอียด</th>
-                                        <th class="text-right">จำนวน</th>
-                                        <th class="text-right">ราคาต่อหน่วย</th>
-                                        <th class="text-right">ราคาย่อย</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <t t-foreach="work_acceptance.wa_line_ids" t-as="line">
-                                        <tr>
-                                            <td>
-                                                <t t-esc="line.product_id.display_name"/>
-                                            </td>
-                                            <td>
-                                                <t t-esc="line.name"/>
-                                            </td>
-                                            <td class="text-right">
-                                                <t t-esc="line.product_qty"/>
-                                            </td>
-                                            <td class="text-right">
-                                                <t t-esc="line.price_unit"/>
-                                            </td>
-                                            <td class="text-right font-weight-bold">
-                                                <t t-esc="line.price_subtotal"/>
-                                            </td>
-                                        </tr>
-                                    </t>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="card shadow-sm mt-4">
-                        <div class="card-header bg-secondary text-white">
-                            <h5 class="mb-0">กรรมการ</h5>
-                        </div>
-                        <div class="card-body p-0">
-                            <table class="table table-striped table-hover mb-0">
-                                <thead class="thead-dark">
-                                    <tr>
-                                        <th>ชื่อกรรมการ</th>
-                                        <th>ตำแหน่ง</th>
-                                        <th class="text-right">email</th>
-                                        <th class="text-right">สถานะ</th>
-                                        <th class="text-right">หมายเหตุ</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <t t-foreach="work_acceptance.work_acceptance_committee_ids" t-as="committee">
-                                        <tr>
-                                            <td>
-                                                <t t-esc="committee.name"/>
-                                            </td>
-                                            <td>
-                                                <t t-if="committee.approve_role == 'chairman'">
-                                                    <span>ประธาน</span>
-                                                </t>
-                                                <t t-elif="committee.approve_role == 'committee'">
-                                                    <span>กรรมการ</span>
-                                                </t>
-                                                <t t-else="">
-                                                    <span>กรรมการและเลขานุการ</span>
-                                                </t>
-                                            </td>
-                                            <td class="text-right">
-                                                <t t-esc="committee.email"/>
-                                            </td>
-                                            <td class="text-right">
-                                                <t t-if="committee.status == 'accept'">
-                                                    <span class="text-success">เห็นชอบตรวจรับ</span>
-                                                </t>
-                                                <t t-if="committee.status == 'not_accept'">
-                                                    <span class="text-danger">ไม่ตรวจรับ</span>
-                                                </t>
-                                            </td>
-                                            <td class="text-right font-weight-bold">
-                                                <t t-esc="committee.note"/>
-                                            </td>
-                                        </tr>
-                                    </t>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </t>
 
-        <!-- Modal Reject -->
-        <div class="modal fade" id="rejectModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form t-att-action="'/wa/view/%s/reject' % committee.id" method="post">
-                        <div class="modal-header">
-                            <h5 class="modal-title">เหตุผลการปฏิเสธ</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            <section
+                                id="products"
+                                class="mt-4"
+                                style="page-break-inside: auto"
+                            >
+                                <h4>รายการตรวจรับ</h4>
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead class="bg-100">
+                                            <tr>
+                                                <th>รายการ</th>
+                                                <th
+                                                    class="text-end d-none d-sm-table-cell"
+                                                >
+                                                    จำนวน
+                                                </th>
+                                                <th
+                                                    class="text-end d-none d-sm-table-cell"
+                                                >
+                                                    ราคาต่อหน่วย
+                                                </th>
+                                                <th
+                                                    class="text-end d-none d-sm-table-cell"
+                                                >
+                                                    รวม
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t
+                                                t-foreach="work_acceptance.wa_line_ids"
+                                                t-as="line"
+                                            >
+                                                <tr>
+                                                    <td>
+                                                        <t t-esc="line.name" />
+                                                    </td>
+                                                    <td
+                                                        class="text-end d-none d-sm-table-cell"
+                                                    >
+                                                        <t t-esc="line.product_qty" />
+                                                    </td>
+                                                    <td
+                                                        class="text-end d-none d-sm-table-cell"
+                                                    >
+                                                        <t t-esc="line.price_unit" />
+                                                    </td>
+                                                    <td
+                                                        class="text-end d-none d-sm-table-cell font-weight-bold"
+                                                    >
+                                                        <t
+                                                            t-esc="line.price_subtotal"
+                                                        />
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </section>
+
+                            <section
+                                id="committee_ids"
+                                class="mt-4"
+                                style="page-break-inside: auto"
+                            >
+                                <h4>รายชื่อกรรมการ</h4>
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead class="bg-100">
+                                            <tr>
+                                                <th>ชื่อกรรมการ</th>
+                                                <th>ตำแหน่ง</th>
+                                                <th>อีเมล</th>
+                                                <th>สถานะการตรวจรับ</th>
+                                                <th>หมายเหตุ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t
+                                                t-foreach="work_acceptance.work_acceptance_committee_ids"
+                                                t-as="committee"
+                                            >
+                                                <tr>
+                                                    <td>
+                                                        <t t-esc="committee.name" />
+                                                    </td>
+                                                    <td>
+                                                        <t
+                                                            t-if="committee.approve_role == 'chairman'"
+                                                        >
+                                                            <span>ประธาน</span>
+                                                        </t>
+                                                        <t
+                                                            t-elif="committee.approve_role == 'committee'"
+                                                        >
+                                                            <span>กรรมการ</span>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <span
+                                                                >กรรมการและเลขานุการ</span
+                                                            >
+                                                        </t>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="committee.email" />
+                                                    </td>
+                                                    <td>
+                                                        <t
+                                                            t-if="committee.status == 'accept'"
+                                                        >
+                                                            <span class="text-success"
+                                                                >เห็นชอบตรวจรับ</span
+                                                            >
+                                                        </t>
+                                                        <t
+                                                            t-if="committee.status == 'not_accept'"
+                                                        >
+                                                            <span class="text-danger"
+                                                                >ไม่ตรวจรับ</span
+                                                            >
+                                                        </t>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="committee.note" />
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </section>
                         </div>
-                        <div class="modal-body">
-                            <input type="hidden" name="committee_id" t-att-value="committee.id"/>
-                            <input type="hidden" name="access_token" t-att-value="committee.access_token"/>
-                            <textarea name="comment" class="form-control" placeholder="ใส่เหตุผล"></textarea>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-danger">ปฏิเสธ</button>
-                        </div>
-                    </form>
+                    </div>
+
+                    <!-- chatter -->
+                    <!-- <div id="sale_order_communication" class="mt-4">
+                        <h2>History</h2>
+                        <t t-call="portal.message_thread"/>
+                    </div> -->
                 </div>
             </div>
-        </div>
+        </xpath>
     </template>
 </odoo>
