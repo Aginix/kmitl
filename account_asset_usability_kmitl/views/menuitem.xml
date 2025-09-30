@@ -46,28 +46,28 @@
     <menuitem 
         id="menu_asset_profile" 
         name="Asset Profiles" 
-        parent="asset_configuration"
+        parent="menu_asset_configuration"
         action="account_asset_management.account_asset_profile_action"
     />
 
     <menuitem 
         id="menu_asset_group" 
         name="Asset Groups" 
-        parent="asset_configuration"
+        parent="menu_asset_configuration"
         action="account_asset_management.account_asset_group_action"
     />
 
     <menuitem 
         id="menu_asset_sub_status" 
         name="Asset Sub-Status" 
-        parent="asset_configuration"
+        parent="menu_asset_configuration"
         action="l10n_th_account_asset_management.action_account_asset_sub_state"
     />
 
     <menuitem 
         id="menu_asset_location" 
         name="Asset Locations" 
-        parent="asset_configuration"
+        parent="menu_asset_configuration"
         action="l10n_th_gov_account_asset_management.action_account_asset_location"
     />
 
