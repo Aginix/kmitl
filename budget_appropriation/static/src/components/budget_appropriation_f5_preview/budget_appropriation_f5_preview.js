@@ -124,15 +124,27 @@ export class BudgetAppropriationF5Preview extends Component {
         this.state.expandedNodes.clear();
     }
 
-    onPrint() {
-        // Expand all nodes before printing
-        const allKeys = this.getAllNodeKeys(this.state.data.hierarchy || []);
-        allKeys.forEach(key => this.state.expandedNodes.add(key));
+    onExport() {
+        // Export to PDF using the QWeb report
+        const appropriationId = this.activeId;
+        if (!appropriationId) {
+            this.notification.add("ไม่พบข้อมูลเอกสาร", { type: "danger" });
+            return;
+        }
 
-        // Small delay to ensure DOM is updated before printing
-        setTimeout(() => {
-            window.print();
-        }, 100);
+        // Trigger the PDF report action
+        this.actionService.doAction({
+            type: 'ir.actions.report',
+            report_type: 'qweb-pdf',
+            report_name: 'budget_appropriation.report_budget_appropriation_f5',
+            report_file: 'budget_appropriation.report_budget_appropriation_f5',
+            data: null,
+            context: {
+                active_ids: [appropriationId],
+                active_id: appropriationId,
+                active_model: 'budget.appropriation',
+            },
+        });
     }
 
     onRefresh() {

@@ -55,10 +55,10 @@
                     <div class="btn-group">
                         <button
                             type="button"
-                            class="btn btn-primary"
-                            t-on-click="onPrint"
-                            title="พิมพ์">
-                            <i class="fa fa-print"/> พิมพ์
+                            class="btn btn-success"
+                            t-on-click="onExport"
+                            title="ส่งออก PDF">
+                            <i class="fa fa-file-pdf-o"/> ส่งออก PDF
                         </button>
                     </div>
                 </div>
