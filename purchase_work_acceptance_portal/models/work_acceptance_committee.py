@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 
 class WorkAcceptanceCommittee(models.Model):
     _name = "work.acceptance.committee"
-    _inherit = ['work.acceptance.committee', 'portal.mixin']
+    _inherit = ['work.acceptance.committee', 'portal.mixin', 'mail.thread', 'mail.activity.mixin']
 
     def get_portal_link(self):
         self.ensure_one()
