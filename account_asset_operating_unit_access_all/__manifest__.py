@@ -8,7 +8,7 @@
     "website": "https://github.com/aginix/kmitl",
     'depends': ['account_asset_operating_unit'],
     'data': [
-        
+        "security/account_asset_security.xml"
     ],
     'installable': True,
     'auto_install': False,
