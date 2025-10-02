@@ -10,8 +10,8 @@
     "data": [
         "security/ir.model.access.csv",
         "views/changeset_views.xml",
-        "views/purchase_committee_views.xml",
         "views/purchase_order_views.xml",
+        "wizards/purchase_committee_wizard.xml"
     ],
     'installable': True,
     'auto_install': False,

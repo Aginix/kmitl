@@ -7,25 +7,11 @@
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//notebook" position="inside">
-                <page name="changeset" string="Changeset">
-
-                </page>
+            <xpath expr="//header" position="inside">
+                <button name="action_open_committee_wizard" string="ทดสอบ" type="object" />
             </xpath>
             <xpath expr="//notebook" position="inside">
                 <page name="committee" string="Committee">
-                    <field name="purchase_committee_ids">
-                        <tree editable="bottom">
-                            <field name="committee_type" invisible="1" />
-                            <field name="employee_id" options="{'no_create': True, 'no_open': True}" />
-                            <field name="name" />
-                            <field name="approve_role" />
-                            <field name="department_id" />
-                            <field name="email" />
-                            <field name="phone" />
-                            <field name="note" />
-                        </tree>
-                    </field>
                 </page>
             </xpath>
         </field>

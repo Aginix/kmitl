@@ -12,4 +12,19 @@ class Changeset(models.Model):
     _description = 'Changeset'
 
     name = fields.Char('ชื่อเรื่อง')
-
+    purchase_id = fields.Many2one(
+        comodel_name="purchase.order",
+        string="Purchase Request",
+        ondelete="cascade",
+        index=True,
+    )
+    purchase_changeset_committee_id = fields.Many2one(
+        comodel_name="purchase.committee.changeset",
+        string="Purchase changeset Committees",
+        copy=True,
+    )
+    wizard_id = fields.One2many(
+        comodel_name="purchase.committee.changeset",
+        inverse_name="changeset_id",
+        string="Wizard",
+    )

@@ -10,9 +10,6 @@ _logger = logging.getLogger(__name__)
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-    purchase_committee_ids = fields.One2many(
-        comodel_name="purchase.committee",
-        inverse_name="purchase_id",
-        string="Purchase Committees",
-        copy=True,
-    )
+    def action_open_committee_wizard(self):
+        self.ensure_one()
+        return self.env['purchase.committee.wizard'].action_open_wizard(self.id)
