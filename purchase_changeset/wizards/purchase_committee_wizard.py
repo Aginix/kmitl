@@ -19,6 +19,12 @@ class PurchaseCommitteeWizard(models.TransientModel):
         ondelete="cascade",
         index=True,
     )
+    changeset_test_id = fields.Many2one(
+        comodel_name="purchase.committee.changeset",
+        string="Purchase test",
+        ondelete="cascade",
+        index=True,
+    )
     partner_ref = fields.Char('Vendor Reference', copy=False,
         help="Reference of the sales order or bid sent by the vendor. "
              "It's used to do the matching when you receive the "
@@ -37,10 +43,26 @@ class PurchaseCommitteeWizard(models.TransientModel):
         }
 
     def action_confirm(self):
-
         for wizard in self:
-            wizard.changeset_id.create({"wizard_id": wizard.id})
+            # สร้าง purchase.committee.changeset record ใหม่
+            test = self.env['purchase.committee.changeset'].create({
+                "partner_ref": wizard.purchase_id.partner_ref,
+            })
+
+            # ผูก wizard เข้ากับ test โดยใช้ Many2one
+            wizard.changeset_test_id = test.id
+
+            # สร้าง changeset จริง
+            wizard.changeset_id.create({
+                "name": f"เรื่องการเปลี่ยน partner_ref ไอดี {test.id}",
+                "purchase_partner_ref": wizard.partner_ref,
+                "purchase_changeset_committee_id": test.id,
+                'purchase_id': wizard.purchase_id.id
+            })
+
+            # update vendor ref ของ purchase order
             wizard.purchase_id.write({'partner_ref': wizard.partner_ref})
 
         return {'type': 'ir.actions.act_window_close'}
+
 

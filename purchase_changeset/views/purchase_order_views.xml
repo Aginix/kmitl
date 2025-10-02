@@ -11,7 +11,8 @@
                 <button name="action_open_committee_wizard" string="ทดสอบ" type="object" />
             </xpath>
             <xpath expr="//notebook" position="inside">
-                <page name="committee" string="Committee">
+                <page name="history" string="ประวัติการเปลี่ยน">
+                    <field name="changeset_ids" />
                 </page>
             </xpath>
         </field>

@@ -16,6 +16,11 @@ class PurchaseCommitteeChangeset(models.Model):
         ondelete="cascade",
         index=True,
     )
+    wizard_id = fields.One2many(
+        comodel_name="purchase.committee.wizard",
+        inverse_name="changeset_test_id",
+        string="Wizard",
+    )
     partner_ref = fields.Char('Vendor Reference', copy=False,
         help="Reference of the sales order or bid sent by the vendor. "
              "It's used to do the matching when you receive the "
