@@ -26,8 +26,10 @@
                         <h1>
                             <field name="code"/>
                         </h1>
-                        <field name="name"/>
-                        <field name="group_code"/>
+                        <group>
+                            <field name="name"/>
+                            <field name="group_code"/>
+                        </group>
                     </div>
                 </sheet>
             </form>
