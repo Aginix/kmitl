@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View changeset View Tree -->
+    <record id="view_changeset_tree" model="ir.ui.view">
+        <field name="name">view.changeset.tree</field>
+        <field name="model">changeset</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- View changeset form -->
+    <record id="view_changeset_form" model="ir.ui.view">
+        <field name="name">view.changeset.form</field>
+        <field name="model">changeset</field>
+        <field name="arch" type="xml">
+            <form string="Changeset">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Name..."/>
+                        </h1>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- View changeset search -->
+    <record id="view_changeset_search" model="ir.ui.view">
+        <field name="name">view.changeset.search</field>
+        <field name="model">changeset</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action changeset -->
+    <record id="action_changeset" model="ir.actions.act_window">
+        <field name="name">Changeset</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">changeset</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Changeset.
+            </p>
+        </field>
+    </record>
+
+</odoo>
