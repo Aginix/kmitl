@@ -8,8 +8,8 @@
     "website": "https://github.com/aginix/kmitl",
     'depends': ['base', 'purchase'],
     "data": [
-        "data/procurement.gpsc.csv",
         "security/ir.model.access.csv",
+        "data/procurement.gpsc.csv",
         "views/procurement_gpsc_views.xml"
     ],
     'installable': True,
