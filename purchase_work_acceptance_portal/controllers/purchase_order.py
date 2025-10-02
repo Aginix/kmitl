@@ -1,21 +1,38 @@
 from odoo import http
 from odoo.http import request
 
+from odoo.addons.purchase.controllers import portal
 
-class PurchaseOrder(http.Controller):
-    @http.route(['/purchase/view/<int:order_id>'],
-                type='http', auth="public", website=True)
-    def portal_my_purchase_form(self, order_id, access_token=None, committee_id=None, **kw):
-        purchase = request.env['purchase.order'].sudo().browse(order_id)
+
+class PurchaseOrder(portal.CustomerPortal):
+    @http.route(['/purchase/view/<int:order_id>'], type='http', auth="public", website=True)
+    def portal_purchase_order_committee_view(self, order_id=None, access_token=None, committee_id=None, **kw):
+        order_sudo = request.env['purchase.order'].sudo().browse(order_id)
+        if not order_sudo.exists():
+            return request.not_found()
+
+        if not access_token or access_token != order_sudo.access_token:
+            return request.not_found()
+
         committee = request.env['work.acceptance.committee'].sudo().browse(int(committee_id))
-        if not purchase.exists():
-            return request.not_found()
 
-        if not access_token or access_token != purchase.access_token:
-            return request.not_found()
+        report_type = kw.get('report_type')
+        if report_type in ('html', 'pdf', 'text'):
+            return self._show_report(model=order_sudo, report_type=report_type, report_ref='purchase.action_report_purchase_order', download=kw.get('download'))
 
-        values = {
-            'purchase': purchase,
-            'committee': committee
-        }
-        return request.render("purchase_work_acceptance_portal.purchase_portal_template", values)
+        confirm_type = kw.get('confirm')
+        if confirm_type == 'reminder':
+            order_sudo.confirm_reminder_mail(kw.get('confirmed_date'))
+        if confirm_type == 'reception':
+            order_sudo._confirm_reception_mail()
+
+        values = self._purchase_order_get_page_view_values(order_sudo, access_token, **kw)
+        update_date = kw.get('update')
+
+        values['committee'] = committee
+        if order_sudo.company_id:
+            values['res_company'] = order_sudo.company_id
+        if update_date == 'True':
+            return request.render("purchase.portal_my_purchase_order_update_date", values)
+        return request.render("purchase.portal_my_purchase_order", values)
+
