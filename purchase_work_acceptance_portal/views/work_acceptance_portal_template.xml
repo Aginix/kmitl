@@ -43,7 +43,7 @@
                                 >
                                     <div class="btn-group flex-grow-1 mb-1">
                                         <form
-                                            t-att-action="'/wa/view/%s/accept' % wa_committee.id"
+                                            t-att-action="'/wa/view/%s/accept?committee_token=%s' % (work_acceptance.id, wa_committee.access_token)"
                                             method="post"
                                             class="w-100"
                                         >
@@ -55,7 +55,7 @@
                                             <input
                                                 type="hidden"
                                                 name="access_token"
-                                                t-att-value="wa_committee.access_token"
+                                                t-att-value="work_acceptance.access_token"
                                             />
                                             <button
                                                 type="submit"
@@ -127,7 +127,7 @@
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <form
-                                    t-att-action="'/wa/view/%s/reject' % wa_committee.id"
+                                    t-att-action="'/wa/view/%s/reject?committee_token=%s' % (work_acceptance.id, wa_committee.access_token)"
                                     method="post"
                                 >
                                     <div class="modal-header">
@@ -147,7 +147,7 @@
                                         <input
                                             type="hidden"
                                             name="access_token"
-                                            t-att-value="wa_committee.access_token"
+                                            t-att-value="work_acceptance.access_token"
                                         />
                                         <textarea
                                             name="comment"
@@ -216,7 +216,7 @@
                                                 </th>
                                                 <td class="w-100 pb-0 text-wrap">
                                                     <a
-                                                        t-att-href="'%s&amp;committee_id=%s' % (work_acceptance.purchase_id.get_portal_link(), wa_committee.id)"
+                                                        t-att-href="'%s&amp;committee_token=%s' % (work_acceptance.purchase_id.get_portal_link(), wa_committee.access_token)"
                                                     >
                                                         <t
                                                             t-esc="work_acceptance.purchase_id.name"

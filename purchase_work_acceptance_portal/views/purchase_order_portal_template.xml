@@ -11,7 +11,7 @@
         <xpath expr="//div[@class='col-lg-6']" position="inside">
             <br />
             <strong>การตรวจรับ : </strong>
-            <a t-att-href="committee.get_portal_link()">
+            <a t-att-href="'%s&amp;committee_token=%s' % (committee.wa_id.get_portal_link(), committee.access_token)">
                 <t t-esc="committee.wa_id.name"/>
             </a>
         </xpath>

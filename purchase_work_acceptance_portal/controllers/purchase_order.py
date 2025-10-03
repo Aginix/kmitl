@@ -6,15 +6,15 @@ from odoo.addons.purchase.controllers import portal
 
 class PurchaseOrder(portal.CustomerPortal):
     @http.route(['/purchase/view/<int:order_id>'], type='http', auth="public", website=True)
-    def portal_purchase_order_committee_view(self, order_id=None, access_token=None, committee_id=None, **kw):
-        order_sudo = request.env['purchase.order'].sudo().browse(order_id)
-        if not order_sudo.exists():
-            return request.not_found()
+    def portal_purchase_order_committee_view(self, order_id=None, access_token=None, committee_token=None, **kw):
+        try:
+            order_sudo = self._document_check_access('purchase.order', order_id, access_token=access_token)
+        except (AccessError, MissingError):
+            return request.redirect('/my')
 
-        if not access_token or access_token != order_sudo.access_token:
-            return request.not_found()
-
-        committee = request.env['work.acceptance.committee'].sudo().browse(int(committee_id))
+        committee_sudo = request.env['work.acceptance.committee'].sudo().search([
+            ('access_token', '=', committee_token),
+            ], limit=1)
 
         report_type = kw.get('report_type')
         if report_type in ('html', 'pdf', 'text'):
@@ -29,7 +29,7 @@ class PurchaseOrder(portal.CustomerPortal):
         values = self._purchase_order_get_page_view_values(order_sudo, access_token, **kw)
         update_date = kw.get('update')
 
-        values['committee'] = committee
+        values['committee'] = committee_sudo
         if order_sudo.company_id:
             values['res_company'] = order_sudo.company_id
         if update_date == 'True':

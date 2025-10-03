@@ -35,18 +35,20 @@ class WorkAcceptance(portal.CustomerPortal):
 
         return request.render("purchase_work_acceptance_portal.work_acceptance_portal_template", values)
 
-    @http.route(['/wa/view/<int:committee_id>/accept'], type='http', auth="public", methods=['POST'], website=True, csrf=False)
-    def work_acceptance_committee_confirm(self, committee_id=None, access_token=None, **post):
+    @http.route(['/wa/view/<int:wa_id>/accept'], type='http', auth="public", methods=['POST'], website=True, csrf=False)
+    def work_acceptance_committee_confirm(self, wa_id, committee_token=None, access_token=None, **post):
+        try:
+            work_acceptance = self._document_check_access('work.acceptance', wa_id, access_token=access_token)
+        except (AccessError, MissingError):
+            return request.redirect('/my')
 
-        committee = request.env['work.acceptance.committee'].sudo().browse(int(committee_id))
-        if not committee.exists() or access_token != committee.access_token:
-            return request.not_found()
+        committee = request.env['work.acceptance.committee'].sudo().search([
+            ('access_token', '=', committee_token),
+            ], limit=1)
 
         committee_user = committee.employee_id.user_id
         if not committee_user:
             return request.not_found()
-
-        work_acceptance = request.env(user=committee_user.id)['work.acceptance'].browse(committee.wa_id.id)
 
         comment_text = "อนุมัติ"
 
@@ -59,19 +61,22 @@ class WorkAcceptance(portal.CustomerPortal):
             work_acceptance.with_user(committee_user)._validate_tier(pending_reviews)
             work_acceptance._update_counter({"review_deleted": True})
 
-        return redirect(f"/wa/view/{committee.id}?access_token={committee.access_token}")
+        return redirect(f"/wa/view/{work_acceptance.id}?access_token={work_acceptance.access_token}&committee_token={committee.access_token}")
 
-    @http.route(['/wa/view/<int:committee_id>/reject'], type='http', auth="public", methods=['POST'], website=True, csrf=False)
-    def work_acceptance_committee_reject(self, committee_id=None, access_token=None, **post):
-        committee = request.env['work.acceptance.committee'].sudo().browse(int(committee_id))
-        if not committee.exists() or access_token != committee.access_token:
-            return request.not_found()
+    @http.route(['/wa/view/<int:wa_id>/reject'], type='http', auth="public", methods=['POST'], website=True, csrf=False)
+    def work_acceptance_committee_reject(self, wa_id, committee_token=None, access_token=None, **post):
+        try:
+            work_acceptance = self._document_check_access('work.acceptance', wa_id, access_token=access_token)
+        except (AccessError, MissingError):
+            return request.redirect('/my')
+
+        committee = request.env['work.acceptance.committee'].sudo().search([
+            ('access_token', '=', committee_token),
+            ], limit=1)
 
         committee_user = committee.employee_id.user_id
         if not committee_user:
             return request.not_found()
-
-        work_acceptance = request.env(user=committee_user.id)['work.acceptance'].browse(committee.wa_id.id)
 
         comment_text = post.get("comment") or "อนุมัติ"
 
@@ -85,5 +90,5 @@ class WorkAcceptance(portal.CustomerPortal):
             work_acceptance._update_counter({"review_deleted": True})
             committee.write({"status": "not_accept", "note": comment_text})
 
-        return redirect(f"/wa/view/{committee.id}?access_token={committee.access_token}")
+        return redirect(f"/wa/view/{work_acceptance.id}?access_token={work_acceptance.access_token}&committee_token={committee.access_token}")
 
