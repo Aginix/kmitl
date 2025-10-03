@@ -29,3 +29,10 @@ class ProcurementGpsc(models.Model):
     group_code = fields.Char(
         string="Group Code"
     )
+
+    def name_get(self):
+        result = []
+        for rec in self:
+            name = f"[{rec.code}] {rec.name}"
+            result.append((rec.id, name))
+        return result
