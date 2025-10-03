@@ -16,11 +16,11 @@
             </style>
             <t t-set="no_breadcrumbs" t-value="1" />
 
-            <t t-set="o_portal_fullwidth_alert">
+            <t t-set="o_portal_fullwidth_alert" t-if="wa_committee">
                 <!-- Uses backend_url provided in rendering values -->
                 <div class="text-center">
                 ท่านกำลังอยู่ในกระบวนการตรวจรับ ภายใต้ชื่อผู้ใช้ "<t
-                    t-esc="committee.name"
+                    t-esc="wa_committee.name"
                 />"</div>
             </t>
 
@@ -36,26 +36,26 @@
                         <ul
                             class="list-group list-group-flush flex-wrap flex-row flex-lg-column"
                         >
-                            <li class="list-group-item flex-grow-1">
+                            <li class="list-group-item flex-grow-1" t-if="wa_committee">
                                 <div
                                     class="o_download_pdf btn-toolbar flex-sm-nowrap gap-2"
-                                    t-if="not committee.status"
+                                    t-if="not wa_committee.status"
                                 >
                                     <div class="btn-group flex-grow-1 mb-1">
                                         <form
-                                            t-att-action="'/wa/view/%s/accept' % committee.id"
+                                            t-att-action="'/wa/view/%s/accept' % wa_committee.id"
                                             method="post"
                                             class="w-100"
                                         >
                                             <input
                                                 type="hidden"
                                                 name="committee_id"
-                                                t-att-value="committee.id"
+                                                t-att-value="wa_committee.id"
                                             />
                                             <input
                                                 type="hidden"
                                                 name="access_token"
-                                                t-att-value="committee.access_token"
+                                                t-att-value="wa_committee.access_token"
                                             />
                                             <button
                                                 type="submit"
@@ -78,7 +78,7 @@
                                 </div>
                                 <h4
                                     class="text-center p-2 fs-6 badge text-bg-info"
-                                    t-if="committee.status"
+                                    t-if="wa_committee.status"
                                 >
                                     <i class="fa fa-fw fa-check"></i> ท่านดำเนินการแล้ว
                                 </h4>
@@ -122,11 +122,12 @@
                         class="modal fade"
                         id="modaldecline"
                         tabindex="-1"
+                        t-if="wa_committee"
                     >
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <form
-                                    t-att-action="'/wa/view/%s/reject' % committee.id"
+                                    t-att-action="'/wa/view/%s/reject' % wa_committee.id"
                                     method="post"
                                 >
                                     <div class="modal-header">
@@ -141,12 +142,12 @@
                                         <input
                                             type="hidden"
                                             name="committee_id"
-                                            t-att-value="committee.id"
+                                            t-att-value="wa_committee.id"
                                         />
                                         <input
                                             type="hidden"
                                             name="access_token"
-                                            t-att-value="committee.access_token"
+                                            t-att-value="wa_committee.access_token"
                                         />
                                         <textarea
                                             name="comment"
@@ -209,13 +210,13 @@
                                                     <t t-esc="work_acceptance.name" />
                                                 </td>
                                             </tr>
-                                            <tr>
+                                            <tr t-if="wa_committee">
                                                 <th class="ps-0 pb-0">
                                                     สัญญา/ใบสั่งซื้อ/จ้าง
                                                 </th>
                                                 <td class="w-100 pb-0 text-wrap">
                                                     <a
-                                                        t-att-href="'%s&amp;committee_id=%s' % (work_acceptance.purchase_id.get_portal_link(), committee.id)"
+                                                        t-att-href="'%s&amp;committee_id=%s' % (work_acceptance.purchase_id.get_portal_link(), wa_committee.id)"
                                                     >
                                                         <t
                                                             t-esc="work_acceptance.purchase_id.name"

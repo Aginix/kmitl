@@ -12,18 +12,24 @@ from odoo.addons.portal.controllers.portal import pager as portal_pager
 class WorkAcceptance(portal.CustomerPortal):
 
     @http.route(['/wa/view/<int:wa_id>'], type='http', auth="public", website=True)
-    def work_acceptance_view(self, wa_id, access_token=None, message=False, **kw):
+    def work_acceptance_view(self, wa_id, access_token=None, committee_token=None, message=False, **kw):
         try:
             wa_sudo = self._document_check_access('work.acceptance', wa_id, access_token=access_token)
         except (AccessError, MissingError):
             return request.redirect('/my')
 
+        committee = request.env['work.acceptance.committee'].sudo().search([
+            ('access_token', '=', committee_token),
+            ], limit=1)
+
         values = {
-            'committee': wa_sudo,
             'work_acceptance': wa_sudo,
             'message': message,
             'report_type': 'html',
         }
+
+        if committee:
+            values['wa_committee'] = committee
 
         values = self._get_page_view_values(wa_sudo, access_token, values, False, False)
 
