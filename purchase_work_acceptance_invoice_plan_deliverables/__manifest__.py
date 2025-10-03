@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Purchase Work Acceptance Invoice Plan Deliveriables',
+    'name': 'Purchase Work Acceptance Invoice Plan Deliverables',
     'version': '16.0.1.0.0',
-    'summary': """ Purchase Work Acceptance Invoice Plan Deliveriables Summary """,
+    'summary': """ Purchase Work Acceptance Invoice Plan Deliverables Summary """,
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
