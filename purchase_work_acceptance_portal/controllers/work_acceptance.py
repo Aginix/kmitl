@@ -1,31 +1,31 @@
 from werkzeug.utils import redirect
 
 from odoo import api, http
-from odoo.http import request
 from odoo.exceptions import AccessError, MissingError, ValidationError
+from odoo.http import request
 
-from odoo.addons.portal.controllers.mail import _message_post_helper
 from odoo.addons.portal.controllers import portal
+from odoo.addons.portal.controllers.mail import _message_post_helper
 from odoo.addons.portal.controllers.portal import pager as portal_pager
 
 
 class WorkAcceptance(portal.CustomerPortal):
 
-    @http.route(['/wa/view/<int:committee_id>'], type='http', auth="public", website=True)
-    def work_acceptance_committee_portal(self, committee_id, access_token=None, message=False, **kw):
+    @http.route(['/wa/view/<int:wa_id>'], type='http', auth="public", website=True)
+    def work_acceptance_view(self, wa_id, access_token=None, message=False, **kw):
         try:
-            wa_committee_sudo = self._document_check_access('work.acceptance.committee', committee_id, access_token=access_token)
+            wa_sudo = self._document_check_access('work.acceptance', wa_id, access_token=access_token)
         except (AccessError, MissingError):
             return request.redirect('/my')
 
         values = {
-            'committee': wa_committee_sudo,
-            'work_acceptance': wa_committee_sudo.wa_id,
+            'committee': wa_sudo,
+            'work_acceptance': wa_sudo,
             'message': message,
             'report_type': 'html',
         }
 
-        values = self._get_page_view_values(wa_committee_sudo, access_token, values, False, False)
+        values = self._get_page_view_values(wa_sudo, access_token, values, False, False)
 
         return request.render("purchase_work_acceptance_portal.work_acceptance_portal_template", values)
 
