@@ -14,6 +14,7 @@ class ProcurementGpsc(models.Model):
     _sql_constraints = [
         ('unique_code', 'unique (code)', "Code already exists!"),
     ]
+    _rec_names_search = ["name", "code"]
 
     name = fields.Char(
         required=True,
