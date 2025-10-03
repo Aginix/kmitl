@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'L10n th gov gpsc',
+    'name': 'Thai Localization - Government Product and Service Code (GPSC)',
     'version': '16.0.1.0.0',
-    'summary': """ L10n th gov gpsc Summary """,
+    'summary': """ Thai Localization - Government Product and Service Code (GPSC) """,
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
