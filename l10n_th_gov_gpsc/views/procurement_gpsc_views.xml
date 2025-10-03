@@ -42,6 +42,17 @@
         <field name="model">procurement.gpsc</field>
         <field name="arch" type="xml">
             <search>
+                <field
+                    name="code"
+                    string="GPSC Code"
+                    filter_domain="[('code', 'ilike', self)]"
+                />
+                <field
+                    name="name"
+                    string="GPSC Name"
+                    filter_domain="[('name', 'ilike', self)]"
+                />
+
                 <group expand="1" string="Group By">
                     <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
                 </group>
