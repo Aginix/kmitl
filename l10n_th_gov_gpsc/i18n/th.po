@@ -18,6 +18,11 @@ msgstr ""
 "X-Generator: Poedit 3.6\n"
 
 #. module: l10n_th_gov_gpsc
+#: model:ir.model.constraint,message:l10n_th_gov_gpsc.constraint_procurement_gpsc_unique_code
+msgid "Code already exists!"
+msgstr "รหัส GPSC ซ้ำกันไม่ได้"
+
+#. module: l10n_th_gov_gpsc
 #: model:ir.model.fields,field_description:l10n_th_gov_gpsc.field_procurement_gpsc__create_uid
 msgid "Created by"
 msgstr ""
