@@ -48,4 +48,5 @@ class AccountAsset(models.Model):
         for asset in self:
             if not asset.number:
                 asset._create_asset_number()
+                # WAKE UP RUNBOT
         return res
