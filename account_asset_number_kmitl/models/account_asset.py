@@ -25,9 +25,10 @@ class AccountAsset(models.Model):
             if not (asset.department_id and asset.gpsc_id):
                 raise ValidationError(_("Missing department or GPSC."))
 
-            fiscal_year = asset.account_fiscal_year_id[-2:]
+            fiscal_year = str(asset.account_fiscal_year_id.name)[-2:]
             short_name = asset.department_id.short_name or "XXX"
             seq_code = f"account.asset.{fiscal_year}.{short_name}.{asset.gpsc_id.code}"
+            seq = self.env['ir.sequence'].sudo().search([('code', '=', seq_code)], limit=1)
 
             if not seq:
                 seq = self.env['ir.sequence'].sudo().create({
@@ -39,7 +40,7 @@ class AccountAsset(models.Model):
                 })
 
             sequence_number = self.env['ir.sequence'].next_by_code(seq_code)
-            number = f"{fiscal_year}{short_name}.{asset.gpsc_id.code}-{sequence_number}"
+            number = f"{fiscal_year}-{short_name}-{asset.gpsc_id.code}-{sequence_number}"
             asset.number = number
 
     def validate(self):
