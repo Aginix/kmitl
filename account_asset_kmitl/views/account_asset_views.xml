@@ -19,8 +19,8 @@
         <field name="inherit_id" ref="account_asset_operating_unit.account_asset_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='operating_unit_id']" position="before">
-              <field name="gpsc_id" />
-              <field name="account_fiscal_year_id" />
+              <field name="gpsc_id" required="1" />
+              <field name="account_fiscal_year_id" required="1" />
             </xpath>
         </field>
     </record>

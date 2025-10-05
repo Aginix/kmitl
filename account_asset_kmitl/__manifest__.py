@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Account asset kmitl',
+    'name': 'Account Asset KMITL',
     'version': '16.0.1.0.0',
     'summary': """ Account asset kmitl Summary """,
     "category": "KMITL",
