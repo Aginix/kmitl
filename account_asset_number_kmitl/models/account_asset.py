@@ -26,7 +26,7 @@ class AccountAsset(models.Model):
                 raise ValidationError(_("Missing department or GPSC."))
 
             fiscal_year = str(asset.account_fiscal_year_id.name)[-2:]
-            short_name = asset.department_id.short_name or "XXX"
+            short_name = asset.department_id.department.short_name or "XXX"
             seq_code = f"account.asset.{fiscal_year}.{short_name}.{asset.gpsc_id.code}"
             seq = self.env['ir.sequence'].sudo().search([('code', '=', seq_code)], limit=1)
 
@@ -48,5 +48,4 @@ class AccountAsset(models.Model):
         for asset in self:
             if not asset.number:
                 asset._create_asset_number()
-                # WAKE UP RUNBOT
         return res
