@@ -136,7 +136,7 @@ msgid "February"
 msgstr "กุมภาพันธ์"
 
 #. module: procurement_plan
-#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__date_range_fy_id
+#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__account_fiscal_year_id
 msgid "Fiscal year"
 msgstr "ปีงบประมาณ"
 

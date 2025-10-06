@@ -38,7 +38,7 @@ class ProcurementPlan(models.Model):
         "cancel": [("readonly", True)],
     }
 
-    date_range_fy_id = fields.Many2one(
+    account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="Fiscal year",
         required=True,
@@ -71,17 +71,10 @@ class ProcurementPlan(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
-    price_per_unit = fields.Float(
-        "Price per unit",
-        required=True,
-        tracking=True,
-        states=READONLY_STATES,
-    )
     total_price = fields.Float(
-        "Total price",
-        compute="_compute_total_price",
+        "วงเงินรวม",
         store=True,
-        readonly=True,
+        readonly=False,
         tracking=True,
     )
     procurement_method_id = fields.Many2one(
@@ -176,19 +169,14 @@ class ProcurementPlan(models.Model):
                     "procurement.plan"
                 ) or _("New")
 
-    @api.depends("name", "description", "amount", "unit", "price_per_unit", "total_price")
+    @api.depends("name", "description", "amount", "unit",  "total_price")
     def _compute_display_name(self):
         for record in self:
             description = record.description if record.description else "{}"
             amount = record.amount
             unit = record.unit if record.unit else "{}"
             total_price = format_amount(self.env, record.total_price, record.currency_id, False)
-            record.display_name = f"{description} จำนวน {amount} {unit} งบประมาณ {total_price} บาท"
-
-    @api.depends("amount", "price_per_unit")
-    def _compute_total_price(self):
-        for record in self:
-            record.total_price = record.amount * record.price_per_unit
+            record.display_name = f"{description} จำนวน {amount} {unit} วงเงินรวม {total_price} บาท"
 
     def action_validate(self):
         self.write({"state": "validate"})

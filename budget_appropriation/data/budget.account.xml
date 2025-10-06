@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="budget_account_99000" model="budget.account">
+        <field name="budget_type">revenue</field>
+        <field name="code">99000</field>
+        <field name="name">หักโอน</field>
+        <field name="budgetable">false</field>
+        <field name="deduct">true</field>
+    </record>
+
+    <record id="budget_account_99001" model="budget.account">
+        <field name="budget_type">revenue</field>
+        <field name="code">99001</field>
+        <field name="name">สมทบค่าจ้างพนักงานเงินรายได้ที่จ้างด้วยรายได้สนอ.</field>
+        <field name="budgetable">true</field>
+        <field name="deduct">true</field>
+        <field name="parent_id" ref="budget_appropriation.budget_account_99000" />
+        <field name="default_deduct_analytic_id" ref="account_analytic_kmitl.dept_89" />
+    </record>
+
+    <record id="budget_account_99002" model="budget.account">
+        <field name="budget_type">revenue</field>
+        <field name="code">99002</field>
+        <field name="name">โอนค่าสอนบริการ</field>
+        <field name="budgetable">true</field>
+        <field name="deduct">true</field>
+        <field name="parent_id" ref="budget_appropriation.budget_account_99000" />
+    </record>
+
+    <record id="budget_account_99003" model="budget.account">
+        <field name="budget_type">revenue</field>
+        <field name="code">99003</field>
+        <field name="name">กองทุนวิจัยสถาบัน</field>
+        <field name="budgetable">true</field>
+        <field name="deduct">true</field>
+        <field name="parent_id" ref="budget_appropriation.budget_account_99000" />
+        <field name="default_deduct_analytic_id" ref="account_analytic_kmitl.dept_89" />
+    </record>
+
+</odoo>

@@ -1,30 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates xml:space="preserve">
     <t t-name="procurement_plan_budget.BudgetAppropriationLineProcurementRenderer" t-inherit="budget_appropriation.ListRenderer.RecordRow" t-inherit-mode="extension" owl="1">
-        <xpath expr="//div[hasclass('o_col_account_id')]" position="inside">
-            <div t-if="record.data.procurement_plan and getProcurementRows(record).length" class="o_field_procurement_plan_ids">
-                <div>
-                    <b>แผนจัดซื้อจัดจ้าง</b>
-                </div>
-                <ul>
-                    <li t-foreach="getProcurementRows(record)" t-as="procurement" t-key="procurement.data.id">
-                        <span t-esc="procurement.data.display_name" />
-                    </li>
-                </ul>
-            </div>
-        </xpath>
-        <xpath expr="//t[@t-foreach='getColumns(record)']/t/td" position="inside">
-            <div t-if="column.name == 'balance' and record.data.procurement_plan" style="width: 100%;" class="o_col_balance">
-                <div class="text-muted mt-2">
-                    <div>จัดสรรแล้ว</div>
-                    <div style="text-decoration-line: underline;" t-esc="formatCurrency(getAllocationAmount(record))" />
-                </div>
-                <div class="text-muted mt-2">
-                    <div>คงเหลือ</div>
-                    <div>
-                        (<span style="text-decoration-line: underline; text-decoration-style: double;" t-esc="formatCurrency(getAvailableAmount(record))" />)
-                    </div>
-                </div>
+        <xpath expr="//t[@t-if='record.data.note']" position="before">
+            <div t-if="record.data.enable_procurement_plan" class="o_field_procurement_plan_ids">
+                <span class="fw-medium fst-italic" t-esc="`(${record.data.procurement_plan_description} จำนวน ${record.data.procurement_plan_amount} ${record.data.procurement_plan_unit})`" />
             </div>
         </xpath>
     </t>

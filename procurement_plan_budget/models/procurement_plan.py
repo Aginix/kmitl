@@ -20,8 +20,6 @@ class ProcurementPlan(models.Model):
     }
     budget_commitment_ids = fields.One2many('budget.commitment', 'procurement_plan_id', string="ผูกพันงบประมาณ", readonly=True)
     budget_commitment_count = fields.Integer(string="จำนวนผูกพันงบประมาณ", compute='_compute_budget_commitment_count')
-    budget_appropriation_id = fields.Many2one('budget.appropriation', related='budget_appropriation_line_id.appropriation_id', store=True, readonly=True)
-    budget_appropriation_line_id = fields.Many2one('budget.appropriation.line')
     budget_account_id = fields.Many2one('budget.account', string="รหัสงบประมาณ", states=READONLY_STATES)
     activity_analytic_id = fields.Many2one(states=READONLY_STATES)
     department_analytic_id = fields.Many2one(states=READONLY_STATES)

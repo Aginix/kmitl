@@ -1,6 +1,7 @@
 /** @odoo-module **/
 
 import { Component, onWillStart, useState } from "@odoo/owl";
+
 import { ControlPanel } from "@web/search/control_panel/control_panel";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
@@ -17,8 +18,6 @@ export class BudgetAppropriationF5Preview extends Component {
             loading: true,
             error: null,
             expandedNodes: new Set(),
-            showProjects: true,
-            showProcurementPlans: true,
         });
 
         this.orm = useService("orm");
@@ -101,7 +100,7 @@ export class BudgetAppropriationF5Preview extends Component {
         }
 
         return this.state.data.hierarchy.reduce((total, node) => {
-            return total + (node.total_amount || 0);
+            return total + (node.amount_total || 0);
         }, 0);
     }
 
@@ -149,14 +148,6 @@ export class BudgetAppropriationF5Preview extends Component {
 
     onRefresh() {
         this.loadData();
-    }
-
-    onToggleProjects() {
-        this.state.showProjects = !this.state.showProjects;
-    }
-
-    onToggleProcurementPlans() {
-        this.state.showProcurementPlans = !this.state.showProcurementPlans;
     }
 
     onBack() {
