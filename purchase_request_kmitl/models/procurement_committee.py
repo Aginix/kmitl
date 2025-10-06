@@ -25,3 +25,11 @@ class ProcurementCommittee(models.Model):
             ("evaluation", "Evaluation Committee"),
         ],
     )
+    approve_role = fields.Selection(
+        selection_add=[
+            ("secretary", "Secretary"),
+        ],
+        required=True,
+        ondelete={'chairman': 'set default', 'committee': 'set default', 'secretary': 'set default'},
+        default="committee",
+    )
