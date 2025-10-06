@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Account asset number kmitl',
+    'name': 'Account Asset Number Kmitl',
     'version': '16.0.1.0.0',
-    'summary': """ Account asset number kmitl Summary """,
+    'summary': """ Account Asset Number Kmitl Summary """,
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
