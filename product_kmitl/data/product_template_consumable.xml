@@ -8,6 +8,7 @@
         <field name="detailed_type">consu</field>
         <field name="uom_id" ref="uom.product_uom_unit"/>
         <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
     </record>
 
     <function model="product.template" name="write">
@@ -25,6 +26,7 @@
         <field name="detailed_type">consu</field>
         <field name="uom_id" ref="uom.product_uom_unit"/>
         <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
     </record>
 
     <function model="product.template" name="write">
@@ -42,6 +44,7 @@
         <field name="detailed_type">consu</field>
         <field name="uom_id" ref="uom.product_uom_unit"/>
         <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
     </record>
 
     <function model="product.template" name="write">
@@ -59,6 +62,7 @@
         <field name="detailed_type">consu</field>
         <field name="uom_id" ref="uom.product_uom_unit"/>
         <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
     </record>
 
     <function model="product.template" name="write">
@@ -76,6 +80,7 @@
         <field name="detailed_type">consu</field>
         <field name="uom_id" ref="uom.product_uom_unit"/>
         <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
     </record>
 
     <function model="product.template" name="write">
@@ -93,6 +98,7 @@
         <field name="detailed_type">consu</field>
         <field name="uom_id" ref="uom.product_uom_unit"/>
         <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
     </record>
 
     <function model="product.template" name="write">
@@ -110,6 +116,7 @@
         <field name="detailed_type">consu</field>
         <field name="uom_id" ref="uom.product_uom_unit"/>
         <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
     </record>
 
     <function model="product.template" name="write">
@@ -127,6 +134,7 @@
         <field name="detailed_type">consu</field>
         <field name="uom_id" ref="uom.product_uom_unit"/>
         <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
     </record>
 
     <function model="product.template" name="write">
@@ -144,6 +152,7 @@
         <field name="detailed_type">consu</field>
         <field name="uom_id" ref="uom.product_uom_unit"/>
         <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
     </record>
 
     <function model="product.template" name="write">
@@ -161,6 +170,7 @@
         <field name="detailed_type">consu</field>
         <field name="uom_id" ref="uom.product_uom_unit"/>
         <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
     </record>
 
     <function model="product.template" name="write">
@@ -178,6 +188,7 @@
         <field name="detailed_type">consu</field>
         <field name="uom_id" ref="uom.product_uom_unit"/>
         <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
     </record>
 
     <function model="product.template" name="write">
@@ -195,6 +206,7 @@
         <field name="detailed_type">consu</field>
         <field name="uom_id" ref="uom.product_uom_unit"/>
         <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
     </record>
 
     <function model="product.template" name="write">
@@ -212,6 +224,7 @@
         <field name="detailed_type">consu</field>
         <field name="uom_id" ref="uom.product_uom_unit"/>
         <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
     </record>
 
     <function model="product.template" name="write">
@@ -229,6 +242,7 @@
         <field name="detailed_type">consu</field>
         <field name="uom_id" ref="uom.product_uom_unit"/>
         <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
     </record>
 
     <function model="product.template" name="write">
@@ -246,6 +260,7 @@
         <field name="detailed_type">consu</field>
         <field name="uom_id" ref="uom.product_uom_unit"/>
         <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
     </record>
 
     <function model="product.template" name="write">
@@ -263,6 +278,7 @@
         <field name="detailed_type">consu</field>
         <field name="uom_id" ref="uom.product_uom_unit"/>
         <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
     </record>
 
     <function model="product.template" name="write">
@@ -280,6 +296,7 @@
         <field name="detailed_type">consu</field>
         <field name="uom_id" ref="uom.product_uom_unit"/>
         <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
     </record>
 
     <function model="product.template" name="write">
@@ -297,6 +314,7 @@
         <field name="detailed_type">consu</field>
         <field name="uom_id" ref="uom.product_uom_unit"/>
         <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
     </record>
 
     <function model="product.template" name="write">
@@ -314,6 +332,7 @@
         <field name="detailed_type">consu</field>
         <field name="uom_id" ref="uom.product_uom_unit"/>
         <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
     </record>
 
     <function model="product.template" name="write">
@@ -331,6 +350,7 @@
         <field name="detailed_type">consu</field>
         <field name="uom_id" ref="uom.product_uom_unit"/>
         <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
     </record>
 
     <function model="product.template" name="write">
@@ -348,6 +368,7 @@
         <field name="detailed_type">consu</field>
         <field name="uom_id" ref="uom.product_uom_unit"/>
         <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
     </record>
 
     <function model="product.template" name="write">

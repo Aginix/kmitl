@@ -11,11 +11,12 @@
         "account_kmitl",
         "product_category_code_unique",
     ],
-    "data": [               
+    "data": [
         "data/product_category.xml",
         "data/product_template_storable.xml",
         "data/product_template_consumable.xml",
         "data/product_template_asset.xml",
+        "views/product_template_views.xml",
     ],
     "application": False,
     "installable": True,
