@@ -50,3 +50,10 @@ msgstr ""
 #, python-format
 msgid "Missing department or GPSC or Fiscal year."
 msgstr "ไม่มีแผนก หรือ รหัส GPSC หรือ ปีงบประมาณ"
+
+#. module: account_asset_number_kmitl
+#. odoo-python
+#: code:addons/account_asset_number_kmitl/models/account_asset.py:0
+#, python-format
+msgid "Department short name is missing."
+msgstr "ไม่มีชื่อย่อของแผนก"
