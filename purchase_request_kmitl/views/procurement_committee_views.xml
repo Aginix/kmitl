@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_procurement_committee_tree" model="ir.ui.view">
+        <field name="name">view.procurement.committee.tree</field>
+        <field name="model">procurement.committee</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="committee_type" invisible="1" />
+                <field name="employee_id" string="Employee" options="{'no_create': True, 'no_open': True}" />
+                <field name="name" string="Committee Name" />
+                <field name="approve_role" string="Role" />
+                <field name="department_id" string="Department" readonly="1"/>
+                <field name="email" string="Work Email" readonly="1"/>
+                <field name="mobile_phone" string="Mobile Phone" readonly="1"/>
+            </tree>
+        </field>
+    </record>
+    <record id="action_procurement_committee" model="ir.actions.act_window">
+        <field name="name">Procurement Committee</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">procurement.committee</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Procurement Committee.
+            </p>
+        </field>
+    </record>
+</odoo>

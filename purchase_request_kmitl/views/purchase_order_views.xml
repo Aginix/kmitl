@@ -8,60 +8,13 @@
             <xpath expr="//notebook" position="inside">
                 <page string="Committee" name="committee">
                     <separator string="Work Acceptance Committee" />
-                    <field name="work_acceptance_committee_ids" nolabel="1" context="{'default_committee_type': 'work_acceptance'}">
-                        <tree editable="bottom">
-                            <field name="committee_type" invisible="1" />
-                            <field name="employee_id" options="{'no_create': True, 'no_open': True}" />
-                            <field name="name" />
-                            <field name="approve_role" />
-                            <field name="department_id" />
-                            <field name="email" />
-                            <field name="phone" />
-                            <field name="note" />
-                        </tree>
-                    </field>
-
+                    <field name="work_acceptance_committee_ids" nolabel="1" context="{'default_committee_type': 'work_acceptance'}" />
                     <separator string="Tor Committee" />
-                    <field name="tor_committee_ids" nolabel="1" context="{'default_committee_type': 'tor_committee'}">
-                        <tree editable="bottom">
-                            <field name="committee_type" invisible="1" />
-                            <field name="employee_id" options="{'no_create': True, 'no_open': True}" />
-                            <field name="name" />
-                            <field name="approve_role" />
-                            <field name="department_id" />
-                            <field name="email" />
-                            <field name="phone" />
-                            <field name="note" />
-                        </tree>
-                    </field>
-
+                    <field name="tor_committee_ids" nolabel="1" context="{'default_committee_type': 'tor_committee'}" />
                     <separator string="Price Determine Committee" />
-                    <field name="price_determine_committee_ids" nolabel="1" context="{'default_committee_type': 'price_determine'}">
-                        <tree editable="bottom">
-                            <field name="committee_type" invisible="1" />
-                            <field name="employee_id" options="{'no_create': True, 'no_open': True}" />
-                            <field name="name" />
-                            <field name="approve_role" />
-                            <field name="department_id" />
-                            <field name="email" />
-                            <field name="phone" />
-                            <field name="note" />
-                        </tree>
-                    </field>
-
+                    <field name="price_determine_committee_ids" nolabel="1" context="{'default_committee_type': 'price_determine'}" />
                     <separator string="Evaluation Committee" />
-                    <field name="evaluation_committee_ids" nolabel="1" context="{'default_committee_type': 'evaluation'}">
-                        <tree editable="bottom">
-                            <field name="committee_type" invisible="1" />
-                            <field name="employee_id" options="{'no_create': True, 'no_open': True}" />
-                            <field name="name" />
-                            <field name="approve_role" />
-                            <field name="department_id" />
-                            <field name="email" />
-                            <field name="phone" />
-                            <field name="note" />
-                        </tree>
-                    </field>
+                    <field name="evaluation_committee_ids" nolabel="1" context="{'default_committee_type': 'evaluation'}" />
                 </page>
             </xpath>
         </field>
