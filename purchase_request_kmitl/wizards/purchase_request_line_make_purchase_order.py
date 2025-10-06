@@ -36,7 +36,8 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         purchase_order = self.env['purchase.order'].browse(po_id)
         requests = self.item_ids.mapped('request_id')
         for request in requests:
-            for committee in request.work_acceptance_committee_ids:
+            request_committees = self.env['procurement.committee'].search([('request_id', '=', request.id), ('committee_type', 'in', ['work_acceptance', 'evaluation'])])
+            for committee in request_committees:
                 self.env['procurement.committee'].create({
                     'name': committee.name,
                     'purchase_order_id': purchase_order.id,
@@ -45,34 +46,6 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
                     'approve_role': committee.approve_role,
                     'note': committee.note,
                 })
-            for committee in request.tor_committee_ids:
-                self.env['procurement.committee'].create({
-                    'name': committee.name,
-                    'purchase_order_id': purchase_order.id,
-                    'employee_id': committee.employee_id.id,
-                    'committee_type': committee.committee_type,
-                    'approve_role': committee.approve_role,
-                    'note': committee.note,
-                })
-            for committee in request.price_determine_committee_ids:
-                self.env['procurement.committee'].create({
-                    'name': committee.name,
-                    'purchase_order_id': purchase_order.id,
-                    'employee_id': committee.employee_id.id,
-                    'committee_type': committee.committee_type,
-                    'approve_role': committee.approve_role,
-                    'note': committee.note,
-                })
-            for committee in request.evaluation_committee_ids:
-                self.env['procurement.committee'].create({
-                    'name': committee.name,
-                    'purchase_order_id': purchase_order.id,
-                    'employee_id': committee.employee_id.id,
-                    'committee_type': committee.committee_type,
-                    'approve_role': committee.approve_role,
-                    'note': committee.note,
-                })
-
 
 class PurchaseRequestLineMakePurchaseOrderItem(models.TransientModel):
     _inherit = 'purchase.request.line.make.purchase.order.item'
