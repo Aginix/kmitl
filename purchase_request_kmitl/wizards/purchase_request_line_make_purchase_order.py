@@ -28,12 +28,13 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
                 ) % line.display_name)
 
         res = super().make_purchase_order()
+        self._create_work_acceptance_committees(res)
+        return res
 
+    def _create_work_acceptance_committees(self, res):
         po_id = res['domain'][0][2]
-
         purchase_order = self.env['purchase.order'].browse(po_id)
         requests = self.item_ids.mapped('request_id')
-
         for request in requests:
             for committee in request.work_acceptance_committee_ids:
                 self.env['procurement.committee'].create({
@@ -44,7 +45,6 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
                     'approve_role': committee.approve_role,
                     'note': committee.note,
                 })
-
             for committee in request.tor_committee_ids:
                 self.env['procurement.committee'].create({
                     'name': committee.name,
@@ -54,7 +54,6 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
                     'approve_role': committee.approve_role,
                     'note': committee.note,
                 })
-
             for committee in request.price_determine_committee_ids:
                 self.env['procurement.committee'].create({
                     'name': committee.name,
@@ -64,7 +63,6 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
                     'approve_role': committee.approve_role,
                     'note': committee.note,
                 })
-
             for committee in request.evaluation_committee_ids:
                 self.env['procurement.committee'].create({
                     'name': committee.name,
@@ -74,8 +72,6 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
                     'approve_role': committee.approve_role,
                     'note': committee.note,
                 })
-        return res
-
 
 
 class PurchaseRequestLineMakePurchaseOrderItem(models.TransientModel):
