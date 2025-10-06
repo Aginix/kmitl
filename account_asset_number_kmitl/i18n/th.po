@@ -1,0 +1,59 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* account_asset_number_kmitl
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-06 10:23+0000\n"
+"PO-Revision-Date: 2025-10-06 17:25+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.6\n"
+
+#. module: account_asset_number_kmitl
+#: model:ir.model,name:account_asset_number_kmitl.model_account_asset
+msgid "Asset"
+msgstr "สินทรัพย์"
+
+#. module: account_asset_number_kmitl
+#. odoo-python
+#: code:addons/account_asset_number_kmitl/models/account_asset.py:0
+#, python-format
+msgid "Asset Number must be unique."
+msgstr "หมายเลขสินทรัพย์ต้องไม่ซ้ำกัน"
+
+#. module: account_asset_number_kmitl
+#: model_terms:ir.ui.view,arch_db:account_asset_number_kmitl.view_account_asset_form
+msgid "Get Asset Number"
+msgstr "รับเลขทะเบียนครุภัณฑ์"
+
+#. module: account_asset_number_kmitl
+#: model:ir.model.fields,field_description:account_asset_number_kmitl.field_account_asset__has_asset_number
+msgid "Has Asset Number"
+msgstr ""
+
+#. module: account_asset_number_kmitl
+#: model:ir.model.fields,field_description:account_asset_number_kmitl.field_account_asset__is_asset_number_editable
+msgid "Is Asset Number Editable"
+msgstr ""
+
+#. module: account_asset_number_kmitl
+#. odoo-python
+#: code:addons/account_asset_number_kmitl/models/account_asset.py:0
+#, python-format
+msgid "Missing department or GPSC or Fiscal year."
+msgstr "ไม่มีแผนก หรือ รหัส GPSC หรือ ปีงบประมาณ"
+
+#. module: account_asset_number_kmitl
+#. odoo-python
+#: code:addons/account_asset_number_kmitl/models/account_asset.py:0
+#, python-format
+msgid "Department short name is missing."
+msgstr "ไม่มีชื่อย่อของแผนก"
