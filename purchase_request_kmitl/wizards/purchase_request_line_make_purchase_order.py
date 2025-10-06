@@ -27,8 +27,25 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
                     "The purchase request '%s' already has a Purchase Order."
                 ) % line.display_name)
 
-        return super().make_purchase_order()
+        res = super().make_purchase_order()
+        self._create_work_acceptance_committees(res)
+        return res
 
+    def _create_work_acceptance_committees(self, res):
+        po_id = res['domain'][0][2]
+        purchase_order = self.env['purchase.order'].browse(po_id)
+        requests = self.item_ids.mapped('request_id')
+        for request in requests:
+            request_committees = self.env['procurement.committee'].search([('request_id', '=', request.id), ('committee_type', 'in', ['work_acceptance', 'evaluation'])])
+            for committee in request_committees:
+                self.env['procurement.committee'].create({
+                    'name': committee.name,
+                    'purchase_order_id': purchase_order.id,
+                    'employee_id': committee.employee_id.id,
+                    'committee_type': committee.committee_type,
+                    'approve_role': committee.approve_role,
+                    'note': committee.note,
+                })
 
 class PurchaseRequestLineMakePurchaseOrderItem(models.TransientModel):
     _inherit = 'purchase.request.line.make.purchase.order.item'

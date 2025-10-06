@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View procurement.gpsc View Tree -->
+    <record id="view_procurement_gpsc_tree" model="ir.ui.view">
+        <field name="name">view.procurement.gpsc.tree</field>
+        <field name="model">procurement.gpsc</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="group_code"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- View procurement.gpsc form -->
+    <record id="view_procurement_gpsc_form" model="ir.ui.view">
+        <field name="name">view.procurement.gpsc.form</field>
+        <field name="model">procurement.gpsc</field>
+        <field name="arch" type="xml">
+            <form string="Procurement GPSC">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="code"/>
+                        <h1>
+                            <field name="code"/>
+                        </h1>
+                        <group>
+                            <field name="name"/>
+                            <field name="group_code"/>
+                        </group>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- View procurement.gpsc search -->
+    <record id="view_procurement_gpsc_search" model="ir.ui.view">
+        <field name="name">view.procurement.gpsc.search</field>
+        <field name="model">procurement.gpsc</field>
+        <field name="arch" type="xml">
+            <search>
+                <field
+                    name="code"
+                    string="GPSC Code"
+                    filter_domain="[('code', 'ilike', self)]"
+                />
+                <field
+                    name="name"
+                    string="GPSC Name"
+                    filter_domain="[('name', 'ilike', self)]"
+                />
+
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action procurement.gpsc -->
+    <record id="action_procurement_gpsc" model="ir.actions.act_window">
+        <field name="name">Procurement GPSC</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">procurement.gpsc</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Procurement GPSC.
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="procurement_gpsc_menu"
+        parent="purchase.menu_purchase_config"
+        sequence="55"
+        action="action_procurement_gpsc"
+        groups="purchase.group_purchase_manager"
+    />
+
+</odoo>
