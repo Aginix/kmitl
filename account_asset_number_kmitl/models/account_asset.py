@@ -16,6 +16,12 @@ class AccountAsset(models.Model):
         default=False
     )
 
+    has_asset_number = fields.Boolean(
+        string="Has Asset Number", 
+        compute="_compute_has_asset_number", 
+        store=True
+    )
+
     def _compute_is_asset_number_editable(self):
         for rec in self:
             rec.is_asset_number_editable = False
@@ -48,3 +54,8 @@ class AccountAsset(models.Model):
         for record in self:
             if record.number and self.search_count([('number', '=', record.number), ('id', '!=', record.id)]):
                 raise ValidationError(_("Asset Number must be unique."))
+            
+    @api.depends('number')
+    def _compute_has_asset_number(self):
+        for rec in self:
+            rec.has_asset_number = bool(rec.number)

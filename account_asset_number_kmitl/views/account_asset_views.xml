@@ -14,7 +14,8 @@
             </xpath>
 
             <xpath expr="//button[@name='validate']" position="after">
-              <button name="create_asset_number" string="Get Registration Number" type="object" class="oe_highlight" attrs="{'invisible': [('number', '!=', False)]}"/>
+              <field name="has_asset_number" invisible="1"/>
+              <button name="create_asset_number" string="Get Registration Number" type="object" class="oe_highlight" attrs="{'invisible': [('has_asset_number', '=', True)]}"/>
             </xpath>
         </field>
     </record>
