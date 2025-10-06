@@ -20,7 +20,7 @@ class AccountAsset(models.Model):
         for rec in self:
             rec.is_asset_number_editable = False
 
-    def _create_asset_number(self):
+    def create_asset_number(self):
         for asset in self:
             if not (asset.department_id and asset.gpsc_id and asset.account_fiscal_year_id):
                 raise ValidationError(_("Missing department or GPSC or Fiscal year."))
