@@ -18,6 +18,9 @@
         <field name="model">account.asset</field>
         <field name="inherit_id" ref="account_asset_number.account_asset_view_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='number']" position="after">
+              <field name="is_asset_number_editable" invisible="1"/>
+            </xpath>
             <xpath expr="//field[@name='number']" position="attributes">
               <attribute name="attrs">{'readonly':[('is_asset_number_editable', '=', True)]}</attribute>
             </xpath>
