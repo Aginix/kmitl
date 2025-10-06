@@ -10,13 +10,6 @@ _logger = logging.getLogger(__name__)
 class BudgetAppropriationLine(models.Model):
     _inherit = "budget.appropriation.line"
 
-    procurement_plan_id = fields.Many2one(
-        comodel_name="procurement.plan",
-        inverse_name="budget_appropriation_line_id",
-        string="รายการแผนจัดซื้อจัดจ้าง",
-        help="รายการแผนจัดซื้อจัดจ้างที่ใช้เงินจากรหัสงบประมาณนี้",
-    )
-
     procurement_plan = fields.Boolean(
         related="account_id.procurement_plan",
         store=False,
