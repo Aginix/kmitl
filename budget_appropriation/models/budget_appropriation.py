@@ -139,6 +139,16 @@ class BudgetAppropriation(models.Model):
         tracking=True,
         readonly=False,
         states=READONLY_STATES,
+        domain=[('deduct', '=', False)],
+    )
+    deduct_line_ids = fields.One2many(
+        comodel_name="budget.appropriation.line",
+        inverse_name="appropriation_id",
+        copy=True,
+        tracking=True,
+        readonly=False,
+        states=READONLY_STATES,
+        domain=[('deduct', '=', True)],
     )
     journal_id = fields.Many2one(
         "budget.journal",
@@ -172,8 +182,22 @@ class BudgetAppropriation(models.Model):
         required=True,
     )
     company_currency_id = fields.Many2one(related="company_id.currency_id")
-    total_amount = fields.Float(
+    amount_total = fields.Float(
         string="งบประมาณทั้งหมด",
+        compute="_compute_amount",
+        readonly=True,
+        store=True,
+        digits="Budget Precision",
+    )
+    amount_deduct = fields.Float(
+        string="Deduct",
+        compute="_compute_amount",
+        readonly=True,
+        store=True,
+        digits="Budget Precision",
+    )
+    amount_net = fields.Float(
+        string="Amount Net",
         compute="_compute_amount",
         readonly=True,
         store=True,
@@ -200,10 +224,14 @@ class BudgetAppropriation(models.Model):
         compute="_compute_hide_review_button", readonly=True
     )
 
-    @api.depends("line_ids.balance")
+    @api.depends("line_ids.balance", "deduct_line_ids.balance")
     def _compute_amount(self):
         for appropriation in self:
-            appropriation.total_amount = sum(appropriation.line_ids.mapped("balance"))
+            amount_total = sum(appropriation.line_ids.mapped("balance"))
+            amount_deduct = sum(appropriation.deduct_line_ids.mapped("balance"))
+            appropriation.amount_total = amount_total
+            appropriation.amount_deduct = amount_deduct
+            appropriation.amount_net = amount_total - amount_deduct
 
     @api.depends("state", "date")
     def _compute_name(self):
@@ -330,3 +358,14 @@ class BudgetAppropriation(models.Model):
                 "active_model": "budget.appropriation",
             },
         }
+
+    def print_f5_pdf(self):
+        self.ensure_one()
+
+        data = self.env["budget.appropriation.f5.report"].get_f5_data(self.id)
+
+        return (
+            self.env.ref("budget_appropriation.action_report_budget_appropriation_f5")
+            .sudo()
+            .report_action(self, data=data)  # required to propagate context
+        )

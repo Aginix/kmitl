@@ -34,18 +34,18 @@ class BudgetAppropriationF5Report(models.TransientModel):
         hierarchy = self._build_hierarchy(lines)
 
         # Calculate totals
-        total_amount = sum(line.balance for line in lines)
+        amount_total = sum(line.balance for line in lines)
 
         return {
             "department": self._get_complete_name_without_codes(appropriation.department_analytic_id),
             "type": appropriation.journal_id.name,
             "source": appropriation.source_analytic_id.name,
             "fiscal_year": appropriation.date_range_fy_id.name,
-            "total_amount": total_amount,
+            "amount_total": amount_total,
             "hierarchy": hierarchy,
             "summary": {
                 "total_lines": len(lines),
-                "total_amount": total_amount,
+                "amount_total": amount_total,
                 "activities_count": len(hierarchy),
             }
         }

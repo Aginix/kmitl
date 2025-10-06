@@ -54,12 +54,14 @@ class BudgetAppropriationLine(models.Model):
     date = fields.Date(related="appropriation_id.date", store=True)
     code = fields.Char(related="account_id.code", store=True, tracking=True)
     name = fields.Char("ชื่อรายการ", related="account_id.name", store=True, tracking=True)
+    description = fields.Char("รายละเอียด", tracking=True)
+    deduct = fields.Boolean(related="account_id.deduct", store=True)
     account_id = fields.Many2one(
         comodel_name="budget.account",
         string="รหัสงบประมาณ",
         index=True,
         required=True,
-        domain="[('budget_type', '=', budget_type)]",
+        domain="[('budget_type', '=', budget_type), ('deduct', '=', deduct)]",
         tracking=True,
         auto_join=True,
     )
@@ -102,6 +104,14 @@ class BudgetAppropriationLine(models.Model):
         store=True,
     )
 
+    deduct_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        compute="_compute_account_id",
+        string="หักให้หน่วยงาน",
+        domain=[("root_plan_id.code", "=", "departments")],
+        store=True,
+        readonly=False,
+    )
     # Analytic fields for easier access
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -134,6 +144,12 @@ class BudgetAppropriationLine(models.Model):
         auto_join=True,
     )
 
+    @api.depends("account_id")
+    def _compute_account_id(self):
+        for rec in self:
+            if rec.account_id.deduct and rec.account_id.default_deduct_analytic_id:
+                rec.deduct_analytic_id = rec.account_id.default_deduct_analytic_id.id
+
     @api.onchange("balance")
     def _onchange_balance(self):
         """Update total when balance changes"""
@@ -151,7 +167,7 @@ class BudgetAppropriationLine(models.Model):
     def budget_move_line_vals(self):
         return {
             "account_id": self.account_id.id,
-            "balance": self.balance,
+            "balance": -self.balance if self.deduct else self.balance,
             "note": self.note,
             "analytic_distribution": self.analytic_distribution,
             "activity_analytic_id": self.activity_analytic_id.id,

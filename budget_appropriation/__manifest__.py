@@ -11,15 +11,16 @@
         "mail",
     ],
     "data": [
-        "security/security.xml",
-        "security/ir.model.access.csv",
-        "views/budget_appropriation_views.xml",
-        "views/budget_appropriation_menus.xml",
-        "views/budget_move_views.xml",
-        "data/budget_appropriation_sequence.xml",
         "data/budget_appropriation_f5_action.xml",
         "data/budget_appropriation_f5_pdf_report.xml",
-        "report/budget_appropriation_f5_report_templates.xml",
+        "data/budget_appropriation_sequence.xml",
+        "security/ir.model.access.csv",
+        "security/security.xml",
+        "views/menus.xml",
+        "views/budget_account_views.xml",
+        "views/budget_appropriation_views.xml",
+        "views/budget_move_views.xml",
+        "report/budget_appropriation_f5_report_templates.xml"
     ],
     "assets": {
         "web.assets_backend": [

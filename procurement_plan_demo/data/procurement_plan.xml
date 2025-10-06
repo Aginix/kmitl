@@ -6,7 +6,7 @@
         <field name="description">ปรับปรุงอาคารเรียนรวม 12 ชั้น</field>
         <field name="amount">12</field>
         <field name="unit">ชั้น</field>
-        <field name="price_per_unit">1500000</field>
+        <field name="total_price">18000000</field>
         <field
             name="procurement_method_id"
             ref="l10n_th_gov_purchase_request.procurement_general"
@@ -71,7 +71,7 @@
         >ปรับปรุงห้องเรียนและห้องปฏิบัติการ อาคารปฏิบัติการพิเศษจอมไตร</field>
         <field name="amount">7</field>
         <field name="unit">ห้อง</field>
-        <field name="price_per_unit">750000</field>
+        <field name="total_price">5250000</field>
         <field
             name="procurement_method_id"
             ref="l10n_th_gov_purchase_request.procurement_general"
@@ -119,7 +119,7 @@
         <field name="description">ครุภัณฑ์วิทยาศาสตร์และการแพทย์ จำนวน 5 รายการ</field>
         <field name="amount">1</field>
         <field name="unit">โครงการ</field>
-        <field name="price_per_unit">2360700</field>
+        <field name="total_price">2360700</field>
         <field
             name="procurement_method_id"
             ref="l10n_th_gov_purchase_request.procurement_specific"
@@ -154,7 +154,7 @@
         <field name="description">ปรับปรุงห้องผ่าตัด โรงพยาบาลพระจอมเกล้าเจ้าคุณทหาร</field>
         <field name="amount">1</field>
         <field name="unit">ห้อง</field>
-        <field name="price_per_unit">17540000</field>
+        <field name="total_price">17540000</field>
         <field
             name="procurement_method_id"
             ref="l10n_th_gov_purchase_request.procurement_select"
@@ -210,7 +210,7 @@
         <field name="description">ปรับปรุงไฟแสงสว่างสนามฟุตบอล</field>
         <field name="amount">1</field>
         <field name="unit">สนาม</field>
-        <field name="price_per_unit">4498300</field>
+        <field name="total_price">4498300</field>
         <field
             name="procurement_method_id"
             ref="l10n_th_gov_purchase_request.procurement_general"
@@ -252,7 +252,7 @@
         <field name="description">ปรับปรุงห้องปฏิบัติการฟิสิกส์</field>
         <field name="amount">1</field>
         <field name="unit">รายการ</field>
-        <field name="price_per_unit">19500000</field>
+        <field name="total_price">19500000</field>
         <field
             name="procurement_method_id"
             ref="l10n_th_gov_purchase_request.procurement_bidding"
