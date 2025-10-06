@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-
 from datetime import datetime
 
 from odoo import api, fields, models
@@ -67,7 +66,11 @@ class PurchaseRequest(models.Model):
         tracking=True,
         readonly=False,
     )
-
+    product_id = fields.Many2one(
+        comodel_name="product.product",
+        string="Product",
+        readonly=False
+    )
     hide_create_po_button = fields.Boolean(compute="_hide_create_po_button")
 
     @api.depends_context('uid')
