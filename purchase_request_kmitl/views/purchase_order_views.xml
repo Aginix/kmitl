@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_order_form" model="ir.ui.view">
+        <field name="name">view.purchase.order.form</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Committee" name="committee">
+                    <separator string="Work Acceptance Committee" />
+                    <field name="work_acceptance_committee_ids" nolabel="1" context="{'default_committee_type': 'work_acceptance'}">
+                        <tree editable="bottom">
+                            <field name="committee_type" invisible="1" />
+                            <field name="employee_id" options="{'no_create': True, 'no_open': True}" />
+                            <field name="name" />
+                            <field name="approve_role" />
+                            <field name="department_id" />
+                            <field name="email" />
+                            <field name="phone" />
+                            <field name="note" />
+                        </tree>
+                    </field>
+
+                    <separator string="Tor Committee" />
+                    <field name="tor_committee_ids" nolabel="1" context="{'default_committee_type': 'tor_committee'}">
+                        <tree editable="bottom">
+                            <field name="committee_type" invisible="1" />
+                            <field name="employee_id" options="{'no_create': True, 'no_open': True}" />
+                            <field name="name" />
+                            <field name="approve_role" />
+                            <field name="department_id" />
+                            <field name="email" />
+                            <field name="phone" />
+                            <field name="note" />
+                        </tree>
+                    </field>
+
+                    <separator string="Price Determine Committee" />
+                    <field name="price_determine_committee_ids" nolabel="1" context="{'default_committee_type': 'price_determine'}">
+                        <tree editable="bottom">
+                            <field name="committee_type" invisible="1" />
+                            <field name="employee_id" options="{'no_create': True, 'no_open': True}" />
+                            <field name="name" />
+                            <field name="approve_role" />
+                            <field name="department_id" />
+                            <field name="email" />
+                            <field name="phone" />
+                            <field name="note" />
+                        </tree>
+                    </field>
+
+                    <separator string="Evaluation Committee" />
+                    <field name="evaluation_committee_ids" nolabel="1" context="{'default_committee_type': 'evaluation'}">
+                        <tree editable="bottom">
+                            <field name="committee_type" invisible="1" />
+                            <field name="employee_id" options="{'no_create': True, 'no_open': True}" />
+                            <field name="name" />
+                            <field name="approve_role" />
+                            <field name="department_id" />
+                            <field name="email" />
+                            <field name="phone" />
+                            <field name="note" />
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

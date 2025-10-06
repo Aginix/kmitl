@@ -27,7 +27,55 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
                     "The purchase request '%s' already has a Purchase Order."
                 ) % line.display_name)
 
-        return super().make_purchase_order()
+        res = super().make_purchase_order()
+
+        po_id = res['domain'][0][2]
+
+        purchase_order = self.env['purchase.order'].browse(po_id)
+        requests = self.item_ids.mapped('request_id')
+
+        for request in requests:
+            for committee in request.work_acceptance_committee_ids:
+                self.env['procurement.committee'].create({
+                    'name': committee.name,
+                    'purchase_order_id': purchase_order.id,
+                    'employee_id': committee.employee_id.id,
+                    'committee_type': committee.committee_type,
+                    'approve_role': committee.approve_role,
+                    'note': committee.note,
+                })
+
+            for committee in request.tor_committee_ids:
+                self.env['procurement.committee'].create({
+                    'name': committee.name,
+                    'purchase_order_id': purchase_order.id,
+                    'employee_id': committee.employee_id.id,
+                    'committee_type': committee.committee_type,
+                    'approve_role': committee.approve_role,
+                    'note': committee.note,
+                })
+
+            for committee in request.price_determine_committee_ids:
+                self.env['procurement.committee'].create({
+                    'name': committee.name,
+                    'purchase_order_id': purchase_order.id,
+                    'employee_id': committee.employee_id.id,
+                    'committee_type': committee.committee_type,
+                    'approve_role': committee.approve_role,
+                    'note': committee.note,
+                })
+
+            for committee in request.evaluation_committee_ids:
+                self.env['procurement.committee'].create({
+                    'name': committee.name,
+                    'purchase_order_id': purchase_order.id,
+                    'employee_id': committee.employee_id.id,
+                    'committee_type': committee.committee_type,
+                    'approve_role': committee.approve_role,
+                    'note': committee.note,
+                })
+        return res
+
 
 
 class PurchaseRequestLineMakePurchaseOrderItem(models.TransientModel):
