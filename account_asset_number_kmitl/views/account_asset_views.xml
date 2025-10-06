@@ -5,10 +5,21 @@
     <record id="view_account_asset_form" model="ir.ui.view">
         <field name="name">view.account.asset.form</field>
         <field name="model">account.asset</field>
+        <field name="inherit_id" ref="account_asset_management.account_asset_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='validate']" position="after">
+              <button name="_create_asset_number" string="Get Registration Number" type="object" class="oe_highlight"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_asset_form" model="ir.ui.view">
+        <field name="name">view.account.asset.form</field>
+        <field name="model">account.asset</field>
         <field name="inherit_id" ref="account_asset_number.account_asset_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='number']" position="attributes">
-              <attribute name="readonly">1</attribute>
+              <attribute name="attrs">{'readonly':[('is_asset_number_editable', '=', True)]}</attribute>
             </xpath>
         </field>
     </record>

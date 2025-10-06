@@ -22,8 +22,8 @@ class AccountAsset(models.Model):
 
     def _create_asset_number(self):
         for asset in self:
-            if not (asset.department_id and asset.gpsc_id):
-                raise ValidationError(_("Missing department or GPSC."))
+            if not (asset.department_id and asset.gpsc_id and asset.account_fiscal_year_id):
+                raise ValidationError(_("Missing department or GPSC or Fiscal year."))
 
             fiscal_year = str(asset.account_fiscal_year_id.name)[-2:]
             short_name = asset.department_id.short_name or "XXX"
@@ -40,12 +40,11 @@ class AccountAsset(models.Model):
                 })
 
             sequence_number = self.env['ir.sequence'].next_by_code(seq_code)
-            number = f"{fiscal_year}-{short_name}-{asset.gpsc_id.code}-{sequence_number}"
+            number = f"{fiscal_year}{short_name}{asset.gpsc_id.code}-{sequence_number}"
             asset.number = number
-
-    def validate(self):
-        res = super().validate()
-        for asset in self:
-            if not asset.number:
-                asset._create_asset_number()
-        return res
+    
+    @api.constrains('number')
+    def _check_number_unique(self):
+        for record in self:
+            if record.number and self.search_count([('number', '=', record.number), ('id', '!=', record.id)]):
+                raise ValidationError(_("Asset Number must be unique."))
