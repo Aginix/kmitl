@@ -11,6 +11,7 @@
         "mail",
     ],
     "data": [
+        "data/budget.account.xml",
         "data/budget_appropriation_f5_action.xml",
         "data/budget_appropriation_f5_pdf_report.xml",
         "data/budget_appropriation_sequence.xml",
