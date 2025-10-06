@@ -2,7 +2,7 @@
 <odoo noupdate="1">
     <!-- Procurement plan 1 -->
     <record id="procurement_plan_1" model="procurement.plan">
-        <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2567" />
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2567" />
         <field name="description">ปรับปรุงอาคารเรียนรวม 12 ชั้น</field>
         <field name="amount">12</field>
         <field name="unit">ชั้น</field>
@@ -65,7 +65,7 @@
 
     <!-- Procurement plan 2 -->
     <record id="procurement_plan_2" model="procurement.plan">
-        <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2567" />
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2567" />
         <field
             name="description"
         >ปรับปรุงห้องเรียนและห้องปฏิบัติการ อาคารปฏิบัติการพิเศษจอมไตร</field>
@@ -115,7 +115,7 @@
 
     <!-- Procurement plan 3 -->
     <record id="procurement_plan_3" model="procurement.plan">
-        <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2567" />
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2567" />
         <field name="description">ครุภัณฑ์วิทยาศาสตร์และการแพทย์ จำนวน 5 รายการ</field>
         <field name="amount">1</field>
         <field name="unit">โครงการ</field>
@@ -150,7 +150,7 @@
 
     <!-- Procurement plan 4 -->
     <record id="procurement_plan_4" model="procurement.plan">
-        <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2567" />
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2567" />
         <field name="description">ปรับปรุงห้องผ่าตัด โรงพยาบาลพระจอมเกล้าเจ้าคุณทหาร</field>
         <field name="amount">1</field>
         <field name="unit">ห้อง</field>
@@ -206,7 +206,7 @@
 
     <!-- Procurement plan 5 -->
     <record id="procurement_plan_5" model="procurement.plan">
-        <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2567" />
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2567" />
         <field name="description">ปรับปรุงไฟแสงสว่างสนามฟุตบอล</field>
         <field name="amount">1</field>
         <field name="unit">สนาม</field>
@@ -248,7 +248,7 @@
 
     <!-- Procurement plan 6 -->
     <record id="procurement_plan_6" model="procurement.plan">
-        <field name="date_range_fy_id" ref="kmitl_demo.account_fiscal_year_y2567" />
+        <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2567" />
         <field name="description">ปรับปรุงห้องปฏิบัติการฟิสิกส์</field>
         <field name="amount">1</field>
         <field name="unit">รายการ</field>

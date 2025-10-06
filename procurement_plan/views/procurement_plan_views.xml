@@ -7,7 +7,7 @@
         <field name="model">procurement.plan</field>
         <field name="arch" type="xml">
             <tree decoration-info="state == 'procurement'" decoration-success="state == 'done'" decoration-warning="state in ('validate', 'pending')">
-                <field name="date_range_fy_id" />
+                <field name="account_fiscal_year_id" />
                 <field name="name" />
                 <field name="description" />
                 <field name="amount" optional="hide" />
@@ -51,7 +51,7 @@
                             <field name="display_name" string="ตัวอย่างการแสดงผลข้อมูล" />
                         </group>
                         <group>
-                            <field name="date_range_fy_id" required="1" options="{'no_create': True, 'no_open': True}" />
+                            <field name="account_fiscal_year_id" required="1" options="{'no_create': True, 'no_open': True}" />
                         </group>
                     </group>
                     <notebook>
@@ -100,7 +100,7 @@
         <field name="arch" type="xml">
             <search>
                 <group expand="1" string="Group By">
-                    <filter string="ปีงบประมาณ" name="group_by_fiscal_year" context="{'group_by': 'date_range_fy_id'}" />
+                    <filter string="ปีงบประมาณ" name="group_by_fiscal_year" context="{'group_by': 'account_fiscal_year_id'}" />
                     <filter string="Procurement Method" name="group_by_procurement_method_id" context="{'group_by': 'procurement_method_id'}" />
                     <filter string="สถานะ" name="group_by_state" context="{'group_by': 'state'}" />
                     <filter string="วิธีการจัดซื้อจัดจ้าง" name="group_by_procurement_method_id" context="{'group_by':'procurement_method_id'}" />
@@ -108,7 +108,7 @@
                 <searchpanel>
                     <field name="state" icon="fa-calendar" enable_counters="1" />
                     <field name="procurement_method_id" icon="fa-calendar" enable_counters="1" />
-                    <field name="date_range_fy_id" icon="fa-calendar" enable_counters="1" />
+                    <field name="account_fiscal_year_id" icon="fa-calendar" enable_counters="1" />
                 </searchpanel>
             </search>
         </field>

@@ -26,7 +26,7 @@ class BudgetAppropriationLine(models.Model):
 
     def _prepare_procurement_plan_valus(self):
         return {
-            "date_range_fy_id": self.date_range_fy_id.id,
+            "account_fiscal_year_id": self.account_fiscal_year_id.id,
             "description": self.procurement_plan_description,
             "amount": self.procurement_plan_amount,
             "unit": self.procurement_plan_unit,
