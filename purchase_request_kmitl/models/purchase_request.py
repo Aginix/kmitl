@@ -70,6 +70,7 @@ class PurchaseRequest(models.Model):
         comodel_name="product.product",
         string="Product",
         domain="[('purchase_request_ok', '=', True)]",
+        related=False,
         readonly=False,
     )
     hide_create_po_button = fields.Boolean(compute="_hide_create_po_button")
@@ -93,10 +94,12 @@ class PurchaseRequest(models.Model):
             return
 
         if self.line_ids:
-            self.line_ids[0].product_id = product
+            for line in self.line_ids:
+                line.product_id = product
         else:
             self.line_ids = [Command.create({
-                'product_id': self.product_id,
+                'product_id': product,
+                'name': product.display_name,
                 'product_uom_id': product.uom_id.id,
                 'product_qty': 1.0,
             })]
