@@ -23,7 +23,7 @@ class PurchaseOrder(models.Model):
 
     def action_open_asset_batch(self):
         return {
-            "name": "Asset Registration Batches",
+            "name": "Asset Batch",
             "type": "ir.actions.act_window",
             "res_model": "account.asset.batch",
             "view_mode": "tree,form",
