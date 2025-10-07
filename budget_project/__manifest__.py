@@ -20,11 +20,11 @@ Features:
     "depends": [
         "budget_appropriation",
         "account_analytic_kmitl",
+        "kmitl_project"
     ],
     "data": [
-        "security/ir.model.access.csv",
+        "data/budget_account_project_update.xml",
         "views/budget_account_views.xml",
-        "views/budget_project_views.xml",
         "views/budget_appropriation_views.xml",
         "views/menu_views.xml",
     ],
