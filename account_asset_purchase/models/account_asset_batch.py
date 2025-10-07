@@ -15,6 +15,7 @@ class AccountAssetBatch(models.Model):
     name = fields.Char(
         string="Document name",
         tracking=True,
+        required=True
     )
 
     date = fields.Date(
@@ -62,6 +63,29 @@ class AccountAssetBatch(models.Model):
         "batch_id",
         string="Lines"
     )
+
+    department_id = fields.Many2one("hr.department", string="Department")
+
+    asset_count = fields.Integer(
+        string="Assets",
+        compute="_compute_asset_count",
+    )
+
+    def _compute_asset_count(self):
+        for batch in self:
+            batch.asset_count = self.env["account.asset"].search_count([
+                ("batch_id", "=", batch.id)
+            ])
+
+    @api.model
+    def default_get(self, fields_list):
+        res = super().default_get(fields_list)
+        purchase_id = self.env.context.get("default_purchase_id")
+        if purchase_id:
+            purchase = self.env["purchase.order"].browse(purchase_id)
+            if purchase.operating_unit_id and purchase.operating_unit_id.department_id:
+                res["department_id"] = purchase.operating_unit_id.department_id.id
+        return res
 
     def action_register_assets(self):
         asset = self.env["account.asset"]
