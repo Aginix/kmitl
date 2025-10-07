@@ -6,10 +6,15 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    'depends': ['base', 'web'],
+    'depends': ['account_asset_number_kmitl', 'purchase'],
     "data": [
         "security/ir.model.access.csv",
-        "views/purchase_asset_line_views.xml"
+        "views/account_asset_bartch_views.xml",
+        "views/account_asset_batch_views.xml",
+        "views/purchase_asset_batch_line​_views.xml",
+        "views/purchase_asset_batch_line_views.xml",
+        "views/purchase_asset_line_views.xml",
+        "views/purchase_order_views.xml"
     ],
     'installable': True,
     'auto_install': False,

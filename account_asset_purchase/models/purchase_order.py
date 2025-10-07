@@ -10,11 +10,12 @@ _logger = logging.getLogger(__name__)
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-    asset_number = fields.Char(
-        string="Asset Number"
-    )
-
-    parent_asset = fields.Boolean(
-        string="Create Parent Asset",
-        help="ถ้าติ๊กถูกเมื่อลงทะเบียนครุภัณฑ์ จะสร้าง parent asset"
-    )
+    def action_open_asset_batch(self):
+        return {
+            "name": "Asset Registration Batches",
+            "type": "ir.actions.act_window",
+            "res_model": "account.asset.batch",
+            "view_mode": "tree,form",
+            "domain": [("purchase_id", "=", self.id)],
+            "context": {"default_purchase_id": self.id},
+        }
