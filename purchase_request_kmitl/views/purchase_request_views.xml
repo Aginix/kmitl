@@ -138,6 +138,9 @@
                 <field name="product_id" />
             </xpath>
             <xpath expr="//field[@name='line_ids']//tree/field[@name='product_id']" position="replace"/>
+            <xpath expr="//field[@name='line_ids']//tree/field[@name='name']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
             <xpath expr="//form/sheet/notebook" position="inside">
                 <page name="committee" string="Committee">
                     <separator string="Work Acceptance Committee" />

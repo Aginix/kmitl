@@ -5,7 +5,7 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["procurement_plan_budget", "purchase_request_budget"],
+    "depends": ["procurement_plan_budget", "purchase_request_budget", "product_kmitl"],
     "data": [
         "data/purchase_request_exception.xml",
         "views/purchase_request_views.xml",

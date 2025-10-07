@@ -23,6 +23,24 @@ class PurchaseRequest(models.Model):
     fund_analytic_id = fields.Many2one("account.analytic.account", store=True, compute="_compute_procurement_plan_analytic_id")
     source_analytic_id = fields.Many2one("account.analytic.account", store=True, compute="_compute_procurement_plan_analytic_id")
     procurement_plan_analytic_id = fields.Many2one("account.analytic.account", store=True, compute="_compute_procurement_plan_analytic_id")
+    require_procurement_plan = fields.Boolean(
+        string="ต้องกรอกแผนจัดซื้อจัดจ้าง",
+        compute="_compute_require_procurement_plan",
+        store=False,
+    )
+
+    @api.depends("product_id.categ_id")
+    def _compute_require_procurement_plan(self):
+        asset_categ = self.env.ref("product_kmitl.product_category_asset", raise_if_not_found=False)
+        building_categ = self.env.ref("product_kmitl.product_category_building", raise_if_not_found=False)
+
+        for rec in self:
+            if rec.product_id and rec.product_id.categ_id in (asset_categ, building_categ):
+                rec.require_procurement_plan = True
+                rec.use_procurement_plan = True
+            else:
+                rec.require_procurement_plan = False
+                rec.use_procurement_plan = False
 
     @api.depends("state", "use_procurement_plan", "procurement_plan_id")
     def _compute_can_edit_budget(self):
@@ -31,10 +49,10 @@ class PurchaseRequest(models.Model):
             if rec.use_procurement_plan:
                 rec.can_edit_budget = False
 
-    @api.depends("use_procurement_plan", "procurement_plan_id")
+    @api.depends("require_procurement_plan", "procurement_plan_id")
     def _compute_procurement_plan_analytic_id(self):
         for rec in self:
-            if rec.use_procurement_plan and rec.procurement_plan_id:
+            if rec.require_procurement_plan and rec.procurement_plan_id:
                 rec.budget_account_id = rec.procurement_plan_id.budget_account_id.id
                 rec.activity_analytic_id = rec.procurement_plan_id.activity_analytic_id.id
                 rec.department_analytic_id = rec.procurement_plan_id.department_analytic_id.id
@@ -42,9 +60,9 @@ class PurchaseRequest(models.Model):
                 rec.source_analytic_id = rec.procurement_plan_id.source_analytic_id.id
                 rec.procurement_plan_analytic_id = rec.procurement_plan_id.analytic_account_id.id
 
-    @api.onchange("use_procurement_plan", "procurement_plan_id")
+    @api.onchange("require_procurement_plan", "procurement_plan_id")
     def _onchange_procurement_plan_id(self):
-        if self.use_procurement_plan and self.procurement_plan_id:
+        if self.require_procurement_plan and self.procurement_plan_id:
             self.budget_account_id = self.procurement_plan_id.budget_account_id.id
             self.activity_analytic_id = self.procurement_plan_id.activity_analytic_id.id
             self.department_analytic_id = self.procurement_plan_id.department_analytic_id.id

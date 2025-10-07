@@ -16,8 +16,9 @@
             </xpath>
             <xpath expr="//notebook" position="before">
                 <group string="แผนจัดซื้อจัดจ้าง">
+                    <field name="require_procurement_plan" invisible="1" />
                     <field name="use_procurement_plan" attrs="{'readonly': [('is_editable','=', False)]}" />
-                    <field name="procurement_plan_id" options="{'no_create_edit': True, 'no_open': True}" domain="[('state', '=', 'pending'), ('date_range_fy_id', '=', date_range_fy_id)]" attrs="{'invisible': [('use_procurement_plan', '=', False)], 'required': [('use_procurement_plan', '=', True)], 'readonly': [('is_editable','=', False)]}" />
+                    <field name="procurement_plan_id" options="{'no_create_edit': True, 'no_open': True}" domain="[('state', '=', 'pending'), ('date_range_fy_id', '=', date_range_fy_id)]" attrs="{'invisible': [('require_procurement_plan', '=', False)], 'required': [('require_procurement_plan', '=', True)], 'readonly': [('is_editable','=', False)]}" />
                     <field name="procurement_plan_analytic_id" invisible="1" />
                 </group>
             </xpath>
