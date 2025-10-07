@@ -12,6 +12,7 @@
         "hr_department_code",
         "account_fiscal_year",
         "account_analytic_kmitl",
+        "hr_department_short_name",
     ],
     "data": [
         "data/company.xml",
