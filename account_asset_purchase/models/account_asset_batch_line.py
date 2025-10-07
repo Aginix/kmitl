@@ -22,10 +22,10 @@ class AccountAssetBatchLine(models.Model):
 
     name = fields.Char(
         string="Asset Name", 
-        related='product_id.display_name',
+        compute="_compute_name", 
+        store=True,
         required=True,
-        tracking=True,
-        store=True
+        tracking=True
     )
 
     sequence = fields.Integer(
