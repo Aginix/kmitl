@@ -24,7 +24,6 @@ class AccountAssetBatchLine(models.Model):
         string="Asset Name", 
         compute="_compute_name", 
         store=True,
-        required=True,
         tracking=True
     )
 
