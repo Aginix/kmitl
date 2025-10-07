@@ -1,4 +1,5 @@
 import logging
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools import get_lang
@@ -18,7 +19,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         res["analytic_distribution"] = purchase_request.analytic_distribution
         res["budget_commitment_id"] = purchase_request.budget_commitment_id.id
         res["budget_account_id"] = purchase_request.budget_account_id.id
-        res["use_procurement_plan"] = purchase_request.use_procurement_plan
+        res["use_procurement_plan"] = purchase_request.require_procurement_plan
         res["procurement_plan_id"] = purchase_request.procurement_plan_id.id
         res["procurement_plan_analytic_id"] = purchase_request.procurement_plan_analytic_id.id
         return res
