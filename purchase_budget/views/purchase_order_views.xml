@@ -24,7 +24,7 @@
             <xpath expr="//notebook" position="before">
                 <group string="แผนจัดซื้อจัดจ้าง">
                     <field name="use_procurement_plan" attrs="{'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}" />
-                    <field name="procurement_plan_id" options="{'no_create_edit': True, 'no_open': True}" domain="[('state', '=', 'pending'), ('date_range_fy_id', '=', date_range_fy_id)]"  attrs="{'invisible': [('use_procurement_plan', '=', False)], 'required': [('use_procurement_plan', '=', True)], 'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}" />
+                    <field name="procurement_plan_id" options="{'no_create_edit': True, 'no_open': True}" domain="[('state', '=', 'pending'), ('account_fiscal_year_id', '=', date_range_fy_id)]"  attrs="{'invisible': [('use_procurement_plan', '=', False)], 'required': [('use_procurement_plan', '=', True)], 'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}" />
                 </group>
             </xpath>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">

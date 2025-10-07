@@ -41,7 +41,7 @@
                         <h3>ประมาณการค่าใช้จ่าย ประจำปีงบประมาณ พ.ศ. <t t-if="appropriation.fiscal_year" t-esc="appropriation.fiscal_year.name"/></h3>
                         <h3>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
                         <h3 t-if="appropriation.department" t-esc="appropriation.department.complete_name"/>
-                        <h3>วงเงิน <t t-esc="formatCurrency(appropriation.total_amount)"/> บาท</h3>
+                        <h3>วงเงิน <t t-esc="formatCurrency(appropriation.amount_total)"/> บาท</h3>
                     </div>
 
                     <!-- Report Table -->
@@ -68,7 +68,7 @@
                                     </td>
                                     <td class="text-end">
                                         <strong>
-                                            <t t-esc="formatCurrency(appropriation.total_amount)"/> บาท
+                                            <t t-esc="formatCurrency(appropriation.amount_total)"/> บาท
                                         </strong>
                                     </td>
                                 </tr>
@@ -126,8 +126,8 @@
                 </div>
             </td>
             <td class="text-end">
-                <t t-if="node.total_amount != 0 or node.type !== 'line'">
-                    <t t-esc="formatCurrency(node.total_amount || node.balance || 0)"/>
+                <t t-if="node.amount_total != 0 or node.type !== 'line'">
+                    <t t-esc="formatCurrency(node.amount_total || node.balance || 0)"/>
                 </t>
             </td>
         </tr>

@@ -170,8 +170,8 @@
                 </div>
             </td>
             <td class="text-end">
-                <t t-if="node.total_amount != 0 or node.type !== 'line'">
-                    <t t-esc="formatCurrency(node.total_amount)"/>
+                <t t-if="node.amount_total != 0 or node.type !== 'line'">
+                    <t t-esc="formatCurrency(node.amount_total)"/>
                 </t>
             </td>
         </tr>
