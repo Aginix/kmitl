@@ -9,3 +9,13 @@ _logger = logging.getLogger(__name__)
 
 class AccountAsset(models.Model):
     _inherit = 'account.asset'
+
+    batch_id = fields.Many2one(
+        related='batch_line_id.batch',
+        tracking=True
+    )
+
+    batch_line_id = fields.Many2one(
+        related='account.asset.batch.line',
+        tracking=True
+    )
