@@ -10,10 +10,6 @@ _logger = logging.getLogger(__name__)
 class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
-    use_procurement_plan = fields.Boolean(
-        string="เลือกใช้รายการจากแผนจัดซื้อจัดจ้าง", default=False
-    )
-
     procurement_plan_id = fields.Many2one(
         comodel_name="procurement.plan", string="รายการแผนจัดซื้อจัดจ้าง", domain="", tracking=True
     )
@@ -37,16 +33,14 @@ class PurchaseRequest(models.Model):
         for rec in self:
             if rec.product_id and rec.product_id.categ_id in (asset_categ, building_categ):
                 rec.require_procurement_plan = True
-                rec.use_procurement_plan = True
             else:
                 rec.require_procurement_plan = False
-                rec.use_procurement_plan = False
 
-    @api.depends("state", "use_procurement_plan", "procurement_plan_id")
+    @api.depends("state", "require_procurement_plan", "procurement_plan_id")
     def _compute_can_edit_budget(self):
         res = super()._compute_can_edit_budget()
         for rec in self:
-            if rec.use_procurement_plan:
+            if rec.require_procurement_plan:
                 rec.can_edit_budget = False
 
     @api.depends("require_procurement_plan", "procurement_plan_id")
