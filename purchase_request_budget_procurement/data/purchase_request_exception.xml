@@ -6,7 +6,7 @@
         <field name="model">purchase.request</field>
         <field name="exception_type">by_py_code</field>
         <field name="code"><![CDATA[
-if self.use_procurement_plan and self.procurement_plan_id and self.estimated_cost > self.procurement_plan_id.total_price:
+if self.procurement_plan_id and self.estimated_cost > self.procurement_plan_id.total_price:
     failed = True
 ]]>
         </field>
