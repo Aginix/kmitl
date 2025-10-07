@@ -23,25 +23,27 @@ class AccountAssetBatch(models.Model):
     )
 
     account_fiscal_year_id = fields.Many2one(
-        related='accouint.fiscal.year',
+        "account.fiscal.year",
+        related='purchase_id.date_range_fy_id',
         required=True,
         tracking=True,
     )
 
-    department_id = fields.Many2one(
-        related='hr.department',
-        required=True,
-        tracking=True,
+    operating_unit_id = fields.Many2one(
+        "operating.unit",
+        related='purchase_id.operating_unit_id',
+        string="Operating Unit",
     )
 
     purchase_id = fields.Many2one(
-        related='purchase.order'
+        "purchase.order"
     )
 
     company_id = fields.Many2one(
-        related='res.company',
+        "res.company",
+        string="Company",
         required=True,
-        default=lambda self:self.env.comany,
+        default=lambda self:self.env.company,
     )
 
     notes = fields.Text(
@@ -55,21 +57,41 @@ class AccountAssetBatch(models.Model):
         default="draft",
     )
 
+    line_ids = fields.One2many(
+        "account.asset.batch.line",
+        "batch_id",
+        string="Lines"
+    )
+
     def action_register_assets(self):
-        Asset = self.env["account.asset"]
+        asset = self.env["account.asset"]
         for batch in self:
             for line in batch.line_ids:
                 for _ in range(line.amount):
-                    Asset.create({
+                    asset.create({
                         "name": line.name,
                         "analytic_distribution": line.analytic_distribution,
+                        "date_start": batch.date,
                         "account_fiscal_year_id": batch.account_fiscal_year_id.id,
-                        "department_id": batch.department_id.id,
+                        "operating_unit_id": batch.operating_unit_id.id,
                         "purchase_id": batch.purchase_id.id,
                         "gpsc_id": line.gpsc_id.id,
                         "profile_id": line.profile_id.id,
-                        "original_value": line.price_per_unit,
+                        "purchase_value": line.price_per_unit,
                         "batch_line_id": line.id,
                         "batch_id": batch.id,
                     })
             batch.state = "done"
+
+    def action_open_asset_items(self):
+        self.ensure_one()
+        return {
+            "name": _("Assets"),
+            "type": "ir.actions.act_window",
+            "res_model": "account.asset",
+            "view_mode": "tree,form",
+            "domain": [("batch_id", "=", self.id)],
+            "context": {
+                "default_batch_id": self.id
+            },
+        }

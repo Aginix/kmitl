@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- View purchase.asset.batch.line View Tree -->
-    <record id="view_purchase_asset_batch_line_tree" model="ir.ui.view">
-        <field name="name">view.purchase.asset.batch.line.tree</field>
-        <field name="model">purchase.asset.batch.line</field>
+    <!-- View account.asset.batch.line View Tree -->
+    <record id="view_account_asset_batch_line_tree" model="ir.ui.view">
+        <field name="name">view.account.asset.batch.line.tree</field>
+        <field name="model">account.asset.batch.line</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
@@ -12,12 +12,12 @@
         </field>
     </record>
 
-    <!-- View purchase.asset.batch.line form -->
-    <record id="view_purchase_asset_batch_line_form" model="ir.ui.view">
-        <field name="name">view.purchase.asset.batch.line.form</field>
-        <field name="model">purchase.asset.batch.line</field>
+    <!-- View account.asset.batch.line form -->
+    <record id="view_account_asset_batch_line_form" model="ir.ui.view">
+        <field name="name">view.account.asset.batch.line.form</field>
+        <field name="model">account.asset.batch.line</field>
         <field name="arch" type="xml">
-            <form string="Purchase Asset Batch Line">
+            <form string="Account Asset Batch Line">
                 <sheet>
                     <div class="oe_title">
                         <label for="name"/>
@@ -30,10 +30,10 @@
         </field>
     </record>
 
-    <!-- View purchase.asset.batch.line search -->
-    <record id="view_purchase_asset_batch_line_search" model="ir.ui.view">
-        <field name="name">view.purchase.asset.batch.line.search</field>
-        <field name="model">purchase.asset.batch.line</field>
+    <!-- View account.asset.batch.line search -->
+    <record id="view_account_asset_batch_line_search" model="ir.ui.view">
+        <field name="name">view.account.asset.batch.line.search</field>
+        <field name="model">account.asset.batch.line</field>
         <field name="arch" type="xml">
             <search>
                 <group expand="1" string="Group By">
@@ -43,11 +43,11 @@
         </field>
     </record>
 
-    <!-- Action purchase.asset.batch.line -->
-    <record id="action_purchase_asset_batch_line" model="ir.actions.act_window">
-        <field name="name">Purchase Asset Batch Line</field>
+    <!-- Action account.asset.batch.line -->
+    <record id="action_account_asset_batch_line" model="ir.actions.act_window">
+        <field name="name">Account Asset Batch Line</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="res_model">purchase.asset.batch.line</field>
+        <field name="res_model">account.asset.batch.line</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[]</field>
         <field name="context">{}</field>
