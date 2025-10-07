@@ -27,18 +27,21 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_open_asset_items"
-                                string="Asset"
-                                type="object"
-                                class="oe_stat_button"
-                                icon="fa-archive"
-                                attrs="{'invisible': [('id', '=', False)]}"
-                        />
+                            string="Asset"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-archive"
+                            attrs="{'invisible': [('id', '=', False)]}">
+                            <field name="asset_count" widget="statinfo" string ="Asset"/>
+                        </button>
+
                     </div>
                     <group>
                         <field name="name"/>
                         <field name="date"/>
                         <field name="account_fiscal_year_id"/>
                         <field name="operating_unit_id"/>
+                        <field name="department_id" />
                         <field name="purchase_id" readonly="1"/>
                         <field name="company_id" />
                         <field name="notes" />
@@ -48,8 +51,7 @@
                             <field name="line_ids">
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle"/>
-                                    <field name="product_id"/>
-                                    <field name="name"/>
+                                    <field name="name" placeholder="Dell Computer All in one Set"/>
                                     <field name="profile_id"/>
                                     <field name="amount"/>
                                     <field name="gpsc_id"/>
@@ -79,7 +81,7 @@
 
     <!-- Action account.asset.batch -->
     <record id="action_account_asset_batch" model="ir.actions.act_window">
-        <field name="name">Account Asset Batch</field>
+        <field name="name">Asset Batch</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">account.asset.batch</field>
         <field name="view_mode">tree,form</field>
@@ -91,5 +93,12 @@
             </p>
         </field>
     </record>
+
+    <menuitem
+        id="menu_assets_batch"
+        name="Asset Batch"
+        parent="account_asset_usability_kmitl.menu_assets"
+        action="action_account_asset_batch"
+    />
 
 </odoo>
