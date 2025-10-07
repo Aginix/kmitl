@@ -19,34 +19,44 @@
         <field name="arch" type="xml">
             <form string="Asset Registration">
                 <header>
+                
                     <button name="action_register_assets" type="object"
                             string="Register Asset" states="draft" class="btn-primary"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_asset_items"
+                                string="Asset"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-archive"
+                                attrs="{'invisible': [('id', '=', False)]}"
+                        />
+                    </div>
                     <group>
                         <field name="name"/>
                         <field name="date"/>
                         <field name="account_fiscal_year_id"/>
-                        <field name="department_id"/>
-                        <field name="purchase_id"/>
+                        <field name="operating_unit_id"/>
+                        <field name="purchase_id" readonly="1"/>
+                        <field name="company_id" />
+                        <field name="notes" />
                     </group>
                     <notebook>
                         <page string="Lines">
                             <field name="line_ids">
                                 <tree editable="bottom">
-                                    <field name="sequence"/>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_id"/>
                                     <field name="name"/>
-                                    <field name="gpsc_id"/>
                                     <field name="profile_id"/>
                                     <field name="amount"/>
+                                    <field name="gpsc_id"/>
                                     <field name="price_per_unit"/>
                                     <field name="amount_total" readonly="1"/>
                                 </tree>
                             </field>
-                        </page>
-                        <page string="Notes">
-                            <field name="notes"/>
                         </page>
                     </notebook>
                 </sheet>
