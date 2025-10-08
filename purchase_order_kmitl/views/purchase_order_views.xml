@@ -19,7 +19,6 @@
             <xpath expr="//button[@name='action_rfq_send' and @states='purchase']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-
             <xpath expr="//div[@name='reminder']/.." position="inside">
                 <field name="contract_name" />
             </xpath>
