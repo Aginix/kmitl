@@ -12,7 +12,6 @@
                             <field name="budget_account_id" options="{'no_create': True}" />
                         </group>
                     </group>
-
                 </page>
             </xpath>
         </field>
