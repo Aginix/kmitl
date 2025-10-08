@@ -146,7 +146,6 @@ class BudgetMove(models.Model):
     account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="Fiscal year",
-        search="_search_date_range_fy",
         tracking=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
