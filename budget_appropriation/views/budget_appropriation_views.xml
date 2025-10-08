@@ -71,6 +71,7 @@
                                     <tree limit="1000">
                                         <field name="appropriation_id" invisible="1" />
                                         <field name="budget_type" invisible="1" />
+                                        <field name="description" invisible="1" />
                                         <field name="deduct" invisible="1" />
                                         <field name="department_analytic_id" invisible="1" />
                                         <field name="activity_analytic_id" options='{"no_open": True}' />
@@ -88,6 +89,7 @@
                                     <tree limit="1000">
                                         <field name="appropriation_id" invisible="1" />
                                         <field name="budget_type" invisible="1" />
+                                        <field name="description" invisible="1" />
                                         <field name="deduct" invisible="1" />
                                         <field name="department_analytic_id" invisible="1" />
                                         <field name="activity_analytic_id" options='{"no_open": True}' optional="show" />
@@ -170,6 +172,7 @@
                         <field name="appropriation_id" invisible="1" />
                         <field name="budget_type" invisible="1" />
                         <field name="deduct" invisible="1" />
+                        <field name="description" invisible="1" />
                         <field name="department_analytic_id" options='{"no_open": True}' widget="helper_text" readonly="1" />
                         <field name="source_analytic_id" options='{"no_open": True}' widget="helper_text" readonly="1" />
                         <field name="activity_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' widget="helper_text" required="1" />

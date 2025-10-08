@@ -20,14 +20,13 @@ class BudgetAppropriationLine(models.Model):
         comodel_name="procurement.method",
         string="Procurement Method",
     )
-    procurement_plan_description = fields.Char(string="ชื่อ")
     procurement_plan_amount = fields.Integer(string="จำนวน")
     procurement_plan_unit = fields.Char("Unit of Measure")
 
     def _prepare_procurement_plan_valus(self):
         return {
             "account_fiscal_year_id": self.account_fiscal_year_id.id,
-            "description": self.procurement_plan_description,
+            "description": self.description,
             "amount": self.procurement_plan_amount,
             "unit": self.procurement_plan_unit,
             "total_price": self.balance,

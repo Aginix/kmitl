@@ -148,9 +148,15 @@
                             <i t-att-class="isNodeExpanded(node.key) ? 'fa fa-minus-square-o' : 'fa fa-plus-square-o'"/>
                         </button>
                         <div t-else="" style="width: 20px; display: inline-block;" class="me-2"></div>
-                        <span>
+                        <div>
                             <t t-if="node.type === 'account'">
                                 <t t-esc="node.code"/> - <t t-esc="node.name"/>
+                                <div style="padding-left: 16px;">
+                                    <span class="fst-italic">
+                                        <t t-if="node.description" t-esc="`(${node.description})`"/>
+                                    </span>
+                                    <t t-esc="node.note"/>
+                                </div>
                             </t>
                             <t t-else="">
                                 <t t-esc="node.name"/>
@@ -158,7 +164,7 @@
                                     <span class="text-muted"> (<t t-esc="node.code"/>)</span>
                                 </t>
                             </t>
-                        </span>
+                        </div>
                     </div>
                 </div>
             </td>

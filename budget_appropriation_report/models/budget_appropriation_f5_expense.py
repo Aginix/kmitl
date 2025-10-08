@@ -57,10 +57,6 @@ class BudgetAppropriationF5Expense(models.AbstractModel):
             ("appropriation_id.source_analytic_id", "=", source_analytic.id),
         ]
 
-        # Add date filters
-        appropriation_domain.append(("appropriation_id.date", ">=", date_from))
-        appropriation_domain.append(("appropriation_id.date", "<=", date_to))
-
         # Add department filter
         if department_id:
             all_dept_ids = self._get_department_with_children([department_id])
