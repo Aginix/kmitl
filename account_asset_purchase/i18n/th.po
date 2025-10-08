@@ -237,7 +237,7 @@ msgstr "ราคาต่อหน่วย"
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__purchase_id
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch_line__purchase_id
 msgid "Purchase"
-msgstr ""
+msgstr "รหัสอ้างอิงคำสั่งซื้อ"
 
 #. module: account_asset_purchase
 #: model:ir.model,name:account_asset_purchase.model_purchase_order
@@ -257,7 +257,7 @@ msgstr ""
 #. module: account_asset_purchase
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__state
 msgid "State"
-msgstr ""
+msgstr "สถานะ"
 
 #. module: account_asset_purchase
 #: model_terms:ir.actions.act_window,help:account_asset_purchase.action_account_asset_batch
