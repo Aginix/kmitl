@@ -116,7 +116,9 @@ class TreeNode:
             'created_at': None,
             'custom_data': {},
             'is_last_level': False,  # Flag to indicate if this is a last-level node
-            'unique_suffix': None  # Unique suffix for last-level nodes
+            'unique_suffix': None,  # Unique suffix for last-level nodes
+            'description': None,  # Description from budget line
+            'note': None  # Note from budget line
         }
 
     def add_child(self, child: 'TreeNode') -> 'TreeNode':
@@ -157,6 +159,8 @@ class TreeNode:
             'level': self.level,
             'has_data': self.metadata.get('has_data', False),
             'expanded': self.metadata.get('expanded', True),
+            'description': self.metadata.get('description', ''),
+            'note': self.metadata.get('note', ''),
         }
 
         # Add children if requested
@@ -419,6 +423,11 @@ class BudgetTreeBuilder:
         node.metadata['has_data'] = True
         node.metadata['line_count'] += 1
         node.metadata['line_ids'].append(line.id)
+        # Store description if available
+        if hasattr(line, 'description') and line.description:
+            node.metadata['description'] = line.description
+        if hasattr(line, 'note') and line.note:
+            node.metadata['note'] = line.note
 
     def _get_line_amount(self, line) -> float:
         """Get amount from line based on configuration"""
