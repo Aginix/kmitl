@@ -8,6 +8,12 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
+                <field name="account_fiscal_year_id" optional="hide"/>
+                <field name="date" optional="show"/>
+                <field name="purchase_id" optional="show"/>
+                <field name="department_id" optional="show"/>
+                <field name="operating_unit_id" optional="hide"/>
+                <field name="state"/>
             </tree>
         </field>
     </record>
@@ -36,6 +42,7 @@
                         </button>
 
                     </div>
+                    <widget name="web_ribbon" title="Approved" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'draft')]}" />
                     <group>
                         <field name="name"/>
                         <field name="date"/>
@@ -43,7 +50,7 @@
                         <field name="operating_unit_id"/>
                         <field name="department_id" />
                         <field name="purchase_id" readonly="1"/>
-                        <field name="company_id" />
+                        <field name="company_id" groups="base.group_multi_company"/>
                         <field name="notes" />
                     </group>
                     <notebook>
@@ -53,8 +60,8 @@
                                     <field name="sequence" widget="handle"/>
                                     <field name="name" placeholder="Dell Computer All in one Set"/>
                                     <field name="profile_id"/>
-                                    <field name="amount"/>
                                     <field name="gpsc_id"/>
+                                    <field name="amount"/>
                                     <field name="price_per_unit"/>
                                     <field name="amount_total" readonly="1"/>
                                 </tree>
