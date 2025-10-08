@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+
+    <!-- View budget.appropriation form -->
+    <record id="view_budget_appropriation_form" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.form</field>
+        <field name="model">budget.appropriation</field>
+        <field name="inherit_id" ref="budget_appropriation.view_budget_appropriation_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="operating_unit_id" widget="selection" groups="operating_unit.group_multi_operating_unit" />
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- View budget.appropriation tree -->
+    <record id="view_budget_appropriation_tree" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.tree</field>
+        <field name="model">budget.appropriation</field>
+        <field name="inherit_id" ref="budget_appropriation.view_budget_appropriation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="operating_unit_id" optional="hide" groups="operating_unit.group_multi_operating_unit" />
+            </xpath>
+        </field>
+    </record>
+
+  </odoo>
