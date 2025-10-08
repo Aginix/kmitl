@@ -15,7 +15,7 @@ class PurchaseRequest(models.Model):
                 if ou.department_id:
                     vals["department_id"] = ou.department_id.id
 
-            fy_id = self.env["account.fiscal.year"].browse(vals.get("date_range_fy_id"))
+            fy_id = self.env["account.fiscal.year"].browse(vals.get("account_fiscal_year_id"))
             fiscal_year = fy_id.name[-2:] if fy_id else fields.Date.today().strftime("%y")
 
             department = self.env["hr.department"].browse(vals.get("department_id"))

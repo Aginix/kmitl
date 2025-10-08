@@ -9,7 +9,7 @@
             <tree string="Budget Commitments">
                 <field name="name" optional="show" />
                 <field name="date" optional="hide" />
-                <field name="date_range_fy_id" optional="show" />
+                <field name="account_fiscal_year_id" optional="show" />
                 <field name="source_analytic_id"/>
                 <field name="department_analytic_id"/>
                 <field name="activity_analytic_id"/>
@@ -71,7 +71,7 @@
                     <group>
                         <group string="Basic Information">
                             <field name="date"/>
-                            <field name="date_range_fy_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="account_fiscal_year_id" options="{'no_create': True, 'no_open': True}"/>
                             <field name="user_id" options="{'no_create': True, 'no_open': True}"/>
                             <field name="ref"/>
                         </group>
@@ -138,7 +138,7 @@
                 <field name="fund_analytic_id"/>
                 <field name="source_analytic_id"/>
                 <field name="user_id"/>
-                <field name="date_range_fy_id"/>
+                <field name="account_fiscal_year_id"/>
 
                 <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
                 <filter string="Reserved" name="reserved" domain="[('state', '=', 'reserved')]"/>
@@ -154,12 +154,12 @@
                     <filter string="Department" name="group_department" context="{'group_by': 'department_analytic_id'}"/>
                     <filter string="Fund" name="group_fund" context="{'group_by': 'fund_analytic_id'}"/>
                     <filter string="Source" name="group_source" context="{'group_by': 'source_analytic_id'}"/>
-                    <filter string="Fiscal Year" name="group_fy" context="{'group_by': 'date_range_fy_id'}"/>
+                    <filter string="Fiscal Year" name="group_fy" context="{'group_by': 'account_fiscal_year_id'}"/>
                     <filter string="Responsible User" name="group_user" context="{'group_by': 'user_id'}"/>
                 </group>
                 <searchpanel>
                     <field name="account_id" icon="fa-book" enable_counters="1" />
-                    <field name="date_range_fy_id" icon="fa-calendar" enable_counters="1" />
+                    <field name="account_fiscal_year_id" icon="fa-calendar" enable_counters="1" />
                     <field name="source_analytic_id" icon="fa-money" enable_counters="1" order="code asc" />
                     <field name="department_analytic_id" icon="fa-users" enable_counters="1" order="code asc" />
                     <field name="activity_analytic_id" icon="fa-bullseye" enable_counters="1" order="code asc" />

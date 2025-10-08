@@ -55,14 +55,14 @@ class BudgetReportSummary(models.AbstractModel):
         # Build domain for move_lines with department filter
         move_line_domain = [
             ("parent_state", "=", "posted"),
-            ("date_range_fy_id", "=", fiscal_year.id),
+            ("account_fiscal_year_id", "=", fiscal_year.id),
             ("source_analytic_id", "=", source_analytic.id),
         ]
-        
+
         if department_ids:
             all_dept_ids = self._get_department_with_children(department_ids)
             move_line_domain.append(("department_analytic_id", "in", all_dept_ids))
-        
+
         move_lines = self.env["budget.move.line"].search(
             move_line_domain,
             order="date desc",
@@ -70,13 +70,13 @@ class BudgetReportSummary(models.AbstractModel):
         # Build domain for commitment_lines with department filter
         commitment_domain = [
             ("state", "in", ["reserved", "obligated"]),
-            ("date_range_fy_id", "=", fiscal_year.id),
+            ("account_fiscal_year_id", "=", fiscal_year.id),
             ("source_analytic_id", "=", source_analytic.id),
         ]
-        
+
         if department_ids:
             commitment_domain.append(("department_analytic_id", "in", all_dept_ids))
-        
+
         commitment_lines = self.env["budget.commitment"].search(
             commitment_domain,
             order="date desc",
@@ -159,16 +159,16 @@ class BudgetReportSummary(models.AbstractModel):
         def traverse(node, level=0, parent_id=None, parent_contexts=None):
             if parent_contexts is None:
                 parent_contexts = {}
-                
+
             row_data = node.to_dict()
             row_data["margin_level"] = str(level * 20) + "px"
             row_data["level"] = level
             row_data["parent_row_id"] = parent_id
             row_data["has_children"] = len(node.children) > 0
-            
+
             # Generate unique row key for expand/collapse tracking
             row_data["row_key"] = f"{node.node_type}_{node.value['code']}_{node.value['id']}"
-            
+
             # Add parent context for multi-dimensional filtering
             if node.node_type == "activity":
                 parent_contexts["activity"] = {
@@ -197,13 +197,13 @@ class BudgetReportSummary(models.AbstractModel):
                     row_data["parent_fund_id"] = parent_contexts["fund"]["id"]
                     row_data["parent_fund_code"] = parent_contexts["fund"]["code"]
                     row_data["parent_fund_path"] = parent_contexts["fund"]["path"]
-            
+
             # Add to parent tracking
             if parent_id:
                 if parent_id not in parent_map:
                     parent_map[parent_id] = []
                 parent_map[parent_id].append(row_data["row_key"])
-            
+
             rows.append(row_data)
             current_row_id = row_data["row_key"]
 
@@ -249,10 +249,10 @@ class BudgetReportSummary(models.AbstractModel):
         """Get department IDs including all children"""
         if not department_ids:
             return []
-        
+
         departments = self.env["account.analytic.account"].browse(department_ids)
         all_ids = set(department_ids)
-        
+
         for dept in departments:
             # Use parent_path for efficient child retrieval
             children = self.env["account.analytic.account"].search([
@@ -260,7 +260,7 @@ class BudgetReportSummary(models.AbstractModel):
                 ("root_plan_id.code", "=", "departments"),
             ])
             all_ids.update(children.ids)
-        
+
         return list(all_ids)
 
     def _get_department_hierarchy(self):
@@ -268,11 +268,11 @@ class BudgetReportSummary(models.AbstractModel):
         departments = self.env["account.analytic.account"].search([
             ("root_plan_id.code", "=", "departments"),
         ], order="code,name")
-        
+
         # Build hierarchy structure
         dept_dict = {}
         roots = []
-        
+
         for dept in departments:
             dept_data = {
                 "id": dept.id,
@@ -283,14 +283,14 @@ class BudgetReportSummary(models.AbstractModel):
                 "has_data": self._department_has_data(dept),
             }
             dept_dict[dept.id] = dept_data
-            
+
             if dept.parent_id:
                 parent = dept_dict.get(dept.parent_id.id)
                 if parent:
                     parent["children"].append(dept_data)
             else:
                 roots.append(dept_data)
-        
+
         return roots
 
     def _department_has_data(self, department):
@@ -299,12 +299,12 @@ class BudgetReportSummary(models.AbstractModel):
             ("department_analytic_id", "=", department.id),
             ("parent_state", "=", "posted"),
         ], limit=1)
-        
+
         has_commitments = self.env["budget.commitment"].search_count([
             ("department_analytic_id", "=", department.id),
             ("state", "in", ["reserved", "obligated"]),
         ], limit=1)
-        
+
         return bool(has_moves or has_commitments)
 
     @api.model
@@ -322,13 +322,13 @@ class BudgetReportSummary(models.AbstractModel):
         analytic = self.env["account.analytic.account"].browse(analytic_id)
         if not analytic.exists():
             return [analytic_id]
-        
+
         # Use parent_path for efficient child retrieval
         children = self.env["account.analytic.account"].search([
             ("parent_path", "=like", f"{analytic.parent_path}%"),
             ("root_plan_id.code", "=", dimension),
         ])
-        
+
         return children.ids
 
     @api.model
@@ -337,12 +337,12 @@ class BudgetReportSummary(models.AbstractModel):
         account = self.env["budget.account"].browse(account_id)
         if not account.exists():
             return [account_id]
-        
+
         # Use parent_path for efficient child retrieval
         children = self.env["budget.account"].search([
             ("parent_path", "=like", f"{account.parent_path}%"),
         ])
-        
+
         return children.ids
 
     @api.model
@@ -350,7 +350,7 @@ class BudgetReportSummary(models.AbstractModel):
         """Get all budget account IDs that are used with this activity"""
         # Get all child activities under this activity
         activity_children = self.get_analytic_children(activity_id, 'activities')
-        
+
         # Find all budget accounts that have data under these activities
         move_lines = self.env["budget.move.line"].search([
             ('activity_analytic_id', 'in', activity_children),
@@ -360,11 +360,11 @@ class BudgetReportSummary(models.AbstractModel):
             ('activity_analytic_id', 'in', activity_children),
             ('state', 'in', ['reserved', 'obligated']),
         ])
-        
+
         account_ids = set()
         account_ids.update(move_lines.mapped('account_id').ids)
         account_ids.update(commitments.mapped('account_id').ids)
-        
+
         return list(account_ids)
 
     @api.model
@@ -372,7 +372,7 @@ class BudgetReportSummary(models.AbstractModel):
         """Get all budget account IDs that are used with this fund (and optionally parent activity)"""
         # Get all child funds under this fund
         fund_children = self.get_analytic_children(fund_id, 'funds')
-        
+
         domain_move = [
             ('fund_analytic_id', 'in', fund_children),
             ('parent_state', '=', 'posted'),
@@ -381,21 +381,21 @@ class BudgetReportSummary(models.AbstractModel):
             ('fund_analytic_id', 'in', fund_children),
             ('state', 'in', ['reserved', 'obligated']),
         ]
-        
+
         # If parent activity is specified, also filter by activity
         if parent_activity_id:
             activity_children = self.get_analytic_children(parent_activity_id, 'activities')
             domain_move.append(('activity_analytic_id', 'in', activity_children))
             domain_commitment.append(('activity_analytic_id', 'in', activity_children))
-        
+
         # Find all budget accounts that have data under these funds
         move_lines = self.env["budget.move.line"].search(domain_move)
         commitments = self.env["budget.commitment"].search(domain_commitment)
-        
+
         account_ids = set()
         account_ids.update(move_lines.mapped('account_id').ids)
         account_ids.update(commitments.mapped('account_id').ids)
-        
+
         return list(account_ids)
 
     @api.model
@@ -404,34 +404,34 @@ class BudgetReportSummary(models.AbstractModel):
         # Map field names to dimensions
         dimension_map = {
             'activity_analytic_id': 'activities',
-            'fund_analytic_id': 'funds', 
+            'fund_analytic_id': 'funds',
             'source_analytic_id': 'sources',
             'department_analytic_id': 'departments',
         }
-        
+
         dimension = dimension_map.get(field_name)
         if not dimension:
             _logger.warning(f"Unknown analytic field: {field_name}")
             return []
-        
+
         # Search analytic accounts by code prefix
         analytics = self.env["account.analytic.account"].search([
             ("root_plan_id.code", "=", dimension),
             ("code", "=ilike", f"{code_prefix}%"),
         ])
-        
+
         _logger.info(f"Found {len(analytics)} analytic accounts for {field_name} with code prefix {code_prefix}")
         return analytics.ids
 
-    @api.model 
+    @api.model
     def get_budget_account_ids_by_code_prefix(self, code_prefix, parent_code_prefix=None):
         """Get budget account IDs that start with the given code prefix"""
         domain = [("code", "=ilike", f"{code_prefix}%")]
-        
+
         # If parent code is provided, also filter by parent context
         # This can be used for more specific filtering if needed
-        
+
         accounts = self.env["budget.account"].search(domain)
-        
+
         _logger.info(f"Found {len(accounts)} budget accounts with code prefix {code_prefix}")
         return accounts.ids

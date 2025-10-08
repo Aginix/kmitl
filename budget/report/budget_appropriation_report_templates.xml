@@ -7,7 +7,7 @@
                         padding-top: 0 !important;
                         margin-top: 0 !important;
                     }
-                    
+
                     .budget-appropriation-report {
                         font-family: 'TH SarabunPSK', 'Sarabun', Arial, sans-serif;
                         margin-left: 24pt;
@@ -175,7 +175,7 @@
                     <div class="institution-info">
                         <h3 t-esc="o.source_analytic_id.name" />
                         <h3>ประมาณการ                            <t t-esc="o.journal_id.name" />
- ประจำปีงบประมาณ พ.ศ.                            <t t-esc="o.date_range_fy_id.name" />
+ ประจำปีงบประมาณ พ.ศ.                            <t t-esc="o.account_fiscal_year_id.name" />
                         </h3>
                         <h3>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
                         <h3 t-esc="o.department_analytic_id.complete_name" />

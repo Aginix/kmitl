@@ -210,7 +210,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
         commitment_date = kwargs.get('date', fields.Date.today())
         commitment_vals['date'] = commitment_date
 
-        if not kwargs.get('date_range_fy_id'):
+        if not kwargs.get('account_fiscal_year_id'):
             company_id = kwargs.get('company_id',
                                   self.company_id.id if hasattr(self, 'company_id') and self.company_id else self.env.company.id)
             fiscal_year = self.env['account.fiscal.year'].search([
@@ -222,9 +222,9 @@ class BudgetCommitmentMixin(models.AbstractModel):
                 raise ValidationError(_(
                     "No fiscal year found for date %s"
                 ) % commitment_date)
-            commitment_vals['date_range_fy_id'] = fiscal_year.id
+            commitment_vals['account_fiscal_year_id'] = fiscal_year.id
         else:
-            commitment_vals['date_range_fy_id'] = kwargs['date_range_fy_id']
+            commitment_vals['account_fiscal_year_id'] = kwargs['account_fiscal_year_id']
 
         return commitment_vals
 
@@ -325,7 +325,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
             fund_analytic_id: Fund dimension (record or ID) - Required
             department_analytic_id: Department dimension (record or ID) - Optional
             source_analytic_id: Source dimension (record or ID) - Optional
-            **kwargs: Optional overrides for date_range_fy_id, company_id
+            **kwargs: Optional overrides for account_fiscal_year_id, company_id
 
         Returns:
             dict: Budget availability information
@@ -354,7 +354,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
         }
 
         # Determine fiscal year
-        if not kwargs.get('date_range_fy_id'):
+        if not kwargs.get('account_fiscal_year_id'):
             check_date = kwargs.get('date', fields.Date.today())
             company_id = kwargs.get('company_id',
                                   self.company_id.id if hasattr(self, 'company_id') and self.company_id else self.env.company.id)
@@ -369,7 +369,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
                 ) % check_date)
             fy_id = fiscal_year.id
         else:
-            fy_id = kwargs['date_range_fy_id']
+            fy_id = kwargs['account_fiscal_year_id']
 
         company_id = kwargs.get('company_id',
                                self.company_id.id if hasattr(self, 'company_id') and self.company_id else self.env.company.id)
@@ -583,7 +583,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
                 fund_analytic_id=commitment.fund_analytic_id,
                 department_analytic_id=commitment.department_analytic_id,
                 source_analytic_id=commitment.source_analytic_id,
-                date_range_fy_id=commitment.date_range_fy_id.id,
+                account_fiscal_year_id=commitment.account_fiscal_year_id.id,
                 company_id=commitment.company_id.id
             )
 
@@ -644,7 +644,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
         move_vals = {
             'name': reference or _("Consumption of %s") % commitment.name,
             'date': fields.Date.today(),
-            'date_range_fy_id': commitment.date_range_fy_id.id,
+            'account_fiscal_year_id': commitment.account_fiscal_year_id.id,
             'commitment_id': commitment.id,
             'move_type': 'consume',
             'line_ids': [(0, 0, {

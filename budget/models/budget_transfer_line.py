@@ -233,7 +233,7 @@ class BudgetTransferLine(models.Model):
         "analytic_distribution",
         "amount",
         "transfer_direction",
-        "transfer_id.date_range_fy_id"
+        "transfer_id.account_fiscal_year_id"
     )
     def _compute_available_budget(self):
         """Compute available budget for source lines"""
@@ -246,7 +246,7 @@ class BudgetTransferLine(models.Model):
             try:
                 # Use budget controller to get available budget
                 budget_controller = self.env["budget.controller"]
-                fiscal_year_id = line.transfer_id.date_range_fy_id.id if line.transfer_id.date_range_fy_id else False
+                fiscal_year_id = line.transfer_id.account_fiscal_year_id.id if line.transfer_id.account_fiscal_year_id else False
 
                 # Build analytic data for budget controller
                 # Note: BudgetController.get_available_budget() expects analytic_data dict
