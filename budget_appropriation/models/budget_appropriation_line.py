@@ -95,8 +95,8 @@ class BudgetAppropriationLine(models.Model):
         related="appropriation_id.state",
         store=True,
     )
-    date_range_fy_id = fields.Many2one(
-        related="appropriation_id.date_range_fy_id",
+    account_fiscal_year_id = fields.Many2one(
+        related="appropriation_id.account_fiscal_year_id",
         store=True,
     )
 

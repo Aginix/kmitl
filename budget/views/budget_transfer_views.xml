@@ -40,7 +40,7 @@
                         </group>
                         <group name="meta_info">
                             <field name="user_id"/>
-                            <field name="date_range_fy_id"/>
+                            <field name="account_fiscal_year_id"/>
                             <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="company_id" groups="base.group_multi_company"/>

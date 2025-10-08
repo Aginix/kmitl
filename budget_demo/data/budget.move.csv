@@ -1,4 +1,4 @@
-id,date,department_analytic_id/id,source_analytic_id/id,date_range_fy_id/id,budget_type,move_type
+id,date,department_analytic_id/id,source_analytic_id/id,account_fiscal_year_id/id,budget_type,move_type
 dept_03_source_4_68,2025-07-22,account_analytic_kmitl.dept_03,account_analytic_kmitl.source_4,kmitl_demo.account_fiscal_year_y2568,expense,Budget Appropriation
 dept_03020_source_2_68,2025-07-02,account_analytic_kmitl.dept_03020,account_analytic_kmitl.source_2,kmitl_demo.account_fiscal_year_y2568,expense,Budget Appropriation
 dept_89380_source_2_68,2025-07-02,account_analytic_kmitl.dept_89380,account_analytic_kmitl.source_2,kmitl_demo.account_fiscal_year_y2568,expense,Budget Appropriation

@@ -53,7 +53,7 @@ class BudgetAppropriationF5Expense(models.AbstractModel):
         appropriation_domain = [
             ("appropriation_id.budget_type", "=", "expense"),
             ("appropriation_id.state", "=", "posted"),
-            ("appropriation_id.date_range_fy_id", "=", fiscal_year.id),
+            ("appropriation_id.account_fiscal_year_id", "=", fiscal_year.id),
             ("appropriation_id.source_analytic_id", "=", source_analytic.id),
         ]
 

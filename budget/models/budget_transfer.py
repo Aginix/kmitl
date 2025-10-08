@@ -144,7 +144,7 @@ class BudgetTransfer(models.Model):
     )
 
     # Fiscal Year
-    date_range_fy_id = fields.Many2one(
+    account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="Fiscal Year",
         required=True,
@@ -389,8 +389,8 @@ class BudgetTransfer(models.Model):
                     available_budget = budget_controller.get_available_budget(
                         analytic_data=analytic_data,
                         fiscal_year_id=(
-                            transfer.date_range_fy_id.id
-                            if transfer.date_range_fy_id
+                            transfer.account_fiscal_year_id.id
+                            if transfer.account_fiscal_year_id
                             else False
                         ),
                         company_id=transfer.company_id.id,
@@ -456,7 +456,7 @@ class BudgetTransfer(models.Model):
                 limit=1,
             )
             if fiscal_year:
-                self.date_range_fy_id = fiscal_year
+                self.account_fiscal_year_id = fiscal_year
 
     @api.onchange("line_ids")
     def _onchange_line_ids(self):
@@ -641,7 +641,7 @@ class BudgetTransfer(models.Model):
             "company_id": self.company_id.id,
             "currency_id": self.currency_id.id,
             "transfer_id": self.id,
-            "date_range_fy_id": self.date_range_fy_id.id,
+            "account_fiscal_year_id": self.account_fiscal_year_id.id,
 
         }
 

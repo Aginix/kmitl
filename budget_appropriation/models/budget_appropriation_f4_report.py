@@ -45,9 +45,9 @@ class BudgetAppropriationF4Report(models.TransientModel):
                 "amount_total": amount_total,
                 "currency_symbol": appropriation.currency_id.symbol or "฿",
                 "fiscal_year": {
-                    "id": appropriation.date_range_fy_id.id,
-                    "name": appropriation.date_range_fy_id.name,
-                } if appropriation.date_range_fy_id else None,
+                    "id": appropriation.account_fiscal_year_id.id,
+                    "name": appropriation.account_fiscal_year_id.name,
+                } if appropriation.account_fiscal_year_id else None,
                 "department": {
                     "id": appropriation.department_analytic_id.id,
                     "name": appropriation.department_analytic_id.name,

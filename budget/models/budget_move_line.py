@@ -123,7 +123,7 @@ class BudgetMoveLine(models.Model):
     source_analytic_id = fields.Many2one(
         related="move_id.source_analytic_id", store=True
     )
-    date_range_fy_id = fields.Many2one(related="move_id.date_range_fy_id", store=True)
+    account_fiscal_year_id = fields.Many2one(related="move_id.account_fiscal_year_id", store=True)
     parent_state = fields.Selection(related="move_id.state", store=True)
     move_type = fields.Selection(related="move_id.move_type", store=True)
     company_id = fields.Many2one(related="move_id.company_id", store=True)

@@ -89,7 +89,7 @@ class BudgetAppropriation(models.Model):
         tracking=True,
         default="draft",
     )
-    date_range_fy_id = fields.Many2one(
+    account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="ปีงบประมาณ",
         tracking=True,
@@ -304,7 +304,7 @@ class BudgetAppropriation(models.Model):
             "ref": self.ref,
             "department_analytic_id": self.department_analytic_id.id,
             "source_analytic_id": self.source_analytic_id.id,
-            "date_range_fy_id": self.date_range_fy_id.id,
+            "account_fiscal_year_id": self.account_fiscal_year_id.id,
             "note": self.note,
             "company_id": self.company_id.id,
             "currency_id": self.currency_id.id,
