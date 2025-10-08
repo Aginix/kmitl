@@ -16,6 +16,10 @@ class AccountAsset(models.Model):
 
     number = fields.Char(tracking=True)
 
+    gpsc_id = fields.Many2one(tracking=True)
+    
+    account_fiscal_year_id = fields.Many2one(tracking=True)
+
     code = fields.Char(tracking=True)
 
     purchase_value = fields.Monetary(tracking=True)
