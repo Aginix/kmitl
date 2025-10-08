@@ -640,7 +640,6 @@ class BudgetTransfer(models.Model):
             "ref": f"Transfer: {self.name}",
             "company_id": self.company_id.id,
             "currency_id": self.currency_id.id,
-            "journal_id": self._get_transfer_journal().id,
             "transfer_id": self.id,
             "date_range_fy_id": self.date_range_fy_id.id,
 
@@ -698,24 +697,6 @@ class BudgetTransfer(models.Model):
         budget_move.action_post()
 
         return budget_move
-
-    def _get_transfer_journal(self):
-        """Get or create budget transfer journal"""
-        journal = self.env["budget.journal"].search(
-            [("code", "=", "BTRF"), ("company_id", "=", self.company_id.id)], limit=1
-        )
-
-        if not journal:
-            journal = self.env["budget.journal"].create(
-                {
-                    "name": "Budget Transfer",
-                    "code": "BTRF",
-                    "company_id": self.company_id.id,
-                    "default_budget_type": "expense",  # Default type
-                }
-            )
-
-        return journal
 
     # Notification Methods
     def _notify_approvers(self):

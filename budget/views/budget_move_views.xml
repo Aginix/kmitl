@@ -10,7 +10,7 @@
                 <field name="date_range_fy_id" />
                 <field name="date" />
                 <field name="name" />
-                <field name="journal_id" />
+                <field name="budget_type" />
                 <field name="move_type" />
                 <field name="source_analytic_id" />
                 <field
@@ -119,7 +119,7 @@
                                 required="1"
                             />
                             <field
-                                name="journal_id"
+                                name="budget_type"
                                 options='{"no_create": True, "no_create_edit": True,"no_open": True}'
                                 required="1"
                                 attrs="{'readonly': [('id', '!=', False)]}"

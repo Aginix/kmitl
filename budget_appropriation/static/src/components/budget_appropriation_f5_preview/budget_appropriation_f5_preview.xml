@@ -78,7 +78,7 @@
                         <div class="budget-report-container">
                             <div class="report-header text-center mb-4">
                                 <h3 t-if="appropriation.source" t-esc="appropriation.source.name" />
-                                <h3>ประมาณการ<t t-if="appropriation.journal" t-esc="appropriation.journal.name" /> ประจำปีงบประมาณ พ.ศ. <t t-if="appropriation.fiscal_year" t-esc="appropriation.fiscal_year.name" /></h3>
+                                <h3>ประมาณการรายจ่าย ประจำปีงบประมาณ พ.ศ. <t t-if="appropriation.fiscal_year" t-esc="appropriation.fiscal_year.name" /></h3>
                                 <h3>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
                                 <h3 t-if="appropriation.department" t-esc="appropriation.department.complete_name" />
                                 <h3>วงเงิน <t t-esc="formatCurrency(totalAmount)"/> บาท</h3>

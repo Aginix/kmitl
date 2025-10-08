@@ -66,7 +66,7 @@ class BudgetAppropriationLine(models.Model):
         auto_join=True,
     )
     budget_type = fields.Selection(
-        related="appropriation_id.journal_id.default_budget_type",
+        related="appropriation_id.budget_type",
         store=True,
         readonly=True,
     )
@@ -97,10 +97,6 @@ class BudgetAppropriationLine(models.Model):
     )
     date_range_fy_id = fields.Many2one(
         related="appropriation_id.date_range_fy_id",
-        store=True,
-    )
-    journal_id = fields.Many2one(
-        related="appropriation_id.journal_id",
         store=True,
     )
 

@@ -59,10 +59,6 @@ class BudgetAppropriationF4Report(models.TransientModel):
                     "name": appropriation.source_analytic_id.name,
                     "code": appropriation.source_analytic_id.code,
                 } if appropriation.source_analytic_id else None,
-                "journal": {
-                    "id": appropriation.journal_id.id,
-                    "name": appropriation.journal_id.name,
-                } if appropriation.journal_id else None,
             },
             "hierarchy": hierarchy,
             "summary": {

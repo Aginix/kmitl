@@ -102,9 +102,6 @@ class BudgetMove(models.Model):
     _order = "date desc, name desc, id desc"
     _rec_names_search = ["name", "ref"]
 
-    def _default_journal_id(self):
-        return self.env['budget.journal'].search([('default_budget_type', '=', 'expense')], limit=1).id
-    
     READONLY_STATES = {
         "review": [("readonly", True)],
         "posted": [("readonly", True)],
@@ -217,22 +214,14 @@ class BudgetMove(models.Model):
         readonly=False,
         states=READONLY_STATES,
     )
-    journal_id = fields.Many2one(
-        "budget.journal",
-        string="Journal",
-        default=lambda self: self._default_journal_id(),
-        store=True,
-        readonly=False,
-        required=True,
-        states=READONLY_STATES,
-        check_company=True,
-        tracking=True,
-    )
     budget_type = fields.Selection(
-        related="journal_id.default_budget_type",
+        [("revenue", "Revenue"), ("expense", "Expense")],
         string="Budget Type",
-        store=True,
-        readonly=True,
+        required=True,
+        copy=True,
+        default="expense",
+        tracking=True,
+        states=READONLY_STATES,
     )
     company_id = fields.Many2one(
         comodel_name="res.company",
@@ -408,12 +397,11 @@ class BudgetMove(models.Model):
             # หากเคย submit แล้ว
             if (
                 "/" in move.name
-                and "journal_id" in vals
-                and move.journal_id.id != vals["journal_id"]
+                and "budget_type" in vals
             ):
                 raise UserError(
                     _(
-                        "You cannot edit the journal of a budget move if it already has a sequence number assigned."
+                        "You cannot edit the budget_type of a budget move if it already has a sequence number assigned."
                     )
                 )
 

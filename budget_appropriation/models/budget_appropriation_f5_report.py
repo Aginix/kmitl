@@ -38,7 +38,7 @@ class BudgetAppropriationF5Report(models.TransientModel):
 
         return {
             "department": self._get_complete_name_without_codes(appropriation.department_analytic_id),
-            "type": appropriation.journal_id.name,
+            "type": "รายจ่าย" if appropriation.budget_type == 'expense' else "รายรับ",
             "source": appropriation.source_analytic_id.name,
             "fiscal_year": appropriation.date_range_fy_id.name,
             "amount_total": amount_total,
