@@ -14,6 +14,7 @@
         "data/project.global.index.csv",
         "data/project.impact.csv",
         "data/project.methodology.csv",
+        "data/kmitl_project_exception_data.xml",
         "security/ir.model.access.csv",
         "views/menu_views.xml",
         "views/kmitl_project_views.xml",
@@ -23,6 +24,7 @@
         "views/project_impact_views.xml",
         "views/project_methodology_views.xml",
         "views/project_strategic_plan_views.xml",
+        "views/portal_templates.xml"
     ],
     "assets": {
         "web.assets_backend": ["kmitl_project/static/src/**/*"],

@@ -286,19 +286,19 @@ class KmitlProject(models.Model):
         comodel_name="account.analytic.account",
     )
 
-    def action_project_cancel(self):
+    def button_cancel(self):
         self.write({"state": "cancel"})
 
-    def action_project_draft(self):
+    def button_draft(self):
         self.write({"state": "draft"})
 
-    def action_project_confirm(self):
+    def button_confirm(self):
         self.write({"state": "confirmed"})
 
-    def action_project_in_progress(self):
+    def button_in_progress(self):
         self.write({"state": "in_progress"})
 
-    def action_project_complete(self):
+    def button_complete(self):
         self.write({"state": "complete"})
 
     def _compute_is_editable(self):
@@ -309,4 +309,17 @@ class KmitlProject(models.Model):
                 rec.is_editable = False
 
     def unlink(self):
+        for rec in self:
+            if rec.state != "cancel":
+                raise UserError(
+                    _("You cannot delete a record. Please cancel the record first.")
+                )
         return super().unlink()
+
+    def action_preview_project(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_url',
+            'target': 'self',
+            'url': '/my/kmitl-project/%s' % self.id
+        }
