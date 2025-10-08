@@ -6,9 +6,10 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    'depends': ['base', 'web'],
-    'data': [
-
+    'depends': ['product', 'budget'],
+    "data": [
+        "views/budget_account_views.xml",
+        "views/product_template_views.xml"
     ],
     'installable': True,
     'auto_install': False,
