@@ -13,7 +13,7 @@
                 <field name="purchase_id" optional="show"/>
                 <field name="department_id" optional="show"/>
                 <field name="operating_unit_id" optional="hide"/>
-                <field name="state"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'done'"/>
             </tree>
         </field>
     </record>
