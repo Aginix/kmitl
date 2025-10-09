@@ -26,7 +26,7 @@ class AccountAssetBatch(models.Model):
 
     account_fiscal_year_id = fields.Many2one(
         "account.fiscal.year",
-        related='purchase_id.date_range_fy_id',
+        related='purchase_id.account_fiscal_year_id',
         required=True,
         tracking=True,
     )
