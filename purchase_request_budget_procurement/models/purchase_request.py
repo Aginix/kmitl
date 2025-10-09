@@ -65,7 +65,6 @@ class PurchaseRequest(models.Model):
             self.procurement_plan_analytic_id = self.procurement_plan_id.analytic_account_id.id
         else:
             self.procurement_plan_id = False
-            self.budget_account_id = False
             self.activity_analytic_id = False
             self.department_analytic_id = False
             self.fund_analytic_id = False

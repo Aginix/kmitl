@@ -17,9 +17,28 @@ class PurchaseRequest(models.Model):
     budget_account_id = fields.Many2one(
         'budget.account',
         string='Budget Account',
+        compute='_compute_budget_account_id',
         domain=[('budgetable', '=', True), ('budget_type', '=', 'expense')],
-        help="Budget account to be used for commitment"
+        help="Budget account to be used for commitment",
+        store=True
     )
+
+    def button_draft(self):
+        for record in self:
+            if record.budget_commitment_id:
+                try:
+                    record._cancel_budget_commitment()
+                    record.write({"verified_by": "", "date_verified": False})
+                    record.message_post(body=_("Budget commitment %s has been cancelled") % record.budget_commitment_id.name)
+                except UserError as e:
+                    record.message_post(body=_("Warning: Could not cancel budget commitment: %s") % str(e))
+
+        return super().button_draft()
+
+    @api.depends('product_id')
+    def _compute_budget_account_id(self):
+        for line in self:
+            line.budget_account_id = line.product_id.product_tmpl_id.budget_account_id
 
     def action_open_budget_commitment(self):
         self.ensure_one()

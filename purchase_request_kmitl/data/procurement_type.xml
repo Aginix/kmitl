@@ -1,4 +1,4 @@
-<odoo noupdate="1">
+<odoo noupdate="0">
     <record id="product_type_004" model="product.product">
         <field name="name">ซื้อ</field>
         <field name="type">service</field>
