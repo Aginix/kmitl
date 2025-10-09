@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-07 14:50+0000\n"
-"PO-Revision-Date: 2025-10-07 21:59+0700\n"
+"POT-Creation-Date: 2025-10-09 04:03+0000\n"
+"PO-Revision-Date: 2025-10-09 11:04+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -31,6 +31,31 @@ msgstr ""
 #. module: account_asset_purchase
 #: model:ir.model,name:account_asset_purchase.model_account_asset_batch_line
 msgid "AccountAssetBatchLine"
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__activity_type_icon
+msgid "Activity Type Icon"
 msgstr ""
 
 #. module: account_asset_purchase
@@ -60,7 +85,7 @@ msgstr ""
 #: model:ir.model,name:account_asset_purchase.model_account_asset
 #: model_terms:ir.ui.view,arch_db:account_asset_purchase.view_account_asset_batch_form
 msgid "Asset"
-msgstr "ครุภัณฑ์"
+msgstr "สินทรัพย์"
 
 #. module: account_asset_purchase
 #: model:ir.actions.act_window,name:account_asset_purchase.action_account_asset_batch
@@ -95,6 +120,11 @@ msgid "Assets"
 msgstr ""
 
 #. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: account_asset_purchase
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch_line__batch_id
 msgid "Batch"
 msgstr ""
@@ -104,6 +134,13 @@ msgstr ""
 #: code:addons/account_asset_purchase/models/account_asset_batch_line.py:0
 #, python-format
 msgid "Cannot delete a line already linked to assets."
+msgstr ""
+
+#. module: account_asset_purchase
+#. odoo-python
+#: code:addons/account_asset_purchase/models/account_asset_batch.py:0
+#, python-format
+msgid "Cannot register assets without any lines."
 msgstr ""
 
 #. module: account_asset_purchase
@@ -121,6 +158,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__create_date
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch_line__create_date
 msgid "Created on"
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__currency_id
+msgid "Currency"
 msgstr ""
 
 #. module: account_asset_purchase
@@ -151,6 +193,7 @@ msgstr "ชื่อเอกสาร"
 
 #. module: account_asset_purchase
 #: model:ir.model.fields.selection,name:account_asset_purchase.selection__account_asset_batch__state__done
+#: model_terms:ir.ui.view,arch_db:account_asset_purchase.view_account_asset_batch_form
 msgid "Done"
 msgstr "เสร็จสิ้น"
 
@@ -158,6 +201,21 @@ msgstr "เสร็จสิ้น"
 #: model:ir.model.fields.selection,name:account_asset_purchase.selection__account_asset_batch__state__draft
 msgid "Draft"
 msgstr "แบบร่าง"
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,help:account_asset_purchase.field_account_asset_batch__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
 
 #. module: account_asset_purchase
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch_line__gpsc_id
@@ -171,9 +229,45 @@ msgid "Group By"
 msgstr ""
 
 #. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: account_asset_purchase
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__id
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch_line__id
 msgid "ID"
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,help:account_asset_purchase.field_account_asset_batch__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,help:account_asset_purchase.field_account_asset_batch__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,help:account_asset_purchase.field_account_asset_batch__message_has_error
+#: model:ir.model.fields,help:account_asset_purchase.field_account_asset_batch__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__is_editable
+msgid "Is Editable"
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__message_is_follower
+msgid "Is Follower"
 msgstr ""
 
 #. module: account_asset_purchase
@@ -196,8 +290,32 @@ msgstr ""
 
 #. module: account_asset_purchase
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__line_ids
-#: model_terms:ir.ui.view,arch_db:account_asset_purchase.view_account_asset_batch_form
 msgid "Lines"
+msgstr ""
+
+#. module: account_asset_purchase
+#: model_terms:ir.ui.view,arch_db:account_asset_purchase.view_account_asset_batch_form
+msgid "List"
+msgstr "รายการ"
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__my_activity_date_deadline
+msgid "My Activity Deadline"
 msgstr ""
 
 #. module: account_asset_purchase
@@ -213,6 +331,21 @@ msgid "Name..."
 msgstr ""
 
 #. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: account_asset_purchase
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__notes
 msgid "Note"
 msgstr "หมายเหตุ"
@@ -221,6 +354,26 @@ msgstr "หมายเหตุ"
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch_line__notes
 msgid "Notes"
 msgstr "หมายเหตุ"
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,help:account_asset_purchase.field_account_asset_batch__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,help:account_asset_purchase.field_account_asset_batch__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
 
 #. module: account_asset_purchase
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__operating_unit_id
@@ -247,7 +400,17 @@ msgstr "คำสั่งซื้อ"
 #. module: account_asset_purchase
 #: model_terms:ir.ui.view,arch_db:account_asset_purchase.view_account_asset_batch_form
 msgid "Register Asset"
-msgstr "ลงทะเบียนครุภัณฑ์"
+msgstr "สร้างรายการครุภัณฑ์"
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
 
 #. module: account_asset_purchase
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch_line__sequence
@@ -255,9 +418,25 @@ msgid "Sequence"
 msgstr ""
 
 #. module: account_asset_purchase
+#. odoo-python
+#: code:addons/account_asset_purchase/models/account_asset_batch.py:0
+#, python-format
+msgid "Some lines have zero amount. Please correct them before proceeding."
+msgstr ""
+
+#. module: account_asset_purchase
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__state
 msgid "State"
 msgstr "สถานะ"
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,help:account_asset_purchase.field_account_asset_batch__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
 
 #. module: account_asset_purchase
 #: model_terms:ir.actions.act_window,help:account_asset_purchase.action_account_asset_batch
@@ -270,9 +449,25 @@ msgid "There is no examples click here to add new Purchase Asset Batch Line."
 msgstr ""
 
 #. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__total_amount
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch_line__amount_total
 msgid "Total"
-msgstr "ราคารวม"
+msgstr "รวม"
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,help:account_asset_purchase.field_account_asset_batch__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,help:account_asset_purchase.field_account_asset_batch__website_message_ids
+msgid "Website communication history"
+msgstr ""
 
 #. module: account_asset_purchase
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__account_fiscal_year_id
