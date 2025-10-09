@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -16,6 +16,9 @@ class PurchaseRequest(models.Model):
 
     purchase_approval_count = fields.Integer(
         string="PR2s count", compute="_compute_purchase_approval_count", readonly=True
+    )
+    report_id = fields.Many2one(
+        'purchase.request.report', string='Request Report', ondelete='set null', index=True
     )
 
     @api.depends("estimated_cost")
