@@ -28,7 +28,7 @@
                             <field name="amount" />
                         </group>
                         <group>
-                            <field name="date_range_fy_id" required="1" widget="selection" options="{'no_create': True, 'no_open': True}" />
+                            <field name="account_fiscal_year_id" required="1" widget="selection" options="{'no_create': True, 'no_open': True}" />
                             <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
                             <field name="budget_appropriation_id" invisible="1" />
                             <field name="budget_appropriation_line_id" invisible="1" />
@@ -46,7 +46,7 @@
                         <group>
                             <field name="budget_move_line_id" invisible="1"/>
                             <field name="budget_move_id" readonly="1" attrs="{'invisible': [('budget_move_id', '=', False)]}"/>
-                            <field name="date_range_fy_id" readonly="1" attrs="{'invisible': [('date_range_fy_id', '=', False)]}"/>
+                            <field name="account_fiscal_year_id" readonly="1" attrs="{'invisible': [('account_fiscal_year_id', '=', False)]}"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                             <field name="currency_id" invisible="1"/>
                         </group>
@@ -114,7 +114,7 @@
                 <!-- <filter string="Confirmed" name="confirmed" domain="[('state', '=', 'confirmed')]"/> -->
                 <!-- <filter string="Done" name="done" domain="[('state', '=', 'done')]"/> -->
                 <separator/>
-                <filter string="Current Year" name="current_year" domain="[('date_range_fy_id.name', 'ilike', time.strftime('%%Y'))]"/>
+                <filter string="Current Year" name="current_year" domain="[('account_fiscal_year_id.name', 'ilike', time.strftime('%%Y'))]"/>
                 <!-- <group expand="0" string="Group By">
                     <filter string="Budget Account" name="group_account" context="{'group_by': 'budget_account_id'}"/>
                     <filter string="State" name="group_state" context="{'group_by': 'state'}"/>

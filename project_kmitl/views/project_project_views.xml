@@ -18,7 +18,7 @@
             </xpath>
 
             <xpath expr="//field[@name='label_tasks']" position="before">
-                <field name="date_range_fy_id" widget="selection" required="1" />
+                <field name="account_fiscal_year_id" widget="selection" required="1" />
             </xpath>
             <xpath expr="//div[@name='dates']" position="after">
                 <field name="code" />
@@ -209,7 +209,7 @@
         <field name="inherit_id" ref="project.view_project"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="before">
-                <field name="date_range_fy_id" optional="show" />
+                <field name="account_fiscal_year_id" optional="show" />
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="attributes">
                 <attribute name="invisible">1</attribute>

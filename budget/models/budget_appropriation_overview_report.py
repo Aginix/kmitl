@@ -12,7 +12,7 @@ class BudgetAppropriationOverviewReport(models.TransientModel):
     # Filter fields
     date_from = fields.Date(string="Date From")
     date_to = fields.Date(string="Date To")
-    date_range_fy_id = fields.Many2one(
+    account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="Fiscal year",
     )
@@ -64,7 +64,7 @@ class BudgetAppropriationOverviewReport(models.TransientModel):
         hierarchy = self._build_aggregated_hierarchy(all_lines)
         hierarchy.sort(key=self._sort_key)
         # Get unique fiscal years
-        fiscal_years = moves.mapped("date_range_fy_id")
+        fiscal_years = moves.mapped("account_fiscal_year_id")
         fiscal_year_names = ", ".join(fiscal_years.mapped("name"))
 
         return {
@@ -94,8 +94,8 @@ class BudgetAppropriationOverviewReport(models.TransientModel):
             domain.append(("date", "<=", filters["date_to"]))
 
         # Fiscal year filter
-        if filters.get("date_range_fy_id"):
-            domain.append(("date_range_fy_id", "=", filters["date_range_fy_id"]))
+        if filters.get("account_fiscal_year_id"):
+            domain.append(("account_fiscal_year_id", "=", filters["account_fiscal_year_id"]))
 
         # Department filter with hierarchy support
         if filters.get("department_ids"):
@@ -420,7 +420,7 @@ class BudgetAppropriationOverviewReport(models.TransientModel):
     def _build_tree_from_paths(self, line_data_with_paths, hide_department=False):
         """Build tree structure from line data with complete paths"""
         from collections import defaultdict
-        
+
         # Group lines by their complete paths
         tree_structure = {}
 

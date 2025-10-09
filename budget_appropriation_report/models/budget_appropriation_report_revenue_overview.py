@@ -37,7 +37,7 @@ class BudgetAppropriationReportRevenueOverview(models.AbstractModel):
         if state:
             domain.append(("parent_state", "=", state))
         if fiscal_year_id:
-            domain.append(("date_range_fy_id", "=", fiscal_year_id))
+            domain.append(("account_fiscal_year_id", "=", fiscal_year_id))
         if source_analytic_id:
             domain.append(("source_analytic_id", "=", source_analytic_id))
         app_lines = self.env["budget.appropriation.line"].search(domain)

@@ -72,8 +72,8 @@ class PurchaseRequest(models.Model):
             self.source_analytic_id = False
             self.procurement_plan_analytic_id = False
 
-    @api.onchange("date_range_fy_id")
-    def _onchange_date_range_fy_id(self):
+    @api.onchange("account_fiscal_year_id")
+    def _onchange_account_fiscal_year_id(self):
         if self.procurement_plan_id:
             self.procurement_plan_id = False
 
