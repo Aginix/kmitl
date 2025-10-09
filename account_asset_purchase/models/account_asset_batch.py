@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 
 class AccountAssetBatch(models.Model):
     _name = 'account.asset.batch'
-    _inherit = "analytic.mixin"
+    _inherit = ['analytic.mixin', 'mail.thread', 'mail.activity.mixin']
     _description = 'AccountAssetBatch'
 
     name = fields.Char(
@@ -21,6 +21,7 @@ class AccountAssetBatch(models.Model):
     date = fields.Date(
         string="Date",
         tracking=True,
+        default=fields.Date.context_today,
     )
 
     account_fiscal_year_id = fields.Many2one(
@@ -56,6 +57,7 @@ class AccountAssetBatch(models.Model):
         [("draft", "Draft"), ("done", "Done")],
         string="State",
         default="draft",
+        tracking=True
     )
 
     line_ids = fields.One2many(
@@ -71,6 +73,37 @@ class AccountAssetBatch(models.Model):
         compute="_compute_asset_count",
     )
 
+    is_editable = fields.Boolean(
+        string="Is Editable",
+        compute="_compute_is_editable",
+        store=False
+    )
+
+    currency_id = fields.Many2one(
+        'res.currency',
+        string="Currency",
+        related='company_id.currency_id',
+        store=True,
+        readonly=True
+    )
+
+    total_amount = fields.Monetary(
+        string="Total",
+        compute="_compute_total_amount",
+        store=True,
+        currency_field='currency_id',
+    )
+
+    @api.depends('line_ids.amount_total')
+    def _compute_total_amount(self):
+        for rec in self:
+            rec.total_amount = sum(rec.line_ids.mapped('amount_total'))
+
+    @api.depends('state')
+    def _compute_is_editable(self):
+        for rec in self:
+            rec.is_editable = rec.state == 'draft'
+
     def _compute_asset_count(self):
         for batch in self:
             batch.asset_count = self.env["account.asset"].search_count([
@@ -85,27 +118,34 @@ class AccountAssetBatch(models.Model):
             purchase = self.env["purchase.order"].browse(purchase_id)
             if purchase.operating_unit_id and purchase.operating_unit_id.department_id:
                 res["department_id"] = purchase.operating_unit_id.department_id.id
-        return res
+        return res    
 
     def action_register_assets(self):
-        asset = self.env["account.asset"]
         for batch in self:
-            for line in batch.line_ids:
-                for _ in range(line.amount):
-                    asset.create({
-                        "name": line.name,
-                        "analytic_distribution": line.analytic_distribution,
-                        "date_start": batch.date,
-                        "account_fiscal_year_id": batch.account_fiscal_year_id.id,
-                        "operating_unit_id": batch.operating_unit_id.id,
-                        "purchase_id": batch.purchase_id.id,
-                        "gpsc_id": line.gpsc_id.id,
-                        "profile_id": line.profile_id.id,
-                        "purchase_value": line.price_per_unit,
-                        "batch_line_id": line.id,
-                        "batch_id": batch.id,
-                    })
-            batch.state = "done"
+            if not batch.line_ids:
+                raise ValidationError(_("Cannot register assets without any lines."))
+
+            if any(line.amount <= 0 for line in batch.line_ids):
+                raise ValidationError(_("Some lines have zero amount. Please correct them before proceeding."))
+
+            asset = self.env["account.asset"]
+            for batch in self:
+                for line in batch.line_ids:
+                    for _ in range(line.amount):
+                        asset.create({
+                            "name": line.name,
+                            "analytic_distribution": line.analytic_distribution,
+                            "date_start": batch.date,
+                            "account_fiscal_year_id": batch.account_fiscal_year_id.id,
+                            "operating_unit_id": batch.operating_unit_id.id,
+                            "purchase_id": batch.purchase_id.id,
+                            "gpsc_id": line.gpsc_id.id,
+                            "profile_id": line.profile_id.id,
+                            "purchase_value": line.price_per_unit,
+                            "batch_line_id": line.id,
+                            "batch_id": batch.id,
+                        })
+                batch.state = "done"
 
     def action_open_asset_items(self):
         self.ensure_one()

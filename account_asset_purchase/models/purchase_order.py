@@ -21,12 +21,13 @@ class PurchaseOrder(models.Model):
                 ('purchase_id', '=', po.id)
             ])
 
-    def action_open_asset_batch(self):
-        return {
-            "name": "Asset Batch",
-            "type": "ir.actions.act_window",
-            "res_model": "account.asset.batch",
-            "view_mode": "tree,form",
-            "domain": [("purchase_id", "=", self.id)],
-            "context": {"default_purchase_id": self.id},
+    def action_open_asset_batch(self):    
+        self.ensure_one()
+        action = self.env["ir.actions.act_window"]._for_xml_id(
+            "account_asset_purchase.action_account_asset_batch"
+        )
+        action["domain"] = [("purchase_id", "=", self.id)]
+        action["context"] = {
+            "default_purchase_id": self.id,
         }
+        return action
