@@ -15,7 +15,7 @@
                 <field name="project_ids" attrs="{'invisible': [('is_project', '=', False)]}" context="{
                         'hide_header': True,
                         'hide_budget': True,
-                        'default_date_range_fy_id': date_range_fy_id,
+                        'default_account_fiscal_year_id': account_fiscal_year_id,
                         'default_source_analytic_id': source_analytic_id,
                         'default_activity_analytic_id': activity_analytic_id,
                         'default_department_analytic_id': department_analytic_id,

@@ -273,7 +273,7 @@ class BudgetController(models.AbstractModel):
         domain = [
             ('state', '=', 'posted'),
             ('move_type', '=', 'appropriation'),
-            ('date_range_fy_id', '=', fiscal_year_id),
+            ('account_fiscal_year_id', '=', fiscal_year_id),
             ('company_id', '=', company_id),
         ]
 
@@ -307,7 +307,7 @@ class BudgetController(models.AbstractModel):
         BudgetCommitment = self.env['budget.commitment']
         domain = [
             ('state', 'in', ['reserved', 'obligated']),
-            ('date_range_fy_id', '=', fiscal_year_id),
+            ('account_fiscal_year_id', '=', fiscal_year_id),
             ('company_id', '=', company_id),
         ]
 
@@ -398,7 +398,7 @@ class BudgetController(models.AbstractModel):
         domain = [
             ('state', '=', 'posted'),
             ('move_type', 'in', ('appropriation', 'entry')),
-            ('date_range_fy_id', '=', fiscal_year_id),
+            ('account_fiscal_year_id', '=', fiscal_year_id),
             ('company_id', '=', company_id),
         ]
 
@@ -417,7 +417,7 @@ class BudgetController(models.AbstractModel):
         """Calculate total reserved amount from commitments (reserved + obligated)"""
         domain = [
             ('state', 'in', ['reserved', 'obligated']),
-            ('date_range_fy_id', '=', fiscal_year_id),
+            ('account_fiscal_year_id', '=', fiscal_year_id),
             ('company_id', '=', company_id),
         ]
 
@@ -436,7 +436,7 @@ class BudgetController(models.AbstractModel):
         domain = [
             ('state', '=', 'posted'),
             ('move_type', '=', 'consume'),
-            ('date_range_fy_id', '=', fiscal_year_id),
+            ('account_fiscal_year_id', '=', fiscal_year_id),
             ('company_id', '=', company_id),
         ]
 
@@ -639,7 +639,7 @@ class BudgetController(models.AbstractModel):
             'date': fields.Date.today(),
             'department_analytic_id': analytic_data.get('department_analytic_id'),
             'source_analytic_id': analytic_data.get('source_analytic_id'),
-            'date_range_fy_id': fiscal_year_id,
+            'account_fiscal_year_id': fiscal_year_id,
             'company_id': company_id,
             'currency_id': self.env.company.currency_id.id,
             'state': 'draft',

@@ -89,7 +89,7 @@ class BudgetAppropriation(models.Model):
         tracking=True,
         default="draft",
     )
-    date_range_fy_id = fields.Many2one(
+    account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="ปีงบประมาณ",
         tracking=True,
@@ -150,21 +150,13 @@ class BudgetAppropriation(models.Model):
         states=READONLY_STATES,
         domain=[('deduct', '=', True)],
     )
-    journal_id = fields.Many2one(
-        "budget.journal",
-        string="Journal",
-        store=True,
-        readonly=False,
-        required=True,
-        states=READONLY_STATES,
-        check_company=True,
-        tracking=True,
-    )
     budget_type = fields.Selection(
-        related="journal_id.default_budget_type",
+        [("revenue", "Revenue"), ("expense", "Expense")],
         string="Budget Type",
-        store=True,
-        readonly=True,
+        required=True,
+        copy=True,
+        default="expense",
+        states=READONLY_STATES,
     )
     company_id = fields.Many2one(
         comodel_name="res.company",
@@ -310,10 +302,9 @@ class BudgetAppropriation(models.Model):
             "move_type": "appropriation",
             "date": self.date,
             "ref": self.ref,
-            "journal_id": self.journal_id.id,
             "department_analytic_id": self.department_analytic_id.id,
             "source_analytic_id": self.source_analytic_id.id,
-            "date_range_fy_id": self.date_range_fy_id.id,
+            "account_fiscal_year_id": self.account_fiscal_year_id.id,
             "note": self.note,
             "company_id": self.company_id.id,
             "currency_id": self.currency_id.id,

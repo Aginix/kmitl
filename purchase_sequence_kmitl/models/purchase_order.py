@@ -10,7 +10,7 @@ class PurchaseOrder(models.Model):
     def create(self, vals_list):
         for vals in vals_list:
 
-            fy_id = self.env["account.fiscal.year"].browse(vals.get("date_range_fy_id"))
+            fy_id = self.env["account.fiscal.year"].browse(vals.get("account_fiscal_year_id"))
             fiscal_year = fy_id.name[-2:] if fy_id else fields.Date.today().strftime("%y")
 
             ou = self.env["operating.unit"].browse(vals["operating_unit_id"])

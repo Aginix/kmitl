@@ -112,7 +112,7 @@ class PurchaseOrder(models.Model):
 
     def _prepare_invoice(self):
         vals = super()._prepare_invoice()
-        # vals["date_range_fy_id"] = purchase_request.date_range_fy_id.id
+        # vals["account_fiscal_year_id"] = purchase_request.account_fiscal_year_id.id
         vals["analytic_distribution"] = self.analytic_distribution
         vals["budget_commitment_id"] = self.budget_commitment_id.id
         vals["budget_account_id"] = self.budget_account_id.id
