@@ -10,43 +10,42 @@ _logger = logging.getLogger(__name__)
 class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
+    use_procurement_plan = fields.Boolean(
+        string="เลือกใช้รายการจากแผนจัดซื้อจัดจ้าง",
+        compute="_compute_use_procurement_plan",
+        store=False,
+    )
     procurement_plan_id = fields.Many2one(
         comodel_name="procurement.plan", string="รายการแผนจัดซื้อจัดจ้าง", domain="", tracking=True
     )
-
     activity_analytic_id = fields.Many2one("account.analytic.account", store=True, compute="_compute_procurement_plan_analytic_id")
     department_analytic_id = fields.Many2one("account.analytic.account", store=True, compute="_compute_procurement_plan_analytic_id")
     fund_analytic_id = fields.Many2one("account.analytic.account", store=True, compute="_compute_procurement_plan_analytic_id")
     source_analytic_id = fields.Many2one("account.analytic.account", store=True, compute="_compute_procurement_plan_analytic_id")
     procurement_plan_analytic_id = fields.Many2one("account.analytic.account", store=True, compute="_compute_procurement_plan_analytic_id")
-    require_procurement_plan = fields.Boolean(
-        string="ต้องกรอกแผนจัดซื้อจัดจ้าง",
-        compute="_compute_require_procurement_plan",
-        store=False,
-    )
 
     @api.depends("product_id.categ_id")
-    def _compute_require_procurement_plan(self):
+    def _compute_use_procurement_plan(self):
         asset_categ = self.env.ref("product_kmitl.product_category_asset", raise_if_not_found=False)
         building_categ = self.env.ref("product_kmitl.product_category_building", raise_if_not_found=False)
 
         for rec in self:
             if rec.product_id and rec.product_id.categ_id in (asset_categ, building_categ):
-                rec.require_procurement_plan = True
+                rec.use_procurement_plan = True
             else:
-                rec.require_procurement_plan = False
+                rec.use_procurement_plan = False
 
-    @api.depends("state", "require_procurement_plan", "procurement_plan_id")
+    @api.depends("state", "use_procurement_plan", "procurement_plan_id")
     def _compute_can_edit_budget(self):
         res = super()._compute_can_edit_budget()
         for rec in self:
-            if rec.require_procurement_plan:
+            if rec.use_procurement_plan:
                 rec.can_edit_budget = False
 
-    @api.depends("require_procurement_plan", "procurement_plan_id")
+    @api.depends("use_procurement_plan", "procurement_plan_id")
     def _compute_procurement_plan_analytic_id(self):
         for rec in self:
-            if rec.require_procurement_plan and rec.procurement_plan_id:
+            if rec.use_procurement_plan and rec.procurement_plan_id:
                 rec.budget_account_id = rec.procurement_plan_id.budget_account_id.id
                 rec.activity_analytic_id = rec.procurement_plan_id.activity_analytic_id.id
                 rec.department_analytic_id = rec.procurement_plan_id.department_analytic_id.id
@@ -54,9 +53,9 @@ class PurchaseRequest(models.Model):
                 rec.source_analytic_id = rec.procurement_plan_id.source_analytic_id.id
                 rec.procurement_plan_analytic_id = rec.procurement_plan_id.analytic_account_id.id
 
-    @api.onchange("require_procurement_plan", "procurement_plan_id")
+    @api.onchange("use_procurement_plan", "procurement_plan_id")
     def _onchange_procurement_plan_id(self):
-        if self.require_procurement_plan and self.procurement_plan_id:
+        if self.use_procurement_plan and self.procurement_plan_id:
             self.budget_account_id = self.procurement_plan_id.budget_account_id.id
             self.activity_analytic_id = self.procurement_plan_id.activity_analytic_id.id
             self.department_analytic_id = self.procurement_plan_id.department_analytic_id.id
