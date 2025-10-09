@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <!-- View purchase.request.report View Tree -->
     <record id="view_purchase_request_report_tree" model="ir.ui.view">
         <field name="name">view.purchase.request.report.tree</field>
         <field name="model">purchase.request.report</field>
@@ -12,25 +10,63 @@
         </field>
     </record>
 
-    <!-- View purchase.request.report form -->
     <record id="view_purchase_request_report_form" model="ir.ui.view">
-        <field name="name">view.purchase.request.report.form</field>
+        <field name="name">purchase.request.report.form</field>
         <field name="model">purchase.request.report</field>
         <field name="arch" type="xml">
-            <form string="Purchase Request Report">
+            <form string="Purchase Request Report" create="1" edit="1">
+                <!-- <header>
+                    <button name="action_submit" string="Submit" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_done" string="Approve" type="object" class="btn-success" attrs="{'invisible': [('state', '!=', 'submit')]}"/>
+                    <button name="action_cancel" string="Cancel" type="object" class="btn-secondary" attrs="{'invisible': [('state', 'in', ['cancel','done'])]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submit,done,cancel" statusbar_colors='{"done":"green","cancel":"red"}'/>
+                </header> -->
                 <sheet>
                     <div class="oe_title">
-                        <label for="name"/>
                         <h1>
-                            <field name="name" placeholder="Name..."/>
+                            <field name="name" placeholder="Report Reference"/>
                         </h1>
+                        <label for="date" string="Created On:"/>
+                        <field name="date" class="oe_inline"/>
                     </div>
+                    <group>
+                        <group>
+                            <field name="payment_type"/>
+                            <field name="approval_date" attrs="{'readonly': [('state','!=','done')]}"/>
+                            <field name="operating_unit_id"/>
+                            <field name="company_id"/>
+                            <field name="currency_id"/>
+                        </group>
+                        <group>
+                            <field name="is_editable" readonly="1"/>
+                            <field name="state" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Requests">
+                            <field name="request_ids" context="{'default_report_id': active_id}" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="date_start"/>
+                                    <field name="requested_by"/>
+                                    <!-- <field name="amount_total" widget="monetary" options="{'currency_field': 'currency_id'}"/> -->
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="message_ids" widget="mail_thread"/>
+                        </page>
+                    </notebook>
                 </sheet>
+                <footer>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    <button string="Save" type="object" name="write" class="btn-primary" attrs="{'invisible': [('is_editable','=',False)]}"/>
+                </footer>
             </form>
         </field>
     </record>
 
-    <!-- View purchase.request.report search -->
     <record id="view_purchase_request_report_search" model="ir.ui.view">
         <field name="name">view.purchase.request.report.search</field>
         <field name="model">purchase.request.report</field>
@@ -43,7 +79,6 @@
         </field>
     </record>
 
-    <!-- Action purchase.request.report -->
     <record id="action_purchase_request_report" model="ir.actions.act_window">
         <field name="name">Purchase Request Report</field>
         <field name="type">ir.actions.act_window</field>
@@ -57,5 +92,5 @@
             </p>
         </field>
     </record>
-
+    <menuitem id="menu_purchase_approval" action="action_purchase_request_report" name="Purchase Approval" parent="purchase_request.parent_menu_purchase_request" groups="purchase_request.group_purchase_request_user,purchase_request.group_purchase_request_manager" sequence="50" />
 </odoo>

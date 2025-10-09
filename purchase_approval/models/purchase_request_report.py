@@ -35,4 +35,4 @@ class PurchaseRequestReport(models.Model):
 
     def _compute_is_editable(self):
         for rec in self:
-            rec.is_editable = rec.state in ['draft', 'to_approve']
+            rec.is_editable = rec.state in ['draft']
