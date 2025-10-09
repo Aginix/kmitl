@@ -78,10 +78,10 @@ class BudgetProject(models.Model):
     )
 
     # Related fields for reporting
-    date_range_fy_id = fields.Many2one(
+    account_fiscal_year_id = fields.Many2one(
         "account.fiscal.year",
         string="Fiscal Year",
-        related="budget_appropriation_line_id.date_range_fy_id",
+        related="budget_appropriation_line_id.account_fiscal_year_id",
         store=True,
         readonly=True,
     )

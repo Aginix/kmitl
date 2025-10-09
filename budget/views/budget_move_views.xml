@@ -7,10 +7,10 @@
         <field name="model">budget.move</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="date_range_fy_id" />
+                <field name="account_fiscal_year_id" />
                 <field name="date" />
                 <field name="name" />
-                <field name="journal_id" />
+                <field name="budget_type" />
                 <field name="move_type" />
                 <field name="source_analytic_id" />
                 <field
@@ -108,7 +108,7 @@
                         </group>
                         <group string="มิติบัญชี">
                             <field
-                                name="date_range_fy_id"
+                                name="account_fiscal_year_id"
                                 options='{"no_create": True, "no_create_edit": True,"no_open": True}'
                                 required="1"
                             />
@@ -119,7 +119,7 @@
                                 required="1"
                             />
                             <field
-                                name="journal_id"
+                                name="budget_type"
                                 options='{"no_create": True, "no_create_edit": True,"no_open": True}'
                                 required="1"
                                 attrs="{'readonly': [('id', '!=', False)]}"
@@ -134,7 +134,7 @@
                                 style="max-width: 100%; display: block;"
                             >
                                 <tree>
-                                    <field name="date_range_fy_id" invisible="1" />
+                                    <field name="account_fiscal_year_id" invisible="1" />
                                     <field name="move_id" invisible="1" />
                                     <field
                                         name="department_analytic_id"
@@ -165,7 +165,7 @@
                                 <field
                                     name="commitment_id"
                                     options='{"no_create": True, "no_create_edit": True}'
-                                    domain="[('state', '=', 'reserved'), ('date_range_fy_id', '=', date_range_fy_id), ('source_analytic_id', '=', source_analytic_id)]"
+                                    domain="[('state', '=', 'reserved'), ('account_fiscal_year_id', '=', account_fiscal_year_id), ('source_analytic_id', '=', source_analytic_id)]"
                                 />
                             </group>
                         </page>
@@ -192,7 +192,7 @@
             >
                 <field name="budget_type" />
                 <field name="move_id" widget="many2onebutton" />
-                <field name="date_range_fy_id" />
+                <field name="account_fiscal_year_id" />
                 <field name="source_analytic_id" />
                 <field name="department_analytic_id" />
                 <field name="activity_analytic_id" />
@@ -221,7 +221,7 @@
             <form string="Budget Move Line">
                 <sheet>
                     <group>
-                        <field name="date_range_fy_id" readonly="1" invisible="1" />
+                        <field name="account_fiscal_year_id" readonly="1" invisible="1" />
                         <field name="move_id" readonly="1" invisible="1" />
                         <field name="source_analytic_id" readonly="1" invisible="1" />
                         <field name="hide_unallocated_balance" readonly="1" invisible="1" />
@@ -309,9 +309,9 @@
                 <group expand="1" string="Group By">
                     <filter
                         string="Fiscal Year"
-                        name="date_range_fy_id"
+                        name="account_fiscal_year_id"
                         domain="[]"
-                        context="{'group_by':'date_range_fy_id'}"
+                        context="{'group_by':'account_fiscal_year_id'}"
                     />
                     <filter
                         string="Department"
