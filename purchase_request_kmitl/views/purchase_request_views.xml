@@ -107,7 +107,7 @@
                 <attribute name="widget">selection</attribute>
             </xpath>
             <xpath expr="//field[@name='procurement_type_id']" position="before">
-                <field name="date_range_fy_id" attrs="{'readonly': [('is_editable','=', False)]}" widget="selection" />
+                <field name="account_fiscal_year_id" attrs="{'readonly': [('is_editable','=', False)]}" widget="selection" />
             </xpath>
             <xpath expr="//field[@name='procurement_method_id']" position="attributes">
                 <attribute name="widget">selection</attribute>
@@ -137,53 +137,13 @@
             <xpath expr="//form/sheet/notebook" position="inside">
                 <page name="committee" string="Committee">
                     <separator string="Work Acceptance Committee" />
-                    <field name="work_acceptance_committee_ids" nolabel="1" context="{'default_committee_type': 'work_acceptance'}" attrs="{'readonly': [('is_editable', '=', False)]}">
-                        <tree editable="bottom">
-                            <field name="committee_type" invisible="1" />
-                            <field name="employee_id" string="Employee" options="{'no_create': True, 'no_open': True}" />
-                            <field name="name" string="Committee Name" />
-                            <field name="approve_role" string="Role" />
-                            <field name="department_id" string="Department" readonly="1"/>
-                            <field name="email" string="Work Email" readonly="1"/>
-                            <field name="mobile_phone" string="Mobile Phone" readonly="1"/>
-                        </tree>
-                    </field>
+                    <field name="work_acceptance_committee_ids" nolabel="1" context="{'default_committee_type': 'work_acceptance'}" attrs="{'readonly': [('is_editable', '=', False)]}" />
                     <separator string="Tor Committee" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"/>
-                    <field name="tor_committee_ids" nolabel="1" context="{'default_committee_type': 'tor_committee'}" attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}">
-                        <tree editable="bottom">
-                            <field name="committee_type" invisible="1" />
-                            <field name="employee_id" string="Employee" options="{'no_create': True, 'no_open': True}" />
-                            <field name="name" string="Committee Name" />
-                            <field name="approve_role" string="Role" />
-                            <field name="department_id" string="Department" readonly="1"/>
-                            <field name="email" string="Work Email" readonly="1"/>
-                            <field name="mobile_phone" string="Mobile Phone" readonly="1"/>
-                        </tree>
-                    </field>
+                    <field name="tor_committee_ids" nolabel="1" context="{'default_committee_type': 'tor_committee'}" attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}" />
                     <separator string="Price Determine Committee" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"/>
-                    <field name="price_determine_committee_ids" nolabel="1" context="{'default_committee_type': 'price_determine'}" attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}">
-                        <tree editable="bottom">
-                            <field name="committee_type" invisible="1" />
-                            <field name="employee_id" string="Employee" options="{'no_create': True, 'no_open': True}" />
-                            <field name="name" string="Committee Name" />
-                            <field name="approve_role" string="Role" />
-                            <field name="department_id" string="Department" />
-                            <field name="email" string="Work Email" readonly="1"/>
-                            <field name="mobile_phone" string="Mobile Phone" readonly="1"/>
-                        </tree>
-                    </field>
+                    <field name="price_determine_committee_ids" nolabel="1" context="{'default_committee_type': 'price_determine'}" attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}" />
                     <separator string="Evaluation Committee" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"/>
-                    <field name="evaluation_committee_ids" nolabel="1" context="{'default_committee_type': 'evaluation'}" attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}">
-                        <tree editable="bottom">
-                            <field name="committee_type" invisible="1" />
-                            <field name="employee_id" string="Employee" options="{'no_create': True, 'no_open': True}" />
-                            <field name="name" string="Committee Name" />
-                            <field name="approve_role" string="Role" />
-                            <field name="department_id" string="Department" />
-                            <field name="email" string="Work Email" readonly="1"/>
-                            <field name="mobile_phone" string="Mobile Phone" readonly="1"/>
-                        </tree>
-                    </field>
+                    <field name="evaluation_committee_ids" nolabel="1" context="{'default_committee_type': 'evaluation'}" attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}" />
                 </page>
                 <page name="logs" string="Operation">
                     <group>

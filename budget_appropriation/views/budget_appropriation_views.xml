@@ -7,12 +7,12 @@
         <field name="model">budget.appropriation</field>
         <field name="arch" type="xml">
             <tree decoration-info="state == 'draft'" decoration-warning="state == 'review'" decoration-muted="state == 'cancel'" decoration-success="state == 'posted'" delete="false">
-                <field name="date_range_fy_id" />
+                <field name="account_fiscal_year_id" />
                 <field name="name" />
-                <field name="journal_id" />
+                <field name="budget_type" />
                 <field name="source_analytic_id" />
                 <field name="department_analytic_id" />
-                <field name="total_amount" sum="Total Amount" />
+                <field name="amount_total" sum="Total Amount" />
                 <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'review'" decoration-success="state == 'posted'" />
                 <field name="user_id" widget="many2one_avatar_user" />
             </tree>
@@ -54,10 +54,10 @@
                             <field name="note" />
                         </group>
                         <group string="มิติบัญชี">
-                            <field name="date_range_fy_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
+                            <field name="account_fiscal_year_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                             <field name="department_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                             <field name="source_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
-                            <field name="journal_id" required="1" attrs="{'readonly': [('id', '!=', False)]}" />
+                            <field name="budget_type" required="1" attrs="{'readonly': [('id', '!=', False)]}" />
                         </group>
                         <group string="การเชื่อมโยง" attrs="{'invisible': [('state', '!=', 'posted')]}">
                             <field name="budget_move_id" readonly="1" />
@@ -65,22 +65,50 @@
                     </group>
                     <notebook>
                         <page name="line_ids" string="Appropriation Lines">
-                            <field name="line_ids" style="max-width: 100%; display: block;" attrs="{'readonly': [('state', 'in', ['review', 'posted', 'cancel'])]}" widget="budget_appropriation_line">
-                                <tree limit="1000">
-                                    <field name="appropriation_id" invisible="1" />
-                                    <field name="budget_type" invisible="1" />
-                                    <field name="department_analytic_id" invisible="1" />
-                                    <field name="activity_analytic_id" options='{"no_open": True}' required="1" />
-                                    <field name="fund_analytic_id" options='{"no_open": True}' required="1" />
-                                    <field name="source_analytic_id" invisible="1" />
-                                    <field name="account_id" options='{"no_open": True}' required="1" />
-                                    <field name="balance" required="1" />
-                                    <field name="note" />
-                                </tree>
-                            </field>
+                            <separator string="จัดสรรงบประมาณ" />
+                            <group>
+                                <field nolabel="1" colspan="2" name="line_ids" style="max-width: 100%; display: block;" attrs="{'readonly': [('state', 'in', ['review', 'posted', 'cancel'])]}" widget="budget_appropriation_line">
+                                    <tree limit="1000">
+                                        <field name="appropriation_id" invisible="1" />
+                                        <field name="budget_type" invisible="1" />
+                                        <field name="description" invisible="1" />
+                                        <field name="deduct" invisible="1" />
+                                        <field name="department_analytic_id" invisible="1" />
+                                        <field name="activity_analytic_id" options='{"no_open": True}' />
+                                        <field name="fund_analytic_id" options='{"no_open": True}' />
+                                        <field name="source_analytic_id" invisible="1" />
+                                        <field name="account_id" options='{"no_open": True}' />
+                                        <field name="balance" />
+                                        <field name="note" invisible="1" />
+                                    </tree>
+                                </field>
+                            </group>
+                            <group attrs="{'invisible': [('budget_type', '!=', 'revenue')]}">
+                                <separator string="หัก" />
+                                <field nolabel="1" colspan="2" name="deduct_line_ids" style="max-width: 100%; display: block;" attrs="{'readonly': [('state', 'in', ['review', 'posted', 'cancel'])]}" widget="budget_appropriation_line" context="{'default_deduct': True}">
+                                    <tree limit="1000">
+                                        <field name="appropriation_id" invisible="1" />
+                                        <field name="budget_type" invisible="1" />
+                                        <field name="description" invisible="1" />
+                                        <field name="deduct" invisible="1" />
+                                        <field name="department_analytic_id" invisible="1" />
+                                        <field name="activity_analytic_id" options='{"no_open": True}' optional="show" />
+                                        <field name="fund_analytic_id" options='{"no_open": True}' optional="show" />
+                                        <field name="source_analytic_id" invisible="1" />
+                                        <field name="account_id" options='{"no_open": True}' />
+                                        <field name="deduct_analytic_id" />
+                                        <field name="balance" />
+                                        <field name="note" invisible="1" />
+                                    </tree>
+                                </field>
+                            </group>
                             <group>
                                 <group class="oe_subtotal_footer oe_right">
-                                    <field name="total_amount" string="งบประมาณทั้งหมด" />
+                                    <label for="amount_total" string="รายรับรวม" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}" />
+                                    <label for="amount_total" string="รายจ่ายรวม" attrs="{'invisible': [('budget_type', '!=', 'expense')]}" />
+                                    <field nolabel="1" name="amount_total" />
+                                    <field style="text-decoration-line: underline;" name="amount_deduct" string="หัก" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}" />
+                                    <field style="text-decoration-line: underline; text-decoration-style: double;" name="amount_net" string="รายรับสุทธิ" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}" />
                                 </group>
                             </group>
                         </page>
@@ -92,7 +120,7 @@
                                         <i class="fa fa-eye" />
                                         เปิดดูตัวอย่างแบบละเอียด (F5)
                                     </button>
-                                    
+
                                     <!-- F4 Preview for Revenue -->
                                     <button type="object" name="action_open_f4_preview" class="btn btn-success btn-lg" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}">
                                         <i class="fa fa-eye" />
@@ -102,6 +130,7 @@
                             </div>
                         </page>
                     </notebook>
+
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_ids" widget="mail_thread" />
@@ -139,17 +168,26 @@
                 <field name="analytic_distribution" widget="analytic_distribution" options="{'account_field': 'account_id', 'business_domain': 'budget'}" invisible="1" />
                 <sheet>
                     <group>
-                        <field name="date_range_fy_id" invisible="1" />
+                        <field name="account_fiscal_year_id" invisible="1" />
                         <field name="appropriation_id" invisible="1" />
                         <field name="budget_type" invisible="1" />
+                        <field name="deduct" invisible="1" />
+                        <field name="description" invisible="1" />
                         <field name="department_analytic_id" options='{"no_open": True}' widget="helper_text" readonly="1" />
                         <field name="source_analytic_id" options='{"no_open": True}' widget="helper_text" readonly="1" />
                         <field name="activity_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' widget="helper_text" required="1" />
                         <field name="fund_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                         <field name="account_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' widget="helper_text" required="1" />
+                        <field name="deduct_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' widget="helper_text" attrs="{'invisible': [('deduct', '!=', True)]}" />
                         <field name="balance" required="1" />
-                        <field name="note" />
                     </group>
+                    <notebook>
+                        <page name="name" string="อื่น ๆ">
+                            <group>
+                                <field name="note" />
+                            </group>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
@@ -163,7 +201,7 @@
             <search string="Budget Appropriations">
                 <field name="name" />
                 <field name="ref" />
-                <field name="journal_id" />
+                <field name="budget_type" />
                 <field name="source_analytic_id" />
                 <field name="department_analytic_id" />
                 <separator />
@@ -171,15 +209,15 @@
                 <filter name="review" string="In Review" domain="[('state', '=', 'review')]" />
                 <filter name="posted" string="Posted" domain="[('state', '=', 'posted')]" />
                 <separator />
-                <filter name="current_fy" string="ปีงบประมาณปัจจุบัน" domain="[('date_range_fy_id.date_from', '&lt;=', context_today()), ('date_range_fy_id.date_to', '&gt;=', context_today())]" />
+                <filter name="current_fy" string="ปีงบประมาณปัจจุบัน" domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
                 <separator />
                 <group expand="0" string="Group By">
                     <filter name="group_by_state" string="สถานะ" context="{'group_by': 'state'}" />
-                    <filter name="group_by_fiscal_year" string="ปีงบประมาณ" context="{'group_by': 'date_range_fy_id'}" />
+                    <filter name="group_by_fiscal_year" string="ปีงบประมาณ" context="{'group_by': 'account_fiscal_year_id'}" />
                     <filter name="group_by_source" string="แหล่งเงิน" context="{'group_by': 'source_analytic_id'}" />
                 </group>
                 <searchpanel>
-                    <field name="date_range_fy_id" icon="fa-calendar" enable_counters="1" />
+                    <field name="account_fiscal_year_id" icon="fa-calendar" enable_counters="1" />
                     <field name="source_analytic_id" icon="fa-money" enable_counters="1" order="code asc" />
                     <field name="department_analytic_id" icon="fa-users" enable_counters="1" order="code asc" />
                 </searchpanel>
@@ -194,22 +232,22 @@
         <field name="arch" type="xml">
             <search string="Budget Appropriations">
                 <field name="name" />
-                <field name="journal_id" />
+                <field name="budget_type" />
                 <field name="source_analytic_id" />
                 <field name="department_analytic_id" />
                 <separator />
-                <filter name="current_fy" string="ปีงบประมาณปัจจุบัน" domain="[('date_range_fy_id.date_from', '&lt;=', context_today()), ('date_range_fy_id.date_to', '&gt;=', context_today())]" />
+                <filter name="current_fy" string="ปีงบประมาณปัจจุบัน" domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
                 <separator />
                 <group expand="0" string="Group By">
                     <filter name="group_by_state" string="สถานะ" context="{'group_by': 'parent_state'}" />
-                    <filter name="group_by_journal" string="ประเภท" context="{'group_by': 'journal_id'}" />
-                    <filter name="group_by_fiscal_year" string="ปีงบประมาณ" context="{'group_by': 'date_range_fy_id'}" />
+                    <filter name="group_by_budget_type" string="ประเภท" context="{'group_by': 'budget_type'}" />
+                    <filter name="group_by_fiscal_year" string="ปีงบประมาณ" context="{'group_by': 'account_fiscal_year_id'}" />
                     <filter name="group_by_source" string="แหล่งเงิน" context="{'group_by': 'source_analytic_id'}" />
                 </group>
                 <searchpanel>
                     <field name="account_id" icon="fa-book" enable_counters="1" />
-                    <field name="journal_id" icon="fa-book" enable_counters="1" />
-                    <field name="date_range_fy_id" icon="fa-calendar" enable_counters="1" />
+                    <field name="budget_type" icon="fa-book" enable_counters="1" />
+                    <field name="account_fiscal_year_id" icon="fa-calendar" enable_counters="1" />
                     <field name="source_analytic_id" icon="fa-money" enable_counters="1" order="code asc" />
                     <field name="department_analytic_id" icon="fa-users" enable_counters="1" order="code asc" />
                 </searchpanel>
@@ -239,7 +277,7 @@
         <field name="res_model">budget.appropriation</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('budget_type', '=', 'expense')]</field>
-        <field name="context">{'default_journal_id': 'expense'}</field>
+        <field name="context">{'default_budget_type': 'expense'}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a new expense budget appropriation!
@@ -256,7 +294,7 @@
         <field name="res_model">budget.appropriation</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('budget_type', '=', 'revenue')]</field>
-        <field name="context">{'default_journal_id': 'revenue'}</field>
+        <field name="context">{'default_budget_type': 'revenue'}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a new revenue budget appropriation!
@@ -275,4 +313,11 @@
         <field name="context">{}</field>
     </record>
 
+
+
+    <menuitem id="menu_budget_appropriation_expense" name="งบประมาณรายจ่าย" parent="menu_budget_appropriation_root" action="action_budget_appropriation_expense" sequence="10" />
+
+    <menuitem id="menu_budget_appropriation_revenue" name="งบประมาณรายรับ" parent="menu_budget_appropriation_root" action="action_budget_appropriation_revenue" sequence="15" />
+
+    <menuitem id="menu_budget_appropriation_line" name="รายการการจัดสรรงบประมาณ" parent="menu_budget_appropriation_root" action="action_budget_appropriation_line" sequence="20" />
 </odoo>

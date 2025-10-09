@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="product_template_5104010101" model="product.template">
+        <field name="default_code">5104010101</field>
+        <field name="name">ค่าวัสดุสำนักงานใช้ไป</field>
+        <field name="categ_id" ref="product_category_consumable"/>
+        <field name="detailed_type">consu</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
+    </record>
+
+    <function model="product.template" name="write">
+        <value eval="ref('product_kmitl.product_template_5104010101')"/>
+        <value model="base" eval="{
+        'property_account_expense_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5104010101').code)]),
+        'property_account_income_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4121040044').code)])
+        }"/>
+    </function>
+
+    <record id="product_template_5104010102" model="product.template">
+        <field name="default_code">5104010102</field>
+        <field name="name">ค่าวัสดุโฆษณาและเผยแพร่ใช้ไป</field>
+        <field name="categ_id" ref="product_category_consumable"/>
+        <field name="detailed_type">consu</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
+    </record>
+
+    <function model="product.template" name="write">
+        <value eval="ref('product_kmitl.product_template_5104010102')"/>
+        <value model="base" eval="{
+        'property_account_expense_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5104010102').code)]),
+        'property_account_income_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4121040044').code)])
+        }"/>
+    </function>
+
+    <record id="product_template_5104010103" model="product.template">
+        <field name="default_code">5104010103</field>
+        <field name="name">ค่าวัสดุการศึกษาใช้ไป</field>
+        <field name="categ_id" ref="product_category_consumable"/>
+        <field name="detailed_type">consu</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
+    </record>
+
+    <function model="product.template" name="write">
+        <value eval="ref('product_kmitl.product_template_5104010103')"/>
+        <value model="base" eval="{
+        'property_account_expense_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5104010103').code)]),
+        'property_account_income_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4121040044').code)])
+        }"/>
+    </function>
+
+    <record id="product_template_5104010104" model="product.template">
+        <field name="default_code">5104010104</field>
+        <field name="name">ค่าวัสดุน้ำมันเชื้อเพลิงและหล่อลื่น</field>
+        <field name="categ_id" ref="product_category_consumable"/>
+        <field name="detailed_type">consu</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
+    </record>
+
+    <function model="product.template" name="write">
+        <value eval="ref('product_kmitl.product_template_5104010104')"/>
+        <value model="base" eval="{
+        'property_account_expense_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5104010104').code)]),
+        'property_account_income_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4121040044').code)])
+        }"/>
+    </function>
+
+    <record id="product_template_5104010105" model="product.template">
+        <field name="default_code">5104010105</field>
+        <field name="name">ค่าวัสดุงานบ้านงานครัวใช้ไป</field>
+        <field name="categ_id" ref="product_category_consumable"/>
+        <field name="detailed_type">consu</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
+    </record>
+
+    <function model="product.template" name="write">
+        <value eval="ref('product_kmitl.product_template_5104010105')"/>
+        <value model="base" eval="{
+        'property_account_expense_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5104010105').code)]),
+        'property_account_income_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4121040044').code)])
+        }"/>
+    </function>
+
+    <record id="product_template_5104010106" model="product.template">
+        <field name="default_code">5104010106</field>
+        <field name="name">ค่าวัสดุก่อสร้างและประปา</field>
+        <field name="categ_id" ref="product_category_consumable"/>
+        <field name="detailed_type">consu</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
+    </record>
+
+    <function model="product.template" name="write">
+        <value eval="ref('product_kmitl.product_template_5104010106')"/>
+        <value model="base" eval="{
+        'property_account_expense_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5104010106').code)]),
+        'property_account_income_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4121040044').code)])
+        }"/>
+    </function>
+
+    <record id="product_template_5104010107" model="product.template">
+        <field name="default_code">5104010107</field>
+        <field name="name">ค่าวัสดุเวชภัณฑ์และการแพทย์</field>
+        <field name="categ_id" ref="product_category_consumable"/>
+        <field name="detailed_type">consu</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
+    </record>
+
+    <function model="product.template" name="write">
+        <value eval="ref('product_kmitl.product_template_5104010107')"/>
+        <value model="base" eval="{
+        'property_account_expense_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5104010107').code)]),
+        'property_account_income_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4121040044').code)])
+        }"/>
+    </function>
+
+    <record id="product_template_5104010108" model="product.template">
+        <field name="default_code">5104010108</field>
+        <field name="name">ค่าวัสดุกีฬาและชมรมต่างๆ</field>
+        <field name="categ_id" ref="product_category_consumable"/>
+        <field name="detailed_type">consu</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
+    </record>
+
+    <function model="product.template" name="write">
+        <value eval="ref('product_kmitl.product_template_5104010108')"/>
+        <value model="base" eval="{
+        'property_account_expense_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5104010108').code)]),
+        'property_account_income_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4121040044').code)])
+        }"/>
+    </function>
+
+    <record id="product_template_5104010109" model="product.template">
+        <field name="default_code">5104010109</field>
+        <field name="name">ค่าวัสดุคอมพิวเตอร์และอิเล็กทรอนิกส์ใช้ไป</field>
+        <field name="categ_id" ref="product_category_consumable"/>
+        <field name="detailed_type">consu</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
+    </record>
+
+    <function model="product.template" name="write">
+        <value eval="ref('product_kmitl.product_template_5104010109')"/>
+        <value model="base" eval="{
+        'property_account_expense_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5104010109').code)]),
+        'property_account_income_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4121040044').code)])
+        }"/>
+    </function>
+
+    <record id="product_template_5104010110" model="product.template">
+        <field name="default_code">5104010110</field>
+        <field name="name">ค่าวัสดุหนังสือ วารสารและตำรา</field>
+        <field name="categ_id" ref="product_category_consumable"/>
+        <field name="detailed_type">consu</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
+    </record>
+
+    <function model="product.template" name="write">
+        <value eval="ref('product_kmitl.product_template_5104010110')"/>
+        <value model="base" eval="{
+        'property_account_expense_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5104010110').code)]),
+        'property_account_income_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4121040044').code)])
+        }"/>
+    </function>
+
+    <record id="product_template_5104010111" model="product.template">
+        <field name="default_code">5104010111</field>
+        <field name="name">ค่าวัสดุไฟฟ้า และวิทยุ</field>
+        <field name="categ_id" ref="product_category_consumable"/>
+        <field name="detailed_type">consu</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
+    </record>
+
+    <function model="product.template" name="write">
+        <value eval="ref('product_kmitl.product_template_5104010111')"/>
+        <value model="base" eval="{
+        'property_account_expense_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5104010111').code)]),
+        'property_account_income_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4121040044').code)])
+        }"/>
+    </function>
+
+    <record id="product_template_5104010112" model="product.template">
+        <field name="default_code">5104010112</field>
+        <field name="name">ค่าวัสดุการเกษตร</field>
+        <field name="categ_id" ref="product_category_consumable"/>
+        <field name="detailed_type">consu</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
+    </record>
+
+    <function model="product.template" name="write">
+        <value eval="ref('product_kmitl.product_template_5104010112')"/>
+        <value model="base" eval="{
+        'property_account_expense_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5104010112').code)]),
+        'property_account_income_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4121040044').code)])
+        }"/>
+    </function>
+
+    <record id="product_template_5104010113" model="product.template">
+        <field name="default_code">5104010113</field>
+        <field name="name">ค่าวัสดุยานพาหนะ</field>
+        <field name="categ_id" ref="product_category_consumable"/>
+        <field name="detailed_type">consu</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
+    </record>
+
+    <function model="product.template" name="write">
+        <value eval="ref('product_kmitl.product_template_5104010113')"/>
+        <value model="base" eval="{
+        'property_account_expense_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5104010113').code)]),
+        'property_account_income_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4121040044').code)])
+        }"/>
+    </function>
+
+    <record id="product_template_5104010114" model="product.template">
+        <field name="default_code">5104010114</field>
+        <field name="name">ค่าวัสดุแต่งกาย</field>
+        <field name="categ_id" ref="product_category_consumable"/>
+        <field name="detailed_type">consu</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
+    </record>
+
+    <function model="product.template" name="write">
+        <value eval="ref('product_kmitl.product_template_5104010114')"/>
+        <value model="base" eval="{
+        'property_account_expense_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5104010114').code)]),
+        'property_account_income_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4121040044').code)])
+        }"/>
+    </function>
+
+    <record id="product_template_5104010115" model="product.template">
+        <field name="default_code">5104010115</field>
+        <field name="name">ค่าวัสดุวิทยาศาสตร์</field>
+        <field name="categ_id" ref="product_category_consumable"/>
+        <field name="detailed_type">consu</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
+    </record>
+
+    <function model="product.template" name="write">
+        <value eval="ref('product_kmitl.product_template_5104010115')"/>
+        <value model="base" eval="{
+        'property_account_expense_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5104010115').code)]),
+        'property_account_income_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4121040044').code)])
+        }"/>
+    </function>
+
+    <record id="product_template_5104010198" model="product.template">
+        <field name="default_code">5104010198</field>
+        <field name="name">ค่าครุภัณฑ์ตำกว่าเกณฑ์-งบดำเนินงาน(วัสดุคงทนถาวร)</field>
+        <field name="categ_id" ref="product_category_consumable"/>
+        <field name="detailed_type">consu</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
+    </record>
+
+    <function model="product.template" name="write">
+        <value eval="ref('product_kmitl.product_template_5104010198')"/>
+        <value model="base" eval="{
+        'property_account_expense_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5104010198').code)]),
+        'property_account_income_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4121040044').code)])
+        }"/>
+    </function>
+
+    <record id="product_template_5104010199" model="product.template">
+        <field name="default_code">5104010199</field>
+        <field name="name">ค่าวัสดุอื่น</field>
+        <field name="categ_id" ref="product_category_consumable"/>
+        <field name="detailed_type">consu</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
+    </record>
+
+    <function model="product.template" name="write">
+        <value eval="ref('product_kmitl.product_template_5104010199')"/>
+        <value model="base" eval="{
+        'property_account_expense_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5104010199').code)]),
+        'property_account_income_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4121040044').code)])
+        }"/>
+    </function>
+
+    <record id="product_template_5107010271" model="product.template">
+        <field name="default_code">5107010271</field>
+        <field name="name">ค่าวัสดุอื่นๆ-โครงการวิจัย</field>
+        <field name="categ_id" ref="product_category_consumable"/>
+        <field name="detailed_type">consu</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
+    </record>
+
+    <function model="product.template" name="write">
+        <value eval="ref('product_kmitl.product_template_5107010271')"/>
+        <value model="base" eval="{
+        'property_account_expense_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5107010271').code)]),
+        'property_account_income_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4121040044').code)])
+        }"/>
+    </function>
+
+    <record id="product_template_5107010281" model="product.template">
+        <field name="default_code">5107010281</field>
+        <field name="name">ค่าวัสดุการศึกษา-โครงการวิจัย</field>
+        <field name="categ_id" ref="product_category_consumable"/>
+        <field name="detailed_type">consu</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
+    </record>
+
+    <function model="product.template" name="write">
+        <value eval="ref('product_kmitl.product_template_5107010281')"/>
+        <value model="base" eval="{
+        'property_account_expense_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5107010281').code)]),
+        'property_account_income_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4121040044').code)])
+        }"/>
+    </function>
+
+    <record id="product_template_5109100003" model="product.template">
+        <field name="default_code">5109100003</field>
+        <field name="name">ค่าวัสดุ - งานบริการ</field>
+        <field name="categ_id" ref="product_category_consumable"/>
+        <field name="detailed_type">consu</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
+    </record>
+
+    <function model="product.template" name="write">
+        <value eval="ref('product_kmitl.product_template_5109100003')"/>
+        <value model="base" eval="{
+        'property_account_expense_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5109100003').code)]),
+        'property_account_income_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4121040044').code)])
+        }"/>
+    </function>
+
+    <record id="product_template_5111000003" model="product.template">
+        <field name="default_code">5111000003</field>
+        <field name="name">ค่าวัสดุ-เบิกแทนหน่วยงานอื่น</field>
+        <field name="categ_id" ref="product_category_consumable"/>
+        <field name="detailed_type">consu</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        <field name="purchase_request_ok">True</field>
+    </record>
+
+    <function model="product.template" name="write">
+        <value eval="ref('product_kmitl.product_template_5111000003')"/>
+        <value model="base" eval="{
+        'property_account_expense_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5111000003').code)]),
+        'property_account_income_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4121040044').code)])
+        }"/>
+    </function>
+
+</odoo>

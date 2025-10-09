@@ -55,7 +55,7 @@
                 <div>
                     <select
                         class="form-select form-select-sm"
-                        t-model="state.filters.date_range_fy_id"
+                        t-model="state.filters.account_fiscal_year_id"
                         t-on-change="(e) => this.onFiscalYearChange(parseInt(e.target.value) || null)"
                     >
                         <option value="">ทุกปีงบประมาณ</option>

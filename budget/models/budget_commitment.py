@@ -137,7 +137,7 @@ class BudgetCommitment(models.Model):
         default="draft",
     )
 
-    date_range_fy_id = fields.Many2one(
+    account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="ปีงบประมาณ",
         required=True,
@@ -351,7 +351,7 @@ class BudgetCommitment(models.Model):
         "department_analytic_id",
         "source_analytic_id",
         "amount",
-        "date_range_fy_id",
+        "account_fiscal_year_id",
         "state",
     )
     def _compute_available_budget(self):
@@ -363,7 +363,7 @@ class BudgetCommitment(models.Model):
                 record.account_id,
                 record.activity_analytic_id,
                 record.fund_analytic_id,
-                record.date_range_fy_id
+                record.account_fiscal_year_id
             ]):
                 record.available_budget_amount = 0.0
                 record.budget_availability_status = 'insufficient'
@@ -383,7 +383,7 @@ class BudgetCommitment(models.Model):
                 # Get available budget amount
                 available = budget_controller.get_available_budget(
                     analytic_data,
-                    record.date_range_fy_id.id,
+                    record.account_fiscal_year_id.id,
                     record.company_id.id
                 )
 

@@ -7,7 +7,7 @@
         <field name="model">procurement.plan</field>
         <field name="inherit_id" ref="procurement_plan.view_procurement_plan_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='date_range_fy_id']" position="after">
+            <xpath expr="//field[@name='account_fiscal_year_id']" position="after">
                 <field name="activity_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" />
                 <field name="source_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" />
                 <field name="department_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" />
@@ -58,7 +58,7 @@
         <field name="model">procurement.plan</field>
         <field name="inherit_id" ref="procurement_plan.view_procurement_plan_search"/>
         <field name="arch" type="xml">
-            <xpath expr="//searchpanel/field[@name='date_range_fy_id']" position="after">
+            <xpath expr="//searchpanel/field[@name='account_fiscal_year_id']" position="after">
                 <field name="budget_account_id" icon="fa-book" enable_counters="1" />
                 <field name="source_analytic_id" icon="fa-money" enable_counters="1" />
                 <field name="fund_analytic_id" icon="fa-money" enable_counters="1" />

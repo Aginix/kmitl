@@ -12,13 +12,6 @@ class BudgetMoveLine(models.Model):
 
     operating_unit_id = fields.Many2one(
         comodel_name="operating.unit",
+        related="move_id.operating_unit_id",
+        string="Operating Unit",
     )
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        for vals in vals_list:
-            if vals.get("move_id", False):
-                move = self.env["budget.move"].browse(vals["move_id"])
-                if move.operating_unit_id:
-                    vals["operating_unit_id"] = move.operating_unit_id.id
-        return super().create(vals_list)
