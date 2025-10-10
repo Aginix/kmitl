@@ -34,12 +34,13 @@
                             <field name="payment_type"/>
                             <field name="approval_date" attrs="{'readonly': [('state','!=','done')]}"/>
                             <field name="operating_unit_id"/>
-                            <field name="company_id"/>
-                            <field name="currency_id"/>
+
                         </group>
                         <group>
-                            <field name="is_editable" readonly="1"/>
+                            <field name="is_editable" invisible="1" />
                             <field name="state" readonly="1"/>
+                            <field name="company_id"/>
+                            <field name="currency_id"/>
                         </group>
                     </group>
                     <notebook>
