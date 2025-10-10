@@ -8,8 +8,6 @@
     "category": "KMITL",
     'depends': ['purchase_request_department'],
     "data": [
-        "security/ir.model.access.csv",
-        "wizards/purchase_request_line_make_purchase_order.xml"
     ],
     'installable': True,
     'auto_install': False,
