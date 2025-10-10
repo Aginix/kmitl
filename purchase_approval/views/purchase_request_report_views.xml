@@ -15,12 +15,13 @@
         <field name="model">purchase.request.report</field>
         <field name="arch" type="xml">
             <form string="Purchase Request Report" create="1" edit="1">
-                <!-- <header>
-                    <button name="action_submit" string="Submit" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submit,done" />
+                    <!-- <button name="action_submit" string="Submit" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <button name="action_done" string="Approve" type="object" class="btn-success" attrs="{'invisible': [('state', '!=', 'submit')]}"/>
                     <button name="action_cancel" string="Cancel" type="object" class="btn-secondary" attrs="{'invisible': [('state', 'in', ['cancel','done'])]}"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,submit,done,cancel" statusbar_colors='{"done":"green","cancel":"red"}'/>
-                </header> -->
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submit,done,cancel" statusbar_colors='{"done":"green","cancel":"red"}'/> -->
+                </header>
                 <sheet>
                     <div class="oe_title">
                         <h1>
@@ -38,7 +39,6 @@
                         </group>
                         <group>
                             <field name="is_editable" invisible="1" />
-                            <field name="state" readonly="1"/>
                             <field name="company_id"/>
                             <field name="currency_id"/>
                         </group>
@@ -50,7 +50,6 @@
                                     <field name="name"/>
                                     <field name="date_start"/>
                                     <field name="requested_by"/>
-                                    <!-- <field name="amount_total" widget="monetary" options="{'currency_field': 'currency_id'}"/> -->
                                     <field name="state"/>
                                 </tree>
                             </field>

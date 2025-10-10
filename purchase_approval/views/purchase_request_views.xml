@@ -7,11 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//form/header" position="before">
                 <field name="is_required_approval" invisible="1" />
-                <!-- <field name="purchase_approval_count" invisible="1" /> -->
             </xpath>
-            <!-- <xpath expr="//button[@name='action_view_purchase_order']" position="before">
-                <button type="object" name="action_view_purchase_approval" class="oe_stat_button" attrs="{'invisible':[('purchase_approval_count', '=', 0)]}" icon="fa-file-contract" string="Purchase Approval" />
-            </xpath> -->
         </field>
     </record>
 
@@ -22,7 +18,7 @@
         <field name="arch" type="xml">
             <xpath expr="//tree" position="inside">
                 <header>
-                    <button name="action_open_request_report" type="object" class="oe_stat_button" string="Request Report">
+                    <button name="action_open_request_report" type="object" class="oe_stat_button" string="Create PA">
                     </button>
                 </header>
             </xpath>
