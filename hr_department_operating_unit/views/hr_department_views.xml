@@ -8,7 +8,18 @@
         <field name="inherit_id" ref="hr.view_department_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='parent_id']" position="after">
-              <field name="operating_unit_id"/>
+              <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_hr_department_tree" model="ir.ui.view">
+        <field name="name">view.hr.department.tree</field>
+        <field name="model">hr.department</field>
+        <field name="inherit_id" ref="hr.view_department_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_id']" position="after">
+              <field name="operating_unit_id" optional="hide" />
             </xpath>
         </field>
     </record>
