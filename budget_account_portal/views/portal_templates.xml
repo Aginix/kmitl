@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_budget_account" name="Budget Account Portal">
+        <t t-call="portal.portal_layout">
+            <div id="budget_account_portal" class="container mt16">
+                <div class="card-header bg-white">
+                    <h2>รายรับ (Revenue)</h2>
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>รหัสงบประมาณ</th>
+                                <th>ชื่อรายการ</th>
+                                <th>หมายเหตุ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="revenue_accounts" t-as="account">
+                                <tr t-attf-class="account-row #{'text-decoration-line-through ' if account.deprecated else ''}">
+                                    <td scope="row" t-out="account.code" t-attf-style="padding-left: #{16 * (account.hierarchy_level + 1)}px" />
+                                    <td t-out="account.name" />
+                                    <td>
+                                        <t t-if="account.deprecated">
+                                            <span class="badge text-bg-danger">ยกเลิกใช้งาน</span>
+                                        </t>
+                                        <t t-if="account.budgetable">
+                                            <div class="">✅ ระบุงบประมาณ</div>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="">❌ ระบุงบประมาณ</div>
+                                        </t>
+                                        <t t-if="account.procurement_plan">
+                                            <div class="">✅ แผนจัดซื้อจัดจ้าง</div>
+                                        </t>
+                                        <div t-out="account.note" />
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-4 card-header bg-white">
+                    <h2>รายจ่าย (Expense)</h2>
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>รหัสงบประมาณ</th>
+                                <th>ชื่อรายการ</th>
+                                <th>กองทุน</th>
+                                <th>หมายเหตุ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="expense_accounts" t-as="account">
+                                <tr t-attf-class="account-row #{'text-decoration-line-through ' if account.deprecated else ''}">
+                                    <td scope="row" t-out="account.code" t-attf-style="padding-left: #{16 * (account.hierarchy_level + 1)}px" />
+                                    <td t-out="account.name" />
+                                    <td>
+                                        <t t-foreach="account.fund_analytic_ids" t-as="fund">
+                                            <span class="badge text-bg-info ml-1" t-out="'[' + fund.code + '] ' + fund.name" />
+                                        </t>
+                                    </td>
+                                    <td>
+                                        <t t-if="account.deprecated">
+                                            <span class="badge text-bg-danger">ยกเลิกใช้งาน</span>
+                                        </t>
+                                        <t t-if="account.budgetable">
+                                            <div class="">✅ ระบุงบประมาณ</div>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="">❌ ระบุงบประมาณ</div>
+                                        </t>
+                                        <div t-out="account.note" />
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
