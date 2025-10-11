@@ -9,12 +9,6 @@ class PurchaseRequest(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
-
-            if vals.get("operating_unit_id"):
-                ou = self.env["operating.unit"].browse(vals["operating_unit_id"])
-                if ou.department_id:
-                    vals["department_id"] = ou.department_id.id
-
             fy_id = self.env["account.fiscal.year"].browse(vals.get("account_fiscal_year_id"))
             fiscal_year = fy_id.name[-2:] if fy_id else fields.Date.today().strftime("%y")
 
@@ -34,10 +28,4 @@ class PurchaseRequest(models.Model):
 
             vals['name'] = self.env['ir.sequence'].next_by_code(seq_code) or _('New')
 
-        records = super().create(vals_list)
-
-        for rec in records:
-            if rec.operating_unit_id and rec.operating_unit_id.department_id:
-                rec.department_id = rec.operating_unit_id.department_id.id
-
-        return records
+        return super().create(vals_list)
