@@ -2,10 +2,310 @@
 <odoo>
     <template id="portal_budget_account" name="Budget Account Portal">
         <t t-call="portal.portal_layout">
-            <div id="budget_account_portal" class="container mt16">
-                <div class="card-header bg-white">
-                    <h2>รายรับ (Revenue)</h2>
-                    <table class="table table-sm">
+            <div id="budget_accounts_portal" class="container mt16">
+                <h1>รหัสงบประมาณ</h1>
+                <div class="card bg-white">
+                    <div class="card">
+                        <div class="accordion accordion-flush" id="budget_accounts">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="sources-header">
+                                    <button
+                                        class="accordion-button collapsed"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#sources-collapse"
+                                        aria-expanded="false"
+                                        aria-controls="sources-collapse"
+                                    >
+                                        <span class="lead">แหล่งเงิน</span>
+                                    </button>
+                                </h2>
+                                <div
+                                    id="sources-collapse"
+                                    class="accordion-collapse collapse"
+                                    aria-labelledby="sources-header"
+                                >
+                                    <div class="accordion-body">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th
+                                                        scope="col"
+                                                        style="width: 140px"
+                                                    >
+                                                        รหัสงบประมาณ
+                                                    </th>
+                                                    <th scope="col">ชื่อรายการ</th>
+                                                    <th cope="col">หมายเหตุ</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t
+                                                    t-foreach="analytic_plan_sources"
+                                                    t-as="line"
+                                                >
+                                                    <tr
+                                                        t-attf-class="#{'text-decoration-line-through ' if not line.active else ''}"
+                                                    >
+                                                        <td
+                                                            class="text-center"
+                                                            scope="row"
+                                                            t-out="line.code"
+                                                            style="width: 140px"
+                                                        />
+                                                        <td
+                                                            t-out="line.name"
+                                                            t-attf-style="padding-left: #{20 * (line.hierarchy_level + 1)}px"
+                                                        />
+                                                        <td>
+                                                            <t t-if="not line.active">
+                                                                <span
+                                                                    class="badge text-bg-danger"
+                                                                    >ยกเลิกใช้งาน</span
+                                                                >
+                                                            </t>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="funds-header">
+                                    <button
+                                        class="accordion-button collapsed"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#funds-collapse"
+                                        aria-expanded="false"
+                                        aria-controls="funds-collapse"
+                                    >
+                                        <span class="lead">กองทุน</span>
+                                    </button>
+                                </h2>
+                                <div
+                                    id="funds-collapse"
+                                    class="accordion-collapse collapse"
+                                    aria-labelledby="funds-header"
+                                >
+                                    <div class="accordion-body">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th
+                                                        scope="col"
+                                                        style="width: 140px"
+                                                    >
+                                                        รหัสงบประมาณ
+                                                    </th>
+                                                    <th scope="col">ชื่อรายการ</th>
+                                                    <th cope="col">หมายเหตุ</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <t
+                                                    t-foreach="analytic_plan_funds"
+                                                    t-as="line"
+                                                >
+                                                    <tr
+                                                        t-attf-class="#{'text-decoration-line-through ' if not line.active else ''}"
+                                                    >
+                                                        <td
+                                                            class="text-center"
+                                                            scope="row"
+                                                            t-out="line.code"
+                                                            style="width: 140px"
+                                                        />
+                                                        <td
+                                                            t-out="line.name"
+                                                            t-attf-style="padding-left: #{20 * (line.hierarchy_level + 1)}px"
+                                                        />
+                                                        <td>
+                                                            <t t-if="not line.active">
+                                                                <span
+                                                                    class="badge text-bg-danger"
+                                                                    >ยกเลิกใช้งาน</span
+                                                                >
+                                                            </t>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="departments-header">
+                                    <button
+                                        class="accordion-button collapsed"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#departments-collapse"
+                                        aria-expanded="false"
+                                        aria-controls="departments-collapse"
+                                    >
+                                        <span class="lead">หน่วยงาน</span>
+                                    </button>
+                                </h2>
+                                <div
+                                    id="departments-collapse"
+                                    class="accordion-collapse collapse"
+                                    aria-labelledby="departments-header"
+                                >
+                                    <div class="accordion-body">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th
+                                                        scope="col"
+                                                        style="width: 140px"
+                                                    >
+                                                        รหัสงบประมาณ
+                                                    </th>
+                                                    <th scope="col">ชื่อรายการ</th>
+                                                    <th cope="col">หมายเหตุ</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                <t
+                                                    t-foreach="analytic_plan_departments"
+                                                    t-as="line"
+                                                >
+                                                    <tr
+                                                        t-attf-class="#{'text-decoration-line-through ' if not line.active else ''}"
+                                                    >
+                                                        <td
+                                                            class="text-center"
+                                                            scope="row"
+                                                            t-out="line.code"
+                                                            style="width: 140px"
+                                                        />
+                                                        <td
+                                                            t-out="line.name"
+                                                            t-attf-style="padding-left: #{20 * (line.hierarchy_level + 1)}px"
+                                                        />
+                                                        <td>
+                                                            <t t-if="not line.active">
+                                                                <span
+                                                                    class="badge text-bg-danger"
+                                                                    >ยกเลิกใช้งาน</span
+                                                                >
+                                                            </t>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="activities-header">
+                                    <button
+                                        class="accordion-button collapsed"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#activities-collapse"
+                                        aria-expanded="false"
+                                        aria-controls="activities-collapse"
+                                    >
+                                        <span class="lead"
+                                            >ด้าน/แผนงาน/กิจกรรม</span
+                                        >
+                                    </button>
+                                </h2>
+                                <div
+                                    id="activities-collapse"
+                                    class="accordion-collapse collapse"
+                                    aria-labelledby="activities-header"
+                                >
+                                    <div class="accordion-body">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th
+                                                        scope="col"
+                                                        style="width: 140px"
+                                                    >
+                                                        รหัสงบประมาณ
+                                                    </th>
+                                                    <th scope="col">ชื่อรายการ</th>
+                                                    <th cope="col">หมายเหตุ</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                <t
+                                                    t-foreach="analytic_plan_activities"
+                                                    t-as="line"
+                                                >
+                                                    <tr
+                                                        t-attf-class="#{'text-decoration-line-through ' if not line.active else ''}"
+                                                    >
+                                                        <td
+                                                            class="text-center"
+                                                            scope="row"
+                                                            t-out="line.code"
+                                                            style="width: 140px"
+                                                        />
+                                                        <td
+                                                            t-out="line.name"
+                                                            t-attf-style="padding-left: #{20 * (line.hierarchy_level + 1)}px"
+                                                        />
+                                                        <td>
+                                                            <t t-if="not line.active">
+                                                                <span
+                                                                    class="badge text-bg-danger"
+                                                                    >ยกเลิกใช้งาน</span
+                                                                >
+                                                            </t>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <t
+                                t-call="budget_account_portal.portal_revenue_budget_accounts_table"
+                            />
+
+                            <t
+                                t-call="budget_account_portal.portal_expense_budget_accounts_table"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_revenue_budget_accounts_table">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="revenue-header">
+                <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#revenue-collapse"
+                    aria-expanded="false"
+                    aria-controls="revenue-collapse"
+                >
+                    <span class="lead">ประเภทงบรายรับ</span>
+                </button>
+            </h2>
+            <div
+                id="revenue-collapse"
+                class="accordion-collapse collapse"
+                aria-labelledby="revenue-header"
+            >
+                <div class="accordion-body">
+                    <table class="table table-sm" id="revenues">
                         <thead>
                             <tr>
                                 <th>รหัสงบประมาณ</th>
@@ -15,12 +315,20 @@
                         </thead>
                         <tbody>
                             <t t-foreach="revenue_accounts" t-as="account">
-                                <tr t-attf-class="account-row #{'text-decoration-line-through ' if account.deprecated else ''}">
-                                    <td scope="row" t-out="account.code" t-attf-style="padding-left: #{16 * (account.hierarchy_level + 1)}px" />
+                                <tr
+                                    t-attf-class="account-row #{'text-decoration-line-through ' if account.deprecated else ''}"
+                                >
+                                    <td
+                                        scope="row"
+                                        t-out="account.code"
+                                        t-attf-style="padding-left: #{16 * (account.hierarchy_level + 1)}px"
+                                    />
                                     <td t-out="account.name" />
                                     <td>
                                         <t t-if="account.deprecated">
-                                            <span class="badge text-bg-danger">ยกเลิกใช้งาน</span>
+                                            <span class="badge text-bg-danger"
+                                                >ยกเลิกใช้งาน</span
+                                            >
                                         </t>
                                         <t t-if="account.budgetable">
                                             <div class="">✅ ระบุงบประมาณ</div>
@@ -38,9 +346,31 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-4 card-header bg-white">
-                    <h2>รายจ่าย (Expense)</h2>
-                    <table class="table table-sm">
+            </div>
+        </div>
+    </template>
+
+    <template id="portal_expense_budget_accounts_table">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="expense-header">
+                <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#expense-collapse"
+                    aria-expanded="false"
+                    aria-controls="expense-collapse"
+                >
+                    <span class="lead">ประเภทงบรายจ่าย</span>
+                </button>
+            </h2>
+            <div
+                id="expense-collapse"
+                class="accordion-collapse collapse"
+                aria-labelledby="expense-header"
+            >
+                <div class="accordion-body">
+                    <table class="table table-sm" id="expenses">
                         <thead>
                             <tr>
                                 <th>รหัสงบประมาณ</th>
@@ -51,17 +381,31 @@
                         </thead>
                         <tbody>
                             <t t-foreach="expense_accounts" t-as="account">
-                                <tr t-attf-class="account-row #{'text-decoration-line-through ' if account.deprecated else ''}">
-                                    <td scope="row" t-out="account.code" t-attf-style="padding-left: #{16 * (account.hierarchy_level + 1)}px" />
+                                <tr
+                                    t-attf-class="account-row #{'text-decoration-line-through ' if account.deprecated else ''}"
+                                >
+                                    <td
+                                        scope="row"
+                                        t-out="account.code"
+                                        t-attf-style="padding-left: #{16 * (account.hierarchy_level + 1)}px"
+                                    />
                                     <td t-out="account.name" />
                                     <td>
-                                        <t t-foreach="account.fund_analytic_ids" t-as="fund">
-                                            <span class="badge text-bg-info ml-1" t-out="'[' + fund.code + '] ' + fund.name" />
+                                        <t
+                                            t-foreach="account.fund_analytic_ids"
+                                            t-as="fund"
+                                        >
+                                            <span
+                                                class="badge text-bg-info ml-1"
+                                                t-out="'[' + fund.code + '] ' + fund.name"
+                                            />
                                         </t>
                                     </td>
                                     <td>
                                         <t t-if="account.deprecated">
-                                            <span class="badge text-bg-danger">ยกเลิกใช้งาน</span>
+                                            <span class="badge text-bg-danger"
+                                                >ยกเลิกใช้งาน</span
+                                            >
                                         </t>
                                         <t t-if="account.budgetable">
                                             <div class="">✅ ระบุงบประมาณ</div>
@@ -77,6 +421,6 @@
                     </table>
                 </div>
             </div>
-        </t>
+        </div>
     </template>
 </odoo>

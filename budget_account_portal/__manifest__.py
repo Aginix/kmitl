@@ -8,7 +8,9 @@
     "depends": ["budget", "web", "portal", "procurement_plan_budget"],
     "data": ["views/portal_templates.xml"],
     "assets": {
-        "web.assets_backend": ["budget_account_portal/static/src/**/*"],
+        "web.assets_frontend": [
+            "/budget_account_portal/static/src/scss/portal.scss"
+        ],
     },
     "application": False,
     "installable": True,
