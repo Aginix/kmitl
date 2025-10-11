@@ -19,7 +19,7 @@
         <field name="inherit_id" ref="hr.view_department_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='parent_id']" position="after">
-              <field name="operating_unit_id" optional="hide" />
+              <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit" optional="hide" />
             </xpath>
         </field>
     </record>
