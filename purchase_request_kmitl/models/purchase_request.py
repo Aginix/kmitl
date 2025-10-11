@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
-
 from datetime import datetime
 
-from odoo import api, fields, models
+from odoo import Command, api, fields, models
 
 _logger = logging.getLogger(__name__)
 
@@ -67,7 +66,13 @@ class PurchaseRequest(models.Model):
         tracking=True,
         readonly=False,
     )
-
+    product_id = fields.Many2one(
+        comodel_name="product.product",
+        string="Product",
+        domain="[('purchase_request_ok', '=', True)]",
+        related=False,
+        readonly=False,
+    )
     hide_create_po_button = fields.Boolean(compute="_hide_create_po_button")
 
     @api.depends_context('uid')
@@ -81,3 +86,20 @@ class PurchaseRequest(models.Model):
             rec.hide_create_po_button = True
             if rec.state in ('approved', 'in_progress') and rec.purchase_count == 0:
                 rec.hide_create_po_button = False
+
+    @api.onchange("product_id")
+    def _onchange_product_id_create_line(self):
+        product = self.product_id
+        if not product:
+            return
+
+        if self.line_ids:
+            for line in self.line_ids:
+                line.product_id = product
+        else:
+            self.line_ids = [Command.create({
+                'product_id': product,
+                'name': product.display_name,
+                'product_uom_id': product.uom_id.id,
+                'product_qty': 1.0,
+            })]

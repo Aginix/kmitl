@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Purchase Request Budget',
+    'name': 'Hr Department Operating Unit',
     'version': '16.0.1.0.0',
-    'summary': """ Purchase Request Budget Summary """,
+    'summary': """ Hr Department Operating Unit Summary """,
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['l10n_th_gov_purchase_request', 'budget', 'product_budget'],
+    'depends': ['hr', 'operating_unit'],
     "data": [
-        "views/purchase_request_views.xml",
+        "security/security.xml",
+        "views/hr_department_views.xml"
     ],
     'installable': True,
     'auto_install': False,

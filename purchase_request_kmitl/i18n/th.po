@@ -607,7 +607,7 @@ msgstr "หน่วยงาน"
 #: model:ir.model.fields,field_description:purchase_request_to_requisition.field_purchase_request_line_make_purchase_requisition_item__name
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.purchase_type_view_form
 msgid "Description"
-msgstr "รายละเอียด"
+msgstr "ชื่อรายการ"
 
 #. module: purchase_request
 #. odoo-python
