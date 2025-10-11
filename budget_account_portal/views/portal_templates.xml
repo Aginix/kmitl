@@ -26,12 +26,13 @@
                                     aria-labelledby="sources-header"
                                 >
                                     <div class="accordion-body">
-                                        <table class="table table-sm">
+                                        <table class="table table-sm table-hover">
                                             <thead>
                                                 <tr>
                                                     <th
                                                         scope="col"
-                                                        style="width: 140px"
+                                                        style="width: 160px"
+                                                        class="text-center"
                                                     >
                                                         รหัสงบประมาณ
                                                     </th>
@@ -51,11 +52,11 @@
                                                             class="text-center"
                                                             scope="row"
                                                             t-out="line.code"
-                                                            style="width: 140px"
+                                                            style="width: 160px"
                                                         />
                                                         <td
                                                             t-out="line.name"
-                                                            t-attf-style="padding-left: #{20 * (line.hierarchy_level + 1)}px"
+                                                            t-attf-style="padding-left: #{20 * (line.hierarchy_level)}px"
                                                         />
                                                         <td>
                                                             <t t-if="not line.active">
@@ -91,12 +92,13 @@
                                     aria-labelledby="funds-header"
                                 >
                                     <div class="accordion-body">
-                                        <table class="table table-sm">
+                                        <table class="table table-sm table-hover">
                                             <thead>
                                                 <tr>
                                                     <th
                                                         scope="col"
-                                                        style="width: 140px"
+                                                        style="width: 160px"
+                                                        class="text-center"
                                                     >
                                                         รหัสงบประมาณ
                                                     </th>
@@ -116,11 +118,11 @@
                                                             class="text-center"
                                                             scope="row"
                                                             t-out="line.code"
-                                                            style="width: 140px"
+                                                            style="width: 160px"
                                                         />
                                                         <td
                                                             t-out="line.name"
-                                                            t-attf-style="padding-left: #{20 * (line.hierarchy_level + 1)}px"
+                                                            t-attf-style="padding-left: #{20 * (line.hierarchy_level)}px"
                                                         />
                                                         <td>
                                                             <t t-if="not line.active">
@@ -156,12 +158,13 @@
                                     aria-labelledby="departments-header"
                                 >
                                     <div class="accordion-body">
-                                        <table class="table table-sm">
+                                        <table class="table table-sm table-hover">
                                             <thead>
                                                 <tr>
                                                     <th
                                                         scope="col"
-                                                        style="width: 140px"
+                                                        style="width: 160px"
+                                                        class="text-center"
                                                     >
                                                         รหัสงบประมาณ
                                                     </th>
@@ -182,11 +185,11 @@
                                                             class="text-center"
                                                             scope="row"
                                                             t-out="line.code"
-                                                            style="width: 140px"
+                                                            style="width: 160px"
                                                         />
                                                         <td
                                                             t-out="line.name"
-                                                            t-attf-style="padding-left: #{20 * (line.hierarchy_level + 1)}px"
+                                                            t-attf-style="padding-left: #{20 * (line.hierarchy_level)}px"
                                                         />
                                                         <td>
                                                             <t t-if="not line.active">
@@ -213,9 +216,7 @@
                                         aria-expanded="false"
                                         aria-controls="activities-collapse"
                                     >
-                                        <span class="lead"
-                                            >ด้าน/แผนงาน/กิจกรรม</span
-                                        >
+                                        <span class="lead">ด้าน/แผนงาน/กิจกรรม</span>
                                     </button>
                                 </h2>
                                 <div
@@ -224,12 +225,13 @@
                                     aria-labelledby="activities-header"
                                 >
                                     <div class="accordion-body">
-                                        <table class="table table-sm">
+                                        <table class="table table-sm table-hover">
                                             <thead>
                                                 <tr>
                                                     <th
                                                         scope="col"
-                                                        style="width: 140px"
+                                                        style="width: 160px"
+                                                        class="text-center"
                                                     >
                                                         รหัสงบประมาณ
                                                     </th>
@@ -250,11 +252,11 @@
                                                             class="text-center"
                                                             scope="row"
                                                             t-out="line.code"
-                                                            style="width: 140px"
+                                                            style="width: 160px"
                                                         />
                                                         <td
                                                             t-out="line.name"
-                                                            t-attf-style="padding-left: #{20 * (line.hierarchy_level + 1)}px"
+                                                            t-attf-style="padding-left: #{20 * (line.hierarchy_level)}px"
                                                         />
                                                         <td>
                                                             <t t-if="not line.active">
@@ -305,10 +307,12 @@
                 aria-labelledby="revenue-header"
             >
                 <div class="accordion-body">
-                    <table class="table table-sm" id="revenues">
+                    <table class="table table-sm table-hover" id="revenues">
                         <thead>
                             <tr>
-                                <th>รหัสงบประมาณ</th>
+                                <th class="text-center" style="width: 160px">
+                                    รหัสงบประมาณ
+                                </th>
                                 <th>ชื่อรายการ</th>
                                 <th>หมายเหตุ</th>
                             </tr>
@@ -319,11 +323,15 @@
                                     t-attf-class="account-row #{'text-decoration-line-through ' if account.deprecated else ''}"
                                 >
                                     <td
+                                        class="text-center"
                                         scope="row"
                                         t-out="account.code"
-                                        t-attf-style="padding-left: #{16 * (account.hierarchy_level + 1)}px"
+                                        style="width: 160px"
                                     />
-                                    <td t-out="account.name" />
+                                    <td
+                                        t-out="account.name"
+                                        t-attf-style="padding-left: #{20 * (account.hierarchy_level)}px"
+                                    />
                                     <td>
                                         <t t-if="account.deprecated">
                                             <span class="badge text-bg-danger"
@@ -370,10 +378,12 @@
                 aria-labelledby="expense-header"
             >
                 <div class="accordion-body">
-                    <table class="table table-sm" id="expenses">
+                    <table class="table table-sm table-hover" id="expenses">
                         <thead>
                             <tr>
-                                <th>รหัสงบประมาณ</th>
+                                <th scope="col"
+                                                        style="width: 160px"
+                                                        class="text-center">รหัสงบประมาณ</th>
                                 <th>ชื่อรายการ</th>
                                 <th>กองทุน</th>
                                 <th>หมายเหตุ</th>
@@ -384,12 +394,11 @@
                                 <tr
                                     t-attf-class="account-row #{'text-decoration-line-through ' if account.deprecated else ''}"
                                 >
+                                    <td class="text-center" scope="row" t-out="account.code" style="width: 160px" />
                                     <td
-                                        scope="row"
-                                        t-out="account.code"
-                                        t-attf-style="padding-left: #{16 * (account.hierarchy_level + 1)}px"
+                                        t-out="account.name"
+                                        t-attf-style="padding-left: #{20 * (account.hierarchy_level)}px"
                                     />
-                                    <td t-out="account.name" />
                                     <td>
                                         <t
                                             t-foreach="account.fund_analytic_ids"
