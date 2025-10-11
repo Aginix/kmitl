@@ -16,6 +16,7 @@ class HrDepartment(models.Model):
         default=lambda self: (self.env["res.users"].operating_unit_default_get()),
         compute="_compute_operating_unit",
         readonly=False,
+        recursive=True,
         store=True
     )
 
