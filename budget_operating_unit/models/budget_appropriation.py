@@ -17,3 +17,9 @@ class BudgetAppropriation(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
+
+    def budget_move_vals(self):
+        res = super().budget_move_vals()
+        if self.operating_unit_id:
+            res['operating_unit_id'] = self.operating_unit_id.id
+        return res

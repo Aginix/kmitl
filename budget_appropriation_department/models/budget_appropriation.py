@@ -19,3 +19,9 @@ class BudgetAppropriation(models.Model):
         return department_id
 
     department_id = fields.Many2one(string="Department", comodel_name="hr.department", default=lambda self: self._default_department())
+
+    def budget_move_vals(self):
+        res = super().budget_move_vals()
+        if self.department_id:
+            res['department_id'] = self.department_id.id
+        return res

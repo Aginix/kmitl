@@ -42,13 +42,15 @@
                 <field name="budget_type" invisible="1" />
                 <sheet>
                     <div class="oe_title">
+                        <span class="o_form_label" attrs="{'invisible': [('budget_type','!=', 'expense')]}">Budget Expense </span>
+                        <span class="o_form_label" attrs="{'invisible': [('budget_type','!=', 'revenue')]}">Budget Revenue </span>
                         <h1>
                             <field name="name" readonly="1" />
                         </h1>
                     </div>
                     <group>
                         <group string="ข้อมูลทั่วไป">
-                            <field name="date" required="1" />
+                            <field name="date" invisible="1" />
                             <field name="user_id" widget="many2one_avatar_user" required="1" />
                         </group>
                         <group string="มิติบัญชี">
@@ -130,8 +132,12 @@
                         <page name="extra" string="Extra Info">
                             <group>
                                 <group>
+
                                     <field name="ref" />
                                     <field name="note" />
+                                </group>
+                                <group>
+                                    <field name="create_date" />
                                 </group>
                             </group>
                         </page>
