@@ -19,12 +19,7 @@
 
                 <field name="consumed_amount" sum="Consumed Amount" optional="show" />
                 <field name="remaining_amount" sum="Remaining Amount" optional="show" />
-                <field name="state" widget="badge"
-                       decoration-success="state == 'done'"
-                       decoration-info="state == 'reserved'"
-                       decoration-muted="state == 'obligated'"
-                       decoration-warning="state == 'draft'"
-                       decoration-danger="state == 'cancel'"/>
+                <field name="state" widget="badge" decoration-success="state == 'done'" decoration-info="state == 'reserved'" decoration-muted="state == 'obligated'" decoration-warning="state == 'draft'" decoration-danger="state == 'cancel'"/>
                 <field name="user_id" widget="many2one_avatar_user" optional="show" />
             </tree>
         </field>
@@ -37,21 +32,12 @@
         <field name="arch" type="xml">
             <form string="Budget Commitment">
                 <header>
-                    <button name="action_check_budget_availability" string="Check Budget" type="object"
-                            class="btn-info" attrs="{'invisible': [('state', '!=', 'draft')]}"
-                            help="Check budget availability for this commitment"/>
-                    <button name="action_reserve" string="Reserve Budget" type="object"
-                            class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                    <button name="action_obligate" string="Obligate Budget" type="object"
-                            class="btn-primary" attrs="{'invisible': [('state', '!=', 'reserved')]}"
-                            help="Mark this commitment as obligated - firm commitment"/>
-                    <button name="action_done" string="Mark as Done" type="object"
-                            attrs="{'invisible': [('state', '!=', 'obligated')]}"
-                            help="Close this commitment and release any remaining budget"/>
-                    <button name="action_cancel" string="Cancel" type="object"
-                            attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"/>
-                    <button name="action_reset_to_draft" string="Reset to Draft" type="object"
-                            attrs="{'invisible': [('state', 'not in', ['cancel'])]}"/>
+                    <button name="action_check_budget_availability" string="Check Budget" type="object" class="btn-info" attrs="{'invisible': [('state', '!=', 'draft')]}" help="Check budget availability for this commitment"/>
+                    <button name="action_reserve" string="Reserve Budget" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_obligate" string="Obligate Budget" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'reserved')]}" help="Mark this commitment as obligated - firm commitment"/>
+                    <button name="action_done" string="Mark as Done" type="object" attrs="{'invisible': [('state', '!=', 'obligated')]}" help="Close this commitment and release any remaining budget"/>
+                    <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"/>
+                    <button name="action_reset_to_draft" string="Reset to Draft" type="object" attrs="{'invisible': [('state', 'not in', ['cancel'])]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,reserved,obligated,done"/>
                 </header>
 
@@ -92,27 +78,30 @@
                             <field name="remaining_amount" widget="monetary" readonly="1"/>
                         </group>
                         <group attrs="{'invisible': [('state', '!=', 'draft')]}">
-                            <field name="available_budget_amount" widget="monetary"
-                                   decoration-danger="budget_availability_status == 'insufficient'"
-                                   decoration-warning="budget_availability_status == 'warning'"
-                                   decoration-success="budget_availability_status == 'sufficient'"/>
-                            <field name="budget_availability_status" widget="badge"
-                                   decoration-danger="budget_availability_status == 'insufficient'"
-                                   decoration-warning="budget_availability_status == 'warning'"
-                                   decoration-success="budget_availability_status == 'sufficient'"/>
+                            <field name="available_budget_amount" widget="monetary" decoration-danger="budget_availability_status == 'insufficient'" decoration-warning="budget_availability_status == 'warning'" decoration-success="budget_availability_status == 'sufficient'"/>
+                            <field name="budget_availability_status" widget="badge" decoration-danger="budget_availability_status == 'insufficient'" decoration-warning="budget_availability_status == 'warning'" decoration-success="budget_availability_status == 'sufficient'"/>
                             <field name="budget_availability_percentage" widget="percentage"/>
                         </group>
                     </group>
 
-                    <group string="Additional Information">
-                        <group>
-
-                            <field name="description" placeholder="Commitment description..."/>
-                        </group>
-                        <group>
-                            <field name="notes" placeholder="Additional notes..."/>
-                        </group>
-                    </group>
+                    <notebook>
+                        <page name="description" string="Description">
+                            <group>
+                                <group>
+                                    <field name="description" placeholder="Commitment description..."/>
+                                </group>
+                                <group>
+                                    <field name="notes" placeholder="Additional notes..."/>
+                                </group>
+                            </group>
+                        </page>
+                        <page name="extra" string="Extra Info">
+                            <group>
+                                <group></group>
+                                <group></group>
+                            </group>
+                        </page>
+                    </notebook>
                 </sheet>
 
                 <div class="oe_chatter">

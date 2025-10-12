@@ -96,7 +96,7 @@ class BudgetAppropriation(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
-    note = fields.Char(
+    note = fields.Text(
         readonly=False,
         tracking=True,
         states=READONLY_STATES,

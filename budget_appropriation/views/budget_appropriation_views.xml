@@ -50,8 +50,6 @@
                         <group string="ข้อมูลทั่วไป">
                             <field name="date" required="1" />
                             <field name="user_id" widget="many2one_avatar_user" required="1" />
-                            <field name="ref" />
-                            <field name="note" />
                         </group>
                         <group string="มิติบัญชี">
                             <field name="account_fiscal_year_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
@@ -128,6 +126,14 @@
                                     </button>
                                 </div>
                             </div>
+                        </page>
+                        <page name="extra" string="Extra Info">
+                            <group>
+                                <group>
+                                    <field name="ref" />
+                                    <field name="note" />
+                                </group>
+                            </group>
                         </page>
                     </notebook>
 

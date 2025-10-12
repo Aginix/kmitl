@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <!-- View budget.move View Tree -->
     <record id="view_budget_move_tree" model="ir.ui.view">
         <field name="name">view.budget.move.tree</field>
@@ -13,6 +12,7 @@
                 <field name="budget_type" />
                 <field name="move_type" />
                 <field name="source_analytic_id" />
+                <field name="user_id" optional="hide" />
                 <field
                     name="state"
                     widget="badge"
@@ -78,8 +78,13 @@
                 <field name="budget_type" invisible="1" />
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button class="oe_stat_button" type="object" name="action_view_commitment" icon="fa-handshake-o"
-                                attrs="{'invisible': [('commitment_id', '=', False)]}">
+                        <button
+                            class="oe_stat_button"
+                            type="object"
+                            name="action_view_commitment"
+                            icon="fa-handshake-o"
+                            attrs="{'invisible': [('commitment_id', '=', False)]}"
+                        >
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_text">View</span>
                                 <span class="o_stat_text">Commitment</span>
@@ -88,8 +93,7 @@
                     </div>
 
                     <div class="oe_title">
-                        <span class="o_form_label">
-                        </span>
+                        <span class="o_form_label"> </span>
                         <h1>
                             <field name="name" readonly="1" />
                         </h1>
@@ -131,10 +135,13 @@
                         <page name="line_ids" string="รายการงบประมาณ">
                             <field
                                 name="line_ids"
-                                style="max-width: 100%; display: block;"
+                                style="max-width: 100%; display: block"
                             >
                                 <tree>
-                                    <field name="account_fiscal_year_id" invisible="1" />
+                                    <field
+                                        name="account_fiscal_year_id"
+                                        invisible="1"
+                                    />
                                     <field name="move_id" invisible="1" />
                                     <field
                                         name="department_analytic_id"
@@ -160,13 +167,16 @@
                                 </tree>
                             </field>
                         </page>
-                        <page name="additional_info" string="Additional Info">
+                        <page name="extra" string="Extra Info">
                             <group>
-                                <field
-                                    name="commitment_id"
-                                    options='{"no_create": True, "no_create_edit": True}'
-                                    domain="[('state', '=', 'reserved'), ('account_fiscal_year_id', '=', account_fiscal_year_id), ('source_analytic_id', '=', source_analytic_id)]"
-                                />
+                                <group>
+                                    <field
+                                        name="commitment_id"
+                                        options='{"no_create": True, "no_create_edit": True}'
+                                        domain="[('state', '=', 'reserved'), ('account_fiscal_year_id', '=', account_fiscal_year_id), ('source_analytic_id', '=', source_analytic_id)]"
+                                    />
+                                </group>
+                                <group></group>
                             </group>
                         </page>
                     </notebook>
@@ -221,10 +231,13 @@
             <form string="Budget Move Line">
                 <sheet>
                     <group>
-                        <field name="account_fiscal_year_id" readonly="1" invisible="1" />
+                        <field
+                            name="account_fiscal_year_id"
+                            readonly="1"
+                            invisible="1"
+                        />
                         <field name="move_id" readonly="1" invisible="1" />
                         <field name="source_analytic_id" readonly="1" invisible="1" />
-                        <field name="hide_unallocated_balance" readonly="1" invisible="1" />
                         <field name="budget_type" invisible="1" />
                         <field
                             name="department_analytic_id"
@@ -251,7 +264,6 @@
                             domain="[('budget_type', '=', budget_type), ('budgetable', '=', True), '|', ('fund_analytic_ids', '=', False), ('fund_analytic_ids', 'in', [fund_analytic_id])]"
                         />
                         <field name="balance" />
-                        <field name="unallocated_balance" attrs="{'invisible': [('hide_unallocated_balance', '=', True)]}" />
                         <field name="note" />
                         <!-- Hidden fields for backend use -->
                         <field name="debit" invisible="1" />
@@ -351,9 +363,7 @@
         <field name="domain">[]</field>
         <field name="context">{}</field>
         <field name="help" type="html">
-            <p class="oe_view_nocontent_create">
-                ไม่มีข้อมูลรายการบันทึกงบประมาณ
-            </p>
+            <p class="oe_view_nocontent_create">ไม่มีข้อมูลรายการบันทึกงบประมาณ</p>
         </field>
     </record>
     <record id="action_budget_move_tree" model="ir.actions.act_window.view">
@@ -378,9 +388,7 @@
         <field name="domain">[]</field>
         <field name="context">{}</field>
         <field name="help" type="html">
-            <p class="oe_view_nocontent_create">
-                ไม่มีข้อมูลรายการบันทึกงบประมาณ
-            </p>
+            <p class="oe_view_nocontent_create">ไม่มีข้อมูลรายการบันทึกงบประมาณ</p>
         </field>
     </record>
 </odoo>
