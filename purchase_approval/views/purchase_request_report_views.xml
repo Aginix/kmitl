@@ -6,6 +6,9 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
+                <field name="payment_type"/>
+                <field name="state"/>
+                <field name="operating_unit_id"/>
             </tree>
         </field>
     </record>
@@ -61,7 +64,7 @@
                 </sheet>
                 <footer>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
-                    <button string="Save" type="object" name="write" class="btn-primary" attrs="{'invisible': [('is_editable','=',False)]}"/>
+                    <button string="Save" type="object" name="action_save_changes" class="btn-primary" attrs="{'invisible': [('is_editable','=',False)]}"/>
                 </footer>
             </form>
         </field>

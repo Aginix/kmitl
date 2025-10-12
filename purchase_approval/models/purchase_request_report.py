@@ -23,9 +23,10 @@ class PurchaseRequestReport(models.Model):
     approval_date = fields.Datetime('Approval Date', tracking=True)
     state = fields.Selection(selection=_STATES, string='Status', default='draft', tracking=True)
     payment_type = fields.Selection([
-        ('normal', 'Normal'),
-        ('cash_advance', 'Cash Advance')
-    ], string='Payment Type', default='normal', required=True, tracking=True)
+        ("direct", "Direct paid"),
+        ("loan", "Loan"),
+        ("prepaid", "Prepaid")
+    ])
     operating_unit_id = fields.Many2one('operating.unit', string='Operating Unit', tracking=True)
     company_id = fields.Many2one(
         'res.company', string='Company', required=True, readonly=True, states={'draft': [('readonly', False)]}, default=lambda self: self.env.company, tracking=True
@@ -36,3 +37,9 @@ class PurchaseRequestReport(models.Model):
     def _compute_is_editable(self):
         for rec in self:
             rec.is_editable = rec.state in ['draft']
+
+    def action_save_changes(self):
+        for rec in self:
+            rec.write({})
+
+        return {'type': 'ir.actions.act_window_close'}

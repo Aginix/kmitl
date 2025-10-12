@@ -19,38 +19,52 @@ class PurchaseRequest(models.Model):
             rec.is_required_approval = rec.estimated_cost <= 100000
 
     def action_open_request_report(self):
-        """Create one Purchase Request Report from selected requests"""
         if not self:
             raise UserError(_("No requests selected."))
 
-        # สร้างชื่อรวม
-        if len(self) == 1:
-            name = f"Report for {self.name}"
-        else:
-            name = f"Combined Report ({len(self)} requests)"
+        # คัดเฉพาะ request ที่ approved เท่านั้น
+        approved_requests = self.filtered(lambda r: r.state == 'approved')
+        if not approved_requests:
+            raise UserError(_("No approved requests selected."))
 
-        # ตรวจสอบ company และ currency ให้เหมือนกัน (optional)
-        companies = self.mapped('company_id')
+        # ใช้ payment_type ของตัวแรกเป็นหลัก
+        main_payment_type = approved_requests[0].payment_type
+
+        # คัดเฉพาะตัวที่ payment_type ตรงกัน
+        valid_requests = approved_requests.filtered(lambda r: r.payment_type == main_payment_type)
+        if not valid_requests:
+            raise UserError(_("No requests with the same payment type as the first one."))
+
+        companies = valid_requests.mapped('company_id')
         if len(companies) > 1:
             raise UserError(_("Please select requests from the same company."))
 
-        currencies = self.mapped('currency_id')
+        currencies = valid_requests.mapped('currency_id')
         if len(currencies) > 1:
             raise UserError(_("Please select requests with the same currency."))
 
-        seq_name = self.env['ir.sequence'].next_by_code('purchase.order.approval')
+        seq_name = self.env['ir.sequence'].next_by_code('purchase.order.approval') or _('New Report')
+
         # สร้าง report เดียว
         report = self.env['purchase.request.report'].create({
             'name': seq_name,
+            'payment_type': main_payment_type,
+            'operating_unit_id': valid_requests[0].operating_unit_id.id,
             'company_id': companies.id if companies else self.env.company.id,
             'currency_id': currencies.id if currencies else self.env.company.currency_id.id,
-            'request_ids': [(6, 0, self.ids)],
+            'request_ids': [(6, 0, valid_requests.ids)],
         })
 
-        # link กลับแต่ละ request
-        self.write({'report_id': report.id})
+        valid_requests.write({'report_id': report.id})
 
-        # เปิดฟอร์ม report ที่สร้าง
+        # แจ้งเตือนถ้ามีบาง request ถูกข้าม
+        skipped = self - valid_requests
+        if skipped:
+            msg = _(
+                "%d requests were skipped because they are not approved or have a different payment type."
+            ) % len(skipped)
+            report.message_post(body=msg)
+
         return {
             'type': 'ir.actions.act_window',
             'name': _('Purchase Request Report'),
