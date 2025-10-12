@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 
 
 class HrDepartment(models.Model):
-    _inherit = 'hr.department'
+    _inherit = "hr.department"
 
     def name_get(self):
         res = []
