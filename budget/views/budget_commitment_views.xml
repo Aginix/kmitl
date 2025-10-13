@@ -123,7 +123,6 @@
         <field name="arch" type="xml">
             <search string="Budget Commitments">
                 <field name="name"/>
-                <field name="ref"/>
                 <field name="account_id"/>
                 <field name="user_id"/>
                 <field name="account_fiscal_year_id"/>
@@ -141,14 +140,13 @@
                 <group expand="0" string="Group By">
                     <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
                     <filter string="Budget Account" name="group_account" context="{'group_by': 'account_id'}"/>
-                    <filter string="Activity" name="group_activity" context="{'group_by': 'activity_analytic_id'}"/>
-                    <filter string="Department" name="group_department" context="{'group_by': 'department_analytic_id'}"/>
                     <filter string="Fund" name="group_fund" context="{'group_by': 'fund_analytic_id'}"/>
                     <filter string="Source" name="group_source" context="{'group_by': 'source_analytic_id'}"/>
                     <filter string="Fiscal Year" name="group_fy" context="{'group_by': 'account_fiscal_year_id'}"/>
                     <filter string="Responsible User" name="group_user" context="{'group_by': 'user_id'}"/>
                 </group>
                 <searchpanel>
+                    <field name="source_analytic_id" icon="fa-money" />
                     <field name="account_id" icon="fa-book" enable_counters="1" />
                 </searchpanel>
             </search>
