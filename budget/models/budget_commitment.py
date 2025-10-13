@@ -82,7 +82,7 @@ class BudgetCommitment(models.Model):
 
     _name = "budget.commitment"
     _description = "Budget Commitment"
-    _inherit = ["analytic.distribution.mixin", "mail.thread", "mail.activity.mixin"]
+    _inherit = ["analytic.mixin", "mail.thread", "mail.activity.mixin"]
     _order = "date desc, name desc, id desc"
     _rec_names_search = ["name", "ref"]
 
@@ -187,42 +187,73 @@ class BudgetCommitment(models.Model):
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="กิจกรรม",
-        required=True,
-        tracking=True,
+        compute="_compute_analytic_id",
+        inverse="_inverse_activity_analytic",
         domain=[("root_plan_id.code", "=", "activities")],
-        help="Activity dimension - แผนงาน/กิจกรรม",
+        store=False,
+        tracking=True,
         states=READONLY_STATES,
     )
 
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="ส่วนงาน",
-        required=True,
-        tracking=True,
+        compute="_compute_analytic_id",
+        inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
-        help="Department dimension",
+        store=False,
+        tracking=True,
         states=READONLY_STATES,
     )
 
     fund_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="กองทุน",
-        required=True,
-        tracking=True,
+        compute="_compute_analytic_id",
+        inverse="_inverse_fund_analytic",
         domain=[("root_plan_id.code", "=", "funds")],
-        help="Fund dimension - กองทุน",
+        store=False,
+        tracking=True,
         states=READONLY_STATES,
     )
 
     source_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="แหล่งเงิน",
-        required=True,
-        tracking=True,
+        compute="_compute_analytic_id",
+        inverse="_inverse_source_analytic",
         domain=[("root_plan_id.code", "=", "sources")],
-        help="Source dimension",
+        store=False,
+        tracking=True,
         states=READONLY_STATES,
     )
+
+    _analytic_keys = {
+        "activities": "activity_analytic_id",
+        "departments": "department_analytic_id",
+        "funds": "fund_analytic_id",
+        "sources": "source_analytic_id",
+    }
+
+    def _inverse_activity_analytic(self):
+        """Update distribution when activity changes"""
+        for line in self:
+            line._update_analytic_distribution("activities")
+
+    def _inverse_department_analytic(self):
+        """Update distribution when department changes"""
+        for line in self:
+            line._update_analytic_distribution("departments")
+
+    def _inverse_fund_analytic(self):
+        """Update distribution when fund changes"""
+        for line in self:
+            line._update_analytic_distribution("funds")
+
+    def _inverse_source_analytic(self):
+        """Update distribution when source changes"""
+        for line in self:
+            line._update_analytic_distribution("sources")
 
     company_id = fields.Many2one(
         comodel_name="res.company",
@@ -330,15 +361,7 @@ class BudgetCommitment(models.Model):
             )
 
             for move in related_moves:
-                for move_line in move.line_ids:
-                    # Check if budget move line matches this commitment
-                    if (
-                        move_line.account_id == record.account_id
-                        and move_line.activity_analytic_id
-                        == record.activity_analytic_id
-                        and move_line.fund_analytic_id == record.fund_analytic_id
-                    ):
-                        consumed += abs(move_line.balance)
+                consumed += sum(move.line_ids.mapped(lambda l: abs(l.balance)))
 
             record.consumed_amount = min(consumed, record.amount)
 
@@ -350,12 +373,9 @@ class BudgetCommitment(models.Model):
 
     @api.depends(
         "account_id",
-        "activity_analytic_id",
-        "fund_analytic_id",
-        "department_analytic_id",
-        "source_analytic_id",
-        "amount",
+        "analytic_distribution",
         "account_fiscal_year_id",
+        "amount",
         "state",
     )
     def _compute_available_budget(self):
@@ -555,17 +575,6 @@ class BudgetCommitment(models.Model):
             if record.amount <= 0:
                 raise ValidationError(_("Commitment amount must be positive."))
 
-    @api.constrains("activity_analytic_id", "fund_analytic_id", "account_id")
-    def _check_required_analytics(self):
-        """Ensure all required analytic dimensions are set"""
-        for record in self:
-            if not record.activity_analytic_id:
-                raise ValidationError(_("Activity analytic account is required."))
-            if not record.fund_analytic_id:
-                raise ValidationError(_("Fund analytic account is required."))
-            if not record.account_id:
-                raise ValidationError(_("Budget account is required."))
-
     # Workflow Methods
     def action_check_budget_availability(self):
         """Check budget availability for this commitment"""
@@ -650,12 +659,12 @@ class BudgetCommitment(models.Model):
     def action_cancel(self):
         """Cancel the commitment"""
         for record in self:
-            if record.state == 'cancel':
+            if record.state == "cancel":
                 continue
             if record.state in ["done"]:
-                raise UserError(_(
-                    "Cannot cancel commitment %s - it is already done"
-                ) % record.name)
+                raise UserError(
+                    _("Cannot cancel commitment %s - it is already done") % record.name
+                )
             record.state = "cancel"
 
             _logger.info("Cancelled budget commitment %s", record.name)
@@ -750,5 +759,5 @@ class BudgetCommitment(models.Model):
         _logger.info(
             "Closed budget commitment %s - Released %.2f",
             self.name,
-            self.remaining_amount
+            self.remaining_amount,
         )
