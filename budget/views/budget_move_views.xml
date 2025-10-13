@@ -31,43 +31,12 @@
         <field name="arch" type="xml">
             <form string="Budget Move">
                 <header>
-                    <button
-                        name="action_review"
-                        string="Submit for review"
-                        class="oe_highlight"
-                        type="object"
-                        data-hotkey="r"
-                        attrs="{'invisible': [('hide_review_button', '=', True)]}"
-                    />
-                    <button
-                        name="action_post"
-                        string="Post"
-                        class="oe_highlight"
-                        type="object"
-                        data-hotkey="v"
-                        attrs="{'invisible': [('hide_post_button', '=', True)]}"
-                    />
-                    <button
-                        name="button_draft"
-                        string="Reset to Draft"
-                        type="object"
-                        attrs="{'invisible' : [('show_reset_to_draft_button', '=', False)]}"
-                        data-hotkey="q"
-                    />
-                    <button
-                        name="button_cancel"
-                        string="Cancel"
-                        type="object"
-                        data-hotkey="w"
-                        attrs="{'invisible' : ['|', ('id', '=', False), ('state', '!=', 'draft')]}"
-                    />
+                    <button name="action_review" string="Submit for review" class="oe_highlight" type="object" data-hotkey="r" attrs="{'invisible': [('hide_review_button', '=', True)]}" />
+                    <button name="action_post" string="Post" class="oe_highlight" type="object" data-hotkey="v" attrs="{'invisible': [('hide_post_button', '=', True)]}" />
+                    <button name="button_draft" string="Reset to Draft" type="object" attrs="{'invisible' : [('show_reset_to_draft_button', '=', False)]}" data-hotkey="q" />
+                    <button name="button_cancel" string="Cancel" type="object" data-hotkey="w" attrs="{'invisible' : ['|', ('id', '=', False), ('state', '!=', 'draft')]}" />
 
-                    <field
-                        name="state"
-                        widget="statusbar"
-                        statusbar_visible="draft,review,posted"
-                        readonly="1"
-                    />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,review,posted" readonly="1" />
                 </header>
                 <!-- Invisible Fields -->
                 <field name="show_reset_to_draft_button" invisible="1" />
@@ -93,41 +62,18 @@
                     </div>
 
                     <div class="oe_title">
-                        <span class="o_form_label"> </span>
                         <h1>
                             <field name="name" readonly="1" />
                         </h1>
                     </div>
                     <group>
                         <group string="ข้อมูลทั่วไป">
-                            <field name="date" required="1" />
-
-                            <field
-                                name="user_id"
-                                widget="many2one_avatar_user"
-                                required="1"
-                            />
-                            <field name="ref" />
-                            <field name="note" />
+                            <field name="user_id" widget="many2one_avatar_user" required="1" />
                         </group>
                         <group string="มิติบัญชี">
-                            <field
-                                name="account_fiscal_year_id"
-                                options='{"no_create": True, "no_create_edit": True,"no_open": True}'
-                                required="1"
-                            />
-                            <!-- <field name="department_analytic_id" options='{"no_open": True}' attrs='{"invisible": [("move_type", "not in", ("appropriation"))]}' /> -->
-                            <field
-                                name="source_analytic_id"
-                                options='{"no_create": True, "no_create_edit": True,"no_open": True}'
-                                required="1"
-                            />
-                            <field
-                                name="budget_type"
-                                options='{"no_create": True, "no_create_edit": True,"no_open": True}'
-                                required="1"
-                                attrs="{'readonly': [('id', '!=', False)]}"
-                            />
+                            <field name="account_fiscal_year_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
+                            <field name="source_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
+                            <field name="budget_type" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" attrs="{'readonly': [('id', '!=', False)]}" />
                             <field name="move_type" required="1" />
                         </group>
                     </group>
@@ -143,23 +89,15 @@
                                         invisible="1"
                                     />
                                     <field name="move_id" invisible="1" />
-                                    <field
-                                        name="department_analytic_id"
-                                        options='{"no_open": True}'
+                                    <field name="department_analytic_id" options='{"no_open": True}'
                                     />
-                                    <field
-                                        name="activity_analytic_id"
-                                        options='{"no_open": True}'
+<field name="activity_analytic_id" options='{"no_open": True}'
                                     />
-                                    <field
-                                        name="fund_analytic_id"
-                                        options='{"no_open": True}'
+<field name="fund_analytic_id" options='{"no_open": True}'
                                     />
-                                    <field
-                                        name="account_id"
-                                        options='{"no_open": True}'
+<field name="account_id" options='{"no_open": True}'
                                     />
-                                    <field name="balance" sum="จำนวนเงิน" />
+<field name="balance" sum="จำนวนเงิน" />
                                     <field name="note" />
                                     <!-- Hidden fields for backend use -->
                                     <field name="debit" invisible="1" />
@@ -170,13 +108,14 @@
                         <page name="extra" string="Extra Info">
                             <group>
                                 <group>
-                                    <field
-                                        name="commitment_id"
-                                        options='{"no_create": True, "no_create_edit": True}'
-                                        domain="[('state', '=', 'reserved'), ('account_fiscal_year_id', '=', account_fiscal_year_id), ('source_analytic_id', '=', source_analytic_id)]"
-                                    />
+                                    <field name="ref" />
+                                    <field name="note" />
+                                    <field name="commitment_id" options='{"no_create": True, "no_create_edit": True}' domain="[('state', '=', 'reserved'), ('account_fiscal_year_id', '=', account_fiscal_year_id)]" />
                                 </group>
-                                <group></group>
+                                <group>
+                                    <field name="date" invisible="1" />
+                                    <field name="create_date" />
+                                </group>
                             </group>
                         </page>
                     </notebook>
@@ -193,13 +132,7 @@
         <field name="name">view.budget.move.line.tree</field>
         <field name="model">budget.move.line</field>
         <field name="arch" type="xml">
-            <tree
-                create="false"
-                edit="false"
-                delete="false"
-                expand="context.get('expand', False)"
-                sample="1"
-            >
+            <tree create="false" edit="false" delete="false" expand="context.get('expand', False)" sample="1">
                 <field name="budget_type" />
                 <field name="move_id" widget="many2onebutton" />
                 <field name="account_fiscal_year_id" />
@@ -212,13 +145,7 @@
                 <!-- Hidden fields for backend use -->
                 <field name="debit" invisible="1" />
                 <field name="credit" invisible="1" />
-                <field
-                    name="parent_state"
-                    widget="badge"
-                    decoration-info="parent_state == 'draft'"
-                    decoration-warning="parent_state == 'review'"
-                    decoration-success="parent_state == 'posted'"
-                />
+                <field name="parent_state" widget="badge" decoration-info="parent_state == 'draft'" decoration-warning="parent_state == 'review'" decoration-success="parent_state == 'posted'" />
             </tree>
         </field>
     </record>
@@ -239,30 +166,10 @@
                         <field name="move_id" readonly="1" invisible="1" />
                         <field name="source_analytic_id" readonly="1" invisible="1" />
                         <field name="budget_type" invisible="1" />
-                        <field
-                            name="department_analytic_id"
-                            options='{"no_create": True, "no_create_edit": True,"no_open": True}'
-                            required="1"
-                            widget="helper_field"
-                        />
-                        <field
-                            name="activity_analytic_id"
-                            options='{"no_create": True, "no_create_edit": True,"no_open": True}'
-                            attrs="{'required': [('budget_type', '=', 'expense')]}"
-                            widget="helper_field"
-                        />
-                        <field
-                            name="fund_analytic_id"
-                            options='{"no_create": True, "no_create_edit": True,"no_open": True}'
-                            required="1"
-                        />
-                        <field
-                            name="account_id"
-                            options='{"no_create": True, "no_create_edit": True,"no_open": True}'
-                            required="1"
-                            widget="helper_field"
-                            domain="[('budget_type', '=', budget_type), ('budgetable', '=', True), '|', ('fund_analytic_ids', '=', False), ('fund_analytic_ids', 'in', [fund_analytic_id])]"
-                        />
+                        <field name="department_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" widget="helper_field" />
+                        <field name="activity_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' attrs="{'required': [('budget_type', '=', 'expense')]}" widget="helper_field" />
+                        <field name="fund_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
+                        <field name="account_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" widget="helper_field" domain="[('budget_type', '=', budget_type), ('budgetable', '=', True), '|', ('fund_analytic_ids', '=', False), ('fund_analytic_ids', 'in', [fund_analytic_id])]" />
                         <field name="balance" />
                         <field name="note" />
                         <!-- Hidden fields for backend use -->
@@ -280,18 +187,10 @@
         <field name="model">budget.move</field>
         <field name="arch" type="xml">
             <search>
-                <field
-                    name="source_analytic_id"
-                    domain="[('root_plan_id.code', '=', 'sources')]"
-                />
+                <field name="source_analytic_id" domain="[('root_plan_id.code', '=', 'sources')]" />
                 <separator />
                 <group expand="1" string="Group By">
-                    <filter
-                        string="Name"
-                        name="name"
-                        domain="[]"
-                        context="{'group_by':'name'}"
-                    />
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}" />
                 </group>
             </search>
         </field>
@@ -305,50 +204,16 @@
             <search>
                 <field name="code" />
                 <field name="name" />
-                <field
-                    name="department_analytic_id"
-                    domain="[('root_plan_id.code', '=', 'departments')]"
-                />
-                <field
-                    name="fund_analytic_id"
-                    domain="[('root_plan_id.code', '=', 'funds')]"
-                />
-                <field
-                    name="source_analytic_id"
-                    domain="[('root_plan_id.code', '=', 'sources')]"
-                />
+                <field name="department_analytic_id" domain="[('root_plan_id.code', '=', 'departments')]" />
+                <field name="fund_analytic_id" domain="[('root_plan_id.code', '=', 'funds')]" />
+                <field name="source_analytic_id" domain="[('root_plan_id.code', '=', 'sources')]" />
                 <separator />
                 <group expand="1" string="Group By">
-                    <filter
-                        string="Fiscal Year"
-                        name="account_fiscal_year_id"
-                        domain="[]"
-                        context="{'group_by':'account_fiscal_year_id'}"
-                    />
-                    <filter
-                        string="Department"
-                        name="department_analytic_id"
-                        domain="[]"
-                        context="{'group_by':'department_analytic_id'}"
-                    />
-                    <filter
-                        string="Activity"
-                        name="activity_analytic_id"
-                        domain="[]"
-                        context="{'group_by':'activity_analytic_id'}"
-                    />
-                    <filter
-                        string="Fund"
-                        name="fund_analytic_id"
-                        domain="[]"
-                        context="{'group_by':'fund_analytic_id'}"
-                    />
-                    <filter
-                        string="Source"
-                        name="source_analytic_id"
-                        domain="[]"
-                        context="{'group_by':'source_analytic_id'}"
-                    />
+                    <filter string="Fiscal Year" name="account_fiscal_year_id" domain="[]" context="{'group_by':'account_fiscal_year_id'}" />
+                    <filter string="Department" name="department_analytic_id" domain="[]" context="{'group_by':'department_analytic_id'}" />
+                    <filter string="Activity" name="activity_analytic_id" domain="[]" context="{'group_by':'activity_analytic_id'}" />
+                    <filter string="Fund" name="fund_analytic_id" domain="[]" context="{'group_by':'fund_analytic_id'}" />
+                    <filter string="Source" name="source_analytic_id" domain="[]" context="{'group_by':'source_analytic_id'}" />
                 </group>
             </search>
         </field>
