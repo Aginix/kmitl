@@ -6,10 +6,12 @@
     "website": "",
     "category": "",
     "depends": ["budget", "web", "portal", "procurement_plan_budget"],
-    "data": ["views/portal_templates.xml"],
+    "data": ["views/portal_templates.xml", "views/budget_account_views.xml"],
     "assets": {
-        "web.assets_frontend": [
-            "/budget_account_portal/static/src/scss/portal.scss"
+        "web.assets_frontend": ["/budget_account_portal/static/src/scss/portal.scss"],
+        "web.assets_backend": [
+            "/budget_account_portal/static/src/components/open_portal/open_portal.js",
+            "/budget_account_portal/static/src/components/open_portal/open_portal.xml",
         ],
     },
     "application": False,
