@@ -20,6 +20,6 @@ class BudgetAppropriation(models.Model):
 
     def budget_move_vals(self):
         res = super().budget_move_vals()
-        if self.operating_unit_id:
-            res['operating_unit_id'] = self.operating_unit_id.id
+        res['operating_unit_id'] = self.operating_unit_id.id
         return res
+

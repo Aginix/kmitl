@@ -10,8 +10,10 @@ _logger = logging.getLogger(__name__)
 class BudgetTransfer(models.Model):
     _inherit = 'budget.transfer'
 
-    @api.onchange("department_id")
-    def _onchange_department_id(self):
+    operating_unit_id = fields.Many2one(compute="_compute_operating_unit_id", store=True)
+
+    @api.depends("department_id")
+    def _compute_operating_unit_id(self):
         for rec in self:
             if rec.department_id and rec.department_id.operating_unit_id:
                 rec.operating_unit_id = rec.department_id.operating_unit_id.id

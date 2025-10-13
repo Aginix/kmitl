@@ -26,4 +26,9 @@
         </field>
     </record>
 
-  </odoo>
+    <!-- <filter
+        name="my_department"
+        string="My Department"
+        domain="[('department_id.member_ids.user_id', '=', uid)]"
+    /> -->
+</odoo>
