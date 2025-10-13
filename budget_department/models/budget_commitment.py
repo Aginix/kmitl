@@ -18,3 +18,9 @@ class BudgetCommitment(models.Model):
         return False
 
     department_id = fields.Many2one(string="Department", comodel_name="hr.department", default=lambda self: self._default_department())
+
+    def _prepare_consume_budget_move_vals(self):
+        vals = super()._prepare_consume_budget_move_vals()
+        if self.department_id:
+            vals['department_id'] = self.department_id.id
+        return vals

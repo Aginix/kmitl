@@ -609,6 +609,17 @@ class BudgetTransfer(models.Model):
                 )
             )
 
+    def _prepare_budget_move_vals(self):
+        return {
+            "move_type": "entry",
+            "date": self.date,
+            "ref": _(f"Transfer: {self.name}"),
+            "company_id": self.company_id.id,
+            "currency_id": self.currency_id.id,
+            "transfer_id": self.id,
+            "account_fiscal_year_id": self.account_fiscal_year_id.id,
+        }
+
     # Budget Move Creation
     def _create_budget_moves(self):
         """Create budget moves for the transfer"""
@@ -633,19 +644,7 @@ class BudgetTransfer(models.Model):
                 )
             )
 
-        # Create a single budget move for the transfer
-        move_vals = {
-            "move_type": "entry",
-            "date": self.date,
-            "ref": f"Transfer: {self.name}",
-            "company_id": self.company_id.id,
-            "currency_id": self.currency_id.id,
-            "transfer_id": self.id,
-            "account_fiscal_year_id": self.account_fiscal_year_id.id,
-
-        }
-
-        budget_move = self.env["budget.move"].create(move_vals)
+        budget_move = self.env["budget.move"].create(self._prepare_budget_move_vals())
 
         # Collect all move line data first, then create in batch
         move_lines_data = []
