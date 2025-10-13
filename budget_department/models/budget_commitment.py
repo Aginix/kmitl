@@ -12,10 +12,9 @@ class BudgetCommitment(models.Model):
 
     @api.model
     def _default_department(self):
-        department_id = False
-        employee = self.env.user.employee_ids
-        if employee and employee[0].department_id:
-            department_id = employee[0].department_id.id
-        return department_id
+        employee_id = self.env.user.employee_id
+        if employee_id and employee_id.deparment_id:
+            return employee_id.deparment_id.id
+        return False
 
     department_id = fields.Many2one(string="Department", comodel_name="hr.department", default=lambda self: self._default_department())
