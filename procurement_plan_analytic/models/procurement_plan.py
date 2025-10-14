@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 
 class ProcurementPlan(models.Model):
     _name = 'procurement.plan'
-    _inherit = ['procurement.plan', "analytic.distribution.mixin"]
+    _inherit = ['procurement.plan', "analytic.mixin"]
 
     analytic_account_id = fields.Many2one(
         "account.analytic.account",

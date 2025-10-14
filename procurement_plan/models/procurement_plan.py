@@ -59,6 +59,7 @@ class ProcurementPlan(models.Model):
         required=True,
         tracking=True,
         states=READONLY_STATES,
+        help="Fill the details include unit",
     )
     amount = fields.Integer(
         required=True,
@@ -149,12 +150,11 @@ class ProcurementPlan(models.Model):
         readonly=True,
     )
 
-    display_name = fields.Char(string="ชื่อแสดง", compute="_compute_display_name")
-
     analytic_account_id = fields.Many2one(
         "account.analytic.account",
         string="Analytic Account",
         copy=False,
+        inverse="_inverse_analytic_account_id",
         ondelete="set null",
         domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
         check_company=True,
@@ -202,15 +202,6 @@ class ProcurementPlan(models.Model):
                     "procurement.plan"
                 ) or _("New")
 
-    @api.depends("name", "description", "amount", "unit",  "total_price")
-    def _compute_display_name(self):
-        for record in self:
-            description = record.description if record.description else "{}"
-            amount = record.amount
-            unit = record.unit if record.unit else "{}"
-            total_price = format_amount(self.env, record.total_price, record.currency_id, False)
-            record.display_name = f"{description} จำนวน {amount} {unit} วงเงินรวม {total_price} บาท"
-
     def action_validate(self):
         self.write({"state": "validate"})
 
@@ -222,3 +213,108 @@ class ProcurementPlan(models.Model):
 
     def action_done(self):
         self.write({"state": "done"})
+
+    budget_commitment_ids = fields.One2many('budget.commitment', 'procurement_plan_id', string="ผูกพันงบประมาณ", readonly=True)
+    budget_commitment_count = fields.Integer(string="จำนวนผูกพันงบประมาณ", compute='_compute_budget_commitment_count')
+
+    budget_account_id = fields.Many2one(comodel_name="budget.account",
+        string="รหัสงบประมาณ",
+        required=True,
+        index=True,
+        tracking=True,
+        domain="[('budgetable', '=', True), ('budget_type', '=', 'expense')]",
+        states=READONLY_STATES
+    )
+
+    activity_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="กิจกรรม",
+        compute="_compute_analytic_id",
+        inverse="_inverse_activity_analytic",
+        domain=[("root_plan_id.code", "=", "activities")],
+        store=False,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
+    department_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="ส่วนงาน",
+        compute="_compute_analytic_id",
+        inverse="_inverse_department_analytic",
+        domain=[("root_plan_id.code", "=", "departments")],
+        store=False,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
+    fund_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="กองทุน",
+        compute="_compute_analytic_id",
+        inverse="_inverse_fund_analytic",
+        domain=[("root_plan_id.code", "=", "funds")],
+        store=False,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
+    source_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="แหล่งเงิน",
+        compute="_compute_analytic_id",
+        inverse="_inverse_source_analytic",
+        domain=[("root_plan_id.code", "=", "sources")],
+        store=False,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
+    _analytic_keys = {
+        "activities": "activity_analytic_id",
+        "departments": "department_analytic_id",
+        "funds": "fund_analytic_id",
+        "sources": "source_analytic_id",
+        "procurement_plan": "analytic_account_id",
+    }
+
+    def _inverse_activity_analytic(self):
+        """Update distribution when activity changes"""
+        for line in self:
+            line._update_analytic_distribution("activities")
+
+    def _inverse_department_analytic(self):
+        """Update distribution when department changes"""
+        for line in self:
+            line._update_analytic_distribution("departments")
+
+    def _inverse_fund_analytic(self):
+        """Update distribution when fund changes"""
+        for line in self:
+            line._update_analytic_distribution("funds")
+
+    def _inverse_analytic_account_id(self):
+        """Update distribution when source changes"""
+        for line in self:
+            line._update_analytic_distribution("procurement_plan")
+
+    def _compute_budget_commitment_count(self):
+        for rec in self:
+            rec.budget_commitment_count = len(rec.budget_commitment_ids)
+
+    def action_view_budget_commitment(self):
+        self.ensure_one()
+        action = self.env.ref('procurement_plan_budget.action_budget_commitment_procurement_plan').sudo().read()[0]
+        action['domain'] = [('procurement_plan_id', '=', self.id)]
+        action['context'] = {'default_procurement_plan_id': self.id}
+        return action
+
+    def action_open_budget_commitments(self):
+        self.ensure_one()
+        return {
+            'name': 'Budget Commitments',
+            'type': 'ir.actions.act_window',
+            'res_model': 'budget.commitment',
+            'view_mode': 'tree,form',
+            'domain': [('procurement_plan_id', '=', self.id)],
+        }

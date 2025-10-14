@@ -5,23 +5,22 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    'depends': ['budget', 'budget_appropriation', 'procurement_plan', 'web'],
+    "depends": ["budget", "budget_appropriation", "procurement_plan", "web"],
     "data": [
-        "data/budget_account_procurement_update.xml",
         "views/budget_account_views.xml",
         "views/budget_appropriation_views.xml",
         "views/budget_commitment_views.xml",
         "views/budget_move_views.xml",
         "views/procurement_plan_menu.xml",
-        "views/procurement_plan_views.xml"
+        "views/procurement_plan_views.xml",
     ],
     "assets": {
         "web.assets_backend": [
             "procurement_plan_budget/static/src/**/*",
         ],
     },
-    'application': False,
-    'installable': True,
-    'auto_install': False,
-    'license': 'LGPL-3',
+    "application": False,
+    "installable": True,
+    "auto_install": False,
+    "license": "LGPL-3",
 }
