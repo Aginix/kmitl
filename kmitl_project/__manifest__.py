@@ -5,7 +5,7 @@
     "author": "",
     "website": "",
     "category": "",
-    "depends": ["web", "hr", "account_fiscal_year", "budget", "project", "base_exception"],
+    "depends": ["web", "hr", "account_fiscal_year", "budget", "project", "base_exception", "portal"],
     "data": [
         "data/account.analytic.plan.csv",
         "data/project.evaluation.csv",
