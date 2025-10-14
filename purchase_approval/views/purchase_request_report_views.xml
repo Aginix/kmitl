@@ -141,5 +141,5 @@
 
     <menuitem id="menu_purchase_approval" name="Purchase Approval" parent="purchase_request.parent_menu_purchase_request" groups="purchase_request.group_purchase_request_user,purchase_request.group_purchase_request_manager" sequence="50" />
     <menuitem id="menu_purchase_approval_filter" action="action_purchase_request_report_filter" name="waiting Purchase Approval" parent="purchase_approval.menu_purchase_approval" groups="purchase_request.group_purchase_request_user,purchase_request.group_purchase_request_manager" sequence="10" />
-    <menuitem id="menu_purchase_approval_report" action="action_purchase_request_report" name="Purchase Approval" parent="purchase_approval.menu_purchase_approval" groups="purchase_request.group_purchase_request_user,purchase_request.group_purchase_request_manager" sequence="20" />
+    <menuitem id="menu_purchase_approval_report" action="action_purchase_request_report" name="Purchase Approval Report" parent="purchase_approval.menu_purchase_approval" groups="purchase_request.group_purchase_request_user,purchase_request.group_purchase_request_manager" sequence="20" />
 </odoo>
