@@ -13,10 +13,12 @@ class PurchaseOrder(models.Model):
             fy_id = self.env["account.fiscal.year"].browse(vals.get("account_fiscal_year_id"))
             fiscal_year = fy_id.name[-2:] if fy_id else fields.Date.today().strftime("%y")
 
-            ou = self.env["operating.unit"].browse(vals["operating_unit_id"])
-            department = self.env["hr.department"].browse(ou.department_id.id if ou.department_id else False)
+            department = self.env["hr.department"].browse(vals.get("department_id"))
 
-            short_name = department.short_name or "XXX"
+            short_name = department.short_name
+
+            if not short_name:
+                raise ValidationError(_("Department short name is missing."))
 
             seq_code = f"purchase.{fiscal_year}.{short_name}"
 
