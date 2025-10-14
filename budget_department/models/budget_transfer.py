@@ -8,7 +8,15 @@ _logger = logging.getLogger(__name__)
 
 
 class BudgetTransfer(models.Model):
-    _inherit = 'budget.transfer'
+    _inherit = "budget.transfer"
+
+    READONLY_STATES = {
+        "submitted": [("readonly", True)],
+        "approved": [("readonly", True)],
+        "posted": [("readonly", True)],
+        "rejected": [("readonly", True)],
+        "cancelled": [("readonly", True)],
+    }
 
     @api.model
     def _default_department(self):
@@ -17,10 +25,16 @@ class BudgetTransfer(models.Model):
             return employee_id.department_id.id
         return False
 
-    department_id = fields.Many2one(string="Department", comodel_name="hr.department", default=lambda self: self._default_department())
+    department_id = fields.Many2one(
+        string="Department",
+        comodel_name="hr.department",
+        default=lambda self: self._default_department(),
+        readonly=False,
+        states=READONLY_STATES,
+    )
 
     def _prepare_budget_move_vals(self):
         vals = super()._prepare_budget_move_vals()
         if self.department_id:
-            vals['department_id'] = self.department_id.id
+            vals["department_id"] = self.department_id.id
         return vals
