@@ -11,12 +11,13 @@
                 <field name="validation_status" invisible="1" />
                 <field name="need_validation" invisible="1" />
                 <field name="can_request" invisible="1" />
-                <button name="request_validation" string="Request Validation" class="btn-primary" attrs="{'invisible': ['|', '|', '|', '|',
+                <button name="request_validation" string="Request Validation" class="btn-primary" attrs="{'invisible': ['|', '|', '|', '|', '|',
         ('need_validation', '!=', True),
         ('validation_status', '=', 'pending'),
         ('rejected', '=', True),
         ('substate_sequence', '!=', 30),
-        ('can_request','=',False)
+        ('can_request','=',False),
+        ('is_egp', '=', False)
     ]}" type="object" />
                 <button name="restart_validation" string="Restart Validation" class="btn-primary" attrs="{'invisible': ['|', '|',
         ('need_validation', '!=', True),
