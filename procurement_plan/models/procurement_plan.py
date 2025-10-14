@@ -311,6 +311,11 @@ class ProcurementPlan(models.Model):
         for line in self:
             line._update_analytic_distribution("funds")
 
+    def _inverse_source_analytic(self):
+        """Update distribution when fund changes"""
+        for line in self:
+            line._update_analytic_distribution("sources")
+
     def _inverse_analytic_account_id(self):
         """Update distribution when source changes"""
         for line in self:
