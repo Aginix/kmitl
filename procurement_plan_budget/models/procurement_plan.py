@@ -21,25 +21,3 @@ class ProcurementPlan(models.Model):
         return "/web#id={}&model={}&view_type=form".format(
             self.id, self._name
         )
-
-    @api.model_create_multi
-    def create(self, vals):
-        records = super().create(vals)
-        ids = records.mapped('id')
-        budget_app_lines = self.env['budget.appropriation.line'].search([('procurement_plan_id', 'in', ids)])
-        for line in budget_app_lines:
-            line.procurement_plan_id._create_pair_with_budget_appropriation(line)
-        # for rec in records:
-        #     line = self.env['budget.appropriation.line'].search([('procurement_plan_id', '=', rec.id)], limit=1)
-        #     if line:
-
-    # def _create_pair_with_budget_appropriation(self):
-    #     self.message_post(
-    #         body=_(
-    #             'Order "%(order_name)s" blocked with reason "%(block_name)s"'
-    #         )
-    #         % {
-    #             "order_name": po.name,
-    #             "block_name": po.approval_block_id.name,
-    #         }
-    #     )
