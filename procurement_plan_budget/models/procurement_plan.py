@@ -1,48 +1,45 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import _, api, fields, models
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
 
 class ProcurementPlan(models.Model):
-    _name = 'procurement.plan'
-    _inherit = ['procurement.plan']
+    _inherit = 'procurement.plan'
 
-    READONLY_STATES = {
-        "validate": [("readonly", True)],
-        "pending": [("readonly", True)],
-        "procurement": [("readonly", True)],
-        "done": [("readonly", True)],
-        "cancel": [("readonly", True)],
-    }
-    budget_commitment_ids = fields.One2many('budget.commitment', 'procurement_plan_id', string="ผูกพันงบประมาณ", readonly=True)
-    budget_commitment_count = fields.Integer(string="จำนวนผูกพันงบประมาณ", compute='_compute_budget_commitment_count')
-    budget_account_id = fields.Many2one('budget.account', string="รหัสงบประมาณ", states=READONLY_STATES)
-    activity_analytic_id = fields.Many2one(states=READONLY_STATES)
-    department_analytic_id = fields.Many2one(states=READONLY_STATES)
-    fund_analytic_id = fields.Many2one(states=READONLY_STATES)
-    source_analytic_id = fields.Many2one(states=READONLY_STATES)
-
-    def _compute_budget_commitment_count(self):
+    def _compute_can_edit(self):
+        super()._compute_can_edit()
         for rec in self:
-            rec.budget_commitment_count = len(rec.budget_commitment_ids)
+            result = self.env['budget.appropriation.line'].search([('procurement_plan_id', '=', rec.id)], limit=1)
+            if result:
+                rec.can_edit = False
 
-    def action_view_budget_commitment(self):
-        self.ensure_one()
-        action = self.env.ref('procurement_plan_budget.action_budget_commitment_procurement_plan').sudo().read()[0]
-        action['domain'] = [('procurement_plan_id', '=', self.id)]
-        action['context'] = {'default_procurement_plan_id': self.id}
-        return action
+    def _get_record_url(self):
+        return "/web#id={}&model={}&view_type=form".format(
+            self.id, self._name
+        )
 
-    def action_open_budget_commitments(self):
-        self.ensure_one()
-        return {
-            'name': 'Budget Commitments',
-            'type': 'ir.actions.act_window',
-            'res_model': 'budget.commitment',
-            'view_mode': 'tree,form',
-            'domain': [('procurement_plan_id', '=', self.id)],
-        }
+    @api.model_create_multi
+    def create(self, vals):
+        records = super().create(vals)
+        ids = records.mapped('id')
+        budget_app_lines = self.env['budget.appropriation.line'].search([('procurement_plan_id', 'in', ids)])
+        for line in budget_app_lines:
+            line.procurement_plan_id._create_pair_with_budget_appropriation(line)
+        # for rec in records:
+        #     line = self.env['budget.appropriation.line'].search([('procurement_plan_id', '=', rec.id)], limit=1)
+        #     if line:
+
+    # def _create_pair_with_budget_appropriation(self):
+    #     self.message_post(
+    #         body=_(
+    #             'Order "%(order_name)s" blocked with reason "%(block_name)s"'
+    #         )
+    #         % {
+    #             "order_name": po.name,
+    #             "block_name": po.approval_block_id.name,
+    #         }
+    #     )

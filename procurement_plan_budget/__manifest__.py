@@ -1,18 +1,14 @@
 # -*- coding: utf-8 -*-
 {
-    "name": "Procurement Plan Budget",
+    "name": "Procurement Plan Budget Appropriation",
     "version": "16.0.1.0.0",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    "depends": ["budget", "budget_appropriation", "procurement_plan", "web"],
+    "depends": ["budget_appropriation", "procurement_plan", "web"],
     "data": [
-        "views/budget_account_views.xml",
         "views/budget_appropriation_views.xml",
-        "views/budget_commitment_views.xml",
-        "views/budget_move_views.xml",
-        "views/procurement_plan_menu.xml",
-        "views/procurement_plan_views.xml",
+        "views/procurement_plan_views.xml"
     ],
     "assets": {
         "web.assets_backend": [
