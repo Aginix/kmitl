@@ -153,13 +153,13 @@
                                 <t t-esc="node.code"/> - <t t-esc="node.name"/>
                                 <div style="padding-left: 16px;">
                                     <span class="fst-italic">
-                                        <t t-if="node.description" t-esc="`(${node.description})`"/>
+                                        <t t-if="node.description" t-out="`(${node.description})`"/>
                                     </span>
-                                    <t t-esc="node.note"/>
+                                    <t t-out="node.note"/>
                                 </div>
                             </t>
                             <t t-else="">
-                                <t t-esc="node.name"/>
+                                <t t-out="node.name"/>
                                 <t t-if="node.code">
                                     <span class="text-muted"> (<t t-esc="node.code"/>)</span>
                                 </t>

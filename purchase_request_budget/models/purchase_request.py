@@ -86,7 +86,6 @@ class PurchaseRequest(models.Model):
                 source_analytic_id=self.source_analytic_id.id,
                 ref=self.name,
                 description=f"Purchase Request: {self.name}",
-                date=self.date_start,
                 auto_reserve=True
             )
             self.message_post(body=_("Budget reserved: %s for amount %s") % (commitment.name, amount))

@@ -207,7 +207,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
             commitment_vals['company_id'] = self.env.company.id
 
         # Handle date and fiscal year
-        commitment_date = kwargs.get('date', fields.Date.today())
+        commitment_date = fields.Date.today()
         commitment_vals['date'] = commitment_date
 
         if not kwargs.get('account_fiscal_year_id'):

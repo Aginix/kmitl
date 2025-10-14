@@ -96,7 +96,7 @@ class BudgetAppropriation(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
-    note = fields.Char(
+    note = fields.Text(
         readonly=False,
         tracking=True,
         states=READONLY_STATES,
@@ -233,7 +233,7 @@ class BudgetAppropriation(models.Model):
             if appropriation.state == "cancel":
                 continue
 
-            appropriation_has_name = appropriation.name and appropriation.name != "New"
+            appropriation_has_name = appropriation.name and appropriation.name != _("New")
             if appropriation_has_name or (
                 appropriation.state not in ("review", "posted")
             ):
