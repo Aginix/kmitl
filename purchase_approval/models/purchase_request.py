@@ -10,7 +10,7 @@ class PurchaseRequest(models.Model):
         compute="_compute_is_required_approval", store=False, readonly=True
     )
     report_id = fields.Many2one(
-        'purchase.request.report', string='Request Report', ondelete='cascade', index=True
+        'purchase.request.report', string='Request Report', ondelete='set null', index=True
     )
 
     @api.depends("estimated_cost")

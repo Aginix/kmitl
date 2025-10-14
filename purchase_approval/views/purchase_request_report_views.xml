@@ -20,10 +20,7 @@
             <form string="Purchase Request Report" create="1" edit="1">
                 <header>
                     <field name="state" widget="statusbar" statusbar_visible="draft,submit,done" />
-                    <!-- <button name="action_submit" string="Submit" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                    <button name="action_done" string="Approve" type="object" class="btn-success" attrs="{'invisible': [('state', '!=', 'submit')]}"/>
-                    <button name="action_cancel" string="Cancel" type="object" class="btn-secondary" attrs="{'invisible': [('state', 'in', ['cancel','done'])]}"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,submit,done,cancel" statusbar_colors='{"done":"green","cancel":"red"}'/> -->
+                    <button name="button_submit" string="Submit" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -48,7 +45,19 @@
                     </group>
                     <notebook>
                         <page string="Requests">
-                            <field name="request_ids" domain="[('payment_type', '=', payment_type), ('state', '=', 'to_verify'), ('report_id', '=', False)]" context="{'default_payment_type': payment_type}">
+                            <field name="request_ids" widget="many2many" domain="[('payment_type', '=', payment_type), ('state', '=', 'to_verify'), ('report_id', '=', False)]" options="{'no_create': True, 'no_open': True}">
+                                <tree create="0">
+                                    <field name="name"/>
+                                    <field name="title"/>
+                                    <field name="date_start"/>
+                                    <field name="requested_by" widget="many2one_avatar_user"/>
+                                    <field name="procurement_type_id"/>
+                                    <field name="contract_type"/>
+                                    <field name="payment_type"/>
+                                    <field name="operating_unit_id"/>
+                                    <field name="estimated_cost"/>
+                                    <field name="state" widget="badge" decoration-success="state in ('done', 'approved', 'in_progress')" decoration-muted="state == 'draft'" decoration-warning="state == 'to_approve'" decoration-danger="state == 'rejected'"/>
+                                </tree>
                             </field>
                         </page>
                         <page string="Notes">

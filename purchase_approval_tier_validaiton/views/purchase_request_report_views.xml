@@ -26,12 +26,6 @@
                         domain="[('reviewer_ids','in',uid), ('state', 'not in', ['done', 'cancel'])]"
                         help="My Purchases to review"
                     />
-                    <filter
-                        name="tier_validated"
-                        string="Validated"
-                        domain="[('validation_status', '=', 'validated')]"
-                        help="Purchase Approval validated and ready to be confirmed"
-                    />
                 </group>
             </search>
         </field>
