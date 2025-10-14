@@ -93,7 +93,7 @@
                         <page name="additional_info" string="Additional Info">
                             <group>
                                 <group>
-                                    <field name="analytic_account_id" groups="analytic.group_analytic_accounting" />
+                                    <field name="analytic_account_id" groups="analytic.group_analytic_accounting" attrs="{'readonly': [('can_edit', '=', False)]}" />
                                     <field name="analytic_account_id" invisible="1" />
                                     <field name="company_id" invisible="1" />
                                     <field name="currency_id" invisible="1" />

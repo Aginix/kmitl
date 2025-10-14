@@ -14,28 +14,20 @@ class BudgetAppropriation(models.Model):
         super().action_review()
 
     def action_post(self):
-        # Need to invoke the `_create_procurement_plan` before action_post
-        self._create_procurement_plan()
-        self._log_message_on_linked_documents()
-
         super().action_post()
-
-    def _create_procurement_plan(self):
-        for line in self.line_ids:
-            if line.enable_procurement_plan:
-                line._create_procurement_plan()
+        self._log_message_on_linked_documents()
 
     def _log_message_on_linked_documents(self):
         for line in self.line_ids:
             if line.procurement_plan_id:
                 self.message_post(
                     body=line._message_link_to_procurement_plan(),
-                    message_type="notification",
+                    message_type="comment",
                 )
 
                 line.procurement_plan_id.message_post(
                     body=line._message_link_back_from_procurement_plan(),
-                    message_type="notification",
+                    message_type="comment",
                 )
 
     def _get_record_url(self):
