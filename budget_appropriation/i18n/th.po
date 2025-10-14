@@ -20,7 +20,7 @@ msgstr ""
 #. module: budget_appropriation
 #: model:ir.actions.report,print_report_name:budget_appropriation.action_report_budget_appropriation_f5
 msgid "'Budget Appropriation F5 - %s' % (object.name)"
-msgstr "‘ประมาณการรายจ่าย F5 - %s' % (object.name)"
+msgstr "'ประมาณการรายจ่าย F5 - %s' % (object.name)"
 
 #. module: budget_appropriation
 #: model_terms:ir.ui.view,arch_db:budget_appropriation.view_budget_appropriation_form
