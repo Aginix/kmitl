@@ -15,6 +15,7 @@ class BudgetAppropriation(models.Model):
 
     def action_post(self):
         super().action_post()
+        self._create_procurement_plan()
 
     def _create_procurement_plan(self):
         for line in self.line_ids:
