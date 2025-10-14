@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-13 19:04+0000\n"
-"PO-Revision-Date: 2025-10-14 02:09+0700\n"
+"POT-Creation-Date: 2025-10-14 17:46+0000\n"
+"PO-Revision-Date: 2025-10-15 00:55+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -113,7 +113,7 @@ msgstr ""
 #. module: budget_appropriation
 #: model_terms:ir.ui.view,arch_db:budget_appropriation.view_budget_appropriation_form
 msgid "Appropriation Lines"
-msgstr ""
+msgstr "รายการ"
 
 #. module: budget_appropriation
 #: model:ir.model.fields,field_description:budget_appropriation.field_budget_appropriation__message_attachment_count
@@ -203,6 +203,8 @@ msgid ""
 "Budget appropriations allow you to plan budget allocations before creating actual budget moves.\n"
 "                This provides a preliminary stage for budget planning without affecting the accounting records."
 msgstr ""
+"ข้อมูลแผนประมาณรายรับ/รายจ่าย (Budget Appropriation) ช่วยให้การจัดทำแผนประมาณง่ายและสะดวกสบาย ก่อนการจัดสรรงบประมาณจริง .\n"
+"                โดยที่ขั้นตอนการจัดสรรแผนประมาณรายรับ/รายจ่าย จะยังไม่ส่งผลกับงบประมาณที่ใช้งานจริง จนกว่าจะได้รับอนุมัติการจัดสรร"
 
 #. module: budget_appropriation
 #: model:ir.model.fields,help:budget_appropriation.field_budget_appropriation__budget_move_id
@@ -240,17 +242,17 @@ msgstr ""
 #. module: budget_appropriation
 #: model_terms:ir.actions.act_window,help:budget_appropriation.action_budget_appropriation_expense
 msgid "Create a new expense budget appropriation!"
-msgstr ""
+msgstr "สร้างข้อมูลแผนประมาณรายจ่าย!"
 
 #. module: budget_appropriation
 #: model_terms:ir.actions.act_window,help:budget_appropriation.action_budget_appropriation_revenue
 msgid "Create a new revenue budget appropriation!"
-msgstr ""
+msgstr "สร้างข้อมูลแผนประมาณรายรับ!"
 
 #. module: budget_appropriation
 #: model:ir.model.fields,field_description:budget_appropriation.field_budget_appropriation__budget_move_id
 msgid "Created Budget Move"
-msgstr ""
+msgstr "Budget Move"
 
 #. module: budget_appropriation
 #: model:ir.model.fields,field_description:budget_appropriation.field_budget_appropriation__create_uid
@@ -455,6 +457,11 @@ msgid "New"
 msgstr "รายการใหม่"
 
 #. module: budget_appropriation
+#: model:ir.model.fields,field_description:budget_appropriation.field_budget_appropriation__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr ""
+
+#. module: budget_appropriation
 #: model:ir.model.fields,field_description:budget_appropriation.field_budget_appropriation__activity_date_deadline
 msgid "Next Activity Deadline"
 msgstr ""
@@ -506,13 +513,13 @@ msgstr ""
 #. module: budget_appropriation
 #: model_terms:ir.ui.view,arch_db:budget_appropriation.view_budget_appropriation_form
 msgid "Post"
-msgstr ""
+msgstr "จัดสรรงบประมาณ"
 
 #. module: budget_appropriation
 #: model:ir.model.fields.selection,name:budget_appropriation.selection__budget_appropriation__state__posted
 #: model_terms:ir.ui.view,arch_db:budget_appropriation.view_budget_appropriation_search
 msgid "Posted"
-msgstr ""
+msgstr "จัดสรรงบประมาณแล้ว"
 
 #. module: budget_appropriation
 #: model_terms:ir.ui.view,arch_db:budget_appropriation.view_budget_appropriation_form

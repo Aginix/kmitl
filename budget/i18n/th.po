@@ -6,16 +6,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-13 18:55+0000\n"
-"PO-Revision-Date: 2025-10-14 02:02+0700\n"
+"POT-Creation-Date: 2025-10-14 17:45+0000\n"
+"PO-Revision-Date: 2025-10-14 17:45+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: th\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.7\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
 
 #. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__budget_availability_percentage
@@ -39,6 +37,7 @@ msgstr ""
 #. module: budget
 #. odoo-python
 #: code:addons/budget/models/budget_account.py:0
+#: code:addons/budget/models/budget_account.py:0
 #, python-format
 msgid "%s (copy)"
 msgstr ""
@@ -52,15 +51,12 @@ msgid ""
 "                    </p>\n"
 "                    <br>\n"
 "                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"                        A new budget transfer request has been submitted and requires your "
-"approval.\n"
+"                        A new budget transfer request has been submitted and requires your approval.\n"
 "                    </p>\n"
 "                    <br>\n"
-"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-"
-"top: 16px; background-color: #F1F2F3; width:100%; margin: 16px 0px 16px 0px;\">\n"
+"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F2F3; width:100%; margin: 16px 0px 16px 0px;\">\n"
 "                        <tr>\n"
-"                            <td style=\"background-color:#875A7B; padding: 8px 16px 8px "
-"16px; font-weight: bold; color: #fff;\">\n"
+"                            <td style=\"background-color:#875A7B; padding: 8px 16px 8px 16px; font-weight: bold; color: #fff;\">\n"
 "                                Transfer Details\n"
 "                            </td>\n"
 "                        </tr>\n"
@@ -68,42 +64,33 @@ msgid ""
 "                            <td style=\"padding: 16px 16px 16px 16px;\">\n"
 "                                <table>\n"
 "                                    <tr>\n"
-"                                        <td style=\"padding-right: 20px; font-weight: bold;"
-"\">Transfer Number:</td>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Transfer Number:</td>\n"
 "                                        <td>{{ object.name }}</td>\n"
 "                                    </tr>\n"
 "                                    <tr>\n"
-"                                        <td style=\"padding-right: 20px; font-weight: bold;"
-"\">Requested by:</td>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Requested by:</td>\n"
 "                                        <td>{{ object.user_id.name }}</td>\n"
 "                                    </tr>\n"
 "                                    <tr>\n"
-"                                        <td style=\"padding-right: 20px; font-weight: bold;"
-"\">Date:</td>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Date:</td>\n"
 "                                        <td>{{ object.date }}</td>\n"
 "                                    </tr>\n"
 "                                    <tr>\n"
-"                                        <td style=\"padding-right: 20px; font-weight: bold;"
-"\">Amount:</td>\n"
-"                                        <td style=\"color: #875A7B; font-weight: bold;"
-"\">{{ object.amount | safe }} {{ object.currency_id.name }}</td>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Amount:</td>\n"
+"                                        <td style=\"color: #875A7B; font-weight: bold;\">{{ object.amount | safe }} {{ object.currency_id.name }}</td>\n"
 "                                    </tr>\n"
 "                                    <tr>\n"
-"                                        <td style=\"padding-right: 20px; font-weight: bold;"
-"\">Transfer Type:</td>\n"
-"                                        <td>{{ dict(object._fields['transfer_type']._description_selection(object.env))"
-"[object.transfer_type] }}</td>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Transfer Type:</td>\n"
+"                                        <td>{{ dict(object._fields['transfer_type']._description_selection(object.env))[object.transfer_type] }}</td>\n"
 "                                    </tr>\n"
 "                                </table>\n"
 "                            </td>\n"
 "                        </tr>\n"
 "                    </table>\n"
 "                    \n"
-"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-"
-"top: 16px; background-color: #F8F9FA; width:100%; margin: 16px 0px 16px 0px;\">\n"
+"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F8F9FA; width:100%; margin: 16px 0px 16px 0px;\">\n"
 "                        <tr>\n"
-"                            <td style=\"background-color:#17A2B8; padding: 8px 16px 8px "
-"16px; font-weight: bold; color: #fff;\">\n"
+"                            <td style=\"background-color:#17A2B8; padding: 8px 16px 8px 16px; font-weight: bold; color: #fff;\">\n"
 "                                Transfer Reason\n"
 "                            </td>\n"
 "                        </tr>\n"
@@ -119,10 +106,7 @@ msgid ""
 "                    </p>\n"
 "                    <br>\n"
 "                    <div style=\"text-align: center;\">\n"
-"                        <a href=\"/"
-"web#id=%7B%7B%20object.id%20%7D%7D&amp;model=budget.transfer&amp;view_type=form\" "
-"style=\"background-color: #875A7B; padding: 8px 16px; text-decoration: none; color: #fff; "
-"border-radius: 5px;\">\n"
+"                        <a href=\"/web#id=%7B%7B%20object.id%20%7D%7D&amp;model=budget.transfer&amp;view_type=form\" style=\"background-color: #875A7B; padding: 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;\">\n"
 "                            Review Transfer Request\n"
 "                        </a>\n"
 "                    </div>\n"
@@ -148,11 +132,9 @@ msgid ""
 "                        Good news! Your budget transfer request has been approved.\n"
 "                    </p>\n"
 "                    <br>\n"
-"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-"
-"top: 16px; background-color: #D4F6E8; width:100%; margin: 16px 0px 16px 0px;\">\n"
+"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #D4F6E8; width:100%; margin: 16px 0px 16px 0px;\">\n"
 "                        <tr>\n"
-"                            <td style=\"background-color:#28A745; padding: 8px 16px 8px "
-"16px; font-weight: bold; color: #fff;\">\n"
+"                            <td style=\"background-color:#28A745; padding: 8px 16px 8px 16px; font-weight: bold; color: #fff;\">\n"
 "                                ✓ Transfer Approved\n"
 "                            </td>\n"
 "                        </tr>\n"
@@ -160,25 +142,20 @@ msgid ""
 "                            <td style=\"padding: 16px 16px 16px 16px;\">\n"
 "                                <table>\n"
 "                                    <tr>\n"
-"                                        <td style=\"padding-right: 20px; font-weight: bold;"
-"\">Transfer Number:</td>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Transfer Number:</td>\n"
 "                                        <td>{{ object.name }}</td>\n"
 "                                    </tr>\n"
 "                                    <tr>\n"
-"                                        <td style=\"padding-right: 20px; font-weight: bold;"
-"\">Approved by:</td>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Approved by:</td>\n"
 "                                        <td>{{ object.approver_id.name }}</td>\n"
 "                                    </tr>\n"
 "                                    <tr>\n"
-"                                        <td style=\"padding-right: 20px; font-weight: bold;"
-"\">Approval Date:</td>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Approval Date:</td>\n"
 "                                        <td>{{ object.approval_date }}</td>\n"
 "                                    </tr>\n"
 "                                    <tr>\n"
-"                                        <td style=\"padding-right: 20px; font-weight: bold;"
-"\">Amount:</td>\n"
-"                                        <td style=\"color: #28A745; font-weight: bold;"
-"\">{{ object.amount | safe }} {{ object.currency_id.name }}</td>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Amount:</td>\n"
+"                                        <td style=\"color: #28A745; font-weight: bold;\">{{ object.amount | safe }} {{ object.currency_id.name }}</td>\n"
 "                                    </tr>\n"
 "                                </table>\n"
 "                            </td>\n"
@@ -186,15 +163,11 @@ msgid ""
 "                    </table>\n"
 "                    \n"
 "                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"                        Your transfer is now ready to be posted. A manager will complete "
-"the posting process shortly.\n"
+"                        Your transfer is now ready to be posted. A manager will complete the posting process shortly.\n"
 "                    </p>\n"
 "                    <br>\n"
 "                    <div style=\"text-align: center;\">\n"
-"                        <a href=\"/"
-"web#id=%7B%7B%20object.id%20%7D%7D&amp;model=budget.transfer&amp;view_type=form\" "
-"style=\"background-color: #28A745; padding: 8px 16px; text-decoration: none; color: #fff; "
-"border-radius: 5px;\">\n"
+"                        <a href=\"/web#id=%7B%7B%20object.id%20%7D%7D&amp;model=budget.transfer&amp;view_type=form\" style=\"background-color: #28A745; padding: 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;\">\n"
 "                            View Transfer\n"
 "                        </a>\n"
 "                    </div>\n"
@@ -217,15 +190,12 @@ msgid ""
 "                    </p>\n"
 "                    <br>\n"
 "                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"                        We regret to inform you that your budget transfer request has been "
-"rejected.\n"
+"                        We regret to inform you that your budget transfer request has been rejected.\n"
 "                    </p>\n"
 "                    <br>\n"
-"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-"
-"top: 16px; background-color: #F8D7DA; width:100%; margin: 16px 0px 16px 0px;\">\n"
+"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F8D7DA; width:100%; margin: 16px 0px 16px 0px;\">\n"
 "                        <tr>\n"
-"                            <td style=\"background-color:#DC3545; padding: 8px 16px 8px "
-"16px; font-weight: bold; color: #fff;\">\n"
+"                            <td style=\"background-color:#DC3545; padding: 8px 16px 8px 16px; font-weight: bold; color: #fff;\">\n"
 "                                ✗ Transfer Rejected\n"
 "                            </td>\n"
 "                        </tr>\n"
@@ -233,36 +203,29 @@ msgid ""
 "                            <td style=\"padding: 16px 16px 16px 16px;\">\n"
 "                                <table>\n"
 "                                    <tr>\n"
-"                                        <td style=\"padding-right: 20px; font-weight: bold;"
-"\">Transfer Number:</td>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Transfer Number:</td>\n"
 "                                        <td>{{ object.name }}</td>\n"
 "                                    </tr>\n"
 "                                    <tr>\n"
-"                                        <td style=\"padding-right: 20px; font-weight: bold;"
-"\">Rejected by:</td>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Rejected by:</td>\n"
 "                                        <td>{{ object.approver_id.name }}</td>\n"
 "                                    </tr>\n"
 "                                    <tr>\n"
-"                                        <td style=\"padding-right: 20px; font-weight: bold;"
-"\">Rejection Date:</td>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Rejection Date:</td>\n"
 "                                        <td>{{ object.approval_date }}</td>\n"
 "                                    </tr>\n"
 "                                    <tr>\n"
-"                                        <td style=\"padding-right: 20px; font-weight: bold;"
-"\">Amount:</td>\n"
-"                                        <td>{{ object.amount | safe }} "
-"{{ object.currency_id.name }}</td>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Amount:</td>\n"
+"                                        <td>{{ object.amount | safe }} {{ object.currency_id.name }}</td>\n"
 "                                    </tr>\n"
 "                                </table>\n"
 "                            </td>\n"
 "                        </tr>\n"
 "                    </table>\n"
 "                    \n"
-"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-"
-"top: 16px; background-color: #FFF3CD; width:100%; margin: 16px 0px 16px 0px;\">\n"
+"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #FFF3CD; width:100%; margin: 16px 0px 16px 0px;\">\n"
 "                        <tr>\n"
-"                            <td style=\"background-color:#856404; padding: 8px 16px 8px "
-"16px; font-weight: bold; color: #fff;\">\n"
+"                            <td style=\"background-color:#856404; padding: 8px 16px 8px 16px; font-weight: bold; color: #fff;\">\n"
 "                                Rejection Reason\n"
 "                            </td>\n"
 "                        </tr>\n"
@@ -274,15 +237,11 @@ msgid ""
 "                    </table>\n"
 "                    \n"
 "                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"                        Please review the rejection reason and feel free to submit a new "
-"transfer request if needed.\n"
+"                        Please review the rejection reason and feel free to submit a new transfer request if needed.\n"
 "                    </p>\n"
 "                    <br>\n"
 "                    <div style=\"text-align: center;\">\n"
-"                        <a href=\"/"
-"web#id=%7B%7B%20object.id%20%7D%7D&amp;model=budget.transfer&amp;view_type=form\" "
-"style=\"background-color: #875A7B; padding: 8px 16px; text-decoration: none; color: #fff; "
-"border-radius: 5px;\">\n"
+"                        <a href=\"/web#id=%7B%7B%20object.id%20%7D%7D&amp;model=budget.transfer&amp;view_type=form\" style=\"background-color: #875A7B; padding: 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;\">\n"
 "                            View Transfer\n"
 "                        </a>\n"
 "                    </div>\n"
@@ -305,15 +264,12 @@ msgid ""
 "                    </p>\n"
 "                    <br>\n"
 "                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"                        Your budget transfer has been successfully completed and posted to "
-"the budget system.\n"
+"                        Your budget transfer has been successfully completed and posted to the budget system.\n"
 "                    </p>\n"
 "                    <br>\n"
-"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-"
-"top: 16px; background-color: #D1ECF1; width:100%; margin: 16px 0px 16px 0px;\">\n"
+"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #D1ECF1; width:100%; margin: 16px 0px 16px 0px;\">\n"
 "                        <tr>\n"
-"                            <td style=\"background-color:#17A2B8; padding: 8px 16px 8px "
-"16px; font-weight: bold; color: #fff;\">\n"
+"                            <td style=\"background-color:#17A2B8; padding: 8px 16px 8px 16px; font-weight: bold; color: #fff;\">\n"
 "                                ✓ Transfer Completed\n"
 "                            </td>\n"
 "                        </tr>\n"
@@ -321,26 +277,20 @@ msgid ""
 "                            <td style=\"padding: 16px 16px 16px 16px;\">\n"
 "                                <table>\n"
 "                                    <tr>\n"
-"                                        <td style=\"padding-right: 20px; font-weight: bold;"
-"\">Transfer Number:</td>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Transfer Number:</td>\n"
 "                                        <td>{{ object.name }}</td>\n"
 "                                    </tr>\n"
 "                                    <tr>\n"
-"                                        <td style=\"padding-right: 20px; font-weight: bold;"
-"\">Amount:</td>\n"
-"                                        <td style=\"color: #17A2B8; font-weight: bold;"
-"\">{{ object.amount | safe }} {{ object.currency_id.name }}</td>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Amount:</td>\n"
+"                                        <td style=\"color: #17A2B8; font-weight: bold;\">{{ object.amount | safe }} {{ object.currency_id.name }}</td>\n"
 "                                    </tr>\n"
 "                                    <tr>\n"
-"                                        <td style=\"padding-right: 20px; font-weight: bold;"
-"\">Posted Date:</td>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Posted Date:</td>\n"
 "                                        <td>{{ object.write_date }}</td>\n"
 "                                    </tr>\n"
 "                                    <tr>\n"
-"                                        <td style=\"padding-right: 20px; font-weight: bold;"
-"\">Budget Moves Created:</td>\n"
-"                                        <td>{{ object.budget_move_ids | length }} move(s)</"
-"td>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Budget Moves Created:</td>\n"
+"                                        <td>{{ object.budget_move_ids | length }} move(s)</td>\n"
 "                                    </tr>\n"
 "                                </table>\n"
 "                            </td>\n"
@@ -348,15 +298,11 @@ msgid ""
 "                    </table>\n"
 "                    \n"
 "                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"                        The budget amounts have been successfully transferred and are now "
-"available for use in the destination accounts.\n"
+"                        The budget amounts have been successfully transferred and are now available for use in the destination accounts.\n"
 "                    </p>\n"
 "                    <br>\n"
 "                    <div style=\"text-align: center;\">\n"
-"                        <a href=\"/"
-"web#id=%7B%7B%20object.id%20%7D%7D&amp;model=budget.transfer&amp;view_type=form\" "
-"style=\"background-color: #17A2B8; padding: 8px 16px; text-decoration: none; color: #fff; "
-"border-radius: 5px;\">\n"
+"                        <a href=\"/web#id=%7B%7B%20object.id%20%7D%7D&amp;model=budget.transfer&amp;view_type=form\" style=\"background-color: #17A2B8; padding: 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;\">\n"
 "                            View Transfer\n"
 "                        </a>\n"
 "                    </div>\n"
@@ -382,7 +328,8 @@ msgstr ""
 #. module: budget
 #: model_terms:ir.ui.view,arch_db:budget.res_config_settings_view_form_budget
 msgid ""
-"<i class=\"fa fa-warning\"/> คำเตือน: การอนุญาตให้งบประมาณติดลบอาจทำให้เกิดปัญหาในการควบคุมงบประมาณ"
+"<i class=\"fa fa-warning\"/> คำเตือน: "
+"การอนุญาตให้งบประมาณติดลบอาจทำให้เกิดปัญหาในการควบคุมงบประมาณ"
 msgstr ""
 
 #. module: budget
@@ -470,7 +417,6 @@ msgid "Activities"
 msgstr ""
 
 #. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_search_view
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_move_line_search
 msgid "Activity"
 msgstr ""
@@ -620,8 +566,8 @@ msgstr ""
 #: code:addons/budget/models/budget_transfer_line.py:0
 #, python-format
 msgid ""
-"Available budget ({:,.2f}) is less than transfer amount ({:,.2f}). This transfer may fail "
-"validation."
+"Available budget ({:,.2f}) is less than transfer amount ({:,.2f}). This "
+"transfer may fail validation."
 msgstr ""
 
 #. module: budget
@@ -721,7 +667,8 @@ msgstr ""
 #. module: budget
 #. odoo-python
 #: code:addons/budget/examples/purchase_order_commitment_example.py:0
-#: code:addons/budget/models/budget_mixin.py:0 code:addons/budget/models/budget_move.py:0
+#: code:addons/budget/models/budget_mixin.py:0
+#: code:addons/budget/models/budget_move.py:0
 #: model:ir.model,name:budget.model_budget_commitment
 #: model:ir.model.fields,field_description:budget.field_budget_mixin__budget_commitment_id
 #: model_terms:ir.ui.view,arch_db:budget.budget_commitment_form_view
@@ -797,7 +744,8 @@ msgstr ""
 
 #. module: budget
 #. odoo-python
-#: code:addons/budget/models/budget_mixin.py:0 model:ir.model,name:budget.model_budget_move
+#: code:addons/budget/models/budget_mixin.py:0
+#: model:ir.model,name:budget.model_budget_move
 #: model:ir.model.fields,field_description:budget.field_budget_mixin__budget_move_id
 #: model:ir.model.fields,field_description:budget.field_budget_move_line__move_id
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_move_form
@@ -928,6 +876,7 @@ msgstr ""
 #. module: budget
 #. odoo-python
 #: code:addons/budget/models/budget_commitment_mixin.py:0
+#: code:addons/budget/models/budget_commitment_mixin.py:0
 #, python-format
 msgid "Budget account field '%s' is not set on this record"
 msgstr ""
@@ -1045,7 +994,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/budget/models/budget_transfer.py:0
 #, python-format
-msgid "Budget move is not balanced. Total debits: {:,.2f}, Total credits: {:,.2f}"
+msgid ""
+"Budget move is not balanced. Total debits: {:,.2f}, Total credits: {:,.2f}"
 msgstr ""
 
 #. module: budget
@@ -1399,7 +1349,6 @@ msgid "Default Budget Type"
 msgstr ""
 
 #. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_search_view
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_move_line_search
 msgid "Department"
 msgstr ""
@@ -1487,8 +1436,8 @@ msgstr "แบบร่าง"
 #: code:addons/budget/models/budget_transfer_line.py:0
 #, python-format
 msgid ""
-"Duplicate transfer line found. Each combination of direction, budget account and analytic "
-"distribution must be unique."
+"Duplicate transfer line found. Each combination of direction, budget account"
+" and analytic distribution must be unique."
 msgstr ""
 
 #. module: budget
@@ -1569,8 +1518,8 @@ msgstr ""
 #: code:addons/budget/models/budget_transfer.py:0
 #, python-format
 msgid ""
-"From amount ({:,.2f}) doesn't match To amount ({:,.2f}). Please ensure the transfer is "
-"balanced."
+"From amount ({:,.2f}) doesn't match To amount ({:,.2f}). Please ensure the "
+"transfer is balanced."
 msgstr ""
 
 #. module: budget
@@ -1586,7 +1535,6 @@ msgid "Full Path"
 msgstr ""
 
 #. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_search_view
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_account_search
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_move_line_search
 msgid "Fund"
@@ -1966,7 +1914,12 @@ msgstr ""
 
 #. module: budget
 #. odoo-python
-#: code:addons/budget/models/budget_commitment.py:0 code:addons/budget/models/budget_move.py:0
+#: code:addons/budget/models/budget_commitment.py:0
+#: code:addons/budget/models/budget_commitment.py:0
+#: code:addons/budget/models/budget_commitment.py:0
+#: code:addons/budget/models/budget_move.py:0
+#: code:addons/budget/models/budget_move.py:0
+#: code:addons/budget/models/budget_transfer.py:0
 #: code:addons/budget/models/budget_transfer.py:0
 #, python-format
 msgid "New"
@@ -1977,6 +1930,14 @@ msgstr ""
 #: code:addons/budget/models/budget_commitment_mixin.py:0
 #, python-format
 msgid "New amount (%.2f) cannot be less than consumed amount (%.2f)"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__activity_calendar_event_id
+#: model:ir.model.fields,field_description:budget.field_budget_journal__activity_calendar_event_id
+#: model:ir.model.fields,field_description:budget.field_budget_move__activity_calendar_event_id
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
 msgstr ""
 
 #. module: budget
@@ -2066,6 +2027,7 @@ msgstr ""
 
 #. module: budget
 #. odoo-python
+#: code:addons/budget/models/budget_commitment_mixin.py:0
 #: code:addons/budget/models/budget_commitment_mixin.py:0
 #, python-format
 msgid "No fiscal year found for date %s"
@@ -2242,8 +2204,8 @@ msgstr ""
 #: code:addons/budget/examples/purchase_order_commitment_example.py:0
 #, python-format
 msgid ""
-"Please reserve budget first before confirming the purchase order. Click 'Reserve Budget' "
-"button to proceed."
+"Please reserve budget first before confirming the purchase order. Click "
+"'Reserve Budget' button to proceed."
 msgstr ""
 
 #. module: budget
@@ -2448,8 +2410,8 @@ msgstr ""
 #. module: budget
 #: model:ir.model.fields,help:budget.field_budget_account__deprecated
 msgid ""
-"Set deprecated to true to mark the Budget Account that has been outdated, that you should "
-"no longer use it."
+"Set deprecated to true to mark the Budget Account that has been outdated, "
+"that you should no longer use it."
 msgstr ""
 
 #. module: budget
@@ -2465,8 +2427,8 @@ msgstr ""
 #. module: budget
 #: model:ir.model.fields,help:budget.field_budget_journal__code
 msgid ""
-"Shorter name used for display. The journal entries of this journal will also be named using "
-"this prefix by default."
+"Shorter name used for display. The journal entries of this journal will also"
+" be named using this prefix by default."
 msgstr ""
 
 #. module: budget
@@ -2505,7 +2467,6 @@ msgid "Show Submit Button"
 msgstr ""
 
 #. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_search_view
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_move_line_search
 msgid "Source"
 msgstr ""
@@ -2866,8 +2827,8 @@ msgstr ""
 #: code:addons/budget/models/budget_move.py:0
 #, python-format
 msgid ""
-"You cannot create a move already in the posted state. Please create a draft move and post "
-"it after."
+"You cannot create a move already in the posted state. Please create a draft "
+"move and post it after."
 msgstr ""
 
 #. module: budget
@@ -2882,8 +2843,8 @@ msgstr ""
 #: code:addons/budget/models/budget_move.py:0
 #, python-format
 msgid ""
-"You cannot edit the budget_type of a budget move if it already has a sequence number "
-"assigned."
+"You cannot edit the budget_type of a budget move if it already has a "
+"sequence number assigned."
 msgstr ""
 
 #. module: budget
@@ -2932,6 +2893,7 @@ msgstr ""
 
 #. module: budget
 #. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
 #: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
 #: code:addons/budget/static/src/components/department_filter_sidebar/department_filter_sidebar.xml:0
 #, python-format
@@ -3056,7 +3018,8 @@ msgid "บรรทัด:"
 msgstr ""
 
 #. module: budget
-#: model:ir.ui.menu,name:budget.budget_move model:ir.ui.menu,name:budget.budget_move_menu
+#: model:ir.ui.menu,name:budget.budget_move
+#: model:ir.ui.menu,name:budget.budget_move_menu
 msgid "บัญชีงบประมาณ"
 msgstr ""
 
@@ -3096,6 +3059,7 @@ msgstr ""
 
 #. module: budget
 #. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
 #: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
 #, python-format
 msgid "พิมพ์"
@@ -3142,6 +3106,7 @@ msgstr ""
 #. module: budget
 #. odoo-javascript
 #: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
 #: code:addons/budget/static/src/components/department_filter_sidebar/department_filter_sidebar.xml:0
 #, python-format
 msgid "ย่อทั้งหมด"
@@ -3177,6 +3142,7 @@ msgstr ""
 
 #. module: budget
 #. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
 #: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
 #, python-format
 msgid "รายการ"
@@ -3269,6 +3235,7 @@ msgstr ""
 
 #. module: budget
 #. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
 #: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
 #, python-format
 msgid "ส่งออก"
@@ -3389,5 +3356,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/budget/models/budget_move_line.py:0
 #, python-format
-msgid "ไม่สามารถมีค่าเดบิตและเครดิตพร้อมกันได้ ต้องเลือกใดเลือกหนึ่ง (รายการ: %s)"
+msgid ""
+"ไม่สามารถมีค่าเดบิตและเครดิตพร้อมกันได้ ต้องเลือกใดเลือกหนึ่ง (รายการ: %s)"
 msgstr ""
