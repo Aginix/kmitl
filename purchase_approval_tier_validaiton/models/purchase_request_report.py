@@ -16,3 +16,22 @@ class PurchaseRequestReport(models.Model):
         res = super(PurchaseRequestReport, self)._get_under_validation_exceptions()
         res.append("route_id")
         return res
+
+    def _validate_tier(self, tiers=False):
+        super()._validate_tier(tiers)
+
+        for rec in self:
+            reviews = rec.review_ids.filtered(
+                lambda r: r.status == "pending" and (self.env.user in r.reviewer_ids)
+            )
+            if not reviews:
+                rec.write({'state': 'done'})
+
+                if rec.request_ids:
+                    rec.request_ids._write({'state': 'approved'})
+
+    @api.model
+    def _get_under_validation_exceptions(self):
+        res = super()._get_under_validation_exceptions()
+        res.append("state")
+        return res
