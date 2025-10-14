@@ -36,8 +36,27 @@ class PurchaseRequestReport(models.Model):
         'purchase.request',
         'report_id',
         string='Requests',
-        domain="[('payment_type', '=', payment_type), ('state', '=', 'to_verify'), ('report_id', '=', False)]",
+        domain="[('payment_type', '=', payment_type), ('state', '=', 'to_verify'), ('report_id', '=', False), ('is_required_approval', '=', True)]",
     )
+
+    def _validate_tier(self, tiers=False):
+        super()._validate_tier(tiers)
+
+        for rec in self:
+            reviews = rec.review_ids.filtered(
+                lambda r: r.status == "pending" and (self.env.user in r.reviewer_ids)
+            )
+            if not reviews:
+                rec.write({'state': 'done'})
+
+                if rec.request_ids:
+                    rec.request_ids._write({'state': 'approved'})
+
+    @api.model
+    def _get_under_validation_exceptions(self):
+        res = super()._get_under_validation_exceptions()
+        res.append("state")
+        return res
 
     def _compute_is_editable(self):
         for rec in self:

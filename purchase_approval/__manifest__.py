@@ -5,7 +5,7 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["purchase_request_kmitl", "purchase_no_rfq", "purchase_tier_validation", 'purchase_request_egp_kmitl', 'purchase_request_approval_kmitl'],
+    "depends": ["purchase_request_kmitl", "purchase_no_rfq", 'purchase_request_approval_kmitl'],
     "data": [
         "data/sequence.xml",
         "security/ir.model.access.csv",

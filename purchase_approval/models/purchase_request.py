@@ -7,7 +7,7 @@ class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
     is_required_approval = fields.Boolean(
-        compute="_compute_is_required_approval", store=False, readonly=True
+        compute="_compute_is_required_approval", store=True,
     )
     report_id = fields.Many2one(
         'purchase.request.report', string='Request Report', ondelete='set null', index=True

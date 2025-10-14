@@ -7,8 +7,33 @@
             <tree>
                 <field name="name"/>
                 <field name="payment_type"/>
-                <field name="state"/>
+                <field name="state" widget="badge" decoration-success="state in ('done')" decoration-muted="state == 'draft'" decoration-warning="state == 'submit'" decoration-danger="state == 'cancel'" />
                 <field name="operating_unit_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_tree_custom" model="ir.ui.view">
+        <field name="name">view.purchase.request.tree</field>
+        <field name="model">purchase.request</field>
+        <field name="arch" type="xml">
+            <tree>
+                <header>
+                    <button name="action_open_request_report" type="object" class="oe_stat_button" string="Create PA">
+                    </button>
+                </header>
+                <field name="name"/>
+                <field name="title"/>
+                <field name="requested_by" widget="many2one_avatar_user"/>
+                <field name="state" widget="badge" decoration-info="state in ('draft','to_approve')" decoration-muted="state in ('rejected')" />
+                <field name="operating_unit_id"/>
+                <field name="substate_sequence" invisible="1"/>
+                <field name="substate_id" widget="badge" decoration-muted="substate_sequence == 1" decoration-warning="substate_sequence == 2" decoration-success="substate_sequence == 3" optional="hide"/>
+                <field name="procurement_type_id" optional="show"/>
+                <field name="contract_type" optional="show"/>
+                <field name="payment_type" optional="show"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="estimated_cost" optional="show"/>
             </tree>
         </field>
     </record>
@@ -45,7 +70,7 @@
                     </group>
                     <notebook>
                         <page string="Requests">
-                            <field name="request_ids" widget="many2many" domain="[('payment_type', '=', payment_type), ('state', '=', 'to_verify'), ('report_id', '=', False)]" options="{'no_create': True, 'no_open': True}">
+                            <field name="request_ids" widget="many2many" domain="[('payment_type', '=', payment_type), ('state', '=', 'to_verify'), ('report_id', '=', False), ('is_required_approval', '=', True)]" options="{'no_create': True, 'no_open': True}">
                                 <tree create="0">
                                     <field name="name"/>
                                     <field name="title"/>
@@ -98,5 +123,23 @@
             </p>
         </field>
     </record>
-    <menuitem id="menu_purchase_approval" action="action_purchase_request_report" name="Purchase Approval" parent="purchase_request.parent_menu_purchase_request" groups="purchase_request.group_purchase_request_user,purchase_request.group_purchase_request_manager" sequence="50" />
+
+    <record id="action_purchase_request_report_filter" model="ir.actions.act_window">
+        <field name="name">Purchase Request Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="purchase_approval.view_purchase_request_tree_custom"/>
+        <field name="domain">[('report_id', '=', False), ('is_required_approval', '=', True), ('substate_sequence', '=', 30)]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Purchase Request Report.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_purchase_approval" name="Purchase Approval" parent="purchase_request.parent_menu_purchase_request" groups="purchase_request.group_purchase_request_user,purchase_request.group_purchase_request_manager" sequence="50" />
+    <menuitem id="menu_purchase_approval_filter" action="action_purchase_request_report_filter" name="waiting Purchase Approval" parent="purchase_approval.menu_purchase_approval" groups="purchase_request.group_purchase_request_user,purchase_request.group_purchase_request_manager" sequence="10" />
+    <menuitem id="menu_purchase_approval_report" action="action_purchase_request_report" name="Purchase Approval" parent="purchase_approval.menu_purchase_approval" groups="purchase_request.group_purchase_request_user,purchase_request.group_purchase_request_manager" sequence="20" />
 </odoo>
