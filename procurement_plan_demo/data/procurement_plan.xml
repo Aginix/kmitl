@@ -11,7 +11,7 @@
             name="procurement_method_id"
             ref="l10n_th_gov_purchase_request.procurement_general"
         />
-        <field name="state">pending</field>
+        <field name="state">draft</field>
         <field name="note">ผู้รับเหมาจะดำเนินงานในวันหยุดพิเศษต่าง ๆ ด้วย</field>
         <field name="purchase_request_eta">1</field>
         <field name="procurement_announcement_eta">2</field>
@@ -76,7 +76,7 @@
             name="procurement_method_id"
             ref="l10n_th_gov_purchase_request.procurement_general"
         />
-        <field name="state">pending</field>
+        <field name="state">draft</field>
         <field name="purchase_request_eta">4</field>
         <field name="procurement_announcement_eta">5</field>
         <field name="approval_signing_eta">6</field>
@@ -124,7 +124,7 @@
             name="procurement_method_id"
             ref="l10n_th_gov_purchase_request.procurement_specific"
         />
-        <field name="state">procurement</field>
+        <field name="state">draft</field>
         <field name="note">รับประกันสินค้าทั้งหมด 1.5 ปี</field>
         <field name="purchase_request_eta">1</field>
         <field name="procurement_announcement_eta">2</field>
@@ -159,7 +159,7 @@
             name="procurement_method_id"
             ref="l10n_th_gov_purchase_request.procurement_select"
         />
-        <field name="state">pending</field>
+        <field name="state">draft</field>
         <field name="note">-</field>
         <field name="purchase_request_eta">11</field>
         <field name="procurement_announcement_eta">5</field>
@@ -215,7 +215,7 @@
             name="procurement_method_id"
             ref="l10n_th_gov_purchase_request.procurement_general"
         />
-        <field name="state">done</field>
+        <field name="state">draft</field>
         <field name="note" />
         <field name="purchase_request_eta">1</field>
         <field name="procurement_announcement_eta">1</field>
@@ -257,7 +257,7 @@
             name="procurement_method_id"
             ref="l10n_th_gov_purchase_request.procurement_bidding"
         />
-        <field name="state">pending</field>
+        <field name="state">draft</field>
         <field name="note" />
         <field name="purchase_request_eta">8</field>
         <field name="procurement_announcement_eta">9</field>
