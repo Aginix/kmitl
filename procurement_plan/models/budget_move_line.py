@@ -17,5 +17,4 @@ class BudgetMoveLine(models.Model):
         readonly=True,
     )
 
-    procurement_plan_id = fields.Many2one(comodel_name="procurement.plan", string="รายการแผนจัดซื้อจัดจ้าง")
-    procurement_plan_analytic_id = fields.Many2one("account.analytic.account")
+    procurement_plan_id = fields.Many2one(comodel_name="procurement.plan")
