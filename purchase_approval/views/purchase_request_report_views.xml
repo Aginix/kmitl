@@ -48,7 +48,7 @@
                     </group>
                     <notebook>
                         <page string="Requests">
-                            <field name="request_ids" domain="[('payment_type', '=', payment_type), ('state', '=', 'to_verify')]" context="{'default_payment_type': payment_type}">
+                            <field name="request_ids" domain="[('payment_type', '=', payment_type), ('state', '=', 'to_verify'), ('report_id', '=', False)]" context="{'default_payment_type': payment_type}">
                             </field>
                         </page>
                         <page string="Notes">
