@@ -31,9 +31,9 @@ class ProcurementPlan(models.Model):
     _rec_names_search = ["name", "description"]
 
     READONLY_STATES = {
-        "validate": [("readonly", True)],
-        "pending": [("readonly", True)],
-        "procurement": [("readonly", True)],
+        "new": [("readonly", True)],
+        "on_hold": [("readonly", True)],
+        "in_progress": [("readonly", True)],
         "done": [("readonly", True)],
         "cancel": [("readonly", True)],
     }
@@ -88,9 +88,9 @@ class ProcurementPlan(models.Model):
     state = fields.Selection(
         [
             ("draft", "Draft"),
-            ("validate", "To Approve"),
-            ("pending", "Pending"),
-            ("procurement", "Procurement"),
+            ("new", "Not started yet"),
+            ("on_hold", "On Hold"),
+            ("in_progress", "In progress"),
             ("done", "Done"),
             ("cancel", "Cancelled"),
         ],
@@ -100,7 +100,7 @@ class ProcurementPlan(models.Model):
         default="draft",
         tracking=True,
     )
-    note = fields.Text("Notes", tracking=True, states=READONLY_STATES)
+    note = fields.Text("Notes", tracking=True)
     purchase_request_eta = fields.Selection(
         MONTH_SELECTION,
         "Purchase Request (ETA)",
@@ -180,9 +180,19 @@ class ProcurementPlan(models.Model):
             'code': values.get('code'),
             'company_id': self.env.company.id,
             'partner_id': values.get('partner_id'),
-            'plan_id': self.env.ref('procurement_plan_analytic.analytic_plan_procurement_plan', raise_if_not_found=True).id,
+            'plan_id': self.env.ref('procurement_plan.analytic_plan_procurement_plan', raise_if_not_found=True).id,
         })
         return analytic_account
+
+    def write(self, vals):
+        res = super().write(vals)
+        if 'state' in vals and vals['state'] not in ('draft', 'cancel') and not self.analytic_account_id:
+            analytic_account = self._create_analytic_account_from_values({
+                "name": self.description,
+                "code": self.name,
+            })
+            self.analytic_account_id = analytic_account.id
+        return res
 
     @api.depends("state", "name")
     def _compute_name(self):
@@ -192,27 +202,35 @@ class ProcurementPlan(models.Model):
             if record.state == "cancel":
                 continue
 
-            record_has_name = record.name and record.name != "New"
-            if record_has_name or (
-                record.state not in ("pending", "procurement", "done")
-            ):
-                continue
+            record_has_name = record.name and record.name != _("New")
             if not record_has_name:
                 record.name = self.env["ir.sequence"].next_by_code(
                     "procurement.plan"
                 ) or _("New")
 
-    def action_validate(self):
-        self.write({"state": "validate"})
+    def action_reset_to_draft(self):
+        self.write({"state": "draft"})
 
-    def action_pending(self):
-        self.write({"state": "pending"})
+    def action_new(self):
+        self.write({"state": "new"})
 
-    def action_procurement(self):
-        self.write({"state": "procurement"})
+    def action_on_hold(self):
+        self.write({"state": "on_hold"})
+
+    def action_in_progress(self):
+        self.write({"state": "in_progress"})
 
     def action_done(self):
         self.write({"state": "done"})
+
+    can_edit = fields.Boolean(compute="_compute_can_edit")
+
+    def _compute_can_edit(self):
+        for rec in self:
+            if rec.state == 'draft':
+                rec.can_edit = True
+            else:
+                rec.can_edit = False
 
     budget_commitment_ids = fields.One2many('budget.commitment', 'procurement_plan_id', string="ผูกพันงบประมาณ", readonly=True)
     budget_commitment_count = fields.Integer(string="จำนวนผูกพันงบประมาณ", compute='_compute_budget_commitment_count')

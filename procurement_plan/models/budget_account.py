@@ -10,4 +10,4 @@ _logger = logging.getLogger(__name__)
 class BudgetAccount(models.Model):
     _inherit = 'budget.account'
 
-    procurement_plan = fields.Boolean(string="ทำแผนจัดซื้อจัดจ้าง",help="หากติ๊กถูก รหัสงบประมาณนี้จะต้องระบุเงินผ่านแผนจัดซื้อจัดจ้างเท่านั้น",default=False)
+    procurement_plan = fields.Boolean(string="ทำแผนจัดซื้อจัดจ้าง",help="ติ๊กถูกเพื่อระบุว่าเป็นประเภทงบลงทุน จะสามารถจัดสรรแผนจัดซื้อจัดจ้างได้",default=False)
