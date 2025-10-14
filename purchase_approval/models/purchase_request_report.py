@@ -32,7 +32,13 @@ class PurchaseRequestReport(models.Model):
         'res.company', string='Company', required=True, readonly=True, states={'draft': [('readonly', False)]}, default=lambda self: self.env.company, tracking=True
     )
     currency_id = fields.Many2one('res.currency', string='Currency', states={'draft': [('readonly', False)]})
-    request_ids = fields.One2many('purchase.request', 'report_id', string='Request Lines', copy=False)
+    request_ids = fields.Many2many(
+        'purchase.request',
+        'purchase_request_report_rel',
+        'report_id', 'request_id',
+        string='Requests',
+        domain="[('payment_type', '=', payment_type), ('state', '=', 'to_verify')]",
+    )
 
     def _compute_is_editable(self):
         for rec in self:

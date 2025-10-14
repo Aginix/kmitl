@@ -10,7 +10,7 @@ class PurchaseRequest(models.Model):
         compute="_compute_is_required_approval", store=False, readonly=True
     )
     report_id = fields.Many2one(
-        'purchase.request.report', string='Request Report', ondelete='set null', index=True
+        'purchase.request.report', string='Request Report', ondelete='cascade', index=True
     )
 
     @api.depends("estimated_cost")
@@ -22,8 +22,8 @@ class PurchaseRequest(models.Model):
         if not self:
             raise UserError(_("No requests selected."))
 
-        # คัดเฉพาะ request ที่ approved เท่านั้น
-        approved_requests = self.filtered(lambda r: r.state == 'approved')
+        # คัดเฉพาะ request ที่ to_verify เท่านั้น
+        approved_requests = self.filtered(lambda r: r.state == 'to_verify')
         if not approved_requests:
             raise UserError(_("No approved requests selected."))
 

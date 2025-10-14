@@ -48,13 +48,7 @@
                     </group>
                     <notebook>
                         <page string="Requests">
-                            <field name="request_ids" context="{'default_report_id': active_id}" nolabel="1">
-                                <tree editable="bottom">
-                                    <field name="name"/>
-                                    <field name="date_start"/>
-                                    <field name="requested_by"/>
-                                    <field name="state"/>
-                                </tree>
+                            <field name="request_ids" domain="[('payment_type', '=', payment_type), ('state', '=', 'to_verify')]" context="{'default_payment_type': payment_type}">
                             </field>
                         </page>
                         <page string="Notes">
