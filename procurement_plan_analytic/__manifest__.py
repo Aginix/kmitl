@@ -6,11 +6,7 @@
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
     'depends': ['account_analytic_kmitl', 'procurement_plan'],
-    'data': [
-        "data/account.analytic.plan.csv",
-        'views/analytic_views.xml',
-        "views/procurement_plan_views.xml"
-    ],
+    'data': [],
     'application': False,
     'installable': True,
     'auto_install': False,

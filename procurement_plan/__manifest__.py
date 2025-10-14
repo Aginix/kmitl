@@ -12,8 +12,12 @@
     "data": [
         "data/account.analytic.plan.csv",
         "data/sequence.xml",
+        "data/budget_account_procurement_update.xml",
         "security/security.xml",
         "security/ir.model.access.csv",
+        "views/budget_account_views.xml",
+        "views/budget_commitment_views.xml",
+        "views/budget_move_views.xml",
         "views/analytic_views.xml",
         "views/procurement_plan_views.xml",
         "views/procurement_plan_menus.xml",
