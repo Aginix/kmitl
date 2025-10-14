@@ -6,7 +6,7 @@
         <field name="model">budget.move</field>
         <field name="inherit_id" ref="budget.view_budget_move_form" />
         <field name="arch" type="xml">
-            <xpath expr="//page[@name='additional_info']/group" position="inside">
+            <xpath expr="//page[@name='extra']/group/group" position="inside">
                 <field name="appropriation_id" readonly="1" />
             </xpath>
         </field>

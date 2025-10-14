@@ -8,11 +8,11 @@ _logger = logging.getLogger(__name__)
 
 
 class BudgetAccount(models.Model):
-    _inherit = 'budget.account'
+    _inherit = "budget.account"
 
     @api.model
-    def get_as_flat_list(self, budget_type='expense'):
-        domain = [('budget_type', '=', budget_type), ('parent_id', '=', False)]
+    def get_as_flat_list(self, budget_type="expense"):
+        domain = [("budget_type", "=", budget_type), ("parent_id", "=", False)]
         roots = self.search(domain, order="code")
 
         def flatten_node(node):
