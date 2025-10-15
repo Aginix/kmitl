@@ -2,10 +2,10 @@
 {
     "name": "KMITL Project",
     "version": "16.0.1.0.0",
-    "author": "",
-    "website": "",
-    "category": "",
-    "depends": ["web", "hr", "account_fiscal_year", "budget", "project", "base_exception", "portal"],
+    "category": "Project",
+    "author": "Aginix Technologies",
+    "website": "https://github.com/aginix/kmitl",
+    "depends": ["web", "hr", "account_fiscal_year", "budget", "project", "base_exception"],
     "data": [
         "data/account.analytic.plan.csv",
         "data/project.evaluation.csv",

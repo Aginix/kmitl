@@ -131,9 +131,9 @@ class KmitlProject(models.Model):
     state = fields.Selection(
         [
             ("draft", "Draft"),
-            ("confirmed", "Confirmed"),
+            ("new", "Not started yet"),
             ("in_progress", "In Progress"),
-            ("postpone", "Postpone"),
+            ("on_hold", "On Hold"),
             ("complete", "Completed"),
             ("cancel", "Cancelled"),
         ],
@@ -146,7 +146,7 @@ class KmitlProject(models.Model):
         tracking=True,
     )
 
-    impact_ids = fields.Many2many(
+    impact_id = fields.Many2one(
         comodel_name="project.impact",
         string="Impact",
         copy=True,
@@ -155,7 +155,7 @@ class KmitlProject(models.Model):
         states={"draft": [("readonly", False)]},
     )
 
-    global_index_ids = fields.Many2many(
+    global_index_id = fields.Many2one(
         comodel_name="project.global.index",
         string="Global Index",
         copy=True,
@@ -164,7 +164,7 @@ class KmitlProject(models.Model):
         states={"draft": [("readonly", False)]},
     )
 
-    fight_ids = fields.Many2many(
+    fight_id = fields.Many2one(
         comodel_name="project.fight",
         string="ความสอดคล้องกับค่านิยม : FIGHT",
         copy=True,
@@ -277,14 +277,103 @@ class KmitlProject(models.Model):
     analytic_account_id = fields.Many2one(
         "account.analytic.account",
         string="Analytic Account",
+        copy=False,
+        inverse="_inverse_analytic_account_id",
+        ondelete="set null",
+        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
+        check_company=True,
+        help="Analytic account to which this procurement plan. \n"
+        "Track the costs and revenues of your procurement plan by setting this analytic account on your related documents (e.g. budgetings, purchase requests, purchase orders etc.).",
     )
 
     active = fields.Boolean(default=True)
     is_editable = fields.Boolean(compute="_compute_is_editable")
 
-    account_analytic_id = fields.Many2one(
-        comodel_name="account.analytic.account",
+    budget_account_id = fields.Many2one(comodel_name="budget.account",
+        string="รหัสงบประมาณ",
+        required=True,
+        index=True,
+        tracking=True,
+        domain="[('budgetable', '=', True), ('budget_type', '=', 'expense')]",
+        states=READONLY_STATES
     )
+
+    activity_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="กิจกรรม",
+        compute="_compute_analytic_id",
+        inverse="_inverse_activity_analytic",
+        domain=[("root_plan_id.code", "=", "activities")],
+        store=False,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
+    department_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="ส่วนงาน",
+        compute="_compute_analytic_id",
+        inverse="_inverse_department_analytic",
+        domain=[("root_plan_id.code", "=", "departments")],
+        store=False,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
+    fund_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="กองทุน",
+        compute="_compute_analytic_id",
+        inverse="_inverse_fund_analytic",
+        domain=[("root_plan_id.code", "=", "funds")],
+        store=False,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
+    source_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="แหล่งเงิน",
+        compute="_compute_analytic_id",
+        inverse="_inverse_source_analytic",
+        domain=[("root_plan_id.code", "=", "sources")],
+        store=False,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
+    _analytic_keys = {
+        "activities": "activity_analytic_id",
+        "departments": "department_analytic_id",
+        "funds": "fund_analytic_id",
+        "sources": "source_analytic_id",
+        "project": "analytic_account_id",
+    }
+
+    def _inverse_activity_analytic(self):
+        """Update distribution when activity changes"""
+        for line in self:
+            line._update_analytic_distribution("activities")
+
+    def _inverse_department_analytic(self):
+        """Update distribution when department changes"""
+        for line in self:
+            line._update_analytic_distribution("departments")
+
+    def _inverse_fund_analytic(self):
+        """Update distribution when fund changes"""
+        for line in self:
+            line._update_analytic_distribution("funds")
+
+    def _inverse_source_analytic(self):
+        """Update distribution when fund changes"""
+        for line in self:
+            line._update_analytic_distribution("sources")
+
+    def _inverse_analytic_account_id(self):
+        """Update distribution when source changes"""
+        for line in self:
+            line._update_analytic_distribution("project")
 
     def button_cancel(self):
         self.write({"state": "cancel"})

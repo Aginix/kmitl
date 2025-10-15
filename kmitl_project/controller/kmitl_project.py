@@ -52,10 +52,6 @@ class KmitlProjectPortal(portal.CustomerPortal):
         except (AccessError, MissingError):
             return request.redirect('/my')
 
-        values = self._get_page_view_values(
-            project_sudo, access_token,
-            values={'kmitl_project': project_sudo},
-            **kw
-        )
+        values = self._get_page_view_values(project_sudo, access_token, {'kmitl_project': project_sudo}, False, False, **kw)
 
         return request.render("kmitl_project.portal_my_kmitl_project", values)

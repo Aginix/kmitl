@@ -1,22 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<odoo noupdate="1">
+<odoo>
     <record id="project_excep_no_strategy" model="exception.rule">
         <field name="name">ความสอดคล้องแผนยุทธศาสตร์ไม่สมบูรณ์</field>
         <field name="description">โครงการยุทธศาสตร์</field>
         <field name="sequence">50</field>
         <field name="model">kmitl.project</field>
-        <field name="code">if self.project_type == 'strategic_project':
-            if not self.national_strategy_id or not self.master_plan_id or not self.nesdc_plan_id or not self.kmitl_plan_id:
-                failed=True</field>
-        <field name="active" eval="False" />
+        <field name="code">
+if self.project_type == 'strategic_project':
+    if not self.national_strategy_id or not self.master_plan_id or not self.nesdc_plan_id or not self.kmitl_plan_id:
+        failed=True
+        </field>
+        <field name="active" eval="True" />
     </record>
-    <!-- <record id="pol_excep_qty_check" model="exception.rule">
-        <field name="name">Quantity not positive</field>
-        <field name="description">Purchase line quantity must be positive</field>
-        <field name="sequence">50</field>
-        <field name="model">purchase.order.line</field>
-        <field name="code">if self.product_qty &lt; 0:
-            failed=True</field>
-        <field name="active" eval="False" />
-    </record> -->
 </odoo>

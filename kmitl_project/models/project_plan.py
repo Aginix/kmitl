@@ -27,7 +27,7 @@ class ProjectPlan(models.Model):
     m10 = fields.Boolean(string="ต.ค.")
     m11 = fields.Boolean(string="พ.ย.")
     m12 = fields.Boolean(string="ธ.ค.")
-    project_id = fields.Many2one("project.project", string="โครงการ")
+    project_id = fields.Many2one("kmitl.project", string="โครงการ")
 
     @api.constrains("percentage")
     def _check_percentage(self):
