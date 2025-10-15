@@ -25,7 +25,7 @@ class PurchaseRequestReport(models.Model):
                 lambda r: r.status == "pending" and (self.env.user in r.reviewer_ids)
             )
             if not reviews:
-                rec.write({'state': 'done'})
+                rec.write({'state': 'done', 'approval_date': fields.Datetime.now()})
 
                 if rec.request_ids:
                     rec.request_ids._write({'state': 'approved'})
