@@ -24,7 +24,8 @@
                         ตัวอย่าง 2. "เครื่องล้างเครื่องมือด้วยคลื่นเสียงความถี่สูง จำนวน 1 เครื่อง วงเงินรวม 45,000 บาท" <br />
                     </p>
                 </div>
-                <field name="description" attrs="{'required': [('enable_procurement_plan', '=', True)]}" />
+                <field name="description" attrs="{'required': [('enable_procurement_plan', '=', True)], 'invisible': [('procurement_plan_id', '!=', False)]}" />
+                <field name="procurement_plan_id" attrs="{'invisible': [('procurement_plan_id', '=', False)]}" />
                 <label for="procurement_plan_amount" string="จำนวน" attrs="{'required': [('enable_procurement_plan', '=', True)]}" />
                 <div class="o_row">
                     <field name="procurement_plan_amount" attrs="{'required': [('enable_procurement_plan', '=', True)]}" />
@@ -36,6 +37,7 @@
                     <div>บาท</div>
                 </div>
                 <field name="procurement_method_id" attrs="{'required': [('enable_procurement_plan', '=', True)]}" widget="selection" />
+
             </group>
         </xpath>
     </field>

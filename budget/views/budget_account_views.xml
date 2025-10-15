@@ -22,52 +22,6 @@
         </field>
     </record>
 
-    <!-- View budget.account kanban -->
-    <record id="view_budget_account_kanban" model="ir.ui.view">
-        <field name="name">view.budget.account.kanban</field>
-        <field name="model">budget.account</field>
-        <field name="arch" type="xml">
-            <kanban class="o_kanban_mobile">
-                <templates>
-                    <t t-name="kanban-box">
-                        <div class="oe_kanban_card oe_kanban_global_click">
-                            <div class="o_kanban_record_top">
-                                <div class="o_kanban_record_headings">
-                                    <strong class="o_kanban_record_title">
-                                        <field name="code" />
- -                                        <field name="name" />
-                                    </strong>
-                                </div>
-                                <div class="o_kanban_manage_button_section">
-                                    <a class="o_kanban_manage_toggle_button" href="#">
-                                        <i class="fa fa-ellipsis-v" role="img" aria-label="Manage" title="Manage" />
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="o_kanban_record_body">
-                                <div class="o_kanban_tags_section">
-                                    <span class="badge" t-att-class="record.budget_type.raw_value == 'revenue' ? 'badge-success' : 'badge-primary'">
-                                        <field name="budget_type" />
-                                    </span>
-                                    <span t-if="record.budgetable.raw_value" class="badge badge-info">Budgetable</span>
-                                    <span t-if="record.deprecated.raw_value" class="badge badge-warning">Deprecated</span>
-                                </div>
-                                <div t-if="record.parent_id.value" class="o_kanban_record_subtitle">
-                                    Parent: <field name="parent_id" />
-                                </div>
-                                <div t-if="record.children_count.raw_value > 0" class="o_kanban_record_subtitle">
-                                    <i class="fa fa-sitemap" title="Sub-accounts" />
-                                    <field name="children_count" />
- sub-accounts
-                                </div>
-                            </div>
-                        </div>
-                    </t>
-                </templates>
-            </kanban>
-        </field>
-    </record>
-
     <!-- View budget.account form -->
     <record id="view_budget_account_form" model="ir.ui.view">
         <field name="name">view.budget.account.form</field>
@@ -95,6 +49,11 @@
                             <field name="deprecated" />
                         </group>
                     </group>
+                    <notebook>
+                        <page name="note" string="Note">
+                            <field name="note" />
+                        </page>
+                    </notebook>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_ids" widget="mail_thread" />
@@ -152,7 +111,7 @@
         <field name="name">รหัสงบประมาณ</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">budget.account</field>
-        <field name="view_mode">tree,kanban,form</field>
+        <field name="view_mode">tree,form</field>
         <field name="domain">[]</field>
         <field name="context">{
             'search_default_active': 1,

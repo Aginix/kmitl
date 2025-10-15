@@ -11,6 +11,7 @@
         "data/purchase_exception.xml",
         "data/purchase_request_exception.xml",
         "data/purchase_request_rules.xml",
+        "data/procurement_type.xml",
         "views/procurement_committee_views.xml",
         "views/purchase_order_views.xml",
         "views/purchase_request_views.xml",
