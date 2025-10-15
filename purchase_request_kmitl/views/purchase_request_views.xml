@@ -149,7 +149,6 @@
                     <group>
                         <field name="requested_by" widget="many2one_avatar_user" readonly="1" />
                         <field name="date_start" readonly="1" />
-                        <field name="operating_unit_id" widget="selection" groups="operating_unit.group_multi_operating_unit"/>
                     </group>
                 </page>
             </xpath>

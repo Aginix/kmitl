@@ -10,6 +10,11 @@ _logger = logging.getLogger(__name__)
 class PurchaseRequest(models.Model):
     _inherit = 'purchase.request'
 
+    department_id = fields.Many2one(
+        store=True,
+        readonly=False
+    )
+
     def _default_operating_unit_id(self):
         department_id = self.env.user.employee_id.department_id
         if department_id and department_id.operating_unit_id:
@@ -20,6 +25,7 @@ class PurchaseRequest(models.Model):
         compute="_compute_operating_unit_id",
         default=lambda self: self._default_operating_unit_id(),
         store=True,
+        readonly=False
     )
     
     @api.depends("department_id")
