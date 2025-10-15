@@ -61,7 +61,7 @@ class BudgetAppropriationLine(models.Model):
         string="รหัสงบประมาณ",
         index=True,
         required=True,
-        domain="[('budget_type', '=', budget_type), ('deduct', '=', deduct)]",
+        domain="[('budget_type', '=', budget_type), ('deduct', '=', deduct), ('budgetable', '=', True)]",
         tracking=True,
         auto_join=True,
     )
