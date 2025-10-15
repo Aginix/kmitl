@@ -6,7 +6,7 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['purchase_operating_unit', 'purchase_order_kmitl'],
+    'depends': ['purchase_order_kmitl', 'purchase_order_department', 'hr_department_short_name'],
     'data': [
 
     ],
