@@ -70,6 +70,7 @@
                                 <field nolabel="1" colspan="2" name="line_ids" style="max-width: 100%; display: block;" attrs="{'readonly': [('state', 'in', ['review', 'posted', 'cancel'])]}" widget="budget_appropriation_line">
                                     <tree limit="1000">
                                         <field name="appropriation_id" invisible="1" />
+                                        <field name="description" invisible="1" />
                                         <field name="budget_type" invisible="1" />
                                         <field name="description" invisible="1" />
                                         <field name="deduct" invisible="1" />
@@ -88,6 +89,7 @@
                                 <field nolabel="1" colspan="2" name="deduct_line_ids" style="max-width: 100%; display: block;" attrs="{'readonly': [('state', 'in', ['review', 'posted', 'cancel'])]}" widget="budget_appropriation_line" context="{'default_deduct': True}">
                                     <tree limit="1000">
                                         <field name="appropriation_id" invisible="1" />
+                                        <field name="description" invisible="1" />
                                         <field name="budget_type" invisible="1" />
                                         <field name="description" invisible="1" />
                                         <field name="deduct" invisible="1" />
@@ -183,6 +185,7 @@
                         <field name="account_fiscal_year_id" invisible="1" />
                         <field name="appropriation_id" invisible="1" />
                         <field name="budget_type" invisible="1" />
+                        <field name="description" invisible="1" />
                         <field name="deduct" invisible="1" />
                         <field name="description" invisible="1" />
                         <field name="department_analytic_id" options='{"no_open": True}' widget="helper_text" readonly="1" />
