@@ -16,10 +16,6 @@ class BudgetAppropriationLine(models.Model):
     )
 
     enable_procurement_plan = fields.Boolean("จัดสรรแผนจัดซื้อจัดจ้าง")
-    procurement_method_id = fields.Many2one(
-        comodel_name="procurement.method",
-        string="Procurement Method",
-    )
     procurement_plan_amount = fields.Integer(string="จำนวน")
     procurement_plan_unit = fields.Char("Unit of Measure")
     procurement_plan_id = fields.Many2one(comodel_name="procurement.plan")
@@ -31,7 +27,6 @@ class BudgetAppropriationLine(models.Model):
             "amount": self.procurement_plan_amount,
             "unit": self.procurement_plan_unit,
             "total_price": self.balance,
-            "procurement_method_id": self.procurement_method_id.id,
             "user_id": self.appropriation_id.user_id.id,
             "budget_account_id": self.account_id.id,
             "analytic_distribution": self.analytic_distribution,
