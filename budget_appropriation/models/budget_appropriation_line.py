@@ -61,7 +61,7 @@ class BudgetAppropriationLine(models.Model):
         string="รหัสงบประมาณ",
         index=True,
         required=True,
-        domain="[('budget_type', '=', budget_type), ('deduct', '=', deduct)]",
+        domain="[('budget_type', '=', budget_type), ('deduct', '=', deduct), ('budgetable', '=', True)]",
         tracking=True,
         auto_join=True,
     )
@@ -104,6 +104,7 @@ class BudgetAppropriationLine(models.Model):
         "account.analytic.account",
         compute="_compute_account_id",
         string="หักให้หน่วยงาน",
+        compute_sudo=True,
         domain=[("root_plan_id.code", "=", "departments")],
         store=True,
         readonly=False,
