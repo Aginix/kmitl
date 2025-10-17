@@ -9,6 +9,7 @@
     'depends': ['account'],
     "data": [
         "security/ir.model.access.csv",
+        "views/account_analytic_account_public_views.xml"
     ],
     'installable': True,
     'auto_install': False,
