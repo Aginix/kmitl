@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <menuitem id="budget_root_menu" name="Budgeting" sequence="10" groups="budget.group_budget_user">
+    <menuitem
+        id="budget_root_menu"
+        name="Budgeting"
+        sequence="10"
+        groups="budget.group_budget_user"
+        web_icon="budget,static/description/icon.png">
 
         <menuitem id="budget_commitment_management" name="จองงบประมาณ" sequence="30">
             <menuitem id="budget_commitment_menu" name="จองงบประมาณ" sequence="1">

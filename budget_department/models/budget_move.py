@@ -8,7 +8,13 @@ _logger = logging.getLogger(__name__)
 
 
 class BudgetMove(models.Model):
-    _inherit = 'budget.move'
+    _inherit = "budget.move"
+
+    READONLY_STATES = {
+        "review": [("readonly", True)],
+        "posted": [("readonly", True)],
+        "cancel": [("readonly", True)],
+    }
 
     @api.model
     def _default_department(self):
@@ -17,4 +23,10 @@ class BudgetMove(models.Model):
             return employee_id.department_id.id
         return False
 
-    department_id = fields.Many2one(string="Department", comodel_name="hr.department", default=lambda self: self._default_department())
+    department_id = fields.Many2one(
+        string="Department",
+        comodel_name="hr.department",
+        default=lambda self: self._default_department(),
+        readonly=False,
+        states=READONLY_STATES,
+    )
