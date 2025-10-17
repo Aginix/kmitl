@@ -11,13 +11,13 @@
                     <field name="currency_id" invisible="1"/>
                     <field name="complete_name" string="Name"/>
                     <field name="code"/>
-                    <field name="partner_id"/>
+                    <field name="partner_id" invisible="1"/>
                     <field name="plan_id"/>
                     <field name="active" invisible="1"/>
-                    <field name="company_id" groups="base.group_multi_company"/>
-                    <field name="debit" sum="Debit"/>
-                    <field name="credit" sum="Credit"/>
-                    <field name="balance" sum="Balance"/>
+                    <field name="company_id" groups="base.group_multi_company" invisible="1"/>
+                    <field name="debit" sum="Debit" invisible="1"/>
+                    <field name="credit" sum="Credit" invisible="1"/>
+                    <field name="balance" sum="Balance" invisible="1"/>
                 </tree>
             </field>
     </record>
