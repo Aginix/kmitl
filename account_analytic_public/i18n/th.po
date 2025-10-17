@@ -1,6 +1,6 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* account_public
+# 	* account_analytic_public
 #
 msgid ""
 msgstr ""
@@ -204,7 +204,7 @@ msgstr ""
 #. module: account_public
 #: model_terms:ir.ui.view,arch_db:account_public.view_account_analytic_account_public_list
 msgid "Name"
-msgstr "หน่วยงาน"
+msgstr "ชื่อหน่วยงาน"
 
 #. module: account_public
 #: model:ir.model.fields,field_description:account_public.field_account_analytic_account_public__message_needaction_counter

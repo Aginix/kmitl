@@ -22,6 +22,32 @@
             </field>
     </record>
 
+    <record id="view_account_analytic_account_public_search" model="ir.ui.view">
+            <field name="name">account.analytic.account.public.search</field>
+            <field name="model">account.analytic.account.public</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field
+                    name="name"
+                    filter_domain="['|', ('complete_name','ilike',self), ('code','ilike',self)]"
+                    string="Name"
+                    />
+                    <group expand="0" string="Group By">
+                        <filter
+                        string="Plan"
+                        name="plan_groupby"
+                        context="{'group_by':'plan_id'}"
+                        />
+                        <filter
+                        string="Parent"
+                        name="parent_groupby"
+                        context="{'group_by':'parent_id'}"
+                        />
+                   </group>
+                </search>
+            </field>
+        </record>
+
     <!-- Action account.analytic.account.public -->
     <record id="action_account_analytic_account_public" model="ir.actions.act_window">
         <field name="name">Account Analytic Account Public</field>
