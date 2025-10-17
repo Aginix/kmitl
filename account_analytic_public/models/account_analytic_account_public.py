@@ -12,6 +12,7 @@ class AccountAnalyticAccountPublic(models.Model):
     _inherit = ['account.analytic.account']
     _description = 'AccountAnalyticAccountPublic'
     _auto = False
+    _rec_names_search = ["complete_name", "code"]
 
     @property
     def _table_query(self):
