@@ -177,7 +177,8 @@ class TreeNode:
             'indent': self.indent,  # Add indent for display purposes
             'has_data': self.metadata.get('has_data', False),
             'expanded': self.metadata.get('expanded', True),
-            'note': self.metadata.get('description', ''),
+            'description': self.metadata.get('description', ''),
+            'note': self.metadata.get('note', ''),
         }
 
         # Add children if requested
@@ -513,6 +514,20 @@ class BudgetTreeExporter:
     @staticmethod
     def to_flat_list(tree: TreeNode) -> List[Dict[str, Any]]:
         """Export tree to flat list with hierarchy information"""
+
+        priority_codes = ['09', '06']  # Add more priority codes as needed
+        def sort_key(node):
+            # Extract first 2 digits of code for priority sorting
+            code_prefix = node.code[:2] if len(node.code) >= 2 else node.code
+
+            # Check if this is a priority code
+            if code_prefix in priority_codes:
+                # Return tuple with priority index first, then code
+                return (priority_codes.index(code_prefix), node.code)
+            else:
+                # Non-priority codes come after priority ones, sorted by code
+                return (len(priority_codes), node.code)
+
         result = []
 
         def traverse(node: TreeNode, indent: int = 0):
@@ -527,14 +542,22 @@ class BudgetTreeExporter:
                 'level': node.level,
                 'indent': indent,
                 'has_children': bool(node.children),
-                'line_count': node.metadata.get('line_count', 0)
+                'line_count': node.metadata.get('line_count', 0),
+                'description': node.metadata.get('description', ''),
+                'note': node.metadata.get('note', ''),
             })
 
-            for child in node.children:
-                traverse(child, indent + 1)
+            sorted_children = sorted(node.children, key=lambda c: c.code)
+            for child in sorted_children:
+                if node.node_type == 'account':
+                    traverse(child, indent + 1)
+                else:
+                    traverse(child, indent)
+
+        sorted_children = sorted(tree.children, key=sort_key)
 
         # Start from root children
-        for child in tree.children:
+        for child in sorted_children:
             traverse(child)
 
         return result

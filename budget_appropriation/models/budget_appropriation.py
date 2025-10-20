@@ -216,6 +216,8 @@ class BudgetAppropriation(models.Model):
         compute="_compute_hide_review_button", readonly=True
     )
 
+    department_id = fields.Many2one('hr.department', tracking=True, default=lambda self: self.env.user.employee_id.department_id.id)
+
     @api.depends("line_ids.balance", "deduct_line_ids.balance")
     def _compute_amount(self):
         for appropriation in self:

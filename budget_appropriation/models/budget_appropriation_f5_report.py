@@ -50,7 +50,42 @@ class BudgetAppropriationF5Report(models.TransientModel):
             }
         }
 
-    def _build_hierarchy(self, lines):
+    @api.model
+    def get_f5_data_flat(self, appropriation_id):
+        """Generate F5 hierarchical data for single budget appropriation"""
+        appropriation = self.env["budget.appropriation"].browse(appropriation_id)
+
+        if not appropriation:
+            return {"error": "Invalid appropriation"}
+
+        # Validate EXPENSE type only
+        if appropriation.budget_type != 'expense':
+            return {"error": "F5 report is only available for expense type appropriations"}
+
+        # Get appropriation lines
+        lines = appropriation.line_ids
+
+        # Build hierarchy: Activities → Funds → Budget Accounts → Lines
+        hierarchy = self._build_hierarchy(lines, True)
+
+        # Calculate totals
+        amount_total = sum(line.balance for line in lines)
+
+        return {
+            "department": self._get_complete_name_without_codes(appropriation.department_analytic_id),
+            "type": "รายจ่าย" if appropriation.budget_type == 'expense' else "รายรับ",
+            "source": appropriation.source_analytic_id.name,
+            "fiscal_year": appropriation.account_fiscal_year_id.name,
+            "amount_total": amount_total,
+            "hierarchy": hierarchy,
+            "summary": {
+                "total_lines": len(lines),
+                "amount_total": amount_total,
+                "activities_count": len(hierarchy),
+            }
+        }
+
+    def _build_hierarchy(self, lines, flatten=False):
         """Build hierarchical tree structure: Activity → Fund → Account"""
 
         if not lines:
@@ -62,6 +97,9 @@ class BudgetAppropriationF5Report(models.TransientModel):
 
         # Build tree from lines
         tree = tree_builder.build_tree(lines)
+
+        if flatten:
+            return BudgetTreeExporter.to_flat_list(tree)
 
         # Export to Odoo-compatible format
         return BudgetTreeExporter.to_odoo_hierarchy(tree)

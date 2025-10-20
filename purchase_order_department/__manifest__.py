@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Operating Unit Base Department',
+    'name': 'Purchase Order Department',
     'version': '16.0.1.0.0',
-    'summary': """ Operating Unit Base Department Summary """,
-    "category": "KMITL",
+    'summary': """ Purchase Order Department Summary """,
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['hr', 'operating_unit'],
+    "category": "KMITL",
+    'depends': ['purchase', 'hr'],
     "data": [
-        "views/operating_unit_views.xml"
+        "views/purchase_order_views.xml"
     ],
     'installable': True,
     'auto_install': False,

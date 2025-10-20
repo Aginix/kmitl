@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Analytic Operating Unit No Security',
+    'name': 'Purchase Order Department Link By Purchase Request',
     'version': '16.0.1.0.0',
-    'summary': """ Analytic Operating Unit No Security Summary """,
+    'summary': """ Purchase Order Department Link By Purchase Request Summary """,
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    'depends': ['analytic_operating_unit'],
-    'data': [
-        'security/analytic_account_security.xml',
+    'depends': ['purchase_request_department', 'purchase_order_department'],
+    "data": [
     ],
     'installable': True,
     'auto_install': False,
