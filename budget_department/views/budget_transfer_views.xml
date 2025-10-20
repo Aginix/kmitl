@@ -8,7 +8,7 @@
         <field name="inherit_id" ref="budget.view_budget_transfer_form"/>
         <field name="arch" type="xml">
             <field name="user_id" position="after">
-                <field name="department_id" required="1" />
+                <field name="department_id" />
             </field>
         </field>
     </record>
