@@ -1,29 +1,23 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <record id="product_category_asset" model="product.category">
-        <field name="name">ครุภัณฑ์</field>
-        <field name="code">asset</field>
+    <record id="product_category_kmitl" model="product.category">
+        <field name="name">KMITL</field>
+        <field name="code">kmitl</field>
     </record>
 
-    <record id="product_category_building" model="product.category">
-        <field name="name">อาคาร สิ่งก่อสร้าง</field>
-        <field name="code">building</field>
-    </record>
 
     <record id="product_category_expense" model="product.category">
         <field name="name">ค่าใช้จ่าย</field>
         <field name="code">expense</field>
+        <field name="parent_id" ref="product_category_kmitl"/>
     </record>
 
-    <record id="product_category_consumable" model="product.category">
-        <field name="name">วัสดุใช้ไป</field>
-        <field name="code">consumable</field>
-    </record>
 
     <record id="product_category_storable" model="product.category">
         <field name="name">วัสดุคงคลัง</field>
         <field name="code">storable</field>
+        <field name="parent_id" ref="product_category_kmitl"/>
     </record>
 
     <record id="product_category_75000000" model="product.category">

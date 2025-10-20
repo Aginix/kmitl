@@ -13,11 +13,8 @@
     ],
     "data": [
         "data/product_category.xml",
-        "data/product_template_storable.xml",
-        "data/product_template_consumable.xml",
-        "data/product_template_asset.xml",
         "data/product_template_expense.xml",
-        "data/product_template_building.xml",
+        "data/product_template_storable.xml",
         "views/product_template_views.xml",
     ],
     "application": False,
