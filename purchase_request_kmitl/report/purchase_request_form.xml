@@ -59,82 +59,120 @@
     </template> -->
 
     <template id="report_purchase_request_fake">
-        <t t-set="company" t-value="env.company" />
-        <t t-call="web.html_container">
-            <t t-call="web.external_layout">
-                <div class="page">
+        <!-- ไม่มี t-call="web.external_layout" -->
+        <t t-foreach="docs" t-as="o">
+            <div class="page">
+                <!-- โลโก้ -->
                 <div style="text-align:center;">
+                    <img t-att-src="'/purchase_request_kmitl/static/src/img/kmitl_logo.png'" style="width:80px;"/>
+                </div>
+
+                <!-- หัวเรื่อง -->
+                <div style="text-align:center; margin-top:10px;">
                     <strong style="font-size:18pt;">บันทึกขอซื้อจ้าง</strong>
+                    <br/>
+                    <span>แทน แบบ พ.1</span>
                 </div>
 
-                <div style="margin-top:10px;">
+                <!-- ข้อมูลทั่วไป -->
+                <div style="margin-top:15px; font-size:13pt;">
                     <p>
-                        เลขที่เอกสาร                        <strong>PR-0001</strong>
-                        วันที่                        <strong>15/10/2025</strong>
+                    เลขที่เอกสาร                        <strong>
+                            <t t-esc="o.name"/>
+                        </strong>
+                    <!-- วันที่                        <strong>
+                            <t t-esc="o.date_request"/>
+                        </strong> -->
                         <br/>
-                        หน่วยงาน                        <strong>คณะวิศวกรรมศาสตร์ ภาควิชาวิศวกรรมคอมพิวเตอร์</strong>
+                    หน่วยงาน                        <strong>
+                            <t t-esc="o.department_id.name"/>
+                        </strong>
                         <br/>
-                        เรื่อง                        <strong>ขอจัดซื้อวัสดุสำนักงานประจำเดือน</strong>
+                    เรื่อง                        <strong>
+                            <t t-esc="o.description"/>
+                        </strong>
                     </p>
                 </div>
 
-                <div style="margin-top:10px;">
+                <!-- รายละเอียด -->
+                <div style="margin-top:15px; font-size:13pt;">
                     <p>
-                        ข้าพเจ้า                        <strong>นายสมชาย ใจดี</strong>
-                        สังกัด                        <strong>คณะวิศวกรรมศาสตร์</strong>
+                    ข้าพเจ้า                        <strong>
+                            <t t-esc="o.requested_by.name"/>
+                        </strong>
+                    สังกัด                        <strong>
+                            <t t-esc="o.department_id.name"/>
+                        </strong>
                         <br/>
-                        เหตุผลความจำเป็น                        <strong>เพื่อใช้ในการดำเนินงานประจำภาควิชา</strong>
+                    <!-- เหตุผลความจำเป็น                        <strong>
+                            <t t-esc="o.reason"/>
+                        </strong> -->
                         <br/>
-                        วิธีการจัดซื้อจัดจ้าง                        <strong>วิธีเฉพาะเจาะจง</strong>
+                    <!-- วิธีการจัดซื้อจัดจ้าง                        <strong>
+                            <t t-esc="o.method"/>
+                        </strong> -->
                         <br/>
-                        ประเภทการจ่ายเงิน                        <strong>เงินงบประมาณ</strong>
+                    ประเภทการจ่ายเงิน                        <strong>
+                            <t t-esc="o.payment_type"/>
+                        </strong>
                     </p>
                 </div>
 
-                <table style="width:100%; margin-top:15px; border:1px solid black; border-collapse:collapse;">
+                <!-- ตารางรายการ -->
+                <table style="width:100%; border-collapse:collapse; border:1px solid black; font-size:12pt; margin-top:10px;">
                     <thead>
-                        <tr style="background-color:#f2f2f2;">
-                            <th style="text-align:center; border:1px solid black;">ลำดับ</th>
-                            <th style="text-align:center; border:1px solid black;">รายละเอียด</th>
-                            <th style="text-align:center; border:1px solid black;">จำนวน</th>
-                            <th style="text-align:center; border:1px solid black;">ราคาต่อหน่วย</th>
-                            <th style="text-align:center; border:1px solid black;">จำนวนเงิน</th>
+                        <tr style="background:#f2f2f2;">
+                            <th style="border:1px solid black; text-align:center;">ลำดับ</th>
+                            <th style="border:1px solid black; text-align:center;">รายละเอียด</th>
+                            <th style="border:1px solid black; text-align:center;">จำนวน</th>
+                            <th style="border:1px solid black; text-align:center;">ราคาต่อหน่วย</th>
+                            <th style="border:1px solid black; text-align:center;">จำนวนเงิน</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td style="text-align:center; border:1px solid black;">1</td>
-                            <td style="border:1px solid black;">กระดาษ A4 Double A</td>
-                            <td style="text-align:center; border:1px solid black;">10</td>
-                            <td style="text-align:right; border:1px solid black;">100.00</td>
-                            <td style="text-align:right; border:1px solid black;">1,000.00</td>
-                        </tr>
-                        <tr>
-                            <td style="text-align:center; border:1px solid black;">2</td>
-                            <td style="border:1px solid black;">หมึกพิมพ์ HP 78A</td>
-                            <td style="text-align:center; border:1px solid black;">2</td>
-                            <td style="text-align:right; border:1px solid black;">850.00</td>
-                            <td style="text-align:right; border:1px solid black;">1,700.00</td>
+                        <tr t-foreach="o.line_ids" t-as="line">
+                            <!-- <td style="border:1px solid black; text-align:center;">
+                                <t t-esc="line.sequence"/>
+                            </td> -->
+                            <td style="border:1px solid black;">
+                                <t t-esc="line.name"/>
+                            </td>
+                            <td style="border:1px solid black; text-align:center;">
+                                <t t-esc="line.product_qty"/>
+                            </td>
+                            <!-- <td style="border:1px solid black; text-align:right;">
+                                <t t-esc="line.price_unit"/>
+                            </td> -->
+                            <!-- <td style="border:1px solid black; text-align:right;">
+                                <t t-esc="line.price_subtotal"/>
+                            </td> -->
                         </tr>
                     </tbody>
                 </table>
 
-                <div style="text-align:right; margin-top:10px;">
-                    <p>ราคาก่อนภาษีมูลค่าเพิ่ม 2,700.00 บาท</p>
-                    <p>ภาษีมูลค่าเพิ่ม (7%) 189.00 บาท</p>
+                <!-- รวมเงิน -->
+                <div style="text-align:right; margin-top:10px; font-size:13pt;">
+                    <!-- <p>ราคาก่อนภาษีมูลค่าเพิ่ม                        <t t-esc="o.amount_untaxed"/>
+ บาท</p> -->
+                    <!-- <p>ภาษีมูลค่าเพิ่ม (7%) <t t-esc="o.amount_tax"/>
+ บาท</p> -->
                     <p>
-                        <strong>ราคารวมสุทธิ 2,889.00 บาท</strong>
+                        <!-- <strong>ราคารวมสุทธิ                            <t t-esc="o.amount_total"/>
+ บาท</strong> -->
                     </p>
                 </div>
 
-                <div style="margin-top:30px;">
-                    <p>ลงชื่อ ...................................................... ผู้ขอซื้อจ้าง</p>
-                    <p>วันที่ 15 ตุลาคม 2568</p>
+                <!-- ลายเซ็น -->
+                <div style="margin-top:30px; font-size:13pt;">
+                    <p>ลงชื่อ ................................................. ผู้ขอซื้อจ้าง</p>
+                    <!-- <p>วันที่                        <t t-esc="o.date_request"/>
+                    </p> -->
                 </div>
             </div>
-            </t>
         </t>
     </template>
+
+
 
     <report id="action_report_purchase_request" model="purchase.request" string="บันทึกขอซื้อจ้าง" report_type="qweb-pdf" name="purchase_request_kmitl.report_purchase_request_fake" file="purchase_request_kmitl.report_purchase_request_fake" print_report_name="'บันทึกขอซื้อจ้าง'" />
 </odoo>
