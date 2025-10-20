@@ -144,7 +144,7 @@ class BudgetTransfer(models.Model):
     )
 
     # Fiscal Year
-    date_range_fy_id = fields.Many2one(
+    account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="Fiscal Year",
         required=True,
@@ -389,8 +389,8 @@ class BudgetTransfer(models.Model):
                     available_budget = budget_controller.get_available_budget(
                         analytic_data=analytic_data,
                         fiscal_year_id=(
-                            transfer.date_range_fy_id.id
-                            if transfer.date_range_fy_id
+                            transfer.account_fiscal_year_id.id
+                            if transfer.account_fiscal_year_id
                             else False
                         ),
                         company_id=transfer.company_id.id,
@@ -456,7 +456,7 @@ class BudgetTransfer(models.Model):
                 limit=1,
             )
             if fiscal_year:
-                self.date_range_fy_id = fiscal_year
+                self.account_fiscal_year_id = fiscal_year
 
     @api.onchange("line_ids")
     def _onchange_line_ids(self):
@@ -609,6 +609,17 @@ class BudgetTransfer(models.Model):
                 )
             )
 
+    def _prepare_budget_move_vals(self):
+        return {
+            "move_type": "entry",
+            "date": self.date,
+            "ref": _(f"Transfer: {self.name}"),
+            "company_id": self.company_id.id,
+            "currency_id": self.currency_id.id,
+            "transfer_id": self.id,
+            "account_fiscal_year_id": self.account_fiscal_year_id.id,
+        }
+
     # Budget Move Creation
     def _create_budget_moves(self):
         """Create budget moves for the transfer"""
@@ -633,20 +644,7 @@ class BudgetTransfer(models.Model):
                 )
             )
 
-        # Create a single budget move for the transfer
-        move_vals = {
-            "move_type": "entry",
-            "date": self.date,
-            "ref": f"Transfer: {self.name}",
-            "company_id": self.company_id.id,
-            "currency_id": self.currency_id.id,
-            "journal_id": self._get_transfer_journal().id,
-            "transfer_id": self.id,
-            "date_range_fy_id": self.date_range_fy_id.id,
-
-        }
-
-        budget_move = self.env["budget.move"].create(move_vals)
+        budget_move = self.env["budget.move"].create(self._prepare_budget_move_vals())
 
         # Collect all move line data first, then create in batch
         move_lines_data = []
@@ -698,24 +696,6 @@ class BudgetTransfer(models.Model):
         budget_move.action_post()
 
         return budget_move
-
-    def _get_transfer_journal(self):
-        """Get or create budget transfer journal"""
-        journal = self.env["budget.journal"].search(
-            [("code", "=", "BTRF"), ("company_id", "=", self.company_id.id)], limit=1
-        )
-
-        if not journal:
-            journal = self.env["budget.journal"].create(
-                {
-                    "name": "Budget Transfer",
-                    "code": "BTRF",
-                    "company_id": self.company_id.id,
-                    "default_budget_type": "expense",  # Default type
-                }
-            )
-
-        return journal
 
     # Notification Methods
     def _notify_approvers(self):

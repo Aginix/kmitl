@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -22,6 +22,5 @@ class AccountAsset(models.Model):
 
     department_id = fields.Many2one(
         "hr.department",
-        related='operating_unit_id.department_id',
         string = "Department"
     )

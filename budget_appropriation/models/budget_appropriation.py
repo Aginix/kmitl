@@ -89,14 +89,14 @@ class BudgetAppropriation(models.Model):
         tracking=True,
         default="draft",
     )
-    date_range_fy_id = fields.Many2one(
+    account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="ปีงบประมาณ",
         tracking=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
-    note = fields.Char(
+    note = fields.Text(
         readonly=False,
         tracking=True,
         states=READONLY_STATES,
@@ -150,21 +150,13 @@ class BudgetAppropriation(models.Model):
         states=READONLY_STATES,
         domain=[('deduct', '=', True)],
     )
-    journal_id = fields.Many2one(
-        "budget.journal",
-        string="Journal",
-        store=True,
-        readonly=False,
-        required=True,
-        states=READONLY_STATES,
-        check_company=True,
-        tracking=True,
-    )
     budget_type = fields.Selection(
-        related="journal_id.default_budget_type",
+        [("revenue", "Revenue"), ("expense", "Expense")],
         string="Budget Type",
-        store=True,
-        readonly=True,
+        required=True,
+        copy=True,
+        default="expense",
+        states=READONLY_STATES,
     )
     company_id = fields.Many2one(
         comodel_name="res.company",
@@ -224,6 +216,8 @@ class BudgetAppropriation(models.Model):
         compute="_compute_hide_review_button", readonly=True
     )
 
+    department_id = fields.Many2one('hr.department', tracking=True, default=lambda self: self.env.user.employee_id.department_id.id)
+
     @api.depends("line_ids.balance", "deduct_line_ids.balance")
     def _compute_amount(self):
         for appropriation in self:
@@ -241,7 +235,7 @@ class BudgetAppropriation(models.Model):
             if appropriation.state == "cancel":
                 continue
 
-            appropriation_has_name = appropriation.name and appropriation.name != "New"
+            appropriation_has_name = appropriation.name and appropriation.name != _("New")
             if appropriation_has_name or (
                 appropriation.state not in ("review", "posted")
             ):
@@ -310,10 +304,9 @@ class BudgetAppropriation(models.Model):
             "move_type": "appropriation",
             "date": self.date,
             "ref": self.ref,
-            "journal_id": self.journal_id.id,
             "department_analytic_id": self.department_analytic_id.id,
             "source_analytic_id": self.source_analytic_id.id,
-            "date_range_fy_id": self.date_range_fy_id.id,
+            "account_fiscal_year_id": self.account_fiscal_year_id.id,
             "note": self.note,
             "company_id": self.company_id.id,
             "currency_id": self.currency_id.id,

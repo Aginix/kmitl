@@ -104,3 +104,35 @@ class AnalyticDistributionMixin(models.AbstractModel):
                 data[keys.get(aa.plan_id.code)] = aa.id
         if data:
             self.write(data)
+
+
+class AnalyticMixin(models.AbstractModel):
+    _inherit = ["analytic.mixin"]
+
+    _analytic_keys = {}
+
+    def _update_analytic_distribution(self, plan_code):
+        """Update analytic distribution JSON from individual fields"""
+        self.ensure_one()
+
+        distribution = {}
+        account_ids = [int(account_id) for account_id in self.analytic_distribution or {}]
+        accounts = self.env['account.analytic.account'].browse(account_ids)
+
+        for account_id in accounts.filtered(lambda r: r.plan_id.code != plan_code):
+            distribution[str(account_id.id)] = 100
+
+        field_name = self._analytic_keys[plan_code]
+        analytic_id = self[field_name]
+        if analytic_id:
+            distribution[str(analytic_id.id)] = 100
+
+        self.analytic_distribution = distribution if distribution else False
+
+    @api.depends("analytic_distribution")
+    def _compute_analytic_id(self):
+        for rec in self:
+            account_ids = [int(account_id) for account_id in rec.analytic_distribution or {}]
+            accounts = self.env['account.analytic.account'].browse(account_ids)
+            for account_id in accounts:
+                rec[self._analytic_keys.get(account_id.plan_id.code)] = account_id.id

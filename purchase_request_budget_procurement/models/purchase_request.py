@@ -11,18 +11,29 @@ class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
     use_procurement_plan = fields.Boolean(
-        string="เลือกใช้รายการจากแผนจัดซื้อจัดจ้าง", default=False
+        string="เลือกใช้รายการจากแผนจัดซื้อจัดจ้าง",
+        compute="_compute_use_procurement_plan",
+        store=False,
     )
-
     procurement_plan_id = fields.Many2one(
         comodel_name="procurement.plan", string="รายการแผนจัดซื้อจัดจ้าง", domain="", tracking=True
     )
-
     activity_analytic_id = fields.Many2one("account.analytic.account", store=True, compute="_compute_procurement_plan_analytic_id")
     department_analytic_id = fields.Many2one("account.analytic.account", store=True, compute="_compute_procurement_plan_analytic_id")
     fund_analytic_id = fields.Many2one("account.analytic.account", store=True, compute="_compute_procurement_plan_analytic_id")
     source_analytic_id = fields.Many2one("account.analytic.account", store=True, compute="_compute_procurement_plan_analytic_id")
     procurement_plan_analytic_id = fields.Many2one("account.analytic.account", store=True, compute="_compute_procurement_plan_analytic_id")
+
+    @api.depends("product_id.categ_id")
+    def _compute_use_procurement_plan(self):
+        asset_categ = self.env.ref("product_kmitl.product_category_asset", raise_if_not_found=False)
+        building_categ = self.env.ref("product_kmitl.product_category_building", raise_if_not_found=False)
+
+        for rec in self:
+            if rec.product_id and rec.product_id.categ_id in (asset_categ, building_categ):
+                rec.use_procurement_plan = True
+            else:
+                rec.use_procurement_plan = False
 
     @api.depends("state", "use_procurement_plan", "procurement_plan_id")
     def _compute_can_edit_budget(self):
@@ -53,15 +64,14 @@ class PurchaseRequest(models.Model):
             self.procurement_plan_analytic_id = self.procurement_plan_id.analytic_account_id.id
         else:
             self.procurement_plan_id = False
-            self.budget_account_id = False
             self.activity_analytic_id = False
             self.department_analytic_id = False
             self.fund_analytic_id = False
             self.source_analytic_id = False
             self.procurement_plan_analytic_id = False
 
-    @api.onchange("date_range_fy_id")
-    def _onchange_date_range_fy_id(self):
+    @api.onchange("account_fiscal_year_id")
+    def _onchange_account_fiscal_year_id(self):
         if self.procurement_plan_id:
             self.procurement_plan_id = False
 

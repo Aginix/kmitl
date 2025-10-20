@@ -61,12 +61,12 @@ class BudgetAppropriationLine(models.Model):
         string="รหัสงบประมาณ",
         index=True,
         required=True,
-        domain="[('budget_type', '=', budget_type), ('deduct', '=', deduct)]",
+        domain="[('budget_type', '=', budget_type), ('deduct', '=', deduct), ('budgetable', '=', True)]",
         tracking=True,
         auto_join=True,
     )
     budget_type = fields.Selection(
-        related="appropriation_id.journal_id.default_budget_type",
+        related="appropriation_id.budget_type",
         store=True,
         readonly=True,
     )
@@ -95,19 +95,16 @@ class BudgetAppropriationLine(models.Model):
         related="appropriation_id.state",
         store=True,
     )
-    date_range_fy_id = fields.Many2one(
-        related="appropriation_id.date_range_fy_id",
-        store=True,
-    )
-    journal_id = fields.Many2one(
-        related="appropriation_id.journal_id",
+    account_fiscal_year_id = fields.Many2one(
+        related="appropriation_id.account_fiscal_year_id",
         store=True,
     )
 
     deduct_analytic_id = fields.Many2one(
-        "account.analytic.account",
+        "account.analytic.account.public",
         compute="_compute_account_id",
         string="หักให้หน่วยงาน",
+        compute_sudo=True,
         domain=[("root_plan_id.code", "=", "departments")],
         store=True,
         readonly=False,

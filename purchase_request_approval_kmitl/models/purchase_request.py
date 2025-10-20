@@ -100,7 +100,7 @@ class PurchaseRequest(models.Model):
         )
         for rec in self:
             rec.can_edit_budget = bool(
-                user_in_group and rec.substate_sequence == 10
+                user_in_group and rec.substate_sequence == 10 or rec.state == 'draft'
             )
 
     def action_reserve_budget(self):

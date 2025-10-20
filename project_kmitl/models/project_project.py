@@ -11,7 +11,7 @@ class ProjectProject(models.Model):
     _inherit = "project.project"
 
     code = fields.Char(string="รหัสโครงการ", tracking=True, copy=False)
-    date_range_fy_id = fields.Many2one(
+    account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="ปีงบประมาณ",
         tracking=True,

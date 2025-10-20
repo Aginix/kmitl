@@ -78,7 +78,7 @@
                         <div class="budget-report-container">
                             <div class="report-header text-center mb-4">
                                 <h3 t-if="appropriation.source" t-esc="appropriation.source.name" />
-                                <h3>ประมาณการ<t t-if="appropriation.journal" t-esc="appropriation.journal.name" /> ประจำปีงบประมาณ พ.ศ. <t t-if="appropriation.fiscal_year" t-esc="appropriation.fiscal_year.name" /></h3>
+                                <h3>ประมาณการรายจ่าย ประจำปีงบประมาณ พ.ศ. <t t-if="appropriation.fiscal_year" t-esc="appropriation.fiscal_year.name" /></h3>
                                 <h3>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
                                 <h3 t-if="appropriation.department" t-esc="appropriation.department.complete_name" />
                                 <h3>วงเงิน <t t-esc="formatCurrency(totalAmount)"/> บาท</h3>
@@ -148,17 +148,23 @@
                             <i t-att-class="isNodeExpanded(node.key) ? 'fa fa-minus-square-o' : 'fa fa-plus-square-o'"/>
                         </button>
                         <div t-else="" style="width: 20px; display: inline-block;" class="me-2"></div>
-                        <span>
+                        <div>
                             <t t-if="node.type === 'account'">
                                 <t t-esc="node.code"/> - <t t-esc="node.name"/>
+                                <div style="padding-left: 16px;">
+                                    <span class="fst-italic">
+                                        <t t-if="node.description" t-out="`(${node.description})`"/>
+                                    </span>
+                                    <t t-out="node.note"/>
+                                </div>
                             </t>
                             <t t-else="">
-                                <t t-esc="node.name"/>
+                                <t t-out="node.name"/>
                                 <t t-if="node.code">
                                     <span class="text-muted"> (<t t-esc="node.code"/>)</span>
                                 </t>
                             </t>
-                        </span>
+                        </div>
                     </div>
                 </div>
             </td>

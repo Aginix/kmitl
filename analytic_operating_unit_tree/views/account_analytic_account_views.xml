@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+
+    <!-- View account.analytic.account tree -->
+    <record id="view_account_analytic_account_tree" model="ir.ui.view">
+        <field name="name">view.account.analytic.account.tree</field>
+        <field name="model">account.analytic.account</field>
+        <field name="inherit_id" ref="analytic.view_account_analytic_account_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="operating_unit_ids" groups="operating_unit.group_multi_operating_unit" widget="many2many_tags" optional="hide" />
+            </xpath>
+        </field>
+    </record>
+
+  </odoo>

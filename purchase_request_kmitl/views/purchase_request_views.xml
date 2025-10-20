@@ -107,7 +107,7 @@
                 <attribute name="widget">selection</attribute>
             </xpath>
             <xpath expr="//field[@name='procurement_type_id']" position="before">
-                <field name="date_range_fy_id" attrs="{'readonly': [('is_editable','=', False)]}" widget="selection" />
+                <field name="account_fiscal_year_id" attrs="{'readonly': [('is_editable','=', False)]}" widget="selection" />
             </xpath>
             <xpath expr="//field[@name='procurement_method_id']" position="attributes">
                 <attribute name="widget">selection</attribute>
@@ -133,6 +133,18 @@
             </xpath>
             <xpath expr="//page[@name='committee']" position="attributes">
                 <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='procurement_type_id']" position="after">
+                <field name="product_id" required="1" />
+            </xpath>
+            <xpath expr="//field[@name='line_ids']" position="attributes">
+                <attribute name="context">{'default_request_id': active_id, 'default_product_id': product_id}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']//tree/field[@name='product_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']//tree/field[@name='name']" position="attributes">
+                <attribute name="required">1</attribute>
             </xpath>
             <xpath expr="//form/sheet/notebook" position="inside">
                 <page name="committee" string="Committee">

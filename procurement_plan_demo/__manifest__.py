@@ -4,7 +4,7 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["budget", "kmitl_demo", "procurement_plan_budget"],
+    "depends": ["kmitl_demo", "procurement_plan_budget"],
     "data": [
         "data/procurement_plan.xml",
     ],

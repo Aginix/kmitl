@@ -6,9 +6,11 @@
     'author': 'Aginix Technologies',
     'website': 'https://github.com/Aginix/kmitl',
     'category': 'KMITL/Budgeting',
-    'depends': ['operating_unit' ,'budget'],
+    'depends': ['operating_unit' ,'budget', 'budget_appropriation'],
     "data": [
         "security/budget_security.xml",
+        "views/budget_appropriation_views.xml",
+        "views/budget_commitment_views.xml",
         "views/budget_move_views.xml",
         "views/budget_transfer_views.xml"
     ],

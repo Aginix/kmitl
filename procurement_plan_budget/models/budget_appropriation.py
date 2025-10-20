@@ -10,41 +10,27 @@ _logger = logging.getLogger(__name__)
 class BudgetAppropriation(models.Model):
     _inherit = "budget.appropriation"
 
-    procurement_plan_ids = fields.Many2many(
-        comodel_name="procurement.plan",
-        compute="_compute_procurement_plan_ids",
-        string="รายการแผนจัดซื้อจัดจ้าง",
-        store=False,
-    )
-
-    def _compute_procurement_plan_ids(self):
-        for record in self:
-            pass
-
     def action_review(self):
         super().action_review()
-        for line in self.line_ids:
-            if line.procurement_plan:
-                for procurement in line.procurement_plan_ids:
-                    procurement.action_validate()
 
     def action_post(self):
-        self._create_procurement_plan()
         super().action_post()
+        self._log_message_on_linked_documents()
 
-    def _create_procurement_plan(self):
+    def _log_message_on_linked_documents(self):
         for line in self.line_ids:
-            if line.enable_procurement_plan:
-                vals = line._prepare_procurement_plan_valus()
-                procurement_plan = self.env['procurement_plan'].create(vals)
-                line.procurement_plan_id = procurement_plan.id
+            if line.procurement_plan_id:
+                self.message_post(
+                    body=line._message_link_to_procurement_plan(),
+                    message_type="comment",
+                )
 
-                procurement_plan.action_validate()
-                procurement_plan.action_pending()
+                line.procurement_plan_id.message_post(
+                    body=line._message_link_back_from_procurement_plan(),
+                    message_type="comment",
+                )
 
-    def budget_move_line_vals(self):
-        lines = super().budget_move_line_vals()
-        for line in self.line_ids:
-            if line.enable_procurement_plan and line.procurement_plan_id:
-                vals['procurement_plan_id'] = line.procurement_plan_id.id
-        return lines
+    def _get_record_url(self):
+        return "/web#id={}&model={}&view_type=form".format(
+            self.id, self._name
+        )
