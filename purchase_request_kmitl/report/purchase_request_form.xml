@@ -60,11 +60,13 @@
 
     <template id="report_purchase_request_fake">
         <!-- ไม่มี t-call="web.external_layout" -->
-        <t t-foreach="docs" t-as="o">
-            <div class="page">
+        <!-- <t t-set="company" t-value="env.company" /> -->
+
+        <t t-call="web.html_container" t-foreach="docs" t-as="o">
+            <div t-call="web.external_layout" class="page">
                 <!-- โลโก้ -->
                 <div style="text-align:center;">
-                    <img t-att-src="'/purchase_request_kmitl/static/src/img/kmitl_logo.png'" style="width:80px;"/>
+                    <img t-att-src="'/purchase_request_kmitl/static/src/img/logo.png'" style="width:80px;"/>
                 </div>
 
                 <!-- หัวเรื่อง -->
@@ -80,7 +82,7 @@
                     เลขที่เอกสาร                        <strong>
                             <t t-esc="o.name"/>
                         </strong>
-                    <!-- วันที่                        <strong>
+                        <!-- วันที่                        <strong>
                             <t t-esc="o.date_request"/>
                         </strong> -->
                         <br/>
@@ -104,11 +106,11 @@
                             <t t-esc="o.department_id.name"/>
                         </strong>
                         <br/>
-                    <!-- เหตุผลความจำเป็น                        <strong>
+                        <!-- เหตุผลความจำเป็น                        <strong>
                             <t t-esc="o.reason"/>
                         </strong> -->
                         <br/>
-                    <!-- วิธีการจัดซื้อจัดจ้าง                        <strong>
+                        <!-- วิธีการจัดซื้อจัดจ้าง                        <strong>
                             <t t-esc="o.method"/>
                         </strong> -->
                         <br/>
@@ -171,8 +173,6 @@
             </div>
         </t>
     </template>
-
-
 
     <report id="action_report_purchase_request" model="purchase.request" string="บันทึกขอซื้อจ้าง" report_type="qweb-pdf" name="purchase_request_kmitl.report_purchase_request_fake" file="purchase_request_kmitl.report_purchase_request_fake" print_report_name="'บันทึกขอซื้อจ้าง'" />
 </odoo>
