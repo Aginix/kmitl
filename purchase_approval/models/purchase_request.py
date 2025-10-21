@@ -22,15 +22,12 @@ class PurchaseRequest(models.Model):
         if not self:
             raise UserError(_("No requests selected."))
 
-        # คัดเฉพาะ request ที่ to_verify เท่านั้น
-        approved_requests = self.filtered(lambda r: r.state == 'to_verify')
+        approved_requests = self.filtered(lambda r: r.state == 'approved')
         if not approved_requests:
             raise UserError(_("No approved requests selected."))
 
-        # ใช้ payment_type ของตัวแรกเป็นหลัก
         main_payment_type = approved_requests[0].payment_type
 
-        # คัดเฉพาะตัวที่ payment_type ตรงกัน
         valid_requests = approved_requests.filtered(lambda r: r.payment_type == main_payment_type)
         if not valid_requests:
             raise UserError(_("No requests with the same payment type as the first one."))
