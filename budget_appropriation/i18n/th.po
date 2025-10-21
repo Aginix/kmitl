@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-14 17:46+0000\n"
-"PO-Revision-Date: 2025-10-15 00:55+0700\n"
+"POT-Creation-Date: 2025-10-21 10:05+0000\n"
+"PO-Revision-Date: 2025-10-21 17:08+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -42,6 +42,8 @@ msgid ""
 "<span class=\"o_form_label\" attrs=\"{'invisible': [('budget_type','!=', 'expense')]}\">Budget Expense </span>\n"
 "                        <span class=\"o_form_label\" attrs=\"{'invisible': [('budget_type','!=', 'revenue')]}\">Budget Revenue </span>"
 msgstr ""
+"<span class=\"o_form_label\" attrs=\"{'invisible': [('budget_type','!=', 'expense')]}\">รายจ่าย </span>\n"
+"                        <span class=\"o_form_label\" attrs=\"{'invisible': [('budget_type','!=', 'revenue')]}\">รายรับ </span>"
 
 #. module: budget_appropriation
 #: model:ir.model.fields,field_description:budget_appropriation.field_budget_appropriation__currency_id
@@ -144,7 +146,7 @@ msgstr ""
 #. module: budget_appropriation
 #: model:ir.model,name:budget_appropriation.model_budget_appropriation_f4_report
 msgid "Budget Appropriation F4 Report"
-msgstr ""
+msgstr "แบบประมาณรายรับ F4"
 
 #. module: budget_appropriation
 #. odoo-python
@@ -159,13 +161,13 @@ msgstr ""
 #: model:ir.model,name:budget_appropriation.model_budget_appropriation_f5_expense_report
 #: model:ir.model,name:budget_appropriation.model_budget_appropriation_f5_report
 msgid "Budget Appropriation F5 Report"
-msgstr ""
+msgstr "แบบประมาณรายจ่าย F5"
 
 #. module: budget_appropriation
 #: model:ir.model,name:budget_appropriation.model_budget_appropriation_line
 #: model_terms:ir.ui.view,arch_db:budget_appropriation.view_budget_appropriation_line_form
 msgid "Budget Appropriation Line"
-msgstr ""
+msgstr "รายการจัดสรรงบประมาณ"
 
 #. module: budget_appropriation
 #: model:ir.actions.act_window,name:budget_appropriation.action_budget_appropriation_line
@@ -182,7 +184,7 @@ msgstr "การจัดสรรงบประมาณ"
 #. module: budget_appropriation
 #: model:ir.model,name:budget_appropriation.model_budget_move
 msgid "Budget Move"
-msgstr ""
+msgstr "บัญชีงบประมาณ"
 
 #. module: budget_appropriation
 #: model:ir.model.fields,field_description:budget_appropriation.field_budget_appropriation__budget_type
@@ -284,6 +286,11 @@ msgstr "หักโอน"
 #: model:ir.model.fields,field_description:budget_appropriation.field_budget_appropriation__deduct_line_ids
 msgid "Deduct Line"
 msgstr "รายการหักโอน"
+
+#. module: budget_appropriation
+#: model:ir.model.fields,field_description:budget_appropriation.field_budget_appropriation__department_id
+msgid "Department"
+msgstr "หน่วยงาน"
 
 #. module: budget_appropriation
 #: model:ir.model.fields,field_description:budget_appropriation.field_budget_appropriation__display_name
