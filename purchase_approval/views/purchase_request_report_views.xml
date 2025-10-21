@@ -18,9 +18,6 @@
         <field name="model">purchase.request</field>
         <field name="arch" type="xml">
             <tree>
-                <header>
-                    <button name="action_tree_request_report" type="object" class="oe_stat_button" string="Create PA" />
-                </header>
                 <field name="name"/>
                 <field name="title"/>
                 <field name="requested_by" widget="many2one_avatar_user"/>
@@ -46,6 +43,7 @@
                 <header>
                     <field name="state" widget="statusbar" statusbar_visible="draft,submit,done" />
                     <button name="button_submit" string="Submit" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="button_done" string="Done" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'submit')]}"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -56,18 +54,19 @@
                     </div>
                     <group>
                         <group>
-                            <field name="payment_type" required="1" />
-                            <field name="department_id" required="1" />
-                            <field name="approval_date" attrs="{'readonly': [('state','!=','done')]}"/>
+                            <field name="payment_type" required="1" attrs="{'readonly': [('is_editable','=', False)]}" />
+                            <field name="department_id" required="1" attrs="{'readonly': [('is_editable','=', False)]}" />
+                            <field name="approval_date" readonly="1" />
                         </group>
                         <group>
                             <field name="is_editable" invisible="1" />
-                            <field name="company_id" groups="base.group_multi_company" />
+                            <field name="company_id" groups="base.group_multi_company" attrs="{'readonly': [('is_editable','=', False)]}" />
                         </group>
                     </group>
                     <notebook>
                         <page string="Requests">
-                            <field name="request_ids" widget="many2many" attrs="{'readonly': [('payment_type', '=', 'direct')]}" domain="[('payment_type', '=', payment_type), ('state', '=', 'approved'), ('report_id', '=', False), ('is_required_approval', '=', True), ('department_id', '=', department_id)]" options="{'no_create': True, 'no_open': True}">
+                            <separator string="รายการคำขอจัดซื้อ/จ้าง"/>
+                            <field name="request_ids" widget="many2many" attrs="{'readonly': ['|', ('payment_type', '=', 'direct'), ('is_editable','=', False)]}" domain="[('payment_type', '=', payment_type), ('state', '=', 'approved'), ('report_id', '=', False), ('is_required_approval', '=', True), ('department_id', '=', department_id)]" options="{'no_create': True, 'no_open': True}">
                                 <tree create="0">
                                     <field name="name"/>
                                     <field name="title"/>
@@ -84,14 +83,11 @@
                         </page>
                         <page string="more">
                             <group name="more">
-                                <field name="operating_unit_id"/>
+                                <field name="operating_unit_id" attrs="{'readonly': [('is_editable','=', False)]}" />
                             </group>
                         </page>
                     </notebook>
                 </sheet>
-                <footer>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
-                </footer>
             </form>
         </field>
     </record>
@@ -104,6 +100,10 @@
                 <group expand="1" string="Group By">
                     <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
                 </group>
+                <searchpanel>
+                    <field name="department_id" icon="fa-users" enable_counters="1" order="code asc" />
+                    <field name="payment_type" icon="fa-money" enable_counters="1" />
+                </searchpanel>
             </search>
         </field>
     </record>

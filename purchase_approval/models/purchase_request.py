@@ -19,6 +19,7 @@ class PurchaseRequest(models.Model):
             rec.is_required_approval = rec.estimated_cost <= 100000
 
     def action_tree_request_report(self):
+        # เก็บไว้ก่อนเผื่อใช้
         if not self:
             raise UserError(_("No requests selected."))
 
@@ -27,6 +28,9 @@ class PurchaseRequest(models.Model):
             raise UserError(_("No approved requests selected."))
 
         main_payment_type = approved_requests[0].payment_type
+
+        if main_payment_type == 'direct':
+            raise UserError(_("Cannot group requests with payment type 'Direct'. Each direct payment must be reported individually."))
 
         valid_requests = approved_requests.filtered(lambda r: r.payment_type == main_payment_type)
         if not valid_requests:

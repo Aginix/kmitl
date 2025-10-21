@@ -43,11 +43,6 @@ class PurchaseRequestReport(models.Model):
         for rec in self:
             rec.is_editable = rec.state in ['draft']
 
-    def action_save_changes(self):
-        for rec in self:
-            rec.write({})
-        return {'type': 'ir.actions.act_window_close'}
-
     @api.onchange('payment_type')
     def _onchange_payment_type_clear_requests(self):
         if self.request_ids:
@@ -57,3 +52,8 @@ class PurchaseRequestReport(models.Model):
         for rec in self:
             rec.state = 'submit'
             rec.name = rec.name or self.env['ir.sequence'].next_by_code('purchase.request.report') or _('New Report')
+
+    def button_done(self):
+        for rec in self:
+            rec.state = 'done'
+            rec.approval_date = fields.Datetime.now()
