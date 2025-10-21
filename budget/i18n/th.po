@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-14 17:45+0000\n"
-"PO-Revision-Date: 2025-10-14 17:45+0000\n"
+"POT-Creation-Date: 2025-10-21 09:35+0000\n"
+"PO-Revision-Date: 2025-10-21 09:35+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -751,7 +751,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_move_form
 #, python-format
 msgid "Budget Move"
-msgstr ""
+msgstr "บัญชีงบประมาณ"
 
 #. module: budget
 #: model:ir.model,name:budget.model_budget_move_line
@@ -789,7 +789,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:budget.field_budget_transfer_reject_wizard__transfer_id
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
 msgid "Budget Transfer"
-msgstr ""
+msgstr "โอนงบประมาณ"
 
 #. module: budget
 #: model:mail.template,subject:budget.email_template_budget_transfer_submitted
@@ -2133,6 +2133,11 @@ msgid "Optional description for this transfer line..."
 msgstr ""
 
 #. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_form
+msgid "Other Information"
+msgstr ""
+
+#. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_account__parent_id
 msgid "Parent"
 msgstr ""
@@ -2820,6 +2825,13 @@ msgstr ""
 #. module: budget
 #: model:ir.model.fields,help:budget.field_budget_mixin__has_budget_integration
 msgid "Whether this record has budget integration enabled"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_account.py:0
+#, python-format
+msgid "You cannot change the budget type."
 msgstr ""
 
 #. module: budget
