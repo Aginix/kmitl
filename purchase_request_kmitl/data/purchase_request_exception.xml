@@ -69,6 +69,32 @@ if self.estimated_cost &gt; 100000:
         </field>
     </record>
 
+    <record id="pr_line_exception_no_space_in_name" model="exception.rule">
+        <field name="name">ห้ามมีช่องว่างในชื่อรายการ</field>
+        <field name="description">ชื่อรายการ ห้ามมีเว้นว่าง</field>
+        <field name="model">purchase.request.line</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+for line in self:
+    if line.name and ' ' in line.name:
+        failed = True
+        break
+        </field>
+    </record>
+
+    <record id="pr_line_exception_price_unit_min_10" model="exception.rule">
+        <field name="name">ราคาต่อหน่วยต้องไม่ต่ำกว่า 10</field>
+        <field name="description">ระบบไม่อนุญาตให้ราคาต่อหน่วยต่ำกว่า 10 บาท</field>
+        <field name="model">purchase.request.line</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+for line in self:
+    if line.price_unit and line.price_unit &lt; 10:
+        failed = True
+        break
+        </field>
+    </record>
+
     <!-- ปรับ active(exception rule) ของ l10n ให้เป็น False เพื่อไม่ให้ทำงาน -->
     <record id="l10n_th_gov_purchase_request.pr_exception_1" model="exception.rule">
         <field name="active">False</field>
