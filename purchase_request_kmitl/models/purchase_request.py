@@ -36,12 +36,6 @@ class PurchaseRequest(models.Model):
         required=True
     )
     description = fields.Text(string="reason", required=True)
-    current_user = fields.Many2one(
-        'res.users',
-        string="Current User",
-        compute='_compute_current_user',
-        store=True,
-    )
     payment_type = fields.Selection([
         ("direct", "Direct paid"),
         ("loan", "Loan"),
@@ -74,11 +68,6 @@ class PurchaseRequest(models.Model):
         readonly=False,
     )
     hide_create_po_button = fields.Boolean(compute="_hide_create_po_button")
-
-    @api.depends_context('uid')
-    def _compute_current_user(self):
-        for rec in self:
-            rec.current_user = self.env.user
 
     @api.depends('state')
     def _hide_create_po_button(self):
