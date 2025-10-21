@@ -13,6 +13,13 @@ class PurchaseRequest(models.Model):
         'purchase.request.report', string='Request Report', ondelete='set null', index=True
     )
 
+    @api.model
+    def _get_after_validation_exceptions(self):
+        # จำเป็นต้องมี tier
+        res = super()._get_after_validation_exceptions()
+        res.append("report_id")
+        return res
+
     @api.depends("estimated_cost")
     def _compute_is_required_approval(self):
         for rec in self:
@@ -32,29 +39,18 @@ class PurchaseRequest(models.Model):
         if not valid_requests:
             raise UserError(_("No requests with the same payment type as the first one."))
 
-        companies = valid_requests.mapped('company_id')
-        if len(companies) > 1:
-            raise UserError(_("Please select requests from the same company."))
-
-        currencies = valid_requests.mapped('currency_id')
-        if len(currencies) > 1:
-            raise UserError(_("Please select requests with the same currency."))
-
         seq_name = self.env['ir.sequence'].next_by_code('purchase.order.approval') or _('New Report')
 
         # สร้าง report เดียว
-        report = self.env['purchase.request.report'].create({
+        report = self.env['purchase.request.report'].sudo().create({
             'name': seq_name,
             'payment_type': main_payment_type,
             'operating_unit_id': valid_requests[0].operating_unit_id.id,
-            'company_id': companies.id if companies else self.env.company.id,
-            'currency_id': currencies.id if currencies else self.env.company.currency_id.id,
             'request_ids': [(6, 0, valid_requests.ids)],
         })
 
-        valid_requests.write({'report_id': report.id})
+        valid_requests.sudo().write({'report_id': report.id})
 
-        # แจ้งเตือนถ้ามีบาง request ถูกข้าม
         skipped = self - valid_requests
         if skipped:
             msg = _(

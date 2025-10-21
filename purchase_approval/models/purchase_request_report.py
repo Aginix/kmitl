@@ -37,7 +37,7 @@ class PurchaseRequestReport(models.Model):
         'purchase.request',
         'report_id',
         string='Requests',
-        domain="[('payment_type', '=', payment_type), ('state', '=', 'to_verify'), ('report_id', '=', False), ('is_required_approval', '=', True)]",
+        domain="[('payment_type', '=', payment_type), ('state', '=', 'approved'), ('report_id', '=', False), ('is_required_approval', '=', True)]",
     )
 
     def _compute_is_editable(self):

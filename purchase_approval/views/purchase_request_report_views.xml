@@ -19,8 +19,7 @@
         <field name="arch" type="xml">
             <tree>
                 <header>
-                    <button name="action_open_request_report" type="object" class="oe_stat_button" string="Create PA">
-                    </button>
+                    <button name="action_open_request_report" type="object" class="oe_stat_button" string="Create PA" />
                 </header>
                 <field name="name"/>
                 <field name="title"/>
