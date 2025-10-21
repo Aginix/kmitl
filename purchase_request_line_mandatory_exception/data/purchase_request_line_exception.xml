@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo noupdate="0">
+<odoo noupdate="1">
     <record id="pr_line_exception_name_required" model="exception.rule">
         <field name="name">ต้องกรอกชื่อรายการ</field>
         <field name="description">ชื่อรายการห้ามปล่อยว่าง</field>
