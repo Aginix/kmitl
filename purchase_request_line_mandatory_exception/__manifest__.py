@@ -3,7 +3,7 @@
     'name': 'Purchase Request Line Mandatory Exception',
     'version': '16.0.1.0.0',
     'summary': """ Purchase Request Line Mandatory Exception Summary """,
-    "category": "KMITL",
+    "category": "Purchase Management",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     'depends': ['purchase_request_exception'],
