@@ -28,7 +28,6 @@ class PurchaseRequestReport(models.Model):
         ("prepaid", "Prepaid")
     ])
     department_id = fields.Many2one('hr.department', string='Department', tracking=True)
-    operating_unit_id = fields.Many2one('operating.unit', string='Operating Unit', tracking=True)
     company_id = fields.Many2one(
         'res.company', string='Company', required=True, readonly=True, states={'draft': [('readonly', False)]}, default=lambda self: self.env.company, tracking=True
     )
@@ -57,3 +56,4 @@ class PurchaseRequestReport(models.Model):
     def button_submit(self):
         for rec in self:
             rec.state = 'submit'
+            rec.name = rec.name or self.env['ir.sequence'].next_by_code('purchase.request.report') or _('New Report')

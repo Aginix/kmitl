@@ -19,7 +19,7 @@
         <field name="arch" type="xml">
             <tree>
                 <header>
-                    <button name="action_open_request_report" type="object" class="oe_stat_button" string="Create PA" />
+                    <button name="action_tree_request_report" type="object" class="oe_stat_button" string="Create PA" />
                 </header>
                 <field name="name"/>
                 <field name="title"/>
@@ -33,7 +33,7 @@
                 <field name="payment_type" optional="show"/>
                 <field name="currency_id" invisible="1"/>
                 <field name="estimated_cost" optional="show"/>
-                <button name="action_open_request_report" string="พิมพ์รายงาน" type="object" icon="fa-print" class="btn-primary"/>
+                <button name="action_form_request_report" string="create PA" type="object" icon="fa-pencil" class="btn-primary"/>
             </tree>
         </field>
     </record>
@@ -57,7 +57,7 @@
                     <group>
                         <group>
                             <field name="payment_type" required="1" />
-                            <field name="department_id" />
+                            <field name="department_id" required="1" />
                             <field name="approval_date" attrs="{'readonly': [('state','!=','done')]}"/>
                         </group>
                         <group>
@@ -67,7 +67,7 @@
                     </group>
                     <notebook>
                         <page string="Requests">
-                            <field name="request_ids" widget="many2many" domain="[('payment_type', '=', payment_type), ('state', '=', 'approved'), ('report_id', '=', False), ('is_required_approval', '=', True)]" options="{'no_create': True, 'no_open': True}">
+                            <field name="request_ids" widget="many2many" attrs="{'readonly': [('payment_type', '=', 'direct')]}" domain="[('payment_type', '=', payment_type), ('state', '=', 'approved'), ('report_id', '=', False), ('is_required_approval', '=', True), ('department_id', '=', department_id)]" options="{'no_create': True, 'no_open': True}">
                                 <tree create="0">
                                     <field name="name"/>
                                     <field name="title"/>
@@ -91,7 +91,6 @@
                 </sheet>
                 <footer>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
-                    <button string="Save" type="object" name="action_save_changes" class="btn-primary" attrs="{'invisible': [('is_editable','=',False)]}"/>
                 </footer>
             </form>
         </field>
@@ -137,8 +136,4 @@
             </p>
         </field>
     </record>
-
-    <menuitem id="menu_purchase_approval" name="Purchase Approval" parent="purchase_request.parent_menu_purchase_request" groups="purchase_request.group_purchase_request_user,purchase_request.group_purchase_request_manager" sequence="50" />
-    <menuitem id="menu_purchase_approval_filter" action="action_purchase_request_report_filter" name="waiting Purchase Approval" parent="purchase_approval.menu_purchase_approval" groups="purchase_request.group_purchase_request_user,purchase_request.group_purchase_request_manager" sequence="10" />
-    <menuitem id="menu_purchase_approval_report" action="action_purchase_request_report" name="Purchase Approval Report" parent="purchase_approval.menu_purchase_approval" groups="purchase_request.group_purchase_request_user,purchase_request.group_purchase_request_manager" sequence="20" />
 </odoo>

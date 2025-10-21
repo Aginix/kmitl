@@ -5,10 +5,12 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["purchase_request_kmitl", "purchase_no_rfq", 'operating_unit'],
+    "depends": ["purchase_request_kmitl", "purchase_no_rfq", 'operating_unit', 'purchase_request_department'],
     "data": [
         "data/sequence.xml",
+        "security/security.xml",
         "security/ir.model.access.csv",
+        "views/menu.xml",
         "views/purchase_request_report_views.xml",
         "views/purchase_request_views.xml"
     ],

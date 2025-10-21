@@ -13,19 +13,12 @@ class PurchaseRequest(models.Model):
         'purchase.request.report', string='Request Report', ondelete='set null', index=True
     )
 
-    @api.model
-    def _get_after_validation_exceptions(self):
-        # จำเป็นต้องมี tier
-        res = super()._get_after_validation_exceptions()
-        res.append("report_id")
-        return res
-
     @api.depends("estimated_cost")
     def _compute_is_required_approval(self):
         for rec in self:
             rec.is_required_approval = rec.estimated_cost <= 100000
 
-    def action_open_request_report(self):
+    def action_tree_request_report(self):
         if not self:
             raise UserError(_("No requests selected."))
 
@@ -41,10 +34,10 @@ class PurchaseRequest(models.Model):
 
         seq_name = self.env['ir.sequence'].next_by_code('purchase.order.approval') or _('New Report')
 
-        # สร้าง report เดียว
         report = self.env['purchase.request.report'].sudo().create({
             'name': seq_name,
             'payment_type': main_payment_type,
+            'department_id': valid_requests[0].department_id.id,
             'operating_unit_id': valid_requests[0].operating_unit_id.id,
             'request_ids': [(6, 0, valid_requests.ids)],
         })
@@ -65,4 +58,25 @@ class PurchaseRequest(models.Model):
             'res_id': report.id,
             'view_mode': 'form',
             'target': 'new',
+        }
+
+    def action_form_request_report(self):
+        self.ensure_one()
+        seq_name = self.env['ir.sequence'].next_by_code('purchase.order.approval') or _('New Report')
+
+        report = self.env['purchase.request.report'].sudo().create({
+            'name': seq_name,
+            'payment_type': self.payment_type,
+            'department_id': self.department_id.id,
+            'operating_unit_id': self.operating_unit_id.id,
+            'request_ids': [(6, 0, self.id)],
+        })
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Purchase Request Report'),
+            'res_model': 'purchase.request.report',
+            'res_id': report.id,
+            'view_mode': 'form',
+            'target': 'current',
         }
