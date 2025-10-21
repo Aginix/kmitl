@@ -49,13 +49,10 @@
                 </header>
                 <sheet>
                     <div class="oe_title">
-
                         <h1>
                             <label for="name" />
                             <field name="name" placeholder="Report Reference" readonly="1" />
                         </h1>
-
-
                     </div>
                     <group>
                         <group>
@@ -70,7 +67,7 @@
                     </group>
                     <notebook>
                         <page string="Requests">
-                            <field name="request_ids" widget="many2many" domain="[('payment_type', '=', payment_type), ('state', '=', 'to_verify'), ('report_id', '=', False), ('is_required_approval', '=', True)]" options="{'no_create': True, 'no_open': True}">
+                            <field name="request_ids" widget="many2many" domain="[('payment_type', '=', payment_type), ('state', '=', 'approved'), ('report_id', '=', False), ('is_required_approval', '=', True)]" options="{'no_create': True, 'no_open': True}">
                                 <tree create="0">
                                     <field name="name"/>
                                     <field name="title"/>
