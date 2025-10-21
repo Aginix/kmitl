@@ -49,23 +49,22 @@
                 </header>
                 <sheet>
                     <div class="oe_title">
+
                         <h1>
-                            <field name="name" placeholder="Report Reference"/>
+                            <label for="name" />
+                            <field name="name" placeholder="Report Reference" readonly="1" />
                         </h1>
-                        <label for="date" string="Created On:"/>
-                        <field name="date" class="oe_inline"/>
+
+
                     </div>
                     <group>
                         <group>
-                            <field name="payment_type"/>
+                            <field name="payment_type" required="1" />
                             <field name="approval_date" attrs="{'readonly': [('state','!=','done')]}"/>
-                            <field name="operating_unit_id"/>
-
                         </group>
                         <group>
                             <field name="is_editable" invisible="1" />
-                            <field name="company_id"/>
-                            <field name="currency_id"/>
+                            <field name="company_id" groups="base.group_multi_company" />
                         </group>
                     </group>
                     <notebook>
@@ -85,8 +84,10 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="Notes">
-                            <field name="message_ids" widget="mail_thread"/>
+                        <page string="more">
+                            <group name="more">
+                                <field name="operating_unit_id"/>
+                            </group>
                         </page>
                     </notebook>
                 </sheet>
@@ -130,7 +131,7 @@
         <field name="res_model">purchase.request</field>
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="purchase_approval.view_purchase_request_tree_custom"/>
-        <field name="domain">[('report_id', '=', False), ('is_required_approval', '=', True), ('substate_sequence', '=', 30)]</field>
+        <field name="domain">[('report_id', '=', False), ('is_required_approval', '=', True), ('state', '=', 'approved')]</field>
         <field name="context">{'create': False}</field>
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">
