@@ -10,9 +10,9 @@
         "data/sequence.xml",
         "security/security.xml",
         "security/ir.model.access.csv",
-        "views/menu.xml",
         "views/purchase_request_report_views.xml",
-        "views/purchase_request_views.xml"
+        "views/purchase_request_views.xml",
+        "views/menu.xml",
     ],
     "application": False,
     "installable": True,
