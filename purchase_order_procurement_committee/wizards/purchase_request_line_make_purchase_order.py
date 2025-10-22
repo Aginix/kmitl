@@ -9,10 +9,6 @@ _logger = logging.getLogger(__name__)
 
 class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     _inherit = 'purchase.request.line.make.purchase.order'
-
-    def make_purchase_order(self):
-        res = super().make_purchase_order()
-        return res
     
     def _prepare_purchase_order(self, picking_type, group_id, company, origin):
         res = super()._prepare_purchase_order(picking_type, group_id, company, origin)
