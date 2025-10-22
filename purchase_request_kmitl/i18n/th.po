@@ -564,11 +564,6 @@ msgstr "วันที่ขอ"
 msgid "Currency"
 msgstr "สกุลเงิน"
 
-#. module: purchase_request_kmitl
-#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__current_user
-msgid "Current User"
-msgstr "ผู้ใช้ปัจจุบัน"
-
 #. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_purchase_request__date_start
 #: model:ir.model.fields,help:purchase_request.field_purchase_request_line__date_start

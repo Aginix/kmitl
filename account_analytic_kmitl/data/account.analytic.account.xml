@@ -1,0 +1,2145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="account_analytic_kmitl.fund_0000" model="account.analytic.account">
+            <field name="code">0000</field>
+            <field name="name">ไม่ระบุกองทุน</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_funds" />
+            <field name="line_seq">0</field>
+        </record>
+        <record id="account_analytic_kmitl.fund_0100" model="account.analytic.account">
+            <field name="code">0100</field>
+            <field name="name">กองทุนทั่วไป</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_funds" />
+            <field name="line_seq">1</field>
+        </record>
+        <record id="account_analytic_kmitl.fund_0200" model="account.analytic.account">
+            <field name="code">0200</field>
+            <field name="name">กองทุนเพื่อการศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_funds" />
+            <field name="line_seq">2</field>
+        </record>
+        <record id="account_analytic_kmitl.fund_0300" model="account.analytic.account">
+            <field name="code">0300</field>
+            <field name="name">กองทุนวิจัย</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_funds" />
+            <field name="line_seq">3</field>
+        </record>
+        <record id="account_analytic_kmitl.fund_0400" model="account.analytic.account">
+            <field name="code">0400</field>
+            <field name="name">กองทุนบริการวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_funds" />
+            <field name="line_seq">4</field>
+        </record>
+        <record id="account_analytic_kmitl.fund_0500" model="account.analytic.account">
+            <field name="code">0500</field>
+            <field name="name">กองทุนกิจการนักศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_funds" />
+            <field name="line_seq">5</field>
+        </record>
+        <record id="account_analytic_kmitl.fund_0600" model="account.analytic.account">
+            <field name="code">0600</field>
+            <field name="name">กองทุนสินทรัพย์ถาวร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_funds" />
+            <field name="line_seq">6</field>
+        </record>
+        <record id="account_analytic_kmitl.fund_0700" model="account.analytic.account">
+            <field name="code">0700</field>
+            <field name="name">กองทุนอื่น</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_funds" />
+            <field name="line_seq">7</field>
+        </record>
+        <record id="account_analytic_kmitl.fund_0701" model="account.analytic.account">
+            <field name="code">0701</field>
+            <field name="name">กองทุนทำนุบำรุงศิลปวัฒนธรรม</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_funds" />
+            <field name="parent_id" ref="account_analytic_kmitl.fund_0700" />
+            <field name="line_seq">8</field>
+        </record>
+        <record id="account_analytic_kmitl.fund_0702" model="account.analytic.account">
+            <field name="code">0702</field>
+            <field name="name">กองทุนสำรอง</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_funds" />
+            <field name="parent_id" ref="account_analytic_kmitl.fund_0700" />
+            <field name="line_seq">9</field>
+        </record>
+        <record id="account_analytic_kmitl.fund_0703" model="account.analytic.account">
+            <field name="code">0703</field>
+            <field name="name">กองทุนพัฒนาบุคลากร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_funds" />
+            <field name="parent_id" ref="account_analytic_kmitl.fund_0700" />
+            <field name="line_seq">10</field>
+        </record>
+        <record id="account_analytic_kmitl.fund_0704" model="account.analytic.account">
+            <field name="code">0704</field>
+            <field name="name">กองทุนบูรณาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_funds" />
+            <field name="parent_id" ref="account_analytic_kmitl.fund_0700" />
+            <field name="line_seq">11</field>
+        </record>
+        <record id="account_analytic_kmitl.fund_0705" model="account.analytic.account">
+            <field name="code">0705</field>
+            <field name="name">กองทุนยุทธศาสตร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_funds" />
+            <field name="parent_id" ref="account_analytic_kmitl.fund_0700" />
+            <field name="line_seq">12</field>
+        </record>
+        <record id="account_analytic_kmitl.activity_00" model="account.analytic.account">
+            <field name="code">00</field>
+            <field name="name">ไม่ระบุด้าน</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09" model="account.analytic.account">
+            <field name="code">09</field>
+            <field name="name">ด้านการพัฒนาประชากร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007" model="account.analytic.account">
+            <field name="code">09007</field>
+            <field name="name">แผนงานจัดการศึกษาอุดมศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09" />
+        </record>
+        <record id="account_analytic_kmitl.activity_090070101" model="account.analytic.account">
+            <field name="code">090070101</field>
+            <field name="name">กิจกรรมหลัก งานสนับสนุนการจัดการศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010110" model="account.analytic.account">
+            <field name="code">09007010110</field>
+            <field name="name">กิจกรรมรอง กิจกรรมบริหารทั่วไป</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070101" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010110170" model="account.analytic.account">
+            <field name="code">09007010110170</field>
+            <field name="name">กิจกรรมย่อย งานด้านบริหารทั่วไป (รวมบริหารจัดการกลาง)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010110" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010110180" model="account.analytic.account">
+            <field name="code">09007010110180</field>
+            <field name="name">กิจกรรมย่อย งานด้านทรัพยากรบุคคลและนิติการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010110" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010110190" model="account.analytic.account">
+            <field name="code">09007010110190</field>
+            <field name="name">กิจกรรมย่อย งานด้านอาคารสถานที่ บำรุงรักษาและยานพาหนะ ระบบสาธารณูปโภค</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010110" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010110200" model="account.analytic.account">
+            <field name="code">09007010110200</field>
+            <field name="name">กิจกรรมย่อย งานด้านนโยบาย แผนพัฒนา แผนงบประมาณ วิจัยสถาบันและการประกันคุณภาพการศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010110" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010110210" model="account.analytic.account">
+            <field name="code">09007010110210</field>
+            <field name="name">กิจกรรมย่อย งานด้านการเงิน บัญชี งบประมาณ และพัสดุ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010110" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010110220" model="account.analytic.account">
+            <field name="code">09007010110220</field>
+            <field name="name">กิจกรรมย่อย งานด้านวิเทศสัมพันธ์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010110" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010110230" model="account.analytic.account">
+            <field name="code">09007010110230</field>
+            <field name="name">กิจกรรมย่อย งานด้านโรงพิมพ์ สารนิเทศและประชาสัมพันธ์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010110" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010111" model="account.analytic.account">
+            <field name="code">09007010111</field>
+            <field name="name">กิจกรรมรอง กิจกรรมทะเบียนนักศึกษาและประมวลผล</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070101" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010111114" model="account.analytic.account">
+            <field name="code">09007010111114</field>
+            <field name="name">กิจกรรมย่อย งานด้านรับเข้านักศึกษาและทะเบียนประวัติ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010111" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010111115" model="account.analytic.account">
+            <field name="code">09007010111115</field>
+            <field name="name">กิจกรรมย่อย งานด้านทะเบียนการศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010111" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010111116" model="account.analytic.account">
+            <field name="code">09007010111116</field>
+            <field name="name">กิจกรรมย่อย งานด้านบริหารการเรียนการสอน</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010111" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010111117" model="account.analytic.account">
+            <field name="code">09007010111117</field>
+            <field name="name">กิจกรรมย่อย งานด้านประมวลผลการศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010111" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010111118" model="account.analytic.account">
+            <field name="code">09007010111118</field>
+            <field name="name">กิจกรรมย่อย งานด้านตรวจสอบและรับรองผลการศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010111" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010112" model="account.analytic.account">
+            <field name="code">09007010112</field>
+            <field name="name">กิจกรรมรอง กิจกรรมบริการห้องสมุดและเทคโนโลยีทางการศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070101" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010112123" model="account.analytic.account">
+            <field name="code">09007010112123</field>
+            <field name="name">กิจกรรมย่อย งานด้านเทคนิค</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010112" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010112124" model="account.analytic.account">
+            <field name="code">09007010112124</field>
+            <field name="name">กิจกรรมย่อย งานด้านบริการสารนิเทศ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010112" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010112125" model="account.analytic.account">
+            <field name="code">09007010112125</field>
+            <field name="name">กิจกรรมย่อย งานเทคโนโลยีสารสนเทศ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010112" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010113" model="account.analytic.account">
+            <field name="code">09007010113</field>
+            <field name="name">กิจกรรมรอง กิจกรรมบริการคอมพิวเตอร์ทางวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070101" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010113133" model="account.analytic.account">
+            <field name="code">09007010113133</field>
+            <field name="name">กิจกรรมย่อย งานด้านควบคุมเครื่องและระบบเครือข่าย</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010113" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010113134" model="account.analytic.account">
+            <field name="code">09007010113134</field>
+            <field name="name">กิจกรรมย่อย งานด้านบริการคอมพิวเตอร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010113" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010114" model="account.analytic.account">
+            <field name="code">09007010114</field>
+            <field name="name">กิจกรรมรอง กิจกรรมบริหารวิชาการ (รวมงานบริการทุนการศึกษา)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070101" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010114142" model="account.analytic.account">
+            <field name="code">09007010114142</field>
+            <field name="name">กิจกรรมย่อย งานวิชาการและมาตรฐานการศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010114" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010114143" model="account.analytic.account">
+            <field name="code">09007010114143</field>
+            <field name="name">กิจกรรมย่อย งานบริหารจัดการศึกษาทั่วไป</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010114" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010114144" model="account.analytic.account">
+            <field name="code">09007010114144</field>
+            <field name="name">กิจกรรมย่อย งานส่งเสริมและพัฒนาการศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010114" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010114145" model="account.analytic.account">
+            <field name="code">09007010114145</field>
+            <field name="name">กิจกรรมย่อย งานบริการทุนการศึกษา (ระดับปริญญาตรี โท-เอก)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010114" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010115" model="account.analytic.account">
+            <field name="code">09007010115</field>
+            <field name="name">กิจกรรมรอง กิจกรรมพัฒนาคุณภาพนักศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070101" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010115151" model="account.analytic.account">
+            <field name="code">09007010115151</field>
+            <field name="name">กิจกรรมย่อย งานด้านกิจกรรมนักศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010115" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010115152" model="account.analytic.account">
+            <field name="code">09007010115152</field>
+            <field name="name">กิจกรรมย่อย งานด้านบริการนักศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010115" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010116" model="account.analytic.account">
+            <field name="code">09007010116</field>
+            <field name="name">กิจกรรมรอง กิจกรรมพัฒนาบุคลากรทางวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070101" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010116161" model="account.analytic.account">
+            <field name="code">09007010116161</field>
+            <field name="name">กิจกรรมย่อย การฝึกอบรม/สัมมนา/ศึกษาดูงาน</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010116" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010116162" model="account.analytic.account">
+            <field name="code">09007010116162</field>
+            <field name="name">กิจกรรมย่อย การศึกษาต่อ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010116" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010116163" model="account.analytic.account">
+            <field name="code">09007010116163</field>
+            <field name="name">กิจกรรมย่อย การส่งเสริม/สนับสนุนการพัฒนาวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010116" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010117" model="account.analytic.account">
+            <field name="code">09007010117</field>
+            <field name="name">กิจกรรมรอง กิจกรรมผลิตและพัฒนาสื่อการศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070101" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010117171" model="account.analytic.account">
+            <field name="code">09007010117171</field>
+            <field name="name">กิจกรรมย่อย อุปกรณ์การสอน และพัฒนาต้นแบบชุดสื่อการสอน</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010117" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010117172" model="account.analytic.account">
+            <field name="code">09007010117172</field>
+            <field name="name">กิจกรรมย่อย บริการเครื่องมือเทคโนโลยีทางการศึกษา(รวมบริการด้านโสตทัศนศึกษา)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010117" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010118" model="account.analytic.account">
+            <field name="code">09007010118</field>
+            <field name="name">กิจกรรมรอง กิจกรรมพัฒนาหลักสูตรและการเรียนการสอน</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070101" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010118181" model="account.analytic.account">
+            <field name="code">09007010118181</field>
+            <field name="name">กิจกรรมย่อย การปรับปรุงและพัฒนาหลักสูตร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010118" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010118182" model="account.analytic.account">
+            <field name="code">09007010118182</field>
+            <field name="name">กิจกรรมย่อย การประเมินผลโครงสร้างหลักสูตร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010118" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010118183" model="account.analytic.account">
+            <field name="code">09007010118183</field>
+            <field name="name">กิจกรรมย่อย การบริหารและสนับสนุนวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010118" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010119" model="account.analytic.account">
+            <field name="code">09007010119</field>
+            <field name="name">กิจกรรมรอง กิจกรรมส่งเสริมการผลิตตำรา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070101" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010119191" model="account.analytic.account">
+            <field name="code">09007010119191</field>
+            <field name="name">กิจกรรมย่อย ผลิตและพัฒนาตำราในสาขาวิชาต่าง ๆ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010119" />
+        </record>
+        <record id="account_analytic_kmitl.activity_090070102" model="account.analytic.account">
+            <field name="code">090070102</field>
+            <field name="name">กิจกรรมหลัก งานจัดการศึกษาด้านวิทยาศาสตร์และเทคโนโลยี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010220" model="account.analytic.account">
+            <field name="code">09007010220</field>
+            <field name="name">กิจกรรมรอง กิจกรรมสาขาครุศาสตร์อุตสาหกรรม</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070102" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010220211" model="account.analytic.account">
+            <field name="code">09007010220211</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาตรี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010220" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010220212" model="account.analytic.account">
+            <field name="code">09007010220212</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาโท-เอก</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010220" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010220213" model="account.analytic.account">
+            <field name="code">09007010220213</field>
+            <field name="name">กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010220" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010221" model="account.analytic.account">
+            <field name="code">09007010221</field>
+            <field name="name">กิจกรรมรอง กิจกรรมสาขาวิทยาศาสตร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070102" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010221211" model="account.analytic.account">
+            <field name="code">09007010221211</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาตรี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010221" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010221212" model="account.analytic.account">
+            <field name="code">09007010221212</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาโท-เอก</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010221" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010221213" model="account.analytic.account">
+            <field name="code">09007010221213</field>
+            <field name="name">กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010221" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010222" model="account.analytic.account">
+            <field name="code">09007010222</field>
+            <field name="name">กิจกรรมรอง กิจกรรมสาขาวิศวกรรมศาสตร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070102" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010222211" model="account.analytic.account">
+            <field name="code">09007010222211</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาตรี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010222" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010222212" model="account.analytic.account">
+            <field name="code">09007010222212</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาโท-เอก</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010222" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010222213" model="account.analytic.account">
+            <field name="code">09007010222213</field>
+            <field name="name">กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010222" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010223" model="account.analytic.account">
+            <field name="code">09007010223</field>
+            <field name="name">กิจกรรมรอง กิจกรรมสาขาสถาปัตยกรรมศาสตร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070102" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010223211" model="account.analytic.account">
+            <field name="code">09007010223211</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาตรี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010223" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010223212" model="account.analytic.account">
+            <field name="code">09007010223212</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาโท-เอก</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010223" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010223213" model="account.analytic.account">
+            <field name="code">09007010223213</field>
+            <field name="name">กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010223" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010224" model="account.analytic.account">
+            <field name="code">09007010224</field>
+            <field name="name">กิจกรรมรอง กิจกรรมสาขาเทคโนโลยีการเกษตร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070102" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010224211" model="account.analytic.account">
+            <field name="code">09007010224211</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาตรี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010224" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010224212" model="account.analytic.account">
+            <field name="code">09007010224212</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาโท-เอก</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010224" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010224213" model="account.analytic.account">
+            <field name="code">09007010224213</field>
+            <field name="name">กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010224" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010225" model="account.analytic.account">
+            <field name="code">09007010225</field>
+            <field name="name">กิจกรรมรอง กิจกรรมสาขาเทคโนโลยีสารสนเทศ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070102" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010225211" model="account.analytic.account">
+            <field name="code">09007010225211</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาตรี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010225" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010225212" model="account.analytic.account">
+            <field name="code">09007010225212</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาโท-เอก</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010225" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010225213" model="account.analytic.account">
+            <field name="code">09007010225213</field>
+            <field name="name">กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010225" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010226" model="account.analytic.account">
+            <field name="code">09007010226</field>
+            <field name="name">กิจกรรมรอง กิจกรรมสาขาวิชาพื้นฐานและวิชาเลือก/โท</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070102" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010226211" model="account.analytic.account">
+            <field name="code">09007010226211</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาตรี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010226" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010226212" model="account.analytic.account">
+            <field name="code">09007010226212</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาโท-เอก</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010226" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010226213" model="account.analytic.account">
+            <field name="code">09007010226213</field>
+            <field name="name">กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010226" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010227" model="account.analytic.account">
+            <field name="code">09007010227</field>
+            <field name="name">กิจกรรมรอง กิจกรรมสาขาอุตสาหกรรมเกษตร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070102" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010227211" model="account.analytic.account">
+            <field name="code">09007010227211</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาตรี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010227" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010227212" model="account.analytic.account">
+            <field name="code">09007010227212</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาโท-เอก</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010227" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010227213" model="account.analytic.account">
+            <field name="code">09007010227213</field>
+            <field name="name">กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010227" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010228" model="account.analytic.account">
+            <field name="code">09007010228</field>
+            <field name="name">กิจกรรมรอง กิจกรรมสาขาวิชาพื้นฐานทั่วไป</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070102" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010228211" model="account.analytic.account">
+            <field name="code">09007010228211</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาตรี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010228" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010228212" model="account.analytic.account">
+            <field name="code">09007010228212</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาโท-เอก</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010228" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010228213" model="account.analytic.account">
+            <field name="code">09007010228213</field>
+            <field name="name">กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010228" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010229" model="account.analytic.account">
+            <field name="code">09007010229</field>
+            <field name="name">กิจกรรมรอง กิจกรรมสาขาบริหารและการจัดการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070102" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010229211" model="account.analytic.account">
+            <field name="code">09007010229211</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาตรี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010229" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010229212" model="account.analytic.account">
+            <field name="code">09007010229212</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาโท-เอก</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010229" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010229213" model="account.analytic.account">
+            <field name="code">09007010229213</field>
+            <field name="name">กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010229" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010230" model="account.analytic.account">
+            <field name="code">09007010230</field>
+            <field name="name">กิจกรรมรอง กิจกรรมสาขาวิทยาศาสตร์สุขภาพ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070102" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010230211" model="account.analytic.account">
+            <field name="code">09007010230211</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาตรี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010230" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010230212" model="account.analytic.account">
+            <field name="code">09007010230212</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาโท-เอก</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010230" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010230213" model="account.analytic.account">
+            <field name="code">09007010230213</field>
+            <field name="name">กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010230" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010231" model="account.analytic.account">
+            <field name="code">09007010231</field>
+            <field name="name">กิจกรรมรอง กิจกรรมสาขานวัตกรรมทางการศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070102" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010231211" model="account.analytic.account">
+            <field name="code">09007010231211</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาตรี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010231" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010231212" model="account.analytic.account">
+            <field name="code">09007010231212</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาโท-เอก</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010231" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010231213" model="account.analytic.account">
+            <field name="code">09007010231213</field>
+            <field name="name">กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010231" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010232" model="account.analytic.account">
+            <field name="code">09007010232</field>
+            <field name="name">กิจกรรมรอง กิจกรรมอุตสาหกรรมการบิน</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070102" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010232211" model="account.analytic.account">
+            <field name="code">09007010232211</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาตรี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010232" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010232212" model="account.analytic.account">
+            <field name="code">09007010232212</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาโท-เอก</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010232" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010232213" model="account.analytic.account">
+            <field name="code">09007010232213</field>
+            <field name="name">กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010232" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010233" model="account.analytic.account">
+            <field name="code">09007010233</field>
+            <field name="name">กิจกรรมรอง กิจกรรมสาขาศิลปศาสตร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070102" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010233211" model="account.analytic.account">
+            <field name="code">09007010233211</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาตรี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010233" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010233212" model="account.analytic.account">
+            <field name="code">09007010233212</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาโท-เอก</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010233" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010233213" model="account.analytic.account">
+            <field name="code">09007010233213</field>
+            <field name="name">กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010233" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010234" model="account.analytic.account">
+            <field name="code">09007010234</field>
+            <field name="name">กิจกรรมรอง กิจกรรมสาขาพยาบาลศาสตร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090070102" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010234211" model="account.analytic.account">
+            <field name="code">09007010234211</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาตรี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010234" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010234212" model="account.analytic.account">
+            <field name="code">09007010234212</field>
+            <field name="name">กิจกรรมย่อย ระดับปริญญาโท-เอก</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010234" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09007010234213" model="account.analytic.account">
+            <field name="code">09007010234213</field>
+            <field name="name">กิจกรรมย่อย สอนบริการวิชาพื้นฐานและวิชาเลือก/โท</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09007010234" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09010" model="account.analytic.account">
+            <field name="code">09010</field>
+            <field name="name">แผนงานบริการวิชาการแก่สังคม</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09" />
+        </record>
+        <record id="account_analytic_kmitl.activity_090100201" model="account.analytic.account">
+            <field name="code">090100201</field>
+            <field name="name">กิจกรรมหลัก งานบริการวิชาการแก่ชุมชน</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09010" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09010020151" model="account.analytic.account">
+            <field name="code">09010020151</field>
+            <field name="name">กิจกรรมรอง จัดฝึกอบรมทางวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090100201" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09010020152" model="account.analytic.account">
+            <field name="code">09010020152</field>
+            <field name="name">กิจกรรมรอง จัดทำวารสารทางวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090100201" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09010020153" model="account.analytic.account">
+            <field name="code">09010020153</field>
+            <field name="name">กิจกรรมรอง จัดแสดงนิทรรศการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090100201" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09010020154" model="account.analytic.account">
+            <field name="code">09010020154</field>
+            <field name="name">กิจกรรมรอง บริการวิชาการรูปแบบต่าง ๆ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090100201" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09011" model="account.analytic.account">
+            <field name="code">09011</field>
+            <field name="name">แผนงานศาสนา ศิลปะ และวัฒนธรรม</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09" />
+        </record>
+        <record id="account_analytic_kmitl.activity_090110301" model="account.analytic.account">
+            <field name="code">090110301</field>
+            <field name="name">กิจกรรมหลัก งานทำนุบำรุงศิลปวัฒนธรรม</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09011" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09011030130" model="account.analytic.account">
+            <field name="code">09011030130</field>
+            <field name="name">กิจกรรมรอง การจัดฝึกอบรม/การจัดนิทรรศการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090110301" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09011030131" model="account.analytic.account">
+            <field name="code">09011030131</field>
+            <field name="name">กิจกรรมรอง การเผยแพร่ประชาสัมพันธ์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090110301" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09011030132" model="account.analytic.account">
+            <field name="code">09011030132</field>
+            <field name="name">กิจกรรมรอง การดำเนินงานอื่นๆ (ด้านศิลปวัฒนธรรม)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090110301" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09006" model="account.analytic.account">
+            <field name="code">09006</field>
+            <field name="name">แผนงานยุทธศาสตร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09" />
+        </record>
+        <record id="account_analytic_kmitl.activity_090060601" model="account.analytic.account">
+            <field name="code">090060601</field>
+            <field name="name">กิจกรรมหลัก งานพัฒนาและผลิตกำลังคนของประเทศ เพื่อรองรับนโยบาย Thailand 4.0</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09006" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09006060160" model="account.analytic.account">
+            <field name="code">09006060160</field>
+            <field name="name">กิจกรรมรอง พัฒนารูปแบบข้อสอบวัดระดับมาตราฐานภาษาอังกฤษสำหรับบุคลากรในภาคอุตสาหกรรม S – Curve</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090060601" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09006060161" model="account.analytic.account">
+            <field name="code">09006060161</field>
+            <field name="name">กิจกรรมรอง ยกระดับแรงงานไทยในภาคอุตสาหกรรมให้มีศักยภาพเพิ่มขึ้น เพื่อเพิ่มขีดความสามารถในการแข่งขันของประเทศ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090060601" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09006060162" model="account.analytic.account">
+            <field name="code">09006060162</field>
+            <field name="name">กิจกรรมรอง กำลังคนต้นแบบด้านวิทยาศาสตร์และเทคโนโลยี เพื่อตอบสนองความต้องการภาคอุตสาหกรรมตามนโยบายรัฐบาล (KNAST)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090060601" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09006060163" model="account.analytic.account">
+            <field name="code">09006060163</field>
+            <field name="name">กิจกรรมรอง ผลิตและพัฒนากำลังคนระดับอาชีวศึกษาและอุดมศึกษาตามความต้องการของประเทศ (ปริญญาตรีต่อเนื่อง)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090060601" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09006060164" model="account.analytic.account">
+            <field name="code">09006060164</field>
+            <field name="name">กิจกรรมรอง พัฒนาทรัพยากรบุคคลตามโครงการยกระดับคุณภาพหลักสูตรตามนโยบายกระทรวงศึกษาธิการ สำหรับสาขาอุตสาหกรรมเป้าหมายเร่งด่วนของประเทศ(อาชีวะพรีเมี่ยม)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090060601" />
+        </record>
+        <record id="account_analytic_kmitl.activity_090060602" model="account.analytic.account">
+            <field name="code">090060602</field>
+            <field name="name">กิจกรรมหลัก งานสร้างกำลังคนที่มีสมรรถนะสูง สำหรับอุตสาหกรรม New Growth Engine ตามนโยบาย Thailand 4.0</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09006" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09006060265" model="account.analytic.account">
+            <field name="code">09006060265</field>
+            <field name="name">กิจกรรมรอง สร้างกำลังคนที่มีสมรรถนะสูง สำหรับอุตสาหกรรมNew Growth Engine ตามนโยบาย Thailand 4.0 (บัณฑิตพันธ์ใหม่)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090060602" />
+        </record>
+        <record id="account_analytic_kmitl.activity_090060603" model="account.analytic.account">
+            <field name="code">090060603</field>
+            <field name="name">กิจกรรมหลัก งานพัฒนากำลังคนด้านวิศวกรรมศาสตร์เทคโนโลยีและนวัตกรรม</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09006" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09006060366" model="account.analytic.account">
+            <field name="code">09006060366</field>
+            <field name="name">กิจกรรมรอง พัฒนาผู้มีความสามารถพิเศษด้านวิทยาศาสตร์และคณิตศาสตร์ (โคเซ็น)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090060603" />
+        </record>
+        <record id="account_analytic_kmitl.activity_090060604" model="account.analytic.account">
+            <field name="code">090060604</field>
+            <field name="name">กิจกรรมหลัก งานวิจัยและพัฒนานวัตกรรม</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09006" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09006060467" model="account.analytic.account">
+            <field name="code">09006060467</field>
+            <field name="name">กิจกรรมรอง สถานีอัดประจุยานพาหนะไฟฟ้าแบบเคลื่อนย้ายได้โดยใช้พลังงานแสงอาทิตย์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090060604" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09006060468" model="account.analytic.account">
+            <field name="code">09006060468</field>
+            <field name="name">กิจกรรมรอง ความเป็นเลิศด้านวิจัยและพัฒนาเทคโนโลยีและนวัตกรรมจากวัสดุอนุพันธ์กราฟี นขั้นแนวหน้าสำหรับอุตสาหกรรมสมัยใหม่</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090060604" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09006060469" model="account.analytic.account">
+            <field name="code">09006060469</field>
+            <field name="name">กิจกรรมรอง เพิ่มผลผลิตข้าวโพดเลี้ยงสัตว์และมูลค่าวัสดุเหลือใช้ทางการเกษตรในอุตสาหกรรมอาหารสัตว์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090060604" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09006060470" model="account.analytic.account">
+            <field name="code">09006060470</field>
+            <field name="name">กิจกรรมรอง การใช้ประโยชน์ของวัตถุดิบพื้นถิ่นอย่างคุ้มค่าและต่อยอดพัฒนาเศรษฐกิจฐานรากของชุมชน</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090060604" />
+        </record>
+        <record id="account_analytic_kmitl.activity_090060605" model="account.analytic.account">
+            <field name="code">090060605</field>
+            <field name="name">กิจกรรมหลัก งานพัฒนาทักษะกำลังคนของประเทศ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09006" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09006060571" model="account.analytic.account">
+            <field name="code">09006060571</field>
+            <field name="name">กิจกรรมรอง เรียนรู้ตลอดชีวิตและพัฒนาทักษะเพื่ออนาคต (Upskill/Reskill)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090060605" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09006060572" model="account.analytic.account">
+            <field name="code">09006060572</field>
+            <field name="name">กิจกรรมรอง ยุวชนอาสา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090060605" />
+        </record>
+        <record id="account_analytic_kmitl.activity_090060606" model="account.analytic.account">
+            <field name="code">090060606</field>
+            <field name="name">กิจกรรมหลัก งาน 1 อำเภอ 1 แปลงเกษตรอัจฉริยะ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09006" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09006060673" model="account.analytic.account">
+            <field name="code">09006060673</field>
+            <field name="name">กิจกรรมรอง ส่งเสริมและพัฒนาต้นแบบเกษตรอัจฉริยะ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090060606" />
+        </record>
+        <record id="account_analytic_kmitl.activity_090060607" model="account.analytic.account">
+            <field name="code">090060607</field>
+            <field name="name">กิจกรรมหลัก งานพัฒนาความเป็นเลิศของสถาบันอุดมศึกษาและพัฒนากำลังคนขั้นสูง</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_09006" />
+        </record>
+        <record id="account_analytic_kmitl.activity_09006060774" model="account.analytic.account">
+            <field name="code">09006060774</field>
+            <field name="name">กิจกรรมรอง พัฒนาหลักสูตรรูปแบบ Entrepreneurship Educationที่เป็น Niche Area หรือ Strength ของสถาบันอุดมศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_090060607" />
+        </record>
+        <record id="account_analytic_kmitl.activity_06" model="account.analytic.account">
+            <field name="code">06</field>
+            <field name="name">ด้านวิทยาศาสตร์และเทคโนโลยี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+        </record>
+        <record id="account_analytic_kmitl.activity_06004" model="account.analytic.account">
+            <field name="code">06004</field>
+            <field name="name">แผนงานวิจัย</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_06" />
+        </record>
+        <record id="account_analytic_kmitl.activity_060040401" model="account.analytic.account">
+            <field name="code">060040401</field>
+            <field name="name">กิจกรรมหลัก งานวิจัยพัฒนาและถ่ายทอดเทคโนโลยี (รวมแผนงานบูรณาการวิจัยและนวัตกรรม)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_06004" />
+        </record>
+        <record id="account_analytic_kmitl.activity_06004040140" model="account.analytic.account">
+            <field name="code">06004040140</field>
+            <field name="name">กิจกรรมรอง วิจัยพื้นฐาน</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_060040401" />
+        </record>
+        <record id="account_analytic_kmitl.activity_06004040141" model="account.analytic.account">
+            <field name="code">06004040141</field>
+            <field name="name">กิจกรรมรอง วิจัยประยุกต์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_060040401" />
+        </record>
+        <record id="account_analytic_kmitl.activity_06004040142" model="account.analytic.account">
+            <field name="code">06004040142</field>
+            <field name="name">กิจกรรมรอง วิจัยและพัฒนา และถ่ายทอดเทคโนโลยี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_060040401" />
+        </record>
+        <record id="account_analytic_kmitl.activity_06004040143" model="account.analytic.account">
+            <field name="code">06004040143</field>
+            <field name="name">กิจกรรมรอง การวิจัยเพื่อดำเนินการตามนโยบายรัฐบาล (แผนงานบูรณาการวิจัยและนวัตกรรม)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_060040401" />
+        </record>
+        <record id="account_analytic_kmitl.activity_06005" model="account.analytic.account">
+            <field name="code">06005</field>
+            <field name="name">แผนงานบูรณาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_06" />
+        </record>
+        <record id="account_analytic_kmitl.activity_060050501" model="account.analytic.account">
+            <field name="code">060050501</field>
+            <field name="name">กิจกรรมหลัก งานส่งเสริม และพัฒนาเทคโนโลยี นวัตกรรม</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_06005" />
+        </record>
+        <record id="account_analytic_kmitl.activity_06005050150" model="account.analytic.account">
+            <field name="code">06005050150</field>
+            <field name="name">กิจกรรมรอง พัฒนาอุตสาหกรรมศักยภาพ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_060050501" />
+        </record>
+        <record id="account_analytic_kmitl.activity_06005050151" model="account.analytic.account">
+            <field name="code">06005050151</field>
+            <field name="name">กิจกรรมรอง สร้างรายได้จากการท่องเที่ยวและบริการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_060050501" />
+        </record>
+        <record id="account_analytic_kmitl.activity_06005050152" model="account.analytic.account">
+            <field name="code">06005050152</field>
+            <field name="name">กิจกรรมรอง พัฒนาศักยภาพการผลิตภาคเกษตร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_060050501" />
+        </record>
+        <record id="account_analytic_kmitl.activity_06005050153" model="account.analytic.account">
+            <field name="code">06005050153</field>
+            <field name="name">กิจกรรมรอง พัฒนาศักยภาพคนตามช่วงวัย</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_060050501" />
+        </record>
+        <record id="account_analytic_kmitl.activity_06005050154" model="account.analytic.account">
+            <field name="code">06005050154</field>
+            <field name="name">กิจกรรมรอง ยกระดับคุณภาพการศึกษาและการเรียนรู้ตลอดชีวิต</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_060050501" />
+        </record>
+        <record id="account_analytic_kmitl.activity_06005050155" model="account.analytic.account">
+            <field name="code">06005050155</field>
+            <field name="name">กิจกรรมรอง เสริมสร้างความเข้มแข็งและยั่งยืนให้กับเศรษฐกิจภายในประเทศ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_060050501" />
+        </record>
+        <record id="account_analytic_kmitl.activity_060050502" model="account.analytic.account">
+            <field name="code">060050502</field>
+            <field name="name">กิจกรรมหลัก งานพัฒนาพื้นที่ระเบียงเศรษฐกิจภาคตะวันออก</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_06005" />
+        </record>
+        <record id="account_analytic_kmitl.activity_06005050256" model="account.analytic.account">
+            <field name="code">06005050256</field>
+            <field name="name">กิจกรรมรอง พัฒนาพื้นที่ระเบียงเศรษฐกิจภาคตะวันออก</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_060050502" />
+        </record>
+        <record id="account_analytic_kmitl.activity_060050503" model="account.analytic.account">
+            <field name="code">060050503</field>
+            <field name="name">กิจกรรมหลัก งานพัฒนาคุณภาพชีวิต สร้างความสมดุลทางเศรษฐกิจ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_06005" />
+        </record>
+        <record id="account_analytic_kmitl.activity_06005050357" model="account.analytic.account">
+            <field name="code">06005050357</field>
+            <field name="name">กิจกรรมรอง พัฒนาคุณภาพชีวิต สร้างความสมดุลทางเศรษฐกิจ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_activities" />
+            <field name="parent_id" ref="account_analytic_kmitl.activity_060050503" />
+        </record>
+        <record id="account_analytic_kmitl.source_1" model="account.analytic.account">
+            <field name="code">1</field>
+            <field name="name">งบประมาณแผ่นดิน</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_sources" />
+            <field name="line_seq">1</field>
+        </record>
+        <record id="account_analytic_kmitl.source_2" model="account.analytic.account">
+            <field name="code">2</field>
+            <field name="name">งบประมาณเงินรายได้</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_sources" />
+            <field name="line_seq">2</field>
+        </record>
+        <record id="account_analytic_kmitl.source_3" model="account.analytic.account">
+            <field name="code">3</field>
+            <field name="name">งบกลาง (งบประมาณแผ่นดิน)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_sources" />
+            <field name="line_seq">3</field>
+        </record>
+        <record id="account_analytic_kmitl.source_4" model="account.analytic.account">
+            <field name="code">4</field>
+            <field name="name">เงินสะสม (งบประมาณเงินรายได้)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_sources" />
+            <field name="line_seq">4</field>
+        </record>
+        <record id="account_analytic_kmitl.source_5" model="account.analytic.account">
+            <field name="code">5</field>
+            <field name="name">เงินกันเหลื่อมปี (งบประมาณแผ่นดิน)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_sources" />
+            <field name="line_seq">5</field>
+        </record>
+        <record id="account_analytic_kmitl.source_6" model="account.analytic.account">
+            <field name="code">6</field>
+            <field name="name">เงินกันเหลื่อมปี (งบประมาณเงินรายได้)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_sources" />
+            <field name="line_seq">6</field>
+        </record>
+        <record id="account_analytic_kmitl.source_7" model="account.analytic.account">
+            <field name="code">7</field>
+            <field name="name">เงินกันเหลื่อมปี (เงินรายได้สะสม)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_sources" />
+            <field name="line_seq">7</field>
+        </record>
+        <record id="account_analytic_kmitl.dept_01" model="account.analytic.account">
+            <field name="code">01</field>
+            <field name="name">คณะวิศวกรรมศาสตร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01030" model="account.analytic.account">
+            <field name="code">01030</field>
+            <field name="name">ภาควิชาวิศวกรรมเกษตร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01031" model="account.analytic.account">
+            <field name="code">01031</field>
+            <field name="name">วิศวกรรมระบบอุตสาหกรรมการเกษตร (ต่อเนื่อง)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01030" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01040" model="account.analytic.account">
+            <field name="code">01040</field>
+            <field name="name">ภาควิชาวิศวกรรมคอมพิวเตอร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01041" model="account.analytic.account">
+            <field name="code">01041</field>
+            <field name="name">วิศวกรรมคอมพิวเตอร์(ต่อเนื่อง)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01040" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01042" model="account.analytic.account">
+            <field name="code">01042</field>
+            <field name="name">วิศวกรรมคอมพิวเตอร์(หลักสูตรนานาชาติ)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01040" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01043" model="account.analytic.account">
+            <field name="code">01043</field>
+            <field name="name">วิศวกรรมระบบไอโอทีและสารสนเทศ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01040" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01050" model="account.analytic.account">
+            <field name="code">01050</field>
+            <field name="name">ภาควิชาวิศวกรรมเคมี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01060" model="account.analytic.account">
+            <field name="code">01060</field>
+            <field name="name">ภาควิชาวิศวกรรมเครื่องกล</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01070" model="account.analytic.account">
+            <field name="code">01070</field>
+            <field name="name">ภาควิชาวิศวกรรมโทรคมนาคม</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01071" model="account.analytic.account">
+            <field name="code">01071</field>
+            <field name="name">วิศวกรรมไฟฟ้าสื่อสารและอิเล็กทรอนิกส์(ต่อเนื่อง)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01070" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01072" model="account.analytic.account">
+            <field name="code">01072</field>
+            <field name="name">วิศวกรรมอวกาศและภูมิสารสนเทศ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01070" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01080" model="account.analytic.account">
+            <field name="code">01080</field>
+            <field name="name">ภาควิชาวิศวกรรมไฟฟ้า</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01081" model="account.analytic.account">
+            <field name="code">01081</field>
+            <field name="name">วิศวกรรมไฟฟ้า (ต่อเนื่อง)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01080" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01090" model="account.analytic.account">
+            <field name="code">01090</field>
+            <field name="name">ภาควิชาวิศวกรรมโยธา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01091" model="account.analytic.account">
+            <field name="code">01091</field>
+            <field name="name">วิศวกรรมโยธา(ต่อเนื่อง)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01090" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01120" model="account.analytic.account">
+            <field name="code">01120</field>
+            <field name="name">ภาควิชาวิศวกรรมอาหาร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01130" model="account.analytic.account">
+            <field name="code">01130</field>
+            <field name="name">ภาควิชาวิศวกรรมอิเล็กทรอนิกส์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01160" model="account.analytic.account">
+            <field name="code">01160</field>
+            <field name="name">ภาควิชาวิศวกรรมอุตสาหการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01170" model="account.analytic.account">
+            <field name="code">01170</field>
+            <field name="name">ส่วนสนับสนุนวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01280" model="account.analytic.account">
+            <field name="code">01280</field>
+            <field name="name">ภาควิชาวิศวกรรมการวัดและควบคุม</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01281" model="account.analytic.account">
+            <field name="code">01281</field>
+            <field name="name">วิศวกรรมการวัดคุม (ต่อเนื่อง)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01280" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01290" model="account.analytic.account">
+            <field name="code">01290</field>
+            <field name="name">ภาควิชาวิศวกรรมชีวการแพทย์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01300" model="account.analytic.account">
+            <field name="code">01300</field>
+            <field name="name">ศูนย์พัฒนานวัตกรรมและบริการทางวิศวกรรม</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01310" model="account.analytic.account">
+            <field name="code">01310</field>
+            <field name="name">สำนักงานบริหารหลักสูตรวิศวกรรมสหวิทยาการนานาชาติ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01302" model="account.analytic.account">
+            <field name="code">01302</field>
+            <field name="name">Computer Innovation Engineering</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01310" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01303" model="account.analytic.account">
+            <field name="code">01303</field>
+            <field name="name">Energy Engineering</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01310" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01304" model="account.analytic.account">
+            <field name="code">01304</field>
+            <field name="name">Finance Engineering</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01310" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01305" model="account.analytic.account">
+            <field name="code">01305</field>
+            <field name="name">Software Engineering</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01310" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01306" model="account.analytic.account">
+            <field name="code">01306</field>
+            <field name="name">Industrial Engineering and Logistics Management</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01310" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01307" model="account.analytic.account">
+            <field name="code">01307</field>
+            <field name="name">Mechanical Engineering</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01310" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01308" model="account.analytic.account">
+            <field name="code">01308</field>
+            <field name="name">Chemical Engineering</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01310" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01309" model="account.analytic.account">
+            <field name="code">01309</field>
+            <field name="name">Civil Engineering</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01310" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01311" model="account.analytic.account">
+            <field name="code">01311</field>
+            <field name="name">Engineering Management and Entrepreneurship</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01310" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01312" model="account.analytic.account">
+            <field name="code">01312</field>
+            <field name="name">Electrical Engineering</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01310" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01320" model="account.analytic.account">
+            <field name="code">01320</field>
+            <field name="name">ภาควิชาวิศวกรรมหุ่นยนต์และปัญญาประดิษฐ์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01" />
+        </record>
+        <record id="account_analytic_kmitl.dept_01330" model="account.analytic.account">
+            <field name="code">01330</field>
+            <field name="name">ศูนย์พัฒนศึกษาวิศวกรรมศาสตร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_01" />
+        </record>
+        <record id="account_analytic_kmitl.dept_02" model="account.analytic.account">
+            <field name="code">02</field>
+            <field name="name">คณะสถาปัตยกรรม ศิลปะและการออกแบบ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_02090" model="account.analytic.account">
+            <field name="code">02090</field>
+            <field name="name">ส่วนสนับสนุนวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_02" />
+        </record>
+        <record id="account_analytic_kmitl.dept_02020" model="account.analytic.account">
+            <field name="code">02020</field>
+            <field name="name">ภาควิชาศิลปอุตสาหกรรม</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_02" />
+        </record>
+        <record id="account_analytic_kmitl.dept_02040" model="account.analytic.account">
+            <field name="code">02040</field>
+            <field name="name">ภาควิชาสถาปัตยกรรมภายใน</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_02" />
+        </record>
+        <record id="account_analytic_kmitl.dept_02050" model="account.analytic.account">
+            <field name="code">02050</field>
+            <field name="name">ภาควิชานิเทศศิลป์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_02" />
+        </record>
+        <record id="account_analytic_kmitl.dept_02130" model="account.analytic.account">
+            <field name="code">02130</field>
+            <field name="name">ภาควิชาสถาปัตยกรรมและการวางแผน</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_02" />
+        </record>
+        <record id="account_analytic_kmitl.dept_02140" model="account.analytic.account">
+            <field name="code">02140</field>
+            <field name="name">ภาควิชาศิลปกรรม</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_02" />
+        </record>
+        <record id="account_analytic_kmitl.dept_02160" model="account.analytic.account">
+            <field name="code">02160</field>
+            <field name="name">ศูนย์บูรณาการเทคโนโลยีเพื่อการแก้ไขปัญหาประเทศ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_02" />
+        </record>
+        <record id="account_analytic_kmitl.dept_02180" model="account.analytic.account">
+            <field name="code">02180</field>
+            <field name="name">ศูนย์วิจัยและออกแบบงานสร้างสรรค์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_02" />
+        </record>
+        <record id="account_analytic_kmitl.dept_02200" model="account.analytic.account">
+            <field name="code">02200</field>
+            <field name="name">สำนักงานบริหารหลักสูตรสถาปัตยกรรมสหวิทยาการนานาชาติ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_02" />
+        </record>
+        <record id="account_analytic_kmitl.dept_03" model="account.analytic.account">
+            <field name="code">03</field>
+            <field name="name">คณะครุศาสตร์อุตสาหกรรมและเทคโนโลยี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_03020" model="account.analytic.account">
+            <field name="code">03020</field>
+            <field name="name">ภาควิชาครุศาสตร์อุตสาหกรรม</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_03" />
+        </record>
+        <record id="account_analytic_kmitl.dept_03040" model="account.analytic.account">
+            <field name="code">03040</field>
+            <field name="name">ภาควิชาครุศาสตร์เกษตร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_03" />
+        </record>
+        <record id="account_analytic_kmitl.dept_03050" model="account.analytic.account">
+            <field name="code">03050</field>
+            <field name="name">ภาควิชาครุศาสตร์วิศวกรรม</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_03" />
+        </record>
+        <record id="account_analytic_kmitl.dept_03070" model="account.analytic.account">
+            <field name="code">03070</field>
+            <field name="name">ส่วนสนับสนุนวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_03" />
+        </record>
+        <record id="account_analytic_kmitl.dept_03130" model="account.analytic.account">
+            <field name="code">03130</field>
+            <field name="name">ศูนย์นวัตกรรมและเทคโนโลยีทางการศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_03" />
+        </record>
+        <record id="account_analytic_kmitl.dept_03140" model="account.analytic.account">
+            <field name="code">03140</field>
+            <field name="name">ภาควิชาครุศาสตร์สถาปัตยกรรมและการออกแบบ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_03" />
+        </record>
+        <record id="account_analytic_kmitl.dept_03150" model="account.analytic.account">
+            <field name="code">03150</field>
+            <field name="name">สำนักงานนานาชาติครุศาสตร์อุตสาหกรรมและเทคโนโลยี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_03" />
+        </record>
+        <record id="account_analytic_kmitl.dept_05" model="account.analytic.account">
+            <field name="code">05</field>
+            <field name="name">คณะวิทยาศาสตร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_05100" model="account.analytic.account">
+            <field name="code">05100</field>
+            <field name="name">ส่วนสนับสนุนวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_05" />
+        </record>
+        <record id="account_analytic_kmitl.dept_05170" model="account.analytic.account">
+            <field name="code">05170</field>
+            <field name="name">ศูนย์เครื่องมือวิทยาศาสตร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_05" />
+        </record>
+        <record id="account_analytic_kmitl.dept_05180" model="account.analytic.account">
+            <field name="code">05180</field>
+            <field name="name">ภาควิชาฟิ สิกส์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_05" />
+        </record>
+        <record id="account_analytic_kmitl.dept_05190" model="account.analytic.account">
+            <field name="code">05190</field>
+            <field name="name">ภาควิชาคณิตศาสตร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_05" />
+        </record>
+        <record id="account_analytic_kmitl.dept_05200" model="account.analytic.account">
+            <field name="code">05200</field>
+            <field name="name">ภาควิชาวิทยาการคอมพิวเตอร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_05" />
+        </record>
+        <record id="account_analytic_kmitl.dept_05210" model="account.analytic.account">
+            <field name="code">05210</field>
+            <field name="name">ภาควิชาสถิติ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_05" />
+        </record>
+        <record id="account_analytic_kmitl.dept_05220" model="account.analytic.account">
+            <field name="code">05220</field>
+            <field name="name">ภาควิชาชีววิทยา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_05" />
+        </record>
+        <record id="account_analytic_kmitl.dept_05230" model="account.analytic.account">
+            <field name="code">05230</field>
+            <field name="name">ภาควิชาเคมี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_05" />
+        </record>
+        <record id="account_analytic_kmitl.dept_05240" model="account.analytic.account">
+            <field name="code">05240</field>
+            <field name="name">ศูนย์วิเคราะห์ข้อมูลดิจิทัลอัจฉริยะพระจอมเกล้าลาดกระบัง</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_05" />
+        </record>
+        <record id="account_analytic_kmitl.dept_04" model="account.analytic.account">
+            <field name="code">04</field>
+            <field name="name">คณะเทคโนโลยีการเกษตร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_04040" model="account.analytic.account">
+            <field name="code">04040</field>
+            <field name="name">ภาควิชาเทคโนโลยีการผลิตพืช</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_04" />
+        </record>
+        <record id="account_analytic_kmitl.dept_04110" model="account.analytic.account">
+            <field name="code">04110</field>
+            <field name="name">ส่วนสนับสนุนวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_04" />
+        </record>
+        <record id="account_analytic_kmitl.dept_04150" model="account.analytic.account">
+            <field name="code">04150</field>
+            <field name="name">ศูนย์วิจัยร่วมภาครัฐและเอกชน</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_04" />
+        </record>
+        <record id="account_analytic_kmitl.dept_04160" model="account.analytic.account">
+            <field name="code">04160</field>
+            <field name="name">ภาควิชาเทคโนโลยีการผลิตสัตว์และประมง</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_04" />
+        </record>
+        <record id="account_analytic_kmitl.dept_04170" model="account.analytic.account">
+            <field name="code">04170</field>
+            <field name="name">ภาควิชานวัตกรรมการสื่อสารและพัฒนาการเกษตร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_04" />
+        </record>
+        <record id="account_analytic_kmitl.dept_04180" model="account.analytic.account">
+            <field name="code">04180</field>
+            <field name="name">สำนักงานบริหารหลักสูตรสหวิทยาการเทคโนโลยีการเกษตร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_04" />
+        </record>
+        <record id="account_analytic_kmitl.dept_06" model="account.analytic.account">
+            <field name="code">06</field>
+            <field name="name">คณะเทคโนโลยีสารสนเทศ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_06030" model="account.analytic.account">
+            <field name="code">06030</field>
+            <field name="name">ส่วนสนับสนุนวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_06" />
+        </record>
+        <record id="account_analytic_kmitl.dept_06040" model="account.analytic.account">
+            <field name="code">06040</field>
+            <field name="name">สาขาวิชาเทคโนโลยีสารสนเทศ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_06" />
+        </record>
+        <record id="account_analytic_kmitl.dept_06050" model="account.analytic.account">
+            <field name="code">06050</field>
+            <field name="name">ศูนย์ความเป็นเลิศทางเทคโนโลยีเชิงลึก</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_06" />
+        </record>
+        <record id="account_analytic_kmitl.dept_17" model="account.analytic.account">
+            <field name="code">17</field>
+            <field name="name">คณะอุตสาหกรรมอาหาร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_17030" model="account.analytic.account">
+            <field name="code">17030</field>
+            <field name="name">ส่วนสนับสนุนวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_17" />
+        </record>
+        <record id="account_analytic_kmitl.dept_17040" model="account.analytic.account">
+            <field name="code">17040</field>
+            <field name="name">สาขาวิชาอุตสาหกรรมเกษตร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_17" />
+        </record>
+        <record id="account_analytic_kmitl.dept_17050" model="account.analytic.account">
+            <field name="code">17050</field>
+            <field name="name">สาขาวิชาเทคโนโลยีการหมัก</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_17" />
+        </record>
+        <record id="account_analytic_kmitl.dept_17060" model="account.analytic.account">
+            <field name="code">17060</field>
+            <field name="name">สาขาวิชาวิศวกรรมแปรรูปอาหาร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_17" />
+        </record>
+        <record id="account_analytic_kmitl.dept_17070" model="account.analytic.account">
+            <field name="code">17070</field>
+            <field name="name">ศูนย์วิจัยและพัฒนาทางอุตสาหกรรมอาหาร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_17" />
+        </record>
+        <record id="account_analytic_kmitl.dept_17080" model="account.analytic.account">
+            <field name="code">17080</field>
+            <field name="name">ศูนย์ห้องปฏิบัติการกลาง</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_17" />
+        </record>
+        <record id="account_analytic_kmitl.dept_08" model="account.analytic.account">
+            <field name="code">08</field>
+            <field name="name">สำนักทะเบียนและบริการการศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_09" model="account.analytic.account">
+            <field name="code">09</field>
+            <field name="name">สำนักบริหารข้อมูลดิจิทัลพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_10" model="account.analytic.account">
+            <field name="code">10</field>
+            <field name="name">สำนักการเรียนรู้ตลอดชีวิตพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_11" model="account.analytic.account">
+            <field name="code">11</field>
+            <field name="name">วิทยาเขตชุมพรเขตรอุดมศักดิ์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_11080" model="account.analytic.account">
+            <field name="code">11080</field>
+            <field name="name">ส่วนบริหารงานทั่วไป</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_11" />
+        </record>
+        <record id="account_analytic_kmitl.dept_11090" model="account.analytic.account">
+            <field name="code">11090</field>
+            <field name="name">ส่วนวิทยบริการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_11" />
+        </record>
+        <record id="account_analytic_kmitl.dept_11100" model="account.analytic.account">
+            <field name="code">11100</field>
+            <field name="name">ส่วนบริหารธุรกิจ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_11" />
+        </record>
+        <record id="account_analytic_kmitl.dept_11140" model="account.analytic.account">
+            <field name="code">11140</field>
+            <field name="name">ภาควิชาพื้นฐานทั่วไป</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_11" />
+        </record>
+        <record id="account_analytic_kmitl.dept_11150" model="account.analytic.account">
+            <field name="code">11150</field>
+            <field name="name">ภาควิชาวิศวกรรมศาสตร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_11" />
+        </record>
+        <record id="account_analytic_kmitl.dept_11160" model="account.analytic.account">
+            <field name="code">11160</field>
+            <field name="name">ภาควิชาเทคโนโลยีการเกษตร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_11" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89" model="account.analytic.account">
+            <field name="code">89</field>
+            <field name="name">สำนักงานอธิการบดี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89300" model="account.analytic.account">
+            <field name="code">89300</field>
+            <field name="name">งบกลางสำนักงานอธิการบดี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89310" model="account.analytic.account">
+            <field name="code">89310</field>
+            <field name="name">สำนักงานบริหารวิชาการและคุณภาพการศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89320" model="account.analytic.account">
+            <field name="code">89320</field>
+            <field name="name">สำนักงานกิจการต่างประเทศ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89330" model="account.analytic.account">
+            <field name="code">89330</field>
+            <field name="name">สำนักงานกิจการนักศึกษาและศิษย์เก่าสัมพันธ์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89340" model="account.analytic.account">
+            <field name="code">89340</field>
+            <field name="name">สำนักงานบริหารยุทธศาสตร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89350" model="account.analytic.account">
+            <field name="code">89350</field>
+            <field name="name">สำนักงานนิติการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89360" model="account.analytic.account">
+            <field name="code">89360</field>
+            <field name="name">สำนักงานบริหารงานทั่วไปและกิจการพิเศษ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89370" model="account.analytic.account">
+            <field name="code">89370</field>
+            <field name="name">สำนักงานบริหารทรัพยากรบุคคล</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89380" model="account.analytic.account">
+            <field name="code">89380</field>
+            <field name="name">สำนักงานคลัง</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89390" model="account.analytic.account">
+            <field name="code">89390</field>
+            <field name="name">สำนักงานบริหารทรัพยากรกายภาพและสิ่งแวดล้อม</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89400" model="account.analytic.account">
+            <field name="code">89400</field>
+            <field name="name">สำนักงานพัสดุ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89410" model="account.analytic.account">
+            <field name="code">89410</field>
+            <field name="name">สำนักงานบริหารทรัพย์สิน</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89401" model="account.analytic.account">
+            <field name="code">89401</field>
+            <field name="name">การจัดหาประโยชน์จากที่ราชพัสดุ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89402" model="account.analytic.account">
+            <field name="code">89402</field>
+            <field name="name">สระว่ายน้ำและศูนย์กีฬา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89403" model="account.analytic.account">
+            <field name="code">89403</field>
+            <field name="name">อาคารพักอาศัย (คอนโด)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89404" model="account.analytic.account">
+            <field name="code">89404</field>
+            <field name="name">หอพักนักศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89405" model="account.analytic.account">
+            <field name="code">89405</field>
+            <field name="name">หอประชุมเจ้าพระยาสุรวงษ์ไวยวัฒน์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89406" model="account.analytic.account">
+            <field name="code">89406</field>
+            <field name="name">อาคารนวัตกรรมเฉลิมพระเกียรติและหอพระราชประวัติฯ (รัชกาลที่ 4)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89407" model="account.analytic.account">
+            <field name="code">89407</field>
+            <field name="name">โรงพิมพ์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89408" model="account.analytic.account">
+            <field name="code">89408</field>
+            <field name="name">อาคารบ้านพักอาศัย(แฟลต)/ บ้านพัก</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89420" model="account.analytic.account">
+            <field name="code">89420</field>
+            <field name="name">โรงเรียนสาธิตนานาชาติ สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89430" model="account.analytic.account">
+            <field name="code">89430</field>
+            <field name="name">สถาบันโคเซ็นแห่งสถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง (KOSEN-KMITL)</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89440" model="account.analytic.account">
+            <field name="code">89440</field>
+            <field name="name">สำนักงานบริหารวารสารวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_89450" model="account.analytic.account">
+            <field name="code">89450</field>
+            <field name="name">สำนักงานสื่อสารองค์กร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_89" />
+        </record>
+        <record id="account_analytic_kmitl.dept_99" model="account.analytic.account">
+            <field name="code">99</field>
+            <field name="name">สำนักบริหารงานวิจัยและนวัตกรรมพระจอมเกล้าลาดกระบัง</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_99040" model="account.analytic.account">
+            <field name="code">99040</field>
+            <field name="name">งานบริการวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_99" />
+        </record>
+        <record id="account_analytic_kmitl.dept_99060" model="account.analytic.account">
+            <field name="code">99060</field>
+            <field name="name">งานบริหารงานวิจัย</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_99" />
+        </record>
+        <record id="account_analytic_kmitl.dept_99070" model="account.analytic.account">
+            <field name="code">99070</field>
+            <field name="name">งานจัดการทรัพย์สินทางปัญญา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_99" />
+        </record>
+        <record id="account_analytic_kmitl.dept_99080" model="account.analytic.account">
+            <field name="code">99080</field>
+            <field name="name">งานส่งเสริมและสนับสนุนนโยบายภาครัฐและเอกชนเชิงรุก</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_99" />
+        </record>
+        <record id="account_analytic_kmitl.dept_31" model="account.analytic.account">
+            <field name="code">31</field>
+            <field name="name">วิทยาลัยเทคโนโลยีและนวัตกรรมวัสดุ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_31020" model="account.analytic.account">
+            <field name="code">31020</field>
+            <field name="name">ศูนย์วิจัยและห้องปฏิบัติการร่วมภาครัฐ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_31" />
+        </record>
+        <record id="account_analytic_kmitl.dept_31030" model="account.analytic.account">
+            <field name="code">31030</field>
+            <field name="name">ส่วนสนับสนุนวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_31" />
+        </record>
+        <record id="account_analytic_kmitl.dept_31040" model="account.analytic.account">
+            <field name="code">31040</field>
+            <field name="name">ศูนย์วิจัยนาโนเทคโนโลยีเพื่อการเกษตร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_31" />
+        </record>
+        <record id="account_analytic_kmitl.dept_31050" model="account.analytic.account">
+            <field name="code">31050</field>
+            <field name="name">ภาควิชานาโนวิทยาและนาโนเทคโนโลยี</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_31" />
+        </record>
+        <record id="account_analytic_kmitl.dept_32" model="account.analytic.account">
+            <field name="code">32</field>
+            <field name="name">วิทยาลัยนวัตกรรมการผลิตขั้นสูง</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_32020" model="account.analytic.account">
+            <field name="code">32020</field>
+            <field name="name">ศูนย์วิจัยร่วมภาครัฐและเอกชน</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_32" />
+        </record>
+        <record id="account_analytic_kmitl.dept_32030" model="account.analytic.account">
+            <field name="code">32030</field>
+            <field name="name">ส่วนสนับสนุนวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_32" />
+        </record>
+        <record id="account_analytic_kmitl.dept_32040" model="account.analytic.account">
+            <field name="code">32040</field>
+            <field name="name">ภาควิชาเทคโนโลยีระบบการผลิต</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_32" />
+        </record>
+        <record id="account_analytic_kmitl.dept_33" model="account.analytic.account">
+            <field name="code">33</field>
+            <field name="name">สำนักงานสภาสถาบัน</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_33030" model="account.analytic.account">
+            <field name="code">33030</field>
+            <field name="name">งานบริหารงานทั่วไป</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_33" />
+        </record>
+        <record id="account_analytic_kmitl.dept_33040" model="account.analytic.account">
+            <field name="code">33040</field>
+            <field name="name">งานประชุม สรรหาและแต่งตั้ง</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_33" />
+        </record>
+        <record id="account_analytic_kmitl.dept_33050" model="account.analytic.account">
+            <field name="code">33050</field>
+            <field name="name">งานวิเคราะห์ ติดตามนโยบายและประเมินผล</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_33" />
+        </record>
+        <record id="account_analytic_kmitl.dept_33060" model="account.analytic.account">
+            <field name="code">33060</field>
+            <field name="name">งานตรวจสอบ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_33" />
+        </record>
+        <record id="account_analytic_kmitl.dept_36" model="account.analytic.account">
+            <field name="code">36</field>
+            <field name="name">คณะบริหารธุรกิจ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_36010" model="account.analytic.account">
+            <field name="code">36010</field>
+            <field name="name">ส่วนสนับสนุนวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_36" />
+        </record>
+        <record id="account_analytic_kmitl.dept_36060" model="account.analytic.account">
+            <field name="code">36060</field>
+            <field name="name">ศูนย์บริการวิชาการด้านการบริหารธุรกิจและการจัดการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_36" />
+        </record>
+        <record id="account_analytic_kmitl.dept_36090" model="account.analytic.account">
+            <field name="code">36090</field>
+            <field name="name">สาขาวิชาบริหารธุรกิจและเศรษฐศาสตร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_36" />
+        </record>
+        <record id="account_analytic_kmitl.dept_37" model="account.analytic.account">
+            <field name="code">37</field>
+            <field name="name">สำนักวิชาศึกษาทั่วไป</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_38" model="account.analytic.account">
+            <field name="code">38</field>
+            <field name="name">คณะแพทยศาสตร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_38010" model="account.analytic.account">
+            <field name="code">38010</field>
+            <field name="name">ส่วนสนับสนุนวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_38" />
+        </record>
+        <record id="account_analytic_kmitl.dept_38020" model="account.analytic.account">
+            <field name="code">38020</field>
+            <field name="name">สาขาวิชาแพทยศาสตร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_38" />
+        </record>
+        <record id="account_analytic_kmitl.dept_38030" model="account.analytic.account">
+            <field name="code">38030</field>
+            <field name="name">ศูนย์บริการทางการแพทย์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_38" />
+        </record>
+        <record id="account_analytic_kmitl.dept_38040" model="account.analytic.account">
+            <field name="code">38040</field>
+            <field name="name">ศูนย์วิจัยและนวัตกรรมแพทยศาสตร์ สจล.</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_38" />
+        </record>
+        <record id="account_analytic_kmitl.dept_39" model="account.analytic.account">
+            <field name="code">39</field>
+            <field name="name">วิทยาลัยการจัดการนวัตกรรมและอุตสาหกรรม</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_39010" model="account.analytic.account">
+            <field name="code">39010</field>
+            <field name="name">สำนักงานวิทยาลัยวิจัยนวัตกรรมทางการศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_39" />
+        </record>
+        <record id="account_analytic_kmitl.dept_39020" model="account.analytic.account">
+            <field name="code">39020</field>
+            <field name="name">ภาควิชาการศึกษาขั้นพื้นฐาน</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_39" />
+        </record>
+        <record id="account_analytic_kmitl.dept_39030" model="account.analytic.account">
+            <field name="code">39030</field>
+            <field name="name">ภาควิชาวิจัยและพัฒนานวัตกรรม</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_39" />
+        </record>
+        <record id="account_analytic_kmitl.dept_39050" model="account.analytic.account">
+            <field name="code">39050</field>
+            <field name="name">ศูนย์วิจัยนวัตกรรมทางการศึกษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_39" />
+        </record>
+        <record id="account_analytic_kmitl.dept_40" model="account.analytic.account">
+            <field name="code">40</field>
+            <field name="name">วิทยาลัยอุตสาหกรรมการบินนานาชาติ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_40010" model="account.analytic.account">
+            <field name="code">40010</field>
+            <field name="name">ส่วนสนับสนุนวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_40" />
+        </record>
+        <record id="account_analytic_kmitl.dept_40020" model="account.analytic.account">
+            <field name="code">40020</field>
+            <field name="name">ภาควิชาวิศวกรรมการบิน</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_40" />
+        </record>
+        <record id="account_analytic_kmitl.dept_40030" model="account.analytic.account">
+            <field name="code">40030</field>
+            <field name="name">ภาควิชานวัตกรรมการจัดการอุตสาหกรรมการบินและการบริการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_40" />
+        </record>
+        <record id="account_analytic_kmitl.dept_40040" model="account.analytic.account">
+            <field name="code">40040</field>
+            <field name="name">ศูนย์นวัตกรรมการบินและบริการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_40" />
+        </record>
+        <record id="account_analytic_kmitl.dept_41" model="account.analytic.account">
+            <field name="code">41</field>
+            <field name="name">คณะศิลปศาสตร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_41010" model="account.analytic.account">
+            <field name="code">41010</field>
+            <field name="name">ส่วนสนับสนุนวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_41" />
+        </record>
+        <record id="account_analytic_kmitl.dept_41020" model="account.analytic.account">
+            <field name="code">41020</field>
+            <field name="name">ภาควิชาภาษา</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_41" />
+        </record>
+        <record id="account_analytic_kmitl.dept_41030" model="account.analytic.account">
+            <field name="code">41030</field>
+            <field name="name">ภาควิชามนุษยศาสตร์และสังคมศาสตร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_41" />
+        </record>
+        <record id="account_analytic_kmitl.dept_41040" model="account.analytic.account">
+            <field name="code">41040</field>
+            <field name="name">ศูนย์ภาษาพระจอมเกล้าลาดกระบัง</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_41" />
+        </record>
+        <record id="account_analytic_kmitl.dept_42" model="account.analytic.account">
+            <field name="code">42</field>
+            <field name="name">วิทยาลัยวิศวกรรมสังคีต</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_42010" model="account.analytic.account">
+            <field name="code">42010</field>
+            <field name="name">ส่วนสนับสนุนวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_42" />
+        </record>
+        <record id="account_analytic_kmitl.dept_42020" model="account.analytic.account">
+            <field name="code">42020</field>
+            <field name="name">สาขาวิชาวิศวกรรมดนตรีและสื่อประสม</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_42" />
+        </record>
+        <record id="account_analytic_kmitl.dept_42030" model="account.analytic.account">
+            <field name="code">42030</field>
+            <field name="name">สาขาวิชาวิศวกรรมเสียงและการออกแบบ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_42" />
+        </record>
+        <record id="account_analytic_kmitl.dept_42040" model="account.analytic.account">
+            <field name="code">42040</field>
+            <field name="name">ศูนย์วิจัยและพัฒนานวัตกรรม</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_42" />
+        </record>
+        <record id="account_analytic_kmitl.dept_43" model="account.analytic.account">
+            <field name="code">43</field>
+            <field name="name">สำนักวิจัยนวัตกรรมเมืองอัจฉริยะ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_44" model="account.analytic.account">
+            <field name="code">44</field>
+            <field name="name">โรงพยาบาลพระจอมเกล้าเจ้าคุณทหาร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_44010" model="account.analytic.account">
+            <field name="code">44010</field>
+            <field name="name">ฝ่ายบริหาร</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_44" />
+        </record>
+        <record id="account_analytic_kmitl.dept_44020" model="account.analytic.account">
+            <field name="code">44020</field>
+            <field name="name">ฝ่ายบริการทางการแพทย์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_44" />
+        </record>
+        <record id="account_analytic_kmitl.dept_44030" model="account.analytic.account">
+            <field name="code">44030</field>
+            <field name="name">ฝ่ายวิจัยและนวัตกรรม</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_44" />
+        </record>
+        <record id="account_analytic_kmitl.dept_45" model="account.analytic.account">
+            <field name="code">45</field>
+            <field name="name">คณะทันตแพทยศาสตร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_45010" model="account.analytic.account">
+            <field name="code">45010</field>
+            <field name="name">ส่วนสนับสนุนวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_45" />
+        </record>
+        <record id="account_analytic_kmitl.dept_45020" model="account.analytic.account">
+            <field name="code">45020</field>
+            <field name="name">สาขาวิชาทันตแพทย์ศาสตร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_45" />
+        </record>
+        <record id="account_analytic_kmitl.dept_45030" model="account.analytic.account">
+            <field name="code">45030</field>
+            <field name="name">ศูนย์วิจัยและนวัตกรรมทางทันตแพทย์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_45" />
+        </record>
+        <record id="account_analytic_kmitl.dept_45040" model="account.analytic.account">
+            <field name="code">45040</field>
+            <field name="name">ศูนย์บริการทางทันตกรรม</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_45" />
+        </record>
+        <record id="account_analytic_kmitl.dept_46" model="account.analytic.account">
+            <field name="code">46</field>
+            <field name="name">42 บางกอก</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_47" model="account.analytic.account">
+            <field name="code">47</field>
+            <field name="name">คณะพยาบาลศาสตร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+        </record>
+        <record id="account_analytic_kmitl.dept_47010" model="account.analytic.account">
+            <field name="code">47010</field>
+            <field name="name">ส่วนสนับสนุนวิชาการ</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_47" />
+        </record>
+        <record id="account_analytic_kmitl.dept_47020" model="account.analytic.account">
+            <field name="code">47020</field>
+            <field name="name">สาขาพยาบาลศาสตร์</field>
+            <field name="plan_id" ref="account_analytic_kmitl.analytic_plan_departments" />
+            <field name="parent_id" ref="account_analytic_kmitl.dept_47" />
+        </record>
+    </data>
+</odoo>

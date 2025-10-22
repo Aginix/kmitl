@@ -1,8 +1,9 @@
 import logging
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
-from .budget_tree import BudgetTree, TreeNode
+from odoo.exceptions import UserError, ValidationError
+
+from .budget_tree import BudgetTree
 
 _logger = logging.getLogger(__name__)
 
@@ -61,6 +62,7 @@ class BudgetAccount(models.Model):
         ondelete="cascade",
         domain="[('budget_type', '=', budget_type)]",
         copy=True,
+        tracking=True,
     )
     child_ids = fields.One2many("budget.account", "parent_id", string="Childs")
     parent_path = fields.Char(index=True, unaccent=False)
@@ -85,6 +87,7 @@ class BudgetAccount(models.Model):
         ondelete="restrict",
         domain=[("root_plan_id.code", "=", "funds")],
         copy=True,
+        tracking=True,
     )
 
     budgetable = fields.Boolean(
@@ -92,6 +95,7 @@ class BudgetAccount(models.Model):
         help="ติ๊กถูกเพื่อระบุว่ารหัสค่าใช้จ่ายสามารถจัดสรรงบประมาณได้",
         default=True,
         copy=True,
+        tracking=True,
     )
 
     children_count = fields.Integer(
@@ -102,7 +106,10 @@ class BudgetAccount(models.Model):
     deprecated = fields.Boolean(
         default=False,
         tracking=True,
-        help="Set deprecated to true to mark the Budget Account that has been outdated, that you should no longer use it.",
+        help=(
+            "Set deprecated to true to mark the Budget Account that has "
+            "been outdated, that you should no longer use it."
+        ),
     )
     active = fields.Boolean(
         default=True,
@@ -128,8 +135,8 @@ class BudgetAccount(models.Model):
 
     def copy_data(self, default=None):
         default = dict(default or {})
-        default.setdefault('code', _("%s (copy)", self.code))
-        default.setdefault('name', _("%s (copy)", self.name))
+        default.setdefault("code", _("%s (copy)", self.code))
+        default.setdefault("name", _("%s (copy)", self.name))
         return super().copy_data(default)
 
     @api.depends("name", "parent_id.complete_name")
@@ -166,7 +173,7 @@ class BudgetAccount(models.Model):
         for record in self:
             name = record.complete_name
             if record.code:
-                name = ("[%(code)s] %(name)s") % {"code": record.code, "name": name}
+                name = f"[{record.code}] {name}"
             if record.parent_id:
                 name = _("%(name)s") % {
                     "name": name,
@@ -186,8 +193,10 @@ class BudgetAccount(models.Model):
         return result
 
     @api.model
-    def get_as_tree(self, domain=[]):
-        accounts = self.env['budget.account'].search(domain, order="code")
+    def get_as_tree(self, domain=None):
+        if domain is None:
+            domain = []
+        accounts = self.env["budget.account"].search(domain, order="code")
         nodes = {item.id: BudgetTree.create_node(item) for item in accounts}
 
         tree = []
@@ -197,5 +206,12 @@ class BudgetAccount(models.Model):
                 item.parent = nodes[item.parent_id]
             else:
                 tree.append(item)
-        print(tree[0].to_dict())
+
         return tree
+
+    def write(self, vals):
+        if "budget_type" in vals:
+            for account in self:
+                if vals.get("budget_type") != account.budget_type:
+                    raise UserError(_("You cannot change the budget type."))
+        return super().write(vals)

@@ -5,7 +5,12 @@
         <field name="name">view.budget.account.tree</field>
         <field name="model">budget.account</field>
         <field name="arch" type="xml">
-            <tree string="Budget Accounts" decoration-muted="deprecated == True" decoration-bf="parent_id == False">
+            <tree
+                string="Budget Accounts"
+                decoration-muted="deprecated == True"
+                decoration-bf="parent_id == False"
+            >
+                <header />
                 <field name="sequence" widget="handle" />
                 <field name="code" string="Budget Code" />
                 <field name="name" string="Account Name" />
@@ -13,7 +18,12 @@
                 <field name="budget_type" string="Type" />
                 <field name="parent_id" string="Parent Account" optional="hide" />
                 <field name="hierarchy_level" string="Level" optional="hide" />
-                <field name="fund_analytic_ids" widget="many2many_tags" string="Funds" optional="show" />
+                <field
+                    name="fund_analytic_ids"
+                    widget="many2many_tags"
+                    string="Funds"
+                    optional="show"
+                />
                 <field name="budgetable" string="Budgetable" widget="boolean_toggle" />
                 <field name="children_count" string="Sub-Accounts" optional="show" />
                 <field name="deprecated" string="Deprecated" optional="hide" />
@@ -28,19 +38,37 @@
         <field name="model">budget.account</field>
         <field name="arch" type="xml">
             <form string="Budget Account">
+                <header />
                 <sheet>
                     <div name="button_box" class="oe_button_box">
-                        <button name="action_view_children_accounts" type="object" class="oe_stat_button" icon="fa-bars">
-                            <field string="Sub Accounts" name="children_count" widget="statinfo" />
+                        <button
+                            name="action_view_children_accounts"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-bars"
+                        >
+                            <field
+                                string="Sub Accounts"
+                                name="children_count"
+                                widget="statinfo"
+                            />
                         </button>
                     </div>
-                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}" />
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': [('active', '=', True)]}"
+                    />
                     <group>
                         <group>
                             <field name="active" invisible="1" />
                             <field name="code" />
                             <field name="name" />
-                            <field name="budget_type" widget="radio" />
+                            <field
+                                name="budget_type"
+                                attrs="{'readonly': [('id', '!=', False)]}"
+                            />
                             <field name="budgetable" />
                         </group>
                         <group>
@@ -52,6 +80,12 @@
                     <notebook>
                         <page name="note" string="Note">
                             <field name="note" />
+                        </page>
+                        <page name="other" string="Other Information">
+                            <group>
+                                <group />
+                                <group />
+                            </group>
                         </page>
                     </notebook>
                 </sheet>
@@ -69,38 +103,112 @@
         <field name="arch" type="xml">
             <search>
                 <!-- Search Fields -->
-                <field name="name" string="Name" filter_domain="['|', ('name', 'ilike', self), ('code', 'ilike', self)]" />
-                <field name="complete_name" string="Complete Name" filter_domain="[('complete_name', 'ilike', self)]" />
+                <field
+                    name="name"
+                    string="Name"
+                    filter_domain="['|', ('name', 'ilike', self), ('code', 'ilike', self)]"
+                />
+                <field
+                    name="complete_name"
+                    string="Complete Name"
+                    filter_domain="[('complete_name', 'ilike', self)]"
+                />
                 <field name="parent_id" string="Parent Account" />
                 <field name="fund_analytic_ids" string="Fund" />
 
                 <!-- Quick Filters -->
                 <separator />
-                <filter string="Revenue Accounts" name="revenue" domain="[('budget_type', '=', 'revenue')]" />
-                <filter string="Expense Accounts" name="expense" domain="[('budget_type', '=', 'expense')]" />
+                <filter
+                    string="Revenue Accounts"
+                    name="revenue"
+                    domain="[('budget_type', '=', 'revenue')]"
+                />
+                <filter
+                    string="Expense Accounts"
+                    name="expense"
+                    domain="[('budget_type', '=', 'expense')]"
+                />
                 <separator />
-                <filter string="Budgetable" name="budgetable" domain="[('budgetable', '=', True)]" />
-                <filter string="Non-Budgetable" name="non_budgetable" domain="[('budgetable', '=', False)]" />
+                <filter
+                    string="Budgetable"
+                    name="budgetable"
+                    domain="[('budgetable', '=', True)]"
+                />
+                <filter
+                    string="Non-Budgetable"
+                    name="non_budgetable"
+                    domain="[('budgetable', '=', False)]"
+                />
                 <separator />
-                <filter string="Top Level Accounts" name="top_level" domain="[('parent_id', '=', False)]" />
-                <filter string="Child Accounts" name="child_accounts" domain="[('parent_id', '!=', False)]" />
+                <filter
+                    string="Top Level Accounts"
+                    name="top_level"
+                    domain="[('parent_id', '=', False)]"
+                />
+                <filter
+                    string="Child Accounts"
+                    name="child_accounts"
+                    domain="[('parent_id', '!=', False)]"
+                />
                 <separator />
-                <filter string="Active" name="active" domain="[('active', '=', True)]" />
-                <filter string="Archived" name="archived" domain="[('active', '=', False)]" />
-                <filter string="Deprecated" name="deprecated" domain="[('deprecated', '=', True)]" />
+                <filter
+                    string="Active"
+                    name="active"
+                    domain="[('active', '=', True)]"
+                />
+                <filter
+                    string="Archived"
+                    name="archived"
+                    domain="[('active', '=', False)]"
+                />
+                <filter
+                    string="Deprecated"
+                    name="deprecated"
+                    domain="[('deprecated', '=', True)]"
+                />
 
                 <!-- Group By Options -->
                 <group expand="0" string="Group By">
-                    <filter string="Budget Type" name="group_budget_type" domain="[]" context="{'group_by': 'budget_type'}" />
-                    <filter string="Parent Account" name="group_parent" domain="[]" context="{'group_by': 'parent_id'}" />
-                    <filter string="Budgetable" name="group_budgetable" domain="[]" context="{'group_by': 'budgetable'}" />
-                    <filter string="Active Status" name="group_active" domain="[]" context="{'group_by': 'active'}" />
+                    <filter
+                        string="Budget Type"
+                        name="group_budget_type"
+                        domain="[]"
+                        context="{'group_by': 'budget_type'}"
+                    />
+                    <filter
+                        string="Parent Account"
+                        name="group_parent"
+                        domain="[]"
+                        context="{'group_by': 'parent_id'}"
+                    />
+                    <filter
+                        string="Budgetable"
+                        name="group_budgetable"
+                        domain="[]"
+                        context="{'group_by': 'budgetable'}"
+                    />
+                    <filter
+                        string="Active Status"
+                        name="group_active"
+                        domain="[]"
+                        context="{'group_by': 'active'}"
+                    />
                 </group>
 
                 <!-- Search Panel for Account Code Filtering -->
                 <searchpanel class="budget_account_root">
-                    <field name="budget_type" string="Budget Type" icon="fa-tags" select="multi"/>
-                    <field name="parent_id" string="Parent Account" icon="fa-sitemap" limit="0"/>
+                    <field
+                        name="budget_type"
+                        string="Budget Type"
+                        icon="fa-tags"
+                        select="multi"
+                    />
+                    <field
+                        name="parent_id"
+                        string="Parent Account"
+                        icon="fa-sitemap"
+                        limit="0"
+                    />
                 </searchpanel>
             </search>
         </field>

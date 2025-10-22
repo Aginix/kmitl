@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- View budget.account form -->
+    <record id="view_budget_account_form" model="ir.ui.view">
+        <field name="name">view.budget.account.form</field>
+        <field name="model">budget.account</field>
+        <field name="inherit_id" ref="budget.view_budget_account_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="purchase_ok" invisible="1" />
+                <button
+                    string="Create Expense Product"
+                    class="btn-primary"
+                    name="action_create_product"
+                    type="object"
+                    attrs="{'invisible': ['|', ('budget_type', '=', 'revenue'), '|', ('purchase_ok', '=', False), ('product_id', '!=', False)]}"
+                />
+            </xpath>
+            <xpath expr="//field[@name='budget_type']" position="after">
+                <field
+                    name="purchase_ok"
+                    attrs="{'invisible': [('budget_type', '!=', 'expense')]}"
+                />
+            </xpath>
+            <xpath expr="//page[@name='other']/group/group" position="inside">
+                <field
+                    name="product_id"
+                    attrs="{'invisible': [('budget_type', '!=', 'expense')]}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- View budget.account tree -->
+    <record id="view_budget_account_tree" model="ir.ui.view">
+        <field name="name">view.budget.account.tree</field>
+        <field name="model">budget.account</field>
+        <field name="inherit_id" ref="budget.view_budget_account_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="purchase_ok" optional="hide" />
+                <field name="product_id" optional="hide" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- View budget.account search -->
+    <record id="view_budget_account_search" model="ir.ui.view">
+        <field name="name">view.budget.account.search</field>
+        <field name="model">budget.account</field>
+        <field name="inherit_id" ref="budget.view_budget_account_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//search/separator[2]" position="before">
+                <separator />
+                <filter
+                    string="Purchase OK"
+                    name="purchase_ok"
+                    domain="[('purchase_ok', '=', True)]"
+                />
+                <filter
+                    string="Non-Purchase OK"
+                    name="non_purchase_ok"
+                    domain="[('purchase_ok', '=', False)]"
+                />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
