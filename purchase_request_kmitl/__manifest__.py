@@ -6,15 +6,17 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['l10n_th_gov_purchase_request', 'purchase_request_operating_unit', 'account_fiscal_year' ,'purchase_order_kmitl', 'purchase_operating_unit'],
+    'depends': ['l10n_th_gov_purchase_request', 'purchase_request_operating_unit', 'account_fiscal_year' ,'purchase_order_kmitl', 'purchase_operating_unit' ,'product_kmitl'],
     "data": [
         "data/purchase_exception.xml",
         "data/purchase_request_exception.xml",
         "data/purchase_request_rules.xml",
         "data/procurement_type.xml",
+        "views/purchase_request_invisible_views.xml",
         "views/procurement_committee_views.xml",
         "views/purchase_order_views.xml",
         "views/purchase_request_views.xml",
+        "views/menu.xml",
         "wizards/purchase_request_line_make_purchase_order_views.xml"
     ],
     'installable': True,

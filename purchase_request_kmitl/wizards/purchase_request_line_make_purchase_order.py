@@ -47,13 +47,3 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
                     'approve_role': committee.approve_role,
                     'note': committee.note,
                 })
-
-class PurchaseRequestLineMakePurchaseOrderItem(models.TransientModel):
-    _inherit = 'purchase.request.line.make.purchase.order.item'
-
-    keep_description = fields.Boolean(
-        default=True,
-    )
-    keep_estimated_cost = fields.Boolean(
-        default=True,
-    )

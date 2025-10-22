@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- procurement committee tree view -->
     <record id="view_procurement_committee_tree" model="ir.ui.view">
         <field name="name">view.procurement.committee.tree</field>
         <field name="model">procurement.committee</field>
@@ -15,6 +16,7 @@
             </tree>
         </field>
     </record>
+    <!-- procurement committee action view -->
     <record id="action_procurement_committee" model="ir.actions.act_window">
         <field name="name">Procurement Committee</field>
         <field name="type">ir.actions.act_window</field>

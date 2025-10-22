@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <!-- purchase request view inherit to add/remove fields -->
     <record id="view_purchase_request_tree" model="ir.ui.view">
         <field name="name">view.purchase.request.tree</field>
         <field name="model">purchase.request</field>
@@ -18,7 +19,7 @@
             </xpath>
         </field>
     </record>
-
+    <!-- purchase request view inherit to add/remove fields -->
     <record id="view_purchase_request_form" model="ir.ui.view">
         <field name="name">view.purchase.request.form</field>
         <field name="model">purchase.request</field>
@@ -27,42 +28,6 @@
             <field name="name" position="attributes">
                 <attribute name="readonly">1</attribute>
             </field>
-            <xpath expr="//form/header/field[@name='state']" position="attributes">
-                <attribute name="statusbar_visible">draft,to_approve,approved,in_progress,done</attribute>
-            </xpath>
-            <xpath expr="//field[@name='picking_type_id']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='assigned_to']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='purchase_type_id']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='group_id']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='purchased_qty']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='purchase_state']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//button[@name='action_show_details']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//button[@name='action_view_purchase_request_line']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//button[@name='button_in_progress']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//button[@name='button_done']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//form" position="inside">
-                <field name="hide_create_po_button" invisible="1" />
-            </xpath>
             <xpath expr="//button[@type='action']" position="attributes">
                 <attribute name="states"/>
                 <attribute name="string">Create PO</attribute>
@@ -85,24 +50,6 @@
             <xpath expr="//button[@name='button_to_approve']" position="attributes">
                 <attribute name="string">Submit Approval</attribute>
             </xpath>
-            <xpath expr="//field[@name='origin']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='requested_by']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='verified_by']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='date_verified']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='date_approved']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='approved_by']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
             <xpath expr="//field[@name='procurement_type_id']" position="attributes">
                 <attribute name="widget">selection</attribute>
             </xpath>
@@ -119,29 +66,11 @@
             <field name="description" position="before">
                 <field name="title" attrs="{'readonly': [('is_editable','=', False)]}" />
             </field>
-            <xpath expr="//field[@name='date_start']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='product_uom_id']" position="attributes">
-                <attribute name="invisible">0</attribute>
-            </xpath>
-            <xpath expr="//field[@name='date_required']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='line_ids']//tree" position="attributes">
-                <attribute name="no_open">1</attribute>
-            </xpath>
-            <xpath expr="//page[@name='committee']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
             <xpath expr="//field[@name='procurement_type_id']" position="after">
-                <field name="product_id" required="1" />
+                <field name="product_id" required="1" attrs="{'readonly': [('is_editable','=', False)]}" />
             </xpath>
             <xpath expr="//field[@name='line_ids']" position="attributes">
                 <attribute name="context">{'default_request_id': active_id, 'default_product_id': product_id}</attribute>
-            </xpath>
-            <xpath expr="//field[@name='line_ids']//tree/field[@name='product_id']" position="attributes">
-                <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//field[@name='line_ids']//tree/field[@name='name']" position="attributes">
                 <attribute name="required">1</attribute>
@@ -166,29 +95,7 @@
             </xpath>
         </field>
     </record>
-
-    <record id="view_purchase_request_exception_inherit_view_form" model="ir.ui.view">
-        <field name="name">view.purchase.request.exception.inherit.view.form</field>
-        <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request_exception.view_purchase_request_form" />
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='exception_ids']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-        </field>
-    </record>
-
-    <record id="view_purchase_request_exception_inherit_view_tree" model="ir.ui.view">
-        <field name="name">view.purchase.request.exception.inherit.view.tree</field>
-        <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request_exception.view_purchase_request_tree" />
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='main_exception_id']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-        </field>
-    </record>
-
+    <!-- purchase request search view inherit to add filters -->
     <record id="view_purchase_request_search" model="ir.ui.view">
         <field name="name">purchase.request.list.select</field>
         <field name="model">purchase.request</field>
@@ -205,46 +112,4 @@
             </field>
         </field>
     </record>
-
-    <record id="view_purchase_request_inherit_view_tree" model="ir.ui.view">
-        <field name="name">view.purchase.request.inherit.view.tree</field>
-        <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="l10n_th_gov_purchase_request.view_purchase_request_tree" />
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='assigned_to']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='origin']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='activity_ids']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='purchase_type_id']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-        </field>
-    </record>
-
-    <record id="view_purchase_request_requisition_inherit_view_form" model="ir.ui.view">
-        <field name="name">view.purchase.request.requisition.inherit.view.form</field>
-        <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request_to_requisition.view_purchase_request_form" />
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='requisition_qty']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='requisition_state']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-        </field>
-    </record>
-
-    <!-- menu -->
-    <menuitem id="purchase_request_kmitl_root_menu" name="PR1" parent="purchase.menu_purchase_root" action="purchase_request.purchase_request_form_action" sequence="1" />
-
-    <function name="write" model="ir.actions.act_window">
-        <value model="ir.actions.act_window" search="[('id', '=', ref('purchase_request.purchase_request_form_action'))]" />
-        <value eval="{'context': '{}'}"/>
-    </function>
 </odoo>
