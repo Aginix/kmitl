@@ -16,7 +16,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         return res
 
     def _create_work_acceptance_committees(self, res):
-        po_id = res['domain'][0][2] if res['domain'] else res['res_id']
+        po_id = res['res_id']
         purchase_order = self.env['purchase.order'].browse(po_id)
         requests = self.item_ids.mapped('request_id')
         for request in requests:
