@@ -11,13 +11,13 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         purchase_requests = self.item_ids.mapped("request_id")
         if purchase_requests.is_egp:
             purchase_requests.action_del_egp_status()
-            res_id = res['domain'][0][2]
+            res_id = res['domain'][0][2].pop()
             return {
                 "name": _("Purchase Order"),
                 "type": "ir.actions.act_window",
                 "res_model": "purchase.order",
                 "view_mode": "form",
-                "domain": [("id", "in", res_id)],
+                "res_id": res_id,
                 "view_id": False,
                 "context": False,
             }
