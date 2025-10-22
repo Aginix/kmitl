@@ -21,7 +21,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         if purchase.request_id:
             return {
                 "name": _("Purchase Approval"),
-                "res_id": purchase.id,
+                "domain": [("id", "in", purchase.id)],
                 "view_mode": "form",
                 "res_model": "purchase.order",
                 "view_id": self.env.ref("purchase_approval.view_purchase_approval_form").id,

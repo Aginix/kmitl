@@ -17,7 +17,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
                 "type": "ir.actions.act_window",
                 "res_model": "purchase.order",
                 "view_mode": "form",
-                "res_id": res_id,
+                "domain": [("id", "in", res_id)],
                 "view_id": False,
                 "context": False,
             }
