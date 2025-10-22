@@ -2,7 +2,7 @@
 <odoo>
     <!-- purchase request view inherit to add/remove fields -->
     <record id="view_purchase_request_tree" model="ir.ui.view">
-        <field name="name">view.purchase.request.tree</field>
+        <field name="name">purchase_request_tree_kmitl</field>
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_tree" />
         <field name="arch" type="xml">
@@ -21,7 +21,7 @@
     </record>
     <!-- purchase request view inherit to add/remove fields -->
     <record id="view_purchase_request_form" model="ir.ui.view">
-        <field name="name">view.purchase.request.form</field>
+        <field name="name">purchase_request_form_kmitl</field>
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
@@ -66,6 +66,9 @@
             <field name="description" position="before">
                 <field name="title" attrs="{'readonly': [('is_editable','=', False)]}" />
             </field>
+            <xpath expr="//form" position="inside">
+                <field name="hide_create_po_button" invisible="1" />
+            </xpath>
             <xpath expr="//field[@name='procurement_type_id']" position="after">
                 <field name="product_id" required="1" attrs="{'readonly': [('is_editable','=', False)]}" />
             </xpath>
@@ -97,7 +100,7 @@
     </record>
     <!-- purchase request search view inherit to add filters -->
     <record id="view_purchase_request_search" model="ir.ui.view">
-        <field name="name">purchase.request.list.select</field>
+        <field name="name">purchase_request_kmitl_search</field>
         <field name="model">purchase.request</field>
         <field name="priority">30</field>
         <field name="inherit_id" ref="l10n_th_gov_purchase_request.view_purchase_request_search" />

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
   <odoo>
-      
+
     <!-- View purchase.request.line.make.purchase.order form -->
     <record id="view_purchase_request_line_make_purchase_order_form" model="ir.ui.view">
-        <field name="name">view.purchase.request.line.make.purchase.order.form</field>
+        <field name="name">purchase_request_line_make_purchase_order_form</field>
         <field name="model">purchase.request.line.make.purchase.order</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_line_make_purchase_order"/>
         <field name="arch" type="xml">
