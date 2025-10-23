@@ -1,5 +1,0 @@
-id,color,default_applicability,name,code
-analytic_plan_activities,1,Mandatory,"Activity (ด้าน/แผนงาน/กิจกรรม)",activities
-analytic_plan_departments,11,Mandatory,"Departments (หน่วยงาน)",departments
-analytic_plan_funds,3,Mandatory,"Fund (กองทุน)",funds
-analytic_plan_sources,4,Mandatory,"ประเภทแหล่งเงิน",sources

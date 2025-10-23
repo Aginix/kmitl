@@ -11,8 +11,8 @@
         "account_analytic_seq",
     ],
     "data": [
-        "data/account.analytic.plan.csv",
-        "data/account.analytic.account.csv",
+        "data/account.analytic.plan.xml",
+        "data/account.analytic.account.xml",
     ],
     "auto_install": False,
     "license": "AGPL-3",

@@ -8,6 +8,7 @@
     "depends": [
         "budget",
         "account_analytic_kmitl",
+        "account_analytic_public",
         "mail",
     ],
     "data": [

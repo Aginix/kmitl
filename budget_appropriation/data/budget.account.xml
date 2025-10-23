@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<odoo>
+<odoo noupdate="1">
 
     <record id="budget_account_99000" model="budget.account">
         <field name="budget_type">revenue</field>

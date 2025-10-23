@@ -48,8 +48,6 @@ class BudgetAppropriation(models.Model):
 
         def _process_account(account_id, array, deduct):
             rows = self.deduct_line_ids if deduct else self.line_ids
-            if deduct:
-                _logger.info(rows)
             rows = rows.filtered(
                 lambda x: x.account_id.parent_path.startswith(account_id.parent_path)
                 or ("/" + account_id.parent_path) in x.account_id.parent_path
