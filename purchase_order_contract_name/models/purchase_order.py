@@ -13,7 +13,7 @@ class PurchaseOrder(models.Model):
     }
 
     contract_name = fields.Char(
-        string="ชื่อสัญญา/ใบสั่งซื้อ/จ้าง",
+        string="contract name",
         tracking=True,
         states=READONLY_STATES,
     )
