@@ -8,3 +8,4 @@ class HrDepartment(models.Model):
     name = fields.Char(tracking=True)
     parent_id = fields.Many2one(tracking=True)
     manager_id = fields.Many2one(tracking=True)
+    active = fields.Boolean(default=True)
