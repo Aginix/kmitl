@@ -23,4 +23,4 @@ msgstr "ไลน์คำสั่งซื้อ"
 #. module: purchase_order_received_qty_percent
 #: model:ir.model.fields,field_description:purchase_order_received_qty_percent.field_purchase_order_line__received_qty_percent
 msgid "Received percent"
-msgstr "ร้อยละได้รับ"
+msgstr "ได้รับแล้ว"
