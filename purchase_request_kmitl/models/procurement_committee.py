@@ -6,12 +6,6 @@ from odoo.exceptions import UserError, ValidationError
 class ProcurementCommittee(models.Model):
     _inherit = 'procurement.committee'
 
-    purchase_order_id = fields.Many2one(
-        comodel_name="purchase.order",
-        string="Purchase Order",
-        ondelete="cascade",
-        index=True,
-    )
     mobile_phone = fields.Char(
         string="Mobile Phone",
         related="employee_id.mobile_phone",
