@@ -13,7 +13,6 @@ class PurchaseOrderLine(models.Model):
     received_qty_percent = fields.Float(
         string='Received percent',
         compute='_compute_received_qty_percent',
-        store=True,
         digits=(16, 2)
     )
 

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Purchase Order Receive Percent',
+    'name': 'Purchase Order Received Qty Percent',
     'version': '16.0.1.0.0',
-    'summary': """ Purchase Order Receive Percent Summary """,
+    'summary': """ Purchase Order Received Qty Percent Summary """,
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
