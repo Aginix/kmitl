@@ -5,8 +5,6 @@ from odoo import _, api, fields, models
 class PurchaseRequestLine(models.Model):
     _inherit = 'purchase.request.line'
 
-    name = fields.Text(string="Description", tracking=True)
-
     @api.onchange("product_id")
     def onchange_product_id(self):
         pass
