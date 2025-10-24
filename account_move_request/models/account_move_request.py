@@ -7,7 +7,7 @@ from odoo.exceptions import UserError
 class AccountMoveRequest(models.Model):
     _name = "account.move.request"
     _description = "Account Move Request"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ["analytic.mixin", "mail.thread", "mail.activity.mixin"]
     _order = "date desc, id desc"
 
     name = fields.Char(
