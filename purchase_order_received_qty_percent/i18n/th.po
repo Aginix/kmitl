@@ -1,6 +1,6 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* purchase_order_receive_percent
+# 	* purchase_order_received_qty_percent
 #
 msgid ""
 msgstr ""
@@ -15,12 +15,12 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
-#. module: purchase_order_receive_percent
-#: model:ir.model,name:purchase_order_receive_percent.model_purchase_order_line
+#. module: purchase_order_received_qty_percent
+#: model:ir.model,name:purchase_order_received_qty_percent.model_purchase_order_line
 msgid "Purchase Order Line"
 msgstr "ไลน์คำสั่งซื้อ"
 
-#. module: purchase_order_receive_percent
-#: model:ir.model.fields,field_description:purchase_order_receive_percent.field_purchase_order_line__received_qty_percent
+#. module: purchase_order_received_qty_percent
+#: model:ir.model.fields,field_description:purchase_order_received_qty_percent.field_purchase_order_line__received_qty_percent
 msgid "Received percent"
 msgstr "ร้อยละได้รับ"
