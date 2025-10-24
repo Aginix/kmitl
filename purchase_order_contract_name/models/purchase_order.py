@@ -6,6 +6,12 @@ from odoo.exceptions import UserError, ValidationError
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
+    READONLY_STATES = {
+        'purchase': [('readonly', True)],
+        'done': [('readonly', True)],
+        'cancel': [('readonly', True)],
+    }
+
     contract_name = fields.Char(
         string="ชื่อสัญญา/ใบสั่งซื้อ/จ้าง",
         tracking=True,
