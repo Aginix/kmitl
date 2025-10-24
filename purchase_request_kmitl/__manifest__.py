@@ -14,7 +14,6 @@
         "data/procurement_type.xml",
         "views/purchase_request_invisible_views.xml",
         "views/procurement_committee_views.xml",
-        "views/purchase_order_views.xml",
         "views/purchase_request_views.xml",
         "views/menu.xml",
         "wizards/purchase_request_line_make_purchase_order_views.xml"
