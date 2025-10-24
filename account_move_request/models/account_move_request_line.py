@@ -6,6 +6,7 @@ from odoo import api, fields, models
 class AccountMoveRequestLine(models.Model):
     _name = "account.move.request.line"
     _description = "Account Move Request Line"
+    _inherit = ["analytic.mixin"]
     _order = "request_id, sequence, id"
 
     request_id = fields.Many2one(
@@ -79,10 +80,6 @@ class AccountMoveRequestLine(models.Model):
             ("company_id", "=", "company_id"),
             ("deprecated", "=", False),
         ],
-    )
-
-    analytic_distribution = fields.Json(
-        string="Analytic Distribution",
     )
 
     company_id = fields.Many2one(
