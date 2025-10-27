@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-from . import analytic_account_analytic
+from . import account_analytic_account
