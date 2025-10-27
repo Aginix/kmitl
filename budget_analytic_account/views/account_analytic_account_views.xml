@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View account.analytic.account form -->
+    <record id="view_account_analytic_account_form" model="ir.ui.view">
+        <field name="name">view.account.analytic.account.form (Budgetable)</field>
+        <field name="model">account.analytic.account</field>
+        <field name="inherit_id" ref="analytic.view_account_analytic_account_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="Budgeting">
+                    <group>
+                        <field name="budgetable" />
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- View account.analytic.account tree -->
+    <record id="view_account_analytic_account_tree" model="ir.ui.view">
+        <field name="name">view.account.analytic.account.tree (Budgetable)</field>
+        <field name="model">account.analytic.account</field>
+        <field name="inherit_id" ref="analytic.view_account_analytic_account_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="budgetable" optional="hide" />
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- View account.analytic.account search -->
+    <record id="view_account_analytic_account_search" model="ir.ui.view">
+        <field name="name">view.account.analytic.account.search (Budgetable)</field>
+        <field name="model">account.analytic.account</field>
+        <field name="inherit_id" ref="analytic.view_account_analytic_account_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//name[@name='inactive']" position="before">
+                <filter string="Budgetable" domain="[('budgetabke', '=', True)]" name="inactive"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
