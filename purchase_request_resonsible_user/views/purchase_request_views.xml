@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View purchase.request form -->
+    <record id="view_purchase_request_form" model="ir.ui.view">
+        <field name="name">view.purchase.request.form (Responsible User)</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='requested_by']" position="before">
+                <field name="user_id" readonly="1" />
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- View purchase.request tree -->
+    <record id="view_purchase_request_tree" model="ir.ui.view">
+        <field name="name">view.purchase.request.tree (Responsible User)</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='requested_by']" position="before">
+                <field name="user_id" widget="many2one_avatar_user" optional="hide" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_search" model="ir.ui.view">
+        <field name="name">purchase.request.list.select (Responsible User)</field>
+        <field name="model">purchase.request</field>
+        <field name="priority">30</field>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='my_requests']" position="after">
+                <filter
+                    name="created_by_me"
+                    domain="[('user_id','=', uid)]"
+                    help="Created by me"
+                />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
