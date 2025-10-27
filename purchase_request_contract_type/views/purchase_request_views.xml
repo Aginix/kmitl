@@ -8,7 +8,7 @@
         <field name="inherit_id" ref="l10n_th_gov_purchase_request.view_purchase_request_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='procurement_method_id']" position="after">
-                <field name="contract_type" required="1" attrs="{'readonly': [('is_editable','=', False)]}" />
+                <field name="contract_type" required="1" attrs="{'readonly': [('is_editable','=', False)]}" widget="radio" options="{'horizontal': true}" />
             </xpath>
         </field>
     </record>
