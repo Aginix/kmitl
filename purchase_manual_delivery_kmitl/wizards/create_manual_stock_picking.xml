@@ -7,8 +7,12 @@
         <field name="model">create.stock.picking.wizard</field>
         <field name="inherit_id" ref="purchase_manual_delivery.view_create_stock_picking"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='picking_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='location_dest_id']" position="before">
-                <field name="operation_type" />
+                <field name="picking_type_id" />
             </xpath>
             
             <xpath expr="//tree" position="attributes">

@@ -10,11 +10,9 @@ _logger = logging.getLogger(__name__)
 class CreateManualStockPicking(models.TransientModel):
     _inherit = 'create.stock.picking.wizard'
 
-    # maybe use from stock.picking.type ???
-    operation_type = fields.Selection(
-        [("receive", "Receive Product")],
+    picking_type_id = fields.Many2one(
+        related='purchase_id.picking_type_id',
         string="Operation Type",
-        default="receive",
         readonly=True
         )
 
