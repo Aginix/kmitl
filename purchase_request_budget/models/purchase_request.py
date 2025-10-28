@@ -1,27 +1,133 @@
 # -*- coding: utf-8 -*-
-from odoo import _, api, fields, models
+from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 
 class PurchaseRequest(models.Model):
-    _name = 'purchase.request'
-    _inherit = ['purchase.request', 'budget.commitment.mixin', 'analytic.distribution.mixin']
+    _name = "purchase.request"
+    _inherit = ["purchase.request", "budget.commitment.mixin", "analytic.mixin"]
 
     budget_commitment_id = fields.Many2one(
-        'budget.commitment',
-        string='Budget Commitment',
+        "budget.commitment",
+        string="Budget Commitment",
         readonly=True,
         copy=False,
-        help="Related budget commitment for this purchase request"
+        help="Related budget commitment for this purchase request",
     )
+
     budget_account_id = fields.Many2one(
-        'budget.account',
-        string='Budget Account',
-        compute='_compute_budget_account_id',
-        domain=[('budgetable', '=', True), ('budget_type', '=', 'expense')],
+        "budget.account",
+        string="Budget Account",
+        compute="_compute_budget_account_id",
+        domain=lambda self: self._domain_budget_account_id(),
         help="Budget account to be used for commitment",
-        store=True
+        store=True,
+        tracking=True,
+        readonly=False,
     )
+
+    def _domain_budget_account_id(self):
+        return [("purchase_ok", "=", True), ("product_id", "!=", False)]
+
+    activity_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="กิจกรรม",
+        compute="_compute_analytic_id",
+        inverse="_inverse_activity_analytic",
+        domain=[("root_plan_id.code", "=", "activities")],
+        store=False,
+        tracking=True,
+        readonly=False,
+    )
+
+    department_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="ส่วนงาน",
+        compute="_compute_analytic_id",
+        inverse="_inverse_department_analytic",
+        domain=[("root_plan_id.code", "=", "departments")],
+        store=False,
+        tracking=True,
+        readonly=False,
+    )
+
+    fund_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="กองทุน",
+        compute="_compute_analytic_id",
+        inverse="_inverse_fund_analytic",
+        domain=[("root_plan_id.code", "=", "funds")],
+        store=False,
+        tracking=True,
+        readonly=False,
+    )
+
+    source_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="แหล่งเงิน",
+        compute="_compute_analytic_id",
+        inverse="_inverse_source_analytic",
+        domain=[("root_plan_id.code", "=", "sources")],
+        store=False,
+        tracking=True,
+        readonly=False,
+    )
+
+    _analytic_keys = {
+        "activities": "activity_analytic_id",
+        "departments": "department_analytic_id",
+        "funds": "fund_analytic_id",
+        "sources": "source_analytic_id",
+    }
+
+    is_budget_editable = fields.Boolean(compute="_compute_is_budget_editable")
+
+    hide_reserve_budget_button = fields.Boolean(
+        compute="_compute_hide_reserve_budget_button"
+    )
+
+    @api.depends("state")
+    def _compute_is_budget_editable(self):
+        can_edit = self.env.user.has_group("budget.group_budget_commitment")
+        for rec in self:
+            if rec.state in ("to_approve") and (
+                not rec.budget_commitment_id
+                or rec.budget_commitment_id.state == "cancel"
+            ):
+                rec.is_budget_editable = can_edit
+            else:
+                rec.is_budget_editable = rec.is_editable
+
+    @api.depends("state", "budget_commitment_id")
+    def _compute_hide_reserve_budget_button(self):
+        for rec in self:
+            if rec.state in ("to_approve") and (
+                rec.budget_commitment_id.state == "cancel"
+                or not rec.budget_commitment_id
+            ):
+                rec.hide_reserve_budget_button = False
+            else:
+                rec.hide_reserve_budget_button = True
+
+    def _inverse_activity_analytic(self):
+        """Update distribution when activity changes"""
+        for line in self:
+            line._update_analytic_distribution("activities")
+
+    def _inverse_department_analytic(self):
+        """Update distribution when department changes"""
+        for line in self:
+            line._update_analytic_distribution("departments")
+
+    def _inverse_fund_analytic(self):
+        """Update distribution when fund changes"""
+        for line in self:
+            line._update_analytic_distribution("funds")
+
+    def _inverse_source_analytic(self):
+        """Update distribution when source changes"""
+        for line in self:
+            line._update_analytic_distribution("sources")
 
     def button_draft(self):
         for record in self:
@@ -29,16 +135,17 @@ class PurchaseRequest(models.Model):
                 try:
                     record._cancel_budget_commitment()
                     record.write({"verified_by": "", "date_verified": False})
-                    record.message_post(body=_("Budget commitment %s has been cancelled") % record.budget_commitment_id.name)
+                    record.message_post(
+                        body=_("Budget commitment %s has been cancelled")
+                        % record.budget_commitment_id.name
+                    )
                 except UserError as e:
-                    record.message_post(body=_("Warning: Could not cancel budget commitment: %s") % str(e))
+                    record.message_post(
+                        body=_("Warning: Could not cancel budget commitment: %s")
+                        % str(e)
+                    )
 
         return super().button_draft()
-
-    @api.depends('product_id')
-    def _compute_budget_account_id(self):
-        for line in self:
-            line.budget_account_id = line.product_id.product_tmpl_id.budget_account_id
 
     def action_open_budget_commitment(self):
         self.ensure_one()
@@ -58,12 +165,6 @@ class PurchaseRequest(models.Model):
         """Reserve budget by creating commitment"""
         self.ensure_one()
 
-        if not self.budget_account_id:
-            raise ValidationError(_("Please specify budget account"))
-
-        if not all([self.activity_analytic_id, self.department_analytic_id, self.fund_analytic_id, self.source_analytic_id]):
-            raise ValidationError(_("Please specify analytic dimensions for budget commitment"))
-
         amount = sum(self.line_ids.mapped("estimated_cost"))
 
         check_result = self._check_budget_availability(
@@ -74,8 +175,11 @@ class PurchaseRequest(models.Model):
             source_analytic_id=self.source_analytic_id.id,
         )
 
-        if not check_result['is_sufficient']:
-            raise UserError(_("Cannot reserve budget due to insufficient funds: %s") % check_result['message'])
+        if not check_result["is_sufficient"]:
+            raise UserError(
+                _("Cannot reserve budget due to insufficient funds: %s")
+                % check_result["message"]
+            )
 
         try:
             commitment = self._create_budget_commitment(
@@ -86,10 +190,12 @@ class PurchaseRequest(models.Model):
                 source_analytic_id=self.source_analytic_id.id,
                 ref=self.name,
                 description=f"Purchase Request: {self.name}",
-                auto_reserve=True
+                auto_reserve=True,
             )
-            self.message_post(body=_("Budget reserved: %s for amount %s") % (commitment.name, amount))
-            self.state = 'to_approve'
+            self.message_post(
+                body=_("Budget reserved: %s for amount %s") % (commitment.name, amount)
+            )
+            self.state = "to_approve"
             return {
                 "type": "ir.actions.act_window",
                 "res_model": "purchase.request",
@@ -108,9 +214,15 @@ class PurchaseRequest(models.Model):
                 try:
                     record._cancel_budget_commitment()
                     record.write({"verified_by": "", "date_verified": False})
-                    record.message_post(body=_("Budget commitment %s has been cancelled") % record.budget_commitment_id.name)
+                    record.message_post(
+                        body=_("Budget commitment %s has been cancelled")
+                        % record.budget_commitment_id.name
+                    )
                 except UserError as e:
-                    record.message_post(body=_("Warning: Could not cancel budget commitment: %s") % str(e))
+                    record.message_post(
+                        body=_("Warning: Could not cancel budget commitment: %s")
+                        % str(e)
+                    )
 
         return super().button_draft()
 
@@ -119,9 +231,15 @@ class PurchaseRequest(models.Model):
             if record.budget_commitment_id:
                 try:
                     record._cancel_budget_commitment()
-                    record.message_post(body=_("Budget commitment %s has been cancelled") % record.budget_commitment_id.name)
+                    record.message_post(
+                        body=_("Budget commitment %s has been cancelled")
+                        % record.budget_commitment_id.name
+                    )
                 except UserError as e:
-                    record.message_post(body=_("Warning: Could not cancel budget commitment: %s") % str(e))
+                    record.message_post(
+                        body=_("Warning: Could not cancel budget commitment: %s")
+                        % str(e)
+                    )
 
         return super().button_rejected()
 
@@ -129,6 +247,25 @@ class PurchaseRequest(models.Model):
     def _onchange_analytic_distribution(self):
         """When change analytic_distribution set analytic distribution on all order lines"""
         if self.analytic_distribution:
-            self.line_ids.update(
-                {"analytic_distribution": self.analytic_distribution}
-            )
+            self.line_ids.update({"analytic_distribution": self.analytic_distribution})
+
+    @api.onchange("budget_account_id")
+    def _onchange_product_id_create_line(self):
+        product_id = self.budget_account_id.product_id
+        if not product_id:
+            return
+
+        if self.line_ids:
+            for line in self.line_ids:
+                line.product_id = product_id
+        else:
+            self.line_ids = [
+                Command.create(
+                    {
+                        "product_id": product_id,
+                        "name": product_id.display_name,
+                        "product_uom_id": product_id.uom_id.id,
+                        "product_qty": 1.0,
+                    }
+                )
+            ]
