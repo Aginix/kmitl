@@ -1,35 +1,39 @@
-<odoo noupdate="0">
+<odoo>
+    <data noupdate="1">
     <!-- Procurement type -->
-    <record id="procurement_type_004" model="procurement.type">
-        <field name="name">ซื้อ</field>
-        <field name="sequence">10</field>
-    </record>
-    <record id="procurement_type_005" model="procurement.type">
-        <field name="name">เช่า</field>
-        <field name="sequence">20</field>
-    </record>
-    <record id="procurement_type_006" model="procurement.type">
-        <field name="name">จ้างก่อสร้าง</field>
-        <field name="sequence">30</field>
-    </record>
-    <record id="procurement_type_007" model="procurement.type">
-        <field name="name">จ้างทำของ/จ้างเหมาบริการ</field>
-        <field name="sequence">40</field>
-    </record>
+        <record id="procurement_type_004" model="procurement.type">
+            <field name="name">ซื้อ</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="procurement_type_005" model="procurement.type">
+            <field name="name">เช่า</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="procurement_type_006" model="procurement.type">
+            <field name="name">จ้างก่อสร้าง</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="procurement_type_007" model="procurement.type">
+            <field name="name">จ้างทำของ/จ้างเหมาบริการ</field>
+            <field name="sequence">40</field>
+        </record>
+    </data>
 
     <function name="write" model="ir.model.data">
         <value model="ir.model.data" search="[('module', '=', 'l10n_th_gov_purchase_request'), ('name', 'in',['procurement_type_001','procurement_type_002','procurement_type_003','product_type_001','product_type_002','product_type_003'])]" />
         <value eval="{'noupdate': False}" />
     </function>
 
-    <!-- active -->
-    <record id="l10n_th_gov_purchase_request.procurement_type_001" model="procurement.type">
-        <field name="active" eval="False"/>
-    </record>
-    <record id="l10n_th_gov_purchase_request.procurement_type_002" model="procurement.type">
-        <field name="active" eval="False"/>
-    </record>
-    <record id="l10n_th_gov_purchase_request.procurement_type_003" model="procurement.type">
-        <field name="active" eval="False"/>
-    </record>
+    <data noupdate="1">
+        <!-- Disabled unused procurement type -->
+        <record id="l10n_th_gov_purchase_request.procurement_type_001" model="procurement.type">
+            <field name="active" eval="False"/>
+        </record>
+        <record id="l10n_th_gov_purchase_request.procurement_type_002" model="procurement.type">
+            <field name="active" eval="False"/>
+        </record>
+        <record id="l10n_th_gov_purchase_request.procurement_type_003" model="procurement.type">
+            <field name="active" eval="False"/>
+        </record>
+    </data>
 </odoo>
