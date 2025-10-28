@@ -13,6 +13,7 @@
         "purchase_request_account_fiscal_year",
     ],
     "data": [
+        "data/purchase_request_exception.xml",
         "views/purchase_request_views.xml",
     ],
     "installable": True,
