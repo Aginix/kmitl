@@ -9,7 +9,9 @@
     "depends": [
         "account",
     ],
-    "data": [],
+    "data": [
+        "views/account_move_views.xml",
+    ],
     "installable": True,
     "auto_install": False,
     "application": False,
