@@ -25,5 +25,5 @@ class PurchaseRequest(models.Model):
     @api.onchange("is_required_partner_id")
     def _onchange_is_required_partner_id(self):
         for rec in self:
-            if not is_required_partner_id:
+            if not rec.is_required_partner_id:
                 rec.partner_id = False
