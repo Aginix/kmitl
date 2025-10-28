@@ -10,7 +10,7 @@
             <xpath expr="//form" position="inside">
                 <field name="hide_create_po_button" invisible="1" />
             </xpath>
-            <xpath expr="//button[@name='%(action_purchase_request_line_make_purchase_order)d']" position="attributes">
+            <xpath expr="//button[@name='%(purchase_request.action_purchase_request_line_make_purchase_order)d']" position="attributes">
                 <attribute name="states"/>
                 <attribute name="attrs">{'invisible':[('hide_create_po_button', '=', True)]}</attribute>
             </xpath>
