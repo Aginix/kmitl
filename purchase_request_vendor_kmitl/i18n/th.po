@@ -19,7 +19,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_request_vendor_kmitl.view_purchase_request_form
 msgid ""
 "If vendor name not found, contact procurement staff to add the information"
-msgstr "ถ้าหากไม่พบชื่อผู้ขาย ให้แจ้งเจ้าหน้าที่พัสดุ/ผู้รับผิดชอบงาน เพื่อเพิ่มข้อมูล"
+msgstr "ถ้าหากไม่พบชื่อผู้ขายที่ต้องการ ให้แจ้งเจ้าหน้าที่พัสดุ/ผู้รับผิดชอบงาน เพื่อเพิ่มข้อมูล"
 
 #. module: purchase_request_vendor_kmitl
 #: model:ir.model.fields,field_description:purchase_request_vendor_kmitl.field_purchase_request__is_required_partner_id
