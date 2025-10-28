@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Company Vendors -->
+        <record id="vendor_demo_001" model="res.partner">
+            <field name="name">บริษัท เทคโนโลยีสมัยใหม่ จำกัด</field>
+            <field name="company_type">company</field>
+            <field name="is_company">True</field>
+            <field name="supplier_rank">1</field>
+            <field name="vat">0105536001239</field>
+            <field name="street">456 อาคารไอที ทาวเวอร์ ชั้น 15 ถนนพระราม 4 แขวงปทุมวัน</field>
+            <field name="city">กรุงเทพมหานคร</field>
+            <field name="zip">10110</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="phone">+66 2 678 9012</field>
+            <field name="email">info@moderntech.co.th</field>
+            <field name="website">www.moderntech.co.th</field>
+            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
+            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000001').code)])"/>
+        </record>
+
+        <record id="vendor_demo_002" model="res.partner">
+            <field name="name">บริษัท คอมพิวเตอร์ ซิสเต็ม จำกัด</field>
+            <field name="company_type">company</field>
+            <field name="is_company">True</field>
+            <field name="supplier_rank">1</field>
+            <field name="vat">0105547002345</field>
+            <field name="street">789/12 ถนนสุขุมวิท 21 แขวงคลองเตยเหนือ</field>
+            <field name="city">กรุงเทพมหานคร</field>
+            <field name="zip">10110</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="phone">+66 2 258 7410</field>
+            <field name="email">contact@compsystem.co.th</field>
+            <field name="website">www.compsystem.co.th</field>
+            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
+            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000001').code)])"/>
+        </record>
+
+        <record id="vendor_demo_003" model="res.partner">
+            <field name="name">บริษัท ดิจิทัล โซลูชั่น จำกัด</field>
+            <field name="company_type">company</field>
+            <field name="is_company">True</field>
+            <field name="supplier_rank">1</field>
+            <field name="vat">0105558003456</field>
+            <field name="street">234 ซอยลาดพร้าว 101 แขวงคลองจั่น</field>
+            <field name="city">กรุงเทพมหานคร</field>
+            <field name="zip">10240</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="phone">+66 2 538 9123</field>
+            <field name="email">sales@digitalsolution.co.th</field>
+            <field name="website">www.digitalsolution.co.th</field>
+            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
+            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000001').code)])"/>
+        </record>
+
+        <record id="vendor_demo_004" model="res.partner">
+            <field name="name">บริษัท เครื่องเขียนไทย จำกัด</field>
+            <field name="company_type">company</field>
+            <field name="is_company">True</field>
+            <field name="supplier_rank">1</field>
+            <field name="vat">0105569004567</field>
+            <field name="street">567 ถนนรัชดาภิเษก แขวงจันทรเกษม</field>
+            <field name="city">กรุงเทพมหานคร</field>
+            <field name="zip">10900</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="phone">+66 2 275 8456</field>
+            <field name="email">order@thaistationery.co.th</field>
+            <field name="website">www.thaistationery.co.th</field>
+            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
+            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000001').code)])"/>
+        </record>
+
+        <record id="vendor_demo_005" model="res.partner">
+            <field name="name">ห้างหุ้นส่วนจำกัด ออฟฟิศ ซัพพลาย</field>
+            <field name="company_type">company</field>
+            <field name="is_company">True</field>
+            <field name="supplier_rank">1</field>
+            <field name="vat">0105570005678</field>
+            <field name="street">123/45 ถนนพระราม 9 แขวงห้วยขวาง</field>
+            <field name="city">กรุงเทพมหานคร</field>
+            <field name="zip">10310</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="phone">+66 2 643 2178</field>
+            <field name="email">info@officesupply.co.th</field>
+            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
+            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000001').code)])"/>
+        </record>
+
+        <record id="vendor_demo_006" model="res.partner">
+            <field name="name">บริษัท ก่อสร้างและบำรุงรักษา จำกัด</field>
+            <field name="company_type">company</field>
+            <field name="is_company">True</field>
+            <field name="supplier_rank">1</field>
+            <field name="vat">0105581006789</field>
+            <field name="street">890 ถนนเพชรบุรีตัดใหม่ แขวงมักกะสัน</field>
+            <field name="city">กรุงเทพมหานคร</field>
+            <field name="zip">10400</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="phone">+66 2 254 7890</field>
+            <field name="email">contract@construction-maint.co.th</field>
+            <field name="website">www.construction-maint.co.th</field>
+            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
+            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000001').code)])"/>
+        </record>
+
+        <record id="vendor_demo_007" model="res.partner">
+            <field name="name">บริษัท วิศวกรรมและบริการ จำกัด</field>
+            <field name="company_type">company</field>
+            <field name="is_company">True</field>
+            <field name="supplier_rank">1</field>
+            <field name="vat">0105592007890</field>
+            <field name="street">456/78 ถนนงามวงศ์วาน แขวงทุ่งสองห้อง</field>
+            <field name="city">กรุงเทพมหานคร</field>
+            <field name="zip">10210</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="phone">+66 2 589 3456</field>
+            <field name="email">service@engineering-service.co.th</field>
+            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
+            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000001').code)])"/>
+        </record>
+
+        <record id="vendor_demo_008" model="res.partner">
+            <field name="name">บริษัท วิทยาศาสตร์เครื่องมือ จำกัด</field>
+            <field name="company_type">company</field>
+            <field name="is_company">True</field>
+            <field name="supplier_rank">1</field>
+            <field name="vat">0105603008901</field>
+            <field name="street">234 ถนนวิภาวดีรังสิต แขวงลาดยาว</field>
+            <field name="city">กรุงเทพมหานคร</field>
+            <field name="zip">10900</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="phone">+66 2 561 2345</field>
+            <field name="email">sales@scienceinstrument.co.th</field>
+            <field name="website">www.scienceinstrument.co.th</field>
+            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
+            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000001').code)])"/>
+        </record>
+
+        <record id="vendor_demo_009" model="res.partner">
+            <field name="name">บริษัท ห้องปฏิบัติการอุปกรณ์ จำกัด</field>
+            <field name="company_type">company</field>
+            <field name="is_company">True</field>
+            <field name="supplier_rank">1</field>
+            <field name="vat">0105614009012</field>
+            <field name="street">789 ถนนพหลโยธิน แขวงสามเสนใน</field>
+            <field name="city">กรุงเทพมหานคร</field>
+            <field name="zip">10400</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="phone">+66 2 617 8901</field>
+            <field name="email">info@labequipment.co.th</field>
+            <field name="website">www.labequipment.co.th</field>
+            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
+            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000001').code)])"/>
+        </record>
+
+        <record id="vendor_demo_010" model="res.partner">
+            <field name="name">บริษัท ที่ปรึกษาและฝึกอบรม จำกัด</field>
+            <field name="company_type">company</field>
+            <field name="is_company">True</field>
+            <field name="supplier_rank">1</field>
+            <field name="vat">0105625000123</field>
+            <field name="street">567/89 ถนนศรีนครินทร์ แขวงหนองบอน</field>
+            <field name="city">กรุงเทพมหานคร</field>
+            <field name="zip">10250</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="phone">+66 2 743 5678</field>
+            <field name="email">contact@consulting-training.co.th</field>
+            <field name="website">www.consulting-training.co.th</field>
+            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
+            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000001').code)])"/>
+        </record>
+
+        <!-- Individual Vendors -->
+        <record id="vendor_demo_011" model="res.partner">
+            <field name="name">ดร.สมชาย วิชาการ</field>
+            <field name="company_type">person</field>
+            <field name="is_company">False</field>
+            <field name="supplier_rank">1</field>
+            <field name="vat">1234567890123</field>
+            <field name="street">78/9 หมู่บ้านมหาชัย ซอยรามคำแหง 24 แขวงหัวหมาก</field>
+            <field name="city">กรุงเทพมหานคร</field>
+            <field name="zip">10240</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="phone">+66 81 234 5678</field>
+            <field name="email">dr.somchai.w@gmail.com</field>
+            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
+            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000099').code)])"/>
+
+        </record>
+
+        <record id="vendor_demo_012" model="res.partner">
+            <field name="name">นายประสิทธิ์ เทคโนโลยี</field>
+            <field name="company_type">person</field>
+            <field name="is_company">False</field>
+            <field name="supplier_rank">1</field>
+            <field name="vat">1345678901234</field>
+            <field name="street">123/456 คอนโดมิเนียม ถนนพระราม 3 แขวงช่องนนทรี</field>
+            <field name="city">กรุงเทพมหานคร</field>
+            <field name="zip">10120</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="phone">+66 89 567 1234</field>
+            <field name="email">prasit.tech@hotmail.com</field>
+            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
+            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000099').code)])"/>
+        </record>
+
+        <record id="vendor_demo_013" model="res.partner">
+            <field name="name">ผศ.ดร.สมหญิง วิจัย</field>
+            <field name="company_type">person</field>
+            <field name="is_company">False</field>
+            <field name="supplier_rank">1</field>
+            <field name="vat">1456789012345</field>
+            <field name="street">45 ซอยสุขุมวิท 39 แขวงคลองตันเหนือ</field>
+            <field name="city">กรุงเทพมหานคร</field>
+            <field name="zip">10110</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="phone">+66 82 345 6789</field>
+            <field name="email">somying.research@yahoo.com</field>
+            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
+            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000099').code)])"/>
+        </record>
+
+        <record id="vendor_demo_014" model="res.partner">
+            <field name="name">นางสาววิภา ที่ปรึกษา</field>
+            <field name="company_type">person</field>
+            <field name="is_company">False</field>
+            <field name="supplier_rank">1</field>
+            <field name="vat">1567890123456</field>
+            <field name="street">234/12 ถนนเพชรบุรี แขวงมักกะสัน</field>
+            <field name="city">กรุงเทพมหานคร</field>
+            <field name="zip">10400</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="phone">+66 86 456 7890</field>
+            <field name="email">vipa.consult@outlook.com</field>
+            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
+            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000099').code)])"/>
+        </record>
+
+        <record id="vendor_demo_015" model="res.partner">
+            <field name="name">นายอนุชา ฝึกอบรม</field>
+            <field name="company_type">person</field>
+            <field name="is_company">False</field>
+            <field name="supplier_rank">1</field>
+            <field name="vat">1678901234567</field>
+            <field name="street">567/8 หมู่บ้านนวธานี ซอยลาดพร้าว 87 แขวงคลองจั่น</field>
+            <field name="city">กรุงเทพมหานคร</field>
+            <field name="zip">10240</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="phone">+66 91 567 8901</field>
+            <field name="email">anucha.trainer@gmail.com</field>
+            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
+            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000099').code)])"/>
+        </record>
+
+        <record id="vendor_demo_016" model="res.partner">
+            <field name="name">นางพิมพ์ใจ ออกแบบ</field>
+            <field name="company_type">person</field>
+            <field name="is_company">False</field>
+            <field name="supplier_rank">1</field>
+            <field name="vat">1789012345678</field>
+            <field name="street">890/23 อาคารชุดรัชดา ถนนรัชดาภิเษก แขวงดินแดง</field>
+            <field name="city">กรุงเทพมหานคร</field>
+            <field name="zip">10400</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="phone">+66 84 678 9012</field>
+            <field name="email">pimjai.design@gmail.com</field>
+            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
+            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000099').code)])"/>
+        </record>
+
+        <record id="vendor_demo_017" model="res.partner">
+            <field name="name">ดร.วีระ วิศวกร</field>
+            <field name="company_type">person</field>
+            <field name="is_company">False</field>
+            <field name="supplier_rank">1</field>
+            <field name="vat">1890123456789</field>
+            <field name="street">123 ซอยอารีย์ แขวงสามเสนใน</field>
+            <field name="city">กรุงเทพมหานคร</field>
+            <field name="zip">10400</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="phone">+66 85 789 0123</field>
+            <field name="email">dr.veera.eng@hotmail.com</field>
+            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
+            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000099').code)])"/>
+        </record>
+
+        <record id="vendor_demo_018" model="res.partner">
+            <field name="name">นายสุรชัย ช่างซ่อม</field>
+            <field name="company_type">person</field>
+            <field name="is_company">False</field>
+            <field name="supplier_rank">1</field>
+            <field name="vat">1901234567890</field>
+            <field name="street">456/78 หมู่บ้านบ้านกลางเมือง ซอยรามคำแหง 164 แขวงสะพานสูง</field>
+            <field name="city">กรุงเทพมหานคร</field>
+            <field name="zip">10240</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="phone">+66 92 890 1234</field>
+            <field name="email">surachai.repair@gmail.com</field>
+            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
+            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000099').code)])"/>
+        </record>
+
+        <record id="vendor_demo_019" model="res.partner">
+            <field name="name">นางสาวนภา โปรแกรมเมอร์</field>
+            <field name="company_type">person</field>
+            <field name="is_company">False</field>
+            <field name="supplier_rank">1</field>
+            <field name="vat">2012345678901</field>
+            <field name="street">234/5 คอนโดมิเนียม ถนนพระราม 9 แขวงห้วยขวาง</field>
+            <field name="city">กรุงเทพมหานคร</field>
+            <field name="zip">10310</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="phone">+66 83 901 2345</field>
+            <field name="email">napa.programmer@outlook.com</field>
+            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
+            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000099').code)])"/>
+        </record>
+
+        <record id="vendor_demo_020" model="res.partner">
+            <field name="name">นายธนา นักบัญชี</field>
+            <field name="company_type">person</field>
+            <field name="is_company">False</field>
+            <field name="supplier_rank">1</field>
+            <field name="vat">2123456789012</field>
+            <field name="street">789 ซอยสุขุมวิท 77 แขวงสวนหลวง</field>
+            <field name="city">กรุงเทพมหานคร</field>
+            <field name="zip">10250</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="phone">+66 87 012 3456</field>
+            <field name="email">thana.accountant@gmail.com</field>
+            <field name="property_account_receivable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1126000001').code)])"/>
+            <field name="property_account_payable_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_2110000099').code)])"/>
+        </record>
+    </data>
+</odoo>
