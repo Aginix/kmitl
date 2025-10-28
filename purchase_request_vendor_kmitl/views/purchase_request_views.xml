@@ -12,7 +12,7 @@
                     <group>
                         <field name="is_required_partner_id" invisible="1" />
                         <field name="partner_id" attrs="{'invisible': [('is_required_partner_id', '!=', True)], 'required': [('is_required_partner_id', '=', True)]}" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}" />
-                        <div colspan="2" class="alert alert-warning show" role="alert">If vendor name not found, contact procurement staff to add the information</div>
+                        <div attrs="{'invisible': [('is_required_partner_id', '!=', True)]}" colspan="2" class="alert alert-warning show" role="alert">If vendor name not found, contact procurement staff to add the information</div>
                     </group>
                 </group>
 
