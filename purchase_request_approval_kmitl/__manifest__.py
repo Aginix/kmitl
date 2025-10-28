@@ -12,7 +12,6 @@
         "data/tier_definition.xml",
         "security/purchase_request_group.xml",
         "views/purchase_request_views.xml",
-        "views/purchase_request_tier_validation_view.xml",
     ],
     'installable': True,
     'auto_install': False,

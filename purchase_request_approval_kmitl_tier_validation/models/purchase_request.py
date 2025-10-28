@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from lxml import etree
-
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
@@ -52,4 +50,3 @@ class PurchaseRequest(models.Model):
         res = super().restart_validation()
         self.write({"state": "to_verify"})
         return res
-
