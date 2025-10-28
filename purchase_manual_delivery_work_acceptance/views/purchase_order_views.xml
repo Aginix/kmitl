@@ -9,11 +9,11 @@
         <field name="arch" type="xml">
             <xpath expr="//button[@type='action']" position='attributes'>
                 <attribute name="attrs">
-                    {'invisible': ['|', '|', '|', ('state', '!=', 'purchase'), ('pending_to_receive', '=', False), ('manual_delivery', '=', False), ('wa_accepted', '!=', True)]}
+                    {'invisible': ['|', '|', '|', ('state', '!=', 'purchase'), ('pending_to_receive', '=', False), ('manual_delivery', '=', False), ('show_create_incoming_button', '!=', True)]}
                 </attribute>
             </xpath>
             <xpath expr="//field[@name='manual_delivery']" position="after">
-                <field name="wa_accepted" invisible="1"/>
+                <field name="show_create_incoming_button" invisible="1"/>
             </xpath>
         </field>
     </record>
