@@ -55,7 +55,7 @@
                 <page name="committee" string="Committee">
                     <separator string="Work Acceptance Committee" />
                     <field name="work_acceptance_committee_ids" nolabel="1" context="{'default_committee_type': 'work_acceptance'}" attrs="{'readonly': [('is_editable', '=', False)]}" />
-                    <separator string="Tor Committee" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"/>
+                    <separator string="TOR Committee" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"/>
                     <field name="tor_committee_ids" nolabel="1" context="{'default_committee_type': 'tor_committee'}" attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}" />
                     <separator string="Price Determine Committee" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}"/>
                     <field name="price_determine_committee_ids" nolabel="1" context="{'default_committee_type': 'price_determine'}" attrs="{'readonly': [('is_editable', '=', False)], 'invisible': [('estimated_cost', '&lt;', 100000)]}" />
