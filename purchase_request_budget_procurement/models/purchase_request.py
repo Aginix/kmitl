@@ -21,11 +21,7 @@ class PurchaseRequest(models.Model):
         domain="",
         tracking=True,
     )
-    # activity_analytic_id = fields.Many2one("account.analytic.account", store=True, compute="_compute_procurement_plan_analytic_id")
-    # department_analytic_id = fields.Many2one("account.analytic.account", store=True, compute="_compute_procurement_plan_analytic_id")
-    # fund_analytic_id = fields.Many2one("account.analytic.account", store=True, compute="_compute_procurement_plan_analytic_id")
-    # source_analytic_id = fields.Many2one("account.analytic.account", store=True, compute="_compute_procurement_plan_analytic_id")
-    # procurement_plan_analytic_id = fields.Many2one("account.analytic.account", compute="_compute_procurement_plan_analytic_id")
+
     procurement_plan_analytic_id = fields.Many2one(
         "account.analytic.account",
         compute="_compute_analytic_id",
@@ -41,6 +37,9 @@ class PurchaseRequest(models.Model):
         "sources": "source_analytic_id",
         "procurement_plan": "procurement_plan_analytic_id",
     }
+
+    def _domain_budget_account_id(self):
+        return super()._domain_budget_account_id() + [("procurement_plan", "=", False)]
 
     def _inverse_procurement_analytic(self):
         """Update distribution when source changes"""

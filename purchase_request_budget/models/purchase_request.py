@@ -19,12 +19,15 @@ class PurchaseRequest(models.Model):
         "budget.account",
         string="Budget Account",
         compute="_compute_budget_account_id",
-        domain=[("purchase_ok", "=", True), ("product_id", "!=", False)],
+        domain=lambda self: self._domain_budget_account_id(),
         help="Budget account to be used for commitment",
         store=True,
         tracking=True,
         readonly=False,
     )
+
+    def _domain_budget_account_id(self):
+        return [("purchase_ok", "=", True), ("product_id", "!=", False)]
 
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -85,13 +88,7 @@ class PurchaseRequest(models.Model):
 
     @api.depends("state")
     def _compute_is_budget_editable(self):
-        can_edit = (
-            self.env.user.has_group("budget.group_budget_commitment")
-            or self.env.user.has_group(
-                "purchase_request.group_purchase_request_manager"
-            )
-            or self.env.user.has_group("base.group_erp_manager")
-        )
+        can_edit = self.env.user.has_group("budget.group_budget_commitment")
         for rec in self:
             if rec.state in ("to_approve") and (
                 not rec.budget_commitment_id
@@ -103,17 +100,10 @@ class PurchaseRequest(models.Model):
 
     @api.depends("state", "budget_commitment_id")
     def _compute_hide_reserve_budget_button(self):
-        can_edit = (
-            self.env.user.has_group("budget.group_budget_commitment")
-            or self.env.user.has_group(
-                "purchase_request.group_purchase_request_manager"
-            )
-            or self.env.user.has_group("base.group_erp_manager")
-        )
         for rec in self:
             if rec.state in ("to_approve") and (
-                not rec.budget_commitment_id
-                or rec.budget_commitment_id.state == "cancel"
+                rec.budget_commitment_id.state == "cancel"
+                or not rec.budget_commitment_id
             ):
                 rec.hide_reserve_budget_button = False
             else:

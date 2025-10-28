@@ -19,7 +19,7 @@
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
-            <!-- <xpath expr="//form/header/field[@name='state']" position="attributes">
+            <xpath expr="//form/header/field[@name='state']" position="attributes">
                 <attribute name="statusbar_visible">draft,to_approve,approved,in_progress,done</attribute>
             </xpath>
             <xpath expr="//button[@name='button_in_progress']" position="attributes">
@@ -28,32 +28,13 @@
             <xpath expr="//button[@name='button_done']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-            <xpath expr="//form" position="inside">
-                <field name="hide_create_po_button" invisible="1" />
-            </xpath>
-            <xpath expr="//button[@type='action']" position="attributes">
-                <attribute name="states"/>
-                <attribute name="string">Create PO</attribute>
-                <attribute name="attrs">{'invisible':[('hide_create_po_button', '=', True)]}</attribute>
+            <xpath expr="//button[@name='button_rejected']" position="attributes">
+                <attribute name="states">to_approve</attribute>
+                <attribute name="groups">purchase_request.group_purchase_request_manager</attribute>
             </xpath>
             <xpath expr="//button[@name='button_draft']" position="attributes">
-                <attribute name="states"></attribute>
-                <attribute name="attrs">{'invisible': [('state', 'in', ['draft', 'to_approve', 'approved', 'in_progress', 'done'])]}</attribute>
+                <attribute name="states">to_verify,rejected</attribute>
             </xpath>
-            <xpath expr="//button[@name='button_approved']" position="attributes">
-                <attribute name="attrs">{'invisible': [('state', '!=', 'to_approve')]}</attribute>
-                <attribute name="groups">purchase_request.group_purchase_request_manager</attribute>
-                <attribute name="class">btn-primary o_button_approved</attribute>
-            </xpath>
-            <xpath expr="//button[@name='button_rejected']" position="attributes">
-                <attribute name="states"></attribute>
-                <attribute name="attrs">{'invisible': [('state', 'in', ['draft', 'approved', 'in_progress', 'done', 'rejected'])]}</attribute>
-                <attribute name="groups">purchase_request.group_purchase_request_manager</attribute>
-            </xpath>
-            <xpath expr="//button[@name='button_to_approve']" position="attributes">
-                <attribute name="string">Submit Approval</attribute>
-            </xpath>
-            -->
             <xpath expr="//page[@name='committee']" position="after">
                 <page name="logs" string="Operation">
                     <group>
