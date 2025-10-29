@@ -13,7 +13,7 @@ class PurchaseOrder(models.Model):
     show_create_incoming_button = fields.Boolean(
         string="Can Show Incoming Shipment Button",
         compute="_compute_show_create_incoming_button",
-        store=True
+        store=False
     )
 
     @api.depends('use_invoice_plan', 'wa_accepted', 'invoice_plan_ids', 'invoice_plan_ids.installment', 'invoice_plan_ids.wa_id.state')
