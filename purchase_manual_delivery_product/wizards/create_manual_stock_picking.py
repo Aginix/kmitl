@@ -10,11 +10,11 @@ _logger = logging.getLogger(__name__)
 class CreateManualStockPicking(models.TransientModel):
     _inherit = 'create.stock.picking.wizard'
 
-    @api.model
-    def default_get(self, fields):
-        res = super(CreateManualStockPicking, self).default_get(fields)
-        res.pop('line_ids', None)
-        res['line_ids'] = []
+    def default_get(self, fields_list):
+        res = super().default_get(fields_list)
+        if 'line_ids' in res:
+            res['line_ids'] = []
+        
         return res
 
     def create_stock_picking(self):
@@ -42,6 +42,18 @@ class CreateManualStockPicking(models.TransientModel):
             subtype_id=self.env.ref("mail.mt_note").id,
         )
 
+        purchase_order = self.purchase_id
+        if picking_id and purchase_order:
+            if picking_id.id not in purchase_order.picking_ids.ids:
+                purchase_order.write({
+                    'picking_ids': [(4, picking_id.id)]
+                })
+            
+            if not picking_id.origin or purchase_order.name not in picking_id.origin:
+                picking_id.write({
+                    'origin': purchase_order.name
+                })
+
         return {
             "name": _("Stock Picking"),
             "view_mode": "form",
@@ -64,3 +76,45 @@ class CreateManualStockPickingWizardLine(models.TransientModel):
     price_unit = fields.Float(
         readonly=False
     )
+
+    def _prepare_stock_moves(self, picking):
+        self.ensure_one()
+        po_line = self.purchase_order_line_id
+        
+        if not po_line:
+            return self._prepare_manual_stock_moves(picking)
+        
+        return super()._prepare_stock_moves(picking)
+    
+    def _prepare_manual_stock_moves(self, picking):
+        self.ensure_one()
+        
+        location_dest_id = (
+            self.wizard_id.location_dest_id.id or 
+            picking.location_dest_id.id
+        )
+        location_id = picking.location_id.id
+        
+        if not self.product_id:
+            raise ValidationError(_("Product is required"))
+        if self.qty <= 0:
+            raise ValidationError(_("Quantity must be greater than 0"))
+        
+        values = {
+            'name': self.product_id.display_name,
+            'product_id': self.product_id.id,
+            'product_uom': self.product_uom.id or self.product_id.uom_id.id,
+            'product_uom_qty': self.qty,
+            'quantity_done': self.qty,
+            'date': fields.Datetime.now(),
+            'location_id': location_id,
+            'location_dest_id': location_dest_id,
+            'picking_id': picking.id,
+            'state': 'draft',
+            'company_id': self.wizard_id.purchase_id.company_id.id,
+            'picking_type_id': picking.picking_type_id.id,
+            'origin': self.wizard_id.purchase_id.name,
+            'route_ids': picking.picking_type_id.warehouse_id.reception_route_id,
+        }
+        
+        return [values]
