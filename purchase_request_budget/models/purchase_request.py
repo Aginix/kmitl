@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+
+_logger = logging.getLogger(__name__)
 
 
 class PurchaseRequest(models.Model):
@@ -85,6 +89,8 @@ class PurchaseRequest(models.Model):
     hide_reserve_budget_button = fields.Boolean(
         compute="_compute_hide_reserve_budget_button"
     )
+
+    product_id = fields.Many2one(related=False, readonly=False)
 
     @api.depends("state")
     def _compute_is_budget_editable(self):
@@ -250,21 +256,25 @@ class PurchaseRequest(models.Model):
             self.line_ids.update({"analytic_distribution": self.analytic_distribution})
 
     @api.onchange("budget_account_id")
-    def _onchange_product_id_create_line(self):
+    def _onchange_budget_account_id(self):
         product_id = self.budget_account_id.product_id
+
         if not product_id:
             return
 
+        self.product_id = product_id.id
+
         if self.line_ids:
             for line in self.line_ids:
-                line.product_id = product_id
+                line.product_id = product_id.id
         else:
             self.line_ids = [
                 Command.create(
                     {
-                        "product_id": product_id,
+                        "product_id": product_id.id,
                         "name": product_id.display_name,
                         "product_uom_id": product_id.uom_id.id,
+                        "price_unit": self.procurement_plan_id.total_price or 0.0,
                         "product_qty": 1.0,
                     }
                 )
