@@ -1,8 +1,8 @@
 {
-    "name": "Account Move State",
+    "name": "Account Move Submitted State",
     "version": "16.0.1.0.0",
     "category": "Accounting",
-    "summary": "Account Move State Management",
+    "summary": "Add Submitted State to Account Moves for Approval Workflow",
     "author": "KMITL",
     "website": "https://www.kmitl.ac.th",
     "license": "AGPL-3",
