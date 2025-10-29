@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo noupdate="0">
+<odoo noupdate="1">
     <record id="l10n_th_gov_purchase_request.purchase_exception_amount_not_exceed_pr" model="exception.rule">
         <field
             name="name"
