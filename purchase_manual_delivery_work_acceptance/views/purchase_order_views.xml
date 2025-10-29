@@ -7,7 +7,7 @@
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase_manual_delivery.purchase_order_view_form_inherit"/>
         <field name="arch" type="xml">
-            <xpath expr="//button[@type='action']" position='attributes'>
+            <xpath expr="//button[@name='%(purchase_manual_delivery.action_create_manual_stock_picking)d']" position='attributes'>
                 <attribute name="attrs">
                     {'invisible': ['|', '|', '|', ('state', '!=', 'purchase'), ('pending_to_receive', '=', False), ('manual_delivery', '=', False), ('show_create_incoming_button', '!=', True)]}
                 </attribute>
