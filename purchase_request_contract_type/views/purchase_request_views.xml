@@ -3,7 +3,7 @@
 
     <!-- View purchase.request form -->
     <record id="view_purchase_request_form" model="ir.ui.view">
-        <field name="name">view.purchase.request.form (title)</field>
+        <field name="name">view.purchase.request.form (Contract Type)</field>
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="l10n_th_gov_purchase_request.view_purchase_request_form"/>
         <field name="arch" type="xml">
@@ -16,7 +16,7 @@
 
     <!-- View purchase.request tree -->
     <record id="view_purchase_request_tree" model="ir.ui.view">
-        <field name="name">view.purchase.request.tree (title)</field>
+        <field name="name">view.purchase.request.tree (Contract Type)</field>
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="l10n_th_gov_purchase_request.view_purchase_request_tree"/>
         <field name="arch" type="xml">
@@ -27,7 +27,7 @@
     </record>
 
     <record id="view_purchase_request_search" model="ir.ui.view">
-        <field name="name">purchase.request.list.select</field>
+        <field name="name">purchase.request.list.select (Contract Type)</field>
         <field name="model">purchase.request</field>
         <field name="priority">30</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_search" />
