@@ -22,18 +22,6 @@ class StockInventory(models.Model):
     name = fields.Char(
         default=_default_inventory_name,
     )
-    product_selection = fields.Selection(
-        [
-            ("all", "All Products"),
-            ("manual", "Manual Selection"),
-            ("category", "Product Category"),
-            ("one", "One Product"),
-        ],
-        default="all",
-        required=True,
-        readonly=True,
-        states=READONLY_STATES,
-    )
     owner_id = fields.Many2one(
         "res.partner",
         default=_default_owner,
