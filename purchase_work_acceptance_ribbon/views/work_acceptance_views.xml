@@ -5,7 +5,7 @@
         <field name="model">work.acceptance</field>
         <field name="inherit_id" ref="purchase_work_acceptance.view_work_acceptance_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//div[hasclass(oe_title)]" position="before">
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
                 <widget
                     name="web_ribbon"
                     title="Accepted"
