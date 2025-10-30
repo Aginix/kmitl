@@ -1193,7 +1193,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_order_line_form2_sub
 #, python-format
 msgid "Purchase Request Lines"
-msgstr ""
+msgstr "รายการคำขอซื้อขอจ้าง"
 
 #. module: purchase_request
 #: model:res.groups,name:purchase_request.group_purchase_request_manager
