@@ -8,6 +8,7 @@
     "category": "KMITL",
     'depends': ['purchase_manual_delivery'],
     'data': [
+        'data/settings.xml',
         'wizards/create_manual_stock_picking.xml',
         'views/stock_picking_views.xml',
     ],
