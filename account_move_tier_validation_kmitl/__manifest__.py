@@ -12,6 +12,7 @@
     ],
     "data": [
         "views/account_move_views.xml",
+        "data/tier_definition.xml",
     ],
     "installable": True,
     "auto_install": False,
