@@ -80,7 +80,8 @@ class CreateManualStockPickingWizardLine(models.TransientModel):
     )
 
     price_unit = fields.Float(
-        readonly=False
+        readonly=False,
+        related=False
     )
 
     def _prepare_stock_moves(self, picking):
@@ -112,6 +113,7 @@ class CreateManualStockPickingWizardLine(models.TransientModel):
             'product_uom': self.product_uom.id or self.product_id.uom_id.id,
             'product_uom_qty': self.qty,
             'quantity_done': self.qty,
+            'price_unit': self.price_unit,
             'date': fields.Datetime.now(),
             'location_id': location_id,
             'location_dest_id': location_dest_id,
