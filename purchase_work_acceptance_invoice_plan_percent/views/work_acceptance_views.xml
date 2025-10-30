@@ -13,6 +13,7 @@
             
             <xpath expr="//field[@name='wa_line_ids']/tree/field[@name='price_unit']" position="attributes">
                 <attribute name="readonly">1</attribute>
+                <attribute name="force_save">1</attribute>
             </xpath>
         </field>
     </record>
