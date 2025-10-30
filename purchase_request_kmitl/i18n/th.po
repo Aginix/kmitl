@@ -475,6 +475,7 @@ msgstr ""
 msgid "Department"
 msgstr "หน่วยงาน"
 
+#. modules: l10n_th_gov_purchase_request, purchase_request
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_method__description
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__description
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__description
@@ -484,6 +485,11 @@ msgstr "หน่วยงาน"
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.purchase_type_view_form
 msgid "Description"
 msgstr "เหตุผล/ความจำเป็น"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__name
+msgid "Description"
+msgstr "ชื่อรายการ"
 
 #. module: purchase_request
 #. odoo-python
