@@ -31,7 +31,7 @@ class AccountMove(models.Model):
         return True
 
     def action_draft(self):
-        """Reset journal entry from submitted back to draft."""        
+        """Reset journal entry from submitted back to draft."""
         for move in self:
             if move.state != "submitted":
                 raise UserError(_("Only submitted entries can be reset to draft."))
