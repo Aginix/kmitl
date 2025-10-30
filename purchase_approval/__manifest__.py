@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 {
     "name": "Purchase Approval KMITL",
-    "version": "",
-    "author": "",
-    "website": "",
-    "category": "",
-    "depends": ["purchase_request_kmitl", "purchase_no_rfq", "purchase_tier_validation"],
+    'version': '16.0.1.0.0',
+    "category": "KMITL",
+    "author": "Aginix Technologies",
+    "website": "https://github.com/aginix/kmitl",
+    "depends": ["purchase_request_kmitl", "purchase_no_rfq", 'operating_unit', 'purchase_request_department'],
     "data": [
         "data/sequence.xml",
-        "views/purchase_order_views.xml",
-        "views/purchase_request_views.xml"
+        "security/security.xml",
+        "security/ir.model.access.csv",
+        "views/purchase_request_report_views.xml",
+        "views/purchase_request_views.xml",
+        "views/menu.xml",
     ],
     "application": False,
     "installable": True,
