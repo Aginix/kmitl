@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-14 14:00+0000\n"
-"PO-Revision-Date: 2025-10-14 14:00+0000\n"
+"POT-Creation-Date: 2025-10-30 05:37+0000\n"
+"PO-Revision-Date: 2025-10-30 05:37+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,14 +16,19 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: purchase_approval_tier_validaiton
+#: model:ir.model.fields,field_description:purchase_approval_tier_validaiton.field_purchase_request_report__can_forward
+msgid "Can Forward"
+msgstr ""
+
+#. module: purchase_approval_tier_validaiton
 #: model:ir.model.fields,field_description:purchase_approval_tier_validaiton.field_purchase_request_report__can_review
 msgid "Can Review"
-msgstr ""
+msgstr "สามารถตรวจสอบได้"
 
 #. module: purchase_approval_tier_validaiton
 #: model:ir.model.fields,field_description:purchase_approval_tier_validaiton.field_purchase_request_report__has_comment
 msgid "Has Comment"
-msgstr ""
+msgstr "มีความคิดเห็น"
 
 #. module: purchase_approval_tier_validaiton
 #: model:ir.model.fields,field_description:purchase_approval_tier_validaiton.field_purchase_request_report__is_reevaluation_required
@@ -38,7 +43,7 @@ msgstr ""
 #. module: purchase_approval_tier_validaiton
 #: model:ir.model.fields,field_description:purchase_approval_tier_validaiton.field_purchase_request_report__need_validation
 msgid "Need Validation"
-msgstr ""
+msgstr "ต้องการขออนุมัติ"
 
 #. module: purchase_approval_tier_validaiton
 #: model_terms:ir.ui.view,arch_db:purchase_approval_tier_validaiton.view_purchase_approval_filter
@@ -58,22 +63,22 @@ msgstr ""
 #. module: purchase_approval_tier_validaiton
 #: model:ir.model,name:purchase_approval_tier_validaiton.model_purchase_request_report
 msgid "Purchase Request Report"
-msgstr ""
+msgstr "รายงานขอซื้อ/จ้าง"
 
 #. module: purchase_approval_tier_validaiton
 #: model:ir.model.fields,field_description:purchase_approval_tier_validaiton.field_purchase_request_report__rejected
 msgid "Rejected"
-msgstr ""
+msgstr "ปฏิเสธ"
 
 #. module: purchase_approval_tier_validaiton
 #: model:ir.model.fields,field_description:purchase_approval_tier_validaiton.field_purchase_request_report__rejected_message
 msgid "Rejected Message"
-msgstr ""
+msgstr "ข้อความปฏิเสธ"
 
 #. module: purchase_approval_tier_validaiton
 #: model:ir.model.fields,field_description:purchase_approval_tier_validaiton.field_purchase_request_report__reviewer_ids
 msgid "Reviewers"
-msgstr ""
+msgstr "ผู้ตรวจสอบ"
 
 #. module: purchase_approval_tier_validaiton
 #: model:ir.model,name:purchase_approval_tier_validaiton.model_tier_definition
@@ -88,19 +93,19 @@ msgstr ""
 #. module: purchase_approval_tier_validaiton
 #: model:ir.model.fields,field_description:purchase_approval_tier_validaiton.field_purchase_request_report__validated
 msgid "Validated"
-msgstr ""
+msgstr "อนุมัติแล้ว"
 
 #. module: purchase_approval_tier_validaiton
 #: model:ir.model.fields,field_description:purchase_approval_tier_validaiton.field_purchase_request_report__validated_message
 msgid "Validated Message"
-msgstr ""
+msgstr "ข้อความอนุมัติ"
 
 #. module: purchase_approval_tier_validaiton
 #: model:ir.model.fields,field_description:purchase_approval_tier_validaiton.field_purchase_request_report__validation_status
 msgid "Validation Status"
-msgstr ""
+msgstr "สถานะการขออนุมัติ"
 
 #. module: purchase_approval_tier_validaiton
 #: model:ir.model.fields,field_description:purchase_approval_tier_validaiton.field_purchase_request_report__review_ids
 msgid "Validations"
-msgstr ""
+msgstr "การขออนุมัติ"
