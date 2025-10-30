@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from odoo import _, api, fields, models
+
+_logger = logging.getLogger(__name__)
 
 
 class PurchaseRequestLine(models.Model):
@@ -27,3 +31,8 @@ class PurchaseRequestLine(models.Model):
                 "name": product.display_name,
             })
         return res
+
+    def _compute_default_product_id(self):
+        super()._compute_default_product_id()
+        for rec in self:
+            rec.product_id = rec.request_id.budget_account_id.product_id
