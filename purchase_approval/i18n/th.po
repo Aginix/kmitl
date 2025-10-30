@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-14 13:58+0000\n"
-"PO-Revision-Date: 2025-10-14 13:58+0000\n"
+"POT-Creation-Date: 2025-10-30 05:24+0000\n"
+"PO-Revision-Date: 2025-10-30 05:24+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -61,23 +61,21 @@ msgstr ""
 
 #. module: purchase_approval
 #: model:ir.model.fields.selection,name:purchase_approval.selection__purchase_request_report__state__cancel
-#: model_terms:ir.ui.view,arch_db:purchase_approval.view_purchase_request_report_form
 msgid "Cancel"
 msgstr "ยกเลิก"
 
 #. module: purchase_approval
-#: model:ir.model.fields,field_description:purchase_approval.field_purchase_request_report__company_id
-msgid "Company"
+#. odoo-python
+#: code:addons/purchase_approval/models/purchase_request.py:0
+#, python-format
+msgid ""
+"Cannot group requests with payment type 'Direct'. Each direct payment must "
+"be reported individually."
 msgstr ""
 
 #. module: purchase_approval
-#: model_terms:ir.ui.view,arch_db:purchase_approval.view_purchase_request_tree_custom
-msgid "Create PA"
-msgstr "สร้างพจ.1"
-
-#. module: purchase_approval
-#: model_terms:ir.ui.view,arch_db:purchase_approval.view_purchase_request_report_form
-msgid "Created On:"
+#: model:ir.model.fields,field_description:purchase_approval.field_purchase_request_report__company_id
+msgid "Company"
 msgstr ""
 
 #. module: purchase_approval
@@ -101,6 +99,11 @@ msgid "Date"
 msgstr "วันที่"
 
 #. module: purchase_approval
+#: model:ir.model.fields,field_description:purchase_approval.field_purchase_request_report__department_id
+msgid "Department"
+msgstr "หน่วยงาน"
+
+#. module: purchase_approval
 #: model:ir.model.fields.selection,name:purchase_approval.selection__purchase_request_report__payment_type__direct
 msgid "Direct paid"
 msgstr "จ่ายตรง"
@@ -112,6 +115,7 @@ msgstr ""
 
 #. module: purchase_approval
 #: model:ir.model.fields.selection,name:purchase_approval.selection__purchase_request_report__state__done
+#: model_terms:ir.ui.view,arch_db:purchase_approval.view_purchase_request_report_form
 msgid "Done"
 msgstr "เสร็จสิ้น"
 
@@ -235,8 +239,15 @@ msgstr "ชื่อ"
 #. module: purchase_approval
 #. odoo-python
 #: code:addons/purchase_approval/models/purchase_request.py:0
+#: code:addons/purchase_approval/models/purchase_request.py:0
+#: code:addons/purchase_approval/models/purchase_request_report.py:0
 #, python-format
 msgid "New Report"
+msgstr ""
+
+#. module: purchase_approval
+#: model:ir.model.fields,field_description:purchase_approval.field_purchase_request_report__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
 msgstr ""
 
 #. module: purchase_approval
@@ -276,11 +287,6 @@ msgid "No requests with the same payment type as the first one."
 msgstr ""
 
 #. module: purchase_approval
-#: model_terms:ir.ui.view,arch_db:purchase_approval.view_purchase_request_report_form
-msgid "Notes"
-msgstr "หมายเหตุ"
-
-#. module: purchase_approval
 #: model:ir.model.fields,field_description:purchase_approval.field_purchase_request_report__message_needaction_counter
 msgid "Number of Actions"
 msgstr ""
@@ -311,20 +317,6 @@ msgid "Payment Type"
 msgstr "ประเภทการจ่ายเงิน"
 
 #. module: purchase_approval
-#. odoo-python
-#: code:addons/purchase_approval/models/purchase_request.py:0
-#, python-format
-msgid "Please select requests from the same company."
-msgstr "กรุณาเลือกคำขอจากบริษัทเดียวกัน"
-
-#. module: purchase_approval
-#. odoo-python
-#: code:addons/purchase_approval/models/purchase_request.py:0
-#, python-format
-msgid "Please select requests with the same currency."
-msgstr "กรุณาเลือกคำขอด้วยสกุลเงินเดียวกัน"
-
-#. module: purchase_approval
 #: model:ir.model.fields.selection,name:purchase_approval.selection__purchase_request_report__payment_type__prepaid
 msgid "Prepaid"
 msgstr "สำรองจ่าย"
@@ -347,18 +339,19 @@ msgstr "คำขอซื้อขอจ้าง"
 #. module: purchase_approval
 #. odoo-python
 #: code:addons/purchase_approval/models/purchase_request.py:0
+#: code:addons/purchase_approval/models/purchase_request.py:0
 #: model:ir.actions.act_window,name:purchase_approval.action_purchase_request_report
 #: model:ir.actions.act_window,name:purchase_approval.action_purchase_request_report_filter
 #: model:ir.model,name:purchase_approval.model_purchase_request_report
 #: model_terms:ir.ui.view,arch_db:purchase_approval.view_purchase_request_report_form
 #, python-format
 msgid "Purchase Request Report"
-msgstr ""
+msgstr "รายงานขอซื้อ/จ้าง"
 
 #. module: purchase_approval
 #: model_terms:ir.ui.view,arch_db:purchase_approval.view_purchase_request_report_form
 msgid "Report Reference"
-msgstr ""
+msgstr "อ้างอิงรายงาน"
 
 #. module: purchase_approval
 #: model:ir.model.fields,field_description:purchase_approval.field_purchase_request__report_id
@@ -369,7 +362,7 @@ msgstr "รายงานขอซื้อ/จ้าง"
 #: model:ir.model.fields,field_description:purchase_approval.field_purchase_request_report__request_ids
 #: model_terms:ir.ui.view,arch_db:purchase_approval.view_purchase_request_report_form
 msgid "Requests"
-msgstr ""
+msgstr "คำขอซื้อ/จ้าง"
 
 #. module: purchase_approval
 #: model:ir.model.fields,field_description:purchase_approval.field_purchase_request_report__activity_user_id
@@ -380,11 +373,6 @@ msgstr "ผู้รับผิดชอบ"
 #: model:ir.model.fields,field_description:purchase_approval.field_purchase_request_report__message_has_sms_error
 msgid "SMS Delivery error"
 msgstr ""
-
-#. module: purchase_approval
-#: model_terms:ir.ui.view,arch_db:purchase_approval.view_purchase_request_report_form
-msgid "Save"
-msgstr "บันทึก"
 
 #. module: purchase_approval
 #: model:ir.model.fields,field_description:purchase_approval.field_purchase_request_report__state
@@ -428,6 +416,21 @@ msgid "Website communication history"
 msgstr ""
 
 #. module: purchase_approval
+#: model_terms:ir.ui.view,arch_db:purchase_approval.view_purchase_request_tree_custom
+msgid "create PA"
+msgstr "สร้าง พจ.1"
+
+#. module: purchase_approval
+#: model_terms:ir.ui.view,arch_db:purchase_approval.view_purchase_request_report_form
+msgid "more"
+msgstr "เพิ่มเติม"
+
+#. module: purchase_approval
 #: model:ir.ui.menu,name:purchase_approval.menu_purchase_approval_filter
 msgid "waiting Purchase Approval"
 msgstr "รอจัดทำรายงานขอซื้อ/จ้าง"
+
+#. module: purchase_approval
+#: model_terms:ir.ui.view,arch_db:purchase_approval.view_purchase_request_report_form
+msgid "รายการคำขอจัดซื้อ/จ้าง"
+msgstr ""
