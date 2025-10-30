@@ -1,13 +1,13 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* purchase_request_resonsible_user
+# 	* purchase_request_responsible_user
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-27 15:16+0000\n"
-"PO-Revision-Date: 2025-10-27 15:16+0000\n"
+"POT-Creation-Date: 2025-10-30 09:16+0000\n"
+"PO-Revision-Date: 2025-10-30 09:16+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -15,17 +15,17 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
-#. module: purchase_request_resonsible_user
-#: model_terms:ir.ui.view,arch_db:purchase_request_resonsible_user.view_purchase_request_search
+#. module: purchase_request_responsible_user
+#: model_terms:ir.ui.view,arch_db:purchase_request_responsible_user.view_purchase_request_search
 msgid "Created by me"
 msgstr "สร้างโดยฉัน"
 
-#. module: purchase_request_resonsible_user
-#: model:ir.model,name:purchase_request_resonsible_user.model_purchase_request
+#. module: purchase_request_responsible_user
+#: model:ir.model,name:purchase_request_responsible_user.model_purchase_request
 msgid "Purchase Request"
 msgstr "คำขอซื้อขอจ้าง"
 
-#. module: purchase_request_resonsible_user
-#: model:ir.model.fields,field_description:purchase_request_resonsible_user.field_purchase_request__user_id
+#. module: purchase_request_responsible_user
+#: model:ir.model.fields,field_description:purchase_request_responsible_user.field_purchase_request__user_id
 msgid "Responsible"
 msgstr "สร้างคำขอโดย"
