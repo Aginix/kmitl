@@ -17,7 +17,6 @@
         </field>
     </record>
 
-
     <!-- View stock.scrap tree -->
     <record id="view_stock_scrap_tree" model="ir.ui.view">
         <field name="name">view.stock.scrap.tree</field>
