@@ -484,7 +484,7 @@ msgstr "หน่วยงาน"
 msgid "Description"
 msgstr "เหตุผล/ความจำเป็น"
 
-#. modules: purchase_request
+#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__name
 msgid "Description"
 msgstr "ชื่อรายการ"
