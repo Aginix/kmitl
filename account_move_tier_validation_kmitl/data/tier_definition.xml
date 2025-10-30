@@ -4,7 +4,7 @@
     <record id="tier_definition_account_move_accountant" model="tier.definition">
         <field name="model_id" ref="account.model_account_move"/>
         <field name="name">นักบัญชี</field>
-        <field name="sequence">10</field>
+        <field name="sequence">20</field>
         <field name="review_type">group</field>
         <field name="reviewer_group_id" ref="account.group_account_manager"/>
         <field name="definition_type">domain</field>
@@ -20,7 +20,7 @@
     <record id="tier_definition_account_move_head_accountant" model="tier.definition">
         <field name="model_id" ref="account.model_account_move"/>
         <field name="name">หัวหน้าส่วนงานคลัง</field>
-        <field name="sequence">20</field>
+        <field name="sequence">10</field>
         <field name="review_type">group</field>
         <field name="reviewer_group_id" ref="account.group_account_manager"/>
         <field name="definition_type">domain</field>
