@@ -74,7 +74,6 @@ class CreateManualStockPickingWizardLine(models.TransientModel):
 
     product_id = fields.Many2one(
         "product.product",
-        string="Product",
         domain="[('type', '=', 'product')]",
         related=False,
     )
