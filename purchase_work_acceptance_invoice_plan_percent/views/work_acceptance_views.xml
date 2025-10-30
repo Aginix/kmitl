@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+      
+    <!-- View work.acceptance form -->
+    <record id="view_work_acceptance_form" model="ir.ui.view">
+        <field name="name">view.work.acceptance.form</field>
+        <field name="model">work.acceptance</field>
+        <field name="inherit_id" ref="purchase_work_acceptance.view_work_acceptance_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='wa_line_ids']/tree/field[@name='name']" position="after">
+                <field name="percent_qty_accepted" optional="show" widget="integer"/>
+            </xpath>
+            
+            <xpath expr="//field[@name='wa_line_ids']/tree/field[@name='price_unit']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+  </odoo>
