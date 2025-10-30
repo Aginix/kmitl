@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+      
+    <!-- View stock.scrap form -->
+    <record id="view_stock_scrap_form" model="ir.ui.view">
+        <field name="name">view.stock.scrap.form</field>
+        <field name="model">stock.scrap</field>
+        <field name="inherit_id" ref="stock.stock_scrap_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+              <notebook>
+                <page name="document" string="Attachment">
+                    <field name="attachment_ids" 
+                          context="{'default_res_model': 'stock.scrap'}">
+                        <tree>
+                            <field name="name" string="File Name" required="1"/>
+                            <field name="description"/>
+                        </tree>
+                        <form>
+                            <sheet>
+                                <group>
+                                    <field name="res_model" invisible="1" readonly="0"/>
+                                    <field name="res_id" invisible="1" readonly="0"/>
+                                    <field name="name" required="1" invisible="1"/>
+                                    <field name="datas" filename="name" required="1"/>
+                                    <field name="description" placeholder="Description"/>
+                                </group>
+                            </sheet>
+                        </form>
+                    </field>
+                </page>
+              </notebook>
+            </xpath>
+        </field>
+    </record>
+
+  </odoo>
