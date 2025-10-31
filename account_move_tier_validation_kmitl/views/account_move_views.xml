@@ -4,10 +4,7 @@
     <record id="view_move_form_inherit_tier_validation_kmitl" model="ir.ui.view">
         <field name="name">account.move.form.inherit.tier.validation.kmitl</field>
         <field name="model">account.move</field>
-        <field
-            name="inherit_id"
-            ref="account_move_submitted_state.view_move_form_inherit_submitted_state"
-        />
+        <field name="inherit_id" ref="account_move_submitted_state.view_move_form_inherit_submitted_state" />
         <field name="arch" type="xml">
 
             <!-- Add id field (invisible) for tier validation -->
@@ -16,26 +13,9 @@
                 <field name="need_validation" invisible="1" />
             </xpath>
 
-            <!-- Modify action_post button attributes to integrate with tier validation -->
-            <!-- Target the button added by account_move_submitted_state (comes before action_submit) -->
-            <xpath expr="//button[@name='action_submit']" position="attributes">
-                <attribute name="sequence">2</attribute>
-            </xpath>
-
-            <xpath
-                expr="//button[@name='action_submit']/preceding-sibling::button[@name='action_post'][1]"
-                position="attributes"
-            >
-                <attribute
-                    name="attrs"
-                >{'invisible': ['|', ('state', '!=', 'submitted'), ('validation_status', '!=', 'validated')]}</attribute>
-            </xpath>
-
             <!-- Hide Reset to Draft button when validation is pending -->
             <xpath expr="//button[@name='action_draft']" position="attributes">
-                <attribute
-                    name="attrs"
-                >{'invisible': ['|', '|', ('state', '!=', 'submitted'), ('need_validation', '!=', True), ('validation_status', '=', 'pending')]}</attribute>
+                <attribute name="attrs">{'invisible': ['|', ('state', '!=', 'submitted'), ('validation_status', 'in', ['validated', 'rejected', 'pending'])]}</attribute>
             </xpath>
 
         </field>
