@@ -15,4 +15,5 @@ class StockScrap(models.Model):
         'res_id',
         string='Document Attachments',
         tracking=True,
+        states={'done': [('readonly', True)]}
     )

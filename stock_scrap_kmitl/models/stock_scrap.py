@@ -12,6 +12,7 @@ class StockScrap(models.Model):
 
     reason = fields.Text(
         string="Reason",
+        states={'done': [('readonly', True)]}
     )
 
     user_id = fields.Many2one(
@@ -19,4 +20,5 @@ class StockScrap(models.Model):
         string='Created By',
         readonly=True,
         default=lambda self: self.env.user,
+        states={'done': [('readonly', True)]}
     )
