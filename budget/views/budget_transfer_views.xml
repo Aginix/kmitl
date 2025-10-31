@@ -132,6 +132,13 @@
                                 </tree>
                             </field>
                         </page>
+
+                        <page name="extra" string="Extra Info">
+                            <group>
+                                <group></group>
+                                <group></group>
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
 

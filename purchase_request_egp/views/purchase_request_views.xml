@@ -3,7 +3,7 @@
 
     <!-- View purchase.request form -->
     <record id="view_purchase_request_form" model="ir.ui.view">
-        <field name="name">view.purchase.request.form</field>
+        <field name="name">view.purchase.request.form (e-GP)</field>
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form"/>
         <field name="arch" type="xml">
@@ -27,7 +27,7 @@
 
     <!-- View purchase.request tree -->
     <record id="view_purchase_request_tree" model="ir.ui.view">
-        <field name="name">view.purchase.request.tree</field>
+        <field name="name">view.purchase.request.tree (e-GP)</field>
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_tree"/>
         <field name="arch" type="xml">
@@ -40,7 +40,7 @@
 
     <!-- View purchase.request kanban -->
     <record id="view_purchase_request_kanban" model="ir.ui.view">
-        <field name="name">view.purchase.request.kanban</field>
+        <field name="name">view.purchase.request.kanban (e-GP)</field>
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_kanban"/>
         <field name="arch" type="xml">

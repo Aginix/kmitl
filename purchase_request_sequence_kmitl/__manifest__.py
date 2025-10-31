@@ -6,10 +6,8 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    'depends': ['hr_department_short_name', 'purchase_request_department', 'purchase_request_operating_unit_department'],
-    'data': [
-
-    ],
+    'depends': ['hr_department_short_name', 'purchase_request_department', 'purchase_request_department_operating_unit'],
+    'data': [],
     'installable': True,
     'auto_install': False,
     'license': 'LGPL-3',

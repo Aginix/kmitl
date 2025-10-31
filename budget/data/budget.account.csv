@@ -1,6 +1,4 @@
 id,budget_type,code,name,parent_id/id,note,active,fund_analytic_ids/id
-budget_account_virtual_expense,expense,virtual_expense,แหล่งเงินรายจ่าย,,,false,
-budget_account_virtual_revenue,revenue,virtual_revenue,แหล่งเงินรายรับ,,,false,
 budget_account_51000,expense,51000,งบบุคลากร,,,true,
 budget_account_51100,expense,51100,ค่าใช้จ่ายบุคลากร,budget_account_51000,,true,
 budget_account_5101010000,expense,5101010000,เงินเดือนและค่าจ้าง,budget_account_51100,,true,

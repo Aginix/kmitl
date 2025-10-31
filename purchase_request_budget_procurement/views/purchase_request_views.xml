@@ -2,28 +2,38 @@
 <odoo>
 
     <!-- View purchase.request form -->
-    <record id="view_purchase_request_form" model="ir.ui.view">
-        <field name="name">view.purchase.request.form</field>
+    <record id="view_purchase_request_form_procurement_plan" model="ir.ui.view">
+        <field name="name">view.purchase.request.form (Procurement Plan)</field>
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form"/>
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <field name="procurement_plan_id" invisible="1" />
                 <button name="action_view_procurement_plan" type="object" class="oe_stat_button" icon="fa-list-alt" attrs="{'invisible': [('procurement_plan_id', '=', False)]}">
                     <div class="o_field_widget o_stat_info">
                         <span class="o_stat_text">แผนจัดซื้อจัดจ้าง</span>
                     </div>
                 </button>
             </xpath>
-            <xpath expr="//notebook" position="before">
-                <group string="แผนจัดซื้อจัดจ้าง">
-                    <field name="use_procurement_plan" attrs="{'readonly': [('is_editable','=', False)]}" />
-                    <field name="procurement_plan_id" options="{'no_create_edit': True, 'no_open': True}" domain="[('state', '=', 'pending'), ('account_fiscal_year_id', '=', account_fiscal_year_id)]" attrs="{'invisible': [('use_procurement_plan', '=', False)], 'required': [('use_procurement_plan', '=', True)], 'readonly': [('is_editable','=', False)]}" />
-                    <field name="procurement_plan_analytic_id" invisible="1" />
-                </group>
-            </xpath>
             <field name="budget_account_id" position="attributes">
                 <attribute name="domain">[('procurement_plan', '=', False)]</attribute>
             </field>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_form_inherit_account_fiscal_year_procurement_plan" model="ir.ui.view">
+        <field name="name">view.purchase.request.form (Procurement Plan)</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request_account_fiscal_year.view_purchase_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_edit_only')]" position="before">
+                <group string="แผนจัดซื้อจัดจ้าง">
+                    <field name="use_procurement_plan" attrs="{'readonly': [('is_editable','=', False)]}" />
+                    <field name="procurement_plan_id" options="{'no_create_edit': True}" domain="[('state', '=', 'new')]" attrs="{'invisible': [('use_procurement_plan', '=', False)], 'required': [('use_procurement_plan', '=', True)], 'readonly': [('is_editable','=', False)]}" />
+                    <field name="procurement_plan_analytic_id" invisible="1" />
+                </group>
+                <separator string="ขอซื้อขอจ้าง" />
+            </xpath>
         </field>
     </record>
 
