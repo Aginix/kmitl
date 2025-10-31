@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import _, api, fields, models
+from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -29,14 +29,18 @@ class PurchaseOrder(models.Model):
 
         line_vals = []
         for line in self.order_line:
-            line_vals.append((0, 0, {
-                'product_id': line.product_id.id,
-                'name': line.name,
-                'quantity': line.product_qty,
-                'price_unit': line.price_unit,
-                'analytic_distribution' : line.analytic_distribution,
-                'tax_ids': [(6, 0, line.taxes_id.ids)],
-            }))
+            line_vals.append(
+                Command.create(
+                    {
+                        "product_id": line.product_id.id,
+                        "name": line.name,
+                        "quantity": line.product_qty,
+                        "price_unit": line.price_unit,
+                        "tax_ids": [Command.set(line.taxes_id.ids)],
+                        "analytic_distribution": line.analytic_distribution,
+                    }
+                )
+            )
 
         move_request = self.env['account.move.request'].create({
             'purchase_id': self.id,
