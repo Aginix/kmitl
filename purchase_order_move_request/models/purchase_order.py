@@ -34,6 +34,7 @@ class PurchaseOrder(models.Model):
                 'name': line.name,
                 'quantity': line.product_qty,
                 'price_unit': line.price_unit,
+                'analytic_distribution' : line.analytic_distribution,
                 'tax_ids': [(6, 0, line.taxes_id.ids)],
             }))
 
@@ -42,6 +43,10 @@ class PurchaseOrder(models.Model):
             'partner_id': self.partner_id.id,
             'line_ids': line_vals,
         })
+
+        for request_line in move_request.line_ids:
+            request_line._onchange_product_id()
+
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'account.move.request',
