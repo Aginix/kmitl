@@ -10,5 +10,4 @@ class ResConfigSettings(models.TransientModel):
         string="Enable Evaluation on Work Acceptance",
         implied_group="purchase_work_acceptance_evaluation.group_enable_eval_on_wa",
         default=True,
-        readonly=True,
     )
