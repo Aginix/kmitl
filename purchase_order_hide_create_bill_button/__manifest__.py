@@ -9,6 +9,7 @@
     'depends': ['purchase'],
     "data": [
         "data/purchase_create_bill_group.xml",
+        "views/purchase_order_views.xml",
         "views/res_config_settings_views.xml"
     ],
     'installable': True,
