@@ -22,3 +22,7 @@ class StockScrap(models.Model):
         default=lambda self: self.env.user,
         states={'done': [('readonly', True)]}
     )
+
+    origin = fields.Char(
+        states={'done': [('readonly', True)]}
+    )
