@@ -13,6 +13,7 @@
                 <field name="need_validation" invisible="1" />
             </xpath>
 
+
             <!-- Hide Reset to Draft button when validation is pending -->
             <xpath expr="//button[@name='action_draft']" position="attributes">
                 <attribute name="attrs">{'invisible': ['|', ('state', '!=', 'submitted'), ('validation_status', 'in', ['validated', 'rejected', 'pending'])]}</attribute>
