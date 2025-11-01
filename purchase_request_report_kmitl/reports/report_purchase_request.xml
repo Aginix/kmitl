@@ -6,9 +6,6 @@
         <xpath expr="//t[@t-call='web.external_layout']" position="replace">
             <t t-call="web.basic_layout">
                 <style>
-                    .page {
-                    }
-
                     * {
                         line-height: 1.5;
                     }
@@ -16,13 +13,23 @@
                         width: 30%;
                     }
                 </style>
+
                 <div class="page">
+                    <div style="position: absolute; top: 0px; left: 0px">
+                        <img
+                            t-if="o.company_id.logo"
+                            t-att-src="image_data_uri(o.company_id.logo)"
+                            style="max-height: 110px"
+                            alt="Logo"
+                        />
+                    </div>
+                    <div style="position: absolute; top: 0px; right: 0px">
+                        <div>แทนพ.1</div>
+                    </div>
                     <div class="oe_structure" />
-                    <div class="page-header">
-                        <h3
-                            class="text-center fw-bolder mb-5"
-                            style="line-height: 1.575"
-                        >
+                    <div style="height: 1px" />
+                    <div class="page-header mt-5 mb-5">
+                        <h3 class="text-center fw-bolder" style="line-height: 1.575">
                             บันทึกขอซื้อขอจ้าง
                         </h3>
                     </div>
@@ -242,7 +249,9 @@
                         </li>
                     </ol>
 
-                    <t t-call="purchase_request_report_kmitl.report_purchase_request_sign" />
+                    <t
+                        t-call="purchase_request_report_kmitl.report_purchase_request_sign"
+                    />
                 </div>
             </t>
         </xpath>
