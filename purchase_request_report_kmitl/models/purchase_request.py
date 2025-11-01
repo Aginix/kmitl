@@ -9,9 +9,9 @@ _logger = logging.getLogger(__name__)
 class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
-    def button_to_approve(self):
+    def button_to_verify(self):
         """Override to generate and attach report PDF after submission"""
-        res = super().button_to_approve()
+        res = super().button_to_verify()
 
         for record in self:
             # Generate the purchase request report PDF
