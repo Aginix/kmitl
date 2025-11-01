@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import api, models
+from odoo import Command, api, models
 
 _logger = logging.getLogger(__name__)
 
@@ -33,6 +33,12 @@ class PurchaseRequest(models.Model):
 
                 # Set as main attachment
                 record.message_main_attachment_id = attachment
+
+                # Post to chatter to make it always visible
+                record.message_post(
+                    body="Purchase Request Report has been generated.",
+                    attachment_ids=[Command.link(attachment.id)],
+                )
 
                 _logger.info(
                     "Generated and attached purchase request report for %s", record.name
