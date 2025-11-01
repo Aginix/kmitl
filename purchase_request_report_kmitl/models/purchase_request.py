@@ -10,9 +10,9 @@ class PurchaseRequest(models.Model):
     _name = "purchase.request"
     _inherit = ["purchase.request", "thai.date.mixin"]
 
-    def button_to_approve(self):
+    def button_to_verify(self):
         """Override to generate and attach report PDF after submission"""
-        res = super().button_to_approve()
+        res = super().button_to_verify()
 
         for record in self:
             # Generate the purchase request report PDF
