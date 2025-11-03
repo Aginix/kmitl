@@ -10,9 +10,11 @@ _logger = logging.getLogger(__name__)
 class StockScrap(models.Model):
     _inherit = 'stock.scrap'
 
-    attachment_ids = fields.One2many(
+    attachment_ids = fields.Many2many(
         'ir.attachment',
-        'res_id',
+        'stock_scrap_ir_attachment_rel',  # ชื่อตารางกลาง
+        'scrap_id',                        # column สำหรับ stock.scrap id
+        'attachment_id',                   # column สำหรับ ir.attachment id
         string='Document Attachments',
         tracking=True,
         states={'done': [('readonly', True)]}

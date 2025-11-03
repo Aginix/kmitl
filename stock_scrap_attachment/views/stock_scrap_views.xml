@@ -7,29 +7,11 @@
         <field name="model">stock.scrap</field>
         <field name="inherit_id" ref="stock.stock_scrap_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//sheet" position="inside">
-              <notebook>
-                <page name="document" string="Attachment">
-                    <field name="attachment_ids" 
-                          context="{'default_res_model': 'stock.scrap'}">
-                        <tree>
-                            <field name="name" string="File Name" required="1"/>
-                            <field name="description"/>
-                        </tree>
-                        <form>
-                            <sheet>
-                                <group>
-                                    <field name="res_model" invisible="1" readonly="0"/>
-                                    <field name="res_id" invisible="1" readonly="0"/>
-                                    <field name="name" required="1" invisible="1"/>
-                                    <field name="datas" filename="name" required="1"/>
-                                    <field name="description" placeholder="Description"/>
-                                </group>
-                            </sheet>
-                        </form>
-                    </field>
-                </page>
-              </notebook>
+            <xpath expr="//group[1]/group[1]" position="inside">
+                <field name="attachment_ids" 
+                       widget="many2many_binary" 
+                       string="Attachments"
+                       attrs="{'readonly': [('state', '=', 'done')]}"/>
             </xpath>
         </field>
     </record>
