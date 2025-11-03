@@ -184,43 +184,7 @@ class AccountMoveRequest(models.Model):
                 request.currency_id,
             )
 
-    def action_submit(self):
-        """Submit request for approval"""
-        for record in self:
-            if record.state != "draft":
-                raise UserError(_("Only draft requests can be submitted."))
-            record.state = "submitted"
-        return True
-
-    def action_validate(self):
-        """Validate the request"""
-        for record in self:
-            if record.state != "submitted":
-                raise UserError(_("Only submitted requests can be validated."))
-            record.state = "validated"
-        return True
-
-    def action_cancel(self):
-        """Cancel the request"""
-        for record in self:
-            if record.state == "cancel":
-                raise UserError(_("Request is already cancelled."))
-            record.state = "cancel"
-        return True
-
-    def action_view_bill(self):
-        """Open the linked vendor bill"""
-        self.ensure_one()
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Vendor Bill"),
-            "res_model": "account.move",
-            "res_id": self.bill_id.id,
-            "view_mode": "form",
-            "target": "current",
-        }
-
-    def action_create_bill(self):
+    def _create_bill(self):
         """Create vendor bill from move request"""
         self.ensure_one()
 
@@ -261,11 +225,53 @@ class AccountMoveRequest(models.Model):
         # Link the bill to this request
         self.bill_id = bill.id
 
+        return bill
+
+    def action_submit(self):
+        """Submit request for approval"""
+        for record in self:
+            if record.state != "draft":
+                raise UserError(_("Only draft requests can be submitted."))
+            record.state = "submitted"
+        return True
+
+    def action_validate(self):
+        """Validate the request"""
+        for record in self:
+            if record.state != "submitted":
+                raise UserError(_("Only submitted requests can be validated."))
+            record.state = "validated"
+        return True
+
+    def action_cancel(self):
+        """Cancel the request"""
+        for record in self:
+            if record.state == "cancel":
+                raise UserError(_("Request is already cancelled."))
+            record.state = "cancel"
+        return True
+
+    def action_view_bill(self):
+        """Open the linked vendor bill"""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Vendor Bill"),
+            "res_model": "account.move",
+            "res_id": self.bill_id.id,
+            "view_mode": "form",
+            "target": "current",
+        }
+
+    def action_create_bill(self):
+
+        self._create_bill()
+
         # Return action to open the created bill
         return {
             "type": "ir.actions.act_window",
             "res_model": "account.move",
-            "res_id": bill.id,
+            "res_id": self.bill_id.id,
             "view_mode": "form",
             "target": "current",
         }
