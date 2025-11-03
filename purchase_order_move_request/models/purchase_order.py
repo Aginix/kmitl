@@ -40,7 +40,7 @@ class PurchaseOrder(models.Model):
                         "name": line.name,
                         "quantity": line.product_qty,
                         "price_unit": line.price_unit,
-                        "account_id": account_id.id,
+                        "account_id": account.id,
                         "tax_ids": [Command.set(line.taxes_id.ids)],
                         "analytic_distribution": line.analytic_distribution,
                     }
