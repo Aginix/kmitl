@@ -26,7 +26,7 @@ msgid "Create bill"
 msgstr "สร้างใบขอเบิก"
 
 #. module: purchase_order_move_request
-#: model:ir.model.fields,field_description:purchase_order_move_request.field_purchase_order__move_reaquest_count
+#: model:ir.model.fields,field_description:purchase_order_move_request.field_purchase_order__move_request_count
 msgid "Move Request Count"
 msgstr ""
 
@@ -34,7 +34,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_order_move_request.field_purchase_order__move_request_ids
 #: model_terms:ir.ui.view,arch_db:purchase_order_move_request.view_purchase_order_form
 msgid "Move Requests"
-msgstr "บิล"
+msgstr "ใบขอเบิก"
 
 #. module: purchase_order_move_request
 #: model:ir.model,name:purchase_order_move_request.model_purchase_order

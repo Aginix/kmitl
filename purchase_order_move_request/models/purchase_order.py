@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
-import logging
-
 from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
 
 
 class PurchaseOrder(models.Model):
@@ -15,43 +11,48 @@ class PurchaseOrder(models.Model):
         inverse_name='purchase_id',
         string='Move Requests',
     )
-    move_reaquest_count = fields.Integer(
+    move_request_count = fields.Integer(
         string='Move Request Count',
         compute='_compute_move_request_count',
     )
+
     @api.depends('move_request_ids')
     def _compute_move_request_count(self):
         for order in self:
-            order.move_reaquest_count = len(order.move_request_ids)
+            order.move_request_count = len(order.move_request_ids)
+
+    def _prepare_move_request_line_vals(self):
+		account = (
+			self.product_id.property_account_expense_id
+			or self.product_id.categ_id.property_account_expense_categ_id
+		)
+		return {
+			"product_id": self.product_id.id,
+            "name": self.name,
+            "quantity": self.product_qty,
+            "price_unit": self.price_unit,
+            "account_id": account.id,
+            "tax_ids": [Command.set(self.taxes_id.ids)],
+            "analytic_distribution": self.analytic_distribution,
+		}
+
+    def _prepare_move_request_vals(self):
+        return {
+                'purchase_id': self.id,
+                'partner_id': self.partner_id.id,
+                'line_ids': [Command.create(line._prepare_move_request_line_vals()) for line in self.order_line],
+            }
 
     def action_move_request(self):
         self.ensure_one()
 
         line_vals = []
         for line in self.order_line:
-            account = (
-                line.product_id.property_account_expense_id
-                or line.product_id.categ_id.property_account_expense_categ_id
-            )
             line_vals.append(
-                Command.create(
-                    {
-                        "product_id": line.product_id.id,
-                        "name": line.name,
-                        "quantity": line.product_qty,
-                        "price_unit": line.price_unit,
-                        "account_id": account.id,
-                        "tax_ids": [Command.set(line.taxes_id.ids)],
-                        "analytic_distribution": line.analytic_distribution,
-                    }
-                )
+                Command.create(line._prepare_move_request_line_vals())
             )
 
-        move_request = self.env['account.move.request'].create({
-            'purchase_id': self.id,
-            'partner_id': self.partner_id.id,
-            'line_ids': line_vals,
-        })
+        move_request = self.env['account.move.request'].create(self._prepare_move_request_vals())
 
         return {
             'type': 'ir.actions.act_window',
