@@ -265,13 +265,13 @@ class AccountMoveRequest(models.Model):
 
     def action_create_bill(self):
 
-        self._create_bill()
+        bill = self._create_bill()
 
         # Return action to open the created bill
         return {
             "type": "ir.actions.act_window",
             "res_model": "account.move",
-            "res_id": self.bill_id.id,
+            "res_id": bill.id,
             "view_mode": "form",
             "target": "current",
         }
