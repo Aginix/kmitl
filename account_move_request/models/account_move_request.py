@@ -264,7 +264,6 @@ class AccountMoveRequest(models.Model):
         }
 
     def action_create_bill(self):
-
         bill = self._create_bill()
 
         # Return action to open the created bill
