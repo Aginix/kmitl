@@ -10,6 +10,12 @@ class AccountMoveRequest(models.Model):
     _inherit = ["analytic.mixin", "mail.thread", "mail.activity.mixin"]
     _order = "date desc, id desc"
 
+    READONLY_STATES = {
+        "submitted": [("readonly", True)],
+        "validated": [("readonly", True)],
+        "cancel": [("readonly", True)],
+    }
+
     name = fields.Char(
         string="Number",
         required=True,
@@ -24,7 +30,7 @@ class AccountMoveRequest(models.Model):
         string="Partner",
         required=True,
         tracking=True,
-        states={"validated": [("readonly", True)], "cancel": [("readonly", True)]},
+        states=READONLY_STATES,
     )
 
     date = fields.Date(
@@ -32,13 +38,13 @@ class AccountMoveRequest(models.Model):
         required=True,
         default=fields.Date.context_today,
         tracking=True,
-        states={"validated": [("readonly", True)], "cancel": [("readonly", True)]},
+        states=READONLY_STATES,
     )
 
     ref = fields.Char(
         string="Reference",
         tracking=True,
-        states={"validated": [("readonly", True)], "cancel": [("readonly", True)]},
+        states=READONLY_STATES,
     )
 
     bill_id = fields.Many2one(
@@ -60,7 +66,7 @@ class AccountMoveRequest(models.Model):
         required=True,
         default=lambda self: self.env.company,
         tracking=True,
-        states={"validated": [("readonly", True)], "cancel": [("readonly", True)]},
+        states=READONLY_STATES,
     )
 
     currency_id = fields.Many2one(
@@ -69,7 +75,7 @@ class AccountMoveRequest(models.Model):
         required=True,
         default=lambda self: self.env.company.currency_id,
         tracking=True,
-        states={"validated": [("readonly", True)], "cancel": [("readonly", True)]},
+        states=READONLY_STATES,
     )
 
     line_ids = fields.One2many(
@@ -77,7 +83,7 @@ class AccountMoveRequest(models.Model):
         inverse_name="request_id",
         string="Request Lines",
         copy=True,
-        states={"validated": [("readonly", True)], "cancel": [("readonly", True)]},
+        states=READONLY_STATES,
     )
 
     amount_untaxed = fields.Monetary(
