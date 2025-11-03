@@ -77,7 +77,7 @@ class PurchaseRequestPortal(CustomerPortal):
         auth="public",
         website=True,
     )
-    def portal_my_purchase_request(self, request_id, access_token=None, **kw):
+    def portal_my_purchase_request(self, request_id, report_type=None, access_token=None, message=False, download=False, **kw):
         """Display single purchase request in portal."""
         try:
             purchase_request_sudo = self._document_check_access(
@@ -85,6 +85,9 @@ class PurchaseRequestPortal(CustomerPortal):
             )
         except (AccessError, MissingError):
             return request.redirect("/my")
+
+        if report_type in ('html', 'pdf', 'text'):
+            return self._show_report(model=purchase_request_sudo, report_type=report_type, report_ref='purchase_request.action_report_purchase_requests', download=download)
 
         values = {
             "purchase_request": purchase_request_sudo,
