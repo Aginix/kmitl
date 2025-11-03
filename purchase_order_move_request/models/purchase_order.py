@@ -29,6 +29,12 @@ class PurchaseOrder(models.Model):
 
         line_vals = []
         for line in self.order_line:
+            account = (
+                line.product_id.property_account_expense_id
+                or line.product_id.categ_id.property_account_expense_categ_id
+            )
+            if account:
+                line.account_id = account
             line_vals.append(
                 Command.create(
                     {
@@ -36,6 +42,7 @@ class PurchaseOrder(models.Model):
                         "name": line.name,
                         "quantity": line.product_qty,
                         "price_unit": line.price_unit,
+                        "account_id": line.account_id.id,
                         "tax_ids": [Command.set(line.taxes_id.ids)],
                         "analytic_distribution": line.analytic_distribution,
                     }
@@ -47,9 +54,6 @@ class PurchaseOrder(models.Model):
             'partner_id': self.partner_id.id,
             'line_ids': line_vals,
         })
-
-        for request_line in move_request.line_ids:
-            request_line._onchange_product_id()
 
         return {
             'type': 'ir.actions.act_window',
