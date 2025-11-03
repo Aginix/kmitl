@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View stock.request View Tree -->
+    <record id="view_stock_request_tree" model="ir.ui.view">
+        <field name="name">view.stock.request.tree</field>
+        <field name="model">stock.request</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="location_id"/>
+                <field name="location_dest_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- View stock.request form -->
+    <record id="view_stock_request_form" model="ir.ui.view">
+        <field name="name">view.stock.request.form</field>
+        <field name="model">stock.request</field>
+        <field name="arch" type="xml">
+            <form string="Stock Request">
+                <header>
+                    <button name="action_confirm" string="Confirm" type="object" states="draft"/>
+                    <button name="action_done" string="Done" type="object" states="confirmed"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Stock request Order" />
+                        <h1>
+                            <field name="name" readonly="1" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group name="left">
+                            <field name="picking_type_id"/>
+                            <field name="location_id"/>
+                            <field name="location_dest_id"/>
+                            <field name="user_id"/>
+                        </group>
+                        <group name="right">
+                            <field name="request_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Lines">
+                            <field name="request_line_ids">
+                                <tree editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="description"/>
+                                    <field name="quantity"/>
+                                    <field name="product_uom_id"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action stock.request -->
+    <record id="action_stock_request" model="ir.actions.act_window">
+        <field name="name">Stock Request</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">stock.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Stock Request.
+            </p>
+        </field>
+    </record>
+
+</odoo>

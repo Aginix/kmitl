@@ -1,0 +1,5 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_stock_request_manager,stock_request_manager,model_stock_request,,1,1,1,1
+access_stock_request_user,stock_request_user,model_stock_request,,1,0,0,0
+access_stock_request_line_manager,stock_request_line_manager,model_stock_request_line,,1,1,1,1
+access_stock_request_line_user,stock_request_line_user,model_stock_request_line,,1,0,0,0
