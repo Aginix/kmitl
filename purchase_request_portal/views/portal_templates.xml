@@ -156,47 +156,4 @@
             </div>
         </t>
     </template>
-
-    <!-- JavaScript for iframe handling -->
-    <template id="portal_purchase_request_assets" inherit_id="web.assets_frontend">
-        <xpath expr="." position="inside">
-            <script type="text/javascript">
-                document.addEventListener('DOMContentLoaded', function() {
-                    var iframe = document.getElementById('purchase_request_html');
-                    var loader = document.getElementById('o_portal_html_loader');
-
-                    if (iframe) {
-                        iframe.onload = function() {
-                            // Hide loader and show iframe
-                            if (loader) {
-                                loader.classList.add('d-none');
-                            }
-                            iframe.classList.remove('d-none');
-
-                            // Auto-resize iframe based on content
-                            try {
-                                var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-                                if (iframeDoc) {
-                                    var height = iframeDoc.body.scrollHeight;
-                                    iframe.style.height = (height + 50) + 'px';
-                                }
-                            } catch(e) {
-                                // Cross-origin restriction, use default height
-                                iframe.style.height = '1200px';
-                            }
-                        };
-
-                        // Fallback: show iframe after timeout even if onload doesn't fire
-                        setTimeout(function() {
-                            if (!iframe.classList.contains('d-none')) return;
-                            if (loader) {
-                                loader.classList.add('d-none');
-                            }
-                            iframe.classList.remove('d-none');
-                        }, 5000);
-                    }
-                });
-            </script>
-        </xpath>
-    </template>
 </odoo>
