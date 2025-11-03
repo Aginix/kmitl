@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Purchase Request Portal List -->
+    <template id="portal_my_home_purchase_request" name="Portal My Home: Purchase Request" inherit_id="portal.portal_my_home" priority="40">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Purchase Requests</t>
+                <t t-set="url" t-value="'/my/purchase_requests'"/>
+                <t t-set="placeholder_count" t-value="'purchase_request_count'"/>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Purchase Request List View -->
+    <template id="portal_my_purchase_requests" name="My Purchase Requests">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Purchase Requests</t>
+            </t>
+
+            <t t-if="not purchase_requests">
+                <div class="alert alert-warning mt-3" role="alert">
+                    There are no purchase requests.
+                </div>
+            </t>
+            <t t-if="purchase_requests" t-call="portal.portal_table">
+                <thead>
+                    <tr class="active">
+                        <th>Reference</th>
+                        <th>Date</th>
+                        <th>Department</th>
+                        <th class="text-end">Amount</th>
+                        <th>State</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="purchase_requests" t-as="request">
+                        <tr>
+                            <td>
+                                <a t-att-href="request.get_portal_url()">
+                                    <t t-esc="request.name"/>
+                                </a>
+                            </td>
+                            <td><span t-field="request.create_date" t-options='{"widget": "date"}'/></td>
+                            <td><span t-field="request.department_id"/></td>
+                            <td class="text-end">
+                                <span t-field="request.amount_total" t-options='{"widget": "monetary", "display_currency": request.currency_id}'/>
+                            </td>
+                            <td>
+                                <span t-field="request.state" class="badge badge-pill"/>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </t>
+        </t>
+    </template>
+
+    <!-- Purchase Request Detail Page with iframe -->
+    <template id="portal_purchase_request_page" name="Portal Purchase Request Page">
+        <t t-call="portal.portal_layout">
+            <t t-set="o_portal_fullwidth_alert" groups="sales_team.group_sale_salesman,account.group_account_invoice,account.group_account_readonly">
+                <t t-call="portal.portal_back_in_edit_mode">
+                    <t t-set="backend_url" t-value="'/web#model=purchase.request&amp;id=%s&amp;action=&amp;view_type=form' % (purchase_request.id)"/>
+                </t>
+            </t>
+
+            <div id="portal_purchase_request_content" class="container mt-3">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-white">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <h4 class="mb-0">
+                                            <span>Purchase Request</span>
+                                            <span t-field="purchase_request.name"/>
+                                        </h4>
+                                    </div>
+                                    <div class="col-6 text-end">
+                                        <a t-att-href="purchase_request.get_portal_url(report_type='pdf')"
+                                           class="btn btn-sm btn-secondary"
+                                           title="Download PDF"
+                                           target="_blank">
+                                            <i class="fa fa-download"/> Download PDF
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <!-- Loading indicator -->
+                                <div id="o_portal_html_loader" class="o_portal_html_loader text-center py-5">
+                                    <i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw text-black-50"/>
+                                    <p class="text-muted mt-2">Loading report...</p>
+                                </div>
+
+                                <!-- iframe for HTML report -->
+                                <iframe
+                                    id="purchase_request_html"
+                                    class="d-none"
+                                    width="100%"
+                                    height="100%"
+                                    frameborder="0"
+                                    scrolling="no"
+                                    t-att-src="purchase_request.get_portal_url(report_type='html')"
+                                    style="min-height: 800px;"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Information Section -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">Request Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <strong>Reference:</strong>
+                                        <span t-field="purchase_request.name" class="ms-2"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Date:</strong>
+                                        <span t-field="purchase_request.create_date" class="ms-2" t-options='{"widget": "date"}'/>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <strong>Department:</strong>
+                                        <span t-field="purchase_request.department_id" class="ms-2"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Requested by:</strong>
+                                        <span t-field="purchase_request.requested_by" class="ms-2"/>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <strong>State:</strong>
+                                        <span t-field="purchase_request.state" class="badge badge-pill ms-2"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Total Amount:</strong>
+                                        <span t-field="purchase_request.amount_total" class="ms-2" t-options='{"widget": "monetary", "display_currency": purchase_request.currency_id}'/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- JavaScript for iframe handling -->
+    <template id="portal_purchase_request_assets" inherit_id="web.assets_frontend">
+        <xpath expr="." position="inside">
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', function() {
+                    var iframe = document.getElementById('purchase_request_html');
+                    var loader = document.getElementById('o_portal_html_loader');
+
+                    if (iframe) {
+                        iframe.onload = function() {
+                            // Hide loader and show iframe
+                            if (loader) {
+                                loader.classList.add('d-none');
+                            }
+                            iframe.classList.remove('d-none');
+
+                            // Auto-resize iframe based on content
+                            try {
+                                var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                                if (iframeDoc) {
+                                    var height = iframeDoc.body.scrollHeight;
+                                    iframe.style.height = (height + 50) + 'px';
+                                }
+                            } catch(e) {
+                                // Cross-origin restriction, use default height
+                                iframe.style.height = '1200px';
+                            }
+                        };
+
+                        // Fallback: show iframe after timeout even if onload doesn't fire
+                        setTimeout(function() {
+                            if (!iframe.classList.contains('d-none')) return;
+                            if (loader) {
+                                loader.classList.add('d-none');
+                            }
+                            iframe.classList.remove('d-none');
+                        }, 5000);
+                    }
+                });
+            </script>
+        </xpath>
+    </template>
+</odoo>
