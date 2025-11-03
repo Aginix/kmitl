@@ -33,8 +33,6 @@ class PurchaseOrder(models.Model):
                 line.product_id.property_account_expense_id
                 or line.product_id.categ_id.property_account_expense_categ_id
             )
-            if account:
-                line.account_id = account
             line_vals.append(
                 Command.create(
                     {
@@ -42,7 +40,7 @@ class PurchaseOrder(models.Model):
                         "name": line.name,
                         "quantity": line.product_qty,
                         "price_unit": line.price_unit,
-                        "account_id": line.account_id.id,
+                        "account_id": account_id.id,
                         "tax_ids": [Command.set(line.taxes_id.ids)],
                         "analytic_distribution": line.analytic_distribution,
                     }
