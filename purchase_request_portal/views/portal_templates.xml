@@ -80,22 +80,16 @@
                                         </h4>
                                     </div>
                                     <div class="col-6 text-end">
-                                        <a t-att-href="purchase_request.get_portal_url(report_type='pdf')"
-                                           class="btn btn-sm btn-secondary"
+                                        <a t-att-href="purchase_request.get_portal_url(report_type='pdf', download=True)"
+                                           class="btn btn-sm btn-secondary o_download_btn"
                                            title="Download PDF"
                                            target="_blank">
-                                            <i class="fa fa-download"/> Download PDF
+                                            <i class="fa fa-download"/> Download
                                         </a>
                                     </div>
                                 </div>
                             </div>
                             <div class="card-body p-0">
-                                <!-- Loading indicator -->
-                                <div id="o_portal_html_loader" class="o_portal_html_loader text-center py-5">
-                                    <i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw text-black-50"/>
-                                    <p class="text-muted mt-2">Loading report...</p>
-                                </div>
-
                                 <!-- iframe for HTML report -->
                                 <iframe
                                     id="purchase_request_html"
@@ -103,9 +97,8 @@
                                     width="100%"
                                     height="100%"
                                     frameborder="0"
-                                    scrolling="no"
-                                    t-att-src="purchase_request.get_portal_url(report_type='html')"
-                                    style="min-height: 800px;"/>
+                                    scrolling="yes"
+                                    t-att-src="purchase_request.get_portal_url(report_type='html')"/>
                             </div>
                         </div>
                     </div>
