@@ -7,10 +7,6 @@
         <field name="model">stock.scrap</field>
         <field name="inherit_id" ref="stock.stock_scrap_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//group/group" position="inside">
-                <field name="reason" />
-            </xpath>
-
             <xpath expr="//field[@name='scrap_location_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
@@ -23,14 +19,6 @@
         <field name="model">stock.scrap</field>
         <field name="inherit_id" ref="stock.stock_scrap_tree_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='date_done']" position="before">
-                <field name="user_id" />
-            </xpath>
-
-            <xpath expr="//field[@name='scrap_qty']" position="after">
-                <field name="reason" />
-            </xpath>
-
             <xpath expr="//field[@name='scrap_location_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>

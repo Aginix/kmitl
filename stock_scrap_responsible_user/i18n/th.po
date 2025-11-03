@@ -1,6 +1,6 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* stock_scrap_kmitl
+# 	* stock_scrap_responsible_user
 #
 msgid ""
 msgstr ""
@@ -17,17 +17,12 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.6\n"
 
-#. module: stock_scrap_kmitl
-#: model:ir.model.fields,field_description:stock_scrap_kmitl.field_stock_scrap__user_id
+#. module: stock_scrap_responsible_user
+#: model:ir.model.fields,field_description:stock_scrap_responsible_user.field_stock_scrap__user_id
 msgid "Created By"
 msgstr "ผู้บันทึกข้อมูล"
 
-#. module: stock_scrap_kmitl
-#: model:ir.model.fields,field_description:stock_scrap_kmitl.field_stock_scrap__reason
-msgid "Reason"
-msgstr "เหตุผลสุดวิสัย"
-
-#. module: stock_scrap_kmitl
-#: model:ir.model,name:stock_scrap_kmitl.model_stock_scrap
+#. module: stock_scrap_responsible_user
+#: model:ir.model,name:stock_scrap_responsible_user.model_stock_scrap
 msgid "Scrap"
 msgstr "เศษซากผลิตภัณฑ์"
