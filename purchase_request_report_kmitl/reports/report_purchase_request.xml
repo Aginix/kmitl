@@ -43,7 +43,7 @@
                     <div class="row my-2">
                         <div class="col">
                             หน่วยงาน
-                            <span class="ms-2" t-field="o.department_id" />
+                            <span class="ms-2" t-out="o.department_id.complete_name" />
                         </div>
                     </div>
                     <div class="row my-2">
@@ -60,7 +60,7 @@
                         <span t-out="o.requested_by.employee_id.department_id.complete_name" class="fw-bolder text-decoration-underline" />
                         ต้องการ
                         <span t-field="o.procurement_type_id" class="fw-bolder text-decoration-underline" />
-                        <span t-field="o.product_id" class="fw-bolder text-decoration-underline" />
+                        <span t-out="o.product_id.name" class="fw-bolder text-decoration-underline" />
                         ด้วยวิธีการจัดซื้อจัดจ้าง
                         <span class="fw-bolder text-decoration-underline" t-field="o.procurement_method_id" />
                     </p>
