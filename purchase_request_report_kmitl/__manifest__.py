@@ -11,7 +11,9 @@
         "purchase_request_department",
         "purchase_request_attachment",
         "l10n_th_amount_to_text",
-        "l10n_th_fonts"
+        "l10n_th_fonts",
+        "thai_date_utils",
+        "purchase_request_price_tax_included"
     ],
     "data": [
         "reports/report_purchase_request.xml",
