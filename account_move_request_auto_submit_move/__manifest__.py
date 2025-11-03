@@ -3,8 +3,8 @@
     "version": "16.0.1.0.0",
     "category": "Accounting",
     "license": "AGPL-3",
-    "author": "KMITL",
-    "website": "https://github.com/OCA/account-financial-tools",
+    "author": "Aginix Technologies",
+    "website": "https://github.com/aginix/kmitl",
     "depends": [
         "account_move_request",
         "account_move_submitted_state",
