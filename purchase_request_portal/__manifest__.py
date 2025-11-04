@@ -15,7 +15,9 @@
         "views/portal_templates.xml",
     ],
     "assets": {
-        "web.assets_backend": ["purchase_request_portal/static/src/**/*"],
+        'web.assets_frontend': [
+            'purchase_request_portal/static/src/js/purchase_request_portal_sidebar.js',
+        ],
     },
     "installable": True,
     "auto_install": False,
