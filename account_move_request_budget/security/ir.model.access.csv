@@ -1,3 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_account_move_request_budget_user,account.move.request budget user,account_move_request.model_account_move_request,budget.group_budget_user,1,0,0,0
-access_account_move_request_budget_manager,account.move.request budget manager,account_move_request.model_account_move_request,budget.group_budget_manager,1,1,1,0

@@ -11,7 +11,6 @@
         "budget"
     ],
     "data": [
-        "security/ir.model.access.csv",
         "views/account_move_request_views.xml",
     ],
     "auto_install": False,
