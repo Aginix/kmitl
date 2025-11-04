@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-30 08:59+0000\n"
-"PO-Revision-Date: 2025-10-30 15:59+0700\n"
+"POT-Creation-Date: 2025-11-04 05:18+0000\n"
+"PO-Revision-Date: 2025-11-04 12:19+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -23,26 +23,11 @@ msgid "Attachments"
 msgstr "เอกสารแนบ"
 
 #. module: stock_scrap_attachment
-#: model_terms:ir.ui.view,arch_db:stock_scrap_attachment.view_stock_scrap_form
-msgid "Description"
-msgstr ""
-
-#. module: stock_scrap_attachment
 #: model:ir.model.fields,field_description:stock_scrap_attachment.field_stock_scrap__attachment_ids
 msgid "Document Attachments"
-msgstr ""
-
-#. module: stock_scrap_attachment
-#: model_terms:ir.ui.view,arch_db:stock_scrap_attachment.view_stock_scrap_form
-msgid "File Name"
-msgstr "ชื่อไฟล์"
+msgstr "แนบเอกสาร"
 
 #. module: stock_scrap_attachment
 #: model:ir.model,name:stock_scrap_attachment.model_stock_scrap
 msgid "Scrap"
 msgstr "เศษซากผลิตภัณฑ์"
-
-#. module: stock_scrap_attachment
-#: model:ir.model,name:stock_scrap_attachment.model_stock_scrap
-msgid "Document Attachments"
-msgstr "แนบเอกสาร"
