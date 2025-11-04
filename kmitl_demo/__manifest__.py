@@ -18,6 +18,8 @@
         "data/company.xml",
         "data/hr.department.csv",
         "data/res.partner.xml",
+        "data/res.bank.xml",
+        "data/res.partner.bank.xml",
         "data/account.fiscal.year.csv",
         "data/ir_config_parameter.xml",
     ],
