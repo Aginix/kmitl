@@ -29,6 +29,7 @@ class TierValidation(models.AbstractModel):
         reviews = self.review_ids.filtered(
             lambda l: l.sequence in sequences or l.approve_sequence_bypass
         )
+        # original has no "self.has_approve_comment"
         if self.has_comment and self.has_approve_comment:
             user_reviews = reviews.filtered(
                 lambda r: r.status == "pending" and (self.env.user in r.reviewer_ids)
@@ -41,6 +42,7 @@ class TierValidation(models.AbstractModel):
         self.ensure_one()
         sequences = self._get_sequences_to_approve(self.env.user)
         reviews = self.review_ids.filtered(lambda l: l.sequence in sequences)
+        # original has no "self.has_reject_comment"
         if self.has_comment and self.has_reject_comment:
             return self._add_comment("reject", reviews)
         self._rejected_tier(reviews)
