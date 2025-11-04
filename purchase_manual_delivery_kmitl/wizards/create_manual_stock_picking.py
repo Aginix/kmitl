@@ -24,50 +24,15 @@ class CreateManualStockPicking(models.TransientModel):
         return res
 
     def create_stock_picking(self):
-        StockPicking = self.env["stock.picking"]
-
-        # If a picking has been selected, we add products to the picking
-        # otherwise we create a new picking
-        picking_id = self.picking_id
-        if not picking_id:
-            res = self._prepare_picking()
-            picking_id = StockPicking.create(res)
-
-        moves = self.line_ids._create_stock_moves(picking_id)
-        moves = moves.filtered(
-            lambda x: x.state not in ("done", "cancel")
-        )._action_confirm()
-        seq = 0
-        for move in sorted(moves, key=lambda move: move.date_deadline or move.date):
-            seq += 5
-            move.sequence = seq
-        moves._action_assign()
-        picking_id.message_post_with_view(
-            "mail.message_origin_link",
-            values={"self": picking_id, "origin": self.purchase_id},
-            subtype_id=self.env.ref("mail.mt_note").id,
-        )
-
+        res = super().create_stock_picking()
         purchase_order = self.purchase_id
-        if picking_id and purchase_order:
-            if picking_id.id not in purchase_order.picking_ids.ids:
-                purchase_order.write({
-                    'picking_ids': [(4, picking_id.id)]
-                })
+        picking_id = self.env['stock.picking'].browse(res['res_id'])
 
-            if not picking_id.origin or purchase_order.name not in picking_id.origin:
-                picking_id.write({
-                    'origin': purchase_order.name
-                })
-
-        return {
-            "name": _("Stock Picking"),
-            "view_mode": "form",
-            "res_model": "stock.picking",
-            "view_id": self.env.ref("stock.view_picking_form").id,
-            "res_id": picking_id.id,
-            "type": "ir.actions.act_window",
-        }
+        if picking_id.id not in purchase_order.picking_ids.ids:
+            purchase_order.write({
+                'picking_ids': [(4, picking_id.id)]
+            })
+        return res
 
 class CreateManualStockPickingWizardLine(models.TransientModel):
     _inherit = 'create.stock.picking.wizard.line'
@@ -83,8 +48,11 @@ class CreateManualStockPickingWizardLine(models.TransientModel):
         related=False
     )
 
+    def _compute_remaining_qty(self):
+        for line in self:
+            line.remaining_qty = line.qty
+
     def _prepare_stock_moves(self, picking):
-        self.ensure_one()
         po_line = self.purchase_order_line_id
 
         if not po_line:
