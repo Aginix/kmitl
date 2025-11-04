@@ -131,6 +131,7 @@
                     <!-- chatter -->
                     <div id="purchase_request_communication" class="mt-4">
                         <h2>History</h2>
+                        <t t-call="portal.message_thread"/>
                     </div>
                 </div>
             </div>
