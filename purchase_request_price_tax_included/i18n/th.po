@@ -83,12 +83,12 @@ msgstr "จำนวนเงินไม่รวมภาษี"
 #. module: purchase_request_price_tax_included
 #: model:ir.model.fields.selection,name:purchase_request_price_tax_included.selection__purchase_request__vat_included__exclusive
 msgid "VAT Exclusive"
-msgstr "ไม่รวมภาษีมูลค่าเพิ่ม"
+msgstr "ไม่มีภาษีมูลค่าเพิ่ม"
 
 #. module: purchase_request_price_tax_included
 #: model:ir.model.fields.selection,name:purchase_request_price_tax_included.selection__purchase_request__vat_included__inclusive
 msgid "VAT Inclusive"
-msgstr "รวมภาษีมูลค่าเพิ่ม"
+msgstr "มีภาษีมูลค่าเพิ่ม"
 
 #. module: purchase_request_price_tax_included
 #: model:ir.model.fields,field_description:purchase_request_price_tax_included.field_purchase_request__vat_included

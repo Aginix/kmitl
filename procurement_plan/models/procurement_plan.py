@@ -29,6 +29,7 @@ class ProcurementPlan(models.Model):
     _check_company_auto = True
     _rec_name = "description"
     _rec_names_search = ["name", "description"]
+    _order = "name desc"
 
     READONLY_STATES = {
         "new": [("readonly", True)],
@@ -175,22 +176,33 @@ class ProcurementPlan(models.Model):
 
     @api.model
     def _create_analytic_account_from_values(self, values):
-        analytic_account = self.env['account.analytic.account'].create({
-            'name': values.get('name', _('Unknown Analytic Account')),
-            'code': values.get('code'),
-            'company_id': self.env.company.id,
-            'partner_id': values.get('partner_id'),
-            'plan_id': self.env.ref('procurement_plan.analytic_plan_procurement_plan', raise_if_not_found=True).id,
-        })
+        analytic_account = self.env["account.analytic.account"].create(
+            {
+                "name": values.get("name", _("Unknown Analytic Account")),
+                "code": values.get("code"),
+                "company_id": self.env.company.id,
+                "partner_id": values.get("partner_id"),
+                "plan_id": self.env.ref(
+                    "procurement_plan.analytic_plan_procurement_plan",
+                    raise_if_not_found=True,
+                ).id,
+            }
+        )
         return analytic_account
 
     def write(self, vals):
         res = super().write(vals)
-        if 'state' in vals and vals['state'] not in ('draft', 'cancel') and not self.analytic_account_id:
-            analytic_account = self._create_analytic_account_from_values({
-                "name": self.description,
-                "code": self.name,
-            })
+        if (
+            "state" in vals
+            and vals["state"] not in ("draft", "cancel")
+            and not self.analytic_account_id
+        ):
+            analytic_account = self._create_analytic_account_from_values(
+                {
+                    "name": self.description,
+                    "code": self.name,
+                }
+            )
             self.analytic_account_id = analytic_account.id
         return res
 
@@ -227,21 +239,34 @@ class ProcurementPlan(models.Model):
 
     def _compute_can_edit(self):
         for rec in self:
-            if rec.state == 'draft':
+            if rec.state == "draft":
                 rec.can_edit = True
             else:
                 rec.can_edit = False
 
-    budget_commitment_ids = fields.One2many('budget.commitment', 'procurement_plan_id', string="ผูกพันงบประมาณ", readonly=True)
-    budget_commitment_count = fields.Integer(string="จำนวนผูกพันงบประมาณ", compute='_compute_budget_commitment_count')
+    def name_get(self):
+        res = []
+        for rec in self:
+            res.append(
+                (rec.id, _(f"[%s] %s งบประมาณ {rec.total_price:,.2f} บาท - %s") % (rec.name, rec.description, rec.source_analytic_id.name))
+            )
+        return res
 
-    budget_account_id = fields.Many2one(comodel_name="budget.account",
+    budget_commitment_ids = fields.One2many(
+        "budget.commitment", "procurement_plan_id", string="ผูกพันงบประมาณ", readonly=True
+    )
+    budget_commitment_count = fields.Integer(
+        string="จำนวนผูกพันงบประมาณ", compute="_compute_budget_commitment_count"
+    )
+
+    budget_account_id = fields.Many2one(
+        comodel_name="budget.account",
         string="รหัสงบประมาณ",
         required=True,
         index=True,
         tracking=True,
         domain="[('budgetable', '=', True), ('budget_type', '=', 'expense')]",
-        states=READONLY_STATES
+        states=READONLY_STATES,
     )
 
     activity_analytic_id = fields.Many2one(
@@ -327,17 +352,23 @@ class ProcurementPlan(models.Model):
 
     def action_view_budget_commitment(self):
         self.ensure_one()
-        action = self.env.ref('procurement_plan_budget.action_budget_commitment_procurement_plan').sudo().read()[0]
-        action['domain'] = [('procurement_plan_id', '=', self.id)]
-        action['context'] = {'default_procurement_plan_id': self.id}
+        action = (
+            self.env.ref(
+                "procurement_plan_budget.action_budget_commitment_procurement_plan"
+            )
+            .sudo()
+            .read()[0]
+        )
+        action["domain"] = [("procurement_plan_id", "=", self.id)]
+        action["context"] = {"default_procurement_plan_id": self.id}
         return action
 
     def action_open_budget_commitments(self):
         self.ensure_one()
         return {
-            'name': 'Budget Commitments',
-            'type': 'ir.actions.act_window',
-            'res_model': 'budget.commitment',
-            'view_mode': 'tree,form',
-            'domain': [('procurement_plan_id', '=', self.id)],
+            "name": "Budget Commitments",
+            "type": "ir.actions.act_window",
+            "res_model": "budget.commitment",
+            "view_mode": "tree,form",
+            "domain": [("procurement_plan_id", "=", self.id)],
         }
