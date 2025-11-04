@@ -11,3 +11,7 @@ class PurchaseRequest(models.Model):
         super()._compute_access_url()
         for request in self:
             request.access_url = f"/my/purchase_request/{request.id}"
+
+    def _get_report_base_filename(self):
+        self.ensure_one()
+        return 'Purchase Request-%s' % (self.name)

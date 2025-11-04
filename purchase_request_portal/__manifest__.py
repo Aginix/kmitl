@@ -14,7 +14,9 @@
     "data": [
         "views/portal_templates.xml",
     ],
-    "assets": {},
+    "assets": {
+        "web.assets_backend": ["purchase_request_portal/static/src/**/*"],
+    },
     "installable": True,
     "auto_install": False,
     "license": "LGPL-3",
