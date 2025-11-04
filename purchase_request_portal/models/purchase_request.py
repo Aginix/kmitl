@@ -15,3 +15,11 @@ class PurchaseRequest(models.Model):
     def _get_report_base_filename(self):
         self.ensure_one()
         return 'Purchase Request-%s' % (self.name)
+
+    def open_preview(self):
+        if self.id:
+            return {
+                'type': 'ir.actions.act_url',
+                'url': self.access_url,
+                'target': 'new',
+            }

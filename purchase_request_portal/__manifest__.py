@@ -13,6 +13,7 @@
     ],
     "data": [
         "views/portal_templates.xml",
+        "views/purchase_request_views.xml"
     ],
     "assets": {
         'web.assets_frontend': [
