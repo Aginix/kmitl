@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Purchase Order Move Request',
+    'name': 'Purchase Order Account Move Request',
     'version': '16.0.1.0.0',
-    'summary': """ Purchase Order Move Request Summary """,
+    'summary': """ Purchase Order Account Move Request Summary """,
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
