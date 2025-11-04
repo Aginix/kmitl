@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Account Move Request Form View with Budget Integration -->
+    <record id="view_account_move_request_form_budget" model="ir.ui.view">
+        <field name="name">account.move.request.form.budget</field>
+        <field name="model">account.move.request</field>
+        <field name="inherit_id" ref="account_move_request.view_account_move_request_form" />
+        <field name="arch" type="xml">
+
+            <!-- Add Budget tab -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Budget" name="budget">
+                    <group string="Budget">
+                        <group name="budget_info">
+                            <field name="budget_commitment_id" attrs="{'readonly': [('state', 'in', ['submitted', 'validated', 'cancel'])]}" />
+                            <field name="analytic_distribution" widget="analytic_distribution" readonly="1"/>
+                            <field name="analytic_distribution" invisible="1"/>
+                            <field name="budget_account_id" readonly="1"/>
+                            <field name="budget_account_id" invisible="1"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>
