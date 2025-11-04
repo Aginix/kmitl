@@ -89,12 +89,16 @@ class PurchaseRequestPortal(CustomerPortal):
         if report_type in ('html', 'pdf', 'text'):
             return self._show_report(model=purchase_request_sudo, report_type=report_type, report_ref='purchase_request.action_report_purchase_requests', download=download)
 
+        values = self._purchase_request_get_page_view_values(purchase_request_sudo, access_token, **kw)
+        return request.render("purchase_request_portal.portal_purchase_request_page", values)
+
+    def _purchase_request_get_page_view_values(self, purchase_request, access_token, **kwargs):
         values = {
-            "purchase_request": purchase_request_sudo,
+            "purchase_request": purchase_request,
             "page_name": "purchase_request",
             "report_type": "html",
         }
-        return request.render("purchase_request_portal.portal_purchase_request_page", values)
+        return self._get_page_view_values(purchase_request, access_token, values, 'my_purchase_requests', False, **kwargs)
 
     @http.route(
         ["/my/purchase_request/<int:request_id>/<string:report_type>"],
