@@ -9,8 +9,9 @@
     'depends': ['stock'],
     "data": [
         "security/ir.model.access.csv",
-        "views/stock_request_views.xml",
-        "views/menu.xml"
+        "views/menu.xml",
+        "views/stock_picking_views.xml",
+        "views/stock_request_views.xml"
     ],
     'installable': True,
     'auto_install': False,

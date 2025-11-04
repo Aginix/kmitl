@@ -20,6 +20,7 @@ class StockRequest(models.Model):
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
+            ('requested', "Requested"),
             ("confirmed", "Confirmed"),
             ("done", "Done"),
             ("cancel", "Cancelled"),
@@ -61,6 +62,11 @@ class StockRequest(models.Model):
         'stock.picking',
         string='Picking'
     )
+
+    def action_requested(self):
+        if self.picking_id:
+            self.picking_id.button_validate()
+        self.state = 'done'
 
     def action_confirm(self):
         StockPicking = self.env['stock.picking']

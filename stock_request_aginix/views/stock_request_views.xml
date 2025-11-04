@@ -27,6 +27,17 @@
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(stock.action_picking_form)d"
+                                type="action"
+                                class="oe_stat_button"
+                                attrs="{'invisible': [('picking_id', '=', False)]}">
+                            <field name="picking_id" invisible="1"/>
+                            <div class="o_stat_info">
+                                <span class="fa fa-truck"/> Picking
+                            </div>
+                        </button>
+                    </div>
                     <div class="oe_title">
                         <label for="name" string="Stock request Order" />
                         <h1>
