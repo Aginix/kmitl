@@ -21,27 +21,12 @@ class PurchaseOrder(models.Model):
         for order in self:
             order.move_request_count = len(order.move_request_ids)
 
-    def _prepare_move_request_line_vals(self, line):
-        account = (
-            line.product_id.property_account_expense_id
-            or line.product_id.categ_id.property_account_expense_categ_id
-        )
-        return {
-            "product_id": line.product_id.id,
-            "name": line.name,
-            "quantity": line.product_qty,
-            "price_unit": line.price_unit,
-            "account_id": account.id if account else False,
-            "tax_ids": [Command.set(line.taxes_id.ids)],
-            "analytic_distribution": line.analytic_distribution,
-        }
-
     def _prepare_move_request_vals(self):
         return {
             "purchase_id": self.id,
             "partner_id": self.partner_id.id,
             "line_ids": [
-                Command.create(self._prepare_move_request_line_vals(line))
+                Command.create(line._prepare_move_request_line_vals())
                 for line in self.order_line
             ],
         }
