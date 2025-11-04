@@ -349,7 +349,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.view_purchase_request_form
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form_l10n
 msgid "Committee"
-msgstr "คณะกรรมการ"
+msgstr "กรรมการ"
 
 #. modules: l10n_th_gov_purchase_request, purchase_request_kmitl
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__name
