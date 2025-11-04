@@ -22,16 +22,9 @@ class AccountMoveRequest(models.Model):
         copy=False,
     )
 
-    analytic_distribution = fields.Json(
-        copy=False,
-    )
-
     @api.onchange('budget_commitment_id')
     def _onchange_budget_commitment_id(self):
         if self.budget_commitment_id:
             budget = self.budget_commitment_id
             self.budget_account_id = budget.account_id
             self.analytic_distribution = budget.analytic_distribution
-
-            for line in self.line_ids:
-                line.analytic_distribution = budget.analytic_distribution
