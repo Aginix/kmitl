@@ -19,7 +19,7 @@ msgstr ""
 
 #. module: stock_scrap_attachment
 #: model_terms:ir.ui.view,arch_db:stock_scrap_attachment.view_stock_scrap_form
-msgid "Attachment"
+msgid "Attachments"
 msgstr "เอกสารแนบ"
 
 #. module: stock_scrap_attachment
@@ -41,3 +41,8 @@ msgstr "ชื่อไฟล์"
 #: model:ir.model,name:stock_scrap_attachment.model_stock_scrap
 msgid "Scrap"
 msgstr "เศษซากผลิตภัณฑ์"
+
+#. module: stock_scrap_attachment
+#: model:ir.model,name:stock_scrap_attachment.model_stock_scrap
+msgid "Document Attachments"
+msgstr "แนบเอกสาร"

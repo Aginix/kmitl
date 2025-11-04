@@ -12,9 +12,9 @@ class StockScrap(models.Model):
 
     attachment_ids = fields.Many2many(
         'ir.attachment',
-        'stock_scrap_ir_attachment_rel',  # ชื่อตารางกลาง
-        'scrap_id',                        # column สำหรับ stock.scrap id
-        'attachment_id',                   # column สำหรับ ir.attachment id
+        'stock_scrap_ir_attachment_rel',
+        'scrap_id',                        
+        'attachment_id',                   
         string='Document Attachments',
         tracking=True,
         states={'done': [('readonly', True)]}
