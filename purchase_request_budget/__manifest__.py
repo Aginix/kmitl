@@ -9,7 +9,7 @@
     "depends": [
         "l10n_th_gov_purchase_request",
         "budget",
-        "product_budget",
+        "budget_product",
         "purchase_request_account_fiscal_year",
     ],
     "data": [
