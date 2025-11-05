@@ -7,7 +7,7 @@
         <field name="inherit_id" ref="purchase_invoice_plan.view_purchase_invoice_plan_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//tree" position="inside">
-                <button name="action_view_linked_invoices" type="object" string="Create bill" class="oe_highlight"/>
+                <button name="action_move_request" type="object" string="Create bill" class="oe_highlight" attrs="{'invisible': [('wa_state', '!=', 'accept')]}" />
             </xpath>
         </field>
     </record>
