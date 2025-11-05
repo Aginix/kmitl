@@ -1407,7 +1407,7 @@ msgstr ""
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__name
 msgid "Request Reference"
-msgstr "รหัสเอกสาร แบบขอซื้อ/จ้าง (พ.1)"
+msgstr "เลขที่"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
