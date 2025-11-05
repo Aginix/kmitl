@@ -15,6 +15,28 @@ class PurchaseOrder(models.Model):
         string='Move Request Count',
         compute='_compute_move_request_count',
     )
+    move_request_total = fields.Monetary(
+        string="Total Move Request",
+        compute="_compute_move_request_total",
+        currency_field="currency_id",
+        store=True,
+    )
+
+    is_move_request_allowed = fields.Boolean(
+        string="Can Create Move Request",
+        compute="_compute_is_move_request_allowed",
+        store=False,
+    )
+
+    @api.depends("move_request_ids.amount_total")
+    def _compute_move_request_total(self):
+        for order in self:
+            order.move_request_total = sum(order.move_request_ids.mapped("amount_total"))
+
+    @api.depends("move_request_total", "amount_total")
+    def _compute_is_move_request_allowed(self):
+        for order in self:
+            order.is_move_request_allowed = order.move_request_total < order.amount_total
 
     @api.depends('move_request_ids')
     def _compute_move_request_count(self):
