@@ -21,10 +21,14 @@ class PurchaseOrder(models.Model):
         currency_field="currency_id",
         store=True,
     )
-
     is_move_request_allowed = fields.Boolean(
         string="Can Create Move Request",
         compute="_compute_is_move_request_allowed",
+        store=False,
+    )
+    hide_create_move_request_button = fields.Boolean(
+        string="Hide Create Move Request Button",
+        compute="_compute_hide_create_move_request_button",
         store=False,
     )
 
@@ -42,6 +46,13 @@ class PurchaseOrder(models.Model):
     def _compute_move_request_count(self):
         for order in self:
             order.move_request_count = len(order.move_request_ids)
+
+    @api.depends("state", "is_move_request_allowed")
+    def _compute_hide_create_move_request_button(self):
+        for order in self:
+            order.hide_create_move_request_button = (
+                order.state != "purchase" or not order.is_move_request_allowed
+            )
 
     def _prepare_move_request_vals(self):
         return {
