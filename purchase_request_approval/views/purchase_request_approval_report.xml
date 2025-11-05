@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_report_purchase_request_approvals" model="ir.actions.report">
+        <field name="name">Purchase Request Approval</field>
+        <field name="binding_model_id" ref="model_purchase_request_approval" />
+        <field name="model">purchase.request.approval</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">purchase_request_approval.report_purchase_request_approval</field>
+        <field name="report_file">purchase_request_approval.report_purchase_request_approval</field>
+    </record>
+</odoo>
