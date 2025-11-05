@@ -1,0 +1,502 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* account_move_request
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-04 15:50+0000\n"
+"PO-Revision-Date: 2025-11-04 22:56+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.8\n"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__account_id
+msgid "Account"
+msgstr "บัญชี"
+
+#. module: account_move_request
+#: model:ir.model,name:account_move_request.model_account_move_request
+msgid "Account Move Request"
+msgstr "คำขอเบิกจ่าย"
+
+#. module: account_move_request
+#: model:ir.model,name:account_move_request.model_account_move_request_line
+msgid "Account Move Request Line"
+msgstr "รายการ"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__analytic_distribution
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__analytic_distribution
+msgid "Analytic"
+msgstr "มิติบัญชี"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__analytic_distribution_search
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__analytic_distribution_search
+msgid "Analytic Distribution Search"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__analytic_precision
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__analytic_precision
+msgid "Analytic Precision"
+msgstr ""
+
+#. module: account_move_request
+#: model_terms:ir.ui.view,arch_db:account_move_request.view_account_move_request_search
+msgid "Approved"
+msgstr "อนุมัติแล้ว"
+
+#. module: account_move_request
+#: model_terms:ir.ui.view,arch_db:account_move_request.view_account_move_request_form
+msgid "Are you sure you want to validate this request?"
+msgstr "โปรดยืนยันการตรวจสอบ ?"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: account_move_request
+#: model_terms:ir.ui.view,arch_db:account_move_request.view_account_move_request_form
+msgid "Bill"
+msgstr "รายการบัญชี"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__bill_count
+msgid "Bill Count"
+msgstr "จำนวนรายการบัญชี"
+
+#. module: account_move_request
+#: model_terms:ir.ui.view,arch_db:account_move_request.view_account_move_request_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: account_move_request
+#: model:ir.model.fields.selection,name:account_move_request.selection__account_move_request__state__cancel
+msgid "Cancelled"
+msgstr "ยกเลิกแล้ว"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__company_id
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__company_id
+msgid "Company"
+msgstr ""
+
+#. module: account_move_request
+#: model_terms:ir.ui.view,arch_db:account_move_request.view_account_move_request_form
+msgid "Create Bill"
+msgstr "สร้างรายการตั้งเจ้าหนี้"
+
+#. module: account_move_request
+#: model_terms:ir.actions.act_window,help:account_move_request.action_account_move_request
+msgid "Create a new Move Request"
+msgstr "สร้างรายการคำขอเบิกจ่าย"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__create_uid
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__create_uid
+msgid "Created by"
+msgstr "สร้างโดย"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__create_date
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__create_date
+msgid "Created on"
+msgstr "สร้างเมื่อ"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__currency_id
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__date
+#: model_terms:ir.ui.view,arch_db:account_move_request.view_account_move_request_search
+msgid "Date"
+msgstr "วันที่"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__name
+msgid "Description"
+msgstr "คำอธิบาย"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__display_name
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__display_name
+msgid "Display Name"
+msgstr "ชื่อรายการ"
+
+#. module: account_move_request
+#: model_terms:ir.ui.view,arch_db:account_move_request.view_account_move_request_search
+msgid "Done"
+msgstr "สำเร็จ"
+
+#. module: account_move_request
+#: model:ir.model.fields.selection,name:account_move_request.selection__account_move_request__state__draft
+#: model_terms:ir.ui.view,arch_db:account_move_request.view_account_move_request_search
+msgid "Draft"
+msgstr "ฉบับร่าง"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,help:account_move_request.field_account_move_request__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: account_move_request
+#: model_terms:ir.ui.view,arch_db:account_move_request.view_account_move_request_search
+msgid "Group By"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__id
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__id
+msgid "ID"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,help:account_move_request.field_account_move_request__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,help:account_move_request.field_account_move_request__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,help:account_move_request.field_account_move_request__message_has_error
+#: model:ir.model.fields,help:account_move_request.field_account_move_request__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request____last_update
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__write_uid
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__write_date
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,help:account_move_request.field_account_move_request__bill_id
+msgid "Link to the created vendor bill"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__request_id
+#: model_terms:ir.ui.view,arch_db:account_move_request.view_account_move_request_form
+msgid "Move Request"
+msgstr "คำขอเบิกจ่าย"
+
+#. module: account_move_request
+#: model:ir.actions.act_window,name:account_move_request.action_account_move_request
+#: model:ir.ui.menu,name:account_move_request.menu_account_move_request
+#: model_terms:ir.ui.view,arch_db:account_move_request.view_account_move_request_search
+#: model_terms:ir.ui.view,arch_db:account_move_request.view_account_move_request_tree
+msgid "Move Requests"
+msgstr "รายการคำขอเบิกจ่าย"
+
+#. module: account_move_request
+#: model_terms:ir.actions.act_window,help:account_move_request.action_account_move_request
+msgid "Move requests are used to hold information before creating bills."
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__name
+msgid "Number"
+msgstr "จำนวน"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,help:account_move_request.field_account_move_request__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,help:account_move_request.field_account_move_request__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: account_move_request
+#. odoo-python
+#: code:addons/account_move_request/models/account_move_request.py:0
+#, python-format
+msgid "Only draft requests can be submitted."
+msgstr "สามารถทำการ ยืนยัน คำขอเบิกจ่ายที่อยู่ในสถานะ \"ฉบับร่าง\" ได้เท่านั้น"
+
+#. module: account_move_request
+#. odoo-python
+#: code:addons/account_move_request/models/account_move_request.py:0
+#, python-format
+msgid "Only submitted requests can be validated."
+msgstr "สามารถ ยืนยันความถูกต้อง คำขอเบิกจ่ายที่อยู่ในสถานะ \"ยืนยันแล้ว\" เท่านั้น"
+
+#. module: account_move_request
+#. odoo-python
+#: code:addons/account_move_request/models/account_move_request.py:0
+#, python-format
+msgid "Only validated requests can be used to create bills."
+msgstr "สามารถ สร้างรายการตั้งเจ้าหนี้ ได้จากคำขอเบิกจากที่ \"ตรวจสอบความถูกต้องแล้ว\" เท่านั้น "
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__partner_id
+#: model_terms:ir.ui.view,arch_db:account_move_request.view_account_move_request_search
+msgid "Partner"
+msgstr "คู่ค้า"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__product_id
+msgid "Product"
+msgstr "รายการ"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__quantity
+msgid "Quantity"
+msgstr "จำนวน"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__ref
+msgid "Reference"
+msgstr "อ้างอิง"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__line_ids
+#: model_terms:ir.ui.view,arch_db:account_move_request.view_account_move_request_form
+msgid "Request Lines"
+msgstr "รายการ"
+
+#. module: account_move_request
+#. odoo-python
+#: code:addons/account_move_request/models/account_move_request.py:0
+#, python-format
+msgid "Request is already cancelled."
+msgstr "คำขอเบิกจ่ายนี้ได้ถูกยกเลิกไปแล้ว"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__activity_user_id
+msgid "Responsible User"
+msgstr "ผู้รับผิดชอบ"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__sequence
+msgid "Sequence"
+msgstr "ลำดับ"
+
+#. module: account_move_request
+#: model_terms:ir.ui.view,arch_db:account_move_request.view_account_move_request_search
+msgid "State"
+msgstr "สถานะ"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__state
+msgid "Status"
+msgstr "สถานะ"
+
+#. module: account_move_request
+#: model:ir.model.fields,help:account_move_request.field_account_move_request__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: account_move_request
+#: model_terms:ir.ui.view,arch_db:account_move_request.view_account_move_request_form
+msgid "Submit"
+msgstr "ยืนยัน"
+
+#. module: account_move_request
+#: model:ir.model.fields.selection,name:account_move_request.selection__account_move_request__state__submitted
+#: model_terms:ir.ui.view,arch_db:account_move_request.view_account_move_request_search
+msgid "Submitted"
+msgstr "ยืนยันแล้ว"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__price_subtotal
+msgid "Subtotal"
+msgstr "จำนวน"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__price_tax
+msgid "Tax"
+msgstr "ภาษี"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__tax_totals
+msgid "Tax Totals"
+msgstr "ภาษีทั้งหมด"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__amount_tax
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__tax_ids
+msgid "Taxes"
+msgstr "ภาษี"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__amount_total
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__price_total
+msgid "Total"
+msgstr "สุทธิ"
+
+#. module: account_move_request
+#: model:ir.model.fields,help:account_move_request.field_account_move_request__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "สุทธิ"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__price_unit
+msgid "Unit Price"
+msgstr "ราคาต่อหน่วย"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__amount_untaxed
+msgid "Untaxed Amount"
+msgstr "ไม่รวมภาษี"
+
+#. module: account_move_request
+#: model_terms:ir.ui.view,arch_db:account_move_request.view_account_move_request_form
+msgid "Validate"
+msgstr "ตรวจสอบ"
+
+#. module: account_move_request
+#: model:ir.model.fields.selection,name:account_move_request.selection__account_move_request__state__validated
+msgid "Validated"
+msgstr "ตรวจสอบแล้ว"
+
+#. module: account_move_request
+#. odoo-python
+#: code:addons/account_move_request/models/account_move_request.py:0
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__bill_id
+#, python-format
+msgid "Vendor Bill"
+msgstr "รายการตั้งเจ้าหนี้"
+
+#. module: account_move_request
+#: model:ir.model.fields,field_description:account_move_request.field_account_move_request__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: account_move_request
+#: model:ir.model.fields,help:account_move_request.field_account_move_request__website_message_ids
+msgid "Website communication history"
+msgstr ""

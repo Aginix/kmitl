@@ -1,71 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo>
+  <odoo>
 
     <!-- View procurement.plan form -->
-    <record id="view_procurement_plan_form_budget" model="ir.ui.view">
-        <field name="name">view.procurement.plan.form.budget</field>
+    <record id="view_procurement_plan_form" model="ir.ui.view">
+        <field name="name">view.procurement.plan.form</field>
         <field name="model">procurement.plan</field>
         <field name="inherit_id" ref="procurement_plan.view_procurement_plan_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='account_fiscal_year_id']" position="after">
-                <field name="activity_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" />
-                <field name="source_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" />
-                <field name="department_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" />
-                <field name="fund_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" />
-                <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" />
-            </xpath>
-            <xpath expr="//header" position="attributes">
-                <attribute name="invisible">context.get('hide_header', False)</attribute>
-            </xpath>
-            <xpath expr="//div[hasclass('oe_title')]" position="before">
-                <div class="oe_button_box" name="button_box">
-                    <field name="budget_commitment_count" invisible="1" />
-                    <button name="action_open_budget_commitments" type="object" class="oe_stat_button" icon="fa-money" attrs="{'invisible': [('budget_commitment_count', '=', 0)]}">
-                        <div class="o_field_widget o_stat_info">
-                            <field name="budget_commitment_count" />
-                            <span class="o_stat_text">Budget Commitment</span>
-                        </div>
-                    </button>
-                </div>
-            </xpath>
+            <field name="account_fiscal_year_id" position="attributes">
+                <attribute name="attrs">{'readonly': [('id', '!=', False)]}</attribute>
+            </field>
         </field>
     </record>
 
-
-    <!-- View procurement.plan tree -->
-    <record id="view_procurement_plan_tree_budget" model="ir.ui.view">
-        <field name="name">view.procurement.plan.tree.budget</field>
-        <field name="model">procurement.plan</field>
-        <field name="inherit_id" ref="procurement_plan.view_procurement_plan_tree"/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='name']" position="after">
-                <field name="budget_account_id" optional="show" />
-                <field name="activity_analytic_id" optional="hide" />
-                <field name="source_analytic_id" optional="show" />
-                <field name="department_analytic_id" optional="show" />
-                <field name="fund_analytic_id" optional="hide" />
-            </xpath>
-            <xpath expr="//tree" position="attributes">
-                <attribute name="create">false</attribute>
-            </xpath>
-        </field>
-    </record>
-
-
-    <!-- View procurement.plan search -->
-    <record id="view_procurement_plan_search_budget" model="ir.ui.view">
-        <field name="name">view.procurement.plan.search.budget</field>
-        <field name="model">procurement.plan</field>
-        <field name="inherit_id" ref="procurement_plan.view_procurement_plan_search"/>
-        <field name="arch" type="xml">
-            <xpath expr="//searchpanel/field[@name='account_fiscal_year_id']" position="after">
-                <field name="budget_account_id" icon="fa-book" enable_counters="1" />
-                <field name="source_analytic_id" icon="fa-money" enable_counters="1" />
-                <field name="fund_analytic_id" icon="fa-money" enable_counters="1" />
-                <field name="department_analytic_id" icon="fa-users" enable_counters="1" />
-                <field name="activity_analytic_id" icon="fa-users" enable_counters="1" />
-            </xpath>
-        </field>
-    </record>
-
-</odoo>
+  </odoo>

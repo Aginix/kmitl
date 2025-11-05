@@ -6,245 +6,1054 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-13 09:31+0000\n"
-"PO-Revision-Date: 2025-05-13 16:33+0700\n"
+"POT-Creation-Date: 2025-10-21 09:35+0000\n"
+"PO-Revision-Date: 2025-10-21 09:35+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: th\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.6\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
 
 #. module: budget
-#. odoo-javascript
-#: code:addons/budget/static/src/components/budget_expenditure_report_main/budget_expenditure_report_main.xml:0
-#, python-format
-msgid "(f) = (b) + (c) + (d) + (e)"
-msgstr ""
-
-#. module: budget
-#. odoo-javascript
-#: code:addons/budget/static/src/components/budget_expenditure_report_main/budget_expenditure_report_main.xml:0
-#, python-format
-msgid "(g) = (a) - (f)"
-msgstr ""
-
-#. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_template_line_account__account_id
-msgid "Account"
-msgstr ""
-
-#. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__account_ids
-msgid "Account Mapping"
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__budget_availability_percentage
+msgid "% of Available"
 msgstr ""
 
 #. module: budget
 #. odoo-python
-#: code:addons/budget/models/budget_template.py:0
-#: model:ir.model.constraint,message:budget.constraint_budget_template_line_account_unique_budget_template_line_account
+#: code:addons/budget/models/budget_account.py:0
 #, python-format
-msgid "Account must be unique"
+msgid "%(name)s"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__message_needaction
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__message_needaction
+#. odoo-python
+#: code:addons/budget/models/budget_account.py:0
+#, python-format
+msgid "%(parent)s / %(own)s"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_account.py:0
+#: code:addons/budget/models/budget_account.py:0
+#, python-format
+msgid "%s (copy)"
+msgstr ""
+
+#. module: budget
+#: model:mail.template,body_html:budget.email_template_budget_transfer_submitted
+msgid ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        Dear Budget Approver,\n"
+"                    </p>\n"
+"                    <br>\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        A new budget transfer request has been submitted and requires your approval.\n"
+"                    </p>\n"
+"                    <br>\n"
+"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F2F3; width:100%; margin: 16px 0px 16px 0px;\">\n"
+"                        <tr>\n"
+"                            <td style=\"background-color:#875A7B; padding: 8px 16px 8px 16px; font-weight: bold; color: #fff;\">\n"
+"                                Transfer Details\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                        <tr>\n"
+"                            <td style=\"padding: 16px 16px 16px 16px;\">\n"
+"                                <table>\n"
+"                                    <tr>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Transfer Number:</td>\n"
+"                                        <td>{{ object.name }}</td>\n"
+"                                    </tr>\n"
+"                                    <tr>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Requested by:</td>\n"
+"                                        <td>{{ object.user_id.name }}</td>\n"
+"                                    </tr>\n"
+"                                    <tr>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Date:</td>\n"
+"                                        <td>{{ object.date }}</td>\n"
+"                                    </tr>\n"
+"                                    <tr>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Amount:</td>\n"
+"                                        <td style=\"color: #875A7B; font-weight: bold;\">{{ object.amount | safe }} {{ object.currency_id.name }}</td>\n"
+"                                    </tr>\n"
+"                                    <tr>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Transfer Type:</td>\n"
+"                                        <td>{{ dict(object._fields['transfer_type']._description_selection(object.env))[object.transfer_type] }}</td>\n"
+"                                    </tr>\n"
+"                                </table>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                    </table>\n"
+"                    \n"
+"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F8F9FA; width:100%; margin: 16px 0px 16px 0px;\">\n"
+"                        <tr>\n"
+"                            <td style=\"background-color:#17A2B8; padding: 8px 16px 8px 16px; font-weight: bold; color: #fff;\">\n"
+"                                Transfer Reason\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                        <tr>\n"
+"                            <td style=\"padding: 16px 16px 16px 16px;\">\n"
+"                                {{ object.reason | safe }}\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                    </table>\n"
+"                    \n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        Please review and approve/reject this transfer request.\n"
+"                    </p>\n"
+"                    <br>\n"
+"                    <div style=\"text-align: center;\">\n"
+"                        <a href=\"/web#id=%7B%7B%20object.id%20%7D%7D&amp;model=budget.transfer&amp;view_type=form\" style=\"background-color: #875A7B; padding: 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;\">\n"
+"                            Review Transfer Request\n"
+"                        </a>\n"
+"                    </div>\n"
+"                    <br>\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        Best regards,<br>\n"
+"                        {{ user.name }}<br>\n"
+"                        {{ user.company_id.name }}\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+msgstr ""
+
+#. module: budget
+#: model:mail.template,body_html:budget.email_template_budget_transfer_approved
+msgid ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        Dear {{ object.user_id.name }},\n"
+"                    </p>\n"
+"                    <br>\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        Good news! Your budget transfer request has been approved.\n"
+"                    </p>\n"
+"                    <br>\n"
+"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #D4F6E8; width:100%; margin: 16px 0px 16px 0px;\">\n"
+"                        <tr>\n"
+"                            <td style=\"background-color:#28A745; padding: 8px 16px 8px 16px; font-weight: bold; color: #fff;\">\n"
+"                                ✓ Transfer Approved\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                        <tr>\n"
+"                            <td style=\"padding: 16px 16px 16px 16px;\">\n"
+"                                <table>\n"
+"                                    <tr>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Transfer Number:</td>\n"
+"                                        <td>{{ object.name }}</td>\n"
+"                                    </tr>\n"
+"                                    <tr>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Approved by:</td>\n"
+"                                        <td>{{ object.approver_id.name }}</td>\n"
+"                                    </tr>\n"
+"                                    <tr>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Approval Date:</td>\n"
+"                                        <td>{{ object.approval_date }}</td>\n"
+"                                    </tr>\n"
+"                                    <tr>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Amount:</td>\n"
+"                                        <td style=\"color: #28A745; font-weight: bold;\">{{ object.amount | safe }} {{ object.currency_id.name }}</td>\n"
+"                                    </tr>\n"
+"                                </table>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                    </table>\n"
+"                    \n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        Your transfer is now ready to be posted. A manager will complete the posting process shortly.\n"
+"                    </p>\n"
+"                    <br>\n"
+"                    <div style=\"text-align: center;\">\n"
+"                        <a href=\"/web#id=%7B%7B%20object.id%20%7D%7D&amp;model=budget.transfer&amp;view_type=form\" style=\"background-color: #28A745; padding: 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;\">\n"
+"                            View Transfer\n"
+"                        </a>\n"
+"                    </div>\n"
+"                    <br>\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        Best regards,<br>\n"
+"                        {{ user.name }}<br>\n"
+"                        {{ user.company_id.name }}\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+msgstr ""
+
+#. module: budget
+#: model:mail.template,body_html:budget.email_template_budget_transfer_rejected
+msgid ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        Dear {{ object.user_id.name }},\n"
+"                    </p>\n"
+"                    <br>\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        We regret to inform you that your budget transfer request has been rejected.\n"
+"                    </p>\n"
+"                    <br>\n"
+"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F8D7DA; width:100%; margin: 16px 0px 16px 0px;\">\n"
+"                        <tr>\n"
+"                            <td style=\"background-color:#DC3545; padding: 8px 16px 8px 16px; font-weight: bold; color: #fff;\">\n"
+"                                ✗ Transfer Rejected\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                        <tr>\n"
+"                            <td style=\"padding: 16px 16px 16px 16px;\">\n"
+"                                <table>\n"
+"                                    <tr>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Transfer Number:</td>\n"
+"                                        <td>{{ object.name }}</td>\n"
+"                                    </tr>\n"
+"                                    <tr>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Rejected by:</td>\n"
+"                                        <td>{{ object.approver_id.name }}</td>\n"
+"                                    </tr>\n"
+"                                    <tr>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Rejection Date:</td>\n"
+"                                        <td>{{ object.approval_date }}</td>\n"
+"                                    </tr>\n"
+"                                    <tr>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Amount:</td>\n"
+"                                        <td>{{ object.amount | safe }} {{ object.currency_id.name }}</td>\n"
+"                                    </tr>\n"
+"                                </table>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                    </table>\n"
+"                    \n"
+"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #FFF3CD; width:100%; margin: 16px 0px 16px 0px;\">\n"
+"                        <tr>\n"
+"                            <td style=\"background-color:#856404; padding: 8px 16px 8px 16px; font-weight: bold; color: #fff;\">\n"
+"                                Rejection Reason\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                        <tr>\n"
+"                            <td style=\"padding: 16px 16px 16px 16px;\">\n"
+"                                {{ object.rejection_reason | safe }}\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                    </table>\n"
+"                    \n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        Please review the rejection reason and feel free to submit a new transfer request if needed.\n"
+"                    </p>\n"
+"                    <br>\n"
+"                    <div style=\"text-align: center;\">\n"
+"                        <a href=\"/web#id=%7B%7B%20object.id%20%7D%7D&amp;model=budget.transfer&amp;view_type=form\" style=\"background-color: #875A7B; padding: 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;\">\n"
+"                            View Transfer\n"
+"                        </a>\n"
+"                    </div>\n"
+"                    <br>\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        Best regards,<br>\n"
+"                        {{ user.name }}<br>\n"
+"                        {{ user.company_id.name }}\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+msgstr ""
+
+#. module: budget
+#: model:mail.template,body_html:budget.email_template_budget_transfer_posted
+msgid ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        Dear {{ object.user_id.name }},\n"
+"                    </p>\n"
+"                    <br>\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        Your budget transfer has been successfully completed and posted to the budget system.\n"
+"                    </p>\n"
+"                    <br>\n"
+"                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #D1ECF1; width:100%; margin: 16px 0px 16px 0px;\">\n"
+"                        <tr>\n"
+"                            <td style=\"background-color:#17A2B8; padding: 8px 16px 8px 16px; font-weight: bold; color: #fff;\">\n"
+"                                ✓ Transfer Completed\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                        <tr>\n"
+"                            <td style=\"padding: 16px 16px 16px 16px;\">\n"
+"                                <table>\n"
+"                                    <tr>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Transfer Number:</td>\n"
+"                                        <td>{{ object.name }}</td>\n"
+"                                    </tr>\n"
+"                                    <tr>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Amount:</td>\n"
+"                                        <td style=\"color: #17A2B8; font-weight: bold;\">{{ object.amount | safe }} {{ object.currency_id.name }}</td>\n"
+"                                    </tr>\n"
+"                                    <tr>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Posted Date:</td>\n"
+"                                        <td>{{ object.write_date }}</td>\n"
+"                                    </tr>\n"
+"                                    <tr>\n"
+"                                        <td style=\"padding-right: 20px; font-weight: bold;\">Budget Moves Created:</td>\n"
+"                                        <td>{{ object.budget_move_ids | length }} move(s)</td>\n"
+"                                    </tr>\n"
+"                                </table>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                    </table>\n"
+"                    \n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        The budget amounts have been successfully transferred and are now available for use in the destination accounts.\n"
+"                    </p>\n"
+"                    <br>\n"
+"                    <div style=\"text-align: center;\">\n"
+"                        <a href=\"/web#id=%7B%7B%20object.id%20%7D%7D&amp;model=budget.transfer&amp;view_type=form\" style=\"background-color: #17A2B8; padding: 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;\">\n"
+"                            View Transfer\n"
+"                        </a>\n"
+"                    </div>\n"
+"                    <br>\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        Thank you for using the budget transfer system.\n"
+"                    </p>\n"
+"                    <br>\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        Best regards,<br>\n"
+"                        Budget Management System<br>\n"
+"                        {{ user.company_id.name }}\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_kanban
+msgid "<i class=\"fa fa-ellipsis-v\" role=\"img\" aria-label=\"Manage\" title=\"Manage\"/>"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.res_config_settings_view_form_budget
+msgid ""
+"<i class=\"fa fa-warning\"/> คำเตือน: "
+"การอนุญาตให้งบประมาณติดลบอาจทำให้เกิดปัญหาในการควบคุมงบประมาณ"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_move_form
+msgid ""
+"<span class=\"o_stat_text\">View</span>\n"
+"                                <span class=\"o_stat_text\">Commitment</span>"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_kanban
+msgid "<strong>Approver:</strong>"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_line_form
+msgid "<strong>Available Budget:</strong>"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
+msgid "<strong>Budget Validation Warning:</strong>"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_kanban
+msgid "<strong>Requested by:</strong>"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_line_form
+msgid "<strong>Sufficient:</strong>"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
+msgid "<strong>✅ Budget Validation Passed</strong>"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_line_form
+msgid "<strong>💰 Budget Availability Check</strong>"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_move__currency_id
+msgid "Account Currency"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_tree
+msgid "Account Name"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__message_needaction
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__message_needaction
+#: model:ir.model.fields,field_description:budget.field_budget_journal__message_needaction
 #: model:ir.model.fields,field_description:budget.field_budget_move__message_needaction
-#: model:ir.model.fields,field_description:budget.field_budget_template__message_needaction
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__message_needaction
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__message_needaction
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__message_needaction
 msgid "Action Needed"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__active
+#: model:ir.model.fields,field_description:budget.field_budget_account__active
+#: model:ir.model.fields,field_description:budget.field_budget_journal__active
+#: model:ir.model.fields,field_description:budget.field_budget_move__active
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_search
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_tree
 msgid "Active"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__activity_ids
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_search
+msgid "Active Status"
+msgstr ""
+
+#. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__activity_ids
+#: model:ir.model.fields,field_description:budget.field_budget_journal__activity_ids
 #: model:ir.model.fields,field_description:budget.field_budget_move__activity_ids
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__activity_ids
 msgid "Activities"
 msgstr ""
 
 #. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_appropriation_line_search
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_commitment_line_search
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_move_line_search
 msgid "Activity"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__activity_exception_decoration
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__activity_exception_decoration
+#: model:ir.model.fields,field_description:budget.field_budget_journal__activity_exception_decoration
 #: model:ir.model.fields,field_description:budget.field_budget_move__activity_exception_decoration
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__activity_exception_decoration
 msgid "Activity Exception Decoration"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__activity_state
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__activity_state
+#: model:ir.model.fields,field_description:budget.field_budget_journal__activity_state
 #: model:ir.model.fields,field_description:budget.field_budget_move__activity_state
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__activity_state
 msgid "Activity State"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__activity_type_icon
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__activity_type_icon
+#: model:ir.model.fields,field_description:budget.field_budget_journal__activity_type_icon
 #: model:ir.model.fields,field_description:budget.field_budget_move__activity_type_icon
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__activity_type_icon
 msgid "Activity Type Icon"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__amount
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__amount
-#: model:ir.model.fields,field_description:budget.field_budget_move_line__amount
-#: model:ir.model.fields,help:budget.field_budget_appropriation_line__amount
-#: model:ir.model.fields,help:budget.field_budget_commitment_line__amount
-#: model:ir.model.fields,help:budget.field_budget_move_line__amount
-msgid "Amount"
-msgstr "จำนวน"
+#: model:ir.model.fields,help:budget.field_budget_transfer_line__activity_analytic_id
+msgid "Activity analytic account"
+msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__analytic_distribution
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__analytic_distribution
+#: model:ir.model.fields,help:budget.field_budget_commitment__notes
+msgid "Additional notes for this commitment"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_form_view
+msgid "Additional notes..."
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields.selection,name:budget.selection__budget_appropriation_overview_report__state__all
+msgid "All"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_commitment__consumed_amount
+msgid "Amount already consumed from budget moves"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_commitment__remaining_amount
+msgid "Amount still available for consumption"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_commitment__amount
+msgid "Amount to be committed for this budget line"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__analytic_distribution
 #: model:ir.model.fields,field_description:budget.field_budget_move_line__analytic_distribution
 msgid "Analytic"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__analytic_distribution_search
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__analytic_distribution_search
+#: model:ir.ui.menu,name:budget.action_budget_account_analytic_account_menu_action
+msgid "Analytic Accounts"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_line__analytic_distribution
+msgid "Analytic Distribution"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__analytic_distribution_search
 #: model:ir.model.fields,field_description:budget.field_budget_move_line__analytic_distribution_search
 msgid "Analytic Distribution Search"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__analytic_precision
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__analytic_precision
+#: model:ir.ui.menu,name:budget.action_budget_account_analytic_plan_menu_action
+msgid "Analytic Plans"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__analytic_precision
 #: model:ir.model.fields,field_description:budget.field_budget_move_line__analytic_precision
 msgid "Analytic Precision"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__message_attachment_count
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__message_attachment_count
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__approval_date
+msgid "Approval Date"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
+msgid "Approval Information"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
+msgid "Approve"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields.selection,name:budget.selection__budget_transfer__state__approved
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_search
+msgid "Approved"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__approver_id
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_search
+msgid "Approved by"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_form
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_search
+msgid "Archived"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__message_attachment_count
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__message_attachment_count
+#: model:ir.model.fields,field_description:budget.field_budget_journal__message_attachment_count
 #: model:ir.model.fields,field_description:budget.field_budget_move__message_attachment_count
-#: model:ir.model.fields,field_description:budget.field_budget_template__message_attachment_count
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__message_attachment_count
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__message_attachment_count
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__message_attachment_count
 msgid "Attachment Count"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields.selection,name:budget.selection__budget_template_line_account__line_type__balance
-msgid "Balance"
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__available_budget_amount
+msgid "Available Budget"
 msgstr ""
 
 #. module: budget
-#: model:ir.model,name:budget.model_budget_appropriation
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__appropriation_id
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_appropriation_form
+#. odoo-python
+#: code:addons/budget/models/budget_transfer_line.py:0
+#, python-format
+msgid ""
+"Available budget ({:,.2f}) is less than transfer amount ({:,.2f}). This "
+"transfer may fail validation."
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_commitment__available_budget_amount
+msgid "Available budget amount for this analytic combination"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_transfer_line__available_budget
+msgid "Available budget for this account and analytics"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_form_view
+msgid "Basic Information"
+msgstr "ข้อมูลทั่วไป"
+
+#. module: budget
+#: model:ir.module.category,name:budget.module_category_budget
+#: model_terms:ir.ui.view,arch_db:budget.res_config_settings_view_form_budget
+msgid "Budget"
+msgstr ""
+
+#. module: budget
+#: model:ir.model,name:budget.model_budget_account
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_search_view
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_form
+msgid "Budget Account"
+msgstr "รหัสงบประมาณ"
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__budget_account_name
+msgid "Budget Account Name"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_account.py:0
+#: model:ir.model.constraint,message:budget.constraint_budget_account_unique_budget_account_line
+#, python-format
+msgid "Budget Account must be unique"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_account.py:0
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_tree
+#, python-format
+msgid "Budget Accounts"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_mixin__budget_amount
+msgid "Budget Amount"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_form_view
+msgid "Budget Analysis"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields.selection,name:budget.selection__budget_move__move_type__appropriation
 msgid "Budget Appropriation"
-msgstr "การจัดสรรงบประมาณ"
+msgstr "จัดสรรงบประมาณ"
 
 #. module: budget
-#: model:ir.model,name:budget.model_budget_appropriation_line
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_appropriation_line_form
-msgid "Budget Appropriation Line"
-msgstr "รายการจัดสรรงบประมาณ"
+#: model:ir.model,name:budget.model_budget_appropriation_overview_report
+msgid "Budget Appropriation Overview Report"
+msgstr ""
 
 #. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_appropriation_form
-msgid "Budget Appropriation Lines"
-msgstr "รายการจัดสรรงบประมาณ"
+#: model:ir.model.fields.selection,name:budget.selection__budget_mixin__budget_state__cancelled
+msgid "Budget Cancelled"
+msgstr ""
 
 #. module: budget
+#. odoo-python
+#: code:addons/budget/examples/purchase_order_commitment_example.py:0
+#, python-format
+msgid "Budget Check"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment.py:0
+#, python-format
+msgid "Budget Check Complete"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__budget_account_code
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_tree
+msgid "Budget Code"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/examples/purchase_order_commitment_example.py:0
+#: code:addons/budget/models/budget_mixin.py:0
+#: code:addons/budget/models/budget_move.py:0
 #: model:ir.model,name:budget.model_budget_commitment
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__commitment_id
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_commitment_form
+#: model:ir.model.fields,field_description:budget.field_budget_mixin__budget_commitment_id
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_form_view
+#, python-format
 msgid "Budget Commitment"
 msgstr "จองงบประมาณ"
 
 #. module: budget
-#: model:ir.model,name:budget.model_budget_commitment_line
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_commitment_line_form
-msgid "Budget Commitment Line"
-msgstr "รายการจองงบประมาณ"
-
-#. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_commitment_form
-msgid "Budget Commitment Lines"
-msgstr "รายการจองงบประมาณ"
-
-#. module: budget
-#: model:ir.model,name:budget.model_report_budget_budget_expenditure_report
-msgid "Budget Expenditure Report"
-msgstr "รายงานสรุปรายจ่าย (ภาพรวม)"
-
-#. module: budget
-#: model:ir.actions.act_window,name:budget.action_budget_move
-#: model:ir.model,name:budget.model_budget_move
-#: model:ir.model.fields,field_description:budget.field_budget_move_line__move_id
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_move_form
-msgid "Budget Move"
+#: model:ir.model,name:budget.model_budget_commitment_mixin
+msgid "Budget Commitment Mixin"
 msgstr ""
 
 #. module: budget
+#: model:ir.actions.act_window,name:budget.action_budget_commitment
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_search_view
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_tree_view
+msgid "Budget Commitments"
+msgstr "รายการจองงบประมาณ"
+
+#. module: budget
+#: model:ir.model.fields.selection,name:budget.selection__budget_mixin__budget_state__committed
+msgid "Budget Committed"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields.selection,name:budget.selection__budget_mixin__budget_state__consumed
+msgid "Budget Consumed"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields.selection,name:budget.selection__budget_move__move_type__consume
+msgid "Budget Consumption"
+msgstr ""
+
+#. module: budget
+#: model:ir.model,name:budget.model_budget_controller
+msgid "Budget Controller Service"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_form_view
+msgid "Budget Details"
+msgstr "มิติทางบัญชี"
+
+#. module: budget
+#: model:ir.model.fields.selection,name:budget.selection__budget_move__move_type__entry
+msgid "Budget Entry"
+msgstr ""
+
+#. module: budget
+#: model:ir.model,name:budget.model_budget_mixin
+msgid "Budget Integration Mixin"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_move_line.py:0
+#, python-format
+msgid "Budget Item %s updated"
+msgstr ""
+
+#. module: budget
+#: model:ir.actions.act_window,name:budget.action_budget_journal
+#: model:ir.model,name:budget.model_budget_journal
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_journal_form
+msgid "Budget Journal"
+msgstr ""
+
+#. module: budget
+#: model:res.groups,name:budget.group_budget_manager
+msgid "Budget Manager"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_mixin.py:0
+#: model:ir.model,name:budget.model_budget_move
+#: model:ir.model.fields,field_description:budget.field_budget_mixin__budget_move_id
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__move_id
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_move_form
+#, python-format
+msgid "Budget Move"
+msgstr "บัญชีงบประมาณ"
+
+#. module: budget
 #: model:ir.model,name:budget.model_budget_move_line
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_move_line_form
 msgid "Budget Move Line"
 msgstr ""
 
 #. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_move_form
-msgid "Budget Move Lines"
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_form_view
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
+msgid "Budget Moves"
 msgstr ""
 
 #. module: budget
-#: model:ir.model,name:budget.model_report_budget_budget_template_structure
-msgid "Budget Structure"
+#. odoo-python
+#: code:addons/budget/examples/purchase_order_commitment_example.py:0
+#: model:ir.model.fields.selection,name:budget.selection__budget_mixin__budget_state__reserved
+#, python-format
+msgid "Budget Reserved"
 msgstr ""
 
 #. module: budget
-#: model:ir.model,name:budget.model_budget_template
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_template_form
-msgid "Budget Template"
-msgstr "โครงสร้างรหัสงบประมาณ"
-
-#. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_template_line_account__budget_template_line_id
-msgid "Budget Template Line"
-msgstr "รหัสงบประมาณ"
-
-#. module: budget
-#: model:ir.model,name:budget.model_budget_template_line
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_template_line_form
-msgid "Budget Template Lines"
-msgstr "รหัสงบประมาณ"
-
-#. module: budget
-#: model:ir.actions.client,name:budget.action_budget_template_structure
-msgid "Budget Template Structure"
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__budget_availability_status
+#: model:ir.model.fields,field_description:budget.field_budget_mixin__budget_state
+msgid "Budget Status"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__budget_type
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__budget_type
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_line__budget_sufficient
+msgid "Budget Sufficient"
+msgstr ""
+
+#. module: budget
+#: model:ir.model,name:budget.model_budget_transfer
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_reject_wizard__transfer_id
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
+msgid "Budget Transfer"
+msgstr "โอนงบประมาณ"
+
+#. module: budget
+#: model:mail.template,subject:budget.email_template_budget_transfer_submitted
+msgid "Budget Transfer Approval Required: {{ object.name }}"
+msgstr ""
+
+#. module: budget
+#: model:mail.template,subject:budget.email_template_budget_transfer_approved
+msgid "Budget Transfer Approved: {{ object.name }}"
+msgstr ""
+
+#. module: budget
+#: model:mail.template,subject:budget.email_template_budget_transfer_posted
+msgid "Budget Transfer Completed: {{ object.name }}"
+msgstr ""
+
+#. module: budget
+#: model:ir.model,name:budget.model_budget_transfer_line
+msgid "Budget Transfer Line"
+msgstr ""
+
+#. module: budget
+#: model:mail.template,subject:budget.email_template_budget_transfer_rejected
+msgid "Budget Transfer Rejected: {{ object.name }}"
+msgstr ""
+
+#. module: budget
+#: model:ir.model,name:budget.model_budget_transfer_reject_wizard
+msgid "Budget Transfer Rejection Wizard"
+msgstr ""
+
+#. module: budget
+#: model:mail.template,name:budget.email_template_budget_transfer_approved
+msgid "Budget Transfer: Approved"
+msgstr ""
+
+#. module: budget
+#: model:mail.template,name:budget.email_template_budget_transfer_posted
+msgid "Budget Transfer: Completed"
+msgstr ""
+
+#. module: budget
+#: model:mail.template,name:budget.email_template_budget_transfer_rejected
+msgid "Budget Transfer: Rejected"
+msgstr ""
+
+#. module: budget
+#: model:mail.template,name:budget.email_template_budget_transfer_submitted
+msgid "Budget Transfer: Submitted for Approval"
+msgstr ""
+
+#. module: budget
+#: model:ir.actions.act_window,name:budget.action_budget_transfer
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_tree
+msgid "Budget Transfers"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__budget_type
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__budget_type
+#: model:ir.model.fields,field_description:budget.field_budget_move__budget_type
 #: model:ir.model.fields,field_description:budget.field_budget_move_line__budget_type
-#: model:ir.model.fields,field_description:budget.field_budget_template__budget_type
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__budget_type
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_search
 msgid "Budget Type"
 msgstr "ประเภทงบประมาณ"
 
 #. module: budget
+#: model:res.groups,name:budget.group_budget_user
+msgid "Budget User"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__budget_validation_message
+msgid "Budget Validation Message"
+msgstr ""
+
+#. module: budget
 #. odoo-python
-#: code:addons/budget/models/budget_template.py:0
-#: model:ir.model.constraint,message:budget.constraint_budget_template_line_unique_budget_template_line
+#: code:addons/budget/models/budget_commitment.py:0
 #, python-format
-msgid "Budget indicator must be unique"
+msgid "Budget account %s is not allowed for fund %s"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment_mixin.py:0
+#: code:addons/budget/models/budget_commitment_mixin.py:0
+#, python-format
+msgid "Budget account field '%s' is not set on this record"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_transfer_line__budget_account_id
+msgid "Budget account for this transfer line"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_commitment__budget_availability_status
+msgid "Budget availability status for this commitment"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment.py:0
+#, python-format
+msgid "Budget availability: %s - Available: %s"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/examples/purchase_order_commitment_example.py:0
+#, python-format
+msgid "Budget commitment %s has been cancelled"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_mixin.py:0
+#, python-format
+msgid "Budget commitment already exists for this record."
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_mixin__budget_commitment_id
+msgid "Budget commitment linked to this record"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_controller.py:0
+#, python-format
+msgid "Budget commitment must be in reserved or obligated state to consume."
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_mixin.py:0
+#, python-format
+msgid "Budget commitment must be in reserved state to consume."
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_controller.py:0
+#, python-format
+msgid "Budget commitment not found."
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_move__commitment_id
+msgid "Budget commitment that this move is consuming from"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/examples/purchase_order_commitment_example.py:0
+#, python-format
+msgid "Budget commitment updated to %s"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.actions.act_window,help:budget.action_budget_commitment
+msgid ""
+"Budget commitments allow you to reserve budget amounts for future spending.\n"
+"                This helps with budget planning and ensures funds are available when needed."
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/examples/purchase_order_commitment_example.py:0
+#, python-format
+msgid "Budget consumed for invoice %s: %s"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_mixin__budget_move_id
+msgid "Budget consumption move linked to this record"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/examples/purchase_order_commitment_example.py:0
+#, python-format
+msgid "Budget has already been reserved for this purchase order"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/examples/purchase_order_commitment_example.py:0
+#, python-format
+msgid "Budget has been successfully reserved for %s"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment_mixin.py:0
+#, python-format
+msgid "Budget is sufficient for this commitment"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_transfer.py:0
+#, python-format
+msgid ""
+"Budget move is not balanced. Total debits: {:,.2f}, Total credits: {:,.2f}"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_transfer__budget_move_ids
+msgid "Budget moves created when this transfer is posted"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/examples/purchase_order_commitment_example.py:0
+#, python-format
+msgid "Budget reserved: %s for amount %s"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_transfer.py:0
+#, python-format
+msgid "Budget transfer approved by {}"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_transfer.py:0
+#, python-format
+msgid "Budget transfer posted successfully. Budget moves created."
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_transfer_reject_wizard.py:0
+#, python-format
+msgid "Budget transfer rejected by {} with reason: {}"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_transfer.py:0
+#, python-format
+msgid "Budget transfer submitted for approval by {}"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_move__transfer_id
+msgid "Budget transfer that generated this move"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.actions.act_window,help:budget.action_budget_transfer
+msgid ""
+"Budget transfers allow you to move allocated budget amounts between accounts\n"
+"                with proper approval workflow and budget availability checking."
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_search
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_tree
+msgid "Budgetable"
 msgstr ""
 
 #. module: budget
@@ -253,555 +1062,1450 @@ msgid "Budgeting"
 msgstr "งบประมาณ"
 
 #. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_appropriation_form
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_commitment_form
+#. odoo-python
+#: code:addons/budget/models/budget_commitment.py:0
+#, python-format
+msgid "Can only consume from reserved or obligated commitments"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment_mixin.py:0
+#, python-format
+msgid "Can only update amount for reserved or obligated commitments"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_form_view
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_move_form
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
 msgid "Cancel"
 msgstr "ยกเลิก"
 
 #. module: budget
-#: model:ir.model.fields.selection,name:budget.selection__budget_appropriation__state__cancel
 #: model:ir.model.fields.selection,name:budget.selection__budget_commitment__state__cancel
 #: model:ir.model.fields.selection,name:budget.selection__budget_move__state__cancel
+#: model:ir.model.fields.selection,name:budget.selection__budget_transfer__state__cancelled
 msgid "Cancelled"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__child_ids
+#. odoo-python
+#: code:addons/budget/models/budget_mixin.py:0
+#, python-format
+msgid "Cancelled due to source record cancellation."
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_transfer.py:0
+#, python-format
+msgid "Cannot cancel a posted transfer"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment.py:0
+#, python-format
+msgid "Cannot cancel commitment %s - it is already done"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment.py:0
+#, python-format
+msgid "Cannot close commitment %s - it must be in obligated state"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment.py:0
+#, python-format
+msgid "Cannot consume %.2f - only %.2f remaining in commitment"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment.py:0
+#, python-format
+msgid "Cannot obligate commitment %s - it must be in reserved state"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/examples/purchase_order_commitment_example.py:0
+#, python-format
+msgid "Cannot reserve budget due to insufficient funds: %s"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/examples/purchase_order_commitment_example.py:0
+#, python-format
+msgid "Cannot reserve budget: %s"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/examples/purchase_order_commitment_example.py:0
+#, python-format
+msgid "Cannot update purchase order amount: %s"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_form_view
+msgid "Check Budget"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_form_view
+msgid "Check budget availability for this commitment"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_search
+msgid "Child Accounts"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__children_count
+msgid "Children Accounts Count"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__child_ids
 msgid "Childs"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__create_uid
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__create_uid
+#. odoo-javascript
+#: code:addons/budget/static/src/components/department_filter_sidebar/department_filter_sidebar.xml:0
+#, python-format
+msgid "Close"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_form_view
+msgid "Close this commitment and release any remaining budget"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__date
+msgid "Commitment Date"
+msgstr "วันที่"
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment_mixin.py:0
+#, python-format
+msgid "Commitment amount must be positive"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment.py:0
+#, python-format
+msgid "Commitment amount must be positive."
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_form_view
+msgid "Commitment description..."
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_controller.py:0
+#: code:addons/budget/models/budget_mixin.py:0
+#, python-format
+msgid "Commitment for %s"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_mixin.py:0
+#, python-format
+msgid "Commitment for %s #%s"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__company_id
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__company_id
+#: model:ir.model.fields,field_description:budget.field_budget_journal__company_id
+#: model:ir.model.fields,field_description:budget.field_budget_mixin__company_id
+#: model:ir.model.fields,field_description:budget.field_budget_move__company_id
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__company_id
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__company_id
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_line__company_id
+msgid "Company"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__company_currency_id
+msgid "Company Currency"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_journal__company_id
+msgid "Company related to this journal"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__complete_name
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_search
+msgid "Complete Name"
+msgstr ""
+
+#. module: budget
+#: model:ir.model,name:budget.model_res_config_settings
+msgid "Config Settings"
+msgstr "ตั้งค่าการกำหนดค่า"
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__consumed_amount
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_tree_view
+msgid "Consumed Amount"
+msgstr "งบประมาณที่ใช้ไป"
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment.py:0
+#, python-format
+msgid "Consumption of %s"
+msgstr "ตัดงบประมาณ %s"
+
+#. module: budget
+#: model_terms:ir.actions.act_window,help:budget.action_budget_commitment
+msgid "Create your first budget commitment!"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.actions.act_window,help:budget.action_budget_transfer
+msgid "Create your first budget transfer!"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__create_uid
+#: model:ir.model.fields,field_description:budget.field_budget_appropriation_overview_report__create_uid
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__create_uid
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__create_uid
+#: model:ir.model.fields,field_description:budget.field_budget_journal__create_uid
 #: model:ir.model.fields,field_description:budget.field_budget_move__create_uid
 #: model:ir.model.fields,field_description:budget.field_budget_move_line__create_uid
-#: model:ir.model.fields,field_description:budget.field_budget_template__create_uid
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__create_uid
-#: model:ir.model.fields,field_description:budget.field_budget_template_line_account__create_uid
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__create_uid
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_line__create_uid
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_reject_wizard__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "สร้างโดย"
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__create_date
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__create_date
+#: model:ir.model.fields,field_description:budget.field_budget_account__create_date
+#: model:ir.model.fields,field_description:budget.field_budget_appropriation_overview_report__create_date
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__create_date
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__create_date
+#: model:ir.model.fields,field_description:budget.field_budget_journal__create_date
 #: model:ir.model.fields,field_description:budget.field_budget_move__create_date
 #: model:ir.model.fields,field_description:budget.field_budget_move_line__create_date
-#: model:ir.model.fields,field_description:budget.field_budget_template__create_date
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__create_date
-#: model:ir.model.fields,field_description:budget.field_budget_template_line_account__create_date
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__create_date
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_line__create_date
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_reject_wizard__create_date
 msgid "Created on"
+msgstr "สร้างเมื่อ"
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__currency_id
+#: model:ir.model.fields,field_description:budget.field_budget_mixin__currency_id
+#: model:ir.model.fields,field_description:budget.field_budget_move__company_currency_id
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__currency_id
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__currency_id
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_line__currency_id
+msgid "Currency"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__credit
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__credit
-#: model:ir.model.fields,field_description:budget.field_budget_move_line__credit
-#: model:ir.model.fields.selection,name:budget.selection__budget_template_line_account__line_type__credit
-msgid "Credit"
+#: model:ir.model.fields,help:budget.field_budget_mixin__budget_state
+msgid "Current status of budget integration"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__date
-#: model:ir.model.fields,field_description:budget.field_budget_commitment__date
+#: model:ir.model.fields,field_description:budget.field_budget_mixin__date
 #: model:ir.model.fields,field_description:budget.field_budget_move__date
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__date
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_search
 msgid "Date"
 msgstr "วันที่"
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__debit
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__debit
-#: model:ir.model.fields,field_description:budget.field_budget_move_line__debit
-#: model:ir.model.fields.selection,name:budget.selection__budget_template_line_account__line_type__debit
-msgid "Debit"
+#: model:ir.model.fields,field_description:budget.field_budget_appropriation_overview_report__date_from
+msgid "Date From"
 msgstr ""
 
 #. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_appropriation_line_search
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_commitment_line_search
-msgid "Department"
-msgstr "หน่วยงาน"
+#: model:ir.model.fields,field_description:budget.field_budget_appropriation_overview_report__date_to
+msgid "Date To"
+msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__display_name
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__display_name
+#: model:ir.model.fields,field_description:budget.field_budget_journal__default_budget_type
+msgid "Default Budget Type"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_move_line_search
+msgid "Department"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_transfer_line__department_analytic_id
+msgid "Department analytic account"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_transfer__department_analytic_id
+msgid "Department for this transfer"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_appropriation_overview_report__department_ids
+msgid "Departments"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__deprecated
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_search
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_tree
+msgid "Deprecated"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__description
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_line__description
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_form_view
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_line_form
+msgid "Description"
+msgstr "รายละเอียด"
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_transfer_line__description
+msgid "Description for this transfer line"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_transfer__budget_validation_message
+msgid "Detailed budget validation message"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_line__transfer_direction
+msgid "Direction"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_transfer_line__transfer_direction
+msgid "Direction of this transfer line"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__display_name
+#: model:ir.model.fields,field_description:budget.field_budget_appropriation_overview_report__display_name
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__display_name
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__display_name
+#: model:ir.model.fields,field_description:budget.field_budget_journal__display_name
 #: model:ir.model.fields,field_description:budget.field_budget_move__display_name
 #: model:ir.model.fields,field_description:budget.field_budget_move_line__display_name
-#: model:ir.model.fields,field_description:budget.field_budget_template__display_name
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__display_name
-#: model:ir.model.fields,field_description:budget.field_budget_template_line_account__display_name
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__display_name
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_line__display_name
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_reject_wizard__display_name
 msgid "Display Name"
 msgstr ""
 
 #. module: budget
 #: model:ir.model.fields.selection,name:budget.selection__budget_commitment__state__done
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_search_view
 msgid "Done"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields.selection,name:budget.selection__budget_appropriation__state__draft
+#: model:ir.model.fields.selection,name:budget.selection__budget_appropriation_overview_report__state__draft
 #: model:ir.model.fields.selection,name:budget.selection__budget_commitment__state__draft
 #: model:ir.model.fields.selection,name:budget.selection__budget_move__state__draft
+#: model:ir.model.fields.selection,name:budget.selection__budget_transfer__state__draft
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_search_view
 msgid "Draft"
+msgstr "แบบร่าง"
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_transfer_line.py:0
+#, python-format
+msgid ""
+"Duplicate transfer line found. Each combination of direction, budget account"
+" and analytic distribution must be unique."
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields.selection,name:budget.selection__budget_template__budget_type__expense
+#: model:ir.model.fields.selection,name:budget.selection__budget_account__budget_type__expense
+#: model:ir.model.fields.selection,name:budget.selection__budget_journal__default_budget_type__expense
+#: model:ir.model.fields.selection,name:budget.selection__budget_move__budget_type__expense
 msgid "Expense"
 msgstr "รายจ่าย"
 
 #. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_appropriation_line_search
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_commitment_line_search
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_search
+msgid "Expense Accounts"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_form_view
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_move_form
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
+msgid "Extra Info"
+msgstr "เพิ่มเติม"
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment_mixin.py:0
+#, python-format
+msgid "Failed to reserve budget commitment: %s"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_move__first_account_id
+msgid "First Account Used"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__account_fiscal_year_id
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_search_view
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_move_line_search
 msgid "Fiscal Year"
 msgstr "ปีงบประมาณ"
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__date_range_fy_id
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__date_range_fy_id
-#: model:ir.model.fields,field_description:budget.field_budget_commitment__date_range_fy_id
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__date_range_fy_id
-#: model:ir.model.fields,field_description:budget.field_budget_move__date_range_fy_id
-#: model:ir.model.fields,field_description:budget.field_budget_template__date_range_fy_id
+#: model:ir.model.fields,field_description:budget.field_budget_appropriation_overview_report__account_fiscal_year_id
+#: model:ir.model.fields,field_description:budget.field_budget_move__account_fiscal_year_id
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__account_fiscal_year_id
 msgid "Fiscal year"
 msgstr "ปีงบประมาณ"
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__message_follower_ids
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__message_follower_ids
+#: model:ir.model.fields,field_description:budget.field_budget_account__message_follower_ids
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__message_follower_ids
+#: model:ir.model.fields,field_description:budget.field_budget_journal__message_follower_ids
 #: model:ir.model.fields,field_description:budget.field_budget_move__message_follower_ids
-#: model:ir.model.fields,field_description:budget.field_budget_template__message_follower_ids
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__message_follower_ids
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__message_follower_ids
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__message_follower_ids
 msgid "Followers"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__message_partner_ids
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__message_partner_ids
+#: model:ir.model.fields,field_description:budget.field_budget_account__message_partner_ids
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__message_partner_ids
+#: model:ir.model.fields,field_description:budget.field_budget_journal__message_partner_ids
 #: model:ir.model.fields,field_description:budget.field_budget_move__message_partner_ids
-#: model:ir.model.fields,field_description:budget.field_budget_template__message_partner_ids
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__message_partner_ids
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__message_partner_ids
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__message_partner_ids
 msgid "Followers (Partners)"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,help:budget.field_budget_appropriation__activity_type_icon
 #: model:ir.model.fields,help:budget.field_budget_commitment__activity_type_icon
+#: model:ir.model.fields,help:budget.field_budget_journal__activity_type_icon
 #: model:ir.model.fields,help:budget.field_budget_move__activity_type_icon
+#: model:ir.model.fields,help:budget.field_budget_transfer__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
 msgstr ""
 
 #. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_appropriation_line_search
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_commitment_line_search
-msgid "Fund"
-msgstr "กองทุน"
+#. odoo-python
+#: code:addons/budget/models/budget_transfer.py:0
+#, python-format
+msgid ""
+"From amount ({:,.2f}) doesn't match To amount ({:,.2f}). Please ensure the "
+"transfer is balanced."
+msgstr ""
 
 #. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_appropriation_line_search
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_appropriation_search
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_commitment_line_search
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_commitment_search
+#. odoo-python
+#: code:addons/budget/models/budget_transfer_line.py:0
+#, python-format
+msgid "From and To amounts must match"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_tree
+msgid "Full Path"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_search
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_move_line_search
+msgid "Fund"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment.py:0
+#, python-format
+msgid "Fund Restriction"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_transfer_line__fund_analytic_id
+msgid "Fund analytic account"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_tree
+msgid "Funds"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__budget_move_ids
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
+msgid "Generated Budget Moves"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_search_view
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_search
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_journal_search
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_move_line_search
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_move_search
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_template_search
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_search
 msgid "Group By"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__has_message
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__has_message
+#: model:ir.model.fields,field_description:budget.field_budget_mixin__has_budget_integration
+msgid "Has Budget Integration"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__has_message
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__has_message
+#: model:ir.model.fields,field_description:budget.field_budget_journal__has_message
 #: model:ir.model.fields,field_description:budget.field_budget_move__has_message
-#: model:ir.model.fields,field_description:budget.field_budget_template__has_message
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__has_message
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__has_message
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__has_message
 msgid "Has Message"
 msgstr ""
 
 #. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_move_form
-msgid "Help"
-msgstr "ช่วยเหลือ"
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__has_sufficient_budget
+msgid "Has Sufficient Budget"
+msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__hide_post_button
-#: model:ir.model.fields,field_description:budget.field_budget_commitment__hide_post_button
 #: model:ir.model.fields,field_description:budget.field_budget_move__hide_post_button
 msgid "Hide Post Button"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__id
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__id
+#: model:ir.model.fields,field_description:budget.field_budget_move__hide_review_button
+msgid "Hide Review Button"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__hide_unallocated_balance
+msgid "Hide Unallocated Balance"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__id
+#: model:ir.model.fields,field_description:budget.field_budget_appropriation_overview_report__id
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__id
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__id
+#: model:ir.model.fields,field_description:budget.field_budget_journal__id
 #: model:ir.model.fields,field_description:budget.field_budget_move__id
 #: model:ir.model.fields,field_description:budget.field_budget_move_line__id
-#: model:ir.model.fields,field_description:budget.field_budget_template__id
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__id
-#: model:ir.model.fields,field_description:budget.field_budget_template_line_account__id
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__id
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_line__id
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_reject_wizard__id
 msgid "ID"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__activity_exception_icon
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__activity_exception_icon
+#: model:ir.model.fields,field_description:budget.field_budget_journal__activity_exception_icon
 #: model:ir.model.fields,field_description:budget.field_budget_move__activity_exception_icon
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__activity_exception_icon
 msgid "Icon"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,help:budget.field_budget_appropriation__activity_exception_icon
 #: model:ir.model.fields,help:budget.field_budget_commitment__activity_exception_icon
+#: model:ir.model.fields,help:budget.field_budget_journal__activity_exception_icon
 #: model:ir.model.fields,help:budget.field_budget_move__activity_exception_icon
+#: model:ir.model.fields,help:budget.field_budget_transfer__activity_exception_icon
 msgid "Icon to indicate an exception activity."
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,help:budget.field_budget_appropriation__message_needaction
-#: model:ir.model.fields,help:budget.field_budget_appropriation_line__message_needaction
+#: model:ir.model.fields,help:budget.field_budget_account__message_needaction
 #: model:ir.model.fields,help:budget.field_budget_commitment__message_needaction
+#: model:ir.model.fields,help:budget.field_budget_journal__message_needaction
 #: model:ir.model.fields,help:budget.field_budget_move__message_needaction
-#: model:ir.model.fields,help:budget.field_budget_template__message_needaction
-#: model:ir.model.fields,help:budget.field_budget_template_line__message_needaction
+#: model:ir.model.fields,help:budget.field_budget_move_line__message_needaction
+#: model:ir.model.fields,help:budget.field_budget_transfer__message_needaction
 msgid "If checked, new messages require your attention."
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,help:budget.field_budget_appropriation__message_has_error
-#: model:ir.model.fields,help:budget.field_budget_appropriation__message_has_sms_error
-#: model:ir.model.fields,help:budget.field_budget_appropriation_line__message_has_error
-#: model:ir.model.fields,help:budget.field_budget_appropriation_line__message_has_sms_error
+#: model:ir.model.fields,help:budget.field_budget_account__message_has_error
+#: model:ir.model.fields,help:budget.field_budget_account__message_has_sms_error
 #: model:ir.model.fields,help:budget.field_budget_commitment__message_has_error
 #: model:ir.model.fields,help:budget.field_budget_commitment__message_has_sms_error
+#: model:ir.model.fields,help:budget.field_budget_journal__message_has_error
+#: model:ir.model.fields,help:budget.field_budget_journal__message_has_sms_error
 #: model:ir.model.fields,help:budget.field_budget_move__message_has_error
 #: model:ir.model.fields,help:budget.field_budget_move__message_has_sms_error
-#: model:ir.model.fields,help:budget.field_budget_template__message_has_error
-#: model:ir.model.fields,help:budget.field_budget_template__message_has_sms_error
-#: model:ir.model.fields,help:budget.field_budget_template_line__message_has_error
-#: model:ir.model.fields,help:budget.field_budget_template_line__message_has_sms_error
+#: model:ir.model.fields,help:budget.field_budget_move_line__message_has_error
+#: model:ir.model.fields,help:budget.field_budget_move_line__message_has_sms_error
+#: model:ir.model.fields,help:budget.field_budget_transfer__message_has_error
+#: model:ir.model.fields,help:budget.field_budget_transfer__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_template__note
+#: model:ir.model.fields.selection,name:budget.selection__budget_move__state__review
+msgid "In Review"
+msgstr "อยู่ระหว่างพิจารณา"
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_transfer__has_sufficient_budget
+msgid "Indicates if source has sufficient budget for transfer"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_mixin.py:0
+#, python-format
+msgid "Inheriting models must implement _prepare_default_budget_lines()"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields.selection,name:budget.selection__budget_commitment__budget_availability_status__insufficient
+msgid "Insufficient"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment.py:0
+#: code:addons/budget/models/budget_transfer_line.py:0
+#, python-format
+msgid "Insufficient Budget"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment_mixin.py:0
+#, python-format
+msgid "Insufficient budget - only %.2f available"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_controller.py:0
+#, python-format
+msgid ""
+"Insufficient budget available:\n"
+"- Budget Account: %(account)s\n"
+"- Activity: %(activity)s\n"
+"- Department: %(department)s\n"
+"- Fund: %(fund)s\n"
+"- Source: %(source)s\n"
+"- Available: %(available).2f\n"
+"- Requested: %(requested).2f\n"
+"- Shortage: %(shortage).2f"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment.py:0
+#, python-format
+msgid ""
+"Insufficient budget for this commitment.\n"
+"\n"
+"Requested: %s\n"
+"Available: %s\n"
+"Budget Account: %s\n"
+"Activity: %s\n"
+"Fund: %s"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_transfer.py:0
+#, python-format
+msgid ""
+"Insufficient budget for transfer:\n"
+"{}"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment_mixin.py:0
+#, python-format
+msgid "Insufficient budget to increase commitment: %s"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__note
 msgid "Internal Notes"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__message_is_follower
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__message_is_follower
+#: model:ir.model.fields,field_description:budget.field_budget_account__message_is_follower
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__message_is_follower
+#: model:ir.model.fields,field_description:budget.field_budget_journal__message_is_follower
 #: model:ir.model.fields,field_description:budget.field_budget_move__message_is_follower
-#: model:ir.model.fields,field_description:budget.field_budget_template__message_is_follower
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__message_is_follower
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__message_is_follower
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__message_is_follower
 msgid "Is Follower"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation____last_update
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line____last_update
+#: model:ir.model.fields,help:budget.field_budget_transfer_line__analytic_distribution
+msgid "JSON containing the analytic distribution for this line"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_journal__name
+msgid "Journal Name"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.constraint,message:budget.constraint_budget_journal_code_company_uniq
+msgid "Journal codes must be unique per company."
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account____last_update
+#: model:ir.model.fields,field_description:budget.field_budget_appropriation_overview_report____last_update
 #: model:ir.model.fields,field_description:budget.field_budget_commitment____last_update
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line____last_update
+#: model:ir.model.fields,field_description:budget.field_budget_journal____last_update
 #: model:ir.model.fields,field_description:budget.field_budget_move____last_update
 #: model:ir.model.fields,field_description:budget.field_budget_move_line____last_update
-#: model:ir.model.fields,field_description:budget.field_budget_template____last_update
-#: model:ir.model.fields,field_description:budget.field_budget_template_line____last_update
-#: model:ir.model.fields,field_description:budget.field_budget_template_line_account____last_update
+#: model:ir.model.fields,field_description:budget.field_budget_transfer____last_update
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_line____last_update
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_reject_wizard____last_update
 msgid "Last Modified on"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__write_uid
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__write_uid
+#: model:ir.model.fields,field_description:budget.field_budget_account__write_uid
+#: model:ir.model.fields,field_description:budget.field_budget_appropriation_overview_report__write_uid
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__write_uid
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__write_uid
+#: model:ir.model.fields,field_description:budget.field_budget_journal__write_uid
 #: model:ir.model.fields,field_description:budget.field_budget_move__write_uid
 #: model:ir.model.fields,field_description:budget.field_budget_move_line__write_uid
-#: model:ir.model.fields,field_description:budget.field_budget_template__write_uid
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__write_uid
-#: model:ir.model.fields,field_description:budget.field_budget_template_line_account__write_uid
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__write_uid
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_line__write_uid
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_reject_wizard__write_uid
 msgid "Last Updated by"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__write_date
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__write_date
+#: model:ir.model.fields,field_description:budget.field_budget_account__write_date
+#: model:ir.model.fields,field_description:budget.field_budget_appropriation_overview_report__write_date
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__write_date
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__write_date
+#: model:ir.model.fields,field_description:budget.field_budget_journal__write_date
 #: model:ir.model.fields,field_description:budget.field_budget_move__write_date
 #: model:ir.model.fields,field_description:budget.field_budget_move_line__write_date
-#: model:ir.model.fields,field_description:budget.field_budget_template__write_date
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__write_date
-#: model:ir.model.fields,field_description:budget.field_budget_template_line_account__write_date
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__write_date
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_line__write_date
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_reject_wizard__write_date
 msgid "Last Updated on"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__hierarchy_level
+#: model:ir.model.fields,field_description:budget.field_budget_account__hierarchy_level
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_tree
 msgid "Level"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__line_ids
-#: model:ir.model.fields,field_description:budget.field_budget_commitment__line_ids
-#: model:ir.model.fields,field_description:budget.field_budget_move__line_ids
-#: model:ir.model.fields,field_description:budget.field_budget_template__line_ids
-msgid "Line"
+#. odoo-python
+#: code:addons/budget/models/budget_commitment.py:0
+#, python-format
+msgid "Low Budget Warning"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_template_line_account__line_type
-msgid "Line Type"
+#. odoo-python
+#: code:addons/budget/models/budget_commitment_mixin.py:0
+#, python-format
+msgid "Low budget warning - %.1f%% of available budget"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__message_main_attachment_id
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__message_main_attachment_id
+#: model:ir.model.fields,field_description:budget.field_budget_account__message_main_attachment_id
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__message_main_attachment_id
+#: model:ir.model.fields,field_description:budget.field_budget_journal__message_main_attachment_id
 #: model:ir.model.fields,field_description:budget.field_budget_move__message_main_attachment_id
-#: model:ir.model.fields,field_description:budget.field_budget_template__message_main_attachment_id
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__message_main_attachment_id
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__message_main_attachment_id
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__message_main_attachment_id
 msgid "Main Attachment"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__message_has_error
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__message_has_error
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_form_view
+msgid "Mark as Done"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_form_view
+msgid "Mark this commitment as obligated - firm commitment"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__message_has_error
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__message_has_error
+#: model:ir.model.fields,field_description:budget.field_budget_journal__message_has_error
 #: model:ir.model.fields,field_description:budget.field_budget_move__message_has_error
-#: model:ir.model.fields,field_description:budget.field_budget_template__message_has_error
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__message_has_error
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__message_has_error
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__message_has_error
 msgid "Message Delivery error"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__message_ids
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__message_ids
+#: model:ir.model.fields,field_description:budget.field_budget_account__message_ids
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__message_ids
+#: model:ir.model.fields,field_description:budget.field_budget_journal__message_ids
 #: model:ir.model.fields,field_description:budget.field_budget_move__message_ids
-#: model:ir.model.fields,field_description:budget.field_budget_template__message_ids
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__message_ids
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__message_ids
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__message_ids
 msgid "Messages"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__my_activity_date_deadline
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__my_activity_date_deadline
+#: model:ir.model.fields,field_description:budget.field_budget_journal__my_activity_date_deadline
 #: model:ir.model.fields,field_description:budget.field_budget_move__my_activity_date_deadline
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__my_activity_date_deadline
 msgid "My Activity Deadline"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__name
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__name
-#: model:ir.model.fields,field_description:budget.field_budget_commitment__name
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__name
-#: model:ir.model.fields,field_description:budget.field_budget_move__name
-#: model:ir.model.fields,field_description:budget.field_budget_template__name
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_appropriation_search
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_commitment_search
+#: model:ir.actions.act_window,name:budget.action_my_budget_transfers
+msgid "My Budget Transfers"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_search_view
+msgid "My Commitments"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_search
+msgid "My Transfers"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_search
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_journal_search
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_move_search
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_template_search
 msgid "Name"
 msgstr "ชื่อ"
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__activity_calendar_event_id
+#. odoo-python
+#: code:addons/budget/models/budget_commitment.py:0
+#, python-format
+msgid "Negative Budget Warning"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment.py:0
+#: code:addons/budget/models/budget_commitment.py:0
+#: code:addons/budget/models/budget_commitment.py:0
+#: code:addons/budget/models/budget_move.py:0
+#: code:addons/budget/models/budget_move.py:0
+#: code:addons/budget/models/budget_transfer.py:0
+#: code:addons/budget/models/budget_transfer.py:0
+#, python-format
+msgid "New"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment_mixin.py:0
+#, python-format
+msgid "New amount (%.2f) cannot be less than consumed amount (%.2f)"
+msgstr ""
+
+#. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__activity_calendar_event_id
+#: model:ir.model.fields,field_description:budget.field_budget_journal__activity_calendar_event_id
 #: model:ir.model.fields,field_description:budget.field_budget_move__activity_calendar_event_id
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__activity_date_deadline
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__activity_date_deadline
+#: model:ir.model.fields,field_description:budget.field_budget_journal__activity_date_deadline
 #: model:ir.model.fields,field_description:budget.field_budget_move__activity_date_deadline
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__activity_date_deadline
 msgid "Next Activity Deadline"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__activity_summary
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__activity_summary
+#: model:ir.model.fields,field_description:budget.field_budget_journal__activity_summary
 #: model:ir.model.fields,field_description:budget.field_budget_move__activity_summary
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__activity_summary
 msgid "Next Activity Summary"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__activity_type_id
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__activity_type_id
+#: model:ir.model.fields,field_description:budget.field_budget_journal__activity_type_id
 #: model:ir.model.fields,field_description:budget.field_budget_move__activity_type_id
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__activity_type_id
 msgid "Next Activity Type"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__note
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__note
-#: model:ir.model.fields,field_description:budget.field_budget_commitment__note
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__note
+#: model:ir.model.fields.selection,name:budget.selection__budget_mixin__budget_state__none
+msgid "No Budget"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_mixin.py:0
+#, python-format
+msgid "No budget commitment found for this record."
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_mixin.py:0
+#, python-format
+msgid "No budget commitment found to consume from."
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/examples/purchase_order_commitment_example.py:0
+#, python-format
+msgid "No budget commitment linked to this purchase order"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_mixin.py:0
+#, python-format
+msgid "No budget commitment to reserve."
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_mixin.py:0
+#, python-format
+msgid "No budget move found for this record."
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_move.py:0
+#, python-format
+msgid "No commitment is linked to this budget move."
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment_mixin.py:0
+#, python-format
+msgid "No commitment to consume"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment_mixin.py:0
+#, python-format
+msgid "No commitment to update"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment_mixin.py:0
+#: code:addons/budget/models/budget_commitment_mixin.py:0
+#, python-format
+msgid "No fiscal year found for date %s"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_mixin.py:0
+#, python-format
+msgid "No fiscal year found for date %s. Please create the fiscal year first."
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_search
+msgid "Non-Budgetable"
+msgstr ""
+
+#. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_move__note
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_form
 msgid "Note"
 msgstr "หมายเหตุ"
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_move_line__move_name
-msgid "Number"
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__notes
+msgid "Notes"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__message_needaction_counter
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__message_needaction_counter
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__name
+#: model:ir.model.fields,field_description:budget.field_budget_move__name
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__move_name
+msgid "Number"
+msgstr "ชื่อ"
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__message_needaction_counter
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__message_needaction_counter
+#: model:ir.model.fields,field_description:budget.field_budget_journal__message_needaction_counter
 #: model:ir.model.fields,field_description:budget.field_budget_move__message_needaction_counter
-#: model:ir.model.fields,field_description:budget.field_budget_template__message_needaction_counter
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__message_needaction_counter
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__message_needaction_counter
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__message_needaction_counter
 msgid "Number of Actions"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__message_has_error_counter
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__message_has_error_counter
+#: model:ir.model.fields,field_description:budget.field_budget_account__message_has_error_counter
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__message_has_error_counter
+#: model:ir.model.fields,field_description:budget.field_budget_journal__message_has_error_counter
 #: model:ir.model.fields,field_description:budget.field_budget_move__message_has_error_counter
-#: model:ir.model.fields,field_description:budget.field_budget_template__message_has_error_counter
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__message_has_error_counter
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__message_has_error_counter
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__message_has_error_counter
 msgid "Number of errors"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,help:budget.field_budget_appropriation__message_needaction_counter
-#: model:ir.model.fields,help:budget.field_budget_appropriation_line__message_needaction_counter
+#: model:ir.model.fields,help:budget.field_budget_account__message_needaction_counter
 #: model:ir.model.fields,help:budget.field_budget_commitment__message_needaction_counter
+#: model:ir.model.fields,help:budget.field_budget_journal__message_needaction_counter
 #: model:ir.model.fields,help:budget.field_budget_move__message_needaction_counter
-#: model:ir.model.fields,help:budget.field_budget_template__message_needaction_counter
-#: model:ir.model.fields,help:budget.field_budget_template_line__message_needaction_counter
+#: model:ir.model.fields,help:budget.field_budget_move_line__message_needaction_counter
+#: model:ir.model.fields,help:budget.field_budget_transfer__message_needaction_counter
 msgid "Number of messages requiring action"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,help:budget.field_budget_appropriation__message_has_error_counter
-#: model:ir.model.fields,help:budget.field_budget_appropriation_line__message_has_error_counter
+#: model:ir.model.fields,help:budget.field_budget_account__message_has_error_counter
 #: model:ir.model.fields,help:budget.field_budget_commitment__message_has_error_counter
+#: model:ir.model.fields,help:budget.field_budget_journal__message_has_error_counter
 #: model:ir.model.fields,help:budget.field_budget_move__message_has_error_counter
-#: model:ir.model.fields,help:budget.field_budget_template__message_has_error_counter
-#: model:ir.model.fields,help:budget.field_budget_template_line__message_has_error_counter
+#: model:ir.model.fields,help:budget.field_budget_move_line__message_has_error_counter
+#: model:ir.model.fields,help:budget.field_budget_transfer__message_has_error_counter
 msgid "Number of messages with delivery error"
 msgstr ""
 
 #. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_form_view
+msgid "Obligate Budget"
+msgstr "ผูกพันงบประมาณ"
+
+#. module: budget
 #: model:ir.model.fields.selection,name:budget.selection__budget_commitment__state__obligated
 msgid "Obligated"
+msgstr "ผูกพันงบประมาณ"
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment.py:0
+#, python-format
+msgid "Only cancelled commitments can be reset to draft."
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__parent_id
+#. odoo-python
+#: code:addons/budget/models/budget_commitment.py:0
+#, python-format
+msgid "Only draft commitments can be reserved."
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_line_form
+msgid "Optional description for this transfer line..."
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_form
+msgid "Other Information"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__parent_id
 msgid "Parent"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__parent_path
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_search
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_tree
+msgid "Parent Account"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__parent_path
 msgid "Parent Path"
 msgstr ""
 
 #. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_appropriation_form
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_search
+msgid "Pending Approval"
+msgstr ""
+
+#. module: budget
+#: model:ir.actions.act_window,name:budget.action_budget_transfers_pending
+msgid "Pending Approvals"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_commitment__budget_availability_percentage
+msgid "Percentage of available budget this commitment represents"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_transfer.py:0
+#, python-format
+msgid "Please add at least one destination line (Transfer TO)"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_transfer.py:0
+#, python-format
+msgid "Please add at least one source line (Transfer FROM)"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_transfer.py:0
+#, python-format
+msgid "Please add transfer lines"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_transfer__reason
+msgid "Please provide detailed justification for this budget transfer"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
+msgid "Please provide detailed justification for this budget transfer..."
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_transfer_reject_wizard__rejection_reason
+msgid "Please provide detailed reason for rejecting this budget transfer"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/examples/purchase_order_commitment_example.py:0
+#, python-format
+msgid ""
+"Please reserve budget first before confirming the purchase order. Click "
+"'Reserve Budget' button to proceed."
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/examples/purchase_order_commitment_example.py:0
+#, python-format
+msgid "Please specify analytic dimensions for budget commitment"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/examples/purchase_order_commitment_example.py:0
+#, python-format
+msgid "Please specify budget account"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/examples/purchase_order_commitment_example.py:0
+#, python-format
+msgid "Please specify budget account and all required analytic dimensions"
+msgstr ""
+
+#. module: budget
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_move_form
 msgid "Post"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields.selection,name:budget.selection__budget_appropriation__state__posted
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
+msgid "Post Transfer"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields.selection,name:budget.selection__budget_appropriation_overview_report__state__posted
 #: model:ir.model.fields.selection,name:budget.selection__budget_move__state__posted
+#: model:ir.model.fields.selection,name:budget.selection__budget_transfer__state__posted
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_search
 msgid "Posted"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__ref
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_search
+msgid "Reason"
+msgstr ""
+
+#. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__ref
 #: model:ir.model.fields,field_description:budget.field_budget_move__ref
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__ref
 msgid "Reference"
 msgstr "รหัสอ้างอิง"
 
 #. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
+msgid "Reject"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_transfer.py:0
+#, python-format
+msgid "Reject Budget Transfer"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields.selection,name:budget.selection__budget_transfer__state__rejected
+msgid "Rejected"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__rejection_reason
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_reject_wizard__rejection_reason
+msgid "Rejection Reason"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment.py:0
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__budget_move_ids
+#, python-format
+msgid "Related Budget Moves"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_move__commitment_id
+msgid "Related Commitment"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_move__transfer_id
+msgid "Related Transfer"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__remaining_amount
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_tree_view
+msgid "Remaining Amount"
+msgstr "งบประมาณคงเหลือ"
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__user_id
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_search
+msgid "Requested by"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_form_view
+msgid "Reserve Budget"
+msgstr ""
+
+#. module: budget
 #: model:ir.model.fields.selection,name:budget.selection__budget_commitment__state__reserved
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_search_view
 msgid "Reserved"
-msgstr ""
+msgstr "จองงบประมาณ"
 
 #. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_appropriation_form
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_commitment_form
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_form_view
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_move_form
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
 msgid "Reset to Draft"
-msgstr ""
+msgstr "กลับแบบร่าง"
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__activity_user_id
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__activity_user_id
+#: model:ir.model.fields,field_description:budget.field_budget_journal__activity_user_id
 #: model:ir.model.fields,field_description:budget.field_budget_move__activity_user_id
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__activity_user_id
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_search_view
 msgid "Responsible User"
 msgstr "ผู้รับผิดชอบข้อมูล"
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__user_id
-#: model:ir.model.fields,field_description:budget.field_budget_commitment__user_id
 #: model:ir.model.fields,field_description:budget.field_budget_move__user_id
 msgid "Responsible user"
 msgstr "ผู้รับผิดชอบข้อมูล"
 
 #. module: budget
-#: model:ir.model.fields.selection,name:budget.selection__budget_template__budget_type__revenue
+#: model:ir.model.fields.selection,name:budget.selection__budget_account__budget_type__revenue
+#: model:ir.model.fields.selection,name:budget.selection__budget_journal__default_budget_type__revenue
+#: model:ir.model.fields.selection,name:budget.selection__budget_move__budget_type__revenue
 msgid "Revenue"
 msgstr "รายรับ"
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__message_has_sms_error
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__message_has_sms_error
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_search
+msgid "Revenue Accounts"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__message_has_sms_error
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__message_has_sms_error
+#: model:ir.model.fields,field_description:budget.field_budget_journal__message_has_sms_error
 #: model:ir.model.fields,field_description:budget.field_budget_move__message_has_sms_error
-#: model:ir.model.fields,field_description:budget.field_budget_template__message_has_sms_error
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__message_has_sms_error
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__message_has_sms_error
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__message_has_sms_error
 msgid "SMS Delivery error"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__sequence
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_search
+msgid "Search Budget Transfers"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__sequence
+#: model:ir.model.fields,field_description:budget.field_budget_journal__sequence
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_line__sequence
 msgid "Sequence"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__show_reset_to_draft_button
-#: model:ir.model.fields,field_description:budget.field_budget_commitment__show_reset_to_draft_button
+#: model:ir.model.fields,help:budget.field_budget_transfer_line__sequence
+msgid "Sequence for ordering transfer lines"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_controller.py:0
+#, python-format
+msgid "Service Commitment"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_controller.py:0
+#, python-format
+msgid "Service reservation for %s"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_account__active
+msgid "Set active to false to hide the Budget Account without removing it."
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_journal__active
+msgid "Set active to false to hide the Journal without removing it."
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_account__deprecated
+msgid ""
+"Set deprecated to true to mark the Budget Account that has been outdated, "
+"that you should no longer use it."
+msgstr ""
+
+#. module: budget
+#: model:ir.actions.act_window,name:budget.action_budget_configuration
+msgid "Settings"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_journal__code
+msgid "Short Code"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_journal__code
+msgid ""
+"Shorter name used for display. The journal entries of this journal will also"
+" be named using this prefix by default."
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__show_approve_button
+msgid "Show Approve Button"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__show_cancel_button
+msgid "Show Cancel Button"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__show_post_button
+msgid "Show Post Button"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__show_reject_button
+msgid "Show Reject Button"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__show_reset_button
+msgid "Show Reset Button"
+msgstr ""
+
+#. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_move__show_reset_to_draft_button
 msgid "Show Reset To Draft Button"
 msgstr ""
 
 #. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_appropriation_line_search
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_commitment_line_search
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__show_submit_button
+msgid "Show Submit Button"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_move_line_search
 msgid "Source"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__state
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__parent_state
+#: model:ir.model.fields,help:budget.field_budget_transfer_line__source_analytic_id
+msgid "Source analytic account"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_transfer__source_analytic_id
+msgid "Source of funds for this transfer"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_appropriation_overview_report__state
+msgid "State"
+msgstr ""
+
+#. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__state
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__parent_state
 #: model:ir.model.fields,field_description:budget.field_budget_move__state
 #: model:ir.model.fields,field_description:budget.field_budget_move_line__parent_state
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__state
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_search_view
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_search
 msgid "Status"
 msgstr "สถานะ"
 
 #. module: budget
-#: model:ir.model.fields,help:budget.field_budget_appropriation__activity_state
 #: model:ir.model.fields,help:budget.field_budget_commitment__activity_state
+#: model:ir.model.fields,help:budget.field_budget_journal__activity_state
 #: model:ir.model.fields,help:budget.field_budget_move__activity_state
+#: model:ir.model.fields,help:budget.field_budget_transfer__activity_state
 msgid ""
 "Status based on activities\n"
 "Overdue: Due date is already passed\n"
@@ -810,134 +2514,428 @@ msgid ""
 msgstr ""
 
 #. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_template_form
-msgid "Structure"
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_form
+msgid "Sub Accounts"
 msgstr ""
 
 #. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_commitment_form
-msgid "Submit"
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_tree
+msgid "Sub-Accounts"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields.selection,name:budget.selection__budget_commitment__state__submitted
-msgid "Submitted"
-msgstr ""
-
-#. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__template_id
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__template_id
-#: model:ir.model.fields,field_description:budget.field_budget_commitment__template_id
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__template_id
-#: model:ir.model.fields,field_description:budget.field_budget_move_line__template_id
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__template_id
-msgid "Template"
-msgstr "โครงสร้างรหัสงบประมาณ"
-
-#. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__template_line_id
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__template_line_id
-#: model:ir.model.fields,field_description:budget.field_budget_move_line__template_line_id
-msgid "Template Line"
-msgstr "รหัสงบประมาณ"
-
-#. module: budget
-#: model_terms:ir.actions.act_window,help:budget.action_budget_move
-msgid "There is no examples click here to add new Budget Move."
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
+msgid "Submit for Approval"
 msgstr ""
 
 #. module: budget
 #: model_terms:ir.ui.view,arch_db:budget.view_budget_move_form
-msgid ""
-"This operation will involve creating a template for budget\n"
-"                                    checking, which will have the following principles of creation."
+msgid "Submit for review"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,help:budget.field_budget_appropriation__activity_exception_decoration
-#: model:ir.model.fields,help:budget.field_budget_commitment__activity_exception_decoration
-#: model:ir.model.fields,help:budget.field_budget_move__activity_exception_decoration
-msgid "Type of the exception activity on record."
+#: model:ir.model.fields.selection,name:budget.selection__budget_transfer__state__submitted
+msgid "Submitted"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__website_message_ids
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__website_message_ids
-#: model:ir.model.fields,field_description:budget.field_budget_commitment__website_message_ids
-#: model:ir.model.fields,field_description:budget.field_budget_move__website_message_ids
-#: model:ir.model.fields,field_description:budget.field_budget_template__website_message_ids
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__website_message_ids
-msgid "Website Messages"
-msgstr ""
-
-#. module: budget
-#: model:ir.model.fields,help:budget.field_budget_appropriation__website_message_ids
-#: model:ir.model.fields,help:budget.field_budget_appropriation_line__website_message_ids
-#: model:ir.model.fields,help:budget.field_budget_commitment__website_message_ids
-#: model:ir.model.fields,help:budget.field_budget_move__website_message_ids
-#: model:ir.model.fields,help:budget.field_budget_template__website_message_ids
-#: model:ir.model.fields,help:budget.field_budget_template_line__website_message_ids
-msgid "Website communication history"
+#: model:ir.model.fields.selection,name:budget.selection__budget_commitment__budget_availability_status__sufficient
+msgid "Sufficient"
 msgstr ""
 
 #. module: budget
 #. odoo-python
-#: code:addons/budget/models/budget_template.py:0
+#: code:addons/budget/models/budget_commitment.py:0
 #, python-format
-msgid "You cannot create recursive budget template line."
+msgid ""
+"The requested amount (%(requested)s) exceeds the available budget (%(available)s).\n"
+"\n"
+"Budget Account: %(account)s\n"
+"Activity: %(activity)s\n"
+"Fund: %(fund)s\n"
+"\n"
+"Please reduce the amount or select a different analytic combination."
 msgstr ""
 
 #. module: budget
-#: model:ir.model,name:budget.model_budget_template_line_account
-msgid "budget.template.line.account"
+#: model_terms:ir.actions.act_window,help:budget.action_budget_journal
+msgid "There is no examples click here to add new Budget Journal."
 msgstr ""
 
 #. module: budget
-#. odoo-javascript
-#: code:addons/budget/static/src/components/budget_template_structure/budget_template_structure.xml:0
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__fund_analytic_id
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__fund_analytic_id
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_search
+msgid "This Month"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_search
+msgid "This Year"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment.py:0
+#, python-format
+msgid ""
+"This commitment will create a negative budget balance.\n"
+"\n"
+"Requested: %(requested)s\n"
+"Available: %(available)s\n"
+"Remaining after commitment: %(remaining)s\n"
+"\n"
+"Negative budgets are allowed by system configuration."
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment.py:0
+#, python-format
+msgid ""
+"This commitment will use %(percentage).1f%% of the available budget.\n"
+"\n"
+"Requested: %(requested)s\n"
+"Available: %(available)s\n"
+"Remaining after commitment: %(remaining)s"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_commitment_mixin.py:0
+#, python-format
+msgid "This will create a negative budget balance"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_search
+msgid "Top Level Accounts"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_tree
+msgid "Total"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_move__total_amount
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_tree_view
+msgid "Total Amount"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
+msgid "Total Destination"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
+msgid "Total Source"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_mixin__budget_amount
+msgid "Total budget amount for this record"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__amount
+msgid "Transfer Amount"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__date
+msgid "Transfer Date"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
+msgid "Transfer Details"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
+msgid "Transfer FROM (Source)"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__from_line_ids
+msgid "Transfer FROM Lines"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields.selection,name:budget.selection__budget_transfer_line__transfer_direction__from
+msgid "Transfer From (Source)"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_line_form
+msgid "Transfer Line"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__line_ids
+msgid "Transfer Lines"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
+msgid "Transfer Lines Summary"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__name
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_search
+msgid "Transfer Number"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__reason
+msgid "Transfer Reason"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_form
+msgid "Transfer TO (Destination)"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__to_line_ids
+msgid "Transfer TO Lines"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields.selection,name:budget.selection__budget_transfer_line__transfer_direction__to
+msgid "Transfer To (Destination)"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__transfer_type
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_transfer_search
+msgid "Transfer Type"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_transfer_line__amount
+msgid "Transfer amount for this line"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_transfer.py:0
+#: code:addons/budget/models/budget_transfer_line.py:0
+#, python-format
+msgid "Transfer amount must be greater than zero"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_transfer.py:0
+#, python-format
+msgid "Transfer lines are not balanced. FROM: {:,.2f}, TO: {:,.2f}"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_transfer.py:0
+#, python-format
+msgid "Transfer must be balanced. From amount: {:,.2f}, To amount: {:,.2f}"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_transfer_line__budget_sufficient
+msgid "True if available budget is sufficient for this transfer"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_move__move_type
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__move_type
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_account_tree
+msgid "Type"
+msgstr "ประเภท"
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_commitment__activity_exception_decoration
+#: model:ir.model.fields,help:budget.field_budget_journal__activity_exception_decoration
+#: model:ir.model.fields,help:budget.field_budget_move__activity_exception_decoration
+#: model:ir.model.fields,help:budget.field_budget_transfer__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_transfer.py:0
+#, python-format
+msgid "Unbalanced Transfer"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_journal__sequence
+msgid "Used to order Journals in the view"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__user_id
+msgid "User"
+msgstr "ผู้รับผิดชอบข้อมูล"
+
+#. module: budget
+#: model:ir.module.category,description:budget.module_category_budget
+msgid "User groups for managing and using budgets"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields.selection,name:budget.selection__budget_commitment__budget_availability_status__warning
+msgid "Warning"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/examples/purchase_order_commitment_example.py:0
+#, python-format
+msgid "Warning: Could not cancel budget commitment: %s"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/examples/purchase_order_commitment_example.py:0
+#, python-format
+msgid "Warning: Could not consume budget commitment: %s"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__website_message_ids
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__website_message_ids
+#: model:ir.model.fields,field_description:budget.field_budget_journal__website_message_ids
+#: model:ir.model.fields,field_description:budget.field_budget_move__website_message_ids
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__website_message_ids
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_account__website_message_ids
+#: model:ir.model.fields,help:budget.field_budget_commitment__website_message_ids
+#: model:ir.model.fields,help:budget.field_budget_journal__website_message_ids
+#: model:ir.model.fields,help:budget.field_budget_move__website_message_ids
+#: model:ir.model.fields,help:budget.field_budget_move_line__website_message_ids
+#: model:ir.model.fields,help:budget.field_budget_transfer__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_mixin__has_budget_integration
+msgid "Whether this record has budget integration enabled"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_account.py:0
+#, python-format
+msgid "You cannot change the budget type."
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_move.py:0
+#, python-format
+msgid ""
+"You cannot create a move already in the posted state. Please create a draft "
+"move and post it after."
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_account.py:0
+#, python-format
+msgid "You cannot create recursive budget account."
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_move.py:0
+#, python-format
+msgid ""
+"You cannot edit the budget_type of a budget move if it already has a "
+"sequence number assigned."
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__fund_analytic_ids
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__fund_analytic_id
 #: model:ir.model.fields,field_description:budget.field_budget_move_line__fund_analytic_id
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__fund_analytic_ids
-#, python-format
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_line__fund_analytic_id
 msgid "กองทุน"
 msgstr ""
 
 #. module: budget
-#: model:ir.actions.act_window,name:budget.action_budget_commitment
-msgid "การจองเงิน/ผูกพันงบประมาณ"
+#: model:ir.ui.menu,name:budget.budget_config_menu
+msgid "การกำหนดค่า"
 msgstr ""
 
 #. module: budget
-#: model:ir.actions.act_window,name:budget.action_budget_appropriation
-#: model:ir.ui.menu,name:budget.budget_appropriation_menu
-msgid "การจัดสรรงบประมาณ"
+#: model:ir.ui.menu,name:budget.menu_budget_config_settings
+msgid "การตั้งค่า"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.res_config_settings_view_form_budget
+msgid "การตั้งค่างบประมาณ"
 msgstr ""
 
 #. module: budget
 #. odoo-javascript
-#: code:addons/budget/static/src/components/budget_expenditure_report_main/budget_expenditure_report_main.xml:0
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#: code:addons/budget/static/src/components/department_filter_sidebar/department_filter_sidebar.xml:0
 #, python-format
-msgid "ขอใช้/ผูกพัน/ตัดจ่าย/ส่งคืน"
+msgid "กำลังโหลด..."
 msgstr ""
 
 #. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_appropriation_form
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_commitment_form
+#. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#, python-format
+msgid "กำลังโหลดข้อมูล..."
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__activity_analytic_id
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_line__activity_analytic_id
+msgid "กิจกรรม"
+msgstr ""
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#: code:addons/budget/static/src/components/department_filter_sidebar/department_filter_sidebar.xml:0
+#, python-format
+msgid "ขยายทั้งหมด"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_move_form
 msgid "ข้อมูลทั่วไป"
 msgstr ""
 
 #. module: budget
-#. odoo-javascript
-#: code:addons/budget/static/src/components/budget_expenditure_report_main/budget_expenditure_report_main.xml:0
-#, python-format
-msgid "งบประมาณ"
+#: model:ir.ui.menu,name:budget.action_my_budget_transfers_menu
+msgid "คำขอโอนงบประมาณของฉัน"
+msgstr ""
+
+#. module: budget
+#: model:ir.ui.menu,name:budget.action_budget_transfer_menu
+msgid "คำขอโอนงบประมาณทั้งหมด"
 msgstr ""
 
 #. module: budget
 #. odoo-javascript
-#: code:addons/budget/static/src/components/budget_expenditure_report_main/budget_expenditure_report_main.xml:0
+#: code:addons/budget/static/src/components/department_filter_sidebar/department_filter_sidebar.xml:0
 #, python-format
+msgid "ค้นหาส่วนงาน..."
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_line__available_budget
 msgid "งบประมาณคงเหลือ"
 msgstr ""
 
@@ -948,110 +2946,231 @@ msgid "จองงบประมาณ"
 msgstr ""
 
 #. module: budget
-#. odoo-javascript
-#: code:addons/budget/static/src/components/budget_expenditure_report_main/budget_expenditure_report_main.xml:0
-#, python-format
-msgid "จองเงิน"
-msgstr ""
-
-#. module: budget
-#: model:ir.ui.menu,name:budget.budget_appropriation_management
-msgid "จัดสรรงบประมาณ"
-msgstr ""
-
-#. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__initial_budget
-msgid "จัดสรรงบประมาณครั้งแรก"
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__balance
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_line__amount
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_move_form
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_move_line_tree
+msgid "จำนวนเงิน"
 msgstr ""
 
 #. module: budget
 #. odoo-javascript
-#: code:addons/budget/static/src/components/budget_template_structure/budget_template_structure.xml:0
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
 #, python-format
-msgid "ชื่อ"
+msgid "จำนวนเงิน (บาท)"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__name
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__amount
+msgid "จำนวนเงินจอง"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_move_line__unallocated_balance
+msgid "จำนวนเงินที่ยังไม่มีการวางแผนการใช้งาน แต่ต้องการจองจำนวนเงินไว้ก่อน"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_move_line__credit
+msgid "จำนวนเงินฝั่งเครดิต (การใช้งบประมาณ, การโอนงบประมาณออก)"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_move_line__debit
+msgid "จำนวนเงินฝั่งเดบิต (การจัดสรรงบประมาณ, การรับโอนงบประมาณ)"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__name
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__name
 msgid "ชื่อรายการ"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__activity_analytic_id
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__activity_analytic_id
 #: model:ir.model.fields,field_description:budget.field_budget_move_line__activity_analytic_id
 msgid "ด้าน/แผนงาน/กิจกรรม"
 msgstr ""
 
 #. module: budget
-#: model:ir.ui.menu,name:budget.budget_config_menu
-msgid "ตั้งค่า"
-msgstr ""
-
-#. module: budget
-#: model:ir.model.fields,help:budget.field_budget_template_line__budgetable
+#: model:ir.model.fields,help:budget.field_budget_account__budgetable
 msgid "ติ๊กถูกเพื่อระบุว่ารหัสค่าใช้จ่ายสามารถจัดสรรงบประมาณได้"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__budget_type
-msgid "ประเภทงบประมาณ"
+#: model:ir.model.fields.selection,name:budget.selection__budget_transfer__transfer_type__entry
+msgid "ทั่วไป"
 msgstr ""
 
 #. module: budget
 #. odoo-javascript
-#: code:addons/budget/static/src/components/budget_expenditure_report_main/budget_expenditure_report_main.xml:0
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
 #, python-format
-msgid "ผูกพัน"
+msgid "ทุกปีงบประมาณ"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,help:budget.field_budget_template_line__fund_analytic_ids
+#. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#, python-format
+msgid "ทุกสถานะ"
+msgstr ""
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#, python-format
+msgid "บรรทัด"
+msgstr ""
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#, python-format
+msgid "บรรทัด:"
+msgstr ""
+
+#. module: budget
+#: model:ir.ui.menu,name:budget.budget_move
+#: model:ir.ui.menu,name:budget.budget_move_menu
+msgid "บัญชีงบประมาณ"
+msgstr ""
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#, python-format
+msgid "บาท"
+msgstr ""
+
+#. module: budget
+#: model:ir.ui.menu,name:budget.action_budget_journal_menu_action
+msgid "ประเภทสมุดบัญชีงบประมาณ"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__account_fiscal_year_id
+msgid "ปีงบประมาณ"
+msgstr ""
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#, python-format
+msgid "ปีงบประมาณ:"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.budget_commitment_search_view
+msgid "ปีงบประมาณปัจจุบัน"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_budget_account__fund_analytic_ids
 msgid "ผูกรหัสงบประมาณกับกองทุน"
 msgstr ""
 
 #. module: budget
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_appropriation_form
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_commitment_form
+#. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#, python-format
+msgid "พิมพ์"
+msgstr ""
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#: model:ir.actions.client,name:budget.action_budget_appropriation_overview
+#: model:ir.ui.menu,name:budget.budget_appropriation_overview_menu
+#, python-format
+msgid "ภาพรวมการจัดสรรงบประมาณ"
+msgstr ""
+
+#. module: budget
+#: model:ir.ui.menu,name:budget.budget_account_analytic
+msgid "มิติทางบัญชี"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_move_form
 msgid "มิติบัญชี"
 msgstr ""
 
 #. module: budget
 #. odoo-javascript
-#: code:addons/budget/static/src/components/budget_expenditure_report_main/budget_expenditure_report_main.xml:0
+#: code:addons/budget/static/src/components/department_filter_sidebar/department_filter_sidebar.xml:0
 #, python-format
-msgid "รวม"
+msgid "มีข้อมูลงบประมาณ"
 msgstr ""
 
 #. module: budget
 #. odoo-javascript
-#: code:addons/budget/static/src/components/budget_expenditure_report_main/budget_expenditure_report_main.xml:0
-#: code:addons/budget/static/src/components/budget_template_structure/budget_template_structure.xml:0
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__code
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__code
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__code
-#: model_terms:ir.ui.view,arch_db:budget.view_budget_template_form
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
 #, python-format
+msgid "ยอดรวม:"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__unallocated_balance
+msgid "ยังไม่ระบุรายการ"
+msgstr ""
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#: code:addons/budget/static/src/components/department_filter_sidebar/department_filter_sidebar.xml:0
+#, python-format
+msgid "ย่อทั้งหมด"
+msgstr ""
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#, python-format
+msgid "รวมทั้งหมด"
+msgstr ""
+
+#. module: budget
+#: model:ir.actions.act_window,name:budget.action_budget_account
+#: model:ir.model.fields,field_description:budget.field_budget_account__code
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__account_id
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__account_id
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__code
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_line__budget_account_id
+#: model:ir.ui.menu,name:budget.action_budget_account_menu_action
 msgid "รหัสงบประมาณ"
 msgstr ""
 
 #. module: budget
-#. odoo-javascript
-#: code:addons/budget/static/src/components/budget_template_structure/budget_template_structure.xml:0
-#, python-format
-msgid "รหัสบัญชี"
+#: model:ir.ui.menu,name:budget.action_budget_transfers_pending_menu
+msgid "รอการอนุมัติ"
 msgstr ""
 
 #. module: budget
-#. odoo-javascript
-#: code:addons/budget/static/src/components/budget_expenditure_report_main/budget_expenditure_report_main.xml:0
-#, python-format
-msgid "รอยืนยันจองเงิน"
-msgstr ""
-
-#. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_template_line__budgetable
+#: model:ir.model.fields,field_description:budget.field_budget_account__budgetable
 msgid "ระบุงบประมาณได้"
+msgstr ""
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#, python-format
+msgid "รายการ"
+msgstr ""
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#, python-format
+msgid "รายการ:"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_move__line_ids
+#: model_terms:ir.ui.view,arch_db:budget.view_budget_move_form
+msgid "รายการงบประมาณ"
 msgstr ""
 
 #. module: budget
@@ -1060,28 +3179,23 @@ msgid "รายการจองงบประมาณ"
 msgstr ""
 
 #. module: budget
-#: model:ir.ui.menu,name:budget.action_budget_commitment_line_menu_action
-msgid "รายการจองงบประมาณ (แบบแจกแจง)"
+#: model:ir.actions.act_window,name:budget.action_budget_move
+msgid "รายการบันทึกงบประมาณ"
 msgstr ""
 
 #. module: budget
-#: model:ir.actions.act_window,name:budget.action_budget_commitment_line
-msgid "รายการจองเงิน/ผูกพันงบประมาณ"
+#: model:ir.actions.act_window,name:budget.action_budget_move_line
+msgid "รายการบันทึกงบประมาณ (แจกแจง)"
 msgstr ""
 
 #. module: budget
-#: model:ir.ui.menu,name:budget.action_budget_appropriation_menu_action
-msgid "รายการจัดการ"
+#: model:ir.ui.menu,name:budget.action_budget_move_menu_action
+msgid "รายการบันทึกสมุดบัญชีงบประมาณ"
 msgstr ""
 
 #. module: budget
-#: model:ir.actions.act_window,name:budget.action_budget_appropriation_line
-msgid "รายการจัดสรรงบประมาณ"
-msgstr ""
-
-#. module: budget
-#: model:ir.ui.menu,name:budget.action_budget_appropriation_line_menu_action
-msgid "รายการจัดสรร​ (แบบแจกแจง)"
+#: model:ir.ui.menu,name:budget.action_budget_move_line_menu_action
+msgid "รายการบันทึกสมุดบัญชีงบประมาณ (แบบแจกแจง)"
 msgstr ""
 
 #. module: budget
@@ -1090,64 +3204,170 @@ msgid "รายงาน"
 msgstr ""
 
 #. module: budget
-#: model:ir.actions.client,name:budget.action_budget_expenditure_report
-msgid "รายงานสรุปรายจ่าย (ภาพรวม)"
-msgstr ""
-
-#. module: budget
-#: model:ir.ui.menu,name:budget.budget_expenditure_report_menu
-msgid "รายงานสรุปรายจ่ายภาพรวม (ภาพรวม)"
-msgstr ""
-
-#. module: budget
-#: model:ir.ui.menu,name:budget.expenditure_reporting_menu
-msgid "รายจ่าย"
-msgstr ""
-
-#. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__department_analytic_id
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__department_analytic_id
-#: model:ir.model.fields,field_description:budget.field_budget_commitment__department_analytic_id
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__department_analytic_id
-#: model:ir.model.fields,field_description:budget.field_budget_move_line__department_analytic_id
-msgid "ส่วนงาน"
+#. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#, python-format
+msgid "ร่าง"
 msgstr ""
 
 #. module: budget
 #. odoo-javascript
-#: code:addons/budget/static/src/components/budget_expenditure_report_main/budget_expenditure_report_main.xml:0
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
 #, python-format
-msgid "เบิกจ่ายแล้ว"
+msgid "ลงบัญชีแล้ว"
 msgstr ""
 
 #. module: budget
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation__source_analytic_id
-#: model:ir.model.fields,field_description:budget.field_budget_appropriation_line__source_analytic_id
+#. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#, python-format
+msgid "ลองใหม่"
+msgstr ""
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/components/department_filter_sidebar/department_filter_sidebar.xml:0
+#, python-format
+msgid "ล้างการเลือก"
+msgstr ""
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#, python-format
+msgid "วันที่สิ้นสุด"
+msgstr ""
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#, python-format
+msgid "วันที่เริ่มต้น"
+msgstr ""
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#, python-format
+msgid "ส่งออก"
+msgstr ""
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#: code:addons/budget/static/src/components/department_filter_sidebar/department_filter_sidebar.xml:0
+#: model:ir.model.fields,field_description:budget.field_budget_commitment__department_analytic_id
+#: model:ir.model.fields,field_description:budget.field_budget_move__department_analytic_id
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__department_analytic_id
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__department_analytic_id
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_line__department_analytic_id
+#, python-format
+msgid "ส่วนงาน"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__note
+msgid "หมายเหตุ"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_res_config_settings__budget_allow_negative
+msgid "อนุญาตงบประมาณติดลบ"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_res_config_settings__budget_allow_negative
+#: model_terms:ir.ui.view,arch_db:budget.res_config_settings_view_form_budget
+msgid "อนุญาตให้มีรายการที่ทำให้งบประมาณติดลบ"
+msgstr ""
+
+#. module: budget
+#. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#, python-format
+msgid "เกิดข้อผิดพลาด"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__credit
+msgid "เครดิต"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_move_line.py:0
+#, python-format
+msgid "เครดิตต้องมีค่าไม่ติดลบ (รายการ: %s)"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_move_line__debit
+msgid "เดบิต"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_move_line.py:0
+#, python-format
+msgid "เดบิตต้องมีค่าไม่ติดลบ (รายการ: %s)"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.constraint,message:budget.constraint_budget_move_line_debit_credit_positive
+msgid "เดบิตและเครดิตต้องมีค่าไม่ติดลบ"
+msgstr ""
+
+#. module: budget
 #: model:ir.model.fields,field_description:budget.field_budget_commitment__source_analytic_id
-#: model:ir.model.fields,field_description:budget.field_budget_commitment_line__source_analytic_id
+#: model:ir.model.fields,field_description:budget.field_budget_move__source_analytic_id
 #: model:ir.model.fields,field_description:budget.field_budget_move_line__source_analytic_id
+#: model:ir.model.fields,field_description:budget.field_budget_transfer__source_analytic_id
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_line__source_analytic_id
 msgid "แหล่งเงิน"
 msgstr ""
 
 #. module: budget
-#: model:ir.actions.act_window,name:budget.action_budget_template
-#: model:ir.ui.menu,name:budget.action_budget_template_menu_action
-msgid "โครงสร้างรหัสงบประมาณ"
+#: model:ir.model.fields,field_description:budget.field_budget_transfer_line__transfer_id
+#: model:ir.ui.menu,name:budget.budget_transfer_management
+#: model:ir.ui.menu,name:budget.budget_transfer_menu
+msgid "โอนงบประมาณ"
 msgstr ""
 
 #. module: budget
-#: model_terms:ir.actions.act_window,help:budget.action_budget_commitment
-#: model_terms:ir.actions.act_window,help:budget.action_budget_commitment_line
-msgid "ไม่มีข้อมูลการจองเงิน/ผูกพันงบประมาณ"
+#. odoo-javascript
+#: code:addons/budget/static/src/components/budget_appropriation_overview/budget_appropriation_overview.xml:0
+#, python-format
+msgid "ไม่พบข้อมูลที่ตรงกับเงื่อนไขการค้นหา"
 msgstr ""
 
 #. module: budget
-#: model_terms:ir.actions.act_window,help:budget.action_budget_appropriation
-#: model_terms:ir.actions.act_window,help:budget.action_budget_appropriation_line
-msgid "ไม่มีข้อมูลการจัดสรรงบประมาณ"
+#. odoo-javascript
+#: code:addons/budget/static/src/components/department_filter_sidebar/department_filter_sidebar.xml:0
+#, python-format
+msgid "ไม่พบส่วนงานที่ค้นหา"
 msgstr ""
 
 #. module: budget
-#: model_terms:ir.actions.act_window,help:budget.action_budget_template
-msgid "ไม่มีข้อมูลโครงสร้างรหัสงบประมาณ คลิกที่นี่เพื่อสร้างข้อมูลใหม่"
+#: model_terms:ir.actions.act_window,help:budget.action_budget_account
+msgid "ไม่มีข้อมูลรหัสงบประมาณ คลิกที่นี่เพื่อสร้างข้อมูลใหม่"
+msgstr ""
+
+#. module: budget
+#: model_terms:ir.actions.act_window,help:budget.action_budget_move
+#: model_terms:ir.actions.act_window,help:budget.action_budget_move_line
+msgid "ไม่มีข้อมูลรายการบันทึกงบประมาณ"
+msgstr ""
+
+#. module: budget
+#: model:ir.model.constraint,message:budget.constraint_budget_move_line_debit_credit_exclusive
+msgid "ไม่สามารถมีค่าเดบิตและเครดิตพร้อมกันได้ ต้องเลือกใดเลือกหนึ่ง"
+msgstr ""
+
+#. module: budget
+#. odoo-python
+#: code:addons/budget/models/budget_move_line.py:0
+#, python-format
+msgid ""
+"ไม่สามารถมีค่าเดบิตและเครดิตพร้อมกันได้ ต้องเลือกใดเลือกหนึ่ง (รายการ: %s)"
 msgstr ""

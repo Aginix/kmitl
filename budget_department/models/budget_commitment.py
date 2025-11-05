@@ -1,0 +1,39 @@
+# -*- coding: utf-8 -*-
+import logging
+
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError, ValidationError
+
+_logger = logging.getLogger(__name__)
+
+
+class BudgetCommitment(models.Model):
+    _inherit = "budget.commitment"
+
+    READONLY_STATES = {
+        "reserved": [("readonly", True)],
+        "obligated": [("readonly", True)],
+        "done": [("readonly", True)],
+        "cancel": [("readonly", True)],
+    }
+
+    @api.model
+    def _default_department(self):
+        employee_id = self.env.user.employee_id
+        if employee_id and employee_id.department_id:
+            return employee_id.department_id.id
+        return False
+
+    department_id = fields.Many2one(
+        string="Department",
+        comodel_name="hr.department",
+        default=lambda self: self._default_department(),
+        readonly=False,
+        states=READONLY_STATES,
+    )
+
+    def _prepare_consume_budget_move_vals(self):
+        vals = super()._prepare_consume_budget_move_vals()
+        if self.department_id:
+            vals["department_id"] = self.department_id.id
+        return vals

@@ -207,7 +207,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
             commitment_vals['company_id'] = self.env.company.id
 
         # Handle date and fiscal year
-        commitment_date = kwargs.get('date', fields.Date.today())
+        commitment_date = fields.Date.today()
         commitment_vals['date'] = commitment_date
 
         if not kwargs.get('account_fiscal_year_id'):
@@ -415,14 +415,9 @@ class BudgetCommitmentMixin(models.AbstractModel):
             'percentage': (amount / available * 100) if available > 0 else 999.99
         }
 
-    def _cancel_budget_commitment(self, commitment=None):
+    def _cancel_budget_commitment(self):
         """
         Cancel a budget commitment and release the reserved budget.
-        If no commitment is provided, uses the record's dynamic commitment field.
-
-        Args:
-            commitment (budget.commitment, optional): Commitment to cancel
-                                                     If None, uses record's commitment field
 
         Returns:
             bool: True if successful
@@ -432,34 +427,19 @@ class BudgetCommitmentMixin(models.AbstractModel):
         """
         self.ensure_one()
 
-        if commitment is None:
-            commitment = self._get_commitment_field_value('commitment_id')
+        commitment = self._get_commitment_field_value('commitment_id')
 
         if not commitment:
             return True
 
-        if commitment.state == 'done':
-            raise UserError(_(
-                "Cannot cancel commitment %s - it is already done"
-            ) % commitment.name)
-
-        if commitment.state == 'cancel':
-            return True  # Already cancelled
-
         commitment.action_cancel()
-        _logger.info("Cancelled budget commitment %s", commitment.name)
 
         return True
 
-    def _obligate_budget_commitment(self, commitment=None):
+    def _obligate_budget_commitment(self):
         """
         Obligate a budget commitment (mark as obligated).
         This transitions from reserved to obligated state for firm commitments.
-        If no commitment is provided, uses the record's dynamic commitment field.
-
-        Args:
-            commitment (budget.commitment, optional): Commitment to obligate
-                                                     If None, uses record's commitment field
 
         Returns:
             bool: True if successful
@@ -469,34 +449,19 @@ class BudgetCommitmentMixin(models.AbstractModel):
         """
         self.ensure_one()
 
-        if commitment is None:
-            commitment = self._get_commitment_field_value('commitment_id')
+        commitment = self._get_commitment_field_value('commitment_id')
 
         if not commitment:
             return True
 
-        if commitment.state == 'obligated':
-            return True  # Already obligated
-
-        if commitment.state != 'reserved':
-            raise UserError(_(
-                "Cannot obligate commitment %s - it must be in reserved state"
-            ) % commitment.name)
-
         commitment.action_obligate()
-        _logger.info("Obligated budget commitment %s", commitment.name)
 
         return True
 
-    def _close_budget_commitment(self, commitment=None):
+    def _close_budget_commitment(self):
         """
         Close a budget commitment (mark as done).
         This releases any unused budget back to the pool.
-        If no commitment is provided, uses the record's dynamic commitment field.
-
-        Args:
-            commitment (budget.commitment, optional): Commitment to close
-                                                     If None, uses record's commitment field
 
         Returns:
             bool: True if successful
@@ -506,38 +471,21 @@ class BudgetCommitmentMixin(models.AbstractModel):
         """
         self.ensure_one()
 
-        if commitment is None:
-            commitment = self._get_commitment_field_value('commitment_id')
+        commitment = self._get_commitment_field_value('commitment_id')
 
         if not commitment:
             return True
 
-        if commitment.state == 'done':
-            return True  # Already done
-
-        if commitment.state != 'obligated':
-            raise UserError(_(
-                "Cannot close commitment %s - it must be in obligated state"
-            ) % commitment.name)
-
-        commitment.action_done()
-        _logger.info(
-            "Closed budget commitment %s - Released %.2f",
-            commitment.name,
-            commitment.remaining_amount
-        )
+        commitment.close_commitment()
 
         return True
 
-    def _update_commitment_amount(self, new_amount, commitment=None):
+    def _update_commitment_amount(self, new_amount):
         """
         Update commitment amount with validation.
-        If no commitment is provided, uses the record's dynamic commitment field.
 
         Args:
             new_amount (float): New commitment amount
-            commitment (budget.commitment, optional): Commitment to update
-                                                     If None, uses record's commitment field
 
         Returns:
             bool: True if successful
@@ -548,8 +496,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
         """
         self.ensure_one()
 
-        if commitment is None:
-            commitment = self._get_commitment_field_value('commitment_id')
+        commitment = self._get_commitment_field_value('commitment_id')
 
         if not commitment:
             raise ValidationError(_("No commitment to update"))
@@ -604,17 +551,13 @@ class BudgetCommitmentMixin(models.AbstractModel):
 
         return True
 
-    def _consume_commitment(self, amount, reference=None, commitment=None):
+    def _consume_commitment(self, amount):
         """
         Record consumption against a commitment.
         Creates a budget move to consume the committed amount.
-        If no commitment is provided, uses the record's dynamic commitment field.
 
         Args:
             amount (float): Amount to consume
-            reference (str, optional): Reference for the consumption
-            commitment (budget.commitment, optional): Commitment to consume from
-                                                     If None, uses record's commitment field
 
         Returns:
             budget.move: Created budget move for consumption
@@ -624,51 +567,15 @@ class BudgetCommitmentMixin(models.AbstractModel):
         """
         self.ensure_one()
 
-        if commitment is None:
-            commitment = self._get_commitment_field_value('commitment_id')
+        commitment = self._get_commitment_field_value('commitment_id')
 
         if not commitment:
             raise ValidationError(_("No commitment to consume"))
 
-        if commitment.state not in ['reserved', 'obligated']:
-            raise UserError(_(
-                "Can only consume from reserved or obligated commitments"
-            ))
-
-        if amount > commitment.remaining_amount:
-            raise ValidationError(_(
-                "Cannot consume %.2f - only %.2f remaining in commitment"
-            ) % (amount, commitment.remaining_amount))
-
-        # Use commitment's analytics for the consumption
-        move_vals = {
-            'name': reference or _("Consumption of %s") % commitment.name,
-            'date': fields.Date.today(),
-            'account_fiscal_year_id': commitment.account_fiscal_year_id.id,
-            'commitment_id': commitment.id,
-            'move_type': 'consume',
-            'line_ids': [(0, 0, {
-                'account_id': commitment.account_id.id,
-                'balance': -amount,  # Negative for consumption
-                'activity_analytic_id': commitment.activity_analytic_id.id,
-                'department_analytic_id': commitment.department_analytic_id.id if commitment.department_analytic_id else False,
-                'fund_analytic_id': commitment.fund_analytic_id.id,
-                'source_analytic_id': commitment.source_analytic_id.id if commitment.source_analytic_id else False,
-            })]
-        }
-
-        budget_move = self.env['budget.move'].create(move_vals)
-        budget_move.action_post()
-
-        _logger.info(
-            "Consumed %.2f from commitment %s (%.2f remaining)",
-            amount,
-            commitment.name,
-            commitment.remaining_amount
-        )
+        budget_move = commitment.consume(amount)
 
         # Auto-close commitment if fully consumed
         if commitment.remaining_amount <= 0.01:  # Small tolerance for rounding
-            self._close_budget_commitment(commitment)
+            commitment.close_commitment()
 
         return budget_move

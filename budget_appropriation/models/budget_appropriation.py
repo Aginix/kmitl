@@ -96,7 +96,7 @@ class BudgetAppropriation(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
-    note = fields.Char(
+    note = fields.Text(
         readonly=False,
         tracking=True,
         states=READONLY_STATES,
@@ -216,6 +216,8 @@ class BudgetAppropriation(models.Model):
         compute="_compute_hide_review_button", readonly=True
     )
 
+    department_id = fields.Many2one('hr.department', tracking=True, default=lambda self: self.env.user.employee_id.department_id.id)
+
     @api.depends("line_ids.balance", "deduct_line_ids.balance")
     def _compute_amount(self):
         for appropriation in self:
@@ -233,7 +235,7 @@ class BudgetAppropriation(models.Model):
             if appropriation.state == "cancel":
                 continue
 
-            appropriation_has_name = appropriation.name and appropriation.name != "New"
+            appropriation_has_name = appropriation.name and appropriation.name != _("New")
             if appropriation_has_name or (
                 appropriation.state not in ("review", "posted")
             ):

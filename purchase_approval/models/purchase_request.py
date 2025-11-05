@@ -1,21 +1,16 @@
 # -*- coding: utf-8 -*-
-import logging
-
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
 
 
 class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
     is_required_approval = fields.Boolean(
-        compute="_compute_is_required_approval", store=False, readonly=True
+        compute="_compute_is_required_approval", store=True,
     )
-
-    purchase_approval_count = fields.Integer(
-        string="PR2s count", compute="_compute_purchase_approval_count", readonly=True
+    report_id = fields.Many2one(
+        'purchase.request.report', string='Request Report', ondelete='set null', index=True
     )
 
     @api.depends("estimated_cost")
@@ -23,19 +18,69 @@ class PurchaseRequest(models.Model):
         for rec in self:
             rec.is_required_approval = rec.estimated_cost <= 100000
 
-    def action_view_purchase_approval(self):
-        action = self.env["ir.actions.actions"]._for_xml_id("purchase_approval.action_purchase_approval")
-        lines = self.mapped("line_ids.purchase_lines.order_id")
-        if len(lines) > 1:
-            action["domain"] = [("id", "in", lines.ids)]
-        elif lines:
-            action["views"] = [
-                (self.env.ref("purchase_approval.view_purchase_approval_form").id, "form")
-            ]
-            action["res_id"] = lines.id
-        return action
+    def action_tree_request_report(self):
+        # เก็บไว้ก่อนเผื่อใช้
+        if not self:
+            raise UserError(_("No requests selected."))
 
-    @api.depends("line_ids")
-    def _compute_purchase_approval_count(self):
-        for rec in self:
-            rec.purchase_approval_count = len(rec.mapped("line_ids.purchase_lines.order_id").filtered("request_id"))
+        approved_requests = self.filtered(lambda r: r.state == 'approved')
+        if not approved_requests:
+            raise UserError(_("No approved requests selected."))
+
+        main_payment_type = approved_requests[0].payment_type
+
+        if main_payment_type == 'direct':
+            raise UserError(_("Cannot group requests with payment type 'Direct'. Each direct payment must be reported individually."))
+
+        valid_requests = approved_requests.filtered(lambda r: r.payment_type == main_payment_type)
+        if not valid_requests:
+            raise UserError(_("No requests with the same payment type as the first one."))
+
+        seq_name = self.env['ir.sequence'].next_by_code('purchase.order.approval') or _('New Report')
+
+        report = self.env['purchase.request.report'].sudo().create({
+            'name': seq_name,
+            'payment_type': main_payment_type,
+            'department_id': valid_requests[0].department_id.id,
+            'operating_unit_id': valid_requests[0].operating_unit_id.id,
+            'request_ids': [(6, 0, valid_requests.ids)],
+        })
+
+        valid_requests.sudo().write({'report_id': report.id})
+
+        skipped = self - valid_requests
+        if skipped:
+            msg = _(
+                "%d requests were skipped because they are not approved or have a different payment type."
+            ) % len(skipped)
+            report.message_post(body=msg)
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Purchase Request Report'),
+            'res_model': 'purchase.request.report',
+            'res_id': report.id,
+            'view_mode': 'form',
+            'target': 'new',
+        }
+
+    def action_form_request_report(self):
+        self.ensure_one()
+        seq_name = self.env['ir.sequence'].next_by_code('purchase.order.approval') or _('New Report')
+
+        report = self.env['purchase.request.report'].sudo().create({
+            'name': seq_name,
+            'payment_type': self.payment_type,
+            'department_id': self.department_id.id,
+            'operating_unit_id': self.operating_unit_id.id,
+            'request_ids': [(6, 0, self.id)],
+        })
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Purchase Request Report'),
+            'res_model': 'purchase.request.report',
+            'res_id': report.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
