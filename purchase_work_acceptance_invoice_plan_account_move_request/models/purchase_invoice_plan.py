@@ -6,6 +6,12 @@ from odoo.exceptions import UserError, ValidationError
 class PurchaseInvoicePlan(models.Model):
     _inherit = 'purchase.invoice.plan'
 
+    move_request_id = fields.Many2one(
+        comodel_name="account.move.request",
+        string="Move Request",
+        ondelete="set null",
+    )
+
     def _prepare_move_request_line_vals(self, wa_line):
         account = (
             wa_line.product_id.property_account_expense_id
@@ -28,10 +34,11 @@ class PurchaseInvoicePlan(models.Model):
         ]
 
         return {
-            "purchase_id": self.id,
+            "purchase_id": self.purchase_id.id,
             "partner_id": self.partner_id.id,
             "line_ids": line_vals,
             "ref": ", ".join(self.wa_id.wa_line_ids.mapped("name")),
+            "invoice_plan_id": self.id,
         }
 
     def action_move_request(self):
@@ -39,6 +46,7 @@ class PurchaseInvoicePlan(models.Model):
         move_request = self.env["account.move.request"].create(
             self._prepare_move_request_vals()
         )
+        self.move_request_id = move_request.id
         return {
             "type": "ir.actions.act_window",
             "res_model": "account.move.request",
