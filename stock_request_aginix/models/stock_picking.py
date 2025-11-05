@@ -15,3 +15,17 @@ class StockPicking(models.Model):
         'picking_id',
         string='Stock Requests'
     )
+
+    def action_view_stock_request(self):
+        self.ensure_one()
+        if not self.stock_request_id:
+            raise UserError(_("No Stock Request linked."))
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Stock Request'),
+            'res_model': 'stock.request',
+            'view_mode': 'form',
+            'res_id': self.stock_request_id.id,
+            'target': 'current',
+        }

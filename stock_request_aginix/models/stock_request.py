@@ -14,14 +14,16 @@ class StockRequest(models.Model):
     _order = "id desc"
 
     name = fields.Char(
-        default='New',
-        readonly=True
+        string="Reference",
+        required=True,
+        readonly=True,
+        default=lambda self: _('New')
     )
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
             ('requested', "Requested"),
-            ("confirmed", "Confirmed"),
+            ("approved", "Approved"),
             ("done", "Done"),
             ("cancel", "Cancelled"),
         ],
@@ -54,6 +56,10 @@ class StockRequest(models.Model):
         'res.users', 
         default=lambda self: self.env.user
     )
+    responsible_id = fields.Many2one(
+        'res.users', 
+        default=lambda self: self.env.user
+    )
     request_line_ids = fields.One2many(
         'stock.request.line', 
         'request_id', string='Lines'
@@ -63,41 +69,71 @@ class StockRequest(models.Model):
         string='Picking'
     )
 
+    @api.model
+    def create(self, vals):
+        if vals.get('name', _('New')) == _('New'):
+            vals['name'] = self.env['ir.sequence'].next_by_code('stock.request.seq') or _('New')
+        return super().create(vals)
+
     def action_requested(self):
-        if self.picking_id:
-            self.picking_id.button_validate()
+        self.state = 'requested'
+
+    def action_approved(self):
+        self.state = 'approved'
+
+    def action_done(self):
         self.state = 'done'
 
-    def action_confirm(self):
+
+    def action_create_picking(self):
+        self.ensure_one()
+
         StockPicking = self.env['stock.picking']
         StockMove = self.env['stock.move']
 
-        for request in self:
-            picking = StockPicking.create({
-                'picking_type_id': request.picking_type_id.id,
-                'location_id': request.location_id.id,
-                'location_dest_id': request.location_dest_id.id,
-                'origin': request.name,
+        picking = StockPicking.create({
+            'picking_type_id': self.picking_type_id.id,
+            'location_id': self.location_id.id,
+            'location_dest_id': self.location_dest_id.id,
+            'origin': self.name,
+        })
+
+        for line in self.request_line_ids:
+            StockMove.create({
+                'name': line.product_id.display_name,
+                'product_id': line.product_id.id,
+                'product_uom_qty': line.quantity,
+                'product_uom': line.product_uom_id.id,
+                'location_id': self.location_id.id,
+                'location_dest_id': self.location_dest_id.id,
+                'picking_id': picking.id,
             })
 
-            for line in request.request_line_ids:
-                StockMove.create({
-                    'name': line.product_id.display_name,
-                    'product_id': line.product_id.id,
-                    'product_uom_qty': line.quantity,
-                    'product_uom': line.product_uom_id.id,
-                    'location_id': request.location_id.id,
-                    'location_dest_id': request.location_dest_id.id,
-                    'picking_id': picking.id,
-                })
+        self.picking_id = picking.id
 
-            request.picking_id = picking.id
-            request.state = 'confirmed'
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Picking'),
+            'res_model': 'stock.picking',
+            'view_mode': 'form',
+            'res_id': picking.id,
+            'target': 'current',
+        }
+    
+    def action_view_picking(self):
+        self.ensure_one()
+        if not self.picking_id:
+            raise UserError(_("No Picking found."))
 
-    def action_done(self):
-        if self.picking_id:
-            self.picking_id.button_validate()
-        self.state = 'done'
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Picking'),
+            'res_model': 'stock.picking',
+            'view_mode': 'form',
+            'res_id': self.picking_id.id,
+            'target': 'current',
+        }
+
 
 
 class StockRequestLine(models.Model):
@@ -129,3 +165,35 @@ class StockRequestLine(models.Model):
         required=True,               
         default=lambda self: self.env.ref('uom.product_uom_unit')
     )
+    qty_done = fields.Float(
+        string="Quantity Done",
+        compute="_compute_progress",
+        store=False
+    )
+    qty_in_progress = fields.Float(
+        string="Quantity In Progress",
+        compute="_compute_progress",
+        store=False
+    )
+    picking_state = fields.Selection(
+        related='request_id.picking_id.state',
+        string="Picking State",
+        store=False,
+        readonly=True
+    )
+
+    @api.depends('request_id.picking_id.move_ids_without_package')
+    def _compute_progress(self):
+        for line in self:
+            done = 0.0
+            in_progress = 0.0
+            moves = line.request_id.picking_id.move_ids_without_package.filtered(
+                lambda m: m.product_id == line.product_id
+            )
+            for move in moves:
+                done += move.quantity_done
+                if move.state not in ['done', 'cancel']:
+                    in_progress += (move.product_uom_qty - move.quantity_done)
+
+            line.qty_done = done
+            line.qty_in_progress = in_progress

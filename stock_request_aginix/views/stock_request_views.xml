@@ -22,19 +22,27 @@
         <field name="arch" type="xml">
             <form string="Stock Request">
                 <header>
-                    <button name="action_confirm" string="Confirm" type="object" states="draft"/>
-                    <button name="action_done" string="Done" type="object" states="confirmed"/>
+                    <button name="action_requested" string="Requested" type="object" states="draft"/>
+                    <button name="action_approved" string="Approved" type="object" states="requested"/>
+                    <button name="action_create_picking"
+                            type="object"
+                            string="Create Picking"
+                            class="btn-primary"
+                            attrs="{'invisible': ['|', ('picking_id', '!=', False), ('state', '!=', 'approved')]}"/>
+                    <field name="picking_id" invisible="1"/>
+                    <button name="action_done" string="Done" type="object" states="approved"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="%(stock.action_picking_form)d"
-                                type="action"
+                        <button name="action_view_picking"
+                                type="object"
                                 class="oe_stat_button"
+                                icon="fa-truck"
                                 attrs="{'invisible': [('picking_id', '=', False)]}">
                             <field name="picking_id" invisible="1"/>
                             <div class="o_stat_info">
-                                <span class="fa fa-truck"/> Picking
+                                <span class="o_stat_text">Picking</span>
                             </div>
                         </button>
                     </div>
@@ -53,6 +61,7 @@
                         </group>
                         <group name="right">
                             <field name="request_date"/>
+                            <field name="responsible_id"/>
                         </group>
                     </group>
                     <notebook>
@@ -63,6 +72,9 @@
                                     <field name="description"/>
                                     <field name="quantity"/>
                                     <field name="product_uom_id"/>
+                                    <field name="qty_in_progress" readonly="1" attrs="{'column_invisible': [('parent.picking_id', '=', False)]}"/>
+                                    <field name="qty_done" readonly="1" attrs="{'column_invisible': [('parent.picking_id', '=', False)]}"/>
+                                    <field name="picking_state" attrs="{'column_invisible': [('parent.picking_id', '=', False)]}"/>
                                 </tree>
                             </field>
                         </page>
