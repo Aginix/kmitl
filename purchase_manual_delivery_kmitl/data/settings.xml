@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <function model="res.company" name="write">
+            <function model="res.company" name="search">
+                <value eval="[]"/>
+            </function>
+            <value eval="{'purchase_manual_delivery': True}"/>
+        </function>
+    </data>
+</odoo>
