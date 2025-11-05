@@ -10,7 +10,6 @@
     "data": [
         "data/account_asset_profile.xml",
         "views/account_asset_views.xml",
-        "views/account_move_views.xml",
         "views/purchase_order_views.xml"
     ],
     'installable': True,
