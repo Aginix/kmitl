@@ -23,8 +23,8 @@ class PurchaseInvoicePlan(models.Model):
             "quantity": wa_line.product_qty,
             "price_unit": wa_line.price_unit,
             "account_id": account.id if account else False,
-            "tax_ids": [Command.set(self.purchase_id.line_ids[0].taxes_id.ids)],
-            "analytic_distribution": self.purchase_id.line_ids[0].analytic_distribution,
+            "tax_ids": [Command.set(self.purchase_id.order_line[0].taxes_id.ids)],
+            "analytic_distribution": self.purchase_id.order_line[0].analytic_distribution,
         }
 
     def _prepare_move_request_vals(self):
