@@ -107,6 +107,7 @@ class StockRequest(models.Model):
                 'location_id': self.location_id.id,
                 'location_dest_id': self.location_dest_id.id,
                 'picking_id': picking.id,
+                'origin': self.name,
             })
 
         self.picking_id = picking.id
