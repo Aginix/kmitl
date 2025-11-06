@@ -151,11 +151,6 @@ class StockRequestLine(models.Model):
         string='Product', 
         required=True
     )
-    description = fields.Text(
-        string="Description",
-        store=True,
-        readonly=False,
-    )
     quantity = fields.Float(
         string='Quantity', 
         required=True
@@ -171,30 +166,15 @@ class StockRequestLine(models.Model):
         compute="_compute_progress",
         store=False
     )
-    qty_in_progress = fields.Float(
-        string="Quantity In Progress",
-        compute="_compute_progress",
-        store=False
-    )
-    picking_state = fields.Selection(
-        related='request_id.picking_id.state',
-        string="Picking State",
-        store=False,
-        readonly=True
-    )
 
     @api.depends('request_id.picking_id.move_ids_without_package')
     def _compute_progress(self):
         for line in self:
             done = 0.0
-            in_progress = 0.0
             moves = line.request_id.picking_id.move_ids_without_package.filtered(
                 lambda m: m.product_id == line.product_id
             )
             for move in moves:
                 done += move.quantity_done
-                if move.state not in ['done', 'cancel']:
-                    in_progress += (move.product_uom_qty - move.quantity_done)
 
             line.qty_done = done
-            line.qty_in_progress = in_progress
