@@ -8,6 +8,7 @@
         <field name="arch" type="xml">
             <xpath expr="//button[@name='button_done']" position="before">
                 <field name="hide_create_approval_button" invisible="1" />
+                <field name="need_make_purchase_order" invisible="1" />
                 <button
                     name="button_create_approval"
                     string="Create approval"
@@ -15,6 +16,14 @@
                     class="oe_highlight"
                     groups="purchase_request_security.group_purchase_request_user_all"
                     attrs="{'invisible': [('hide_create_approval_button', '=', True)]}"
+                />
+                <button
+                    name="approval_make_purchase_order"
+                    string="Create Purchase Order"
+                    type="object"
+                    class="oe_highlight"
+                    groups="purchase_request_security.group_purchase_request_user_all"
+                    attrs="{'invisible':[('need_make_purchase_order', '!=', True)]}"
                 />
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">

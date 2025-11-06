@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import base64
 import logging
 
 from odoo import models, fields, api, _
@@ -80,13 +81,13 @@ class PurchaseRequestApproval(models.Model):
 
     report_html_url = fields.Char(compute="_compute_report_html_url")
 
-    _sql_constraints = [
-        (
-            "request_id_uniq",
-            "unique(request_id)",
-            _("A purchase approval already exists!"),
-        )
-    ]
+    # _sql_constraints = [
+    #     (
+    #         "request_id_uniq",
+    #         "unique(request_id)",
+    #         _("A purchase approval already exists!"),
+    #     )
+    # ]
 
     def button_draft(self):
         return self.write({"state": "draft"})
@@ -94,11 +95,36 @@ class PurchaseRequestApproval(models.Model):
     def button_to_approve(self):
         for rec in self:
             rec.state = "to_approve"
+            rec.report_generate()
             rec.name = (
                 rec.name
                 or self.env["ir.sequence"].next_by_code("purchase.request.approval")
                 or _("New")
             )
+
+    def report_generate(self):
+        self.ensure_one()
+
+        report = self.env["ir.actions.report"]._render_qweb_pdf(
+            "purchase_request_approval.report_purchase_request_approval",
+            [self.id],
+        )
+        filename = self.name + ".pdf"
+        attachment = self.env["ir.attachment"].create(
+            {
+                "name": filename,
+                "res_id": self.id,
+                "res_model": self._name,
+                # "raw": base64.b64encode(report[0]),
+                "datas": base64.b64encode(report[0]),
+                "type": "binary",
+                "mimetype": "application/pdf",
+            }
+        )
+
+        self.message_post(
+            body=(_("PA Report is generated on %s") % fields.Datetime.now())
+        )
 
     def _message_link_back_to_request(self):
         request_id = self.request_id
@@ -113,18 +139,21 @@ class PurchaseRequestApproval(models.Model):
 
     def button_approved(self):
         for rec in self:
-            message = rec.request_id._purchase_request_approval_approved_message_content(rec)
+            message = (
+                rec.request_id._purchase_request_approval_approved_message_content(rec)
+            )
             rec.request_id.message_post(body=message, message_type="comment")
             rec.request_id.activity_schedule(
-                    "purchase_request_activity_kmitl.mail_activity_create_purchase_order",
-                    user_id=rec.request_id.user_id.id,
-                    # note=_("Your activity is going to end soon"),
-                )
+                "purchase_request_activity_kmitl.mail_activity_create_purchase_order",
+                user_id=rec.request_id.user_id.id,
+            )
             rec.write({"state": "approved", "approval_date": fields.Datetime.now()})
 
     def button_rejected(self):
         for rec in self:
-            message = rec.request_id._purchase_request_reject_approved_message_content(rec)
+            message = rec.request_id._purchase_request_reject_approved_message_content(
+                rec
+            )
             rec.request_id.message_post(body=message, message_type="comment")
             rec.write({"state": "rejected"})
 
@@ -175,11 +204,15 @@ class PurchaseRequestApproval(models.Model):
     @api.depends("state")
     def _compute_report_html_url(self):
         for rec in self:
-            rec.report_html_url = rec.get_portal_url(report_type='html')
+            rec.report_html_url = rec.get_portal_url(report_type="html")
 
     def action_view_request(self):
         self.ensure_one()
-        action = self.env.ref("purchase_request.purchase_request_form_action").sudo().read()[0]
+        action = (
+            self.env.ref("purchase_request.purchase_request_form_action")
+            .sudo()
+            .read()[0]
+        )
         form = self.env.ref("purchase_request.view_purchase_request_form")
         action["views"] = [(form.id, "form")]
         action["res_id"] = self.request_id.id

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 {
-    "name": "Purchase_request_approval",
+    "name": "Purchase Request Approval",
     "version": "16.0.1.0.0",
-    "author": "",
-    "website": "",
-    "category": "",
+    "author": "Aginix Technologies",
+    "website": "https://github.com/aginix/kmitl",
+    "category": "KMITL",
     "depends": [
         "l10n_th_gov_purchase_request",
         "purchase_request_security",
@@ -12,11 +12,13 @@
         "purchase_request_kmitl",
         "purchase_request_activity_kmitl",
         "purchase_request_hide_create_po_button",
+        "purchase_request_vendor_kmitl",
         "thai_date_utils",
         "portal",
     ],
     "data": [
         "data/purchase_request_approval_sequence.xml",
+        "data/activity.xml",
         "security/ir.model.access.csv",
         "security/purchase_request_approval.xml",
         "views/portal_templates.xml",
@@ -25,6 +27,7 @@
         "views/purchase_request_views.xml",
         "report/report_purchase_request_approval.xml",
         "report/paperformat.xml",
+        "wizard/purchase_request_line_make_purchase_order_view.xml"
     ],
     "assets": {
         "web.assets_backend": ["purchase_request_approval/static/src/**/*"],
