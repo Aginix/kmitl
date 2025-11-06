@@ -33,14 +33,14 @@ msgstr "งวดงาน"
 #. module: purchase_work_acceptance_invoice_plan_account_move_request
 #: model:ir.model,name:purchase_work_acceptance_invoice_plan_account_move_request.model_purchase_invoice_plan
 msgid "Invoice Planning Detail"
-msgstr ""
+msgstr "งวดงานใบสั่งซื้อ"
 
 #. module: purchase_work_acceptance_invoice_plan_account_move_request
 #: model:ir.model.fields,field_description:purchase_work_acceptance_invoice_plan_account_move_request.field_purchase_invoice_plan__move_request_id
 msgid "Move Request"
-msgstr "เลขใบเบิก"
+msgstr "เลขที่ใบเบิก"
 
 #. module: purchase_work_acceptance_invoice_plan_account_move_request
 #: model:ir.model.fields,help:purchase_work_acceptance_invoice_plan_account_move_request.field_account_move_request__invoice_plan_id
 msgid "This move request was created from a Purchase Invoice Plan."
-msgstr ""
+msgstr "สร้างคำขอเบิกจ่ายจากงวดงานใบสั่งซื้อแล้ว"
