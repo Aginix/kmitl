@@ -141,6 +141,7 @@ class AccountAssetBatch(models.Model):
                             "date_start": batch.date,
                             "account_fiscal_year_id": batch.account_fiscal_year_id.id,
                             "operating_unit_id": batch.operating_unit_id.id,
+                            "department_id": batch.department_id.id,
                             "purchase_id": batch.purchase_id.id,
                             "gpsc_id": line.gpsc_id.id,
                             "profile_id": line.profile_id.id,
