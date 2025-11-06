@@ -18,6 +18,8 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
             Command.create(self._prepare_committee(committee)) 
             for committee in purchase_request.work_acceptance_committee_ids
         ]
+
+        return res
     
     def _prepare_committee(self, committee):
         return {
