@@ -49,6 +49,7 @@
                         <field name="operating_unit_id"/>
                         <field name="department_id" attrs="{'readonly': [('is_editable','=', False)]}"/>
                         <field name="purchase_id" readonly="1"/>
+                        <field name="source_of_asset" required="1" attrs="{'readonly': [('is_editable','=', False)]}" widget="radio" options="{'horizontal': true}"/>
                         <field name="company_id" groups="base.group_multi_company"/>
                         <field name="notes" />
                     </group>
