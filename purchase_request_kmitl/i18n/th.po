@@ -324,7 +324,7 @@ msgstr ""
 #. module: l10n_th_gov_purchase_request
 #: model:ir.model.fields.selection,name:l10n_th_gov_purchase_request.selection__procurement_committee__approve_role__chairman
 msgid "Chairman"
-msgstr ""
+msgstr "ประธาน"
 
 #. module: purchase_request
 #: model:ir.model.fields,help:purchase_request.field_product_product__purchase_request

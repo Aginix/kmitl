@@ -18,7 +18,7 @@ class PurchaseOrder(models.Model):
 
     account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
-        string="ปีงบประมาณ",
+        string="Fiscal year",
         tracking=True,
         states=READONLY_STATES,
     )
