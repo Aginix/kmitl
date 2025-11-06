@@ -13,13 +13,38 @@ class PurchaseOrder(models.Model):
     )
     move_request_count = fields.Integer(
         string='Move Request Count',
-        compute='_compute_move_request_count',
+        compute='_compute_move_request',
+    )
+    move_request_total = fields.Monetary(
+        string="Total Move Request",
+        compute="_compute_move_request",
+        currency_field="currency_id",
+        store=False,
+    )
+    is_move_request_allowed = fields.Boolean(
+        string="Can Create Move Request",
+        compute="_compute_move_request",
+        store=False,
+    )
+    hide_create_move_request_button = fields.Boolean(
+        string="Hide Create Move Request Button",
+        compute="_compute_hide_create_move_request_button",
+        store=False,
     )
 
-    @api.depends('move_request_ids')
-    def _compute_move_request_count(self):
+    @api.depends("move_request_ids", "move_request_ids.amount_total")
+    def _compute_move_request(self):
         for order in self:
+            order.move_request_total = sum(order.move_request_ids.mapped("amount_total"))
+            order.is_move_request_allowed = order.move_request_total < order.amount_total
             order.move_request_count = len(order.move_request_ids)
+
+    @api.depends("state", "is_move_request_allowed")
+    def _compute_hide_create_move_request_button(self):
+        for order in self:
+            order.hide_create_move_request_button = (
+                order.state != "purchase" or not order.is_move_request_allowed
+            )
 
     def _prepare_move_request_vals(self):
         return {
