@@ -46,7 +46,14 @@ class PurchaseRequest(models.Model):
             lambda r: r.status == "pending" and (self.env.user in r.reviewer_ids)
         )
         if not reviews:
-            return self.write({"state": "approved"})
+            return self.button_approved()
+
+    def _compute_to_approve_allowed(self):
+        super()._compute_to_approve_allowed()
+        for rec in self:
+            rec.to_approve_allowed = rec.state == "to_verify" and any(
+                not line.cancelled and line.product_qty for line in rec.line_ids
+            )
 
     @api.model
     def _get_after_validation_exceptions(self):
@@ -71,7 +78,7 @@ class PurchaseRequest(models.Model):
     def request_validation(self):
         self.ensure_one()
         res = super().request_validation()
-        self.write({"state": "to_approve"})
+        self.button_to_approve()
         return res
 
     def restart_validation(self):
@@ -85,6 +92,9 @@ class PurchaseRequest(models.Model):
         res = super()._get_under_validation_exceptions()
         res.append("state")
         res.append("substate_id")
+        res.append("approved_by")
+        res.append("date_verified")
+        res.append("date_approved")
         return res
 
     def action_reserve_budget(self):

@@ -5,7 +5,12 @@
         <field name="name">view.purchase.request.approval.tree</field>
         <field name="model">purchase.request.approval</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree
+                decoration-success="state in ('approved')"
+                decoration-muted="state == 'draft'"
+                decoration-warning="state == 'to_approve'"
+                decoration-danger="state == 'rejected'"
+            >
                 <field name="account_fiscal_year_id" optional="hide" />
                 <field name="request_id" />
                 <field name="title" />
@@ -119,6 +124,7 @@
                         <field name="report_html_url" widget="iframe_viewer" />
                     </div>
                 </sheet>
+                <div class="o_attachment_preview" />
                 <div class="oe_chatter">
                     <field
                         name="message_follower_ids"

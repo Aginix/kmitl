@@ -13,6 +13,9 @@ class PurchaseRequest(models.Model):
     hide_create_approval_button = fields.Boolean(
         compute="_compute_hide_create_approval_button"
     )
+    need_make_purchase_order = fields.Boolean(
+        compute="_compute_need_make_purchase_order"
+    )
     request_approval_count = fields.Integer(compute="_compute_request_approval_count")
     request_approval_ids = fields.One2many(
         "purchase.request.approval", inverse_name="request_id"
@@ -22,7 +25,6 @@ class PurchaseRequest(models.Model):
         return {
             "request_id": self.id,
             "origin": self.name,
-            "message_main_attachment_id": self.message_main_attachment_id.id,
         }
 
     def button_create_approval(self):
@@ -39,11 +41,34 @@ class PurchaseRequest(models.Model):
             self._prepare_approval_vals()
         )
 
+        self.activity_feedback(
+            ["purchase_request_approval.mail_activity_awaiting_approval_creation"]
+        )
+
         link_back_message = approval._message_link_back_to_request()
         approval.message_post(body=link_back_message, message_type="comment")
 
         message = self._purchase_request_approval_create_message_content(approval)
         self.message_post(body=message, message_type="comment")
+
+        return {
+            "name": _("Purchase Request Approval"),
+            "type": "ir.actions.act_window",
+            "view_type": "form",
+            "view_mode": "form",
+            "res_model": "purchase.request.approval",
+            "res_id": approval.id,
+        }
+
+    def button_approved(self):
+        res = super().button_approved()
+
+        if self.request_approval_count < 1 and self.estimated_cost <= 100000:
+            self.activity_schedule(
+                "purchase_request_approval.mail_activity_awaiting_approval_creation",
+                user_id=self.user_id.id,
+            )
+        return res
 
     def _purchase_request_approval_create_message_content(self, approval):
         message = _(
@@ -123,12 +148,48 @@ class PurchaseRequest(models.Model):
     def _hide_create_po_button(self):
         super()._hide_create_po_button()
         for rec in self:
+            if rec.estimated_cost <= 100000:
+                rec.hide_create_po_button = True
+
+    def approval_make_purchase_order(self):
+        self.ensure_one()
+        self._create_purchase_order_from_approval()
+        self._done_activity_feedback_create_purchase_order_from_approval()
+        return self.action_view_purchase_order()
+
+    def _done_activity_feedback_create_purchase_order_from_approval(self):
+        self.activity_feedback(
+            ["purchase_request_activity_kmitl.mail_activity_create_purchase_order"]
+        )
+
+    def _create_purchase_order_from_approval(self):
+        self.ensure_one()
+        wizard = (
+            self.env["purchase.request.line.make.purchase.order"]
+            .with_context(
+                active_model="purchase.request", active_ids=self.ids, active_id=self.id
+            )
+            .create({})
+        )
+        wizard.make_purchase_order()
+        return wizard
+
+    @api.depends(
+        "state",
+        "estimated_cost",
+        "purchase_count",
+        "request_approval_ids",
+        "request_approval_ids.state",
+    )
+    def _compute_need_make_purchase_order(self):
+        for rec in self:
             if (
                 rec.state in ("approved", "in_progress")
-                and rec.purchase_count == 0
                 and rec.estimated_cost <= 100000
+                and rec.purchase_count == 0
+                and rec.request_approval_ids
+                and rec.request_approval_ids.state in ("approved")
             ):
-                if rec.request_approval_ids.state in ('approved'):
-                    rec.hide_create_po_button = False
-                else:
-                    rec.hide_create_po_button = True
+                rec.need_make_purchase_order = True
+            else:
+                rec.need_make_purchase_order = False
