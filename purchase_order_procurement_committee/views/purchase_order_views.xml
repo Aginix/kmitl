@@ -9,8 +9,6 @@
                 <page string="Committee" name="committee">
                     <separator string="Work Acceptance Committee" />
                     <field name="work_acceptance_committee_ids" nolabel="1" context="{'default_committee_type': 'work_acceptance'}" />
-                    <separator string="Evaluation Committee" />
-                    <field name="evaluation_committee_ids" nolabel="1" context="{'default_committee_type': 'evaluation'}" />
                 </page>
             </xpath>
             <field name="requesting_operating_unit_id" position="attributes">
