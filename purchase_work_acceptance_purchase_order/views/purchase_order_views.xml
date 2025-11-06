@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+      
+    <!-- View purchase.order form -->
+    <record id="view_purchase_order_form" model="ir.ui.view">
+        <field name="name">view.purchase.order.form</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="l10n_th_gov_work_acceptance.purchase_order_form_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='wa_tier_validation']" position="attributes">
+              <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+  </odoo>
