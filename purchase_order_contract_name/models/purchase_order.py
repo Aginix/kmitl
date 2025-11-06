@@ -16,5 +16,4 @@ class PurchaseOrder(models.Model):
         string="contract name",
         tracking=True,
         states=READONLY_STATES,
-        required=True,
     )
