@@ -7,6 +7,10 @@
         <field name="model">work.acceptance</field>
         <field name="inherit_id" ref="purchase_work_acceptance.view_work_acceptance_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="attributes">
+                <attribute name="optional">show</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='currency_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
