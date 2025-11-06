@@ -16,7 +16,7 @@
                         type="object"
                         class="oe_stat_button"
                         icon="fa-cubes"
-                        invisible="not has_storable_product">
+                        attrs="{'invisible': [('has_storable_product', '=', False)]}">
                         <field name="asset_count" widget="statinfo" string="Asset Batch"/>
                 </button>
             </xpath>
