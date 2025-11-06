@@ -22,3 +22,7 @@ class PurchaseOrder(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
+
+    date_planned = fields.Datetime(
+        string="Date End"
+    )

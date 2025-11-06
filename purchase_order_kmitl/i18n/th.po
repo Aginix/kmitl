@@ -1142,7 +1142,7 @@ msgstr "ตัวช่วยการเขียนอีเมล"
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__date_planned
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__date_planned
-msgid "Expected Arrival"
+msgid "Date End"
 msgstr "วันที่สิ้นสุดสัญญา/ใบสั่งซื้อ/จ้าง"
 
 #. module: purchase
