@@ -7,9 +7,7 @@
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
     'depends': ['purchase_order_account_move_request'],
-    'data': [
-
-    ],
+    'data': [],
     'installable': True,
     'auto_install': False,
     'license': 'LGPL-3',

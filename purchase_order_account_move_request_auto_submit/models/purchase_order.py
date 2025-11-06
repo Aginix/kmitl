@@ -6,9 +6,7 @@ from odoo.exceptions import UserError, ValidationError
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-    def _prepare_move_request_vals(self):
-        vals = super()._prepare_move_request_vals()
-        vals.update({
-            "state": "submitted",
-        })
-        return vals
+    def _create_move_request(self):
+        move_request = super()._create_move_request()
+        move_request.action_submit()
+        return move_request
