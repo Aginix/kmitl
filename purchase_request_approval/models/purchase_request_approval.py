@@ -151,7 +151,7 @@ class PurchaseRequestApproval(models.Model):
 
     def button_rejected(self):
         for rec in self:
-            message = rec.request_id._purchase_request_reject_approved_message_content(
+            message = rec.request_id._purchase_request_approval_rejected_message_content(
                 rec
             )
             rec.request_id.message_post(body=message, message_type="comment")

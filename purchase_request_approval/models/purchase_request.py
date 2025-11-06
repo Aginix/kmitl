@@ -158,9 +158,8 @@ class PurchaseRequest(models.Model):
         return self.action_view_purchase_order()
 
     def _done_activity_feedback_create_purchase_order_from_approval(self):
-        self.activity_feedback(
-            ["purchase_request_activity_kmitl.mail_activity_create_purchase_order"]
-        )
+        activity = "purchase_request_activity_kmitl.mail_activity_create_purchase_order"
+        self.activity_feedback([activity])
 
     def _create_purchase_order_from_approval(self):
         self.ensure_one()
@@ -169,7 +168,7 @@ class PurchaseRequest(models.Model):
             .with_context(
                 active_model="purchase.request", active_ids=self.ids, active_id=self.id
             )
-            .create({})
+            .create({"supplier_id": self.partner_id.id})
         )
         wizard.make_purchase_order()
         return wizard

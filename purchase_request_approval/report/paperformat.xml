@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="purchase_request_approval.paperformat_purchase_request_approval_report" model="report.paperformat">
+    <record id="paperformat_purchase_request_approval_report" model="report.paperformat">
         <field name="name">Purchase Request Approval</field>
         <field name="default" eval="False"/>
         <field name="disable_shrinking" eval="True"/>
