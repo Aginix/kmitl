@@ -28,7 +28,7 @@
         <field name="inherit_id" ref="account_move_request.view_account_move_request_search"/>
         <field name="arch" type="xml">
             <xpath expr="//group" position="inside">
-                <filter string=" Payment Type" name="payment_type" context="{'group_by': 'payment_type'}" />
+                <filter string="Payment Type" name="payment_type" context="{'group_by': 'payment_type'}" />
             </xpath>
         </field>
     </record>
