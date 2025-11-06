@@ -29,6 +29,7 @@ class AccountAssetBatch(models.Model):
         related='purchase_id.account_fiscal_year_id',
         required=True,
         tracking=True,
+        string="Fiscal year",
     )
 
     operating_unit_id = fields.Many2one(
