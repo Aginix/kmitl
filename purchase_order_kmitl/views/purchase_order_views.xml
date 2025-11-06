@@ -28,7 +28,6 @@
             <xpath expr="//button[@name='confirm_reminder_mail']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-            product_id
             <xpath expr="//button[@name='product_id']" position="attributes">
                 <attribute name="optional">show</attribute>
             </xpath>
