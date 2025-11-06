@@ -442,7 +442,7 @@ msgstr ""
 #. module: account_asset_purchase
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__source_of_asset
 msgid "Source of asset"
-msgstr ""
+msgstr "ที่มาของครุภัณฑ์"
 
 #. module: account_asset_purchase
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__state
