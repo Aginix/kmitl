@@ -29,7 +29,8 @@ class AccountAssetBatchLine(models.Model):
     )
 
     account_fiscal_year_id = fields.Many2one(
-        related='batch_id.account_fiscal_year_id'
+        related='batch_id.account_fiscal_year_id',
+        string="Fiscal year",
     )
 
     purchase_id = fields.Many2one(
