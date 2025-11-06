@@ -97,6 +97,15 @@ class AccountAssetBatch(models.Model):
         currency_field='currency_id',
     )
 
+    source_of_asset = fields.Selection(
+        [
+            ("procurement", "Procurement"),
+            ("donation", "Donation"),
+        ],
+        string="Source of asset",
+        tracking=True,
+    )
+
     @api.depends('line_ids.amount_total')
     def _compute_total_amount(self):
         for rec in self:
