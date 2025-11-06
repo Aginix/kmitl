@@ -34,9 +34,7 @@ class PurchaseOrder(models.Model):
 
     def action_move_request(self):
         self.ensure_one()
-        move_request = self.env["account.move.request"].create(
-            self._prepare_move_request_vals()
-        )
+        move_request = self._create_move_request()
         return {
             "type": "ir.actions.act_window",
             "res_model": "account.move.request",
@@ -44,6 +42,12 @@ class PurchaseOrder(models.Model):
             "res_id": move_request.id,
             "target": "current",
         }
+
+    def _create_move_request(self):
+        move_request = self.env["account.move.request"].create(
+            self._prepare_move_request_vals()
+        )
+        return move_request
 
     def action_view_move_request(self):
         self.ensure_one()
