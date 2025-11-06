@@ -24,19 +24,26 @@ class TierValidation(models.AbstractModel):
             rec.has_reject_comment = True in has_reject_comment
 
     def validate_tier(self):
+        """Extended version — safe for future inheritance"""
         self.ensure_one()
         sequences = self._get_sequences_to_approve(self.env.user)
         reviews = self.review_ids.filtered(
             lambda l: l.sequence in sequences or l.approve_sequence_bypass
         )
+
+        has_comment = getattr(self, "has_comment", False)
+        has_approve_comment = getattr(self, "has_approve_comment", False)
         # original has no "self.has_approve_comment"
-        if self.has_comment and self.has_approve_comment:
+        if has_comment and has_approve_comment:
             user_reviews = reviews.filtered(
                 lambda r: r.status == "pending" and (self.env.user in r.reviewer_ids)
             )
             return self._add_comment("validate", user_reviews)
-        self._validate_tier(reviews)
+
+        res = super().validate_tier()
         self._update_counter({"review_deleted": True})
+
+        return res
 
     def reject_tier(self):
         self.ensure_one()
