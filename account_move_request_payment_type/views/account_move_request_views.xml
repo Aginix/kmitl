@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+
+    <!-- View account.move.request form -->
+    <record id="view_account_move_request_form" model="ir.ui.view">
+        <field name="name">view.account.move.request.form</field>
+        <field name="model">account.move.request</field>
+        <field name="inherit_id" ref="account_move_request.action_account_move_request"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date']" position="after">
+                <field name="payment_type"/>
+            </xpath>
+        </field>
+    </record>
+
+  </odoo>
