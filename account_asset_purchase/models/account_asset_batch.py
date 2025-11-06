@@ -33,7 +33,6 @@ class AccountAssetBatch(models.Model):
 
     operating_unit_id = fields.Many2one(
         "operating.unit",
-        related='purchase_id.operating_unit_id',
         string="Operating Unit",
     )
 
@@ -66,7 +65,11 @@ class AccountAssetBatch(models.Model):
         string="Lines"
     )
 
-    department_id = fields.Many2one("hr.department", string="Department")
+    department_id = fields.Many2one(
+        "hr.department", 
+        string="Department",
+        related="purchase_id.department_id"
+    )
 
     asset_count = fields.Integer(
         string="Assets",
@@ -116,8 +119,8 @@ class AccountAssetBatch(models.Model):
         purchase_id = self.env.context.get("default_purchase_id")
         if purchase_id:
             purchase = self.env["purchase.order"].browse(purchase_id)
-            if purchase.operating_unit_id and purchase.operating_unit_id.department_id:
-                res["department_id"] = purchase.operating_unit_id.department_id.id
+            if purchase.department_id and purchase.department_id.operating_unit_id:
+                res["operating_unit_id"] = purchase.department_id.operating_unit_id.id
         return res    
 
     def action_register_assets(self):
