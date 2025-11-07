@@ -62,13 +62,16 @@ class PurchaseRequest(models.Model):
 
     def button_approved(self):
         res = super().button_approved()
+        self._activity_awaiting_approval_creation()
 
+        return res
+
+    def _activity_awaiting_approval_creation(self):
         if self.request_approval_count < 1 and self.estimated_cost <= 100000:
             self.activity_schedule(
                 "purchase_request_approval.mail_activity_awaiting_approval_creation",
                 user_id=self.user_id.id,
             )
-        return res
 
     def _purchase_request_approval_create_message_content(self, approval):
         message = _(
