@@ -143,11 +143,14 @@ class PurchaseRequestApproval(models.Model):
                 rec.request_id._purchase_request_approval_approved_message_content(rec)
             )
             rec.request_id.message_post(body=message, message_type="comment")
-            rec.request_id.activity_schedule(
-                "purchase_request_activity_kmitl.mail_activity_create_purchase_order",
-                user_id=rec.request_id.user_id.id,
-            )
+            rec._activity_awaiting_create_purchase_order()
             rec.write({"state": "approved", "approval_date": fields.Datetime.now()})
+
+    def _activity_awaiting_create_purchase_order(self):
+        self.request_id.activity_schedule(
+            "mail_activity_create_purchase_order",
+            user_id=rec.request_id.user_id.id,
+        )
 
     def button_rejected(self):
         for rec in self:
