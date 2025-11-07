@@ -97,77 +97,79 @@ class PurchaseRequest(models.Model):
         res.append("date_approved")
         return res
 
-    def action_reserve_budget(self):
-        """Reserve budget by creating commitment"""
-        self.ensure_one()
+    # def action_reserve_budget(self):
+    #     """Reserve budget by creating commitment"""
+    #     self.ensure_one()
 
-        if not self.budget_account_id:
-            raise ValidationError(_("Please specify budget account"))
+    #     if not self.budget_account_id:
+    #         raise ValidationError(_("Please specify budget account"))
 
-        if not all(
-            [
-                self.activity_analytic_id,
-                self.department_analytic_id,
-                self.fund_analytic_id,
-                self.source_analytic_id,
-            ]
-        ):
-            raise ValidationError(
-                _("Please specify analytic dimensions for budget commitment")
-            )
+    #     if not all(
+    #         [
+    #             self.activity_analytic_id,
+    #             self.department_analytic_id,
+    #             self.fund_analytic_id,
+    #             self.source_analytic_id,
+    #         ]
+    #     ):
+    #         raise ValidationError(
+    #             _("Please specify analytic dimensions for budget commitment")
+    #         )
 
-        amount = sum(self.line_ids.mapped("estimated_cost"))
+    #     amount = sum(self.line_ids.mapped("estimated_cost"))
 
-        check_result = self._check_budget_availability(
-            amount=amount,
-            activity_analytic_id=self.activity_analytic_id.id,
-            department_analytic_id=self.department_analytic_id.id,
-            fund_analytic_id=self.fund_analytic_id.id,
-            source_analytic_id=self.source_analytic_id.id,
-        )
+    #     check_result = self._check_budget_availability(
+    #         amount=amount,
+    #         activity_analytic_id=self.activity_analytic_id.id,
+    #         department_analytic_id=self.department_analytic_id.id,
+    #         fund_analytic_id=self.fund_analytic_id.id,
+    #         source_analytic_id=self.source_analytic_id.id,
+    #     )
 
-        if not check_result["is_sufficient"]:
-            raise UserError(
-                _("Cannot reserve budget due to insufficient funds: %s")
-                % check_result["message"]
-            )
+    #     if not check_result["is_sufficient"]:
+    #         raise UserError(
+    #             _("Cannot reserve budget due to insufficient funds: %s")
+    #             % check_result["message"]
+    #         )
 
-        try:
-            commitment = self._create_budget_commitment(
-                amount=amount,
-                activity_analytic_id=self.activity_analytic_id.id,
-                department_analytic_id=self.department_analytic_id.id,
-                fund_analytic_id=self.fund_analytic_id.id,
-                source_analytic_id=self.source_analytic_id.id,
-                ref=self.name,
-                description=f"Purchase Request: {self.name}",
-                date=self.date_start,
-                auto_reserve=True,
-            )
-            self.message_post(
-                body=_("Budget reserved: %s for amount %s") % (commitment.name, amount)
-            )
-            substate = self.env["base.substate"].search(
-                [("model", "=", "purchase.request"), ("sequence", "=", 20)], limit=1
-            )
-            self.write(
-                {
-                    "substate_id": substate.id,
-                    "verified_by": self.env.user.id,
-                    "date_verified": fields.Date.context_today(self),
-                }
-            )
-            return {
-                "type": "ir.actions.act_window",
-                "res_model": "purchase.request",
-                "view_mode": "form",
-                "res_id": self.id,
-                "target": "current",
-                "context": self.env.context,
-            }
+    #     try:
+    #         commitment = self._create_budget_commitment(
+    #             amount=amount,
+    #             activity_analytic_id=self.activity_analytic_id.id,
+    #             department_analytic_id=self.department_analytic_id.id,
+    #             fund_analytic_id=self.fund_analytic_id.id,
+    #             source_analytic_id=self.source_analytic_id.id,
+    #             ref=self.name,
+    #             description=f"Purchase Request: {self.name}",
+    #             date=self.date_start,
+    #             auto_reserve=True,
+    #         )
+    #         self.state = "to_approve"
+    #         self.message_post(
+    #             body=_("Budget reserved: %s for amount %s") % (commitment.name, amount)
+    #         )
+    #         substate = self.env["base.substate"].search(
+    #             [("model", "=", "purchase.request"), ("sequence", "=", 20)], limit=1
+    #         )
 
-        except UserError as e:
-            raise UserError(_("Cannot reserve budget: %s") % str(e))
+    #         self.write(
+    #             {
+    #                 "state": 'draft',
+    #                 "verified_by": self.env.user.id,
+    #                 "date_verified": fields.Date.context_today(self),
+    #             }
+    #         )
+    #         return {
+    #             "type": "ir.actions.act_window",
+    #             "res_model": "purchase.request",
+    #             "view_mode": "form",
+    #             "res_id": self.id,
+    #             "target": "current",
+    #             "context": self.env.context,
+    #         }
+
+    #     except UserError as e:
+    #         raise UserError(_("Cannot reserve budget: %s") % str(e))
 
     @api.depends("requested_by")
     def _compute_can_request(self):
@@ -183,7 +185,7 @@ class PurchaseRequest(models.Model):
     def _compute_hide_reserve_budget_button(self):
         super()._compute_hide_reserve_budget_button()
         for rec in self:
-            if rec.substate_sequence == 10 and rec.state == "to_verify":
+            if rec.state == "to_verify":
                 rec.hide_reserve_budget_button = False
 
     def _compute_is_budget_editable(self):

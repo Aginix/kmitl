@@ -15,7 +15,7 @@
     </record>
 
     <!-- new substate -->
-    <record id="base_substate_budget_validaition" model="base.substate">
+    <!-- <record id="base_substate_budget_validaition" model="base.substate">
         <field name="name">Budget Validation</field>
         <field name="sequence">10</field>
         <field name="target_state_value_id" ref="target_state_value_approved" />
@@ -29,5 +29,5 @@
         <field name="name">Waiting for request approval</field>
         <field name="sequence">30</field>
         <field name="target_state_value_id" ref="target_state_value_approved" />
-    </record>
+    </record> -->
 </odoo>
