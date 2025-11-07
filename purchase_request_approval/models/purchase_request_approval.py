@@ -149,7 +149,7 @@ class PurchaseRequestApproval(models.Model):
     def _activity_awaiting_create_purchase_order(self):
         self.request_id.activity_schedule(
             "mail_activity_create_purchase_order",
-            user_id=rec.request_id.user_id.id,
+            user_id=self.request_id.user_id.id,
         )
 
     def button_rejected(self):

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-06 17:34+0000\n"
-"PO-Revision-Date: 2025-11-06 17:34+0000\n"
+"POT-Creation-Date: 2025-11-07 04:14+0000\n"
+"PO-Revision-Date: 2025-11-07 04:14+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -129,6 +129,7 @@ msgstr "อนุมัติ"
 #. module: purchase_request_approval
 #: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__approved
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
 msgid "Approved"
 msgstr "อนุมัติแล้ว"
 
@@ -168,11 +169,6 @@ msgid "Budget account to be used for commitment"
 msgstr ""
 
 #. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__can_edit_egp
-msgid "Can Edit Egp"
-msgstr ""
-
-#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__can_forward
 msgid "Can Forward"
 msgstr ""
@@ -205,7 +201,7 @@ msgstr "ประเภทสัญญา"
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_form
 msgid "Create Purchase Order"
-msgstr ""
+msgstr "สร้างคำสั่งซื้อ/จ้าง"
 
 #. module: purchase_request_approval
 #: model:mail.activity.type,summary:purchase_request_approval.mail_activity_awaiting_approval_creation
@@ -289,13 +285,9 @@ msgstr ""
 
 #. module: purchase_request_approval
 #: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__draft
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
 msgid "Draft"
 msgstr "แบบร่าง"
-
-#. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_line_make_purchase_order__estimated_cost
-msgid "Estimated Cost"
-msgstr ""
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__evaluation_committee_ids
@@ -338,21 +330,6 @@ msgid "Group By"
 msgstr ""
 
 #. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__purchase_guarantee_ids
-msgid "Guarantee"
-msgstr ""
-
-#. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__purchase_guarantee_count
-msgid "Guarantee Count"
-msgstr ""
-
-#. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__has_approve_comment
-msgid "Has Approve Comment"
-msgstr ""
-
-#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__has_comment
 msgid "Has Comment"
 msgstr ""
@@ -360,11 +337,6 @@ msgstr ""
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__has_message
 msgid "Has Message"
-msgstr ""
-
-#. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__has_reject_comment
-msgid "Has Reject Comment"
 msgstr ""
 
 #. module: purchase_request_approval
@@ -450,14 +422,14 @@ msgid "Is Reevaluation Required"
 msgstr ""
 
 #. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__is_required_approval
-msgid "Is Required Approval"
-msgstr ""
-
-#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__is_required_partner_id
 msgid "Is Required Partner"
 msgstr ""
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
+msgid "Last 7 days"
+msgstr "7 วันล่าสุด"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval____last_update
@@ -495,6 +467,16 @@ msgid "Message Delivery error"
 msgstr ""
 
 #. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__message_search
+msgid "Message Search"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__message_search
+msgid "Message search, to be used only in searches"
+msgstr ""
+
+#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__message_ids
 msgid "Messages"
 msgstr ""
@@ -503,11 +485,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__my_activity_date_deadline
 msgid "My Activity Deadline"
 msgstr ""
-
-#. module: purchase_request_approval
-#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
-msgid "Name"
-msgstr "ชื่อรายการ"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request__need_make_purchase_order
@@ -658,6 +635,16 @@ msgid "Product"
 msgstr ""
 
 #. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
+msgid "Productment Method"
+msgstr "วิธีการจัดซื้อจัดจ้าง"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
+msgid "Productment Type"
+msgstr "ประเภทการจัดซื้อ/จ้าง"
+
+#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__line_ids
 msgid "Products to Purchase"
 msgstr ""
@@ -676,6 +663,7 @@ msgstr "คำขอซื้อขอจ้าง"
 #: model:ir.actions.report,name:purchase_request_approval.action_report_purchase_request_approvals
 #: model:ir.model,name:purchase_request_approval.model_purchase_request_approval
 #: model:ir.ui.menu,name:purchase_request_approval.purchase_request_approval_menu
+#: model:ir.ui.menu,name:purchase_request_approval.purchase_request_approval_menu_purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
 #, python-format
 msgid "Purchase Request Approval"
@@ -693,11 +681,6 @@ msgstr "บันทึกรายงานขอซื้อ/จ้าง (พ
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.portal_my_purchase_request_approvals
 msgid "Purchase Request Approvals"
 msgstr "รายงานขอซื้อ/จ้าง (พจ.1)"
-
-#. module: purchase_request_approval
-#: model:ir.model,name:purchase_request_approval.model_purchase_request_line_make_purchase_order
-msgid "Purchase Request Line Make Purchase Order"
-msgstr ""
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__line_count
@@ -796,11 +779,6 @@ msgid "Request Approval Count"
 msgstr ""
 
 #. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__report_id
-msgid "Request Report"
-msgstr ""
-
-#. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
 msgid "Request approval"
 msgstr "ยื่นขออนุมัติ"
@@ -851,11 +829,6 @@ msgid "Sequence"
 msgstr ""
 
 #. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__show_egp_create_purchase_order_button
-msgid "Show Egp Create Purchase Order Button"
-msgstr ""
-
-#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__origin
 msgid "Source Document"
 msgstr ""
@@ -867,6 +840,7 @@ msgstr "สถานะ"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__state
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
 msgid "Status"
 msgstr "สถานะ"
 
@@ -920,6 +894,16 @@ msgid "There is no examples click here to add new Purchase Request Approval."
 msgstr ""
 
 #. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
+msgid "This Month"
+msgstr "เดือนนี้"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
+msgid "This Year"
+msgstr "ปีนี้"
+
+#. module: purchase_request_approval
 #: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__procurement_method_ids
 msgid ""
 "This field will help to filter procurement method in each purchase type on "
@@ -951,9 +935,19 @@ msgid "To Validate Message"
 msgstr ""
 
 #. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
+msgid "To approve"
+msgstr "รออนุมัติ"
+
+#. module: purchase_request_approval
 #: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__to_approve
 msgid "To be approved"
 msgstr "รออนุมัติ"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
+msgid "Today"
+msgstr "วันนี้"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__amount_total
@@ -1026,6 +1020,11 @@ msgid "Work Acceptance Committees"
 msgstr "คณะกรรมการตรวจรับ"
 
 #. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
+msgid "Yesterday"
+msgstr "เมื่อวาน"
+
+#. module: purchase_request_approval
 #. odoo-python
 #: code:addons/purchase_request_approval/models/purchase_request_approval.py:0
 #, python-format
@@ -1033,13 +1032,8 @@ msgid "You cannot delete a purchase approval which is not draft."
 msgstr ""
 
 #. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__is_egp
-msgid "e-GP"
-msgstr ""
-
-#. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__egp_status
-msgid "e-GP Status"
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__activity_team_user_ids
+msgid "test field"
 msgstr ""
 
 #. module: purchase_request_approval
@@ -1192,11 +1186,6 @@ msgid "ลำดับ"
 msgstr ""
 
 #. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__egp_project_url
-msgid "ลิงค์ e-GP"
-msgstr ""
-
-#. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
 msgid "วันที่"
 msgstr ""
@@ -1220,11 +1209,6 @@ msgstr ""
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
 msgid "เลขที่"
-msgstr ""
-
-#. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__egp_project_id
-msgid "เลขที่โครงการ e-GP"
 msgstr ""
 
 #. module: purchase_request_approval
