@@ -396,7 +396,7 @@ msgstr ""
 msgid ""
 "There are active adjustments for the requested products: %(names)s. Blocking"
 " adjustments: %(blocking_names)s"
-msgstr ""
+msgstr "พบสินค้า '%(names)s' กำลังอยู่ระหว่างการปรับปรุงยอดวัสดุคงคลัง ชื่อรายการ '%(blocking_names)s'"
 
 #. module: stock_inventory
 #. odoo-python
@@ -405,7 +405,7 @@ msgstr ""
 msgid ""
 "There's already an Adjustment in Process using one requested Location: "
 "%(names)s. Blocking adjustments: %(blocking_names)s"
-msgstr ""
+msgstr "พบสถานที่จัดเก็บ '%(names)s' กำลังอยู่ระหว่างการปรับปรุงยอดวัสดุคงคลัง ชื่อรายการ '%(blocking_names)s"
 
 #. module: stock_inventory
 #: model:ir.model.fields,help:stock_inventory.field_stock_inventory__owner_id
@@ -416,7 +416,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:stock_inventory.field_stock_quant__to_do
 #: model_terms:ir.ui.view,arch_db:stock_inventory.view_stock_quant_search_not_done
 msgid "To Do"
-msgstr ""
+msgstr "สิ่งที่ต้องทำ"
 
 #. module: stock_inventory
 #: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__website_message_ids
