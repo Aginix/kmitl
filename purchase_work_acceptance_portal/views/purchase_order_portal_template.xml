@@ -23,7 +23,7 @@
                     <tr>
                         <th class="ps-0 pb-0">ปีงบประมาณ:</th>
                         <td class="w-100 pb-0 text-wrap">
-                            <t t-esc="order.date_range_fy_id.name" />
+                            <t t-esc="order.account_fiscal_year_id.name" />
                         </td>
                     </tr>
                 </tbody>

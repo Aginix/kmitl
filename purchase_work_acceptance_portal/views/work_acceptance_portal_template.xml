@@ -198,7 +198,7 @@
                                                 <th class="ps-0 pb-0">ปีงบประมาณ:</th>
                                                 <td class="w-100 pb-0 text-wrap">
                                                     <t
-                                                        t-esc="work_acceptance.purchase_id.date_range_fy_id.name"
+                                                        t-esc="work_acceptance.purchase_id.account_fiscal_year_id.name"
                                                     />
                                                 </td>
                                             </tr>
