@@ -51,12 +51,12 @@ msgstr "การลงทะเบียนวัสดุ"
 #. module: purchase_manual_delivery_kmitl
 #: model:ir.model,name:purchase_manual_delivery_kmitl.model_create_stock_picking_wizard
 msgid "Create Manual Stock Picking Wizard"
-msgstr "การลงทะเบียนวัสดุ"
+msgstr "บันทึกรับวัสดุเข้าคลัง"
 
 #. module: purchase_manual_delivery_kmitl
 #: model:ir.model,name:purchase_manual_delivery_kmitl.model_create_stock_picking_wizard_line
 msgid "Create Manual Stock Picking Wizard Line"
-msgstr "การลงทะเบียนวัสดุ"
+msgstr "บันทึกรับวัสดุเข้าคลัง"
 
 #. module: purchase_manual_delivery
 #: model_terms:ir.ui.view,arch_db:purchase_manual_delivery.view_create_stock_picking
@@ -66,7 +66,7 @@ msgstr ""
 #. module: purchase_manual_delivery
 #: model_terms:ir.ui.view,arch_db:purchase_manual_delivery.view_create_stock_picking
 msgid "Create and View Picking"
-msgstr "บันทึกการลงทะเบียนวัสด"
+msgstr "บันทึก"
 
 #. module: purchase_manual_delivery
 #: model:ir.model.fields,field_description:purchase_manual_delivery.field_create_stock_picking_wizard__create_uid
