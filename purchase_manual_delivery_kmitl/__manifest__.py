@@ -7,10 +7,10 @@
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
     'depends': ['purchase_manual_delivery'],
-    "data": [
-        "data/settings.xml",
-        "views/stock_picking_views.xml",
-        "wizards/create_manual_stock_picking.xml"
+    'data': [
+        'data/settings.xml',
+        'wizards/create_manual_stock_picking.xml',
+        'views/stock_picking_views.xml',
     ],
     'installable': True,
     'auto_install': False,
