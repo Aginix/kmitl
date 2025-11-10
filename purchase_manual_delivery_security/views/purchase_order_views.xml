@@ -5,10 +5,10 @@
     <record id="view_purchase_order_form" model="ir.ui.view">
         <field name="name">view.purchase.order.form</field>
         <field name="model">purchase.order</field>
-        <field name="inherit_id" ref=""/>
+        <field name="inherit_id" ref="purchase_manual_delivery.purchase_order_view_form_inherit"/>
         <field name="arch" type="xml">
             <xpath expr="//button[@name='%(purchase_manual_delivery.action_create_manual_stock_picking)d']" position="attributes">
-                <attribute name="groups">purchase_manual_delivery_kmitl.group_warehouse_receive</attribute>
+                <attribute name="groups">purchase_manual_delivery_security.group_enable_incoming_shipment</attribute>
             </xpath>
         </field>
     </record>

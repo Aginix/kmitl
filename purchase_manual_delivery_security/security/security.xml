@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_enable_incoming_shipment" model="res.groups">
+        <field name="name">Enable Create Incoming Shipment</field>
+        <field name="category_id" ref="base.module_category_inventory_inventory"/>
+        <field name="comment">Enable Create Incoming Shipment</field>
+    </record>
+</odoo>
