@@ -43,7 +43,7 @@ msgstr "ทั้งหมด"
 #. module: stock_inventory
 #: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__responsible_id
 msgid "Assigned to"
-msgstr ""
+msgstr "ผู้รับผิดชอบ"
 
 #. module: stock_inventory
 #: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__message_attachment_count
@@ -304,7 +304,7 @@ msgstr "รายการเดียว"
 #. module: stock_inventory
 #: model:ir.model.fields,field_description:stock_inventory.field_stock_inventory__owner_id
 msgid "Owner"
-msgstr ""
+msgstr "เจ้าของ"
 
 #. module: stock_inventory
 #: model_terms:ir.ui.view,arch_db:stock_inventory.stock_inventory_search_view
@@ -444,21 +444,21 @@ msgstr ""
 msgid ""
 "When 'Product Selection: One Product' is selected you are only able to add "
 "one product."
-msgstr ""
+msgstr "เมื่อเลือก 'สินค้าที่ต้องปรับปรุง : รายการเดียว' ท่านสามารถเลือกสินค้าได้เพียง 1 สินค้าเท่านั้น"
 
 #. module: stock_inventory
 #. odoo-python
 #: code:addons/stock_inventory/models/stock_inventory.py:0
 #, python-format
 msgid "You can only delete inventory adjustments groups in draft state."
-msgstr ""
+msgstr "คุณสามารถลบรายการได้ในขณะข้อมูลอยู่ในสถานะ 'แบบร่าง' เท่านั้น"
 
 #. module: stock_inventory
 #. odoo-python
 #: code:addons/stock_inventory/models/stock_inventory.py:0
 #, python-format
 msgid "You can't cancel this inventory %(display_name)s."
-msgstr ""
+msgstr "ไม่สามารถยกเลิกรายการปรับปรุงยอด '%(display_name)s' ได้"
 
 #. module: stock_inventory
 #: model_terms:ir.ui.view,arch_db:stock_inventory.view_inventory_group_form
