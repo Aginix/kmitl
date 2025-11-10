@@ -3,7 +3,7 @@
     'name': 'Stock Inventory Restriction',
     'version': '16.0.1.0.0',
     'summary': """ Stock Inventory Restriction Summary """,
-    "category": "KMITL",
+    "category": "Inventory/Inventory",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     'depends': ['stock_inventory'],
