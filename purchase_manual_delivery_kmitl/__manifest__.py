@@ -9,7 +9,6 @@
     'depends': ['purchase_manual_delivery'],
     "data": [
         "data/settings.xml",
-        "views/purchase_order_views.xml",
         "views/stock_picking_views.xml",
         "wizards/create_manual_stock_picking.xml"
     ],
