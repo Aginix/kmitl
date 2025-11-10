@@ -24,6 +24,7 @@ class WorkAcceptance(models.Model):
             order_url = purchase.get_portal_link()
             if wa.work_acceptance_committee_ids:
                 for committee in wa.work_acceptance_committee_ids:
+                    committee.get_portal_link()
                     wa_url = wa.get_portal_link()
                     message = f"กรุณาตรวจรับพัสดุที่มีชื่อว่า {wa.name} \n เอกสารสัญญา/ใบสั่งซื้อ/จ้าง : <a href='{order_url+'&wa_token='+str(wa.access_token)}'>คลิกที่นี่</a> \n เอกสารตรวจรับ : <a href='{wa_url+'&committee_token='+str(committee.access_token)}'>คลิกที่นี่</a>"
                     channel = self.env['mail.channel'].channel_get([committee.employee_id.user_id.partner_id.id])
