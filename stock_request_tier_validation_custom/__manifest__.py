@@ -1,21 +1,15 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Stock_request_tier_validation_custom',
+    'name': 'Stock Request Tier Validation Custom',
     'version': '16.0.1.0.0',
-    'summary': """ Stock_request_tier_validation_custom Summary """,
-    'author': '',
-    'website': '',
-    'category': '',
-    'depends': ['base', 'web'],
+    'summary': """ Stock Request Tier Validation Custom Summary """,
+    "category": "KMITL",
+    "author": "Aginix Technologies",
+    "website": "https://github.com/aginix/kmitl",
+    'depends': ['stock_request_aginix'],
     'data': [
         
     ],
-    'assets': {
-              'web.assets_backend': [
-                  'stock_request_tier_validation_custom/static/src/**/*'
-              ],
-          },
-    'application': True,
     'installable': True,
     'auto_install': False,
     'license': 'LGPL-3',
