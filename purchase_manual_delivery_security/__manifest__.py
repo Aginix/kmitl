@@ -5,7 +5,7 @@
     'summary': """ Purchase Manual Delivery Security Summary """,
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "category": "KMITL",
+    "category": "Purchase",
     'depends': ['purchase_manual_delivery'],
     "data": [
         "security/security.xml",
