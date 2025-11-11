@@ -7,50 +7,21 @@
         <field name="arch" type="xml">
             <!-- tier validation -->
             <button name="button_draft" position="after">
-                <field name="rejected" invisible="1" />
+                <field name="hide_request_validation_button" invisible="1" />
+                <field name="hide_restart_validation_button" />
                 <field name="validation_status" invisible="1" />
                 <field name="need_validation" invisible="1" />
                 <field name="can_request" invisible="1" />
-                <button
-                    name="request_validation"
-                    string="Request Validation"
-                    class="btn-primary"
-                    attrs="{'invisible': ['|', '|', '|', '|',
-                        ('need_validation', '!=', True),
-                        ('validation_status', '=', 'pending'),
-                        ('rejected', '=', True),
-                        ('state', '!=', 'to_approve'),
-                        ('can_request','=',False)
-                    ]}"
-                    type="object"
-                />
-                <button
-                    name="restart_validation"
-                    string="Restart Validation"
-                    class="btn-primary"
-                    attrs="{'invisible': ['|', '|',
-                        ('need_validation', '!=', True),
-                        ('validation_status', '!=', 'pending'),
-                        ('can_request','=',False)
-                    ]}"
-                    type="object"
-                    groups="purchase_request.group_purchase_request_manager"
-                />
+                <button name="request_validation" string="Request Validation" class="btn-primary" attrs="{'invisible': [('hide_request_validation_button', '=', True)]}" type="object" />
+                <button name="restart_validation" string="Restart Validation" class="btn-primary" attrs="{'invisible': [('hide_restart_validation_button', '=', True)]}" type="object" groups="purchase_request.group_purchase_request_manager" />
             </button>
             <!-- state change -->
             <field name="state" position="attributes">
-                <attribute name="statusbar_visible"
-                    >draft,to_verify,to_approve,approved,done,in_progress</attribute
+                <attribute name="statusbar_visible">draft,to_verify,to_approve,approved,done,in_progress</attribute
                 >
             </field>
             <button name="button_to_approve" position="after">
-                <button
-                    name="button_to_verify"
-                    states="draft"
-                    string="Request approval"
-                    type="object"
-                    class="oe_highlight"
-                />
+                <button name="button_to_verify" states="draft" string="Request approval" type="object" class="oe_highlight" />
             </button>
             <button name="button_approved" position="attributes">
                 <attribute name="invisible">1</attribute>
@@ -61,24 +32,17 @@
     <record id="view_purchase_request_form_substate" model="ir.ui.view">
         <field name="name">view.purchase.request.form.substate</field>
         <field name="model">purchase.request</field>
-        <field
-            name="inherit_id"
-            ref="l10n_th_gov_purchase_request.view_purchase_request_form_substate"
-        />
+        <field name="inherit_id" ref="l10n_th_gov_purchase_request.view_purchase_request_form_substate" />
         <field name="arch" type="xml">
             <field name="substate_id" position="attributes">
-                <attribute name="attrs"
-                    >{'invisible':[('state','!=','to_verify')]}</attribute
+                <attribute name="attrs">{'invisible':[('state','!=','to_verify')]}</attribute
                 >
             </field>
             <button name="action_to_substate" position="attributes">
-                <attribute name="groups"
-                    >purchase_request_security.group_purchase_request_user_all</attribute
+                <attribute name="groups">purchase_request_security.group_purchase_request_user_all</attribute
                 >
                 <attribute name="context">{'to_substate_sequence': 30}</attribute>
-                <attribute name="attrs"
-                    >{'invisible': ['|', ('substate_sequence', '!=', 20), ('state',
-                    '!=', 'to_verify')]}</attribute
+                <attribute name="attrs">{'invisible': ['|', ('substate_sequence', '!=', 20), ('state', '!=', 'to_verify')]}</attribute
                 >
             </button>
         </field>
