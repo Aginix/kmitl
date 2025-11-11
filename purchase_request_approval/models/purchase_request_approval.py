@@ -14,7 +14,7 @@ class PurchaseRequestApproval(models.Model):
     _inherits = {"purchase.request": "request_id"}
 
     _description = "Purchase Request Approval"
-    _order = "date desc, name desc"
+    _order = "date_start desc, name desc"
     _check_company_auto = True
 
     @api.model
@@ -76,8 +76,7 @@ class PurchaseRequestApproval(models.Model):
         index=True,
     )
 
-    # department_id = fields.Many2one('hr.department', string='Department', tracking=True)
-    # requesting_department_id = fields.Many2one('hr.department', string='Department', tracking=True)
+    requesting_department_id = fields.Many2one('hr.department', string='Department', tracking=True)
 
     report_html_url = fields.Char(compute="_compute_report_html_url")
 

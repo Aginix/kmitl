@@ -9,6 +9,7 @@
                 <field name="name" />
                 <field name="partner_id" />
                 <field name="date" />
+                <field name="payment_type" />
                 <field name="ref" />
                 <field name="amount_total" />
                 <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'submitted'" decoration-success="state in ('approved', 'done')" />
@@ -44,6 +45,7 @@
                         <group>
                             <field name="partner_id" />
                             <field name="date" />
+                            <field name="payment_type" />
                             <field name="ref" />
                         </group>
                         <group>
@@ -106,6 +108,8 @@
                     <filter string="Partner" name="partner" context="{'group_by': 'partner_id'}" />
                     <filter string="Date" name="date" context="{'group_by': 'date'}" />
                     <filter string="State" name="state" context="{'group_by': 'state'}" />
+                    <filter string="Payment Type" name="payment_type" context="{'group_by': 'payment_type'}" />
+
                 </group>
             </search>
         </field>

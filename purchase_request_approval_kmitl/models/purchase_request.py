@@ -23,8 +23,39 @@ class PurchaseRequest(models.Model):
             "to_verify": "set default",
         },
     )
-
     can_request = fields.Boolean(compute="_compute_can_request")
+    hide_request_validation_button = fields.Boolean(
+        compute="_compute_hide_request_validation_button",
+        string="Hide Request Validation Button",
+        store=False,
+    )
+    hide_restart_validation_button = fields.Boolean(
+        compute="_compute_hide_restart_validation_button",
+        string="Hide Restart Validation Button",
+        store=False,
+    )
+
+    @api.depends("need_validation", "validation_status", "can_request")
+    def _compute_hide_restart_validation_button(self):
+        for record in self:
+            record.hide_restart_validation_button = (
+                record.need_validation != True
+                or record.validation_status != "pending"
+                or record.can_request is False
+            )
+
+    @api.depends('need_validation', 'validation_status', 'rejected', 'state', 'can_request')
+    def _compute_hide_request_validation_button(self):
+        current_user = self.env.user
+        for record in self:
+            record.hide_request_validation_button = (
+                record.need_validation != True
+                or record.validation_status == 'pending'
+                or record.rejected
+                or record.state != 'to_approve'
+                or record.can_request is False
+                or record.requested_by != current_user
+            )
 
     def _compute_is_purchase_request(self):
         for rec in self:
