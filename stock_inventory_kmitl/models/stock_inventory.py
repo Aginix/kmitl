@@ -19,3 +19,8 @@ class StockInventory(models.Model):
     name = fields.Char(
         default=_default_inventory_name,
     )
+
+    responsible_id = fields.Many2one(
+        comodel_name="res.users",
+        default=lambda self: self.env.user,
+    )
