@@ -8,6 +8,7 @@
     "website": "https://github.com/aginix/kmitl",
     'depends': ['stock_request_aginix', 'base_tier_validation'],
     "data": [
+        "data/tier_definition.xml",
         "views/stock_request_views.xml",
     ],
     'installable': True,
