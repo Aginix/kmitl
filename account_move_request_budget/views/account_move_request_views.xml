@@ -6,30 +6,15 @@
         <field name="model">account.move.request</field>
         <field name="inherit_id" ref="account_move_request.view_account_move_request_form" />
         <field name="arch" type="xml">
-            <xpath expr="//group/group" position="inside">
-                <field name="account_fiscal_year_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('id', '!=', False)]}" />
-                <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
-                <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
-                <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
-                <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
-                <field name="budget_account_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+            <xpath expr="//group/group[2]" position="inside">
+                <field name="budget_commitment_id" />
+                <field name="source_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
+                <field name="department_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
+                <field name="fund_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
+                <field name="activity_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
+                <field name="budget_account_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
+                <field name="analytic_distribution" invisible="1"/>
             </xpath>
-
-            <!-- Add Budget tab -->
-            <xpath expr="//notebook" position="inside">
-                <page string="Budget" name="budget">
-                    <group string="Budget">
-                        <group name="budget_info">
-                            <field name="budget_commitment_id" attrs="{'readonly': [('state', 'in', ['submitted', 'validated', 'cancel'])]}" />
-                            <field name="analytic_distribution" widget="analytic_distribution" readonly="1"/>
-                            <field name="analytic_distribution" invisible="1"/>
-                            <field name="budget_account_id" readonly="1"/>
-                            <field name="budget_account_id" invisible="1"/>
-                        </group>
-                    </group>
-                </page>
-            </xpath>
-
         </field>
     </record>
 </odoo>
