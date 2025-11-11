@@ -17,6 +17,6 @@ class StockRequest(models.Model):
 
     @api.model
     def _get_under_validation_exceptions(self):
-        res = super(StockRequest, self)._get_under_validation_exceptions()
+        res = super()._get_under_validation_exceptions()
         res.append("route_id")
         return res
