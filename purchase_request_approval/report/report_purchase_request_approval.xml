@@ -52,7 +52,7 @@
                                 วันที่
                                 <span
                                     class="ms-2 fw-normal"
-                                    t-esc="o.format_date_thai(o.date)"
+                                    t-esc="o.format_date_thai(o.date_start)"
                                 />
                             </div>
                         </div>

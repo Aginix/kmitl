@@ -10,11 +10,14 @@
                 decoration-muted="state == 'draft'"
                 decoration-warning="state == 'to_approve'"
                 decoration-danger="state == 'rejected'"
+                create="0"
+                edit="0"
+                delete="0"
             >
                 <field name="account_fiscal_year_id" optional="hide" />
                 <field name="request_id" />
                 <field name="title" />
-                <field name="date" widget="date" />
+                <field name="date_start" widget="date" />
                 <field name="name" />
                 <field name="activity_ids" widget="list_activity" optional="show" />
                 <field name="department_id" optional="hide" />
@@ -144,14 +147,78 @@
         <field name="model">purchase.request.approval</field>
         <field name="arch" type="xml">
             <search>
+                <filter
+                    name="draft"
+                    string="Draft"
+                    domain="[('state', '=', 'draft')]"
+                />
+                <filter
+                    name="to_approve"
+                    string="To approve"
+                    domain="[('state', '=', 'to_approve')]"
+                />
+                <filter
+                    name="approved"
+                    string="Approved"
+                    domain="[('state', '=', 'approved')]"
+                />
+                <separator />
+                <filter
+                    name="today"
+                    string="Today"
+                    domain="[('date_start','&lt;', time.strftime('%%Y-%%m-%%d 23:59:59')), ('date_start','&gt;=', time.strftime('%%Y-%%m-%%d 00:00:00'))]"
+                />
+                <filter
+                    name="yesterday"
+                    string="Yesterday"
+                    domain="[
+                        ('date_start','&lt;', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d 23:59:59')),
+                        ('date_start','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d 00:00:00'))
+                    ]"
+                />
+                <filter
+                    name="last_7days"
+                    string="Last 7 days"
+                    domain="[
+                        ('date_start','&lt;', time.strftime('%%Y-%%m-%%d 23:59:59')),
+                        ('date_start','&gt;=',(datetime.date.today()-datetime.timedelta(days=7)).strftime('%%Y-%%m-%%d 00:00:00'))
+                    ]"
+                />
+                <filter
+                    name="this_month"
+                    string="This Month"
+                    domain="[('date_start', '>=', (context_today() - relativedelta(day=1)).strftime('%Y-%m-%d')),
+                                ('date_start', '&lt;', (context_today() + relativedelta(months=1, day=1)).strftime('%Y-%m-%d'))]"
+                />
+                <filter
+                    name="this_year"
+                    string="This Year"
+                    domain="[('date_start', '>=', (context_today() - relativedelta(month=1, day=1)).strftime('%Y-%m-%d')),
+                                ('date_start', '&lt;', (context_today() + relativedelta(years=1, month=1, day=1)).strftime('%Y-%m-%d'))]"
+                />
                 <group expand="1" string="Group By">
                     <filter
-                        string="Name"
-                        name="name"
+                        name="group_by_state"
+                        string="Status"
                         domain="[]"
-                        context="{'group_by':'name'}"
+                        context="{'group_by':'state'}"
+                    />
+                    <filter
+                        name="group_by_procurement_method_id"
+                        string="Productment Method"
+                        domain="[]"
+                        context="{'group_by':'procurement_method_id'}"
+                    />
+                    <filter
+                        name="group_by_procurement_type_id"
+                        string="Productment Type"
+                        domain="[]"
+                        context="{'group_by':'procurement_type_id'}"
                     />
                 </group>
+                <searchpanel>
+                    <field name="department_id" icon="fa-book" enable_counters="1" />
+                </searchpanel>
             </search>
         </field>
     </record>
@@ -173,9 +240,14 @@
 
     <menuitem
         id="purchase_request_approval_menu"
-        parent="purchase.menu_procurement_management"
+        parent="purchase.menu_purchase_root"
         action="action_purchase_request_approval"
-        groups="purchase_request_security.group_purchase_request_user_all"
         sequence="2"
+    />
+    <menuitem
+        id="purchase_request_approval_menu_purchase_request"
+        parent="purchase_request.parent_menu_purchase_request"
+        action="action_purchase_request_approval"
+        sequence="20"
     />
 </odoo>
