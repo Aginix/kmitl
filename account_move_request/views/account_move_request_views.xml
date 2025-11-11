@@ -96,9 +96,8 @@
         <field name="model">account.move.request</field>
         <field name="arch" type="xml">
             <search string="Move Requests">
-                <field name="name" />
+                <field name="name" string="Name" filter_domain="['|', ('name', 'ilike', self), ('ref', 'ilike', self)]" />
                 <field name="partner_id" />
-                <field name="ref" />
                 <separator />
                 <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]" />
                 <filter string="Submitted" name="submitted" domain="[('state', '=', 'submitted')]" />
