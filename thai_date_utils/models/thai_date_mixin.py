@@ -24,4 +24,4 @@ class ThaiDateMixin(models.AbstractModel):
         day = dt.day
         month = MONTHS_TH[dt.month]
         year = dt.year + 543
-        return f"{day} {month} {year}"
+        return f"{day} {month} พ.ศ. {year}"

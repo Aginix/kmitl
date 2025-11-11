@@ -1,24 +1,33 @@
 <odoo>
-    <template id="report_purchase_request_kmitl" inherit_id="purchase_request.report_purchase_request">
+    <template
+        id="report_purchase_request_kmitl"
+        inherit_id="purchase_request.report_purchase_request"
+    >
         <xpath expr="//t[@t-call='web.external_layout']" position="replace">
             <t t-call="web.basic_layout">
                 <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
                 <style>
                     * {
-                        line-height: 1.5;
+                        font-family: 'THSarabunNew', Arial, sans-serif;
+                        --bs-body-font-size: 16pt;
                     }
                     table.budget tr td:first-child {
                         width: 30%;
                     }
-                    ol &gt; li {
-                        margin-top: 8px;
-                        margin-bottom: 8px;
+                    p, span, div {
+                        font-size: 16pt;
+                        line-height: 1.2;
                     }
                 </style>
 
                 <div class="page">
                     <div style="position: absolute; top: 0px; left: 0px">
-                        <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 110px" alt="Logo" />
+                        <img
+                            t-if="o.company_id.logo"
+                            t-att-src="image_data_uri(o.company_id.logo)"
+                            style="max-height: 110px"
+                            alt="Logo"
+                        />
                     </div>
                     <div style="position: absolute; top: 0px; right: 0px">
                         <div>แทนพ.1</div>
@@ -26,64 +35,91 @@
                     <div class="oe_structure" />
                     <div style="height: 1px" />
                     <div class="page-header mt-5 mb-5">
-                        <h3 class="text-center fw-bolder" style="line-height: 1.575">
+                        <h3 class="text-center fw-bolder" style="line-height: 1.575;">
                             บันทึกขอซื้อขอจ้าง
                         </h3>
                     </div>
-                    <div class="row my-2">
+                    <div class="row">
                         <div class="col-8">
                             เลขที่เอกสาร
                             <span class="ms-2 fw-normal" t-out="o.name" />
                         </div>
                         <div class="col">
                             วันที่
-                            <span class="ms-2 fw-normal" t-esc="o.format_date_thai(o.create_date)"/>
+                            <span
+                                class="ms-2 fw-normal"
+                                t-esc="o.format_date_thai(o.create_date)"
+                            />
                         </div>
                     </div>
-                    <div class="row my-2">
+                    <div class="row">
                         <div class="col">
                             หน่วยงาน
                             <span class="ms-2" t-out="o.department_id.complete_name" />
                         </div>
                     </div>
-                    <div class="row my-2">
+                    <div class="row">
                         <div class="col">
-                            เรื่อง                            <span class="ms-2" t-out="o.title" />
+                            เรื่อง <span class="ms-2" t-out="o.title" />
                         </div>
                     </div>
 
                     <div class="my-4" />
-                    <p style="text-indent: 6em; line-height: 2.5">
+                    <p style="text-indent: 6em;">
                         ข้าพเจ้า
-                        <span t-field="o.requested_by" class="fw-bolder text-decoration-underline" />
+                        <span
+                            t-field="o.requested_by"
+                            class="fw-bolder text-decoration-underline"
+                        />
                         <span class="ms-2">สังกัด</span>
-                        <span t-out="o.requested_by.employee_id.department_id.complete_name" class="fw-bolder text-decoration-underline" />
+                        <span
+                            t-out="o.requested_by.employee_id.department_id.complete_name"
+                            class="fw-bolder text-decoration-underline"
+                        />
                         ต้องการ
-                        <span t-field="o.procurement_type_id" class="fw-bolder text-decoration-underline" />
-                        <span t-out="o.product_id.name" class="fw-bolder text-decoration-underline" />
+                        <span
+                            t-field="o.procurement_type_id"
+                            class="fw-bolder text-decoration-underline"
+                        />
+                        <span
+                            t-out="o.product_id.name"
+                            class="fw-bolder text-decoration-underline"
+                        />
                         ด้วยวิธีการจัดซื้อจัดจ้าง
-                        <span class="fw-bolder text-decoration-underline" t-field="o.procurement_method_id" />
+                        <span
+                            class="fw-bolder text-decoration-underline"
+                            t-field="o.procurement_method_id"
+                        />
                     </p>
 
                     <div class="my-4" />
 
-                    <div class="row my-4">
+                    <div class="row">
                         <div class="col">
                             เหตุผลความจำเป็น
-                            <span class="fw-bolder text-decoration-underline" t-out="o.description" />
+                            <span
+                                class="fw-bolder text-decoration-underline"
+                                t-out="o.description"
+                            />
                         </div>
                     </div>
 
-                    <div class="row my-4">
+                    <div class="row">
                         <div class="col">
                             โดยใช้งบประมาณ ประจำปีงบประมาณ พ.ศ.
-                            <span class="fw-bolder text-decoration-underline" t-field="o.account_fiscal_year_id" />
+                            <span
+                                class="fw-bolder text-decoration-underline"
+                                t-field="o.account_fiscal_year_id"
+                            />
                         </div>
                     </div>
-                    <div class="row my-4">
+                    <div class="row">
                         <div class="col">
                             โดยมีการเบิกจ่ายดังนี้
-                            <span class="fw-bolder text-decoration-underline" t-field="o.payment_type" />
+                            <span
+                                class="fw-bolder text-decoration-underline"
+                                t-field="o.payment_type"
+                            />
                         </div>
                     </div>
 
@@ -109,41 +145,67 @@
                                     <td class="text-center" t-out="row_no" />
                                     <td t-out="line.name" />
                                     <td class="text-center">
-                                        <span t-out="'{0:,.0f}'.format(line.product_qty)" />
+                                        <span
+                                            t-out="'{0:,.0f}'.format(line.product_qty)"
+                                        />
                                         <span t-field="line.product_uom_id" />
                                     </td>
-                                    <td class="text-end" t-out="'{0:,.2f}'.format(line.price_unit)" />
-                                    <td class="text-end" t-out="'{0:,.2f}'.format(line.estimated_cost)" />
+                                    <td
+                                        class="text-end"
+                                        t-out="'{0:,.2f}'.format(line.price_unit)"
+                                    />
+                                    <td
+                                        class="text-end"
+                                        t-out="'{0:,.2f}'.format(line.estimated_cost)"
+                                    />
                                 </tr>
                                 <t t-set="row_no" t-value="row_no + 1" />
                             </t>
                             <tr>
                                 <t t-set="currency" t-value="o.currency_id" />
-                                <td colspan="2" rowspan="3" class="text-center align-middle">
-                                    (                                    <t t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)" />
-)
+                                <td
+                                    colspan="2"
+                                    rowspan="3"
+                                    class="text-center align-middle"
+                                >
+                                    (
+                                    <t
+                                        t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)"
+                                    />
+                                    )
                                 </td>
                                 <td class="text-center" colspan="2">
                                     ราคาก่อนรวมภาษีมูลค่าเพิ่ม
                                 </td>
-                                <td class="text-end" t-out="'{0:,.2f}'.format(o.amount_untaxed)" />
+                                <td
+                                    class="text-end"
+                                    t-out="'{0:,.2f}'.format(o.amount_untaxed)"
+                                />
                             </tr>
                             <tr>
                                 <td class="text-center" colspan="2">
                                     ภาษีมูลค่าเพิ่ม (VAT 7%)
                                 </td>
-                                <td class="text-end" t-out="'{0:,.2f}'.format(o.amount_tax)" />
+                                <td
+                                    class="text-end"
+                                    t-out="'{0:,.2f}'.format(o.amount_tax)"
+                                />
                             </tr>
                             <tr>
                                 <td class="text-center" colspan="2">ราคาสุทธิ</td>
-                                <td class="text-end" t-out="'{0:,.2f}'.format(o.amount_total)" />
+                                <td
+                                    class="text-end"
+                                    t-out="'{0:,.2f}'.format(o.amount_total)"
+                                />
                             </tr>
                         </tbody>
                     </table>
 
                     <div class="my-4" />
                     <p>รายละเอียดงบประมาณ</p>
-                    <t t-call="purchase_request_report_kmitl.report_purchase_request_budget" />
+                    <t
+                        t-call="purchase_request_report_kmitl.report_purchase_request_budget"
+                    />
 
                     <div class="my-4"></div>
                     <div class="mb-2">
@@ -157,20 +219,30 @@
                         </li>
                         <li>
                             ใบเสนอราคาพัสดุ จำนวน
-                            <span class="fw-bolder text-decoration-underline" t-out="len(o.attachment_ids.filtered(lambda x: x.attachment_type == 'rfq'))" />
+                            <span
+                                class="fw-bolder text-decoration-underline"
+                                t-out="len(o.attachment_ids.filtered(lambda x: x.attachment_type == 'rfq'))"
+                            />
                             ชุด
                         </li>
                         <li>
                             เอกสารคุณสมบัติ จำนวน
-                            <span class="fw-bolder text-decoration-underline" t-out="len(o.attachment_ids.filtered(lambda x: x.attachment_type == 'tor'))" />
+                            <span
+                                class="fw-bolder text-decoration-underline"
+                                t-out="len(o.attachment_ids.filtered(lambda x: x.attachment_type == 'tor'))"
+                            />
                             ชุด
                         </li>
-                        <t t-call="purchase_request_report_kmitl.report_purchase_request_committee" />
+                        <t
+                            t-call="purchase_request_report_kmitl.report_purchase_request_committee"
+                        />
                     </ol>
 
                     <div class="my-5" style="height: 10px" />
 
-                    <t t-call="purchase_request_report_kmitl.report_purchase_request_sign" />
+                    <t
+                        t-call="purchase_request_report_kmitl.report_purchase_request_sign"
+                    />
                 </div>
             </t>
         </xpath>
@@ -181,7 +253,7 @@
             ขออนุมัติแต่งตั้งคณะกรรมการตรวจรับพัสดุ ดังต่อไปนี้
             <ol>
                 <li t-foreach="o.work_acceptance_committee_ids" t-as="committee">
-                    <span class="fw-bolder text-decoration-underline" t-field="committee.employee_id" />
+                    <span t-field="committee.employee_id" />
                 </li>
             </ol>
         </li>
@@ -190,7 +262,7 @@
                 ขออนุมัติแต่งตั้งคณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน ดังต่อไปนี้
                 <ol>
                     <li t-foreach="o.tor_committee_ids" t-as="committee">
-                        <span class="fw-bolder text-decoration-underline" t-field="committee.employee_id" />
+                        <span t-field="committee.employee_id" />
                     </li>
                 </ol>
             </li>
@@ -198,7 +270,7 @@
                 ขออนุมัติแต่งตั้งคณะกรรมการกำหนดราคากลาง ดังต่อไปนี้
                 <ol>
                     <li t-foreach="o.price_determine_committee_ids" t-as="committee">
-                        <span class="fw-bolder text-decoration-underline" t-field="committee.employee_id" />
+                        <span t-field="committee.employee_id" />
                     </li>
                 </ol>
             </li>
@@ -206,7 +278,7 @@
                 ขออนุมัติแต่งตั้งคณะกรรมการพิจารณาผล ดังต่อไปนี้
                 <ol>
                     <li t-foreach="o.evaluation_committee_ids" t-as="committee">
-                        <span class="fw-bolder text-decoration-underline" t-field="committee.employee_id" />
+                        <span t-field="committee.employee_id" />
                     </li>
                 </ol>
             </li>
@@ -260,25 +332,23 @@
     <template id="report_purchase_request_sign">
         <div class="my-5">
             <div class="my-2 d-inline-block">
-                <div>ลงชื่อ                    <t t-out="'.' * 80" />
- ผู้ขอให้จัดหา</div>
-                <div class="text-center fw-bolder my-2 text-decoration-underline">
-                    (                    <span t-field="o.requested_by" />
-)
+                <div>ลงชื่อ <t t-out="'.' * 80" /> ผู้ขอให้จัดหา</div>
+                <div class="text-center my-2">
+                    ( <span t-field="o.requested_by" />
+                    )
                 </div>
             </div>
         </div>
         <div class="my-5" />
         <div class="my-5">
             <div class="my-2 d-inline-block">
-                <div>ลงชื่อ                    <t t-out="'.' * 80" />
+                <div>ลงชื่อ <t t-out="'.' * 80" /></div>
+                <div class="text-center">
+                    ( <span t-field="o.requested_by" />
+                    )
                 </div>
-                <div class="text-center fw-bolder my-2 text-decoration-underline">
-                    (                    <span t-field="o.requested_by" />
-)
-                </div>
-                <div class="text-center fw-bolder my-2 text-decoration-underline">
-                    คณบดี                    <span t-out="o.department_id.master_department_id.name" />
+                <div class="text-center">
+                    คณบดี <span t-out="o.department_id.master_department_id.name" />
                 </div>
             </div>
         </div>

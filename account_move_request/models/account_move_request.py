@@ -129,6 +129,11 @@ class AccountMoveRequest(models.Model):
         default="draft",
     )
 
+    analytic_distribution = fields.Json(
+        inverse="_inverse_analytic_distribution",
+        copy=False,
+    )
+
     @api.depends("bill_id")
     def _compute_bill_count(self):
         """Compute the number of bills linked to this request"""
@@ -189,6 +194,21 @@ class AccountMoveRequest(models.Model):
                 [x._convert_to_tax_base_line_dict() for x in request.line_ids],
                 request.currency_id,
             )
+
+    @api.onchange("analytic_distribution")
+    def _onchange_analytic_distribution(self):
+        """When change analytic_distribution set analytic distribution on all request lines"""
+        if self.analytic_distribution:
+            self.line_ids.update(
+                {"analytic_distribution": self.analytic_distribution}
+            )
+
+    def _inverse_analytic_distribution(self):
+        """When set analytic_distribution set analytic distribution on all request lines"""
+        for request in self:
+            if request.analytic_distribution:
+                request.line_ids.write(
+                    {"analytic_distribution": request.analytic_distribution})
 
     def _create_bill(self):
         """Create vendor bill from move request"""

@@ -1,0 +1,40 @@
+# -*- coding: utf-8 -*-
+{
+    "name": "Purchase Request Approval",
+    "version": "16.0.1.0.0",
+    "author": "Aginix Technologies",
+    "website": "https://github.com/aginix/kmitl",
+    "category": "KMITL",
+    "depends": [
+        "l10n_th_gov_purchase_request",
+        "purchase_request_security",
+        "purchase_request_portal",
+        "purchase_request_kmitl",
+        "purchase_request_activity_kmitl",
+        "purchase_request_hide_create_po_button",
+        "purchase_request_vendor_kmitl",
+        "thai_date_utils",
+        "portal",
+    ],
+    "data": [
+        "data/purchase_request_approval_sequence.xml",
+        "data/activity.xml",
+        "security/ir.model.access.csv",
+        "security/purchase_request_approval.xml",
+        "report/paperformat.xml",
+        "views/portal_templates.xml",
+        "views/purchase_request_approval_report.xml",
+        "views/purchase_request_approval_views.xml",
+        "views/purchase_request_views.xml",
+        "report/report_purchase_request_approval.xml",
+    ],
+    "assets": {
+        "web.assets_backend": ["purchase_request_approval/static/src/**/*"],
+        "web.assets_frontend": [
+            "purchase_request_approval/static/src/js/purchase_request_approval_portal_sidebar.js",
+        ],
+    },
+    "installable": True,
+    "auto_install": False,
+    "license": "LGPL-3",
+}

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="seq_purchase_request_approval" model="ir.sequence">
+        <field name="name">Purchase Request Approval</field>
+        <field name="code">purchase.request.approval</field>
+        <field name="prefix">PA</field>
+        <field name="padding">5</field>
+        <field name="company_id" />
+    </record>
+</odoo>

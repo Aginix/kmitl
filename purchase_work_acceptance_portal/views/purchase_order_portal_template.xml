@@ -1,0 +1,33 @@
+<odoo>
+    <template id="purchase_order_portal_content_inherit" inherit_id="purchase.purchase_order_portal_content">
+        <xpath expr="//div[@id='introduction']" position="replace">
+            <div id="introduction" t-attf-class="pb-2 pt-3 #{'card-header bg-primary text-white d-flex justify-content-between align-items-center' if report_type == 'html' else ''}">
+                <h3 class="mb-0">
+                    <i class="fa fa-file"></i> สัญญา/ใบสั่งซื้อ/จ้าง:                    <em t-esc="order.name"/>
+                </h3>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[@class='col-lg-6']" position="inside">
+            <div t-if="committee">
+                <strong>การตรวจรับ : </strong>
+                <a t-att-href="'%s&amp;committee_token=%s' % (committee.wa_id.get_portal_link(), committee.access_token)">
+                    <t t-esc="committee.wa_id.name"/>
+                </a>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[@id='po_date']" position="after">
+            <table class="table table-borderless table-sm">
+                <tbody style="white-space: nowrap" id="work_acceptance_info_table">
+                    <tr>
+                        <th class="ps-0 pb-0">ปีงบประมาณ:</th>
+                        <td class="w-100 pb-0 text-wrap">
+                            <t t-esc="order.account_fiscal_year_id.name" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </xpath>
+    </template>
+</odoo>

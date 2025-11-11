@@ -1,28 +1,61 @@
 /** @odoo-module **/
 
-import { Component, onMounted, useRef, useState } from "@odoo/owl";
+import {Component, onMounted, useRef, useState} from "@odoo/owl";
 
-import { CharField } from "@web/views/fields/char/char_field";
-import { registry } from "@web/core/registry";
+import {CharField} from "@web/views/fields/char/char_field";
+import { isValidAnchor } from "web.utils";
+import {registry} from "@web/core/registry";
 
 class IFrameViewerWidget extends CharField {
     setup() {
         super.setup();
         this.iframeRef = useRef("iframe");
         this.state = useState({
-            url: this.props.value || '',
+            url: this.props.value || "",
             loading: true,
-            error: false
+            error: false,
         });
     }
 
     get displayName() {
-        return this.props.value || '';
+        return this.props.value || "";
     }
 
     onIframeLoad() {
         this.state.loading = false;
         this.state.error = false;
+
+        var $el = $(`iframe#${this.name}`);
+        var updateIframeSize = this._updateIframeSize.bind(this, $el);
+
+        $(window).on("resize", updateIframeSize);
+
+        var iframeDoc = $el[0].contentDocument || $el[0].contentWindow.document;
+        if (iframeDoc.readyState === "complete") {
+            updateIframeSize();
+        } else {
+            $el.on("load", updateIframeSize);
+        }
+    }
+
+    _updateIframeSize($el) {
+        var $wrapwrap = $el.contents().find("div#wrapwrap");
+        // Set it to 0 first to handle the case where scrollHeight is too big for its content.
+
+        if (!$wrapwrap[0]) return;
+
+        $el.height(0);
+        $el.height($wrapwrap[0].scrollHeight);
+
+        // scroll to the right place after iframe resize
+        if (!isValidAnchor(window.location.hash)) {
+            return;
+        }
+        var $target = $(window.location.hash);
+        if (!$target.length) {
+            return;
+        }
+        dom.scrollTo($target[0], {duration: 0});
     }
 
     onIframeError() {
@@ -32,13 +65,13 @@ class IFrameViewerWidget extends CharField {
 
     get iframeUrl() {
         const url = this.props.value;
-        if (!url) return '';
+        if (!url) return "";
 
-        // Add protocol if missing
-        if (url && !url.match(/^https?:\/\//)) {
-            return `https://${url}`;
-        }
         return url;
+    }
+
+    get name() {
+        return this.props.name;
     }
 }
 
@@ -48,7 +81,7 @@ IFrameViewerWidget.components = {};
 registry.category("fields").add("iframe_viewer", IFrameViewerWidget);
 
 // Template definition
-const { xml } = owl;
+const {xml} = owl;
 IFrameViewerWidget.template = xml`
 <div class="o_iframe_viewer_widget">
     <style>
@@ -68,11 +101,15 @@ IFrameViewerWidget.template = xml`
         </div>
         <iframe
             t-ref="iframe"
+            t-att-id="name"
+            t-att-name="name"
             t-att-src="iframeUrl"
             t-on-load="onIframeLoad"
             t-on-error="onIframeError"
-            style="width: 100%; height: 100%; border: 1px solid #ddd; border-radius: 4px;"
+            width="100%"
+            height="100%"
             frameborder="0"
+            scrolling="no"
             sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
         ></iframe>
     </div>

@@ -40,4 +40,19 @@ class AccountAnalyticAccount(models.Model):
         for node in roots:
             flat_list.extend(flatten_node(node))
 
+        def sort_key(node):
+            priority_codes = ['00', '09', '06']
+            # Extract first 2 digits of code for priority sorting
+            code_prefix = node.code[:2] if len(node.code) >= 2 else node.code
+
+            if code_prefix in priority_codes:
+                # Return tuple with priority index first, then code
+                return (priority_codes.index(code_prefix), node.code)
+            else:
+                # Non-priority codes come after priority ones, sorted by code
+                return (len(priority_codes), node.code)
+
+        if plan_id == self.env.ref('account_analytic_kmitl.analytic_plan_activities').id:
+            return sorted(flat_list, key=sort_key)
+
         return flat_list

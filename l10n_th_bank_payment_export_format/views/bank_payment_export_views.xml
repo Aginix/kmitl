@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+      
+    <!-- View bank.payment.export form -->
+    <record id="view_bank_payment_export_form" model="ir.ui.view">
+        <field name="name">view.bank.payment.export.form</field>
+        <field name="model">bank.payment.export</field>
+        <field name="inherit_id" ref="l10n_th_bank_payment_export.bank_payment_export_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='left_header']" position="inside">
+              <field
+                  name="bank_export_format_id"
+                  attrs="{'required': [('bank', '!=', False)]}"
+              />
+            </xpath>
+        </field>
+    </record>
+
+  </odoo>

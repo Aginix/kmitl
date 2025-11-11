@@ -19,7 +19,7 @@
                         ('need_validation', '!=', True),
                         ('validation_status', '=', 'pending'),
                         ('rejected', '=', True),
-                        ('substate_sequence', '!=', 30),
+                        ('state', '!=', 'to_approve'),
                         ('can_request','=',False)
                     ]}"
                     type="object"
