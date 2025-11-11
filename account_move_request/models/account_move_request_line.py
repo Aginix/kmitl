@@ -97,6 +97,10 @@ class AccountMoveRequestLine(models.Model):
         store=True,
     )
 
+    analytic_distribution = fields.Json(
+        copy=False,
+    )
+
     @api.depends("quantity", "price_unit", "tax_ids")
     def _compute_amount(self):
         """Compute line amounts with tax calculation (mirrors PO logic)"""

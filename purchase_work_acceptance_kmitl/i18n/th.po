@@ -247,7 +247,7 @@ msgstr ""
 #. module: purchase_work_acceptance
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_form_inherit
 msgid "Create WA"
-msgstr ""
+msgstr "สร้างการตรวจรับ"
 
 #. module: purchase_work_acceptance
 #: model_terms:ir.actions.act_window,help:purchase_work_acceptance.action_work_acceptance

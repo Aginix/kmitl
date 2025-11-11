@@ -10,6 +10,12 @@ class AccountMoveRequest(models.Model):
     _inherit = ["analytic.mixin", "mail.thread", "mail.activity.mixin"]
     _order = "date desc, id desc"
 
+    READONLY_STATES = {
+        "submitted": [("readonly", True)],
+        "validated": [("readonly", True)],
+        "cancel": [("readonly", True)],
+    }
+
     name = fields.Char(
         string="Number",
         required=True,
@@ -24,7 +30,7 @@ class AccountMoveRequest(models.Model):
         string="Partner",
         required=True,
         tracking=True,
-        states={"validated": [("readonly", True)], "cancel": [("readonly", True)]},
+        states=READONLY_STATES,
     )
 
     date = fields.Date(
@@ -32,13 +38,13 @@ class AccountMoveRequest(models.Model):
         required=True,
         default=fields.Date.context_today,
         tracking=True,
-        states={"validated": [("readonly", True)], "cancel": [("readonly", True)]},
+        states=READONLY_STATES,
     )
 
     ref = fields.Char(
         string="Reference",
         tracking=True,
-        states={"validated": [("readonly", True)], "cancel": [("readonly", True)]},
+        states=READONLY_STATES,
     )
 
     bill_id = fields.Many2one(
@@ -60,7 +66,7 @@ class AccountMoveRequest(models.Model):
         required=True,
         default=lambda self: self.env.company,
         tracking=True,
-        states={"validated": [("readonly", True)], "cancel": [("readonly", True)]},
+        states=READONLY_STATES,
     )
 
     currency_id = fields.Many2one(
@@ -69,7 +75,7 @@ class AccountMoveRequest(models.Model):
         required=True,
         default=lambda self: self.env.company.currency_id,
         tracking=True,
-        states={"validated": [("readonly", True)], "cancel": [("readonly", True)]},
+        states=READONLY_STATES,
     )
 
     line_ids = fields.One2many(
@@ -77,7 +83,7 @@ class AccountMoveRequest(models.Model):
         inverse_name="request_id",
         string="Request Lines",
         copy=True,
-        states={"validated": [("readonly", True)], "cancel": [("readonly", True)]},
+        states=READONLY_STATES,
     )
 
     amount_untaxed = fields.Monetary(
@@ -121,6 +127,11 @@ class AccountMoveRequest(models.Model):
         copy=False,
         tracking=True,
         default="draft",
+    )
+
+    analytic_distribution = fields.Json(
+        inverse="_inverse_analytic_distribution",
+        copy=False,
     )
 
     @api.depends("bill_id")
@@ -184,43 +195,22 @@ class AccountMoveRequest(models.Model):
                 request.currency_id,
             )
 
-    def action_submit(self):
-        """Submit request for approval"""
-        for record in self:
-            if record.state != "draft":
-                raise UserError(_("Only draft requests can be submitted."))
-            record.state = "submitted"
-        return True
+    @api.onchange("analytic_distribution")
+    def _onchange_analytic_distribution(self):
+        """When change analytic_distribution set analytic distribution on all request lines"""
+        if self.analytic_distribution:
+            self.line_ids.update(
+                {"analytic_distribution": self.analytic_distribution}
+            )
 
-    def action_validate(self):
-        """Validate the request"""
-        for record in self:
-            if record.state != "submitted":
-                raise UserError(_("Only submitted requests can be validated."))
-            record.state = "validated"
-        return True
+    def _inverse_analytic_distribution(self):
+        """When set analytic_distribution set analytic distribution on all request lines"""
+        for request in self:
+            if request.analytic_distribution:
+                request.line_ids.write(
+                    {"analytic_distribution": request.analytic_distribution})
 
-    def action_cancel(self):
-        """Cancel the request"""
-        for record in self:
-            if record.state == "cancel":
-                raise UserError(_("Request is already cancelled."))
-            record.state = "cancel"
-        return True
-
-    def action_view_bill(self):
-        """Open the linked vendor bill"""
-        self.ensure_one()
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Vendor Bill"),
-            "res_model": "account.move",
-            "res_id": self.bill_id.id,
-            "view_mode": "form",
-            "target": "current",
-        }
-
-    def action_create_bill(self):
+    def _create_bill(self):
         """Create vendor bill from move request"""
         self.ensure_one()
 
@@ -260,6 +250,47 @@ class AccountMoveRequest(models.Model):
 
         # Link the bill to this request
         self.bill_id = bill.id
+
+        return bill
+
+    def action_submit(self):
+        """Submit request for approval"""
+        for record in self:
+            if record.state != "draft":
+                raise UserError(_("Only draft requests can be submitted."))
+            record.state = "submitted"
+        return True
+
+    def action_validate(self):
+        """Validate the request"""
+        for record in self:
+            if record.state != "submitted":
+                raise UserError(_("Only submitted requests can be validated."))
+            record.state = "validated"
+        return True
+
+    def action_cancel(self):
+        """Cancel the request"""
+        for record in self:
+            if record.state == "cancel":
+                raise UserError(_("Request is already cancelled."))
+            record.state = "cancel"
+        return True
+
+    def action_view_bill(self):
+        """Open the linked vendor bill"""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Vendor Bill"),
+            "res_model": "account.move",
+            "res_id": self.bill_id.id,
+            "view_mode": "form",
+            "target": "current",
+        }
+
+    def action_create_bill(self):
+        bill = self._create_bill()
 
         # Return action to open the created bill
         return {

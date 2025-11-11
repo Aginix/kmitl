@@ -6,10 +6,11 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['l10n_th_gov_account_asset_management', 'account_asset_operating_unit', 'account_fiscal_year', 'l10n_th_gov_gpsc'],
+    'depends': ['l10n_th_gov_account_asset_management', 'account_asset_operating_unit', 'account_fiscal_year', 'l10n_th_gov_gpsc', 'account_kmitl'],
     "data": [
         "data/account_asset_profile.xml",
-        "views/account_asset_views.xml"
+        "views/account_asset_views.xml",
+        "views/purchase_order_views.xml"
     ],
     'installable': True,
     'auto_install': False,

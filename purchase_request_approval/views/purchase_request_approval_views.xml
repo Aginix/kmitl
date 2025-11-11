@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- View purchase.request.approval View Tree -->
+    <record id="view_purchase_request_approval_tree" model="ir.ui.view">
+        <field name="name">view.purchase.request.approval.tree</field>
+        <field name="model">purchase.request.approval</field>
+        <field name="arch" type="xml">
+            <tree
+                decoration-success="state in ('approved')"
+                decoration-muted="state == 'draft'"
+                decoration-warning="state == 'to_approve'"
+                decoration-danger="state == 'rejected'"
+                create="0"
+                edit="0"
+                delete="0"
+            >
+                <field name="account_fiscal_year_id" optional="hide" />
+                <field name="request_id" />
+                <field name="title" />
+                <field name="date_start" widget="date" />
+                <field name="name" />
+                <field name="activity_ids" widget="list_activity" optional="show" />
+                <field name="department_id" optional="hide" />
+                <field name="estimated_cost" optional="hide" />
+                <field name="procurement_type_id" optional="show" />
+                <field name="procurement_method_id" optional="show" />
+                <field
+                    name="state"
+                    widget="badge"
+                    decoration-success="state in ('approved')"
+                    decoration-muted="state == 'draft'"
+                    decoration-warning="state == 'to_approve'"
+                    decoration-danger="state == 'rejected'"
+                />
+                <field
+                    name="requested_by"
+                    widget="many2one_avatar_user"
+                    optional="show"
+                />
+            </tree>
+        </field>
+    </record>
+
+    <!-- View purchase.request.approval form -->
+    <record id="view_purchase_request_approval_form" model="ir.ui.view">
+        <field name="name">view.purchase.request.approval.form</field>
+        <field name="model">purchase.request.approval</field>
+        <field name="arch" type="xml">
+            <form string="Purchase Request Approval">
+                <header>
+                    <button
+                        name="button_draft"
+                        states="to_approve,rejected"
+                        string="Reset"
+                        type="object"
+                        groups="purchase_request.group_purchase_request_manager"
+                    />
+                    <button
+                        name="button_draft"
+                        states="approved"
+                        string="Reset"
+                        type="object"
+                        groups="base.group_erp_manager"
+                    />
+                    <button
+                        name="button_to_approve"
+                        states="draft"
+                        string="Request approval"
+                        type="object"
+                        class="oe_highlight"
+                    />
+                    <button
+                        name="button_approved"
+                        states="to_approve"
+                        string="Approve"
+                        type="object"
+                        class="oe_highlight"
+                        groups="purchase_request.group_purchase_request_manager"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,to_approve,approved"
+                        statusbar_colors='{"approved":"blue"}'
+                    />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            class="oe_stat_button"
+                            type="object"
+                            name="action_view_request"
+                            icon="fa-shopping-cart"
+                            string="Purchase Request"
+                        />
+                        <button
+                            class="oe_stat_button"
+                            type="object"
+                            name="open_preview"
+                            icon="fa-search-plus"
+                            string="Preview"
+                        />
+                    </div>
+                    <widget
+                        name="web_ribbon"
+                        title="Approved"
+                        bg_color="bg-success"
+                        attrs="{'invisible': [('state', '!=', 'approved')]}"
+                    />
+                    <widget
+                        name="web_ribbon"
+                        title="Rejected"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': [('state', '!=', 'rejected')]}"
+                    />
+                    <!-- <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Name..."/>
+                        </h1>
+                    </div> -->
+                    <group>
+                        <group></group>
+                        <group></group>
+                    </group>
+                    <div>
+                        <field name="report_html_url" widget="iframe_viewer" />
+                    </div>
+                </sheet>
+                <div class="o_attachment_preview" />
+                <div class="oe_chatter">
+                    <field
+                        name="message_follower_ids"
+                        options="{'post_refresh':True}"
+                        groups="base.group_user"
+                    />
+                    <field name="activity_ids" />
+                    <field name="message_ids" options="{'open_attachments': True}" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- View purchase.request.approval search -->
+    <record id="view_purchase_request_approval_search" model="ir.ui.view">
+        <field name="name">view.purchase.request.approval.search</field>
+        <field name="model">purchase.request.approval</field>
+        <field name="arch" type="xml">
+            <search>
+                <filter
+                    name="draft"
+                    string="Draft"
+                    domain="[('state', '=', 'draft')]"
+                />
+                <filter
+                    name="to_approve"
+                    string="To approve"
+                    domain="[('state', '=', 'to_approve')]"
+                />
+                <filter
+                    name="approved"
+                    string="Approved"
+                    domain="[('state', '=', 'approved')]"
+                />
+                <separator />
+                <filter
+                    name="today"
+                    string="Today"
+                    domain="[('date_start','&lt;', time.strftime('%%Y-%%m-%%d 23:59:59')), ('date_start','&gt;=', time.strftime('%%Y-%%m-%%d 00:00:00'))]"
+                />
+                <filter
+                    name="yesterday"
+                    string="Yesterday"
+                    domain="[
+                        ('date_start','&lt;', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d 23:59:59')),
+                        ('date_start','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d 00:00:00'))
+                    ]"
+                />
+                <filter
+                    name="last_7days"
+                    string="Last 7 days"
+                    domain="[
+                        ('date_start','&lt;', time.strftime('%%Y-%%m-%%d 23:59:59')),
+                        ('date_start','&gt;=',(datetime.date.today()-datetime.timedelta(days=7)).strftime('%%Y-%%m-%%d 00:00:00'))
+                    ]"
+                />
+                <filter
+                    name="this_month"
+                    string="This Month"
+                    domain="[('date_start', '>=', (context_today() - relativedelta(day=1)).strftime('%Y-%m-%d')),
+                                ('date_start', '&lt;', (context_today() + relativedelta(months=1, day=1)).strftime('%Y-%m-%d'))]"
+                />
+                <filter
+                    name="this_year"
+                    string="This Year"
+                    domain="[('date_start', '>=', (context_today() - relativedelta(month=1, day=1)).strftime('%Y-%m-%d')),
+                                ('date_start', '&lt;', (context_today() + relativedelta(years=1, month=1, day=1)).strftime('%Y-%m-%d'))]"
+                />
+                <group expand="1" string="Group By">
+                    <filter
+                        name="group_by_state"
+                        string="Status"
+                        domain="[]"
+                        context="{'group_by':'state'}"
+                    />
+                    <filter
+                        name="group_by_procurement_method_id"
+                        string="Productment Method"
+                        domain="[]"
+                        context="{'group_by':'procurement_method_id'}"
+                    />
+                    <filter
+                        name="group_by_procurement_type_id"
+                        string="Productment Type"
+                        domain="[]"
+                        context="{'group_by':'procurement_type_id'}"
+                    />
+                </group>
+                <searchpanel>
+                    <field name="department_id" icon="fa-book" enable_counters="1" />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action purchase.request.approval -->
+    <record id="action_purchase_request_approval" model="ir.actions.act_window">
+        <field name="name">Purchase Request Approval</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.request.approval</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Purchase Request Approval.
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="purchase_request_approval_menu"
+        parent="purchase.menu_purchase_root"
+        action="action_purchase_request_approval"
+        sequence="2"
+    />
+    <menuitem
+        id="purchase_request_approval_menu_purchase_request"
+        parent="purchase_request.parent_menu_purchase_request"
+        action="action_purchase_request_approval"
+        sequence="20"
+    />
+</odoo>

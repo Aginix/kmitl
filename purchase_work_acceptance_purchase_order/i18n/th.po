@@ -20,7 +20,7 @@ msgstr ""
 #. module: purchase_work_acceptance_purchase_order
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_purchase_order.view_work_acceptance_form
 msgid "<span class=\"o_stat_text\">Purchase Order</span>"
-msgstr "คำขอซื้อขอจ้าง"
+msgstr "สัญญา/ใบสั่งซื้อ/จ้าง"
 
 #. module: purchase_work_acceptance_purchase_order
 #. odoo-python
