@@ -79,13 +79,6 @@ class PurchaseRequest(models.Model):
         if not reviews:
             return self.button_approved()
 
-    def _compute_to_approve_allowed(self):
-        super()._compute_to_approve_allowed()
-        for rec in self:
-            rec.to_approve_allowed = rec.state == "to_verify" and any(
-                not line.cancelled and line.product_qty for line in rec.line_ids
-            )
-
     @api.model
     def _get_after_validation_exceptions(self):
         res = super()._get_after_validation_exceptions()
@@ -109,7 +102,6 @@ class PurchaseRequest(models.Model):
     def request_validation(self):
         self.ensure_one()
         res = super().request_validation()
-        self.button_to_approve()
         return res
 
     def restart_validation(self):
