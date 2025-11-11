@@ -6,6 +6,14 @@
         <field name="model">account.move.request</field>
         <field name="inherit_id" ref="account_move_request.view_account_move_request_form" />
         <field name="arch" type="xml">
+            <xpath expr="//group/group" position="inside">
+                <field name="account_fiscal_year_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('id', '!=', False)]}" />
+                <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
+                <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
+                <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
+                <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
+                <field name="budget_account_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+            </xpath>
 
             <!-- Add Budget tab -->
             <xpath expr="//notebook" position="inside">
