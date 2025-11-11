@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Stock Request Tier Validation Custom',
+    'name': 'Stock Request Aginix Tier Validation',
     'version': '16.0.1.0.0',
-    'summary': """ Stock Request Tier Validation Custom Summary """,
+    'summary': """ Stock Request Aginix Tier Validation Summary """,
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
