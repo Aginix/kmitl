@@ -22,7 +22,7 @@ class StockRequest(models.Model):
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
-            ('requested', "Requested"),
+            ('submitted', "Submitted"),
             ("approved", "Approved"),
             ("done", "Done"),
             ("cancel", "Cancelled"),
@@ -75,8 +75,8 @@ class StockRequest(models.Model):
             vals['name'] = self.env['ir.sequence'].next_by_code('stock.request.seq') or _('New')
         return super().create(vals)
 
-    def action_requested(self):
-        self.state = 'requested'
+    def action_submitted(self):
+        self.state = 'submitted'
 
     def action_approved(self):
         self.state = 'approved'
@@ -84,34 +84,46 @@ class StockRequest(models.Model):
     def action_done(self):
         self.state = 'done'
 
+    def action_cancel(self):
+        self.state = 'cancel'
 
-    def action_create_picking(self):
+    def action_reset(self):
+        self.state = 'draft'
+
+    def _prepare_picking_vals(self):
         self.ensure_one()
-
-        StockPicking = self.env['stock.picking']
-        StockMove = self.env['stock.move']
-
-        picking = StockPicking.create({
+        return {
             'picking_type_id': self.picking_type_id.id,
             'location_id': self.location_id.id,
             'location_dest_id': self.location_dest_id.id,
             'origin': self.name,
-        })
-
+        }
+    
+    def _prepare_move_vals(self, line, picking):
+        return {
+            'name': line.product_id.display_name or line.name or '/',
+            'product_id': line.product_id.id,
+            'product_uom_qty': line.quantity,
+            'product_uom': line.product_uom_id.id,
+            'location_id': self.location_id.id,
+            'location_dest_id': self.location_dest_id.id,
+            'picking_id': picking.id,
+            'origin': self.name,
+        }
+    
+    def action_create_picking(self):
+        self.ensure_one()
+        stock_picking = self.env['stock.picking']
+        stock_move = self.env['stock.move']
+        picking_vals = self._prepare_picking_vals()
+        picking = stock_picking.create(picking_vals)
+        
         for line in self.request_line_ids:
-            StockMove.create({
-                'name': line.product_id.display_name,
-                'product_id': line.product_id.id,
-                'product_uom_qty': line.quantity,
-                'product_uom': line.product_uom_id.id,
-                'location_id': self.location_id.id,
-                'location_dest_id': self.location_dest_id.id,
-                'picking_id': picking.id,
-                'origin': self.name,
-            })
-
+            move_vals = self._prepare_move_vals(line, picking)
+            stock_move.create(move_vals)
+            
         self.picking_id = picking.id
-
+        
         return {
             'type': 'ir.actions.act_window',
             'name': _('Picking'),
@@ -134,8 +146,6 @@ class StockRequest(models.Model):
             'res_id': self.picking_id.id,
             'target': 'current',
         }
-
-
 
 class StockRequestLine(models.Model):
     _name = 'stock.request.line'

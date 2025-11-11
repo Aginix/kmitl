@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 class StockRequest(models.Model):
     _name = "stock.request"
     _inherit = ["stock.request", "tier.validation"]
-    _state_from = ["requested"]
+    _state_from = ["submitted"]
     _state_to = ["approved"]
 
     _tier_validation_manual_config = False
