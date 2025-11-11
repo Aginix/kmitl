@@ -52,8 +52,7 @@ class AccountMoveRequest(models.Model):
         required=True,
         tracking=True,
         string="Payment Type",
-        states={"submitted": [("readonly", True)], "validated": [
-            ("readonly", True)], "cancel": [("readonly", True)]},
+        states=READONLY_STATES,
     )
 
     bill_id = fields.Many2one(
