@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo import _, fields, models
 
 
 class AccountMoveRequest(models.Model):
@@ -8,6 +7,7 @@ class AccountMoveRequest(models.Model):
 
     payment_type = fields.Selection(
         selection=[("direct", "Direct paid"), ("loan", "Loan"), ("prepaid", "Prepaid")],
+        required=True,
         tracking=True,
         string="Payment Type",
         states={"submitted": [("readonly", True)], "validated": [
