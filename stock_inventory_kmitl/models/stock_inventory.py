@@ -16,13 +16,6 @@ class StockInventory(models.Model):
         today_str = datetime.today().strftime('%d-%m-%Y')
         return f'Inventory Adjustment {today_str}'
 
-    def _default_owner(self):
-        return self.env.user.partner_id.id
-
     name = fields.Char(
         default=_default_inventory_name,
-    )
-    owner_id = fields.Many2one(
-        "res.partner",
-        default=_default_owner,
     )
