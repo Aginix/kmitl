@@ -18,22 +18,27 @@ class AccountMoveRequest(models.Model):
     budget_commitment_id = fields.Many2one(
         'budget.commitment',
         string='Budget Commitment',
+        tracking=True,
         copy=False,
+        states=READONLY_STATES,
     )
 
     budget_account_id = fields.Many2one(
         'budget.account',
         string='Budget Account',
         domain=[('budgetable', '=', True), ('budget_type', '=', 'expense')],
+        tracking=True,
         copy=False,
+        states=READONLY_STATES,
     )
 
     @api.onchange('budget_commitment_id')
     def _onchange_budget_commitment_id(self):
-        if self.budget_commitment_id:
-            budget = self.budget_commitment_id
-            self.budget_account_id = budget.account_id
-            self.analytic_distribution = budget.analytic_distribution
+        for rec in self:
+            if rec.budget_commitment_id:
+                budget = rec.budget_commitment_id
+                rec.budget_account_id = budget.account_id
+                rec.analytic_distribution = budget.analytic_distribution
 
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
