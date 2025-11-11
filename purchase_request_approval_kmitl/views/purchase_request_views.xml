@@ -8,7 +8,7 @@
             <!-- tier validation -->
             <button name="button_draft" position="after">
                 <field name="hide_request_validation_button" invisible="1" />
-                <field name="hide_restart_validation_button" />
+                <field name="hide_restart_validation_button" invisible="1" />
                 <field name="validation_status" invisible="1" />
                 <field name="need_validation" invisible="1" />
                 <field name="can_request" invisible="1" />
