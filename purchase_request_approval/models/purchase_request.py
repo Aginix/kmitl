@@ -24,7 +24,14 @@ class PurchaseRequest(models.Model):
     def _prepare_approval_vals(self):
         return {
             "request_id": self.id,
+            "requesting_department_id": self.department_id.id,
             "origin": self.name,
+            "date_start": fields.Datetime.now(),
+            "verified_by": False,
+            "approved_by": False,
+            "date_verified": False,
+            "date_approved": False,
+            "assigned_to": False,
         }
 
     def button_create_approval(self):
