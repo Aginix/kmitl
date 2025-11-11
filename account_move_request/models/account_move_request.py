@@ -47,6 +47,15 @@ class AccountMoveRequest(models.Model):
         states=READONLY_STATES,
     )
 
+    payment_type = fields.Selection(
+        selection=[("direct", "Direct paid"), ("loan", "Loan"), ("prepaid", "Prepaid")],
+        required=True,
+        tracking=True,
+        string="Payment Type",
+        states={"submitted": [("readonly", True)], "validated": [
+            ("readonly", True)], "cancel": [("readonly", True)]},
+    )
+
     bill_id = fields.Many2one(
         comodel_name="account.move",
         string="Vendor Bill",
