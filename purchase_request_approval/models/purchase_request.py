@@ -32,6 +32,8 @@ class PurchaseRequest(models.Model):
             "date_verified": False,
             "date_approved": False,
             "assigned_to": False,
+            "state": "draft",
+            "validation_status": "no"
         }
 
     def button_create_approval(self):
