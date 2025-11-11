@@ -7,8 +7,8 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     'depends': ['stock_request_aginix'],
-    'data': [
-        
+    "data": [
+        "views/stock_request_views.xml"
     ],
     'installable': True,
     'auto_install': False,
