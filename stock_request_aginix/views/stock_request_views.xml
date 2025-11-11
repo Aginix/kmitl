@@ -22,18 +22,18 @@
         <field name="arch" type="xml">
             <form string="Stock Request">
                 <header>
-                    <button name="action_submitted" string="Submitted" type="object" states="draft" groups="group_stock_request_user"/>
-                    <button name="action_approved" string="Approved" type="object" states="submitted" groups="group_stock_request_approver"/>
+                    <button name="action_submitted" string="Submitted" type="object" states="draft" groups="stock_request_aginix.group_stock_request_user"/>
+                    <button name="action_approved" string="Approved" type="object" states="submitted" groups="stock_request_aginix.group_stock_request_approver"/>
                     <button name="action_create_picking"
                             type="object"
                             string="Create Picking"
                             class="btn-primary"
                             attrs="{'invisible': ['|', ('picking_id', '!=', False), ('state', '!=', 'approved')]}"
-                            groups="group_stock_request_manager"/>
+                            groups="stock_request_aginix.group_stock_request_manager"/>
                     <field name="picking_id" invisible="1"/>
-                    <button name="action_done" string="Done" type="object" states="approved" groups="group_stock_request_approver"/>
-                    <button name="action_cancel" string="Done" type="object" states="submitted, approved"/>
-                    <button name="action_reset" string="Done" type="object" states="cancel"/>
+                    <button name="action_done" string="Done" type="object" states="approved" groups="stock_request_aginix.group_stock_request_approver"/>
+                    <button name="action_cancel" string="Cancel" type="object" states="submitted,approved"/>
+                    <button name="action_reset" string="Reset" type="object" states="cancel"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved,done"/>
                 </header>
                 <sheet>

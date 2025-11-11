@@ -42,12 +42,14 @@ class StockRequest(models.Model):
     location_id = fields.Many2one(
         'stock.location', 
         string='From Location', 
-        required=True
+        required=True,
+        default=lambda self: self.env['stock.location'].search([('complete_name', '=', 'WH/Stock')], limit=1)
     )
     location_dest_id = fields.Many2one(
         'stock.location', 
         string='To Location', 
-        required=True
+        required=True,
+        default=lambda self: self.env['stock.location'].search([('usage', '=', 'customer')], limit=1)
     )
     request_date = fields.Datetime(
         default=fields.Datetime.now
