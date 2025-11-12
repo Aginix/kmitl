@@ -21,20 +21,20 @@ class PurchaseRequestApproval(models.Model):
         return approvals
 
     def _copy_attachments_from_request(self, pa_record):
-        Attachment = self.env['ir.attachment']
+        attachment = self.env['ir.attachment']
 
-        pr_attachments = Attachment.search([
+        pr_attachments = attachment.search([
             ('res_model', '=', 'purchase.request'),
             ('res_id', '=', self.request_id.id)
         ])
 
-        for attachment in pr_attachments:
-            Attachment.create({
-                'name': attachment.name,
-                'datas': attachment.datas,  
+        for file in pr_attachments:
+            attachment.create({
+                'name': file.name,
+                'datas': file.datas,  
                 'res_model': pa_record._name,
                 'res_id': pa_record.id,
-                'type': attachment.type,
-                'mimetype': attachment.mimetype,
+                'type': file.type,
+                'mimetype': file.mimetype,
                 'description': f'From PR: {self.request_id.name}',
             })
