@@ -54,7 +54,8 @@ class PurchaseOrder(models.Model):
                 Command.create(line._prepare_move_request_line_vals())
                 for line in self.order_line
             ],
-            "ref": self.name
+            "ref": self.name,
+            "payment_type": self.payment_type,
         }
 
     def action_move_request(self):
