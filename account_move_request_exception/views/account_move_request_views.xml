@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- <record id="view_account_move_request_form" model="ir.ui.view">
+        <field name="name">view.account.move.request.form</field>
+        <field name="model">account.move.request</field>
+        <field name="inherit_id" ref=""/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='']">
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="view_account_move_request_tree" model="ir.ui.view">
+        <field name="name">view.account.move.request.tree</field>
+        <field name="model">account.move.request</field>
+        <field name="inherit_id" ref=""/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='']">
+            </xpath>
+        </field>
+    </record> -->
+
+    <record id="action_account_move_request_tree" model="ir.actions.act_window">
+        <field name="name">Account Move Request Exception Rules</field>
+        <field name="res_model">exception.rule</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="base_exception.view_exception_rule_tree" />
+        <field
+            name="domain"
+        >[('model', 'in', ['account.move.request', 'account.move.request.line'])]</field>
+        <field
+            name="context"
+        >{'active_test': False, 'default_model' : 'account.move.request'}</field>
+    </record>
+
+    <menuitem
+        action="action_account_move_request_tree"
+        id="menu_account_move_request_exception"
+        parent="account.menu_account_config"
+    />
+
+</odoo>
