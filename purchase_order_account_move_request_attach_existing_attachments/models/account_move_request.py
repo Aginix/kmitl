@@ -36,5 +36,5 @@ class AccountMoveRequest(models.Model):
                 'res_id': self.id,
                 'type': attachment.type,
                 'mimetype': attachment.mimetype,
-                'description': _(f'From PO: {self.request_id.name}'),
+                'description': _(f'From PO: {self.purchase_id.name}'),
             }
