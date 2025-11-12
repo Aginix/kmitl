@@ -165,41 +165,45 @@ class AccountMoveRequest(models.Model):
 
     def write(self, values):
         # ถ้า budget_commitment_id เปลี่ยนแปลงค่า
-        if "budget_commitment_id" in values and values.get('budget_commitment_id') != self.budget_commitment_id.id:
-            self._check_budget_commitment(values.get("budget_commitment_id"))
+        if (
+            "budget_commitment_id" in values
+            and values.get("budget_commitment_id") != self.budget_commitment_id.id
+        ):
             self._log_budget_commitment_unlinked()
 
         res = super().write(values)
 
         # ถ้า budget_commitment_id เปลี่ยนแปลงค่า
-        if "budget_commitment_id" in values and values.get('budget_commitment_id'):
+        if "budget_commitment_id" in values and values.get("budget_commitment_id"):
             self._log_budget_commitment_linked()
 
         return res
 
+    def action_submit(self):
+        super().action_submit()
+        for record in self:
+            record._check_budget_commitment()
+
     def _check_budget_commitment(self, budget_commitment_id):
-        request_id = self.env["account.move.request"].search(
-            [
-                ("budget_commitment_id", "=", budget_commitment_id),
-                ("id", "not in", [self.id]),
-            ],
-            limit=1,
-        )
-        if request_id:
-            raise UserError(
-                _(
-                    "The budget commitment '%(commitment_name)s' has already been selected by '%(request_name)s'"
-                )
-                % {
-                    "commitment_name": request_id.budget_commitment_id.name,
-                    "request_name": request_id.name,
-                }
-            )
+        budget_commitment = self.env["budget.commitment"].browse(budget_commitment_id)
+        # TODO: check budget commitment available
+        # if self.amount_total > budget_commitment.available_budget_amount:
+        #     raise UserError(
+        #         _(
+        #             "Unable to process: The requested amount of %(amount)s THB exceeds the available budget reservation balance of %(available_amount)s THB. Please review and adjust the amount."
+        #         )
+        #         % {
+        #             "amount": self.amount_total,
+        #             "available_amount": budget_commitment.available_budget_amount,
+        #         }
+        #     )
 
     def _log_budget_commitment_linked(self):
         link = f"/web#id={self.id}&model={self._name}&view_type=form"
         self.budget_commitment_id.message_post(
-            body=_('The account move request <a href="%(link)s" target="_blank">\'%(name)s\'</a> has been linked to this record.')
+            body=_(
+                'The account move request <a href="%(link)s" target="_blank">\'%(name)s\'</a> has been linked to this record.'
+            )
             % {"name": self.name, "link": link},
             subtype_xmlid="mail.mt_comment",
         )
@@ -217,6 +221,5 @@ class AccountMoveRequest(models.Model):
         lines = super().create(vals_list)
         for rec in lines:
             if rec.budget_commitment_id:
-                rec._check_budget_commitment(rec.budget_commitment_id.id)
                 rec._log_budget_commitment_linked()
         return lines
