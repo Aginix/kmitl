@@ -8,6 +8,7 @@
     "category": "KMITL",
     'depends': ['purchase', 'account_move_request'],
     "data": [
+        "views/account_move_request_views.xml",
         "views/purchase_order_views.xml"
     ],
     'installable': True,
