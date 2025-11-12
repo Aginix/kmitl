@@ -45,7 +45,7 @@
                         <group>
                             <field name="partner_id" />
                             <field name="date" />
-                            <field name="payment_type" />
+                            <field name="payment_type" required="1" />
                             <field name="ref" />
                         </group>
                         <group>
