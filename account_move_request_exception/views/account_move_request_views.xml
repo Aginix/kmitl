@@ -1,26 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <!-- <record id="view_account_move_request_form" model="ir.ui.view">
-        <field name="name">view.account.move.request.form</field>
+    <record id="view_account_move_request_form" model="ir.ui.view">
+        <field name="name">view.account.move.request.form.exception</field>
         <field name="model">account.move.request</field>
-        <field name="inherit_id" ref=""/>
+        <field name="inherit_id" ref="account_move_request.view_account_move_request_form" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='']">
+            <sheet position="before">
+                <div
+                    class="alert alert-danger"
+                    role="alert"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': [('exceptions_summary','=',False)]}"
+                >
+                    <p>
+                        <strong>There are exceptions blocking this Purchase Order:</strong>
+                    </p>
+                    <field name="exceptions_summary" />
+                    <button
+                        name="action_ignore_exceptions"
+                        type="object"
+                        class="btn-danger"
+                        string="Ignore Exceptions"
+                        help="Click here to be able to confirm this Agreement regardless of the exceptions."
+                        groups="base_exception.group_exception_rule_manager"
+                    />
+                </div>
+            </sheet>
+            <xpath expr="//field[@name='ref']/.." position="inside">
+                <field
+                    name="ignore_exception"
+                    states="to_approve"
+                    groups='base_exception.group_exception_rule_manager'
+                />
+                <field name="exception_ids" widget="many2many_tags" readonly="True" />
             </xpath>
         </field>
     </record>
 
-
     <record id="view_account_move_request_tree" model="ir.ui.view">
-        <field name="name">view.account.move.request.tree</field>
+        <field name="name">view.account.move.request.tree.exception</field>
         <field name="model">account.move.request</field>
-        <field name="inherit_id" ref=""/>
+        <field name="inherit_id" ref="account_move_request.view_account_move_request_tree" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='']">
-            </xpath>
+            <field name="state" position="after">
+                <field name="main_exception_id" />
+            </field>
         </field>
-    </record> -->
+    </record>
+
+    <record id="view_account_move_request_search" model="ir.ui.view">
+        <field
+            name="name"
+        >account.move.request.exception.search</field>
+        <field name="model">account.move.request</field>
+        <field name="inherit_id" ref="account_move_request.view_account_move_request_search" />
+        <field name="arch" type="xml">
+            <field name="ref" position="after">
+                <separator orientation="vertical" />
+                <filter
+                    icon="fa-exclamation-circle"
+                    name="tofix"
+                    string="Blocked in Draft"
+                    domain="[('main_exception_id','!=',False)]"
+                />
+            </field>
+        </field>
+    </record>
 
     <record id="action_account_move_request_tree" model="ir.actions.act_window">
         <field name="name">Account Move Request Exception Rules</field>
