@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Purchase Request Approval Attachment',
+    'name': 'Purchase Request Approval Attach Existing Attachment',
     'version': '16.0.1.0.0',
-    'summary': """ Purchase Request Approval Attachment Summary """,
+    'summary': """ Purchase Request Approval Attach Existing Attachment Summary """,
     'author': 'Aginix Technologies',
     'website': 'https://github.com/aginix/kmitl',
     'category': 'KMITL',
