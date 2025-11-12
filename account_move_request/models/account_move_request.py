@@ -49,7 +49,6 @@ class AccountMoveRequest(models.Model):
 
     payment_type = fields.Selection(
         selection=[("direct", "Direct paid"), ("loan", "Loan"), ("prepaid", "Prepaid")],
-        required=True,
         tracking=True,
         string="Payment Type",
         states=READONLY_STATES,
