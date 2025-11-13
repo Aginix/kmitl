@@ -9,6 +9,7 @@ _logger = logging.getLogger(__name__)
 
 class ProjectProject(models.Model):
     _inherit = "project.project"
+    bypass_warning = True
 
     code = fields.Char(string="รหัสโครงการ", tracking=True, copy=False)
     account_fiscal_year_id = fields.Many2one(
