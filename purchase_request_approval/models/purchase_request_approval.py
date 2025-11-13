@@ -2,7 +2,7 @@
 import base64
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -100,7 +100,7 @@ class PurchaseRequestApproval(models.Model):
         copy=False,
     )
 
-    requesting_department_id = fields.Many2one('hr.department', string='Department', tracking=True)
+    requesting_department_id = fields.Many2one('hr.department', string='Department ', tracking=True)
 
     report_html_url = fields.Char(compute="_compute_report_html_url")
 

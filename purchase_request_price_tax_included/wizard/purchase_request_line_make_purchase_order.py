@@ -1,4 +1,5 @@
 import logging
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools import get_lang
@@ -42,7 +43,7 @@ class PurchaseRequestLineMakePurchaseOrderItem(models.TransientModel):
 
     tax_id = fields.Many2one(
         "account.tax",
-        string="Tax",
+        string="Tax ",
         related="request_id.tax_id",
     )
 
