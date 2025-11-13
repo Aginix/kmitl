@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -121,14 +121,14 @@ class ProjectProject(models.Model):
     participant_ids = fields.One2many(
         "project.target",
         "project_id",
-        string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ",
+        string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ ",
         domain=[("line_type", "=", "participant")],
     )
 
     organizer_ids = fields.One2many(
         "project.target",
         "project_id",
-        string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ",
+        string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ  ",
         domain=[("line_type", "=", "organizer")],
     )
 

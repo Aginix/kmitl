@@ -72,7 +72,7 @@ class BudgetMoveLine(models.Model):
     name = fields.Char("ชื่อรายการ", related="account_id.name", store=True, tracking=True)
     account_id = fields.Many2one(
         comodel_name="budget.account",
-        string="รหัสงบประมาณ",
+        string="รหัสงบประมาณ ",
         index=True,
         required=True,
         # TODO: ต้องกรองข้อมูลเฉพาะรหัสงบประมาณ ที่อยู่ภายใต้กองทุนที่เลือกเท่านั้น

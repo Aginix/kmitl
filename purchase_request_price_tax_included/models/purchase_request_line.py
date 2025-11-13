@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ class PurchaseRequestLine(models.Model):
         compute="_compute_amount", string="Subtotal", store=True
     )
     price_total = fields.Monetary(compute="_compute_amount", string="Total", store=True)
-    price_tax = fields.Float(compute="_compute_amount", string="Tax", store=True)
+    price_tax = fields.Float(compute="_compute_amount", string="Tax ", store=True)
 
     tax_id = fields.Many2one(
         "account.tax",

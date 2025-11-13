@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ class ProjectStrategicPlan(models.Model):
     code = fields.Char(string="รหัสอ้างอิง", required=True, tracking=True)
     level = fields.Integer(string="ระดับแผน", required=True, tracking=True)
     hierarchy_level = fields.Integer(
-        string="ระดับแผน",
+        string="ระดับแผน ",
         compute="_compute_hierarchy_level",
         store=False,
         recursive=True,

@@ -58,7 +58,7 @@ class BudgetAppropriationLine(models.Model):
     deduct = fields.Boolean(related="account_id.deduct", store=True)
     account_id = fields.Many2one(
         comodel_name="budget.account",
-        string="รหัสงบประมาณ",
+        string="รหัสงบประมาณ  ",
         index=True,
         required=True,
         domain="[('budget_type', '=', budget_type), ('deduct', '=', deduct), ('budgetable', '=', True)]",
