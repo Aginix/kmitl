@@ -6,16 +6,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-11 07:35+0000\n"
-"PO-Revision-Date: 2025-11-11 14:38+0700\n"
+"POT-Creation-Date: 2025-11-13 05:39+0000\n"
+"PO-Revision-Date: 2025-11-13 05:39+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: th\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
 
 #. module: account_move_request
 #: model:ir.model.fields,field_description:account_move_request.field_account_move_request_line__account_id
@@ -353,7 +351,8 @@ msgstr "สามารถทำการ ยืนยัน คำขอเบ�
 #: code:addons/account_move_request/models/account_move_request.py:0
 #, python-format
 msgid "Only submitted requests can be validated."
-msgstr "สามารถ ยืนยันความถูกต้อง คำขอเบิกจ่ายที่อยู่ในสถานะ \"ยืนยันแล้ว\" เท่านั้น"
+msgstr ""
+"สามารถ ยืนยันความถูกต้อง คำขอเบิกจ่ายที่อยู่ในสถานะ \"ยืนยันแล้ว\" เท่านั้น"
 
 #. module: account_move_request
 #. odoo-python
@@ -361,7 +360,8 @@ msgstr "สามารถ ยืนยันความถูกต้อง �
 #, python-format
 msgid "Only validated requests can be used to create bills."
 msgstr ""
-"สามารถ สร้างรายการตั้งเจ้าหนี้ ได้จากคำขอเบิกจากที่ \"ตรวจสอบความถูกต้องแล้ว\" เท่านั้น"
+"สามารถ สร้างรายการตั้งเจ้าหนี้ ได้จากคำขอเบิกจากที่ "
+"\"ตรวจสอบความถูกต้องแล้ว\" เท่านั้น"
 
 #. module: account_move_request
 #: model:ir.model.fields,field_description:account_move_request.field_account_move_request__partner_id
@@ -407,6 +407,18 @@ msgstr "รายการ"
 #, python-format
 msgid "Request is already cancelled."
 msgstr "คำขอเบิกจ่ายนี้ได้ถูกยกเลิกไปแล้ว"
+
+#. module: account_move_request
+#. odoo-python
+#: code:addons/account_move_request/models/account_move_request.py:0
+#, python-format
+msgid "Request is already draft."
+msgstr "คำขอเบิกจ่ายนี้อยู่ในสถานะ ฉบับร่าง แล้ว"
+
+#. module: account_move_request
+#: model_terms:ir.ui.view,arch_db:account_move_request.view_account_move_request_form
+msgid "Reset to draft"
+msgstr "รีเซ็ต"
 
 #. module: account_move_request
 #: model:ir.model.fields,field_description:account_move_request.field_account_move_request__activity_user_id

@@ -284,6 +284,12 @@ class AccountMoveRequest(models.Model):
             record.state = "cancel"
         return True
 
+    def action_draft(self):
+        """Draft the request"""
+        for record in self:
+            record.state = "draft"
+        return True
+
     def action_view_bill(self):
         """Open the linked vendor bill"""
         self.ensure_one()
