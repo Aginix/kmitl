@@ -6,7 +6,7 @@ from odoo.tools import unique
 from odoo.addons.base.models import ir_model
 
 select_en = ir_model.select_en
-
+upsert_en = ir_model.upsert_en
 
 class IrModelFields(models.Model):
     _inherit = 'ir.model.fields'
