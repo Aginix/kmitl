@@ -6,7 +6,6 @@ class ProductTemplate(models.Model):
     bypass_warning = True
 
     purchase_request_ok = fields.Boolean(
-        string="Purchase Request",
         default=False,
         help="If checked, this product can be used in purchase requests",
     )
