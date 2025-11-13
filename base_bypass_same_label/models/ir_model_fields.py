@@ -7,6 +7,7 @@ from odoo.addons.base.models import ir_model
 
 select_en = ir_model.select_en
 upsert_en = ir_model.upsert_en
+mark_modified = ir_model.mark_modified
 
 class IrModelFields(models.Model):
     _inherit = 'ir.model.fields'
