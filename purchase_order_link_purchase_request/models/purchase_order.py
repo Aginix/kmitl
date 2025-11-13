@@ -19,9 +19,8 @@ class PurchaseOrder(models.Model):
     @api.depends("order_line.purchase_request_lines")
     def _compute_request_id(self):
         for rec in self:
-            for line in rec.order_line:
-                for request_line in line.purchase_request_lines:
-                    rec.request_id = request_line.request_id.id
-                    break
+            rec.request_id = False
+            for request_line in rec.order_line.mapped("purchase_request_lines"):
+                rec.request_id = request_line.request_id.id
                 if rec.request_id:
                     break
