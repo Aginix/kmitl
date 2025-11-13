@@ -27,6 +27,7 @@
                     <button name="action_create_bill" string="Create Bill" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'validated'), ('bill_count', '>', 0)]}" />
                     <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" />
                     <button name="action_validate" string="Validate" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted')]}" confirm="Are you sure you want to validate this request?" />
+                    <button name="action_draft" string="Reset to draft" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', '!=', 'submitted')]}" groups="account.group_account_manager" />
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', '!=', 'validated')]}" />
                     <field name="state" widget="statusbar" statusbar_visible="draft,submitted,validated" />
                 </header>

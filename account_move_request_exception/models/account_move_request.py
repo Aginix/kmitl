@@ -35,12 +35,12 @@ class AccountMoveRequest(models.Model):
         return super().action_submit()
 
     def action_draft(self):
+        res = super().action_draft()
         for record in self:
             record.exception_ids = False
             record.main_exception_id = False
             record.ignore_exception = False
-            record.state = "draft"
-        return True
+        return res
 
     @api.model
     def _get_popup_action(self):
