@@ -287,8 +287,6 @@ class AccountMoveRequest(models.Model):
     def action_draft(self):
         """Draft the request"""
         for record in self:
-            if record.state == "draft":
-                raise UserError(_("Request is already draft."))
             record.state = "draft"
         return True
 
