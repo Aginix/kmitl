@@ -16,7 +16,7 @@ class PurchaseOrder(models.Model):
         string="Purchase Request",
     )
 
-    @api.depends("purchase_request_lines")
+    @api.depends("order_line.purchase_request_lines")
     def _compute_request_id(self):
         for rec in self:
             for request_line in rec.order_line.mapped('purchase_request_lines'):
