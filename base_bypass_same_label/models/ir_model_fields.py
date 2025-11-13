@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import unique
 
 from odoo.addons.base.models import ir_model
+
+_logger = logging.getLogger(__name__)
 
 select_en = ir_model.select_en
 upsert_en = ir_model.upsert_en
@@ -20,9 +24,14 @@ class IrModelFields(models.Model):
         for model_name in model_names:
             model = self.env[model_name]
             by_label = {}
+            bypass_model = [
+                m for m in self.env if getattr(self.env[m], "bypass_warning", False)
+            ]
             for field in model._fields.values():
-                if field.string in by_label:
+                if field.string in by_label and model_name not in bypass_model:
                     other = by_label[field.string]
+                    _logger.warning('Two fields (%s, %s) of %s have the same label: %s. [Modules: %s and %s]',
+                                    field.name, other.name, model, field.string, field._module, other._module)
                 else:
                     by_label[field.string] = field
 
