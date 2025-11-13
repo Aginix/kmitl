@@ -115,7 +115,6 @@ class ProjectProject(models.Model):
         "project.target",
         "project_id",
         string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ",
-        translate=False,
         domain=[("line_type", "=", "target")],
     )
 
@@ -123,7 +122,6 @@ class ProjectProject(models.Model):
         "project.target",
         "project_id",
         string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ",
-        translate=False,
         domain=[("line_type", "=", "participant")],
     )
 
@@ -131,7 +129,6 @@ class ProjectProject(models.Model):
         "project.target",
         "project_id",
         string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ",
-        translate=False,
         domain=[("line_type", "=", "organizer")],
     )
 
