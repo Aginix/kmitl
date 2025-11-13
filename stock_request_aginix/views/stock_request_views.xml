@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
     <!-- View stock.request View Tree -->
     <record id="view_stock_request_tree" model="ir.ui.view">
         <field name="name">view.stock.request.tree</field>
         <field name="model">stock.request</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="name"/>
-                <field name="location_id"/>
-                <field name="location_dest_id"/>
-                <field name="state"/>
+                <field name="name" />
+                <field name="location_id" />
+                <field name="location_dest_id" />
+                <field name="state" />
             </tree>
         </field>
     </record>
@@ -22,28 +21,64 @@
         <field name="arch" type="xml">
             <form string="Stock Request">
                 <header>
-                    <button name="action_submitted" string="Submitted" type="object" states="draft"/>
-                    <button name="action_approved" string="Approved" type="object" states="submitted" groups="stock_request_aginix.group_stock_request_approver"/>
-                    <button name="action_create_picking"
-                            type="object"
-                            string="Create Picking"
-                            class="btn-primary"
-                            attrs="{'invisible': ['|', ('picking_id', '!=', False), ('state', '!=', 'approved')]}"
-                            groups="stock_request_aginix.group_stock_request_manager"/>
-                    <field name="picking_id" invisible="1"/>
-                    <button name="action_done" string="Done" type="object" states="approved" groups="stock_request_aginix.group_stock_request_manager"/>
-                    <button name="action_cancel" string="Cancel" type="object" states="submitted,approved" groups="stock_request_aginix.group_stock_request_manager"/>
-                    <button name="action_reset" string="Reset" type="object" states="cancel"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved,done"/>
+                    <button
+                        name="action_submitted"
+                        string="Submitted"
+                        type="object"
+                        states="draft"
+                    />
+                    <button
+                        name="action_approved"
+                        string="Approved"
+                        type="object"
+                        states="submitted"
+                        groups="stock_request_aginix.group_stock_request_approver"
+                    />
+                    <button
+                        name="action_create_picking"
+                        type="object"
+                        string="Create Picking"
+                        class="btn-primary"
+                        attrs="{'invisible': ['|', ('picking_id', '!=', False), ('state', '!=', 'approved')]}"
+                        groups="stock_request_aginix.group_stock_request_manager"
+                    />
+                    <field name="picking_id" invisible="1" />
+                    <button
+                        name="action_done"
+                        string="Done"
+                        type="object"
+                        states="approved"
+                        groups="stock_request_aginix.group_stock_request_manager"
+                    />
+                    <button
+                        name="action_cancel"
+                        string="Cancel"
+                        type="object"
+                        states="submitted,approved"
+                        groups="stock_request_aginix.group_stock_request_manager"
+                    />
+                    <button
+                        name="action_reset"
+                        string="Reset"
+                        type="object"
+                        states="cancel"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,submitted,approved,done"
+                    />
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_view_picking"
-                                type="object"
-                                class="oe_stat_button"
-                                icon="fa-truck"
-                                attrs="{'invisible': [('picking_id', '=', False)]}">
-                            <field name="picking_id" invisible="1"/>
+                        <button
+                            name="action_view_picking"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-truck"
+                            attrs="{'invisible': [('picking_id', '=', False)]}"
+                        >
+                            <field name="picking_id" invisible="1" />
                             <div class="o_stat_info">
                                 <span class="o_stat_text">Picking</span>
                             </div>
@@ -63,24 +98,28 @@
                     </div>
                     <group>
                         <group name="left">
-                            <field name="picking_type_id"/>
-                            <field name="location_id"/>
-                            <field name="location_dest_id"/>
-                            <field name="user_id"/>
+                            <field name="picking_type_id" />
+                            <field name="location_id" />
+                            <field name="location_dest_id" />
+                            <field name="user_id" />
                         </group>
                         <group name="right">
-                            <field name="request_date"/>
-                            <field name="responsible_id"/>
+                            <field name="request_date" />
+                            <field name="responsible_id" />
                         </group>
                     </group>
                     <notebook>
                         <page string="Lines">
                             <field name="request_line_ids">
                                 <tree editable="bottom">
-                                    <field name="product_id"/>
-                                    <field name="quantity"/>
-                                    <field name="product_uom_id"/>
-                                    <field name="qty_done" readonly="1" attrs="{'column_invisible': [('parent.picking_id', '=', False)]}"/>
+                                    <field name="product_id" />
+                                    <field name="quantity" />
+                                    <field name="product_uom_id" />
+                                    <field
+                                        name="qty_done"
+                                        readonly="1"
+                                        attrs="{'column_invisible': [('parent.picking_id', '=', False)]}"
+                                    />
                                 </tree>
                             </field>
                         </page>
@@ -104,5 +143,4 @@
             </p>
         </field>
     </record>
-
 </odoo>

@@ -35,19 +35,20 @@ class StockRequest(models.Model):
         tracking=True,
     )
     picking_type_id = fields.Many2one(
-        'stock.picking.type', 
-        string="Picking Type", 
-        required=True
+        'stock.picking.type',
+        string="Picking Type",
+        required=True,
+        default=lambda self: self.env['stock.location'].search([('code', '=', 'stock_request_order')], limit=1)
     )
     location_id = fields.Many2one(
-        'stock.location', 
-        string='From Location', 
+        'stock.location',
+        string='From Location',
         required=True,
         default=lambda self: self.env['stock.location'].search([('complete_name', '=', 'WH/Stock')], limit=1)
     )
     location_dest_id = fields.Many2one(
-        'stock.location', 
-        string='To Location', 
+        'stock.location',
+        string='To Location',
         required=True,
         default=lambda self: self.env['stock.location'].search([('usage', '=', 'customer')], limit=1)
     )
@@ -55,15 +56,15 @@ class StockRequest(models.Model):
         default=fields.Datetime.now
     )
     user_id = fields.Many2one(
-        'res.users', 
+        'res.users',
         default=lambda self: self.env.user
     )
     responsible_id = fields.Many2one(
-        'res.users', 
+        'res.users',
         default=lambda self: self.env.user
     )
     request_line_ids = fields.One2many(
-        'stock.request.line', 
+        'stock.request.line',
         'request_id', string='Lines'
     )
     picking_id = fields.Many2one(
@@ -149,6 +150,7 @@ class StockRequest(models.Model):
             'target': 'current',
         }
 
+
 class StockRequestLine(models.Model):
     _name = 'stock.request.line'
     _description = 'Stock Request Line'
@@ -159,18 +161,18 @@ class StockRequestLine(models.Model):
         ondelete='cascade'
     )
     product_id = fields.Many2one(
-        'product.product', 
-        string='Product', 
+        'product.product',
+        string='Product',
         required=True
     )
     quantity = fields.Float(
-        string='Quantity', 
+        string='Quantity',
         required=True
     )
     product_uom_id = fields.Many2one(
-        'uom.uom', 
-        string='UoM', 
-        required=True,               
+        'uom.uom',
+        string='UoM',
+        required=True,
         default=lambda self: self.env.ref('uom.product_uom_unit')
     )
     qty_done = fields.Float(
