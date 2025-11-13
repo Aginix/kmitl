@@ -38,7 +38,7 @@ class StockRequest(models.Model):
         'stock.picking.type',
         string="Picking Type",
         required=True,
-        default=lambda self: self.env['stock.picking.type'].search([('code', '=', 'stock_request_order')], limit=1)
+        default=lambda self: self.env['stock.picking.type'].search([('code', '=', 'stock_request')], limit=1)
     )
     location_id = fields.Many2one(
         'stock.location',

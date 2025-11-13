@@ -11,6 +11,6 @@ class StockPickingType(models.Model):
     _inherit = 'stock.picking.type'
 
     code = fields.Selection(
-        selection_add=[("stock_request_order", "Stock Request Order")],
-        ondelete={"stock_request_order": "cascade"},
+        selection_add=[("stock_request", "Stock Request")],
+        ondelete={"stock_request": "cascade"},
     )
