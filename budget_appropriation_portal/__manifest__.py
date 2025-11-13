@@ -14,9 +14,6 @@
         "views/templates.xml",
         "report/budget_appropriation_f4_report_templates.xml"
     ],
-    "assets": {
-        "web.assets_backend": ["budget_appropriation_portal/static/src/**/*"],
-    },
     "application": False,
     "installable": True,
     "auto_install": False,
