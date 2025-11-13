@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -115,6 +115,7 @@ class ProjectProject(models.Model):
         "project.target",
         "project_id",
         string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ",
+        translate=False,
         domain=[("line_type", "=", "target")],
     )
 
@@ -122,6 +123,7 @@ class ProjectProject(models.Model):
         "project.target",
         "project_id",
         string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ",
+        translate=False,
         domain=[("line_type", "=", "participant")],
     )
 
@@ -129,6 +131,7 @@ class ProjectProject(models.Model):
         "project.target",
         "project_id",
         string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ",
+        translate=False,
         domain=[("line_type", "=", "organizer")],
     )
 
