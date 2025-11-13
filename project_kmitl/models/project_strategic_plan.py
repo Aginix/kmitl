@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -12,6 +12,7 @@ class ProjectStrategicPlan(models.Model):
     _inherit = ["mail.thread"]
     _order = "hierarchy_level asc, code asc"
     _parent_store = True
+    bypass_warning = True
 
     name = fields.Char(string="ชื่อแผนยุทธศาสตร์", required=True, tracking=True)
     code = fields.Char(string="รหัสอ้างอิง", required=True, tracking=True)

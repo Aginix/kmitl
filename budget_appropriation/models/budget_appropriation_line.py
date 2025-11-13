@@ -34,6 +34,7 @@ class BudgetAppropriationLine(models.Model):
     _description = "Budget Appropriation Line"
     _inherit = ["analytic.distribution.mixin", "mail.thread"]
     _order = "date desc, appropriation_name desc, id"
+    bypass_warning = True
 
     appropriation_id = fields.Many2one(
         comodel_name="budget.appropriation",

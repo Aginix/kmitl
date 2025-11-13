@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -9,6 +9,7 @@ _logger = logging.getLogger(__name__)
 
 class PurchaseRequestLine(models.Model):
     _inherit = "purchase.request.line"
+    bypass_warning = True
 
     price_unit = fields.Float(
         string="Unit Price",
