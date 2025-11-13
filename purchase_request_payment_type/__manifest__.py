@@ -10,7 +10,7 @@
         "purchase_order_payment_type",
         "purchase_order_link_purchase_request"
     ],
-    "data": ["views/purchase_request_views.xml"],
+    "data": ["data/purchase_exception.xml", "views/purchase_request_views.xml"],
     "installable": True,
     "auto_install": False,
     "license": "LGPL-3",
