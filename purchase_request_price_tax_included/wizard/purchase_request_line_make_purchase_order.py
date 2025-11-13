@@ -30,6 +30,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
 
 class PurchaseRequestLineMakePurchaseOrderItem(models.TransientModel):
     _inherit = "purchase.request.line.make.purchase.order.item"
+    bypass_warning = True
 
     price_unit = fields.Float(
         string="Unit Price",
