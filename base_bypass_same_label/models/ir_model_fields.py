@@ -3,6 +3,10 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import unique
 
+from odoo.addons.base.models import ir_model
+
+select_en = ir_model.select_en
+
 
 class IrModelFields(models.Model):
     _inherit = 'ir.model.fields'
