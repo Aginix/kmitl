@@ -4,7 +4,7 @@
             <!-- Title -->
             <t t-set="title">Asset Information</t>
 
-            <div class="container mt-4">
+            <!-- <div class="container mt-4">
                 <h2 class="mb-3">รายละเอียดครุภัณฑ์</h2>
                 <hr />
 
@@ -79,7 +79,7 @@
                 <t t-else="">
                     <div class="alert alert-danger">ไม่พบข้อมูลครุภัณฑ์</div>
                 </t>
-            </div>
+            </div> -->
         </t>
     </template>
 </odoo>
