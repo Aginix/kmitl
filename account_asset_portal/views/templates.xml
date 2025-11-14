@@ -22,7 +22,6 @@
                             </div>
                         </div>
 
-                        <!-- Asset detail -->
                         <div class="col-12 col-md-8">
                             <table class="table table-borderless table-sm">
                                 <tbody>
@@ -30,48 +29,36 @@
                                         <th class="text-muted">เลขที่ครุภัณฑ์:</th>
                                         <td><t t-esc="asset.number" /></td>
                                     </tr>
-
                                     <tr>
                                         <th class="text-muted">ชื่อรายการ:</th>
                                         <td><t t-esc="asset.name" /></td>
                                     </tr>
-
                                     <tr>
                                         <th class="text-muted">สถานะ:</th>
                                         <td><t t-esc="asset.state" /></td>
                                     </tr>
-
                                     <tr>
                                         <th class="text-muted">ต้นทุน:</th>
                                         <td><t t-esc="asset.depreciation_base" /></td>
                                     </tr>
-
                                     <tr>
                                         <th class="text-muted">วันที่เริ่มต้น:</th>
                                         <td><t t-esc="asset.date_start" /></td>
                                     </tr>
-
                                     <tr>
-                                        <th class="text-muted">
-                                            ประเภทครุภัณฑ์ (Profile):
-                                        </th>
+                                        <th class="text-muted">ประเภทครุภัณฑ์ (Profile):</th>
                                         <td><t t-esc="asset.profile_id.name" /></td>
                                     </tr>
-
                                     <tr>
                                         <th class="text-muted">GPSC:</th>
                                         <td><t t-esc="asset.gpsc_id.name" /></td>
                                     </tr>
-
                                     <tr>
                                         <th class="text-muted">หน่วยงาน:</th>
                                         <td><t t-esc="asset.department_id.name" /></td>
                                     </tr>
-
                                     <tr>
-                                        <th class="text-muted">
-                                            โครงการที่จัดซื้อ (PO):
-                                        </th>
+                                        <th class="text-muted">โครงการที่จัดซื้อ (PO):</th>
                                         <td>
                                             <t t-if="asset.purchase_id">
                                                 <t t-esc="asset.purchase_id.name" />
@@ -79,12 +66,9 @@
                                             <t t-else="">-</t>
                                         </td>
                                     </tr>
-
                                     <tr>
                                         <th class="text-muted">สถานที่:</th>
-                                        <td>
-                                            <t t-esc="asset.asset_location_id.name" />
-                                        </td>
+                                        <td><t t-esc="asset.asset_location_id.name" /></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -92,7 +76,6 @@
                     </div>
                 </t>
 
-                <!-- ไม่มี asset -->
                 <t t-else="">
                     <div class="alert alert-danger">ไม่พบข้อมูลครุภัณฑ์</div>
                 </t>
