@@ -1,0 +1,9 @@
+<odoo>
+    <template id="portal_account_asset_page" name="Asset Portal Page">
+        <t t-call="portal.portal_layout">
+            <div class="container">
+                <h2>Asset Detail</h2>
+            </div>
+        </t>
+    </template>
+</odoo>
