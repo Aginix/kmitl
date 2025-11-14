@@ -1,6 +1,6 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* purchase_order_contract_name
+# 	* purchase_order_contract_kmitl
 #
 msgid ""
 msgstr ""
@@ -15,12 +15,17 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
-#. module: purchase_order_contract_name
-#: model:ir.model,name:purchase_order_contract_name.model_purchase_order
+#. module: purchase_order_contract_kmitl
+#: model:ir.model,name:purchase_order_contract_kmitl.model_purchase_order
 msgid "Purchase Order"
 msgstr "คำสั่งซื้อ"
 
-#. module: purchase_order_contract_name
-#: model:ir.model.fields,field_description:purchase_order_contract_name.field_purchase_order__contract_name
-msgid "contract name"
+#. module: purchase_order_contract_kmitl
+#: model:ir.model.fields,field_description:purchase_order_contract_kmitl.field_purchase_order__contract_name
+msgid "Contract Name"
 msgstr "ชื่อสัญญา/ใบสั่งซื้อ/จ้าง"
+
+#. module: purchase_order_contract_kmitl
+#: model:ir.model.fields,field_description:purchase_order_contract_kmitl.field_purchase_order__contract_number
+msgid "Contract No."
+msgstr "เลขที่สัญญา"
