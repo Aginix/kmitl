@@ -74,12 +74,15 @@ class StockRequest(models.Model):
 
     @api.model
     def create(self, vals):
-        if vals.get('name', _('New')) == _('New'):
-            vals['name'] = self.env['ir.sequence'].next_by_code('stock.request.seq') or _('New')
+        if vals.get('name') in [False, _('New')]:
+            vals['name'] = _('New')
         return super().create(vals)
 
     def action_submitted(self):
-        self.state = 'submitted'
+        for rec in self:
+            if rec.name == _('New'):
+                rec.name = self.env['ir.sequence'].next_by_code('stock.request.seq') or _('New')
+            rec.state = 'submitted'
 
     def action_approved(self):
         self.state = 'approved'
@@ -149,6 +152,13 @@ class StockRequest(models.Model):
             'res_id': self.picking_id.id,
             'target': 'current',
         }
+    
+    def copy(self, default=None):
+        default = dict(default or {})
+        default['name'] = _('New')
+        default['state'] = 'draft'
+        default['picking_id'] = False
+        return super().copy(default)
 
 
 class StockRequestLine(models.Model):

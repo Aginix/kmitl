@@ -20,3 +20,11 @@ class StockRequest(models.Model):
         res = super()._get_under_validation_exceptions()
         res.append("route_id")
         return res
+
+    def _validate_tier(self, tiers=False):
+        super()._validate_tier(tiers)
+        reviews = self.review_ids.filtered(
+            lambda r: r.status == "pending" and (self.env.user in r.reviewer_ids)
+        )
+        if not reviews:
+            return self.button_approved()
