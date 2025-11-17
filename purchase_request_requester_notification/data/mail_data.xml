@@ -13,7 +13,7 @@
         <field name="model_id" ref="purchase_request.model_purchase_request" />
         <field name="subject">PR ${object.name} รออนุมัติ</field>
         <field name="email_from">${object.company_id.partner_id.email_formatted}</field>
-        <field name="email_to">${object.requested_by.email}</field>
+        <field name="email_to">${object.requested_by.work_email}</field>
         <field name="body_html">
             <p>เรียนคุณ ${object.requested_by.name},</p>
 
