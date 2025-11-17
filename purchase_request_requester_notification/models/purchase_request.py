@@ -36,12 +36,12 @@ class PurchaseRequest(models.Model):
 
     def _get_to_approve_activity_type(self):
         return self.env.ref(
-            "purchase_request_requester_notification.mail_act_purchase_request_requester_notification_reminder"
+            "purchase_request_requester_notification.mail_act_purchase_request_notify_requester"
         )
 
     def _get_to_approve_email_template(self):
         return self.env.ref(
-            "purchase_request_requester_notification.email_purchase_request_to_approve"
+            "purchase_request_requester_notification.email_purchase_request_notify_requester"
         )
 
     def _send_to_approve_chatter_message(self):
