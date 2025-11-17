@@ -7,7 +7,7 @@
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
     'depends': ['account_asset_number'],
-    'data': [],
+    'data': ['views/template_asset_number.xml'],
     'installable': True,
     'auto_install': False,
     'license': 'LGPL-3',
