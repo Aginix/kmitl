@@ -14,7 +14,7 @@
         <field name="subject">PR ${object.name} รออนุมัติ</field>
         <field name="email_from">${object.company_id.partner_id.email_formatted}</field>
         <field name="email_to">${object.requested_by.work_email}</field>
-        <field name="body_html">
+        <field name="body_html" type="html">
             <div>
                 <p>เรียนคุณ ${object.requested_by.name},</p>
                 <p>เอกสาร <strong>${object.name}</strong> รออนุมัติแล้ว</p>
