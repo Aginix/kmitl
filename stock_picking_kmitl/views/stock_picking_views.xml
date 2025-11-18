@@ -42,7 +42,7 @@
         <field name="inherit_id" ref="purchase_manual_delivery_kmitl.view_stock_picking_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='price_unit']" position="attributes">
-              <attribute name="attrs">{'invisible': [('picking_id.picking_type_id.code', '=', 'incoming')]}</attribute>
+              <attribute name="attrs">{'invisible': [('picking_code', '=', 'incoming')]}</attribute>
             </xpath>
         </field>
     </record>
