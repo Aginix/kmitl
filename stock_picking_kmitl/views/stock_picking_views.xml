@@ -15,10 +15,6 @@
               <attribute name="invisible">1</attribute>
             </xpath>
 
-            <xpath expr="//field[@name='picking_type_id']" position="after">
-              <field name="picking_code" />
-            </xpath>
-
             <xpath expr="//notebook" position="inside">
               <page string="Valuation Layers">
                 <field name="stock_valuation_layer_ids" readonly="1">
@@ -42,7 +38,7 @@
         <field name="inherit_id" ref="purchase_manual_delivery_kmitl.view_stock_picking_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='price_unit']" position="attributes">
-              <attribute name="attrs">{'invisible': [('picking_code', '=', 'incoming')]}</attribute>
+              <attribute name="attrs">{'column_invisible': [('parent.picking_type_id.code', '!=', 'incoming')]}</attribute>
             </xpath>
         </field>
     </record>

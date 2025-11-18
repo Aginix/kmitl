@@ -17,7 +17,8 @@ class StockRequest(models.Model):
         string="Reference",
         required=True,
         readonly=True,
-        default=lambda self: _('New')
+        default=lambda self: _('New'),
+        tracking=True
     )
     state = fields.Selection(
         selection=[
@@ -38,34 +39,42 @@ class StockRequest(models.Model):
         'stock.picking.type',
         string="Picking Type",
         required=True,
-        default=lambda self: self.env['stock.picking.type'].search([('code', '=', 'stock_request')], limit=1)
+        default=lambda self: self.env['stock.picking.type'].search([('code', '=', 'outgoing')], limit=1),
+        tracking=True
     )
     location_id = fields.Many2one(
         'stock.location',
         string='From Location',
         required=True,
-        default=lambda self: self.env['stock.location'].search([('complete_name', '=', 'WH/Stock')], limit=1)
+        default=lambda self: self.env['stock.location'].search([('complete_name', '=', 'WH/Stock')], limit=1),
+        tracking=True
     )
     location_dest_id = fields.Many2one(
         'stock.location',
         string='To Location',
         required=True,
-        default=lambda self: self.env['stock.location'].search([('usage', '=', 'customer')], limit=1)
+        default=lambda self: self.env['stock.location'].search([('usage', '=', 'customer')], limit=1),
+        tracking=True
     )
-    request_date = fields.Datetime(
-        default=fields.Datetime.now
+    request_date = fields.Date(
+        default=fields.Date.today,
+        tracking=True
     )
     user_id = fields.Many2one(
         'res.users',
-        default=lambda self: self.env.user
+        default=lambda self: self.env.user,
+        tracking=True,
+        readonly=True,
     )
-    responsible_id = fields.Many2one(
+    requested_by = fields.Many2one(
         'res.users',
-        default=lambda self: self.env.user
+        default=lambda self: self.env.user,
+        tracking=True
     )
     request_line_ids = fields.One2many(
         'stock.request.line',
-        'request_id', string='Lines'
+        'request_id', 
+        string='Lines'
     )
     picking_id = fields.Many2one(
         'stock.picking',

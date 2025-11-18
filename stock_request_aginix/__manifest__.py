@@ -9,7 +9,6 @@
     'depends': ['stock'],
     "data": [
         "data/stock_request_sequence.xml",
-        "data/stock_picking_type.xml",
         "security/ir.model.access.csv",
         "security/stock_request_security.xml",
         "views/stock_picking_views.xml",

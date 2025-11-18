@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <record id="stock_request_order" model="stock.picking.type">
-        <field name="name">Stock Requests</field>
-        <field name="code">stock_request</field>
-        <field name="sequence_code">SR</field>
-    </record>
-</odoo>

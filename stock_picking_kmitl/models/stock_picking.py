@@ -10,11 +10,6 @@ _logger = logging.getLogger(__name__)
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
-    picking_code = fields.Char(
-        compute='_compute_picking_code',
-        store=False
-    )
-
     stock_valuation_layer_ids = fields.One2many(
         comodel_name='stock.valuation.layer',
         inverse_name='stock_move_id',
@@ -28,7 +23,3 @@ class StockPicking(models.Model):
             picking.stock_valuation_layer_ids = self.env['stock.valuation.layer'].search([
                 ('stock_move_id', 'in', picking.move_ids.ids)
             ])
-
-    def _compute_picking_code(self):
-        for rec in self:
-            rec.picking_code = rec.picking_type_id.code
