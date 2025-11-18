@@ -16,4 +16,4 @@ class AccountAsset(portal.CustomerPortal):
         values = {
             "asset": access,
         }
-        return request.render("account_asset_portal.portal_account_asset_page", values)
+        return request.render("account_asset_portal.portal_account_asset", values)
