@@ -32,15 +32,4 @@
         </field>
     </record>
 
-    <record id="view_stock_picking_manual_delivery_form" model="ir.ui.view">
-        <field name="name">view.stock.picking.form</field>
-        <field name="model">stock.picking</field>
-        <field name="inherit_id" ref="purchase_manual_delivery_kmitl.view_stock_picking_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='price_unit']" position="attributes">
-              <attribute name="attrs">{'column_invisible': [('parent.picking_type_id.code', '!=', 'incoming')]}</attribute>
-            </xpath>
-        </field>
-    </record>
-
   </odoo>
