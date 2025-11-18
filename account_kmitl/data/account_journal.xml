@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="account_journal_kmitl_jv" model="account.journal">
+        <field name="name">สมุดรายวันทั่วไป</field>
+        <field name="code">JV</field>
+        <field name="type">general</field>
+    </record>
+
+    <record id="account_journal_kmitl_pv" model="account.journal">
+        <field name="default_account_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1112210004').code)])"/>
+        <!-- <field name="suspense_account_id"></field> -->
+        <field name="name">สมุดรายวันจ่าย</field>
+        <field name="code">PV</field>
+        <field name="type">bank</field>
+    </record>
+
+    <record id="account_journal_kmitl_rv" model="account.journal">
+        <field name="default_account_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1112210004').code)])"/>
+        <!-- <field name="suspense_account_id"></field> -->
+        <field name="name">สมุดรายวันรับ</field>
+        <field name="code">RV</field>
+        <field name="type">bank</field>
+    </record>
+
+    <record id="account_journal_kmitl_sv" model="account.journal">
+        <field name="default_account_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4000000000').code)])"/>
+        <field name="name">สมุดรายวันขาย</field>
+        <field name="code">SV</field>
+        <field name="type">sale</field>
+    </record>
+
+    <record id="account_journal_kmitl_uv" model="account.journal">
+        <field name="default_account_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5000000000').code)])"/>
+        <field name="name">สมุดรายวันซื้อ</field>
+        <field name="code">UV</field>
+        <field name="type">purchase</field>
+    </record>
+
+</odoo>

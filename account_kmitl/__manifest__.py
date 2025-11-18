@@ -11,6 +11,7 @@
         "data/account_kmitl_chart_data.xml",
         "data/account.account.template.csv",
         "data/account_kmitl_chart_post_data.xml",
+        "data/account_journal.xml",
         # "data/account_tax_template_data.xml",
     ],
     "demo": [
