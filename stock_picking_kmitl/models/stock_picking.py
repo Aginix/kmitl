@@ -20,12 +20,13 @@ class StockPicking(models.Model):
         inverse_name='stock_move_id',
         string='Stock Valuation Layers',
         compute='_compute_valuation_layers',
+        store=False,
     )
 
     def _compute_valuation_layers(self):
         for picking in self:
             picking.stock_valuation_layer_ids = self.env['stock.valuation.layer'].search([
-                ('stock_move_id', 'in', picking.move_lines.ids)
+                ('stock_move_id', 'in', picking.move_ids.ids)
             ])
 
     def _compute_picking_code(self):
