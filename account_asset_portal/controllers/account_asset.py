@@ -6,14 +6,14 @@ from odoo.addons.portal.controllers import portal
 
 class AccountAsset(portal.CustomerPortal):
     @http.route(['/account_assets/<string:access_uid>'], type='http', auth="public", website=True)
-    def work_acceptance_view(self, access_uid, **kw):
-        asset = request.env['account.asset'].sudo()
+    def asset_portal_view(self, access_uid, **kw):
+        Asset = request.env['account.asset'].sudo()
+        asset = Asset.search([('access_uid', '=', access_uid)], limit=1)
 
-        access = asset.search([('access_uid', '=', access_uid)], limit=1)
-        if not access:
+        if not asset:
             return request.not_found()
 
         values = {
-            "asset": access,
+            "asset": asset,
         }
         return request.render("account_asset_portal.portal_account_asset", values)
