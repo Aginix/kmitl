@@ -15,22 +15,11 @@
         <field name="email_from">${object.company_id.partner_id.email_formatted}</field>
         <field name="email_to">${object.requested_by.work_email}</field>
         <field name="body_html">
-            <p>เรียนคุณ ${object.requested_by.name},</p>
-
-            <p>
-                เอกสารขอซื้อ/ขอจ้างหมายเลข
-                <strong>${object.name}</strong>
-                รออนุมัติแล้ว
-            </p>
-
-            <p>
-                เรื่อง: ${object.title}<br />
-                สถานะปัจจุบัน: ${object.state}
-            </p>
-
-            <br />
-
-            <p>ขอบคุณ</p>
+            <div>
+                <p>เรียนคุณ ${object.requested_by.name},</p>
+                <p>เอกสาร <strong>${object.name}</strong> รออนุมัติแล้ว</p>
+                <p>ขอบคุณ</p>
+            </div>
         </field>
     </record>
 </odoo>
