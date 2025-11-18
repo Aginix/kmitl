@@ -27,4 +27,4 @@ class StockRequest(models.Model):
             lambda r: r.status == "pending" and (self.env.user in r.reviewer_ids)
         )
         if not reviews:
-            return self.button_approved()
+            return self.action_approved()

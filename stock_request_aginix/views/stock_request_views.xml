@@ -23,7 +23,7 @@
                 <header>
                     <button
                         name="action_submitted"
-                        string="Submitted"
+                        string="Submit"
                         type="object"
                         states="draft"
                     />
