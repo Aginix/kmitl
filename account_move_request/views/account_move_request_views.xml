@@ -96,15 +96,15 @@
         <field name="model">account.move.request</field>
         <field name="arch" type="xml">
             <search string="Move Requests">
-                <field name="name" />
+                <field name="name" string="Name" filter_domain="['|', ('name', 'ilike', self), ('ref', 'ilike', self)]" />
                 <field name="partner_id" />
-                <field name="ref" />
                 <separator />
                 <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]" />
                 <filter string="Submitted" name="submitted" domain="[('state', '=', 'submitted')]" />
                 <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]" />
                 <filter string="Done" name="done" domain="[('state', '=', 'done')]" />
                 <separator />
+                <filter name="date" string="Date" date="date" />
                 <group expand="0" string="Group By">
                     <filter string="Partner" name="partner" context="{'group_by': 'partner_id'}" />
                     <filter string="Date" name="date" context="{'group_by': 'date'}" />

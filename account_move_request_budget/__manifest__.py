@@ -8,10 +8,12 @@
     "depends": [
         "account_move_request",
         "account_move_request_fiscal_year",
-        "budget"
+        "budget",
+        "base_fontawesome"
     ],
     "data": [
         "views/account_move_request_views.xml",
+        "views/budget_commitment_views.xml"
     ],
     "auto_install": False,
     "application": False,
