@@ -70,7 +70,7 @@ class PurchaseOrder(models.Model):
     @api.depends("contract_type_id")
     def _compute_is_construction(self):
         for rec in self:
-            rec.is_contract = bool(rec.contract_type_id.is_construction)
+            rec.is_construction = bool(rec.contract_type_id.is_construction)
 
     def compute_fines_late(self):
         today = fields.Date.today()
