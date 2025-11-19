@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import date
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
@@ -12,6 +14,35 @@ class PurchaseOrder(models.Model):
         "cancel": [("readonly", True)],
     }
 
+    contract_type_id = fields.Many2one(
+        "purchase.contract.type",
+        string="Contract Type",
+        states=READONLY_STATES,
+        tracking=True
+    )
+
+    work_start = fields.Date(
+        string="Work Start",
+        states=READONLY_STATES,
+        tracking=True
+    )
+
+    work_end = fields.Date(string="Work End",
+        states=READONLY_STATES,
+        tracking=True
+    )
+
+    fines_rate = fields.Monetary(string="Fines Rate",
+        states=READONLY_STATES,
+        tracking=True
+    )
+
+    late_days = fields.Integer(string="Late Days",
+        help="Late day(s) from Current Date - End Date",
+        states=READONLY_STATES,
+        tracking=True
+    )
+
     contract_name = fields.Char(
         string="Contract Name",
         tracking=True,
@@ -23,3 +54,17 @@ class PurchaseOrder(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
+
+    def compute_fines_late(self):
+        today = fields.Date.today()
+
+        for rec in self:
+            rec.late_days = today - rec.end_date
+            if rec.contract_type_id.is_construction:
+                rec.end_date = rec.work_end
+
+            else:
+                rec.end_date = rec.date_planned
+
+            rec.late_days = today - rec.end_date
+            rec.fines_late = rec.fines_rate * rec.late_days

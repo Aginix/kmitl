@@ -1,11 +1,11 @@
 <odoo>
-    <record id="purchase_order_contract_exception" model="exception.rule">
-        <field name="name">ต้องระบุชื่อสัญญาและเลขที่สัญญา</field>
-        <field name="description">ข้อมูลใบสั่งซื้อ/จ้าง</field>
+    <record id="purchase_order_contract_name_exception" model="exception.rule">
+        <field name="name">ต้องระบุชื่อสัญญา</field>
+        <field name="description">ข้อมูลใบสั่งซื้อ/จ้าง/สัญญา</field>
         <field name="model">purchase.order</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
-if not self.contract_name or not self.contract_number:
+if not self.contract_name:
     failed = True
         </field>
     </record>
