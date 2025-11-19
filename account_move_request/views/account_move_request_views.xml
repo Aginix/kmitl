@@ -104,6 +104,7 @@
                 <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]" />
                 <filter string="Done" name="done" domain="[('state', '=', 'done')]" />
                 <separator />
+                <filter name="date" string="Date" date="date" />
                 <group expand="0" string="Group By">
                     <filter string="Partner" name="partner" context="{'group_by': 'partner_id'}" />
                     <filter string="Date" name="date" context="{'group_by': 'date'}" />

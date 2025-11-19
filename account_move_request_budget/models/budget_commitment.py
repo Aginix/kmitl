@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 
 
 class BudgetCommitment(models.Model):
-    _inherit = 'budget.commitment'
+    _inherit = "budget.commitment"
 
     account_move_request_ids = fields.One2many(
         string="Account Move Requests",
