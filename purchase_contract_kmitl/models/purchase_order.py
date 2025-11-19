@@ -61,14 +61,14 @@ class PurchaseOrder(models.Model):
         states=READONLY_STATES,
     )
 
-    is_contract = fields.Boolean(
-        string="Is Contract",
-        compute="_compute_is_contract",
+    is_construction = fields.Boolean(
+        string="Is construction",
+        compute="_compute_is_construction",
         store=True,
     )
 
     @api.depends("contract_type_id")
-    def _compute_is_contract(self):
+    def _compute_is_construction(self):
         for rec in self:
             rec.is_contract = bool(rec.contract_type_id.is_construction)
 

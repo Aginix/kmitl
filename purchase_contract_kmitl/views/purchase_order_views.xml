@@ -15,7 +15,7 @@
             </xpath>
 
             <xpath expr="//div[@name='date_approve']" position="before">
-                <field name="is_contract" invisible="1" />
+                <field name="is_construction" invisible="1" />
                 <label for="date_order" string="Date Order" />
                 <!-- มีปัญหาไม่อยู่บรรทัดเดียวกัน -->
                 <div name="date_order_div" class="o_row">
@@ -39,12 +39,12 @@
                 <label
                     for="work_start"
                     string="Date Work"
-                    attrs="{'invisible': [('is_contract', '=', False)]}"
+                    attrs="{'invisible': [('is_construction', '=', False)]}"
                 />
                 <div
                     name="work_start_div"
                     class="o_row"
-                    attrs="{'invisible': [('is_contract', '=', False)]}"
+                    attrs="{'invisible': [('is_construction', '=', False)]}"
                 >
                     <field
                         name="work_start"
