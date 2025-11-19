@@ -15,7 +15,7 @@
             </xpath>
 
             <xpath expr="//div[@name='date_approve']" position="before">
-                <field name="is_contract" />
+                <field name="is_contract" invisible="1" />
                 <label for="date_order" string="Date Order" />
                 <!-- มีปัญหาไม่อยู่บรรทัดเดียวกัน -->
                 <div name="date_order_div" class="o_row">
@@ -36,8 +36,16 @@
                     />
                 </div>
 
-                <label for="work_start" string="Date Work" attrs="{'invisible': [('is_contract', '=', False)]}" />
-                <div name="work_start_div" class="o_row" attrs="{'invisible': [('is_contract', '=', False)]}">
+                <label
+                    for="work_start"
+                    string="Date Work"
+                    attrs="{'invisible': [('is_contract', '=', False)]}"
+                />
+                <div
+                    name="work_start_div"
+                    class="o_row"
+                    attrs="{'invisible': [('is_contract', '=', False)]}"
+                >
                     <field
                         name="work_start"
                         widget="daterange"
@@ -67,6 +75,9 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//div[@name='reminder']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='%(purchase_stock.action_purchase_vendor_delay_report)d']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
         </field>

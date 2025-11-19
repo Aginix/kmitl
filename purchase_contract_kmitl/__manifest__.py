@@ -7,9 +7,9 @@
     "category": "KMITL",
     'depends': ['purchase', 'purchase_exception', 'purchase_invoice_plan', 'purchase_budget'],
     "data": [
-        "security/ir.model.access.csv",
         "data/cron.xml",
         "data/purchase_exception.xml",
+        "security/ir.model.access.csv",
         "views/purchase_contract_type_views.xml",
         "views/purchase_order_views.xml",
         "views/purchase_contract_menu.xml",
