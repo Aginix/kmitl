@@ -2,6 +2,6 @@
     <menuitem
         id="menu_purchase_contract_type_kmitl"
         parent="purchase.menu_purchase_config"
-        action="purchase_contract_kmitl.action_purchase_contract_type"
+        action="action_purchase_contract_type"
     />
 </odoo>

@@ -37,6 +37,12 @@ class PurchaseOrder(models.Model):
         tracking=True
     )
 
+    fines_late = fields.Monetary(string="Fines Amount",
+        help="Computed amount. Can be overwritten",
+        states=READONLY_STATES,
+        tracking=True
+    )
+
     late_days = fields.Integer(string="Late Days",
         help="Late day(s) from Current Date - End Date",
         states=READONLY_STATES,
@@ -54,6 +60,17 @@ class PurchaseOrder(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
+
+    is_contract = fields.Boolean(
+        string="Is Contract",
+        compute="_compute_is_contract",
+        store=True,
+    )
+
+    @api.depends("contract_type_id")
+    def _compute_is_contract(self):
+        for rec in self:
+            rec.is_contract = bool(rec.contract_type_id.is_construction)
 
     def compute_fines_late(self):
         today = fields.Date.today()

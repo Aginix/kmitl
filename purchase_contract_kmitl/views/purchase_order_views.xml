@@ -3,12 +3,104 @@
     <record id="view_purchase_order_form_contract" model="ir.ui.view">
         <field name="name">view.purchase.order.form (Contract KMITL)</field>
         <field name="model">purchase.order</field>
-        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="inherit_id" ref="purchase.purchase_order_form" />
         <field name="arch" type="xml">
             <xpath expr="//group/group[2]" position="inside">
                 <field name="contract_name" />
-                <field name="contract_number" />
+                <field name="contract_number" readonly="1" />
+                <field name="fines_rate" />
+                <field name="fines_late" />
+                <field name="late_days" />
                 <field name="contract_type_id" />
+            </xpath>
+
+            <xpath expr="//div[@name='date_approve']" position="before">
+                <field name="is_contract" />
+                <label for="date_order" string="Date Order" />
+                <!-- มีปัญหาไม่อยู่บรรทัดเดียวกัน -->
+                <div name="date_order_div" class="o_row">
+                    <field
+                        name="date_order"
+                        widget="daterange"
+                        options="{'related_end_date': 'date_planned'}"
+                    />
+                    <i
+                        class="fa fa-long-arrow-right mx-2 oe_edit_only"
+                        aria-label="Arrow icon"
+                        title="Arrow"
+                    />
+                    <field
+                        name="date_planned"
+                        widget="daterange"
+                        options="{'related_start_date': 'date_order'}"
+                    />
+                </div>
+
+                <label for="work_start" string="Date Work" attrs="{'invisible': [('is_contract', '=', False)]}" />
+                <div name="work_start_div" class="o_row" attrs="{'invisible': [('is_contract', '=', False)]}">
+                    <field
+                        name="work_start"
+                        widget="daterange"
+                        options="{'related_end_date': 'work_end'}"
+                    />
+                    <i
+                        class="fa fa-long-arrow-right mx-2 oe_edit_only"
+                        aria-label="Arrow icon"
+                        title="Arrow"
+                    />
+                    <field
+                        name="work_end"
+                        widget="daterange"
+                        options="{'related_start_date': 'work_start'}"
+                    />
+                </div>
+            </xpath>
+
+            <!-- invisible -->
+            <xpath expr="//field[@name='date_planned']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_order']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//label[@for='date_planned']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//div[@name='reminder']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="purchase_order_view_search_kmitl" model="ir.ui.view">
+        <field name="name">purchase.order.search.kmitl (Contract KMITL)</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_view_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <filter
+                    string="Work delayed"
+                    name="work_delayed"
+                    domain="[('state', '=', 'order'), ('late_days', '>', 0)]"
+                />
+            </xpath>
+            <xpath expr="//group" position="inside">
+                <filter
+                    string="Contract Type"
+                    name="contract_type_id"
+                    context="{'group_by': 'contract_type_id'}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="purchase_order_tree_kmitl" model="ir.ui.view">
+        <field name="name">purchase.order.tree (Contract KMITL)</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="late_days" optional="hide" />
             </xpath>
         </field>
     </record>
