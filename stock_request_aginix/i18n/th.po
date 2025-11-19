@@ -280,7 +280,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:stock_request_aginix.field_stock_request__picking_id
 #, python-format
 msgid "Picking"
-msgstr ""
+msgstr "การรับ"
 
 #. module: stock_request_aginix
 #: model:ir.model.fields,field_description:stock_request_aginix.field_stock_request__picking_type_id
