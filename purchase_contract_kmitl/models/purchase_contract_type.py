@@ -9,7 +9,7 @@ class PurchaseContractType(models.Model):
     _description = 'PurchaseContractType'
 
     name = fields.Char(tracking=True, required=True)
-    active = fields.Boolean(tracking=True)
+    active = fields.Boolean(tracking=True, default=True)
     purchase_ids = fields.One2many(
         comodel_name="purchase.order",
         inverse_name="contract_type_id",
