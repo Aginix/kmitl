@@ -30,7 +30,7 @@
         <field name="inherit_id" ref="account_move_request.view_account_move_request_search" />
         <field name="priority" eval="20" />
         <field name="arch" type="xml">
-            <field name="ref" position="after">
+            <field name="partner_id" position="after">
                 <field name="account_fiscal_year_id" />
             </field>
         </field>
