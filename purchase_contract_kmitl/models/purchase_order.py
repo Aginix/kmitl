@@ -67,6 +67,14 @@ class PurchaseOrder(models.Model):
         store=True,
     )
 
+    _sql_constraints = [
+        (
+            "unique_contract_number",
+            "unique(contract_number)",
+            "The contract_number must be unique!",
+        ),
+    ]
+
     @api.depends("contract_type_id")
     def _compute_is_construction(self):
         for rec in self:

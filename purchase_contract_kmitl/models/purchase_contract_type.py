@@ -15,3 +15,12 @@ class PurchaseContractType(models.Model):
         inverse_name="contract_type_id",
     )
     is_construction = fields.Boolean(tracking=True, default=False)
+
+    @api.multi
+    def unlink(self):
+        for rec in self:
+            if rec.purchase_ids:
+                raise UserError(
+                    "You have Purchase Order, Can't Delete."
+                )
+        return super().unlink()
