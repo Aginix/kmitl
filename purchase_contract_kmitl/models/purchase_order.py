@@ -62,7 +62,7 @@ class PurchaseOrder(models.Model):
     )
 
     is_construction = fields.Boolean(
-        string="Is construction",
+        string="Is Construction",
         compute="_compute_is_construction",
         store=True,
     )
