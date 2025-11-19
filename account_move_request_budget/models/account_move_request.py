@@ -180,23 +180,8 @@ class AccountMoveRequest(models.Model):
         return res
 
     def action_submit(self):
+        # TODO: validate budget commitment before submit
         super().action_submit()
-        for record in self:
-            record._check_budget_commitment()
-
-    def _check_budget_commitment(self, budget_commitment_id):
-        budget_commitment = self.env["budget.commitment"].browse(budget_commitment_id)
-        # TODO: check budget commitment available
-        # if self.amount_total > budget_commitment.available_budget_amount:
-        #     raise UserError(
-        #         _(
-        #             "Unable to process: The requested amount of %(amount)s THB exceeds the available budget reservation balance of %(available_amount)s THB. Please review and adjust the amount."
-        #         )
-        #         % {
-        #             "amount": self.amount_total,
-        #             "available_amount": budget_commitment.available_budget_amount,
-        #         }
-        #     )
 
     def _log_budget_commitment_linked(self):
         link = f"/web#id={self.id}&model={self._name}&view_type=form"
