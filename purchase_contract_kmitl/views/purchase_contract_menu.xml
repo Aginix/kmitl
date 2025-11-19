@@ -1,9 +1,7 @@
 <odoo>
     <menuitem
-        id="menu_purchase_contract_type"
-        name="Purchase Contract Type"
-        parent="menu_purchase_config"
+        id="menu_purchase_contract_type_kmitl"
+        parent="purchase.menu_purchase_config"
         action="purchase_contract_kmitl.action_purchase_contract_type"
-        sequence="31"
     />
 </odoo>

@@ -39,7 +39,7 @@ if self.contract_type_id.is_construction:
         <field name="model">purchase.order</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
-if not self.fines_rate or self.fines_rate < 0:
+if not self.fines_rate or self.fines_rate &lt; 0:
     failed = True
         </field>
     </record>

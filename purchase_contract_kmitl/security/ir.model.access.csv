@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_purchase_contract_manager,purchase.contract.type.manager,purchase_contract_kmitl.model_purchase_contract_type,,1,1,1,1

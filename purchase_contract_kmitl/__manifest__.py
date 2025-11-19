@@ -5,8 +5,9 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    'depends': ['purchase_exception', 'purchase_invoice_plan', 'purchase_budget'],
+    'depends': ['purchase', 'purchase_exception', 'purchase_invoice_plan', 'purchase_budget'],
     "data": [
+        "security/ir.model.access.csv",
         "data/cron.xml",
         "data/purchase_exception.xml",
         "views/purchase_contract_type_views.xml",
