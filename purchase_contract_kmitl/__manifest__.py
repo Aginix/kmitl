@@ -7,9 +7,11 @@
     "category": "KMITL",
     'depends': ['purchase_exception', 'purchase_invoice_plan', 'purchase_budget'],
     "data": [
-        "views/purchase_order_views.xml",
+        "data/cron.xml",
         "data/purchase_exception.xml",
-        "data/cron.xml"
+        "views/purchase_contract_type_views.xml",
+        "views/purchase_order_views.xml",
+        "views/purchase_contract_menu.xml",
     ],
     'installable': True,
     'auto_install': False,
