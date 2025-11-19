@@ -3,94 +3,159 @@
         <t t-set="profile" t-value="asset.profile_id" />
         <style>
             .asset-card {
-                width: 400px;
-                height: 200px;
-                border-radius: 10px;
-                overflow: hidden;
-                font-size: 13px;
-                font-family: 'TH SarabunPSK', 'Sarabun', Arial, sans-serif;
-                border: 1px solid #e85d14;
+                box-sizing: border-box;
+                width: 288px;
+                height: 144px;
+                border: 2px solid #eb5b1e;
+                border-radius: 6px;
+                font-family: "TH SarabunPSK", "Sarabun", Arial, sans-serif;
                 display: inline-block;
                 margin: 6px;
+                overflow: hidden;
+                position: relative;
             }
+
             .asset-header {
-                background-color: #e85d14;
-                color: white;
-                padding: 10px 15px;
+                background-color: #eb5b1e;
+                color: #fff;
                 font-size: 16px;
                 font-weight: bold;
+                padding: 4px 8px;
             }
+
+            .asset-container {
+                box-sizing: border-box;
+                padding: 4px 8px !important;
+                height: 114px;
+            }
+
             .asset-body {
-                padding: 10px 15px;
+                display: table;
+                width: 100%;
+                height: 100%;
+                table-layout: fixed;
             }
-            .asset-label {
+
+            .asset-left,
+            .asset-right {
+                display: table-cell;
+                vertical-align: top;
+            }
+
+            .asset-right {
+                width: 20%;
+                position: relative;
+                text-align: center;
+            }
+
+            .asset-right-inner {
+                position: absolute;
+                right: 0;
+                top: 4px;
+                text-align: center;
+            }
+
+            .asset-title {
+                font-size: 18px;
+                font-weight: 900;
+                line-height: 1.15;
+                margin-bottom: -1px;
+                margin-top: 1.15px;
+            }
+
+            .text-small {
+                display: table;
+                width: 100%;
+                font-size: 15px;
+                line-height: 1.15;
+                margin-bottom: -3px;
+            }
+
+            .textlabel {
+                display: table-cell;
+                white-space: nowrap;
                 font-weight: bold;
+                width: 80px;
+                padding-right: 4px;
+            }
+
+            .text-value {
+                display: table-cell;
+                line-height: 1.15;
+            }
+
+            .qr-img {
+                width: 52px;
+                height: 52px;
             }
         </style>
+
         <div class="asset-card">
-            <div class="asset-header">เลขครุภัณฑ์ : <t t-esc="asset.number" /></div>
-            <div class="asset-body">
-                <div class="row">
-                    <div class="col-8 mt-2" style="font-size: 13px">
-                        <div>
-                            <p class="fw-bold" t-esc="asset.name"></p>
-                        </div>
-                        <div class="mt-3">
-                            <strong class="asset-label">สัญญาเลขที่ :</strong>
-                            <t t-esc="asset.purchase_id.contract_number or '-'" />
+            <div class="asset-header">
+                เลขครุภัณฑ์:
+                <t t-esc="asset.number" />
+            </div>
+
+            <div class="asset-container">
+                <div class="asset-body">
+                    <div class="asset-left">
+                        <div class="asset-title">
+                            <t t-esc="asset.name" />
                         </div>
 
-                        <div>
-                            <strong class="asset-label">ประเภทครุภัณฑ์ :</strong>
-                            <t t-esc="asset.profile_id.name or '-'" />
+                        <div class="text-small">
+                            <span class="textlabel">สัญญาเลขที่:</span>
+                            <span class="text-value">
+                                <t t-esc="asset.purchase_id.contract_number or '-'" />
+                            </span>
                         </div>
 
-                        <div>
-                            <strong class="asset-label">Service Tag :</strong>
-                            <t t-esc="asset.asset_serial_number or '-'" />
+                        <div class="text-small">
+                            <span class="textlabel">ประเภทครุภัณฑ์:</span>
+                            <span class="text-value">
+                                <t t-esc="asset.profile_id.name or '-'" />
+                            </span>
+                        </div>
+
+                        <div class="text-small">
+                            <span class="textlabel">Service Tag:</span>
+                            <span class="text-value">
+                                <t t-esc="asset.asset_serial_number or '-'" />
+                            </span>
                         </div>
                     </div>
-                    <div class="col-4" style="text-align: center">
-                        <img
-                            t-if="asset.company_id.logo"
-                            t-att-src="image_data_uri(asset.company_id.logo)"
-                            style="width: 55px; margin-bottom: 15px"
-                            alt="Logo"
-                            class="mt-1"
-                        />
-                        <t t-if="asset.number">
-                            <t t-if="profile.barcode_type == 'barcode'">
-                                <img
-                                    alt="Barcode"
-                                    t-if="len(asset.number) == 13"
-                                    t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=55&amp;height=55' % ('EAN13', quote_plus(asset.number or ''))"
-                                    style="display: block; margin: 0 auto"
-                                />
-                                <img
-                                    alt="Barcode"
-                                    t-elif="len(asset.number) == 8"
-                                    t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=55&amp;height=55' % ('EAN8', quote_plus(asset.number or ''))"
-                                    style="display: block; margin: 0 auto"
-                                />
-                                <img
-                                    alt="Barcode"
-                                    t-else=""
-                                    t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=55&amp;height=55' % ('Code128', quote_plus(asset.number or ''))"
-                                    style="display: block; margin: 0 auto"
-                                />
+
+                    <div class="asset-right">
+                        <div class="asset-right-inner">
+                            <t t-if="asset.number">
+                                <t t-if="profile.barcode_type == 'barcode'">
+                                    <img
+                                        t-if="len(asset.number) == 13"
+                                        t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=70&amp;height=70' % ('EAN13', quote_plus(asset.number or ''))"
+                                        class="qr-img"
+                                    />
+                                    <img
+                                        t-elif="len(asset.number) == 8"
+                                        t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=70&amp;height=70' % ('EAN8', quote_plus(asset.number or ''))"
+                                        class="qr-img"
+                                    />
+                                    <img
+                                        t-else=""
+                                        t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=70&amp;height=70' % ('Code128', quote_plus(asset.number or ''))"
+                                        class="qr-img"
+                                    />
+                                </t>
+                                <t t-elif="profile.barcode_type == 'qr'">
+                                    <img
+                                        t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=255&amp;height=255' % ('QR', quote_plus(asset.number or ''))"
+                                        class="qr-img"
+                                    />
+                                </t>
                             </t>
-                            <t t-elif="profile.barcode_type == 'qr'">
-                                <img
-                                    alt="QRcode"
-                                    t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=55&amp;height=55' % ('QR', quote_plus(asset.number or ''))"
-                                    style="display: block; margin: 0 auto"
-                                />
+                            <t t-else="">
+                                <span class="text-muted">No number</span>
                             </t>
-                        </t>
-                        <t t-else="">
-                            <span class="text-muted">No number available</span>
-                        </t>
-                        <div style="font-size: 9px; margin-top: 5px">(TEST TEST)</div>
+                        </div>
                     </div>
                 </div>
             </div>
