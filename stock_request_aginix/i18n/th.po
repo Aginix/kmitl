@@ -25,7 +25,7 @@ msgstr ""
 #. module: stock_request_aginix
 #: model_terms:ir.ui.view,arch_db:stock_request_aginix.view_stock_picking_form
 msgid "<span class=\"o_stat_text\">Stock Request</span>"
-msgstr ""
+msgstr "ใบเบิก-จ่ายพัสดุ"
 
 #. module: stock_request_aginix
 #: model:ir.model.fields,field_description:stock_request_aginix.field_stock_request__message_needaction
