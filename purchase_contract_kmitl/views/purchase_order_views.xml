@@ -22,7 +22,7 @@
                     <field
                         name="date_order"
                         widget="daterange"
-                        options="{'related_end_date': 'date_planned'}"
+                        options="{'related_end_date': 'date_planned', 'format_type': 'date'}"
                     />
                     <i
                         class="fa fa-long-arrow-right mx-2 oe_edit_only"
@@ -32,7 +32,7 @@
                     <field
                         name="date_planned"
                         widget="daterange"
-                        options="{'related_start_date': 'date_order'}"
+                        options="{'related_start_date': 'date_order', 'format_type': 'date'}"
                     />
                 </div>
 
@@ -64,6 +64,10 @@
                 </div>
             </xpath>
 
+            <xpath expr="//button[@name='button_confirm']" position="before">
+                <button name="get_contract_number" type="object" string="Get Contract Number" class="oe_highlight" attrs="{'invisible': [('contract_number', '=', True)]}" />
+            </xpath>
+
             <!-- invisible -->
             <xpath expr="//field[@name='date_planned']" position="attributes">
                 <attribute name="invisible">1</attribute>
@@ -77,7 +81,10 @@
             <xpath expr="//div[@name='reminder']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-            <xpath expr="//button[@name='%(purchase_stock.action_purchase_vendor_delay_report)d']" position="attributes">
+            <xpath
+                expr="//button[@name='%(purchase_stock.action_purchase_vendor_delay_report)d']"
+                position="attributes"
+            >
                 <attribute name="invisible">1</attribute>
             </xpath>
         </field>
@@ -108,7 +115,7 @@
     <record id="purchase_order_tree_kmitl" model="ir.ui.view">
         <field name="name">purchase.order.tree (Contract KMITL)</field>
         <field name="model">purchase.order</field>
-        <field name="inherit_id" ref="purchase.purchase_order_tree" />
+        <field name="inherit_id" ref="purchase.purchase_order_view_tree" />
         <field name="arch" type="xml">
             <xpath expr="//tree" position="inside">
                 <field name="late_days" optional="hide" />

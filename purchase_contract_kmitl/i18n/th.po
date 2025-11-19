@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-19 10:29+0000\n"
-"PO-Revision-Date: 2025-11-19 10:29+0000\n"
+"POT-Creation-Date: 2025-11-19 11:15+0000\n"
+"PO-Revision-Date: 2025-11-19 11:15+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -96,7 +96,7 @@ msgstr ""
 #. module: purchase_contract_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_order_form_contract
 msgid "Date Order"
-msgstr ""
+msgstr "วันที่เริ่มสัญญา"
 
 #. module: purchase_contract_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_order_form_contract
@@ -132,6 +132,11 @@ msgstr ""
 #: model:ir.model.fields,help:purchase_contract_kmitl.field_purchase_contract_type__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
 msgstr ""
+
+#. module: purchase_contract_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_order_form_contract
+msgid "Get Contract Number"
+msgstr "รับเลขที่สัญญา"
 
 #. module: purchase_contract_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_contract_type_search
@@ -171,13 +176,9 @@ msgstr ""
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__is_construction
-msgid "Is Construction"
-msgstr "งานก่อสร้าง"
-
-#. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_order__is_construction
 msgid "Is Construction"
-msgstr "เป็นงานก่อสร้าง"
+msgstr "งานก่อสร้าง"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__message_is_follower

@@ -85,3 +85,6 @@ class PurchaseOrder(models.Model):
 
             rec.late_days = today - rec.end_date
             rec.fines_late = rec.fines_rate * rec.late_days
+
+    def get_contract_number(self):
+        print("Get Contract Number")
