@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
@@ -71,6 +71,7 @@ class PurchaseOrder(models.Model):
         string="Expected Arrival (Date Only)",
         compute="_compute_date_only",
         inverse="_inverse_date_only",
+        states=READONLY_STATES,
         store=False,
     )
 
@@ -78,6 +79,7 @@ class PurchaseOrder(models.Model):
         string="Order Date (Date Only)",
         compute="_compute_date_only",
         inverse="_inverse_date_only",
+        states=READONLY_STATES,
         store=False,
     )
 
@@ -120,11 +122,10 @@ class PurchaseOrder(models.Model):
         today = fields.Date.today()
 
         domain = [
-            ('state', '=', 'order'),
-            ('active', '=', True),
+            ('state', '=', 'purchase'),
             '|',
-                ('work_end', '>=', today),
-                ('date_planned', '>=', today),
+            ('work_end', '>=', today),
+            ('date_planned', '>=', today),
         ]
 
         orders = self.search(domain)
@@ -136,14 +137,27 @@ class PurchaseOrder(models.Model):
         today = fields.Date.today()
 
         for rec in self:
-            rec.late_days = today - rec.end_date
-            if rec.contract_type_id.is_construction:
-                rec.end_date = rec.work_end
 
+            if rec.contract_type_id.is_construction and rec.work_end:
+                dt = rec.work_end
             else:
-                rec.end_date = rec.date_planned
+                dt = rec.date_planned
 
-            rec.late_days = today - rec.end_date
+            if not dt:
+                rec.late_days = 0
+                rec.fines_late = 0
+                continue
+
+            if isinstance(dt, datetime):
+                planned_date = dt.date()
+            elif isinstance(dt, date):
+                planned_date = dt
+            else:
+                rec.late_days = 0
+                rec.fines_late = 0
+                continue
+
+            rec.late_days = (today - planned_date).days
             rec.fines_late = rec.fines_rate * rec.late_days
 
     def get_contract_number(self):
