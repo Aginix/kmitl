@@ -71,14 +71,14 @@ class PurchaseOrder(models.Model):
         string="Expected Arrival (Date Only)",
         compute="_compute_date_only",
         inverse="_inverse_date_only",
-        store=True,
+        store=False,
     )
 
     date_order_date = fields.Date(
         string="Order Date (Date Only)",
         compute="_compute_date_only",
         inverse="_inverse_date_only",
-        store=True,
+        store=False,
     )
 
     _sql_constraints = [
