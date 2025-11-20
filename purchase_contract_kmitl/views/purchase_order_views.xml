@@ -17,7 +17,6 @@
             <xpath expr="//div[@name='date_approve']" position="before">
                 <field name="is_construction" invisible="1" />
                 <label for="date_order_date" string="Date Order" />
-                <!-- มีปัญหาไม่อยู่บรรทัดเดียวกัน -->
                 <div name="date_order_div" class="o_row">
                     <field
                         name="date_order_date"
@@ -35,7 +34,6 @@
                         options="{'related_start_date': 'date_order_date'}"
                     />
                 </div>
-
                 <label
                     for="work_start"
                     string="Date Work"

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-19 11:15+0000\n"
-"PO-Revision-Date: 2025-11-19 11:15+0000\n"
+"POT-Creation-Date: 2025-11-20 04:52+0000\n"
+"PO-Revision-Date: 2025-11-20 04:52+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -25,7 +25,7 @@ msgstr ""
 #. module: purchase_contract_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_contract_type_form
 msgid "<span class=\"o_form_label\">Purchase Contract Type </span>"
-msgstr ""
+msgstr "<span class=\"o_form_label\">ประเภทสัญญา </span>"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__message_needaction
@@ -101,12 +101,24 @@ msgstr "วันที่เริ่มสัญญา"
 #. module: purchase_contract_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_order_form_contract
 msgid "Date Work"
-msgstr ""
+msgstr "วันที่เริ่มงาน"
+
+#. module: purchase_contract_kmitl
+#. odoo-python
+#: code:addons/purchase_contract_kmitl/models/purchase_order.py:0
+#, python-format
+msgid "Department short name is missing."
+msgstr "ไม่มีตัวย่อหน่วยงาน"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__display_name
 msgid "Display Name"
 msgstr ""
+
+#. module: purchase_contract_kmitl
+#: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_order__date_planned_date
+msgid "Expected Arrival (Date Only)"
+msgstr "วันที่สิ้นสุดสัญญา"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_order__fines_late
@@ -141,7 +153,7 @@ msgstr "รับเลขที่สัญญา"
 #. module: purchase_contract_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_contract_type_search
 msgid "Group By"
-msgstr ""
+msgstr "จัดกลุ่มตาม"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__has_message
@@ -208,12 +220,12 @@ msgstr "จำนวนวันล่าช้า"
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,help:purchase_contract_kmitl.field_purchase_order__late_days
 msgid "Late day(s) from Current Date - End Date"
-msgstr ""
+msgstr "วันล่าช้าคำนวณจาก วันที่ปัจจุบัน - วันที่สิ้นสุดงาน"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__message_main_attachment_id
 msgid "Main Attachment"
-msgstr ""
+msgstr "เอกสารแนบหลัก"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__message_has_error
@@ -272,8 +284,12 @@ msgid "Number of messages with delivery error"
 msgstr ""
 
 #. module: purchase_contract_kmitl
+#: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_order__date_order_date
+msgid "Order Date (Date Only)"
+msgstr "วันที่เริ่มสัญญา"
+
+#. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__purchase_ids
-#: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_contract_type_form
 msgid "Purchase"
 msgstr ""
 
@@ -282,7 +298,7 @@ msgstr ""
 #: model:ir.ui.menu,name:purchase_contract_kmitl.menu_purchase_contract_type_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_contract_type_form
 msgid "Purchase Contract Type"
-msgstr ""
+msgstr "ประเภทสัญญา"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model,name:purchase_contract_kmitl.model_purchase_order
@@ -292,7 +308,7 @@ msgstr "คำสั่งซื้อ"
 #. module: purchase_contract_kmitl
 #: model:ir.model,name:purchase_contract_kmitl.model_purchase_contract_type
 msgid "PurchaseContractType"
-msgstr ""
+msgstr "ประเภทสัญญาซื"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__activity_user_id
@@ -314,9 +330,14 @@ msgid ""
 msgstr ""
 
 #. module: purchase_contract_kmitl
+#: model:ir.model.constraint,message:purchase_contract_kmitl.constraint_purchase_order_unique_contract_number
+msgid "The contract_number must be unique!"
+msgstr "เลขที่สัญญาต้องไม่ซ้ำกัน!"
+
+#. module: purchase_contract_kmitl
 #: model_terms:ir.actions.act_window,help:purchase_contract_kmitl.action_purchase_contract_type
 msgid "There is no examples click here to add new Purchase Contract Type."
-msgstr ""
+msgstr "ไม่มีตัวอย่าง คลิกที่นี่เพื่อเพิ่ม ประเภทสัญญาซื้อ ใหม่"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,help:purchase_contract_kmitl.field_purchase_contract_type__activity_exception_decoration
@@ -346,13 +367,13 @@ msgstr "วันที่เริ่มงาน"
 #. module: purchase_contract_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.purchase_order_view_search_kmitl
 msgid "Work delayed"
-msgstr ""
+msgstr "งานล่าช้า"
 
 #. module: purchase_contract_kmitl
 #: model:ir.actions.server,name:purchase_contract_kmitl.ir_cron_compute_fines_late_ir_actions_server
 #: model:ir.cron,cron_name:purchase_contract_kmitl.ir_cron_compute_fines_late
 msgid "purchase_order_fines_late_daily"
-msgstr ""
+msgstr "คำนวณค่าปรับล่าช้า รายวัน"
 
 #. module: purchase_contract_kmitl
 #: model:exception.rule,description:purchase_contract_kmitl.purchase_order_contract_name_exception
