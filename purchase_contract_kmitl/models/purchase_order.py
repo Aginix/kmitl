@@ -111,7 +111,7 @@ class PurchaseOrder(models.Model):
                     time(0, 0, 0)
                 )
 
-    @api.depends("contract_type_id")
+    @api.depends("contract_type_id", "contract_type_id.is_construction")
     def _compute_is_construction(self):
         for rec in self:
             rec.is_construction = bool(rec.contract_type_id.is_construction)
