@@ -2,7 +2,7 @@
 import base64
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -230,7 +230,7 @@ class PurchaseRequestApproval(models.Model):
     @api.depends("state")
     def _compute_report_html_url(self):
         for rec in self:
-            rec.report_html_url = rec.get_portal_url(report_type="html")
+            rec.report_html_url = "/th" + rec.get_portal_url(report_type="html")
 
     def action_view_request(self):
         self.ensure_one()
