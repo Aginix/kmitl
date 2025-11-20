@@ -55,7 +55,7 @@
         <field name="model">account.move.request</field>
         <field name="inherit_id" ref="account_move_request.view_account_move_request_search" />
         <field name="arch" type="xml">
-            <field name="ref" position="after">
+            <xpath expr="//group" position="before">
                 <separator orientation="vertical" />
                 <filter
                     icon="fa-exclamation-circle"
@@ -63,7 +63,7 @@
                     string="Blocked in Draft"
                     domain="[('main_exception_id','!=',False)]"
                 />
-            </field>
+            </xpath>
         </field>
     </record>
 

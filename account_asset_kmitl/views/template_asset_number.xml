@@ -1,0 +1,133 @@
+<odoo>
+    <template id="report_simple_asset_number_kmitl">
+        <t t-set="profile" t-value="asset.profile_id"/>
+        <style>
+            .asset-card {
+                display: inline-block;
+                width: 222pt;
+                min-height: 111pt;
+                border: 2pt solid #eb5b1e;
+                border-radius: 4pt;
+                font-family: "THSarabun", Sarabun, Arial, sans-serif;
+                margin: 4pt;
+            }
+
+            .asset-header {
+                background-color: #eb5b1e;
+                color: #fff;
+                font-size: 12pt;
+                font-weight: bold;
+                padding: 4pt 8pt;
+            }
+
+            .asset-body {
+                padding: 4pt 8pt !important;
+            }
+
+            .table {
+              margin-bottom: 0 !important;
+            }
+
+            .asset-title {
+                font-size: 12pt;
+                font-weight: 900;
+                line-height: 1.15;
+            }
+
+            table td {
+              line-height: 1.2;
+            }
+
+            .table-sm &gt; :not(caption) &gt; * &gt; * {
+              padding: 0 !important;
+            }
+
+            .label {
+              width: 60pt;
+            }
+
+            .qr-img {
+              width: 40pt;
+              height: 40pt;
+            }
+        </style>
+
+        <div class="asset-card">
+            <div class="asset-header">
+                เลขครุภัณฑ์:
+                <t t-esc="asset.number"/>
+            </div>
+
+            <div class="asset-body">
+              <table class="table table-borderless table-sm">
+                <td style="width: 80%;" valign="center">
+                  <table class="table table-borderless table-sm">
+                    <tbody>
+                      <tr>
+                        <td colspan="2" class="asset-title" style="padding-bottom: 2pt !important;">
+                          <b>
+                            <t t-esc="asset.name"/>
+                          </b>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="label">
+                          <b>สัญญาเลขที่:</b>
+                        </td>
+                        <td>
+                          <t t-esc="asset.purchase_id.contract_number or '-'"/>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="label">
+                          <b>ประเภทครุภัณฑ์:</b>
+                        </td>
+                        <td>
+                          <t t-esc="asset.profile_id.name or '-'"/>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="label">
+                          <b>Service Tag:</b>
+                        </td>
+                        <td>
+                          <t t-esc="asset.asset_serial_number or '-'"/>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+                <td style="width: 20%; padding-left: 4pt !important; text-align: center;" valign="center">
+                  <t t-if="asset.number">
+                      <t t-if="profile.barcode_type == 'barcode'">
+                          <img t-if="len(asset.number) == 13" t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=70&amp;height=70' % ('EAN13', quote_plus(asset.number or ''))" class="qr-img"/>
+                          <img t-elif="len(asset.number) == 8" t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=70&amp;height=70' % ('EAN8', quote_plus(asset.number or ''))" class="qr-img"/>
+                          <img t-else="" t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=70&amp;height=70' % ('Code128', quote_plus(asset.number or ''))" class="qr-img"/>
+                      </t>
+                      <t t-elif="profile.barcode_type == 'qr'">
+                          <img t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=255&amp;height=255' % ('QR', quote_plus(asset.number or ''))" class="qr-img"/>
+                      </t>
+                  </t>
+                  <t t-else="">
+                      <span class="text-muted">
+                        <b>No number</b>
+                      </span>
+                  </t>
+                </td>
+              </table>
+            </div>
+        </div>
+    </template>
+
+    <template
+        id="report_asset_number_inherit"
+        inherit_id="account_asset_number.report_asset_number"
+    >
+        <xpath
+            expr="//t[@t-call='account_asset_number.report_simple_asset_number']"
+            position="replace"
+        >
+            <t t-call="account_asset_kmitl.report_simple_asset_number_kmitl" />
+        </xpath>
+    </template>
+</odoo>

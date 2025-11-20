@@ -77,6 +77,20 @@ class PurchaseOrder(models.Model):
 
     def action_view_move_request(self):
         self.ensure_one()
+        move_requests = self.env['account.move.request'].search(
+            [('purchase_id', '=', self.id)]
+        )
+        
+        if len(move_requests) == 1:
+            return {
+                'type': 'ir.actions.act_window',
+                'name': 'Move Request',
+                'res_model': 'account.move.request',
+                'res_id': move_requests.id,
+                'view_mode': 'form',
+                'context': {'default_purchase_id': self.id},
+            }
+        
         return {
             'type': 'ir.actions.act_window',
             'name': 'Move Requests',
