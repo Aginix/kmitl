@@ -1,0 +1,1510 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* kmitl_project
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-20 09:50+0000\n"
+"PO-Revision-Date: 2025-11-20 17:16+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.7\n"
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "<b>ค่าครุภัณฑ์</b> เช่น ใบเสนอราคา, รายละเอียดคุณลักษณะ (spec), แผนการจัดซื้อจัดจ้าง"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "<b>ค่าจ้างเหมาบริการ</b> เช่น จ้างออแกไนซ์เซอร์, ใบเสนอราคา"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "<b>ปรับปรุง/สิ่งก่อสร้าง</b> เช่น แบบรูปรายการ, แบบประมาณราคากลาง, แผนการจัดซื้อจัดจ้าง, โครงการตามผังแม่บทสถาบัน, แผนผังแสดงพื้นที่ที่จะดำเนินการ"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "<i class=\"fa fa-long-arrow-right mx-2 oe_edit_only\" aria-label=\"Arrow icon\" title=\"Arrow\"/>"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "<i>ผลที่เกิดโดยตรงทันทีที่สิ้นสุดโครงการ  และผลที่จะเกิดตามมาในระยะยาว</i>"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "<i>ผลที่ได้จากการบรรลุวัตถุประสงค์ของโครงการ</i>"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "<i>ผลหรือสิ่งที่คาดว่าจะได้รับหรือประโยชน์จากการดำเนินโครงการ</i>"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "<i>ระบุกลุ่มผู้เข้าร่วมโครงการและจำนวนคน ซึ่งมีส่วนได้ส่วนเสียและได้รับประโยชน์หลังจากดำเนินโครงการแล้ว  แต่ไม่นับเป็นค่าเป้าหมายของโครงการ</i>"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "<i>ระบุกลุ่มเป้าหมายหลักและจำนวนคน เพื่อกำหนดเป็นตัวชี้วัดและค่าเป้าหมายของโครงการ ซึ่งได้รับประโยชน์จากการดำเนินโครงการ</i>"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "<i>ระบุจำนวนผู้ดำเนินโครงการและวิทยากร เพื่อนำไปคำนวณเป็นค่าใช้จ่ายเพิ่ม รวมกับค่าใช้จ่ายของกลุ่มเป้าหมาย/ผู้เข้าร่วมโครงการ แต่ไม่นับเป็นค่าเป้าหมายของโครงการ</i>"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__access_warning
+msgid "Access warning"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__message_needaction
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__active
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__active model_terms:ir.ui.view,arch_db:kmitl_project.view_project_strategic_plan_search
+msgid "Active"
+msgstr "ใช้งาน"
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_output__amount model:ir.model.fields,field_description:kmitl_project.field_project_target__amount
+msgid "Amount"
+msgstr "จำนวนเงิน"
+
+#. module: kmitl_project
+#. odoo-python
+#: code:addons/kmitl_project/models/project_output.py:0 code:addons/kmitl_project/models/project_target.py:0
+#, python-format
+msgid "Amount must be greather than zero"
+msgstr "จำนวนเงินต้องมากกว่า 0"
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__analytic_distribution
+msgid "Analytic"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__analytic_account_id
+msgid "Analytic Account"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__analytic_distribution_search
+msgid "Analytic Distribution Search"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__analytic_precision
+msgid "Analytic Precision"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,help:kmitl_project.field_kmitl_project__analytic_account_id
+msgid ""
+"Analytic account to which this procurement plan. \n"
+"Track the costs and revenues of your procurement plan by setting this analytic account on your related documents (e.g. budgetings, purchase requests, purchase orders etc.)."
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_exception_rule__model
+msgid "Apply on"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form model_terms:ir.ui.view,arch_db:kmitl_project.view_project_strategic_plan_form
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_strategic_plan_search
+msgid "Archived"
+msgstr "จัดเก็บถาวร"
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__message_attachment_count
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__attachment_ids
+msgid "Attachments"
+msgstr "ไฟล์แนบ"
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "Basic radio toggle button group"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: kmitl_project
+#: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__state__cancel model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "Cancelled"
+msgstr "ยกเลิกแล้ว"
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_strategic_plan_search
+msgid "Child Accounts"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__children_count
+msgid "Children Accounts Count"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__company_id
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__company_id
+msgid "Company"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "Complete"
+msgstr "เสร็จสิ้น"
+
+#. module: kmitl_project
+#: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__state__complete model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "Completed"
+msgstr "เสร็จสิ้นแล้ว"
+
+#. module: kmitl_project
+#: model:ir.ui.menu,name:kmitl_project.menu_project_config
+msgid "Configuration"
+msgstr "การกำหนดค่า"
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "Confirm"
+msgstr "ยืนยัน"
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__create_uid
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project_exception_confirm__create_uid
+#: model:ir.model.fields,field_description:kmitl_project.field_project_evaluation__create_uid
+#: model:ir.model.fields,field_description:kmitl_project.field_project_expected_outcome__create_uid
+#: model:ir.model.fields,field_description:kmitl_project.field_project_fight__create_uid
+#: model:ir.model.fields,field_description:kmitl_project.field_project_global_index__create_uid
+#: model:ir.model.fields,field_description:kmitl_project.field_project_impact__create_uid
+#: model:ir.model.fields,field_description:kmitl_project.field_project_methodology__create_uid
+#: model:ir.model.fields,field_description:kmitl_project.field_project_output__create_uid model:ir.model.fields,field_description:kmitl_project.field_project_plan__create_uid
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__create_uid
+#: model:ir.model.fields,field_description:kmitl_project.field_project_target__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__create_date
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project_exception_confirm__create_date
+#: model:ir.model.fields,field_description:kmitl_project.field_project_evaluation__create_date
+#: model:ir.model.fields,field_description:kmitl_project.field_project_expected_outcome__create_date
+#: model:ir.model.fields,field_description:kmitl_project.field_project_fight__create_date
+#: model:ir.model.fields,field_description:kmitl_project.field_project_global_index__create_date
+#: model:ir.model.fields,field_description:kmitl_project.field_project_impact__create_date
+#: model:ir.model.fields,field_description:kmitl_project.field_project_methodology__create_date
+#: model:ir.model.fields,field_description:kmitl_project.field_project_output__create_date
+#: model:ir.model.fields,field_description:kmitl_project.field_project_plan__create_date
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__create_date
+#: model:ir.model.fields,field_description:kmitl_project.field_project_target__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,help:kmitl_project.field_kmitl_project__access_url
+msgid "Customer Portal URL"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__department_id
+msgid "Department"
+msgstr "หน่วยงาน"
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__deprecated
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_strategic_plan_search
+msgid "Deprecated"
+msgstr "ยกเลิกใช้งาน"
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__display_name
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project_exception_confirm__display_name
+#: model:ir.model.fields,field_description:kmitl_project.field_project_evaluation__display_name
+#: model:ir.model.fields,field_description:kmitl_project.field_project_expected_outcome__display_name
+#: model:ir.model.fields,field_description:kmitl_project.field_project_fight__display_name
+#: model:ir.model.fields,field_description:kmitl_project.field_project_global_index__display_name
+#: model:ir.model.fields,field_description:kmitl_project.field_project_impact__display_name
+#: model:ir.model.fields,field_description:kmitl_project.field_project_methodology__display_name
+#: model:ir.model.fields,field_description:kmitl_project.field_project_output__display_name
+#: model:ir.model.fields,field_description:kmitl_project.field_project_plan__display_name
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__display_name
+#: model:ir.model.fields,field_description:kmitl_project.field_project_target__display_name
+msgid "Display Name"
+msgstr "ชื่อ"
+
+#. module: kmitl_project
+#: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__state__draft
+msgid "Draft"
+msgstr "แบบร่าง"
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__date_end
+msgid "End Date"
+msgstr "วันที่สิ้นสุดโครงการ"
+
+#. module: kmitl_project
+#: model:ir.model,name:kmitl_project.model_exception_rule
+msgid "Exception Rule"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project_exception_confirm__exception_ids
+msgid "Exceptions to resolve"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "FIGHT"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__account_fiscal_year_id
+msgid "Fiscal year"
+msgstr "ปีงบประมาณ"
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__message_follower_ids
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__message_partner_ids
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,help:kmitl_project.field_kmitl_project__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__global_index_id model:ir.ui.menu,name:kmitl_project.project_global_index_config_menu
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "Global Index"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search model_terms:ir.ui.view,arch_db:kmitl_project.view_project_evaluation_search
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_fight_search model_terms:ir.ui.view,arch_db:kmitl_project.view_project_global_index_search
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_impact_search model_terms:ir.ui.view,arch_db:kmitl_project.view_project_methodology_search
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_strategic_plan_search
+msgid "Group By"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__has_message
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__id
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project_exception_confirm__id
+#: model:ir.model.fields,field_description:kmitl_project.field_project_evaluation__id model:ir.model.fields,field_description:kmitl_project.field_project_expected_outcome__id
+#: model:ir.model.fields,field_description:kmitl_project.field_project_fight__id model:ir.model.fields,field_description:kmitl_project.field_project_global_index__id
+#: model:ir.model.fields,field_description:kmitl_project.field_project_impact__id model:ir.model.fields,field_description:kmitl_project.field_project_methodology__id
+#: model:ir.model.fields,field_description:kmitl_project.field_project_output__id model:ir.model.fields,field_description:kmitl_project.field_project_plan__id
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__id model:ir.model.fields,field_description:kmitl_project.field_project_target__id
+msgid "ID"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,help:kmitl_project.field_kmitl_project__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,help:kmitl_project.field_kmitl_project__message_needaction model:ir.model.fields,help:kmitl_project.field_project_strategic_plan__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,help:kmitl_project.field_kmitl_project__message_has_error model:ir.model.fields,help:kmitl_project.field_kmitl_project__message_has_sms_error
+#: model:ir.model.fields,help:kmitl_project.field_project_strategic_plan__message_has_error
+#: model:ir.model.fields,help:kmitl_project.field_project_strategic_plan__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project_exception_confirm__ignore
+msgid "Ignore Exceptions"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__impact_id model:ir.ui.menu,name:kmitl_project.project_impact_config_menu
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "Impact"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__state__in_progress model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "In Progress"
+msgstr "กำลังดำเนินการ"
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__note
+msgid "Internal Notes"
+msgstr "โน้ตภายใน"
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__is_editable
+msgid "Is Editable"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__message_is_follower
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.actions.act_window,name:kmitl_project.action_project_fight model:ir.ui.menu,name:kmitl_project.project_fight_config_menu
+msgid "KMITL FIGHT"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.actions.act_window,name:kmitl_project.action_kmitl_project_all
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project_exception_confirm__related_model_id
+#: model:ir.model.fields.selection,name:kmitl_project.selection__exception_rule__model__kmitl_project model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "KMITL Project"
+msgstr "โครงการ/กิจกรรม"
+
+#. module: kmitl_project
+#: model:ir.actions.act_window,name:kmitl_project.action_kmitl_project_test_tree model:ir.ui.menu,name:kmitl_project.menu_kmitl_project_test
+msgid "KMITL Project Exception Rules"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model,name:kmitl_project.model_kmitl_project_exception_confirm
+msgid "KMITL Project exception wizard"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.portal_my_home model_terms:ir.ui.view,arch_db:kmitl_project.portal_my_kmitl_projects
+msgid "KMITL Projects"
+msgstr "โครงการ/กิจกรรม"
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__key
+msgid "Key"
+msgstr "รหัสโครงการ"
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project____last_update
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project_exception_confirm____last_update
+#: model:ir.model.fields,field_description:kmitl_project.field_project_evaluation____last_update
+#: model:ir.model.fields,field_description:kmitl_project.field_project_expected_outcome____last_update
+#: model:ir.model.fields,field_description:kmitl_project.field_project_fight____last_update
+#: model:ir.model.fields,field_description:kmitl_project.field_project_global_index____last_update
+#: model:ir.model.fields,field_description:kmitl_project.field_project_impact____last_update
+#: model:ir.model.fields,field_description:kmitl_project.field_project_methodology____last_update
+#: model:ir.model.fields,field_description:kmitl_project.field_project_output____last_update
+#: model:ir.model.fields,field_description:kmitl_project.field_project_plan____last_update
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan____last_update
+#: model:ir.model.fields,field_description:kmitl_project.field_project_target____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__write_uid
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project_exception_confirm__write_uid
+#: model:ir.model.fields,field_description:kmitl_project.field_project_evaluation__write_uid
+#: model:ir.model.fields,field_description:kmitl_project.field_project_expected_outcome__write_uid
+#: model:ir.model.fields,field_description:kmitl_project.field_project_fight__write_uid
+#: model:ir.model.fields,field_description:kmitl_project.field_project_global_index__write_uid
+#: model:ir.model.fields,field_description:kmitl_project.field_project_impact__write_uid
+#: model:ir.model.fields,field_description:kmitl_project.field_project_methodology__write_uid
+#: model:ir.model.fields,field_description:kmitl_project.field_project_output__write_uid model:ir.model.fields,field_description:kmitl_project.field_project_plan__write_uid
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__write_uid
+#: model:ir.model.fields,field_description:kmitl_project.field_project_target__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__write_date
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project_exception_confirm__write_date
+#: model:ir.model.fields,field_description:kmitl_project.field_project_evaluation__write_date
+#: model:ir.model.fields,field_description:kmitl_project.field_project_expected_outcome__write_date
+#: model:ir.model.fields,field_description:kmitl_project.field_project_fight__write_date
+#: model:ir.model.fields,field_description:kmitl_project.field_project_global_index__write_date
+#: model:ir.model.fields,field_description:kmitl_project.field_project_impact__write_date
+#: model:ir.model.fields,field_description:kmitl_project.field_project_methodology__write_date
+#: model:ir.model.fields,field_description:kmitl_project.field_project_output__write_date model:ir.model.fields,field_description:kmitl_project.field_project_plan__write_date
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__write_date
+#: model:ir.model.fields,field_description:kmitl_project.field_project_target__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__hierarchy_level
+msgid "Level"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_output__line_type model:ir.model.fields,field_description:kmitl_project.field_project_target__line_type
+msgid "Line Type"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__message_main_attachment_id
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__message_has_error
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__message_ids
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__name model:ir.model.fields,field_description:kmitl_project.field_project_evaluation__name
+#: model:ir.model.fields,field_description:kmitl_project.field_project_methodology__name model:ir.model.fields,field_description:kmitl_project.field_project_output__name
+#: model:ir.model.fields,field_description:kmitl_project.field_project_target__name model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_evaluation_search model_terms:ir.ui.view,arch_db:kmitl_project.view_project_fight_search
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_global_index_search model_terms:ir.ui.view,arch_db:kmitl_project.view_project_impact_search
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_methodology_search
+msgid "Name"
+msgstr "ชื่อ"
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_evaluation_form model_terms:ir.ui.view,arch_db:kmitl_project.view_project_strategic_plan_form
+msgid "Name..."
+msgstr "ชื่อ..."
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__state__new
+msgid "Not started yet"
+msgstr "ยังไม่เริ่มดำเนินการ"
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__message_needaction_counter
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__message_has_error_counter
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,help:kmitl_project.field_kmitl_project__message_needaction_counter
+#: model:ir.model.fields,help:kmitl_project.field_project_strategic_plan__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,help:kmitl_project.field_kmitl_project__message_has_error_counter
+#: model:ir.model.fields,help:kmitl_project.field_project_strategic_plan__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__state__on_hold
+msgid "On Hold"
+msgstr "ชะลอโครงการ"
+
+#. module: kmitl_project
+#: model:ir.model.fields.selection,name:kmitl_project.selection__project_target__line_type__organizer
+msgid "Organizer"
+msgstr "ผู้จัดงาน"
+
+#. module: kmitl_project
+#: model:ir.model.fields.selection,name:kmitl_project.selection__project_output__line_type__outcome
+msgid "Outcome"
+msgstr "ผลลัพธ์"
+
+#. module: kmitl_project
+#: model:ir.model.fields.selection,name:kmitl_project.selection__project_output__line_type__output
+msgid "Output"
+msgstr "ผลผลิต"
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_strategic_plan_search
+msgid "Parent"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_strategic_plan_search
+msgid "Parent Account"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__parent_path
+msgid "Parent Path"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields.selection,name:kmitl_project.selection__project_target__line_type__participant
+msgid "Participant"
+msgstr "ผู้เข้าร่วม"
+
+#. module: kmitl_project
+#. odoo-python
+#: code:addons/kmitl_project/models/project_plan.py:0
+#, python-format
+msgid "Percentage must be 0-100"
+msgstr "ร้อยละต้องอยู่ในช่วง 0 ถึง 100"
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "Period"
+msgstr "ระยะเวลา"
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__access_url
+msgid "Portal Access URL"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "Portal Preview"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "Postpone"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_expected_outcome__project_id
+#: model:ir.model.fields,field_description:kmitl_project.field_project_output__project_id
+#: model:ir.model.fields,field_description:kmitl_project.field_project_target__project_id model:ir.ui.menu,name:kmitl_project.menu_main_project
+msgid "Project"
+msgstr "โครงการ/กิจกรรม"
+
+#. module: kmitl_project
+#: model:ir.actions.act_window,name:kmitl_project.action_project_evaluation model_terms:ir.ui.view,arch_db:kmitl_project.view_project_evaluation_form
+msgid "Project Evaluation"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.actions.act_window,name:kmitl_project.action_project_global_index
+msgid "Project Global Index"
+msgstr "Global Index"
+
+#. module: kmitl_project
+#: model:ir.actions.act_window,name:kmitl_project.action_project_impact
+msgid "Project Impact"
+msgstr "Impact"
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "Project Manager"
+msgstr "หัวหน้าโครงการ/กิจกรรม"
+
+#. module: kmitl_project
+#: model:ir.actions.act_window,name:kmitl_project.action_project_methodology
+msgid "Project Methodology"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "Project Name..."
+msgstr "ชื่อโครงการ/กิจกรรม เช่น กิจกรรม Open House ประจำปี 2570"
+
+#. module: kmitl_project
+#: model:ir.actions.act_window,name:kmitl_project.action_project_strategic_plan model_terms:ir.ui.view,arch_db:kmitl_project.view_project_strategic_plan_form
+msgid "Project Strategic Plan"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__project_type
+msgid "Project Type"
+msgstr "ประเภท"
+
+#. module: kmitl_project
+#. odoo-python
+#: code:addons/kmitl_project/models/project_strategic_plan.py:0
+#: model:ir.model.constraint,message:kmitl_project.constraint_project_strategic_plan_unique_project_strategic_plan
+#, python-format
+msgid "Project strategic plan's code must be unique"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__project_type__project
+msgid "Project/Activity"
+msgstr "โครงการ/กิจกรรม"
+
+#. module: kmitl_project
+#: model:ir.model,name:kmitl_project.model_project_evaluation
+msgid "ProjectEvaluation"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model,name:kmitl_project.model_project_methodology
+msgid "ProjectMethodology"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model,name:kmitl_project.model_project_output
+msgid "ProjectOutput"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_exception_rule__kmitl_project_ids model:ir.ui.menu,name:kmitl_project.menu_projects
+msgid "Projects"
+msgstr "โครงการ/กิจกรรม"
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "Reset to Draft"
+msgstr "รีเซ็ต"
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__creating_user_id
+msgid "Responsible"
+msgstr "ผู้รับผิดชอบ"
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__activity_user_id
+msgid "Responsible User"
+msgstr "ผู้รับผิดชอบ"
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__message_has_sms_error
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__access_token
+msgid "Security Token"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_expected_outcome__sequence
+#: model:ir.model.fields,field_description:kmitl_project.field_project_output__sequence model:ir.model.fields,field_description:kmitl_project.field_project_target__sequence
+msgid "Sequence"
+msgstr "ลำดับ"
+
+#. module: kmitl_project
+#: model:ir.model.fields,help:kmitl_project.field_project_strategic_plan__active
+msgid "Set active to false to hide the project strategic plan without removing it."
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,help:kmitl_project.field_project_strategic_plan__deprecated
+msgid "Set deprecated to true to mark the project strategic plan that has been outdated, that you should no longer use it."
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "Settings"
+msgstr "ตั้งค่า"
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__date_start
+msgid "Start Date"
+msgstr "วันที่เริ่มโครงการ"
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__state
+msgid "Status"
+msgstr "สถานะ"
+
+#. module: kmitl_project
+#: model:ir.model.fields,help:kmitl_project.field_kmitl_project__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__project_type__strategic_project
+msgid "Strategic Project"
+msgstr "โครงการยุทธศาสตร์"
+
+#. module: kmitl_project
+#. odoo-python
+#: code:addons/kmitl_project/models/project_strategic_plan.py:0
+#, python-format
+msgid "Strategic subplans"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_strategic_plan_form
+msgid "Sub plans"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields.selection,name:kmitl_project.selection__project_target__line_type__target
+msgid "Target Group"
+msgstr "กลุ่มเป้าหมาย"
+
+#. module: kmitl_project
+#: model_terms:ir.actions.act_window,help:kmitl_project.action_project_fight
+msgid "There is no examples click here to add new KMITL FIGHT."
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.actions.act_window,help:kmitl_project.action_kmitl_project_all
+msgid "There is no examples click here to add new KMITL Project."
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.actions.act_window,help:kmitl_project.action_project_evaluation
+msgid "There is no examples click here to add new Project Evaluation."
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.actions.act_window,help:kmitl_project.action_project_global_index
+msgid "There is no examples click here to add new Project Global Index."
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.actions.act_window,help:kmitl_project.action_project_impact
+msgid "There is no examples click here to add new Project Impact."
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.actions.act_window,help:kmitl_project.action_project_methodology
+msgid "There is no examples click here to add new Project Methodology."
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.actions.act_window,help:kmitl_project.action_project_strategic_plan
+msgid "There is no examples click here to add new Project Strategic Plan."
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_strategic_plan_search
+msgid "Top Level Accounts"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,help:kmitl_project.field_kmitl_project__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_output__unit
+msgid "Unit"
+msgstr "หน่วย"
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__user_id
+msgid "User"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__website_message_ids
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,help:kmitl_project.field_kmitl_project__website_message_ids
+#: model:ir.model.fields,help:kmitl_project.field_project_strategic_plan__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: kmitl_project
+#. odoo-python
+#: code:addons/kmitl_project/models/project_strategic_plan.py:0
+#, python-format
+msgid "You cannot create recursive project strategic plan."
+msgstr ""
+
+#. module: kmitl_project
+#. odoo-python
+#: code:addons/kmitl_project/models/kmitl_project.py:0
+#, python-format
+msgid "You cannot delete a record. Please cancel the record first."
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "bytes)"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model,name:kmitl_project.model_kmitl_project
+msgid "kmitl.project"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model,name:kmitl_project.model_project_expected_outcome
+msgid "project.expected.outcome"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model,name:kmitl_project.model_project_fight
+msgid "project.fight"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model,name:kmitl_project.model_project_global_index
+msgid "project.global.index"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model,name:kmitl_project.model_project_impact
+msgid "project.impact"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model,name:kmitl_project.model_project_plan
+msgid "project.plan"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model,name:kmitl_project.model_project_strategic_plan
+msgid "project.strategic.plan"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model,name:kmitl_project.model_project_target
+msgid "project.target"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_plan__m7 model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ก.ค."
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_plan__m2 model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ก.พ."
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_plan__m9 model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ก.ย."
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "กลุ่มเป้าหมาย"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__organizer_ids
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__participant_ids
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__target_ids model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__fund_analytic_id
+msgid "กองทุน"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "การดำเนินโครงการ"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "กำลังดำเนินการ"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__activity_analytic_id
+msgid "กิจกรรม"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_form_project_plan
+msgid "กิจกรรม / ขั้นตอน"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__fight_id
+msgid "ความสอดคล้องกับค่านิยม : FIGHT"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "ความสอดคล้องกับนโยบายสถาบัน"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.ui.menu,name:kmitl_project.project_strategic_plan_config_menu
+msgid "ความสอดคล้องกับยุทธศาสตร์"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ความสอดคล้องกับแผนยุทธศาสตร์"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "ความสอดคล้องแผนยุทธศาสตร์"
+msgstr ""
+
+#. module: kmitl_project
+#: model:exception.rule,name:kmitl_project.project_excep_no_strategy
+msgid "ความสอดคล้องแผนยุทธศาสตร์ไม่สมบูรณ์"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_fight__description
+msgid "คำอธิบาย"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_plan__amount model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "งบประมาณ"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "จำนวน"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ชะลอ"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_expected_outcome__name model:ir.model.fields,field_description:kmitl_project.field_project_fight__name
+#: model:ir.model.fields,field_description:kmitl_project.field_project_global_index__name model:ir.model.fields,field_description:kmitl_project.field_project_impact__name
+#: model:ir.model.fields,field_description:kmitl_project.field_project_plan__name
+msgid "ชื่อ"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ชื่อกลุ่มเป้าหมาย"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ชื่อรายการ"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__name
+msgid "ชื่อแผนยุทธศาสตร์"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.portal_my_kmitl_projects
+msgid "ชื่อโครงการ"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ชื่อโครงการ/กิจกรรม"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_plan__m10 model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ต.ค."
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ตั้งแต่"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ถึง"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_plan__m12 model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ธ.ค."
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
+msgid "ประเภทโครงการ"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content model_terms:ir.ui.view,arch_db:kmitl_project.portal_my_kmitl_projects
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
+msgid "ปีงบประมาณ"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
+msgid "ปีงบประมาณปัจจุบัน"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__expected_outcome_ids model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "ผลที่คาดว่าจะได้รับ"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__output_ids model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ผลผลิต"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "ผลผลิต (Output)"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__outcome_ids model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ผลลัพธ์"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "ผลลัพธ์ (Outcome)"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ผู้จัดงาน"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "ผู้ดำเนินโครงการ และวิทยากร"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ผู้เข้าร่วม"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "ผู้เข้าร่วมโครงการ"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_plan__m5 model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "พ.ค."
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_plan__m11 model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "พ.ย."
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_plan__m1 model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ม.ค."
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_plan__m6 model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "มิ.ย."
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_plan__m3 model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "มี.ค."
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ยกเลิก"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.portal_my_kmitl_projects
+msgid "ยังไม่มีโครงการในระบบ"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ยังไม่เริ่มดำเนินการ"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__national_strategy_id model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ยุทธศาสตร์ชาติ"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__budget_account_id
+msgid "รหัสงบประมาณ"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__code
+msgid "รหัสอ้างอิง"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content model_terms:ir.ui.view,arch_db:kmitl_project.portal_my_kmitl_projects
+msgid "รหัสโครงการ"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__level
+msgid "ระดับแผน"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_form_project_plan
+msgid "ระบุเดือนที่ดำเนินการ"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ระยะเวลาดำเนินโครงการ"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_output_tree
+msgid "รายการ"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "รายละเอียด"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "รายละเอียดโครงการ/กิจกรรม"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_plan__percentage
+msgid "ร้อยละ"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_plan__sequence
+msgid "ลำดับการแสดงผล"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__objective model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "วัตถุประสงค์"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "วิธีการ"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__evaluation_ids model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "วิธีการ/เครื่องมือติดตามและประเมินผล"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__evaluation_detail
+msgid "วิธีการ/เครื่องมือติดตามและประเมินผล (รายละเอียด)"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__methodology_ids model:ir.ui.menu,name:kmitl_project.project_methodology_config_menu
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "วิธีดำเนินการ"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__methodology_detail
+msgid "วิธีดำเนินการ (รายละเอียด)"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_plan__m8 model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ส.ค."
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__location model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "สถานที่/พื้นที่ดำเนินโครงการ"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.portal_my_kmitl_projects model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
+msgid "สถานะ"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "สถานะการดำเนินโครงการ"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__department_analytic_id
+msgid "ส่วนงาน"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_output_tree
+msgid "หน่วย"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content model_terms:ir.ui.view,arch_db:kmitl_project.portal_my_kmitl_projects
+msgid "หน่วยงาน"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__introduction model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "หลักการและเหตุผล"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "หลักการและเหตุผล..."
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "หัวหน้าโครงการ"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_target_tree
+msgid "เป้าหมาย"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "เป้าหมาย ผลผลิต และผลลัพธ์"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_plan__m4 model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "เม.ย."
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "เอกสารประกอบ"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "เอกสารอื่น ๆ"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "เอกสารแนบ"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "แบบฟอร์มรายงานโครงการหรือกิจกรรม (แบบ วต)"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "แบบร่าง"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__kmitl_plan_id
+msgid "แผนกลยุทธสถาบัน"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "แผนกลยุทธ์สถาบัน"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
+msgid "แผนการดำเนินงาน"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__plan_ids model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "แผนการดำเนินงานและแผนการใช้จ่ายงบประมาณ"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "แผนพัฒนาเศรษฐกิจและสังคมแห่งชาติ"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__nesdc_plan_id
+msgid "แผนพัฒนาเศรษฐกิจและสังคมแห่งชาติ ฉบับที่ 13"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__child_ids
+msgid "แผนยุทธศาสตร์ย่อย"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__parent_id
+msgid "แผนยุทธศาสตร์หลัก"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__master_plan_id model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "แผนแม่บทภายใต้ยุทธศาสตร์ชาติ"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "แล้วเสร็จ"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__source_analytic_id
+msgid "แหล่งเงิน"
+msgstr ""
+
+#. module: kmitl_project
+#: model:ir.model.fields,field_description:kmitl_project.field_project_plan__project_id
+msgid "โครงการ"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
+msgid "โครงการ/กิจกรรม"
+msgstr ""
+
+#. module: kmitl_project
+#: model:exception.rule,description:kmitl_project.project_excep_no_strategy model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
+msgid "โครงการยุทธศาสตร์"
+msgstr ""
+
+#. module: kmitl_project
+#. odoo-javascript
+#: code:addons/kmitl_project/static/src/components/project_plan_edit_table/project_plan_edit_table.xml:0
+#, python-format
+msgid "ไตรมาสที่ 1"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_form_project_plan
+msgid "ไตรมาสที่ 1 (ต.ค. - ธ.ค.)"
+msgstr ""
+
+#. module: kmitl_project
+#. odoo-javascript
+#: code:addons/kmitl_project/static/src/components/project_plan_edit_table/project_plan_edit_table.xml:0
+#, python-format
+msgid "ไตรมาสที่ 2"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_form_project_plan
+msgid "ไตรมาสที่ 2 (ม.ค. - มี.ค.)"
+msgstr ""
+
+#. module: kmitl_project
+#. odoo-javascript
+#: code:addons/kmitl_project/static/src/components/project_plan_edit_table/project_plan_edit_table.xml:0
+#, python-format
+msgid "ไตรมาสที่ 3"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_form_project_plan
+msgid "ไตรมาสที่ 3 (เม.ย. - มิ.ย.)"
+msgstr ""
+
+#. module: kmitl_project
+#. odoo-javascript
+#: code:addons/kmitl_project/static/src/components/project_plan_edit_table/project_plan_edit_table.xml:0
+#, python-format
+msgid "ไตรมาสที่ 4"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_form_project_plan
+msgid "ไตรมาสที่ 4 (ก.ค. - ก.ย.)"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+msgid "ไม่มีข้อมูล"
+msgstr ""

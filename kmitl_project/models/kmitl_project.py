@@ -15,9 +15,9 @@ class KmitlProject(models.Model):
 
     READONLY_STATES = {
         "draft": [("readonly", False)],
-        "confirmed": [("readonly", True)],
+        "new": [("readonly", True)],
         "in_progress": [("readonly", True)],
-        "postpone": [("readonly", True)],
+        "on_hold": [("readonly", True)],
         "complete": [("readonly", True)],
         "cancel": [("readonly", True)],
     }

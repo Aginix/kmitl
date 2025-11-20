@@ -25,6 +25,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
+                <field name="activity_ids" widget="list_activity" optional="show"/>
                 <field name="key" optional="show" />
                 <field name="account_fiscal_year_id" optional="show" />
                 <field name="project_type"/>
@@ -46,7 +47,7 @@
                     <button string="Complete" name="button_complete" states="in_progress" type="object" class="oe_highlight" />
                     <button string="Reset to Draft" name="button_draft" groups="project.group_project_manager" states="cancel,confirmed,in_progress" type="object" />
                     <button string="Cancel" name="button_cancel" states="draft,confirmed" type="object" />
-                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,in_progress,complete" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,new,in_progress,complete" />
                 </header>
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}" />
@@ -102,11 +103,18 @@
                     </group>
                     <notebook>
                         <page name="strategic" string="ความสอดคล้องแผนยุทธศาสตร์">
-                            <group >
+                            <group>
                                 <field name="national_strategy_id" />
                                 <field name="master_plan_id" />
                                 <field name="nesdc_plan_id" />
                                 <field name="kmitl_plan_id" />
+                            </group>
+                            <group name="budget" string="งบประมาณ">
+                                <field name="budget_account_id" required="1"/>
+                                <field name="activity_analytic_id" required="1"/>
+                                <field name="fund_analytic_id" required="1"/>
+                                <field name="department_analytic_id" required="1"/>
+                                <field name="source_analytic_id" required="1"/>
                             </group>
                         </page>
                         <page name="introduction" string="รายละเอียดโครงการ/กิจกรรม">
@@ -230,9 +238,9 @@
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
-                    <field name="message_follower_ids" options="{'post_refresh':True}" groups="base.group_user"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
+                    <field name="message_follower_ids" widget="mail_followers" options="{'post_refresh':True}" groups="base.group_user"/>
+                    <field name="activity_ids" widget="mail_activity" />
+                    <field name="message_ids" widget="mail_thread" />
                 </div>
             </form>
         </field>
@@ -250,6 +258,10 @@
                 <filter name="project_type_strategic" string="โครงการยุทธศาสตร์" domain="[('project_type', '=', 'strategic_project')]" />
                 <separator />
                 <filter name="current_fy" string="ปีงบประมาณปัจจุบัน" domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
+                <separator />
+                <filter string="Late Activities" name="activities_overdue" domain="[('my_activity_date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]" help="Show all records which have a next action date before today"/>
+                <filter string="Today Activities" name="activities_today" domain="[('my_activity_date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Future Activities" name="activities_upcoming_all" domain="[('my_activity_date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]"/>
                 <group expand="1" string="Group By">
                     <filter string="ประเภทโครงการ" name="by_project_type" domain="[]" context="{'group_by':'project_type'}"/>
                     <filter string="สถานะ" name="by_state" domain="[]" context="{'group_by':'state'}"/>
