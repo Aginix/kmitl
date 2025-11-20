@@ -16,7 +16,6 @@ class PurchaseContractType(models.Model):
     )
     is_construction = fields.Boolean(tracking=True, default=False)
 
-    @api.multi
     def unlink(self):
         for rec in self:
             if rec.purchase_ids:

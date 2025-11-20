@@ -65,7 +65,13 @@
             </xpath>
 
             <xpath expr="//button[@name='button_confirm']" position="before">
-                <button name="get_contract_number" type="object" string="Get Contract Number" class="oe_highlight" attrs="{'invisible': [('contract_number', '=', True)]}" />
+                <button
+                    name="get_contract_number"
+                    type="object"
+                    string="Get Contract Number"
+                    class="oe_highlight"
+                    attrs="{'invisible': [('contract_number', '!=', False)]}"
+                />
             </xpath>
 
             <!-- invisible -->

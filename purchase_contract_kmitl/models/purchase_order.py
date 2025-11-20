@@ -83,6 +83,22 @@ class PurchaseOrder(models.Model):
     def compute_fines_late(self):
         today = fields.Date.today()
 
+        domain = [
+            ('state', '=', 'order'),
+            ('active', '=', True),
+            '|',
+                ('work_end', '>=', today),
+                ('date_planned', '>=', today),
+        ]
+
+        orders = self.search(domain)
+
+        for po in orders:
+            po._compute_fines_internal()
+
+    def _compute_fines_internal(self):
+        today = fields.Date.today()
+
         for rec in self:
             rec.late_days = today - rec.end_date
             if rec.contract_type_id.is_construction:
@@ -95,4 +111,34 @@ class PurchaseOrder(models.Model):
             rec.fines_late = rec.fines_rate * rec.late_days
 
     def get_contract_number(self):
-        print("Get Contract Number")
+        source_map = {
+            "r_prefix_ids": [
+                self.env.ref("account_analytic_kmitl.source_2").id,
+                self.env.ref("account_analytic_kmitl.source_4").id,
+            ]
+        }
+
+        for rec in self:
+            fy = rec.account_fiscal_year_id
+            fiscal_year = fy.name if fy else fields.Date.today().strftime("%y")
+
+            short_name = rec.department_id.short_name
+            if not short_name:
+                raise ValidationError(_("Department short name is missing."))
+
+            prefix_src = "ร." if rec.source_analytic_id.id in source_map["r_prefix_ids"] else ""
+
+            seq_code = f"purchase.contract.{fiscal_year}.{short_name}"
+
+            Sequence = self.env['ir.sequence']
+            if not Sequence.search([('code', '=', seq_code)], limit=1):
+                Sequence.create({
+                    'name': f'Purchase Contract {fiscal_year} {short_name}',
+                    'code': seq_code,
+                    'prefix': f'{short_name}. ',
+                    'padding': 2,
+                    'number_increment': 1,
+                })
+
+            next_num = Sequence.next_by_code(seq_code)
+            rec.contract_number = f"{prefix_src}{next_num}/{fiscal_year}"
