@@ -40,13 +40,15 @@ class PurchaseOrder(models.Model):
     fines_late = fields.Monetary(string="Fines Amount",
         help="Computed amount. Can be overwritten",
         states=READONLY_STATES,
-        tracking=True
+        tracking=True,
+        copy=False,
     )
 
     late_days = fields.Integer(string="Late Days",
         help="Late day(s) from Current Date - End Date",
         states=READONLY_STATES,
-        tracking=True
+        tracking=True,
+        copy=False,
     )
 
     contract_name = fields.Char(
@@ -59,6 +61,7 @@ class PurchaseOrder(models.Model):
         string="Contract No.",
         tracking=True,
         states=READONLY_STATES,
+        copy=False,
     )
 
     is_construction = fields.Boolean(
