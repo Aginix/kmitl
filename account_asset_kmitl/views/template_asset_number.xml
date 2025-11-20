@@ -23,7 +23,7 @@
             .asset-body {
                 padding: 4pt 8pt !important;
             }
-            
+
             .table {
               margin-bottom: 0 !important;
             }
@@ -33,15 +33,15 @@
                 font-weight: 900;
                 line-height: 1.15;
             }
-            
+
             table td {
               line-height: 1.2;
             }
-            
+
             .table-sm &gt; :not(caption) &gt; * &gt; * {
               padding: 0 !important;
             }
-            
+
             .label {
               width: 60pt;
             }
@@ -127,7 +127,7 @@
             expr="//t[@t-call='account_asset_number.report_simple_asset_number']"
             position="replace"
         >
-            <t t-call="account_asset_label_kmitl.report_simple_asset_number_kmitl" />
+            <t t-call="account_asset_kmitl.report_simple_asset_number_kmitl" />
         </xpath>
     </template>
 </odoo>
