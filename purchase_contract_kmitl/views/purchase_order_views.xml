@@ -16,13 +16,13 @@
 
             <xpath expr="//div[@name='date_approve']" position="before">
                 <field name="is_construction" invisible="1" />
-                <label for="date_order" string="Date Order" />
+                <label for="date_order_date" string="Date Order" />
                 <!-- มีปัญหาไม่อยู่บรรทัดเดียวกัน -->
                 <div name="date_order_div" class="o_row">
                     <field
-                        name="date_order"
+                        name="date_order_date"
                         widget="daterange"
-                        options="{'related_end_date': 'date_planned', 'format_type': 'date'}"
+                        options="{'related_end_date': 'date_planned_date'}"
                     />
                     <i
                         class="fa fa-long-arrow-right mx-2 oe_edit_only"
@@ -30,9 +30,9 @@
                         title="Arrow"
                     />
                     <field
-                        name="date_planned"
+                        name="date_planned_date"
                         widget="daterange"
-                        options="{'related_start_date': 'date_order', 'format_type': 'date'}"
+                        options="{'related_start_date': 'date_order_date'}"
                     />
                 </div>
 

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import date
+from datetime import date, datetime, time
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
@@ -67,6 +67,20 @@ class PurchaseOrder(models.Model):
         store=True,
     )
 
+    date_planned_date = fields.Date(
+        string="Expected Arrival (Date Only)",
+        compute="_compute_date_only",
+        inverse="_inverse_date_only",
+        store=True,
+    )
+
+    date_order_date = fields.Date(
+        string="Order Date (Date Only)",
+        compute="_compute_date_only",
+        inverse="_inverse_date_only",
+        store=True,
+    )
+
     _sql_constraints = [
         (
             "unique_contract_number",
@@ -74,6 +88,28 @@ class PurchaseOrder(models.Model):
             "The contract_number must be unique!",
         ),
     ]
+
+    @api.depends("date_planned", "date_order")
+    def _compute_date_only(self):
+        for rec in self:
+            rec.date_planned_date = rec.date_planned.date() if rec.date_planned else False
+            rec.date_order_date = rec.date_order.date() if rec.date_order else False
+
+    def _inverse_date_only(self):
+        for rec in self:
+            if rec.date_planned_date:
+                rec.date_planned = datetime.combine(
+                    rec.date_planned_date,
+                    time(0, 0, 0)
+                )
+            else:
+                rec.date_planned = False
+
+            if rec.date_order_date:
+                rec.date_order = datetime.combine(
+                    rec.date_order_date,
+                    time(0, 0, 0)
+                )
 
     @api.depends("contract_type_id")
     def _compute_is_construction(self):
