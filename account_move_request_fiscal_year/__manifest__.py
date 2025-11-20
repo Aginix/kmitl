@@ -7,7 +7,7 @@
     "website": "https://github.com/aginix/kmitl",
     "depends": [
         "account_move_request",
-        "account_fiscal_year",
+        "account_fiscal_year_enhance",
     ],
     "data": [
         "views/account_move_request_views.xml",
