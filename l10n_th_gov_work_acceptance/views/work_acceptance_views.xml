@@ -180,16 +180,15 @@
                             icon="fa-thumbs-up"
                         />
                         <button
-                            name="validate_tier"
+                            name="reject_tier"
                             string="Not Accept"
                             attrs="{'invisible': [('can_review', '=', False)]}"
                             type="object"
                             class="btn-icon btn-danger"
                             icon="fa-thumbs-down"
-                            context="{'validate_as_not_accept': True, 'default_comment': 'ไม่รับเพราะ...'}"
                         />
                         <button
-                            name="validate_tier"
+                            name="reject_tier"
                             string="Other"
                             attrs="{'invisible': [('can_review', '=', False)]}"
                             type="object"

@@ -7,15 +7,9 @@
         <field name="code">
 # Write comment and status = accepted / not accepted / other
 tier_reviews = record.review_ids.filtered(lambda l: l.done_by == env.user)
-<!-- comment = ",".join(tier_reviews.mapped("comment")) -->
 committee = record.work_acceptance_committee_ids.filtered(lambda l: l.employee_id.user_id == env.user)
-if env.context.get("validate_as_other"):
-    committee.write({"status": "other"})
-elif env.context.get("validate_as_not_accept"):
-    comment = ",".join(tier_reviews.mapped("comment"))
-    committee.write({"status": "not_accept", "note": comment})
-else:
-    committee.write({"status": "accept"})
+
+committee.write({"status": "accept"})
         </field>
     </record>
 
@@ -28,7 +22,11 @@ else:
 tier_reviews = record.review_ids.filtered(lambda l: l.done_by == env.user)
 comment = ",".join(tier_reviews.mapped("comment"))
 committee = record.work_acceptance_committee_ids.filtered(lambda l: l.employee_id.user_id == env.user)
-committee.write({"status": "not_accept", "note": comment})
+
+if env.context.get("validate_as_other"):
+    committee.write({"status": "other", "note": comment})
+else:
+    committee.write({"status": "not_accept", "note": comment})
         </field>
     </record>
 </odoo>
