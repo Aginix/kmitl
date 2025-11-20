@@ -99,13 +99,14 @@ class PurchaseOrder(models.Model):
 
     def _inverse_date_only(self):
         for rec in self:
+            rec.date_planned = False
+            rec.date_order = False
+
             if rec.date_planned_date:
                 rec.date_planned = datetime.combine(
                     rec.date_planned_date,
                     time(0, 0, 0)
                 )
-            else:
-                rec.date_planned = False
 
             if rec.date_order_date:
                 rec.date_order = datetime.combine(
@@ -118,7 +119,7 @@ class PurchaseOrder(models.Model):
         for rec in self:
             rec.is_construction = bool(rec.contract_type_id.is_construction)
 
-    def compute_fines_late(self):
+    def _cron_compute_fines_late(self):
         today = fields.Date.today()
 
         domain = [
@@ -135,60 +136,55 @@ class PurchaseOrder(models.Model):
 
     def _compute_fines_internal(self):
         today = fields.Date.today()
-
         for rec in self:
-
-            if rec.contract_type_id.is_construction and rec.work_end:
-                dt = rec.work_end
-            else:
-                dt = rec.date_planned
-
-            if not dt:
+            if not rec.work_end or not rec.date_planned:
                 rec.late_days = 0
                 rec.fines_late = 0
                 continue
+            end_date = rec.work_end if rec.contract_type_id.is_construction else rec.date_planned.date()
+            rec.late_days = (today - end_date).days
+            rec.fines_late = rec.fines_rate * rec.late_days if rec.fines_rate else 0
 
-            if isinstance(dt, datetime):
-                planned_date = dt.date()
-            elif isinstance(dt, date):
-                planned_date = dt
-            else:
-                rec.late_days = 0
-                rec.fines_late = 0
-                continue
+    def _validate_get_contract_number(self):
+        if not self.account_fiscal_year_id:
+            raise ValidationError(_("Account fiscal year is required."))
+        if not self.department_id or not self.department_id.short_name:
+            raise ValidationError(_("Department's short name is required."))
+        if not self.source_analytic_id:
+            raise ValidationError(_("Source analytic is required."))
 
-            rec.late_days = (today - planned_date).days
-            rec.fines_late = rec.fines_rate * rec.late_days
+    def _get_next_contract_number(self):
+        fiscal_year = self.account_fiscal_year_id.name
+        short_name = self.department_id.short_name
+        seq_code = f"purchase.contract.{fiscal_year}.{short_name}"
 
-    def get_contract_number(self):
-        source_map = {
-            "r_prefix_ids": [
-                self.env.ref("account_analytic_kmitl.source_2").id,
-                self.env.ref("account_analytic_kmitl.source_4").id,
-            ]
-        }
+        Sequence = self.env['ir.sequence']
+
+        if not Sequence.search([('code', '=', seq_code)], limit=1):
+            Sequence.create({
+                'name': f'Purchase Contract {fiscal_year} {short_name}',
+                'code': seq_code,
+                'prefix': f'{short_name}. ',
+                'padding': 2,
+                'number_increment': 1,
+            })
+
+        return Sequence.next_by_code(seq_code)
+
+    def create_contract_number(self):
+        prefix_src = "ร."
+        source_analytic_ids = [
+            self.env.ref("account_analytic_kmitl.source_2").id,
+            self.env.ref("account_analytic_kmitl.source_4").id,
+        ]
 
         for rec in self:
-            fy = rec.account_fiscal_year_id
-            fiscal_year = fy.name if fy else fields.Date.today().strftime("%y")
+            rec._validate_get_contract_number()
 
-            short_name = rec.department_id.short_name
-            if not short_name:
-                raise ValidationError(_("Department short name is missing."))
+            fiscal_year = rec.account_fiscal_year_id.name
+            next_num = rec._get_next_contract_number()
 
-            prefix_src = "ร." if rec.source_analytic_id.id in source_map["r_prefix_ids"] else ""
-
-            seq_code = f"purchase.contract.{fiscal_year}.{short_name}"
-
-            Sequence = self.env['ir.sequence']
-            if not Sequence.search([('code', '=', seq_code)], limit=1):
-                Sequence.create({
-                    'name': f'Purchase Contract {fiscal_year} {short_name}',
-                    'code': seq_code,
-                    'prefix': f'{short_name}. ',
-                    'padding': 2,
-                    'number_increment': 1,
-                })
-
-            next_num = Sequence.next_by_code(seq_code)
-            rec.contract_number = f"{prefix_src}{next_num}/{fiscal_year}"
+            if rec.source_analytic_id.id in source_analytic_ids:
+                rec.contract_number = f"{prefix_src}{next_num}/{fiscal_year}"
+            else:
+                rec.contract_number = f"{next_num}/{fiscal_year}"

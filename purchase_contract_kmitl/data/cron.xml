@@ -3,7 +3,7 @@
         <field name="name">purchase_order_fines_late_daily</field>
         <field name="model_id" ref="model_purchase_order" />
         <field name="state">code</field>
-        <field name="code">model.compute_fines_late()</field>
+        <field name="code">model._cron_compute_fines_late()</field>
         <field name="interval_number">1</field>
         <field name="interval_type">days</field>
         <field name="numbercall">-1</field>
