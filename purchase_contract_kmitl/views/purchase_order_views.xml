@@ -5,7 +5,7 @@
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_form" />
         <field name="arch" type="xml">
-            <xpath expr="//group/group[2]" position="inside">
+            <xpath expr="//field[@name='date_order']" position="after">
                 <field name="contract_name" />
                 <field name="contract_number" readonly="1" />
                 <field name="fines_rate" />
@@ -14,7 +14,7 @@
                 <field name="contract_type_id" />
             </xpath>
 
-            <xpath expr="//div[@name='date_approve']" position="before">
+            <xpath expr="//field[@name='date_order']" position="after">
                 <field name="is_construction" invisible="1" />
                 <label for="date_order_date" string="Date Order" />
                 <div name="date_order_div" class="o_row">
@@ -83,6 +83,12 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//div[@name='reminder']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//div[@name='date_planned_div']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='ignore_exception']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
             <xpath
