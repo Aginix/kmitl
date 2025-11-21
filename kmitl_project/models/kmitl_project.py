@@ -381,11 +381,14 @@ class KmitlProject(models.Model):
     def button_draft(self):
         self.write({"state": "draft"})
 
-    def button_confirm(self):
-        self.write({"state": "confirmed"})
+    def button_new(self):
+        self.write({"state": "new"})
 
     def button_in_progress(self):
         self.write({"state": "in_progress"})
+
+    def button_on_hold(self):
+        self.write({"state": "on_hold"})
 
     def button_complete(self):
         self.write({"state": "complete"})

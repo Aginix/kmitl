@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_report_kmitl_project" model="ir.actions.report">
+        <field name="name">KMITL Project</field>
+        <field name="binding_model_id" ref="model_kmitl_project" />
+        <field name="model">kmitl.project</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">kmitl_project.report_kmitl_project</field>
+        <field name="paperformat_id" ref="paperformat_kmitl_project_report"/>
+        <field name="report_file">kmitl_project.report_kmitl_project</field>
+    </record>
+</odoo>

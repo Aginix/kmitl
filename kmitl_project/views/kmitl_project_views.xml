@@ -42,17 +42,19 @@
         <field name="arch" type="xml">
             <form string="KMITL Project">
                 <header>
-                    <button string="Confirm" name="button_confirm" states="draft" type="object" class="oe_highlight" />
-                    <button string="In Progress" name="button_in_progress" states="confirmed" type="object" />
+                    <button string="Confirm" name="button_new" states="draft" type="object" class="oe_highlight" />
+                    <button string="In Progress" name="button_in_progress" states="new" type="object" />
+                    <button string="On hold" name="button_on_hold" states="new" type="object" />
                     <button string="Complete" name="button_complete" states="in_progress" type="object" class="oe_highlight" />
-                    <button string="Reset to Draft" name="button_draft" groups="project.group_project_manager" states="cancel,confirmed,in_progress" type="object" />
-                    <button string="Cancel" name="button_cancel" states="draft,confirmed" type="object" />
+                    <button string="Reset to Draft" name="button_draft" groups="project.group_project_manager" states="cancel,in_progress,on_hold" type="object" />
+                    <button string="Reset to Draft" name="button_draft" states="new" type="object" />
+                    <button string="Cancel" name="button_cancel" groups="project.group_project_manager" states="draft,new,in_progress,on_hold" type="object" />
                     <field name="state" widget="statusbar" statusbar_visible="draft,new,in_progress,complete" />
                 </header>
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}" />
                     <widget name="web_ribbon" title="Cancelled" bg_color="bg-black" attrs="{'invisible': [('state', '!=', 'cancel')]}" />
-                    <widget name="web_ribbon" title="Postpone" bg_color="bg-warning" attrs="{'invisible': [('state', '!=', 'postpone')]}" />
+                    <widget name="web_ribbon" title="On hold" bg_color="bg-warning" attrs="{'invisible': [('state', '!=', 'on_hold')]}" />
                     <widget name="web_ribbon" title="Completed" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'complete')]}" />
                     <field name="is_editable" invisible="1" />
                     <div class="oe_button_box" name="button_box" groups="base.group_user">
@@ -115,6 +117,8 @@
                                 <field name="fund_analytic_id" required="1"/>
                                 <field name="department_analytic_id" required="1"/>
                                 <field name="source_analytic_id" required="1"/>
+                                <field name="analytic_account_id" invisible="1" />
+                                <field name="analytic_distribution" invisible="1" />
                             </group>
                         </page>
                         <page name="introduction" string="รายละเอียดโครงการ/กิจกรรม">
@@ -228,7 +232,6 @@
                                 <group>
                                     <field name="analytic_account_id" groups="analytic.group_analytic_accounting" />
                                     <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting" />
-                                    <field name="analytic_distribution" invisible="1" />
                                 </group>
                                 <group>
                                     <field name="creating_user_id" widget="many2one_avatar_user" attrs="{'readonly': [('id', '!=', False)]}" />

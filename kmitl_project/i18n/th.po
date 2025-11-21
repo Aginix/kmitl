@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-20 09:50+0000\n"
-"PO-Revision-Date: 2025-11-20 17:16+0700\n"
+"POT-Creation-Date: 2025-11-20 10:31+0000\n"
+"PO-Revision-Date: 2025-11-20 17:34+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -87,7 +87,7 @@ msgstr "ใช้งาน"
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__activity_ids
 msgid "Activities"
-msgstr ""
+msgstr "งาน/กิจกรรม"
 
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__activity_exception_decoration
@@ -327,6 +327,11 @@ msgid "Font awesome icon e.g. fa-tasks"
 msgstr ""
 
 #. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
+msgid "Future Activities"
+msgstr ""
+
+#. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__global_index_id model:ir.ui.menu,name:kmitl_project.project_global_index_config_menu
 #: model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
 msgid "Global Index"
@@ -487,6 +492,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:kmitl_project.field_project_strategic_plan__write_date
 #: model:ir.model.fields,field_description:kmitl_project.field_project_target__write_date
 msgid "Last Updated on"
+msgstr ""
+
+#. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
+msgid "Late Activities"
 msgstr ""
 
 #. module: kmitl_project
@@ -663,7 +673,7 @@ msgstr "โครงการ/กิจกรรม"
 #. module: kmitl_project
 #: model:ir.actions.act_window,name:kmitl_project.action_project_evaluation model_terms:ir.ui.view,arch_db:kmitl_project.view_project_evaluation_form
 msgid "Project Evaluation"
-msgstr ""
+msgstr "วิธีการประเมิน"
 
 #. module: kmitl_project
 #: model:ir.actions.act_window,name:kmitl_project.action_project_global_index
@@ -683,7 +693,7 @@ msgstr "หัวหน้าโครงการ/กิจกรรม"
 #. module: kmitl_project
 #: model:ir.actions.act_window,name:kmitl_project.action_project_methodology
 msgid "Project Methodology"
-msgstr ""
+msgstr "วิธีการดำเนินงาน"
 
 #. module: kmitl_project
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
@@ -693,7 +703,7 @@ msgstr "ชื่อโครงการ/กิจกรรม เช่น ก
 #. module: kmitl_project
 #: model:ir.actions.act_window,name:kmitl_project.action_project_strategic_plan model_terms:ir.ui.view,arch_db:kmitl_project.view_project_strategic_plan_form
 msgid "Project Strategic Plan"
-msgstr ""
+msgstr "ข้อมูลยุทธศาสตร์ชาติ"
 
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__project_type
@@ -706,7 +716,7 @@ msgstr "ประเภท"
 #: model:ir.model.constraint,message:kmitl_project.constraint_project_strategic_plan_unique_project_strategic_plan
 #, python-format
 msgid "Project strategic plan's code must be unique"
-msgstr ""
+msgstr "รหัสข้อมูลยุทธศาสตร์ต้องไม่ซ้ำกันในระบบ"
 
 #. module: kmitl_project
 #: model:ir.model.fields.selection,name:kmitl_project.selection__kmitl_project__project_type__project
@@ -716,17 +726,17 @@ msgstr "โครงการ/กิจกรรม"
 #. module: kmitl_project
 #: model:ir.model,name:kmitl_project.model_project_evaluation
 msgid "ProjectEvaluation"
-msgstr ""
+msgstr "วิธีประเมิน"
 
 #. module: kmitl_project
 #: model:ir.model,name:kmitl_project.model_project_methodology
 msgid "ProjectMethodology"
-msgstr ""
+msgstr "วิธีการดำเนินงาน"
 
 #. module: kmitl_project
 #: model:ir.model,name:kmitl_project.model_project_output
 msgid "ProjectOutput"
-msgstr ""
+msgstr "ผลผลิต"
 
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_exception_rule__kmitl_project_ids model:ir.ui.menu,name:kmitl_project.menu_projects
@@ -781,6 +791,11 @@ msgid "Settings"
 msgstr "ตั้งค่า"
 
 #. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
+msgid "Show all records which have a next action date before today"
+msgstr ""
+
+#. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__date_start
 msgid "Start Date"
 msgstr "วันที่เริ่มโครงการ"
@@ -809,12 +824,12 @@ msgstr "โครงการยุทธศาสตร์"
 #: code:addons/kmitl_project/models/project_strategic_plan.py:0
 #, python-format
 msgid "Strategic subplans"
-msgstr ""
+msgstr "ข้อมูลยุทธศาสตรย่อย"
 
 #. module: kmitl_project
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_strategic_plan_form
 msgid "Sub plans"
-msgstr ""
+msgstr "ข้อมูลย่อย"
 
 #. module: kmitl_project
 #: model:ir.model.fields.selection,name:kmitl_project.selection__project_target__line_type__target
@@ -857,6 +872,11 @@ msgid "There is no examples click here to add new Project Strategic Plan."
 msgstr ""
 
 #. module: kmitl_project
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_search
+msgid "Today Activities"
+msgstr ""
+
+#. module: kmitl_project
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_project_strategic_plan_search
 msgid "Top Level Accounts"
 msgstr ""
@@ -874,7 +894,7 @@ msgstr "หน่วย"
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__user_id
 msgid "User"
-msgstr ""
+msgstr "ผู้ใช้"
 
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__website_message_ids
@@ -1036,6 +1056,7 @@ msgstr ""
 
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_project_plan__amount model_terms:ir.ui.view,arch_db:kmitl_project.kmitl_project_portal_content
+#: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
 msgid "งบประมาณ"
 msgstr ""
 
