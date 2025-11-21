@@ -9,8 +9,8 @@
     'depends': ['stock'],
     "data": [
         "data/stock_request_sequence.xml",
-        "security/ir.model.access.csv",
         "security/stock_request_security.xml",
+        "security/ir.model.access.csv",
         "views/stock_picking_views.xml",
         "views/stock_request_views.xml",
         "views/menu.xml",
