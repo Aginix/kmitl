@@ -18,9 +18,4 @@
         <field name="implied_ids" eval="[(4, ref('stock_request_aginix.group_stock_request_user'))]"/>
     </record>
 
-    <record id="group_stock_request_manager" model="res.groups">
-        <field name="name">Stock Request Manager</field>
-        <field name="category_id" ref="category_stock_request_security"/>
-        <field name="implied_ids" eval="[(4, ref('stock_request_aginix.group_stock_request_approver'))]"/>
-    </record>
 </odoo>

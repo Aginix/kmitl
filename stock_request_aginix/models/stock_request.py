@@ -80,6 +80,11 @@ class StockRequest(models.Model):
         'stock.picking',
         string='Picking'
     )
+    is_editable = fields.Boolean(
+        string="Is Editable",
+        compute="_compute_is_editable",
+        store=False
+    )
 
     @api.model
     def create(self, vals):
@@ -168,6 +173,11 @@ class StockRequest(models.Model):
         default['state'] = 'draft'
         default['picking_id'] = False
         return super().copy(default)
+    
+    @api.depends('state')
+    def _compute_is_editable(self):
+        for rec in self:
+            rec.is_editable = rec.state == 'draft'
 
 
 class StockRequestLine(models.Model):
@@ -199,6 +209,23 @@ class StockRequestLine(models.Model):
         compute="_compute_progress",
         store=False
     )
+    valuation_layer_id = fields.Many2one(
+        'stock.valuation.layer',
+        string='Valuation Layer',
+        compute='_compute_valuation_layer',
+        store=False
+    )
+    price_unit = fields.Float(
+        string='Unit Price',
+        compute='_compute_price_from_valuation',
+        store=False
+    )
+    
+    total_price = fields.Float(
+        string='Total Price',
+        compute='_compute_total_price_from_valuation',
+        store=False
+    )
 
     @api.depends('request_id.picking_id.move_ids_without_package')
     def _compute_progress(self):
@@ -211,3 +238,44 @@ class StockRequestLine(models.Model):
                 done += move.quantity_done
 
             line.qty_done = done
+
+    @api.depends('product_id', 'request_id.picking_id')
+    def _compute_valuation_layer(self):
+        for line in self:
+            if not line.product_id or not line.request_id.picking_id:
+                line.valuation_layer_id = False
+                continue
+
+            moves = line.request_id.picking_id.move_ids_without_package.filtered(
+                lambda m: m.product_id == line.product_id
+            )
+            
+            if not moves:
+                line.valuation_layer_id = False
+                continue
+
+            valuation_layer = self.env['stock.valuation.layer'].search([
+                ('stock_move_id', 'in', moves.ids)
+            ], order='create_date asc', limit=1)
+            
+            line.valuation_layer_id = valuation_layer if valuation_layer else False
+
+    @api.depends('valuation_layer_id', 'qty_done')
+    def _compute_price_from_valuation(self):
+        for line in self:
+            if line.valuation_layer_id and line.valuation_layer_id.quantity != 0:
+                line.price_unit = abs(line.valuation_layer_id.value / line.valuation_layer_id.quantity)
+            else:
+                line.price_unit = 0.0
+
+    @api.depends('valuation_layer_id', 'qty_done')
+    def _compute_total_price_from_valuation(self):
+        for line in self:
+            if line.valuation_layer_id:
+                if line.valuation_layer_id.quantity != 0:
+                    ratio = line.qty_done / abs(line.valuation_layer_id.quantity)
+                    line.total_price = abs(line.valuation_layer_id.value) * ratio
+                else:
+                    line.total_price = 0.0
+            else:
+                line.total_price = 0.0
