@@ -9,9 +9,9 @@
                 <field name="contract_name" />
                 <field name="contract_number" readonly="1" />
                 <field name="contract_type_id" />
-                <field name="fines_rate" widget="float" readonly="1" />
+                <field name="fines_rate" widget="float" />
                 <field name="fines_late" widget="float" readonly="1" />
-                <field name="late_days" />
+                <field name="late_days" readonly="1" />
             </xpath>
 
             <xpath expr="//field[@name='date_order']" position="after">
