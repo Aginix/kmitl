@@ -30,7 +30,7 @@
                     string="Portal"
                     class="oe_highlight"
                     icon="fa-search-plus"
-                    attrs="{'invisible': ['|', ('has_asset_number', '=', False), ('state', '=', 'draft')]}"
+                    attrs="{'invisible': [('state', '=', 'draft')]}"
                 />
             </xpath>
         </field>
