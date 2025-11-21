@@ -47,6 +47,13 @@ class AccountMoveRequest(models.Model):
         states=READONLY_STATES,
     )
 
+    payment_type = fields.Selection(
+        selection=[("direct", "Direct paid"), ("loan", "Loan"), ("prepaid", "Prepaid")],
+        tracking=True,
+        string="Payment Type",
+        states=READONLY_STATES,
+    )
+
     bill_id = fields.Many2one(
         comodel_name="account.move",
         string="Vendor Bill",
@@ -275,6 +282,12 @@ class AccountMoveRequest(models.Model):
             if record.state == "cancel":
                 raise UserError(_("Request is already cancelled."))
             record.state = "cancel"
+        return True
+
+    def action_draft(self):
+        """Draft the request"""
+        for record in self:
+            record.state = "draft"
         return True
 
     def action_view_bill(self):

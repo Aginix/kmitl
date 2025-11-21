@@ -2,7 +2,7 @@
 import base64
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 
 class PurchaseRequestApproval(models.Model):
     _name = "purchase.request.approval"
-    _inherit = ["mail.thread", "mail.activity.mixin", "portal.mixin", "thai.date.mixin"]
+    _inherit = ["mail.thread", "mail.activity.mixin", "portal.mixin", "thai.date.mixin", "tier.validation"]
     _inherits = {"purchase.request": "request_id"}
 
     _description = "Purchase Request Approval"
@@ -57,7 +57,7 @@ class PurchaseRequestApproval(models.Model):
         index=True,
     )
 
-    date = fields.Datetime("Date", default=fields.Datetime.now, tracking=True)
+    date_start = fields.Date(copy=False)
     approval_date = fields.Datetime("Approval Date", tracking=True)
 
     origin = fields.Char(string="Source Document")
@@ -74,6 +74,30 @@ class PurchaseRequestApproval(models.Model):
             )
         ],
         index=True,
+    )
+
+    verified_by = fields.Many2one(
+        comodel_name="res.users",
+        index=True,
+        copy=False,
+        tracking=True,
+    )
+
+    approved_by = fields.Many2one(
+        comodel_name="res.users",
+        index=True,
+        copy=False,
+        tracking=True,
+    )
+
+    date_verified = fields.Date(
+        string="Verified Date",
+        copy=False,
+    )
+
+    date_approved = fields.Date(
+        string="Approved Date",
+        copy=False,
     )
 
     requesting_department_id = fields.Many2one('hr.department', string='Department', tracking=True)
@@ -206,7 +230,7 @@ class PurchaseRequestApproval(models.Model):
     @api.depends("state")
     def _compute_report_html_url(self):
         for rec in self:
-            rec.report_html_url = rec.get_portal_url(report_type="html")
+            rec.report_html_url = "/th" + rec.get_portal_url(report_type="html")
 
     def action_view_request(self):
         self.ensure_one()
