@@ -18,4 +18,46 @@
         <field name="implied_ids" eval="[(4, ref('stock_request_aginix.group_stock_request_user'))]"/>
     </record>
 
+    <record id="stock_request_rule" model="ir.rule">
+        <field name="name">Stock Request User : Own Documents Only</field>
+        <field name="model_id" ref="model_stock_request" />
+        <field name="groups" eval="[(6,0, [ref('group_stock_request_user')])]" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_create" eval="True" />
+        <field name="perm_unlink" eval="True" />
+        <field name="domain_force">[('user_id','=',user.id)]</field>
+    </record>
+
+    <record id="stock_request_line_rule" model="ir.rule">
+        <field name="name">Stock Request Line User</field>
+        <field name="model_id" ref="model_stock_request_line" />
+        <field name="groups" eval="[(6,0, [ref('group_stock_request_user')])]" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_create" eval="True" />
+        <field name="perm_unlink" eval="True" />
+        <field name="domain_force">[('request_id.user_id','=',user.id)]</field>
+    </record>
+
+    <record id="stock_request_approver_rule" model="ir.rule">
+        <field name="name">stock Request User : All Documents</field>
+        <field name="model_id" ref="model_stock_request" />
+        <field name="groups" eval="[(6,0, [ref('group_stock_request_approver')])]" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_create" eval="True" />
+        <field name="perm_unlink" eval="True" />
+    </record>
+    
+    <record id="stock_request_approver_line_rule" model="ir.rule">
+        <field name="name">stock Request User : All Documents</field>
+        <field name="model_id" ref="model_stock_request_line" />
+        <field name="groups" eval="[(6,0, [ref('group_stock_request_approver')])]" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_create" eval="True" />
+        <field name="perm_unlink" eval="True" />
+    </record>
+
 </odoo>
