@@ -38,7 +38,7 @@
               line-height: 1.2;
             }
 
-            .table-sm &gt; :not(caption) &gt; * &gt; * {
+            .table-sm > :not(caption) > * > * {
               padding: 0 !important;
             }
 
@@ -105,7 +105,7 @@
                           <img t-else="" t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=70&amp;height=70' % ('Code128', quote_plus(asset.number or ''))" class="qr-img"/>
                       </t>
                       <t t-elif="profile.barcode_type == 'qr'">
-                          <img t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=255&amp;height=255' % ('QR', quote_plus(asset.number or ''))" class="qr-img"/>
+                          <img t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=255&amp;height=255' % ('QR', quote_plus(asset.barcode_value or ''))" class="qr-img"/>
                       </t>
                   </t>
                   <t t-else="">
