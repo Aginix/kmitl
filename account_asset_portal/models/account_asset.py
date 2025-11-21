@@ -24,6 +24,17 @@ class AccountAsset(models.Model):
         copy=False,
     )
 
+    barcode_value = fields.Char(
+        string="Barcode Value",
+        compute="_compute_barcode_value",
+        store=False,
+    )
+
+    def _compute_barcode_value(self):
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        for rec in self:
+            rec.barcode_value = f"{base_url}{rec.access_url}"
+
     def _compute_access_url(self):
         super()._compute_access_url()
         for rec in self:
