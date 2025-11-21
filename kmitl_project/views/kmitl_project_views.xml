@@ -12,10 +12,11 @@
             name="context"
         >{'active_test': False, 'default_model' : 'kmitl.project'}</field>
     </record>
+
     <menuitem
         action="action_kmitl_project_test_tree"
         id="menu_kmitl_project_test"
-        parent="menu_project_config"
+        parent="kmitl_project.menu_project_config"
     />
 
     <!-- View kmitl.project View Tree -->
