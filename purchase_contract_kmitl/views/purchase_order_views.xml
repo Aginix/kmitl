@@ -9,8 +9,8 @@
                 <field name="contract_name" />
                 <field name="contract_number" readonly="1" />
                 <field name="contract_type_id" />
-                <field name="fines_rate" />
-                <field name="fines_late" />
+                <field name="fines_rate" widget="float" readonly="1" />
+                <field name="fines_late" widget="float" readonly="1" />
                 <field name="late_days" />
             </xpath>
 
