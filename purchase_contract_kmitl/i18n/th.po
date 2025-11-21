@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-20 04:52+0000\n"
-"PO-Revision-Date: 2025-11-20 04:52+0000\n"
+"POT-Creation-Date: 2025-11-21 03:46+0000\n"
+"PO-Revision-Date: 2025-11-21 03:46+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -26,6 +26,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_contract_type_form
 msgid "<span class=\"o_form_label\">Purchase Contract Type </span>"
 msgstr "<span class=\"o_form_label\">ประเภทสัญญา </span>"
+
+#. module: purchase_contract_kmitl
+#. odoo-python
+#: code:addons/purchase_contract_kmitl/models/purchase_order.py:0
+#, python-format
+msgid "Account fiscal year is required."
+msgstr "ปีงบประมาณบัญชีต้องระบุ"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__message_needaction
@@ -107,8 +114,8 @@ msgstr "วันที่เริ่มงาน"
 #. odoo-python
 #: code:addons/purchase_contract_kmitl/models/purchase_order.py:0
 #, python-format
-msgid "Department short name is missing."
-msgstr "ไม่มีตัวย่อหน่วยงาน"
+msgid "Department's short name is required."
+msgstr "หน่วยงานต้องระบุชื่อย่อ"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__display_name
@@ -291,7 +298,7 @@ msgstr "วันที่เริ่มสัญญา"
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__purchase_ids
 msgid "Purchase"
-msgstr ""
+msgstr "ใบสั่งซื้อ/จ้าง"
 
 #. module: purchase_contract_kmitl
 #: model:ir.actions.act_window,name:purchase_contract_kmitl.action_purchase_contract_type
@@ -319,6 +326,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__message_has_sms_error
 msgid "SMS Delivery error"
 msgstr ""
+
+#. module: purchase_contract_kmitl
+#. odoo-python
+#: code:addons/purchase_contract_kmitl/models/purchase_order.py:0
+#, python-format
+msgid "Source analytic is required."
+msgstr "แหล่งเงินต้องระบุ"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,help:purchase_contract_kmitl.field_purchase_contract_type__activity_state

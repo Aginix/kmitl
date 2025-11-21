@@ -66,7 +66,7 @@ class PurchaseOrder(models.Model):
 
     is_construction = fields.Boolean(
         string="Is Construction",
-        compute="_compute_is_construction",
+        related="contract_type_id.is_construction",
         store=True,
     )
 
@@ -102,7 +102,6 @@ class PurchaseOrder(models.Model):
 
     def _inverse_date_only(self):
         for rec in self:
-
             if rec.date_planned_date:
                 rec.date_planned = datetime.combine(
                     rec.date_planned_date,
@@ -114,11 +113,6 @@ class PurchaseOrder(models.Model):
                     rec.date_order_date,
                     time(0, 0, 0)
                 )
-
-    @api.depends("contract_type_id", "contract_type_id.is_construction")
-    def _compute_is_construction(self):
-        for rec in self:
-            rec.is_construction = bool(rec.contract_type_id.is_construction)
 
     def _cron_compute_fines_late(self):
         today = fields.Date.today()

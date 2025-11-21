@@ -12,7 +12,6 @@
         "security/ir.model.access.csv",
         "views/purchase_contract_type_views.xml",
         "views/purchase_order_views.xml",
-        "views/purchase_contract_menu.xml",
     ],
     'installable': True,
     'auto_install': False,

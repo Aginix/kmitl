@@ -20,6 +20,6 @@ class PurchaseContractType(models.Model):
         for rec in self:
             if rec.purchase_ids:
                 raise UserError(
-                    "You have Purchase Order, Can't Delete."
+                    "You cannot delete a contract type (%s) that is used in purchase order", rec.name
                 )
         return super().unlink()

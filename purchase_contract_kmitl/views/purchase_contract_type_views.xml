@@ -55,7 +55,6 @@
         </field>
     </record>
 
-    <!-- Action purchase.contract.type -->
     <record id="action_purchase_contract_type" model="ir.actions.act_window">
         <field name="name">Purchase Contract Type</field>
         <field name="type">ir.actions.act_window</field>
@@ -69,4 +68,10 @@
             </p>
         </field>
     </record>
+
+    <menuitem
+        id="menu_purchase_contract_type_kmitl"
+        parent="purchase.menu_purchase_config"
+        action="action_purchase_contract_type"
+    />
 </odoo>
