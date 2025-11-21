@@ -24,37 +24,48 @@
                                 </div>
                             </t>
                         </div>
-
-                        <!-- ASSET STATE -->
                         <div class="text-center mb-2">
-                            <span class="badge bg-success px-3 py-2 fs-6">
-                                <span t-field="asset.state" />
-                            </span>
+                            <t t-if="asset.state == 'open'">
+                                <span class="badge bg-success px-3 py-2 fs-6">
+                                    <span t-field="asset.state" />
+                                </span>
+                            </t>
+
+                            <t t-elif="asset.state == 'close'">
+                                <span class="badge bg-dark px-3 py-2 fs-6">
+                                    <span t-field="asset.state" />
+                                </span>
+                            </t>
+
+                            <t t-elif="asset.state == 'removed'">
+                                <span class="badge bg-danger px-3 py-2 fs-6">
+                                    <span t-field="asset.state" />
+                                </span>
+                            </t>
                         </div>
 
-                        <!-- ASSET NAME -->
                         <div class="text-center mb-1">
                             <h4 class="fw-bold">
                                 <t t-esc="asset.name or '-' " />
                             </h4>
                         </div>
 
-                        <!-- ASSET NUMBER -->
                         <div class="text-center mb-3">
                             <h4 class="fw-bold" style="color: #e35205">
                                 <t t-esc="asset.number or '-' " />
                             </h4>
                         </div>
 
-                        <!-- DETAILS TABLE -->
-                        <table
-                            class="table mt-4"
-                        >
+                        <table class="table mt-4">
                             <tbody>
                                 <tr>
-                                    <td class="text-start" width="35%">เลขที่ครุภัณฑ์</td>
+                                    <td class="text-start" width="35%">
+                                        หมายเลขประจำเครื่อง (S/N)
+                                    </td>
                                     <th class="text-end">
-                                        <t t-esc="asset.number or '-'" />
+                                        <t t-esc="asset.asset_model or '-'" />
+                                        /
+                                        <t t-esc="asset.asset_brand or '-'" />
                                     </th>
                                 </tr>
 
@@ -73,23 +84,20 @@
                                 </tr>
 
                                 <tr>
-                                    <td class="text-start">ต้นทุน</td>
+                                    <td class="text-start">เลขที่สัญญา</td>
                                     <th class="text-end">
-                                        <t t-esc="asset.depreciation_base or '0.00'" />
+                                        <t
+                                            t-esc="asset.purchase_id.contract_number or '0.00'"
+                                        />
                                     </th>
                                 </tr>
 
                                 <tr>
-                                    <td class="text-start">วันที่เริ่มใช้</td>
+                                    <td class="text-start">ระยะเวลารับประกัน</td>
                                     <th class="text-end">
-                                        <t t-esc="asset.date_start or '-'" />
-                                    </th>
-                                </tr>
-
-                                <tr>
-                                    <td class="text-start">ประเภทครุภัณฑ์</td>
-                                    <th class="text-end">
-                                        <t t-esc="asset.profile_id.name or '-'" />
+                                        <t t-esc="asset.asset_guarantee_start or '-'" />
+                                        -
+                                        <t t-esc="asset.asset_guarantee_end or '-'" />
                                     </th>
                                 </tr>
                             </tbody>
@@ -97,7 +105,6 @@
                     </div>
                 </div>
             </div>
-
         </t>
     </template>
 </odoo>
