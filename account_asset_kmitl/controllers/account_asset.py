@@ -8,7 +8,8 @@ class AccountAsset(portal.CustomerPortal):
     @http.route(['/account_assets/<string:access_uid>'], type='http', auth="public", website=True)
     def asset_portal_view(self, access_uid, **kw):
         Asset = request.env['account.asset'].sudo()
-        asset = Asset.search([('access_uid', '=ilike', access_uid)], limit=1)
+        access_uid = (access_uid or "").lower()
+        asset = Asset.search([('access_uid', '=', access_uid)], limit=1)
 
         if not asset:
             return request.not_found()
@@ -16,4 +17,4 @@ class AccountAsset(portal.CustomerPortal):
         values = {
             "asset": asset,
         }
-        return request.render("account_asset_portal.portal_account_asset", values)
+        return request.render("account_asset_kmitl.portal_account_asset", values)

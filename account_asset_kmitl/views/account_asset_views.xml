@@ -1,14 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <odoo>
-      
+<odoo>
     <!-- View account.asset form -->
     <record id="view_account_asset_form" model="ir.ui.view">
         <field name="name">view.account.asset.form</field>
         <field name="model">account.asset</field>
-        <field name="inherit_id" ref="l10n_th_gov_account_asset_management.account_asset_view_form"/>
+        <field
+            name="inherit_id"
+            ref="l10n_th_gov_account_asset_management.account_asset_view_form"
+        />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='asset_location_id']" position="after">
-              <field name="department_id" />
+                <field name="department_id" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_asset_kmitl_form" model="ir.ui.view">
+        <field name="name">view.account.asset.form</field>
+        <field name="model">account.asset</field>
+        <field
+            name="inherit_id"
+            ref="account_asset_management.account_asset_view_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_open_portal_view"
+                    type="object"
+                    string="Portal"
+                    class="oe_highlight"
+                    icon="fa-search-plus"
+                    attrs="{'invisible': ['|', ('has_asset_number', '=', False), ('state', '=', 'draft')]}"
+                />
             </xpath>
         </field>
     </record>
@@ -16,13 +39,15 @@
     <record id="view_account_asset_ou_form" model="ir.ui.view">
         <field name="name">view.account.asset.ou.form</field>
         <field name="model">account.asset</field>
-        <field name="inherit_id" ref="account_asset_operating_unit.account_asset_view_form"/>
+        <field
+            name="inherit_id"
+            ref="account_asset_operating_unit.account_asset_view_form"
+        />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='operating_unit_id']" position="before">
-              <field name="gpsc_id" required="1" />
-              <field name="account_fiscal_year_id" required="1" />
+                <field name="gpsc_id" required="1" />
+                <field name="account_fiscal_year_id" required="1" />
             </xpath>
         </field>
     </record>
-
-  </odoo>
+</odoo>
