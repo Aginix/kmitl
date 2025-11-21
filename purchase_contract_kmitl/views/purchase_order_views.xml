@@ -20,6 +20,7 @@
                 <div name="date_order_div" class="o_row">
                     <field
                         name="date_order_date"
+                        required="1"
                         widget="daterange"
                         options="{'related_end_date': 'date_planned_date'}"
                     />

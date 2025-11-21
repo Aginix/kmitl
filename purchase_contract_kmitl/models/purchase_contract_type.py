@@ -16,10 +16,11 @@ class PurchaseContractType(models.Model):
     )
     is_construction = fields.Boolean(tracking=True, default=False)
 
+
     def unlink(self):
         for rec in self:
             if rec.purchase_ids:
                 raise UserError(
-                    "You cannot delete a contract type (%s) that is used in purchase order", rec.name
+                    _("You cannot delete a contract type (%s) that is used in purchase order") % rec.name
                 )
         return super().unlink()
