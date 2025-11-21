@@ -102,8 +102,6 @@ class PurchaseOrder(models.Model):
 
     def _inverse_date_only(self):
         for rec in self:
-            rec.date_planned = False
-            rec.date_order = False
 
             if rec.date_planned_date:
                 rec.date_planned = datetime.combine(
