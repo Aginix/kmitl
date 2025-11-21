@@ -20,7 +20,6 @@ class StockMove(models.Model):
     def _compute_qty_available(self):
         for move in self:
             if move.product_id and move.location_id:
-                # ดึง quantity available จาก product stock
                 move.qty_available = move.product_id.with_context(
                     location=move.location_id.id
                 ).qty_available
