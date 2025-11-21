@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <menuitem
+        id="menu_stock_request_root"
+        name="Stock Requests"
+        groups="stock_request.group_stock_request_user,stock_request.group_stock_request_manager"
+        sequence="100"
+    />
+    <menuitem
         id="menu_stock_request_root_root"
         name="Stock Request"
-        parent="stock.menu_stock_root"
+        parent="menu_stock_request_root"
     />
     <menuitem
         id="menu_stock_request_aginix"

@@ -76,7 +76,7 @@ msgstr "ยกเลิก"
 #. module: stock_request_aginix
 #: model_terms:ir.ui.view,arch_db:stock_request_aginix.view_stock_request_form
 msgid "Create Picking"
-msgstr "บันทึกการลงทะเบียนวัสด"
+msgstr "สร้างการจ่ายวัสดุ"
 
 #. module: stock_request_aginix
 #: model:ir.model.fields,field_description:stock_request_aginix.field_stock_request__create_uid
@@ -320,7 +320,7 @@ msgstr "วันที่สร้างใบเบิก"
 #. module: stock_request_aginix
 #: model:ir.model.fields,field_description:stock_request_aginix.field_stock_request__requested_by
 msgid "Requested By"
-msgstr "ชื่อผู้ขอ"
+msgstr "ผู้รับพัสดุ"
 
 #. module: stock_request_aginix
 #: model:ir.ui.menu,name:stock_request_aginix.menu_stock_request_aginix
@@ -441,7 +441,7 @@ msgstr "หน่วยนับ"
 #. module: stock_request_aginix
 #: model:ir.model.fields,field_description:stock_request_aginix.field_stock_request__user_id
 msgid "User"
-msgstr "สร้างคำขอโดย"
+msgstr "ผู้สร้างคำขอ"
 
 #. module: stock_request_aginix
 #: model:ir.model.fields,field_description:stock_request_aginix.field_stock_request__website_message_ids
