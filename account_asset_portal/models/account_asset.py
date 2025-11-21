@@ -11,7 +11,8 @@ def _generate_random_code(length=8):
     return ''.join(random.choices(chars, k=length))
 
 class AccountAsset(models.Model):
-    _inherit = 'account.asset'
+    _name = "account.asset"
+    _inherit = ["account.asset", "portal.mixin"]
 
     def _default_access_uid(self):
         return _generate_random_code(8)
@@ -23,14 +24,15 @@ class AccountAsset(models.Model):
         copy=False,
     )
 
+    def _compute_access_url(self):
+        super()._compute_access_url()
+        for rec in self:
+        	rec.access_url = f"/account_assets/{self.access_uid}"
+
     def action_open_portal_view(self):
         self.ensure_one()
-
-        if not self.access_uid:
-            raise UserError("Access code is missing.")
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-        url = f"{base_url}/account_assets/{self.access_uid}"
-
+        url = f"{base_url}{self.access_url}"
         return {
             "type": "ir.actions.act_url",
             "url": url,
