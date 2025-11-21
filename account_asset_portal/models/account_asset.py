@@ -7,7 +7,7 @@ from odoo.exceptions import UserError, ValidationError
 
 
 def _generate_random_code(length=8):
-    chars = string.ascii_uppercase + string.digits
+    chars = string.ascii_lowercase + string.digits
     return ''.join(random.choices(chars, k=length))
 
 class AccountAsset(models.Model):

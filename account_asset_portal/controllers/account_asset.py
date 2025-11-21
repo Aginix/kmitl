@@ -8,7 +8,7 @@ class AccountAsset(portal.CustomerPortal):
     @http.route(['/account_assets/<string:access_uid>'], type='http', auth="public", website=True)
     def asset_portal_view(self, access_uid, **kw):
         Asset = request.env['account.asset'].sudo()
-        asset = Asset.search([('access_uid', '=', access_uid)], limit=1)
+        asset = Asset.search([('access_uid', '=ilike', access_uid)], limit=1)
 
         if not asset:
             return request.not_found()
