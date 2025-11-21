@@ -1,136 +1,103 @@
 <odoo>
     <template id="portal_account_asset" name="My Account Asset">
         <t t-call="portal.portal_layout">
+            <t t-set="no_breadcrumbs" t-value="1" />
             <t t-set="title">รายละเอียดครุภัณฑ์</t>
 
             <div class="container my-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-primary text-white">
-                        <h4 class="mb-0">
-                            <i class="fa fa-archive"></i>
-                            รายละเอียดครุภัณฑ์
-                        </h4>
-                    </div>
-
+                <div
+                    class="card shadow border-0 rounded-3"
+                    style="max-width: 636px; margin: auto"
+                >
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-4 text-center mb-3">
-                                <t t-if="asset.image">
-                                    <img
-                                        t-att-src="image_data_uri(asset.image)"
-                                        class="img-fluid rounded shadow-sm"
-                                        style="max-height: 250px"
-                                    />
-                                </t>
-                                <t t-else="">
-                                    <div class="border rounded p-5 text-muted bg-light">
-                                        ไม่มีรูปภาพ
-                                    </div>
-                                </t>
-                            </div>
-                            <div class="col-md-8">
-                                <table class="table table-sm">
-                                    <tbody>
-                                        <tr>
-                                            <th width="35%">เลขที่ครุภัณฑ์</th>
-                                            <td><t t-esc="asset.number or '-'" /></td>
-                                        </tr>
-
-                                        <tr>
-                                            <th>ชื่อรายการ</th>
-                                            <td><t t-esc="asset.name or '-'" /></td>
-                                        </tr>
-
-                                        <tr>
-                                            <th>สถานะ</th>
-                                            <td>
-                                                <span class="badge bg-info">
-                                                    <t t-esc="asset.state" />
-                                                </span>
-                                            </td>
-                                        </tr>
-
-                                        <tr>
-                                            <th>ต้นทุน</th>
-                                            <td>
-                                                <t
-                                                    t-esc="asset.depreciation_base or '0.00'"
-                                                />
-                                            </td>
-                                        </tr>
-
-                                        <tr>
-                                            <th>วันที่เริ่มใช้</th>
-                                            <td>
-                                                <t t-esc="asset.date_start or '-'" />
-                                            </td>
-                                        </tr>
-
-                                        <tr>
-                                            <th>ประเภทครุภัณฑ์</th>
-                                            <td>
-                                                <t
-                                                    t-esc="asset.profile_id.name or '-'"
-                                                />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="text-center border-bottom pb-3 mb-3">
+                            <t t-if="asset.image">
+                                <img
+                                    t-att-src="image_data_uri(asset.image)"
+                                    class="img-fluid rounded shadow-sm mx-auto d-block"
+                                    style="max-height: 220px"
+                                />
+                            </t>
+                            <t t-else="">
+                                <div class="border rounded p-5 text-muted bg-light">
+                                    ไม่มีรูปภาพ
+                                </div>
+                            </t>
                         </div>
 
-                        <hr />
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <table class="table table-sm">
-                                    <tbody>
-                                        <tr>
-                                            <th width="40%">GPSC</th>
-                                            <td>
-                                                <t t-esc="asset.gpsc_id.name or '-'" />
-                                            </td>
-                                        </tr>
-
-                                        <tr>
-                                            <th>หน่วยงาน</th>
-                                            <td>
-                                                <t
-                                                    t-esc="asset.department_id.name or '-'"
-                                                />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <div class="col-md-6">
-                                <table class="table table-sm">
-                                    <tbody>
-                                        <tr>
-                                            <th width="40%">โครงการที่จัดซื้อ (PO)</th>
-                                            <td>
-                                                <t
-                                                    t-esc="asset.purchase_id.name or '-'"
-                                                />
-                                            </td>
-                                        </tr>
-
-                                        <tr>
-                                            <th>สถานที่</th>
-                                            <td>
-                                                <t
-                                                    t-esc="asset.asset_location_id.name or '-'"
-                                                />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        <!-- ASSET STATE -->
+                        <div class="text-center mb-2">
+                            <span class="badge bg-success px-3 py-2 fs-6">
+                                <span t-field="asset.state" />
+                            </span>
                         </div>
+
+                        <!-- ASSET NAME -->
+                        <div class="text-center mb-1">
+                            <h4 class="fw-bold">
+                                <t t-esc="asset.name or '-' " />
+                            </h4>
+                        </div>
+
+                        <!-- ASSET NUMBER -->
+                        <div class="text-center mb-3">
+                            <h4 class="fw-bold" style="color: #e35205">
+                                <t t-esc="asset.number or '-' " />
+                            </h4>
+                        </div>
+
+                        <!-- DETAILS TABLE -->
+                        <table
+                            class="table mt-4"
+                        >
+                            <tbody>
+                                <tr>
+                                    <td class="text-start" width="35%">เลขที่ครุภัณฑ์</td>
+                                    <th class="text-end">
+                                        <t t-esc="asset.number or '-'" />
+                                    </th>
+                                </tr>
+
+                                <tr>
+                                    <td class="text-start">ประเภทครุภัณฑ์</td>
+                                    <th class="text-end">
+                                        <t t-esc="asset.profile_id.name or '-'" />
+                                    </th>
+                                </tr>
+
+                                <tr>
+                                    <td class="text-start">ชื่อโครงการ</td>
+                                    <th class="text-end">
+                                        <t t-esc="asset.purchase_id.contract_name" />
+                                    </th>
+                                </tr>
+
+                                <tr>
+                                    <td class="text-start">ต้นทุน</td>
+                                    <th class="text-end">
+                                        <t t-esc="asset.depreciation_base or '0.00'" />
+                                    </th>
+                                </tr>
+
+                                <tr>
+                                    <td class="text-start">วันที่เริ่มใช้</td>
+                                    <th class="text-end">
+                                        <t t-esc="asset.date_start or '-'" />
+                                    </th>
+                                </tr>
+
+                                <tr>
+                                    <td class="text-start">ประเภทครุภัณฑ์</td>
+                                    <th class="text-end">
+                                        <t t-esc="asset.profile_id.name or '-'" />
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
+
         </t>
     </template>
 </odoo>
