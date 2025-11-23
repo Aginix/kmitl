@@ -192,6 +192,7 @@ class StockRequestLine(models.Model):
     product_id = fields.Many2one(
         'product.product',
         string='Product',
+        domain="[('type', '=', 'product')]",
         required=True
     )
     quantity = fields.Float(
