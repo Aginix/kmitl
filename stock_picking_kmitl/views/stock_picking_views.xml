@@ -16,7 +16,7 @@
             </xpath>
 
             <xpath expr="//field[@name='product_uom_qty']" position="after">
-              <field name="qty_available" readonly="1"/>
+              <field name="qty_available" readonly="1" attrs="{'column_invisible': [('parent.picking_type_code', '!=', 'outgoing')]}"/>
             </xpath>
 
             <xpath expr="//notebook" position="inside">
