@@ -79,7 +79,7 @@
         id="menu_res_partner_type"
         name="Partner Type"
         parent="purchase.menu_purchase_config"
-        action="res_partner_type_action"
+        action="action_res_partner_type"
         sequence="10"
     />
 

@@ -11,7 +11,7 @@ class ResPartnerType(models.Model):
     _name = 'res.partner.type'
     _description = 'ResPartnerType'
 
-    _inherit = ['mail.thread']
+    _inherit = ["mail.thread", "mail.activity.mixin"]
 
     name = fields.Char(
         string='Name',
