@@ -23,6 +23,14 @@
                         font-size: 16pt;
                         line-height: 1.2;
                     }
+                    span {
+                        word-break: break-all !important;
+                    }
+                    .force-wrap {
+                        white-space: normal !important;
+                        word-break: break-all !important;
+                        overflow-wrap: break-word !important;
+                    }
                 </style>
 
                 <div class="page">
@@ -52,7 +60,7 @@
                                 t-out="o.partner_id.name"
                             />
                         </div>
-                        <div class="col">
+                        <div class="col-5">
                             ใบสั่งซื้อเลขที่
                             <span
                                 class="ms-2 fw-normal fw-bolder text-decoration-underline"
@@ -68,7 +76,7 @@
                                 t-out="o.partner_id.street"
                             />
                         </div>
-                        <div class="col">
+                        <div class="col-5">
                             วันที่
                             <span
                                 class="ms-2 fw-normal fw-bolder text-decoration-underline"
@@ -78,14 +86,19 @@
                     </div>
                     <div class="row">
                         <div class="col-7">
-                            <span class="fw-normal" t-out="o.partner_id.city" />
-                            <span class="fw-normal" t-out="o.partner_id.zip" />
-                        </div>
-                        <div class="col">
-                            ส่วนราชการ
-                            <!-- ทะลุกระดาษ -->
                             <span
-                                class="ms-2 fw-normal fw-bolder text-decoration-underline"
+                                class="fw-normal fw-bolder text-decoration-underline"
+                                t-out="o.partner_id.city"
+                            />
+                            <span
+                                class="fw-normal fw-bolder text-decoration-underline"
+                                t-out="o.partner_id.zip"
+                            />
+                        </div>
+                        <div class="col-5">
+                            ส่วนราชการ
+                            <span
+                                class="ms-2 fw-normal fw-bolder text-decoration-underline force-wrap"
                                 t-esc="o.company_id.name"
                             />
                         </div>
@@ -97,37 +110,29 @@
                                 class="ms-2 fw-normal fw-bolder text-decoration-underline"
                                 t-out="o.partner_id.phone"
                             />
+                            <div>เลขประจำตัวผู้เสียภาษี</div>
+                            <div>
+                                <span
+                                    class="fw-normal fw-bolder text-decoration-underline"
+                                    t-out="o.partner_id.vat"
+                                />
+                            </div>
                         </div>
-                        <div class="col">
+                        <div class="col-5">
                             ที่อยู่
-                            <!-- ทะลุกระดาษ -->
                             <span
                                 class="ms-2 fw-normal fw-bolder text-decoration-underline"
                                 t-esc="o.company_id.partner_id.street"
                             />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-7">เลขประจำตัวผู้เสียภาษี</div>
-                        <div class="col">
                             <span
-                                class="fw-normal"
+                                class="fw-normal fw-bolder text-decoration-underline"
                                 t-esc="o.company_id.partner_id.city"
                             />
                             <span
-                                class="fw-normal"
+                                class="fw-normal fw-bolder text-decoration-underline"
                                 t-esc="o.company_id.partner_id.zip"
                             />
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-7">
-                            <span
-                                class="fw-normal fw-bolder text-decoration-underline"
-                                t-out="o.partner_id.vat"
-                            />
-                        </div>
-                        <div class="col">โทรศัพท์ 02-329-8000 ต่อ 3102</div>
                     </div>
 
                     <div class="my-4" />
