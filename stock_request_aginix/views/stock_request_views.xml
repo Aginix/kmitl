@@ -62,7 +62,7 @@
                         name="action_cancel"
                         string="Cancel"
                         type="object"
-                        states="submitted,approved"
+                        states="submitted"
                         groups="stock.group_stock_user"
                     />
                     <button
