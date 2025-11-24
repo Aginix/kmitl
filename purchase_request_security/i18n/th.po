@@ -23,7 +23,7 @@ msgstr "ผู้ใช้ : เอกสารทั้งหมด"
 #. modules: purchase_request, purchase_request_security
 #: model:res.groups,name:purchase_request.group_purchase_request_user
 msgid "Purchase Request User : Own Documents Only"
-msgstr "ผู้ใช้ : เอกสารทของตนเองเท่านั้น"
+msgstr "ผู้ใช้ : เอกสารของตนเองเท่านั้น"
 
 #. modules: purchase_request, purchase_request_security
 #: model:res.groups,name:purchase_request.group_purchase_request_manager
