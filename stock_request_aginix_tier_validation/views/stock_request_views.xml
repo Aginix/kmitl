@@ -48,8 +48,15 @@
                         groups="stock_request_aginix.group_stock_request_approver"
                         attrs="{'invisible': ['|', ('state', '!=', 'submitted'), ('validation_status', '!=', 'validated')]}"/>
             </xpath>
-            <xpath expr="//button[@name='action_cancel']" position="attributes">
-                <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ['submitted']), ('validation_status', '!=', 'rejected')]}</attribute>
+            <xpath expr="//button[@name='action_cancel']" position="replace">
+                <button
+                    name="action_cancel"
+                    string="Cancel"
+                    type="object"
+                    states="submitted"
+                    groups="stock.group_stock_user"
+                    attrs="{'invisible': [('state', '!=', 'submitted'), ('validation_status', '!=', 'rejected')]}"
+                />
             </xpath>
         </field>
     </record>
