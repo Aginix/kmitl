@@ -452,3 +452,13 @@ msgstr ""
 #: model:ir.model.fields,help:stock_request_aginix.field_stock_request__website_message_ids
 msgid "Website communication history"
 msgstr ""
+
+#. module: stock_request_aginix
+#: model:ir.model.fields,field_description:stock_request_aginix.field_stock_request_line__total_price
+msgid "Total Price"
+msgstr "ราคารวม"
+
+#. module: stock_request_aginix
+#: model:ir.model.fields,field_description:stock_request_aginix.field_stock_request_line__price_unit
+msgid "Unit Price"
+msgstr "ราคาต่อหน่วย"

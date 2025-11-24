@@ -31,3 +31,23 @@ msgstr "โอน"
 #: model_terms:ir.ui.view,arch_db:stock_picking_kmitl.view_stock_picking_form
 msgid "Valuation Layers"
 msgstr "การประเมินมูลค่า"
+
+#. module: stock_picking_kmitl
+#: model:ir.model.fields,field_description:stock_picking_kmitl.field_stock_move__qty_available
+msgid "On Hand Quantity"
+msgstr "จำนวนที่มีอยู่"
+
+#. module: stock_picking_kmitl
+#: model:ir.model.fields,field_description:stock_picking_kmitl.field_stock_valuation_layer__quantity_abs
+msgid "Quantity"
+msgstr "จำนวนที่ย้ายแล้ว"
+
+#. module: stock_picking_kmitl
+#: model:ir.model.fields,field_description:stock_picking_kmitl.field_stock_valuation_layer__unit_cost_abs
+msgid "Unit Cost"
+msgstr "มูลค่าต่อหน่วย"
+
+#. module: stock_picking_kmitl
+#: model:ir.model.fields,field_description:stock_picking_kmitl.field_stock_valuation_layer__value_abs
+msgid "Value"
+msgstr "มูลค่ารวม"
