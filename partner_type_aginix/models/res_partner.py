@@ -31,3 +31,12 @@ class ResPartner(models.Model):
                     partner.property_account_payable_id = partner.partner_type_id.property_account_payable_id.id
                 if partner.partner_type_id.property_account_receivable_id:
                     partner.property_account_receivable_id = partner.partner_type_id.property_account_receivable_id.id
+
+    @api.depends('partner_type_id.property_account_payable_id', 'partner_type_id.property_account_receivable_id')
+    def _compute_accounts_from_type(self):
+        for partner in self:
+            if partner.partner_type_id:
+                if partner.partner_type_id.property_account_payable_id:
+                    partner.property_account_payable_id = partner.partner_type_id.property_account_payable_id.id
+                if partner.partner_type_id.property_account_receivable_id:
+                    partner.property_account_receivable_id = partner.partner_type_id.property_account_receivable_id.id
