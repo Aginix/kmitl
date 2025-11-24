@@ -45,17 +45,71 @@
                         </h3>
                     </div>
                     <div class="row">
-                        <div class="col-8">
+                        <div class="col-7">
                             ผู้รับจ้าง
                             <span class="ms-2 fw-normal" t-out="o.partner_id.name" />
                         </div>
                         <div class="col">
                             ใบสั่งซื้อเลขที่
+                            <span class="ms-2 fw-normal" t-esc="o.name" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-7">
+                            ที่อยู่
+                            <span class="ms-2 fw-normal" t-out="o.partner_id.street" />
+                        </div>
+                        <div class="col">
+                            วันที่
                             <span
                                 class="ms-2 fw-normal"
-                                t-esc="o.name"
+                                t-esc="o.format_date_thai(o.date_order)"
                             />
                         </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-7">
+                            <span class="ms-2 fw-normal" t-out="o.partner_id.city" />
+                            <span class="ms-2 fw-normal" t-out="o.partner_id.zip" />
+                        </div>
+                        <div class="col">
+                            ส่วนราชการ
+                            <!-- ทะลุกระดาษ -->
+                            <span class="ms-2 fw-normal" t-esc="o.company_id.name" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-7">
+                            โทรศัพท์
+                            <span class="ms-2 fw-normal" t-out="o.partner_id.phone" />
+                        </div>
+                        <div class="col">
+                            ที่อยู่
+                            <!-- ทะลุกระดาษ -->
+                            <span
+                                class="ms-2 fw-normal"
+                                t-esc="o.company_id.partner_id.street"
+                            />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-7">เลขประจำตัวผู้เสียภาษี</div>
+                        <div class="col">
+                            <span
+                                class="ms-2 fw-normal"
+                                t-esc="o.company_id.partner_id.city"
+                            />
+                            <span
+                                class="ms-2 fw-normal"
+                                t-esc="o.company_id.partner_id.zip"
+                            />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-7">
+                            <span class="ms-2 fw-normal" t-out="o.partner_id.vat" />
+                        </div>
+                        <div class="col"></div>
                     </div>
                 </div>
             </t>
