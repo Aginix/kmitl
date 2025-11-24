@@ -47,47 +47,62 @@
                     <div class="row">
                         <div class="col-7">
                             ผู้รับจ้าง
-                            <span class="ms-2 fw-normal" t-out="o.partner_id.name" />
+                            <span
+                                class="ms-2 fw-normal fw-bolder text-decoration-underline"
+                                t-out="o.partner_id.name"
+                            />
                         </div>
                         <div class="col">
                             ใบสั่งซื้อเลขที่
-                            <span class="ms-2 fw-normal" t-esc="o.name" />
+                            <span
+                                class="ms-2 fw-normal fw-bolder text-decoration-underline"
+                                t-esc="o.name"
+                            />
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-7">
                             ที่อยู่
-                            <span class="ms-2 fw-normal" t-out="o.partner_id.street" />
+                            <span
+                                class="ms-2 fw-normal fw-bolder text-decoration-underline"
+                                t-out="o.partner_id.street"
+                            />
                         </div>
                         <div class="col">
                             วันที่
                             <span
-                                class="ms-2 fw-normal"
+                                class="ms-2 fw-normal fw-bolder text-decoration-underline"
                                 t-esc="o.format_date_thai(o.date_order)"
                             />
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-7">
-                            <span class="ms-2 fw-normal" t-out="o.partner_id.city" />
-                            <span class="ms-2 fw-normal" t-out="o.partner_id.zip" />
+                            <span class="fw-normal" t-out="o.partner_id.city" />
+                            <span class="fw-normal" t-out="o.partner_id.zip" />
                         </div>
                         <div class="col">
                             ส่วนราชการ
                             <!-- ทะลุกระดาษ -->
-                            <span class="ms-2 fw-normal" t-esc="o.company_id.name" />
+                            <span
+                                class="ms-2 fw-normal fw-bolder text-decoration-underline"
+                                t-esc="o.company_id.name"
+                            />
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-7">
                             โทรศัพท์
-                            <span class="ms-2 fw-normal" t-out="o.partner_id.phone" />
+                            <span
+                                class="ms-2 fw-normal fw-bolder text-decoration-underline"
+                                t-out="o.partner_id.phone"
+                            />
                         </div>
                         <div class="col">
                             ที่อยู่
                             <!-- ทะลุกระดาษ -->
                             <span
-                                class="ms-2 fw-normal"
+                                class="ms-2 fw-normal fw-bolder text-decoration-underline"
                                 t-esc="o.company_id.partner_id.street"
                             />
                         </div>
@@ -96,129 +111,232 @@
                         <div class="col-7">เลขประจำตัวผู้เสียภาษี</div>
                         <div class="col">
                             <span
-                                class="ms-2 fw-normal"
+                                class="fw-normal"
                                 t-esc="o.company_id.partner_id.city"
                             />
                             <span
-                                class="ms-2 fw-normal"
+                                class="fw-normal"
                                 t-esc="o.company_id.partner_id.zip"
                             />
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-7">
-                            <span class="ms-2 fw-normal" t-out="o.partner_id.vat" />
+                            <span
+                                class="fw-normal fw-bolder text-decoration-underline"
+                                t-out="o.partner_id.vat"
+                            />
                         </div>
-                        <div class="col"></div>
+                        <div class="col">โทรศัพท์ 02-329-8000 ต่อ 3102</div>
+                    </div>
+
+                    <div class="my-4" />
+
+                    <div class="row">
+                        <div class="col">
+                            ตามที่
+                            <span
+                                class="fw-bolder text-decoration-underline"
+                                t-out="o.partner_id.name"
+                            />
+                            ได้เสนอราคาไว้ต่อ
+                            <span
+                                class="fw-bolder text-decoration-underline"
+                                t-out="o.company_id.name"
+                            />
+                            ซึ่งได้รับราคาและตกลงซื้อ ตามรายการดังต่อไปนี้
+                        </div>
+                    </div>
+                    <table class="table table-bordered table-sm mb-4">
+                        <thead>
+                            <tr>
+                                <th>ลำดับ</th>
+                                <th class="text-center">รายการ</th>
+                                <th class="text-center">จำนวน</th>
+                                <th class="text-end">ราคาต่อหน่วย (บาท)</th>
+                                <th class="text-end">จำนวนเงิน (บาท)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="row_no" t-value="1" />
+                            <t t-foreach="o.order_line" t-as="line">
+                                <tr>
+                                    <td class="text-center" t-out="row_no" />
+                                    <td t-out="line.name" />
+                                    <td class="text-center">
+                                        <span
+                                            t-out="'{0:,.0f}'.format(line.product_qty)"
+                                        />
+                                        <span t-field="line.product_uom" />
+                                    </td>
+                                    <td
+                                        class="text-end"
+                                        t-out="'{0:,.2f}'.format(line.price_unit)"
+                                    />
+                                    <td
+                                        class="text-end"
+                                        t-out="'{0:,.2f}'.format(line.price_subtotal)"
+                                    />
+                                </tr>
+                                <t t-set="row_no" t-value="row_no + 1" />
+                            </t>
+                            <tr>
+                                <t t-set="currency" t-value="o.currency_id" />
+                                <td
+                                    colspan="2"
+                                    rowspan="3"
+                                    class="text-center align-middle"
+                                >
+                                    (
+                                    <t
+                                        t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)"
+                                    />
+                                    )
+                                </td>
+                                <td class="text-center" colspan="2">
+                                    ราคาก่อนรวมภาษีมูลค่าเพิ่ม
+                                </td>
+                                <td
+                                    class="text-end"
+                                    t-out="'{0:,.2f}'.format(o.amount_untaxed)"
+                                />
+                            </tr>
+                            <tr>
+                                <td class="text-center" colspan="2">
+                                    ภาษีมูลค่าเพิ่ม (VAT 7%)
+                                </td>
+                                <td
+                                    class="text-end"
+                                    t-out="'{0:,.2f}'.format(o.amount_tax)"
+                                />
+                            </tr>
+                            <tr>
+                                <td class="text-center" colspan="2">ราคาสุทธิ</td>
+                                <td
+                                    class="text-end"
+                                    t-out="'{0:,.2f}'.format(o.amount_total)"
+                                />
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="mb-2">การสั่งซื้อ อยู่ภายใต้เงื่อนไขดังนี้</div>
+                    <ol>
+                        <li>
+                            กำหนดส่งมอบภายใน 60 วัน นับถัดจากวันที่ผู้รับจ้างได้รับ
+                            <span
+                                class="fw-bolder text-decoration-underline"
+                                t-esc="o.contract_type_id.name"
+                            />
+                        </li>
+                        <li>
+                            ครบกำหนดส่งมอบวันที่
+                            <span
+                                class="fw-bolder text-decoration-underline"
+                                t-esc="o.format_date_thai(o.date_order)"
+                            />
+                        </li>
+                        <li>
+                            สถานที่ส่งมอบ
+                            <span
+                                class="fw-bolder text-decoration-underline"
+                                t-esc="o.company_id.name"
+                            />
+                        </li>
+                        <li>
+                            สงวนสิทธิ์ค่าปรับกรณีส่งมอบเกินกำหนด
+                            โดยคิดค่าปรับเป็นรายวันในอัตราร้อยละ
+                            <span
+                                class="fw-bolder text-decoration-underline"
+                                t-esc="o.fines_rate"
+                            />
+                            ของราคางานจ้าง แต่ต้องไม่น้อยกว่า 100.00 บาท
+                        </li>
+                        <li>
+                            ส่วนราชการสงวนสิทธิ์ที่จะไม่รับมอบถ้าปรากฎว่าสินค้านั้นมีลักษณะไม่ตรงตามรายการที่ระบุไว้ใน
+                            <span
+                                class="fw-bolder text-decoration-underline"
+                                t-esc="o.contract_type_id.name"
+                            />
+                            กรณีนี้ผู้รับจ้างจะต้องดำเนินการเปลี่ยนใหม่ให้ถูกต้องตาม
+                            <span
+                                class="fw-bolder text-decoration-underline"
+                                t-esc="o.contract_type_id.name"
+                            />
+                            ทุกประการ
+                        </li>
+                        <li>
+                            การจ้างช่วง
+                            ผู้รับจ้างจะต้องไม่เอางานทั้งหมดหรือแต่บางส่วนไปจ้างช่วงอีกทอดหนึ่ง
+                            เว้นแต่การจ้างช่วงแต่บางส่วนที่ได้รับอนุญาตเป็นหนังสือจากผู้ว่าจ้างแล้ว
+                            การที่ผู้ว่าจ้างได้อนุญาตให้จ้างช่วงงานแต่บางส่วนดังกล่าว
+                            ไม่เป็นเหตุให้ผู้รับจ้างหลุดพ้นจากความรับผิดหรือพันธะหน้าที่และผู้รับจ้างจะยังคงต้องรับผิดในความผิดและประมาทเลินเล่อของผู้รับจ้างช่วง
+                            หรือของตัวแทนหรือลูกจ้างของผู้รับจ้างช่วงนั้นทุกประการ
+                            กรณีผู้รับจ้างไปจ้างช่วงงานแต่บางส่วน
+                            โดยฝ่าฝืนความในวรรคหนึ่ง
+                            ผู้รับจ้างต้องชำระค่าปรับให้แก่ผู้ว่าจ้างเป็นจำนวนเงินในอัตราร้อยละ
+                            10 (สิบ) ของวงเงินของงาน ที่จ้างช่วง ทั้งนี้
+                            ไม่ตัดสิทธิ์ผู้ว่าจ้างในการบอกเลิกสัญญา
+                        </li>
+                        <li>
+                            การประเมินผลการปฏิบัติงานของผู้ประกอบการ
+                            หน่วยงานของรัฐสามารถนำผลการปฏิบัติงานแล้วเสร็จตามสัญญาหรือข้อตกลงของคู่สัญญาเพื่อนำมาประเมินผลการปฏิบัติงานของผู้ประกอบการ
+                        </li>
+                    </ol>
+                    <div class="my-4" />
+                    <div class="mb-2 text-decoration-underline">หมายเหตุ</div>
+                    <ol>
+                        <li>
+                            การติดอากรแสตมป์ให้เป็นไปตามประมวลกฏหมายรัษฎากร
+                            หากต้องการให้
+                            <span
+                                class="fw-bolder text-decoration-underline"
+                                t-esc="o.contract_type_id.name"
+                            />มีผลตามกฎหมาย
+                        </li>
+                        <li>
+                            <span
+                                class="fw-bolder text-decoration-underline"
+                                t-esc="o.contract_type_id.name"
+                            />
+                            นี้อ้างอิงตามเลขที่โครงการ
+                            <!-- ไม่รู้ต้องเลขอะไร -->
+                            <span
+                                class="fw-bolder text-decoration-underline"
+                                t-esc="o.product_id.code"
+                            />
+                            <span
+                                class="fw-bolder text-decoration-underline"
+                                t-esc="o.product_id.name"
+                            />
+                            <span class="fw-bolder text-decoration-underline">
+                                จำนวน 1 รายการ
+                            </span>
+                            โดยวิธี
+                            <span
+                                class="fw-bolder text-decoration-underline"
+                                t-esc="o.request_id.procurement_method_id.name"
+                            />
+                        </li>
+                    </ol>
+                    <div class="my-5">
+                        <div class="my-2 d-inline-block">
+                            <div>ลงชื่อ <t t-out="'.' * 80" /> ผู้สั่งจ้าง</div>
+                            <div class="text-center">
+                                <!-- ชื่อใคร -->
+                                ( <span t-field="o.partner_id.name" />
+                                )
+                            </div>
+                            <div class="text-center">
+                                รองอธิการบดีฝ่ายพัสดุ
+                                <!-- ตำแหน่งเอาจากไหน -->
+                                <span
+                                    t-out="o.department_id.master_department_id.name"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </t>
         </xpath>
-    </template>
-
-    <template id="report_purchase_request_committee">
-        <li>
-            ขออนุมัติแต่งตั้งคณะกรรมการตรวจรับพัสดุ ดังต่อไปนี้
-            <ol>
-                <li t-foreach="o.work_acceptance_committee_ids" t-as="committee">
-                    <span t-field="committee.employee_id" />
-                </li>
-            </ol>
-        </li>
-        <t t-if="o.estimated_cost > 100000">
-            <li>
-                ขออนุมัติแต่งตั้งคณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน ดังต่อไปนี้
-                <ol>
-                    <li t-foreach="o.tor_committee_ids" t-as="committee">
-                        <span t-field="committee.employee_id" />
-                    </li>
-                </ol>
-            </li>
-            <li>
-                ขออนุมัติแต่งตั้งคณะกรรมการกำหนดราคากลาง ดังต่อไปนี้
-                <ol>
-                    <li t-foreach="o.price_determine_committee_ids" t-as="committee">
-                        <span t-field="committee.employee_id" />
-                    </li>
-                </ol>
-            </li>
-            <li>
-                ขออนุมัติแต่งตั้งคณะกรรมการพิจารณาผล ดังต่อไปนี้
-                <ol>
-                    <li t-foreach="o.evaluation_committee_ids" t-as="committee">
-                        <span t-field="committee.employee_id" />
-                    </li>
-                </ol>
-            </li>
-        </t>
-        <t t-else=""></t>
-    </template>
-
-    <template id="report_purchase_request_budget">
-        <table class="table table-bordered border table-sm budget">
-            <tbody>
-                <tr class="o_field_budget_commitment_id">
-                    <td>เลขที่ใบจองงบประมาณ</td>
-                    <td>
-                        <span t-field="o.budget_commitment_id" />
-                    </td>
-                </tr>
-                <tr class="o_field_budget_account_id">
-                    <td>รหัสงบประมาณค่าใช้จ่าย</td>
-                    <td>
-                        <span t-field="o.budget_account_id" />
-                    </td>
-                </tr>
-                <tr class="o_field_source_analytic_id">
-                    <td>แหล่งเงิน</td>
-                    <td>
-                        <span t-field="o.source_analytic_id" />
-                    </td>
-                </tr>
-                <tr class="o_field_department_analytic_id">
-                    <td>หน่วยงาน</td>
-                    <td>
-                        <span t-field="o.department_analytic_id" />
-                    </td>
-                </tr>
-                <tr class="o_field_activity_analytic_id">
-                    <td>ด้าน/แผนงาน/กิจกรรม</td>
-                    <td>
-                        <span t-field="o.activity_analytic_id" />
-                    </td>
-                </tr>
-                <tr class="o_field_fund_analytic_id">
-                    <td>กองทุน</td>
-                    <td>
-                        <span t-field="o.fund_analytic_id" />
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </template>
-
-    <template id="report_purchase_request_sign">
-        <div class="my-5">
-            <div class="my-2 d-inline-block">
-                <div>ลงชื่อ <t t-out="'.' * 80" /> ผู้ขอให้จัดหา</div>
-                <div class="text-center my-2">
-                    ( <span t-field="o.requested_by" />
-                    )
-                </div>
-            </div>
-        </div>
-        <div class="my-5" />
-        <div class="my-5">
-            <div class="my-2 d-inline-block">
-                <div>ลงชื่อ <t t-out="'.' * 80" /></div>
-                <div class="text-center">
-                    ( <span t-field="o.requested_by" />
-                    )
-                </div>
-                <div class="text-center">
-                    คณบดี <span t-out="o.department_id.master_department_id.name" />
-                </div>
-            </div>
-        </div>
     </template>
 </odoo>
