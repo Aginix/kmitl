@@ -8,10 +8,12 @@
             <xpath expr="//field[@name='date_order']" position="after">
                 <field name="contract_name" />
                 <field name="contract_number" readonly="1" />
-                <field name="contract_type_id" />
+                <field name="contract_type_id" required="1" />
                 <field name="fines_rate" widget="float" />
                 <field name="fines_late" widget="float" readonly="1" />
                 <field name="late_days" readonly="1" />
+                <field name="fines_late" invisible="1" />
+                <field name="late_days" invisible="1" />
             </xpath>
 
             <xpath expr="//field[@name='date_order']" position="after">
@@ -35,6 +37,7 @@
                         options="{'related_start_date': 'date_order_date'}"
                     />
                 </div>
+                <field name="contract_period_days" />
                 <label
                     for="work_start"
                     string="Date Work"

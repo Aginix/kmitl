@@ -86,6 +86,21 @@ class PurchaseOrder(models.Model):
         store=False,
     )
 
+    contract_period_days = fields.Integer(
+        string="Contract Period Days",
+        compute="_compute_contract_period_days",
+        store=True,
+        readonly=True
+    )
+
+    @api.depends('date_planned_date', 'date_order_date')
+    def _compute_contract_period_days(self):
+        for rec in self:
+            if rec.date_planned_date and rec.date_order_date:
+                rec.contract_period_days = (rec.date_planned_date - rec.date_order_date).days
+            else:
+                rec.contract_period_days = 0
+
     _sql_constraints = [
         (
             "unique_contract_number",
@@ -93,6 +108,11 @@ class PurchaseOrder(models.Model):
             "The contract_number must be unique!",
         ),
     ]
+
+    @api.onchange('date_order_date', 'date_planned_date', 'work_start', 'work_end')
+    def _onchange_dates(self):
+        self._compute_fines_internal()
+
 
     @api.depends("date_planned", "date_order")
     def _compute_date_only(self):
