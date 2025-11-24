@@ -113,7 +113,6 @@ class PurchaseOrder(models.Model):
     def _onchange_dates(self):
         self._compute_fines_internal()
 
-
     @api.depends("date_planned", "date_order")
     def _compute_date_only(self):
         for rec in self:
