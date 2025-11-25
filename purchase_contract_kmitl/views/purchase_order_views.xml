@@ -8,7 +8,7 @@
             <xpath expr="//field[@name='date_order']" position="after">
                 <field name="contract_name" />
                 <field name="contract_number" readonly="1" />
-                <field name="contract_type_id" required="1" />
+                <field name="contract_type_id" required="1" options="{'no_open': True}" />
                 <field name="fines_rate" widget="float" />
                 <field name="fines_late" widget="float" readonly="1" />
                 <field name="late_days" readonly="1" />
