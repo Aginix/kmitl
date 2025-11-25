@@ -103,7 +103,7 @@ class PurchaseOrder(models.Model):
     def _compute_contract_period_days(self):
         for rec in self:
             if rec.date_planned_date and rec.date_order_date:
-                rec.contract_period_days = (rec.date_planned_date - rec.date_order_date).days
+                rec.contract_period_days = (rec.date_planned_date - rec.date_order_date).days + 1
             else:
                 rec.contract_period_days = 0
 
@@ -144,9 +144,9 @@ class PurchaseOrder(models.Model):
 
         domain = [
             ('state', '=', 'purchase'),
-            '|',
-            ('work_end', '>=', today),
-            ('date_planned', '>=', today),
+            "|",
+            ('work_end', '<=', today),
+            ('date_planned_date', '<=', today),
         ]
 
         orders = self.search(domain)
@@ -157,12 +157,12 @@ class PurchaseOrder(models.Model):
     def _compute_fines_internal(self):
         today = fields.Date.today()
         for rec in self:
-            if not rec.work_end or not rec.date_planned:
+            if (rec.contract_type_id.is_construction and not rec.work_end) or not rec.date_planned_date:
                 rec.late_days = 0
                 rec.fines_late = 0
                 continue
-            end_date = rec.work_end if rec.contract_type_id.is_construction else rec.date_planned.date()
-            rec.late_days = (today - end_date).days
+            end_date = rec.work_end if rec.contract_type_id.is_construction else rec.date_planned_date
+            rec.late_days = max((today - end_date).days, 0)
             rec.fines_late = rec.fines_rate * rec.late_days if rec.fines_rate else 0
 
     def _validate_get_contract_number(self):
@@ -178,7 +178,7 @@ class PurchaseOrder(models.Model):
         short_name = self.department_id.short_name
         seq_code = f"purchase.contract.{fiscal_year}.{short_name}"
 
-        Sequence = self.env['ir.sequence']
+        Sequence = self.env['ir.sequence'].sudo()
 
         if not Sequence.search([('code', '=', seq_code)], limit=1):
             Sequence.create({
