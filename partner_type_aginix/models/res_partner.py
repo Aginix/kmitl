@@ -17,17 +17,18 @@ class ResPartner(models.Model):
     )
 
     @api.model
-    def _default_partner_type_id(self):
-        if self.company_type == 'person':
-            return self.env['partner_type_aginix.partner_type_other'].search([], limit=1).id
+    def _default_partner_type_id(self, company_type):
+        if company_type == 'person':
+            return self.ref('partner_type_aginix.partner_type_other')
         else:
-            return self.env['partner_type_aginix.partner_type_company'].search([], limit=1).id
+            return self.ref('partner_type_aginix.partner_type_company')
 
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
             if "partner_type_id" not in vals:
-                vals['partner_type_id'] = self._default_partner_type_id()
+                company_type = vals.get('company_type', 'person')
+                vals['partner_type_id'] = self._default_partner_type_id(company_type)
         return super().create(vals_list)
 
     @api.depends('partner_type_id')
