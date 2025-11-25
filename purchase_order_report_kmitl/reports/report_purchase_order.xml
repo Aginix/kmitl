@@ -305,10 +305,9 @@
                             />
                             นี้อ้างอิงตามเลขที่โครงการ
                             <!-- ไม่รู้ต้องเลขอะไร -->
-                            <span
-                                class="fw-bolder text-decoration-underline"
-                                t-esc="o.product_id.code"
-                            />
+                            <span class="fw-bolder text-decoration-underline">
+                                xxx
+                            </span>
                             <span
                                 class="fw-bolder text-decoration-underline"
                                 t-esc="o.product_id.name"
