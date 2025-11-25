@@ -28,7 +28,7 @@
                     }
                     .force-wrap {
                         white-space: normal !important;
-                        word-break: break-all !important;
+                        word-break: break-word !important;
                         overflow-wrap: break-word !important;
                     }
                 </style>
@@ -72,7 +72,7 @@
                         <div class="col-7">
                             ที่อยู่
                             <span
-                                class="ms-2 fw-normal fw-bolder text-decoration-underline"
+                                class="ms-2 fw-normal fw-bolder text-decoration-underline force-wrap"
                                 t-out="o.partner_id.street"
                             />
                         </div>
@@ -121,7 +121,7 @@
                         <div class="col-5">
                             ที่อยู่
                             <span
-                                class="ms-2 fw-normal fw-bolder text-decoration-underline"
+                                class="ms-2 fw-normal fw-bolder text-decoration-underline force-wrap"
                                 t-esc="o.company_id.partner_id.street"
                             />
                             <span
