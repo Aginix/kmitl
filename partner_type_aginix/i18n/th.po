@@ -30,7 +30,7 @@ msgstr "บัญชีลูกหนี้"
 #. module: partner_type_aginix
 #: model_terms:ir.ui.view,arch_db:partner_type_aginix.res_partner_type_form
 msgid "Accounting Settings"
-msgstr ""
+msgstr "รายการบัญชี"
 
 #. module: partner_type_aginix
 #: model:ir.model.fields,field_description:partner_type_aginix.field_res_partner_type__message_needaction
@@ -311,3 +311,10 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:partner_type_aginix.res_partner_type_form
 msgid "e.g., Retail Customer"
 msgstr ""
+
+#. module: partner_type_aginix
+#. odoo-python
+#: code:addons/partner_type_aginix/models/res_partner_type.py:0
+#, python-format
+msgid "Cannot delete partner type in used."
+msgstr "ไม่สามารถลบประเภทคู่ค้าที่ใช้แล้วได้"
