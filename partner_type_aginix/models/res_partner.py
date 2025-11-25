@@ -19,9 +19,9 @@ class ResPartner(models.Model):
     @api.model
     def _default_partner_type_id(self, company_type):
         if company_type == 'person':
-            return self.ref('partner_type_aginix.partner_type_other')
+            return self.env.ref('partner_type_aginix.partner_type_other').id
         else:
-            return self.ref('partner_type_aginix.partner_type_company')
+            return self.env.ref('partner_type_aginix.partner_type_company').id
 
     @api.model_create_multi
     def create(self, vals_list):
