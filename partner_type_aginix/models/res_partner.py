@@ -14,15 +14,14 @@ class ResPartner(models.Model):
         comodel_name='res.partner.type',
         string='Partner Type',
         tracking=True,
-
     )
 
     @api.model
     def _default_partner_type_id(self):
         if self.company_type == 'person':
-            return self.env('partner_type_aginix.partner_type_other').id
+            return self.env['partner_type_aginix.partner_type_other'].search([], limit=1).id
         else:
-            return self.env('partner_type_aginix.partner_type_company').id
+            return self.env['partner_type_aginix.partner_type_company'].search([], limit=1).id
 
     @api.model_create_multi
     def create(self, vals_list):
