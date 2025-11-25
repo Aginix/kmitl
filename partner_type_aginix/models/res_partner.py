@@ -14,7 +14,22 @@ class ResPartner(models.Model):
         comodel_name='res.partner.type',
         string='Partner Type',
         tracking=True,
+
     )
+
+    @api.model
+    def _default_partner_type_id(self):
+        if self.company_type == 'person':
+            return self.env('partner_type_aginix.partner_type_other').id
+        else:
+            return self.env('partner_type_aginix.partner_type_company').id
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if "partner_type_id" not in vals:
+                vals['partner_type_id'] = self._default_partner_type_id()
+        return super().create(vals_list)
 
     @api.depends('partner_type_id')
     def _compute_company_type(self):
