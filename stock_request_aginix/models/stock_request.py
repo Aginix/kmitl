@@ -58,13 +58,15 @@ class StockRequest(models.Model):
     )
     request_date = fields.Date(
         default=fields.Date.today,
-        tracking=True
+        tracking=True,
+        copy=False
     )
     user_id = fields.Many2one(
         'res.users',
         default=lambda self: self.env.user,
         tracking=True,
         readonly=True,
+        copy=False
     )
     requested_by = fields.Many2one(
         'res.users',

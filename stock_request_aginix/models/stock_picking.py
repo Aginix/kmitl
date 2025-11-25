@@ -19,7 +19,7 @@ class StockPicking(models.Model):
     has_stock_request = fields.Boolean(
         string='Has Stock Request',
         compute='_compute_has_stock_request',
-        store=True
+        store=False
     )
     
     @api.depends('stock_request_id')
