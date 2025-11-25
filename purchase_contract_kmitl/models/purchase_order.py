@@ -24,12 +24,12 @@ class PurchaseOrder(models.Model):
     work_start = fields.Date(
         string="Work Start",
         states=READONLY_STATES,
-        tracking=True
+        tracking=True,
     )
 
     work_end = fields.Date(string="Work End",
         states=READONLY_STATES,
-        tracking=True
+        tracking=True,
     )
 
     fines_rate = fields.Monetary(string="Fines Rate",
@@ -92,6 +92,12 @@ class PurchaseOrder(models.Model):
         store=True,
         readonly=True
     )
+
+    @api.onchange("is_construction")
+    def _onchange_is_construction_clear_dates(self):
+        if not self.is_construction:
+            self.work_start = False
+            self.work_end = False
 
     @api.depends('date_planned_date', 'date_order_date')
     def _compute_contract_period_days(self):
