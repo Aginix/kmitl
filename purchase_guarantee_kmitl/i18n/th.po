@@ -220,7 +220,7 @@ msgstr "ประเภทการค้ำประกัน"
 #. module: l10n_th_gov_purchase_guarantee
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee__name
 msgid "Guarantee Number"
-msgstr "หมายเลขการรับประกัน"
+msgstr "หมายเลขหลักประกัน"
 
 #. module: l10n_th_gov_purchase_guarantee
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee__date_guarantee_receive
@@ -440,7 +440,7 @@ msgstr ""
 #. module: l10n_th_gov_purchase_guarantee
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee__reference
 msgid "Reference"
-msgstr "เลขที่หลักประกัน"
+msgstr "อ้างอิงคำขอซื้อ/จ้าง"
 
 #. module: l10n_th_gov_purchase_guarantee
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee__reference_model
