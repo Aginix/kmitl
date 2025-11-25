@@ -43,3 +43,16 @@ class ResPartnerType(models.Model):
         tracking=True,
         help='This account will be used instead of the default one as the payable account for the partner',
     )
+
+    partner_ids = fields.One2many(
+        comodel_name='res.partner',
+        inverse_name='partner_type_id',
+        string='Partners',
+        readonly=True,
+    )
+
+    def unlink(self):
+        for record in self:
+            if record.partner_ids:
+                raise UserError(_("Cannot delete partner type in used."))
+        return super().unlink()

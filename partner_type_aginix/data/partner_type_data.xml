@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="partner_type_company" model="res.partner.type">
+            <field name="name">Company</field>
+            <field name="company_type">company</field>
+        </record>
+
+        <record id="partner_type_employee" model="res.partner.type">
+            <field name="name">Employee</field>
+            <field name="company_type">person</field>
+        </record>
+
+        <record id="partner_type_student" model="res.partner.type">
+            <field name="name">Student</field>
+            <field name="company_type">person</field>
+        </record>
+
+        <record id="partner_type_other" model="res.partner.type">
+            <field name="name">Other</field>
+            <field name="company_type">person</field>
+        </record>
+    </data>
+</odoo>
