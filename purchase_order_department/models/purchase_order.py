@@ -20,4 +20,5 @@ class PurchaseOrder(models.Model):
         comodel_name="hr.department",
         string="Department",
         states=READONLY_STATES,
+        tracking=True
     )
