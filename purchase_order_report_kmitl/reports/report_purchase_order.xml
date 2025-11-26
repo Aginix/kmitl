@@ -227,7 +227,12 @@
                     <div class="mb-2">การสั่งซื้อ อยู่ภายใต้เงื่อนไขดังนี้</div>
                     <ol>
                         <li>
-                            กำหนดส่งมอบภายใน 60 วัน นับถัดจากวันที่ผู้รับจ้างได้รับ
+                            กำหนดส่งมอบภายใน
+                            <span
+                                class="fw-bolder text-decoration-underline"
+                                t-esc="o.contract_period_days"
+                            />
+                            วัน นับถัดจากวันที่ผู้รับจ้างได้รับ
                             <span
                                 class="fw-bolder text-decoration-underline"
                                 t-esc="o.contract_type_id.name"
@@ -322,23 +327,6 @@
                             />
                         </li>
                     </ol>
-                    <div class="my-5">
-                        <div class="my-2 d-inline-block">
-                            <div>ลงชื่อ <t t-out="'.' * 80" /> ผู้สั่งจ้าง</div>
-                            <div class="text-center">
-                                <!-- ชื่อใคร -->
-                                ( <span t-field="o.partner_id.name" />
-                                )
-                            </div>
-                            <div class="text-center">
-                                รองอธิการบดีฝ่ายพัสดุ
-                                <!-- ตำแหน่งเอาจากไหน -->
-                                <span
-                                    t-out="o.department_id.master_department_id.name"
-                                />
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </t>
         </xpath>
