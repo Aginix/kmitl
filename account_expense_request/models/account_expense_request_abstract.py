@@ -4,26 +4,62 @@ from odoo.exceptions import UserError
 
 class AccountExpenseRequestAbstract(models.AbstractModel):
     _name = "account.expense.request"
+    _inherit = ["analytic.mixin", "mail.thread", "mail.activity.mixin"]
     _description = "Account Expense Request Abstract"
 
+    READONLY_STATES = {
+        "submitted": [("readonly", True)],
+        "approved": [("readonly", True)],
+        "cancel": [("readonly", True)],
+    }
+
     name = fields.Char(
-        string="Number",
+        string="เลขที่",
         required=True,
         readonly=True,
         copy=False,
         default="/",
+        tracking=True
     )
 
     requester_id = fields.Many2one(
         comodel_name="res.partner",
-        string="Requester",
+        string="ผู้ขอ",
         required=True,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
+    responsible_id = fields.Many2one(
+        comodel_name="res.partner",
+        string="ผู้สร้างข้อมูล",
+        required=True,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
+    approver_id = fields.Many2one(
+        comodel_name="res.partner",
+        string="ผู้อนุมัติ",
+        required=True,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
+    department_id = fields.Many2one(
+        "hr.department",
+        string="หน่วยงาน",
+        required=True,
+        tracking=True,
+        states=READONLY_STATES,
     )
 
     date = fields.Date(
-        string="Date",
+        string="วันที่",
         required=True,
         default=fields.Date.context_today,
+        tracking=True,
+        states=READONLY_STATES,
     )
 
     company_id = fields.Many2one(
@@ -31,7 +67,7 @@ class AccountExpenseRequestAbstract(models.AbstractModel):
         string="Company",
         required=True,
         default=lambda self: self.env.company,
-        tracking=True,
+        tracking=True
     )
 
     currency_id = fields.Many2one(
@@ -43,25 +79,32 @@ class AccountExpenseRequestAbstract(models.AbstractModel):
     )
 
     amount_total = fields.Monetary(
-        string="Total",
-        compute="_compute_amount_all",
-        store=True,
+        string="จำนวนเงินทั้งหมด",
         currency_field="currency_id",
+        required=True,
         tracking=True,
+        states=READONLY_STATES,
     )
 
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
             ("submitted", "Submitted"),
-            ("validated", "Validated"),
+            ("approved", "Approved"),
             ("cancel", "Cancelled"),
         ],
-        string="Status",
+        string="สถานะ",
         required=True,
         readonly=True,
         copy=False,
         default="draft",
+        tracking=True,
+    )
+
+    description = fields.Text(
+        string="รายละเอียด",
+        tracking=True,
+        states=READONLY_STATES,
     )
 
     def action_submit(self):
@@ -72,12 +115,12 @@ class AccountExpenseRequestAbstract(models.AbstractModel):
             record.state = "submitted"
         return True
 
-    def action_validate(self):
-        """Validate the request"""
+    def action_approve(self):
+        """Approve the request"""
         for record in self:
             if record.state != "submitted":
-                raise UserError(_("Only submitted requests can be validated."))
-            record.state = "validated"
+                raise UserError(_("Only submitted requests can be approved."))
+            record.state = "approved"
         return True
 
     def action_cancel(self):
