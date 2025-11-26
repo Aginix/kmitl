@@ -1,0 +1,14 @@
+<odoo>
+    <record id="contract_1" model="purchase.contract.type">
+        <field name="name">ใบสั่งซื้อ</field>
+        <field name="is_construction" eval="False" />
+    </record>
+    <record id="contract_2" model="purchase.contract.type">
+        <field name="name">ใบสั่งจ้าง</field>
+        <field name="is_construction" eval="False" />
+    </record>
+    <record id="contract_3" model="purchase.contract.type">
+        <field name="name">สัญญาจ้างก่อสร้าง</field>
+        <field name="is_construction" eval="True" />
+    </record>
+</odoo>
