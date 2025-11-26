@@ -9,10 +9,9 @@
                 <field name="name" />
                 <field name="price" />
                 <button
-                    name="action_delete_row"
+                    name="unlink"
                     type="object"
                     icon="fa-trash"
-                    class="btn-link"
                 />
             </tree>
         </field>

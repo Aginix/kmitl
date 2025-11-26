@@ -13,6 +13,3 @@ class PurchaseRequestTender(models.Model):
     currency_id = fields.Many2one(related="request_id.company_id.currency_id", readonly=True)
     sequence = fields.Integer(default=10)
     request_id = fields.Many2one("purchase.request", required=True, index=True)
-
-    def action_delete_row(self):
-        self.unlink()
