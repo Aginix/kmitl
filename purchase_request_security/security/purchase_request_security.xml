@@ -12,11 +12,6 @@
     <record id="purchase_request.group_purchase_request_manager" model="res.groups">
         <field name="name">Purchase Request Manager</field>
         <field name="implied_ids" eval="[(4, ref('purchase_request_security.group_purchase_request_user_all'))]" />
-    </record>
-
-    <!-- add group to admin  -->
-    <record id="add_admin_to_request_manager" model="res.groups">
-        <field name="id" ref="purchase_request.group_purchase_request_manager"/>
         <field name="users" eval="[(4, ref('base.user_admin'))]" />
     </record>
 
