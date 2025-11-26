@@ -1,0 +1,3 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_purchase_request_tender_user,purchase_request_tender_user,model_purchase_request_tender,purchase_request.group_purchase_request_user,1,1,1,1
+access_purchase_request_tender_manager,purchase_request_tender_manager,model_purchase_request_tender,purchase_request.group_purchase_request_manager,1,1,1,1
