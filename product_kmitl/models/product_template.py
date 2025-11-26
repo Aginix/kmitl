@@ -3,7 +3,6 @@ from odoo import fields, models
 
 class ProductTemplate(models.Model):
     _inherit = "product.template"
-    bypass_warning = True
 
     purchase_request_ok = fields.Boolean(
         default=False,

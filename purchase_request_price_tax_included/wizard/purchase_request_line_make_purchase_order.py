@@ -9,7 +9,6 @@ _logger = logging.getLogger(__name__)
 
 class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     _inherit = "purchase.request.line.make.purchase.order"
-    bypass_warning = True
 
     @api.model
     def _prepare_purchase_order_line(self, po, item):
@@ -30,7 +29,6 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
 
 class PurchaseRequestLineMakePurchaseOrderItem(models.TransientModel):
     _inherit = "purchase.request.line.make.purchase.order.item"
-    bypass_warning = True
 
     price_unit = fields.Float(
         string="Unit Price",

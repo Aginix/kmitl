@@ -9,7 +9,6 @@ _logger = logging.getLogger(__name__)
 
 class PurchaseRequestLine(models.Model):
     _inherit = "purchase.request.line"
-    bypass_warning = True
 
     price_unit = fields.Float(
         string="Unit Price",

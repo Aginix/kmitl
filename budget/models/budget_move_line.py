@@ -50,7 +50,6 @@ class BudgetMoveLine(models.Model):
     _description = "Budget Move Line"
     _inherit = ["analytic.distribution.mixin", "mail.thread"]
     _order = "date desc, move_name desc, id"
-    bypass_warning = True
 
     move_id = fields.Many2one(
         comodel_name="budget.move",

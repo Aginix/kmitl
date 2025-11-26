@@ -16,7 +16,6 @@ class PurchaseRequestApproval(models.Model):
     _description = "Purchase Request Approval"
     _order = "date_start desc, name desc"
     _check_company_auto = True
-    bypass_warning = True
 
     @api.model
     def _get_default_requested_by(self):
