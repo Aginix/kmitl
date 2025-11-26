@@ -8,6 +8,12 @@
                 <field name="sequence" widget="handle" />
                 <field name="name" />
                 <field name="price" />
+                <button
+                    name="action_delete_row"
+                    type="object"
+                    icon="fa-trash"
+                    class="btn-link"
+                />
             </tree>
         </field>
     </record>
@@ -19,9 +25,9 @@
             <form string="Purchase Request Tender">
                 <sheet>
                     <div class="oe_title">
-                        <label for="name"/>
+                        <label for="name" />
                         <h1>
-                            <field name="name" placeholder="Name..."/>
+                            <field name="name" placeholder="Name..." />
                         </h1>
                     </div>
                 </sheet>
@@ -35,7 +41,12 @@
         <field name="arch" type="xml">
             <search>
                 <group expand="1" string="Group By">
-                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                    <filter
+                        string="Name"
+                        name="name"
+                        domain="[]"
+                        context="{'group_by':'name'}"
+                    />
                 </group>
             </search>
         </field>

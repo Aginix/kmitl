@@ -9,11 +9,10 @@ class PurchaseRequestTender(models.Model):
 
     name = fields.Char(string='Tender Name', required=True, tracking=True)
     price = fields.Monetary(string="Price", required=True, tracking=True)
-    currency_id = fields.Many2one(
-        'res.currency',
-        string='Currency',
-        required=True,
-        default=lambda self: self.env.company.currency_id.id,
-    )
+    company_id = fields.Many2one(related="request_id.company_id", readonly=True)
+    currency_id = fields.Many2one(related="request_id.company_id.currency_id", readonly=True)
     sequence = fields.Integer(default=10)
     request_id = fields.Many2one("purchase.request", required=True, index=True)
+
+    def action_delete_row(self):
+        self.unlink()
