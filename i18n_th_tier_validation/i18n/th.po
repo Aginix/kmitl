@@ -25,7 +25,7 @@ msgstr ""
 #. module: base_tier_validation
 #: model_terms:ir.ui.view,arch_db:base_tier_validation.tier_validation_label
 msgid "<i class=\"fa fa-info-circle\"/> This Record needs to be validated."
-msgstr "<i class=\"fa fa-info-circle\"/> ข้อมูลจำเป็นต้องได้รับการตรวจสอบ""
+msgstr "<i class=\"fa fa-info-circle\"/> ข้อมูลจำเป็นต้องได้รับการตรวจสอบ"
 
 #. module: base_tier_validation
 #: model_terms:ir.ui.view,arch_db:base_tier_validation.tier_validation_label
