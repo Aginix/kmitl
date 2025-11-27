@@ -160,9 +160,6 @@
             <xpath expr="//tree" position="inside">
                 <field name="late_days" optional="hide" />
             </xpath>
-            <xpath expr="//field[@name='date_planned']" position="attributes">
-                <attribute name="widget">remaining_days</attribute>
-            </xpath>
         </field>
     </record>
 </odoo>
