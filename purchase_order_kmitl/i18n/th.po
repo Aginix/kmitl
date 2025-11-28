@@ -1424,7 +1424,7 @@ msgstr "ล็อคคำสั่งซื้อที่ยืนยันแ
 #: code:addons/purchase/controllers/portal.py:0 model:ir.model.fields.selection,name:purchase.selection__purchase_order__state__done
 #, python-format
 msgid "Locked"
-msgstr "ล็อก"
+msgstr "ล็อค"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__message_main_attachment_id
@@ -1952,6 +1952,12 @@ msgstr "ระยะเวลาในการจัดซื้อ"
 #, python-format
 msgid "Purchase Order"
 msgstr "คำสั่งซื้อ"
+
+#. modules: purchase
+#: model:ir.model.fields.selection,name:purchase.selection__purchase_order__state__purchase
+#: model:ir.model.fields.selection,name:purchase.selection__purchase_report__state__purchase
+msgid "Purchase Order"
+msgstr "คำสั่งซื้อ/จ้าง"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
