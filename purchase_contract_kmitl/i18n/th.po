@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-24 09:09+0000\n"
-"PO-Revision-Date: 2025-11-24 09:09+0000\n"
+"POT-Creation-Date: 2025-11-27 08:27+0000\n"
+"PO-Revision-Date: 2025-11-27 08:27+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -94,6 +94,26 @@ msgstr "กำหนดวันส่งมอบภายใน"
 #: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.purchase_order_view_search_kmitl
 msgid "Contract Type"
 msgstr "ประเภทสัญญา"
+
+#. module: purchase_contract_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.purchase_order_view_search_kmitl
+msgid "Contract period 0 - 15 days"
+msgstr "อายุสัญญา 0 - 15 วัน"
+
+#. module: purchase_contract_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.purchase_order_view_search_kmitl
+msgid "Contract period 0 - 30 days"
+msgstr "อายุสัญญา 0 - 30 วัน"
+
+#. module: purchase_contract_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.purchase_order_view_search_kmitl
+msgid "Contract period 0 - 60 days"
+msgstr "อายุสัญญา 0 - 60 วัน"
+
+#. module: purchase_contract_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.purchase_order_view_search_kmitl
+msgid "Contract period 60+ days"
+msgstr "อายุสัญญามากกว่า 60 วัน"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__create_uid
@@ -430,5 +450,11 @@ msgstr ""
 
 #. module: purchase_contract_kmitl
 #: model:exception.rule,description:purchase_contract_kmitl.purchase_order_is_construction_exception
+#: model:exception.rule,description:purchase_contract_kmitl.purchase_order_work_start_must_be_valid_exception
 msgid "ประเภทสัญญางานก่อสร้าง"
+msgstr ""
+
+#. module: purchase_contract_kmitl
+#: model:exception.rule,name:purchase_contract_kmitl.purchase_order_work_start_must_be_valid_exception
+msgid "วันที่เริ่มงาน ต้องไม่เริ่มก่อนวันที่เริ่มสัญญา"
 msgstr ""
