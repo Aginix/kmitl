@@ -94,6 +94,13 @@ class PurchaseOrder(models.Model):
         ),
     ]
 
+    @api.onchange('date_order_date', 'work_start')
+    def _onchange_sync_work_start(self):
+        for rec in self:
+            if rec.date_order_date and rec.work_start:
+                if rec.date_order_date > rec.work_start:
+                    rec.work_start = rec.date_order_date
+
     @api.depends('work_start', 'contract_period_days')
     def _compute_work_end(self):
         for rec in self:

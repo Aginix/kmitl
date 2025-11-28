@@ -322,6 +322,11 @@ msgid ""
 msgstr ""
 
 #. module: purchase_contract_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_order_form_contract
+msgid "Date Work"
+msgstr "วันที่เริ่มงาน"
+
+#. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_order__supervision_cost
 msgid "Supervision Cost"
 msgstr "ค่าใข้จ่ายควบคุมงาน"

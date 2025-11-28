@@ -6,13 +6,13 @@
         <field name="inherit_id" ref="purchase.purchase_order_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='date_order']" position="after">
-                <field name="contract_name" />
-                <field name="contract_number" />
                 <field
                     name="contract_type_id"
                     required="1"
                     options="{'no_open': True}"
                 />
+                <field name="contract_name" />
+                <field name="contract_number" />
                 <field name="fines_rate" widget="float" />
                 <field name="fines_late" widget="float" readonly="1" />
                 <field name="late_days" readonly="1" />
@@ -23,9 +23,17 @@
 
             <xpath expr="//field[@name='date_order']" position="after">
                 <field name="date_order_date" required="1" />
-                <field name="contract_period_days" />
-                <field name="work_start" />
-                <field name="work_end" widget="remaining_days" />
+                <field name="contract_period_days" required="1" />
+                <label for="work_start" string="Date Work" />
+                <div name="work_start_div" class="o_row">
+                    <field name="work_start" required="1" />
+                    <i
+                        class="fa fa-long-arrow-right mx-2 oe_edit_only"
+                        aria-label="Arrow icon"
+                        title="Arrow"
+                    />
+                    <field name="work_end" readonly="1" />
+                </div>
             </xpath>
 
             <!-- invisible -->
@@ -61,6 +69,9 @@
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_view_search" />
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="contract_number" />
+            </xpath>
             <xpath expr="//search" position="inside">
                 <filter
                     string="Work delayed"
@@ -107,6 +118,12 @@
         <field name="arch" type="xml">
             <xpath expr="//tree" position="inside">
                 <field name="late_days" optional="hide" />
+            </xpath>
+            <xpath expr="//field[@name='date_planned']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_planned']" position="before">
+                <field name="work_end" widget="remaining_days" />
             </xpath>
         </field>
     </record>
