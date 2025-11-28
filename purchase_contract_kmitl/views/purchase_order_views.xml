@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='date_order']" position="after">
                 <field name="contract_name" />
-                <field name="contract_number" readonly="1" />
+                <field name="contract_number" />
                 <field
                     name="contract_type_id"
                     required="1"
@@ -16,53 +16,16 @@
                 <field name="fines_rate" widget="float" />
                 <field name="fines_late" widget="float" readonly="1" />
                 <field name="late_days" readonly="1" />
+                <field name="supervision_cost" widget="float" />
                 <field name="fines_late" invisible="1" />
                 <field name="late_days" invisible="1" />
             </xpath>
 
             <xpath expr="//field[@name='date_order']" position="after">
-                <label for="date_order_date" string="Date Order" />
-                <div name="date_order_div" class="o_row">
-                    <field
-                        name="date_order_date"
-                        required="1"
-                    />
-                </div>
+                <field name="date_order_date" required="1" />
                 <field name="contract_period_days" />
-                <label
-                    for="work_start"
-                    string="Date Work"
-                />
-                <div
-                    name="work_start_div"
-                    class="o_row"
-                >
-                    <field
-                        name="work_start"
-                        widget="daterange"
-                        options="{'related_end_date': 'work_end'}"
-                    />
-                    <i
-                        class="fa fa-long-arrow-right mx-2 oe_edit_only"
-                        aria-label="Arrow icon"
-                        title="Arrow"
-                    />
-                    <field
-                        name="work_end"
-                        widget="daterange"
-                        options="{'related_start_date': 'work_start'}"
-                    />
-                </div>
-            </xpath>
-
-            <xpath expr="//button[@name='button_confirm']" position="before">
-                <button
-                    name="create_contract_number"
-                    type="object"
-                    string="Get Contract Number"
-                    class="oe_highlight"
-                    attrs="{'invisible': ['|', ('contract_number', '!=', False) ,('state', '!=', 'purchase')]}"
-                />
+                <field name="work_start" />
+                <field name="work_end" widget="remaining_days" />
             </xpath>
 
             <!-- invisible -->
