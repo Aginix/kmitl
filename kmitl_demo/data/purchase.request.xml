@@ -1,0 +1,61 @@
+<odoo>
+    <record id="purchase_request_1" model="purchase.request">
+        <field name="title">โครงการจัดหาบ้านให้น้องแมว</field>
+        <field name="description">แมวภายในสถาบันไม่มีที่อยู่</field>
+        <field
+            name="account_fiscal_year_id"
+            ref="kmitl_demo.account_fiscal_year_y2568"
+        />
+        <field
+            name="procurement_type_id"
+            ref="purchase_request_kmitl.procurement_type_006"
+        />
+        <field
+            name="procurement_method_id"
+            ref="l10n_th_gov_purchase_request.procurement_general"
+        />
+        <field name="payment_type">direct</field>
+        <field name="requested_by" ref="base.user_admin" />
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_014" />
+        <field name="user_id" ref="base.user_admin" />
+        <field name="department_id" ref="kmitl_demo.01" />
+        <field name="product_id" ref="l10n_th_gov_purchase_request.product_type_001" />
+        <field name="operating_unit_id" ref="operating_unit_kmitl.operating_unit_01" />
+        <field name="budget_account_id" ref="budget.budget_account_5101020008" />
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01" />
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0200" />
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_2" />
+    </record>
+    <record id="purchase_request_line_1" model="purchase.request.line">
+        <field name="name">ซื้อ/จ้าง/เช่า</field>
+        <field name="product_id" ref="l10n_th_gov_purchase_request.product_type_001" />
+        <field name="product_qty">1</field>
+        <field name="price_unit">1500</field>
+        <field name="request_id" ref="kmitl_demo.purchase_request_1" />
+    </record>
+    <record id="committee_wa_01" model="procurement.committee">
+        <field name="request_id" ref="kmitl_demo.purchase_request_1" />
+        <field name="employee_id" ref="kmitl_demo.employee_demo_005" />
+        <field name="committee_type">work_acceptance</field>
+        <field name="approve_role">chairman</field>
+        <field name="name" model="base" eval="obj().env.ref('kmitl_demo.employee_demo_005').name" />
+        <field name="phone" model="base" eval="obj().env.ref('kmitl_demo.employee_demo_005').work_phone" />
+    </record>
+    <record id="committee_wa_02" model="procurement.committee">
+        <field name="request_id" ref="kmitl_demo.purchase_request_1" />
+        <field name="employee_id" ref="kmitl_demo.employee_demo_008" />
+        <field name="committee_type">work_acceptance</field>
+        <field name="approve_role">committee</field>
+        <field name="name" model="base" eval="obj().env.ref('kmitl_demo.employee_demo_008').name" />
+        <field name="phone" model="base" eval="obj().env.ref('kmitl_demo.employee_demo_008').work_phone" />
+    </record>
+    <record id="committee_wa_03" model="procurement.committee">
+        <field name="request_id" ref="kmitl_demo.purchase_request_1" />
+        <field name="employee_id" ref="kmitl_demo.employee_demo_007" />
+        <field name="committee_type">work_acceptance</field>
+        <field name="approve_role">committee</field>
+        <field name="name" model="base" eval="obj().env.ref('kmitl_demo.employee_demo_007').name" />
+        <field name="phone" model="base" eval="obj().env.ref('kmitl_demo.employee_demo_007').work_phone" />
+    </record>
+</odoo>

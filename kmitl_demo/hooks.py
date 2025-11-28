@@ -6,6 +6,11 @@ def post_init(cr, registry):
     # This is a placeholder for the post-init method.
     env = api.Environment(cr, SUPERUSER_ID, {})
 
+    requests = env['purchase.request'].search([])
+    for r in requests:
+        r._onchange_budget_account_id()
+        r.write({})
+
     # Install the Thai language pack
     th = (
         env["res.lang"].with_context(active_test=False).search([("code", "=", "th_TH")])
