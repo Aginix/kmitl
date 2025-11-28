@@ -64,20 +64,6 @@ class PurchaseOrder(models.Model):
         copy=False,
     )
 
-    is_construction = fields.Boolean(
-        string="Is Construction",
-        related="contract_type_id.is_construction",
-        store=True,
-    )
-
-    date_planned_date = fields.Date(
-        string="Expected Arrival (Date Only)",
-        compute="_compute_date_only",
-        inverse="_inverse_date_only",
-        states=READONLY_STATES,
-        store=False,
-    )
-
     date_order_date = fields.Date(
         string="Order Date (Date Only)",
         compute="_compute_date_only",
@@ -88,24 +74,9 @@ class PurchaseOrder(models.Model):
 
     contract_period_days = fields.Integer(
         string="Contract Period Days",
-        compute="_compute_contract_period_days",
-        store=True,
-        readonly=True
+        tracking=True,
+        states=READONLY_STATES,
     )
-
-    @api.onchange("is_construction")
-    def _onchange_is_construction_clear_dates(self):
-        if not self.is_construction:
-            self.work_start = False
-            self.work_end = False
-
-    @api.depends('date_planned_date', 'date_order_date')
-    def _compute_contract_period_days(self):
-        for rec in self:
-            if rec.date_planned_date and rec.date_order_date:
-                rec.contract_period_days = (rec.date_planned_date - rec.date_order_date).days + 1
-            else:
-                rec.contract_period_days = 0
 
     _sql_constraints = [
         (
@@ -115,24 +86,17 @@ class PurchaseOrder(models.Model):
         ),
     ]
 
-    @api.onchange('date_order_date', 'date_planned_date', 'work_start', 'work_end')
+    @api.onchange('date_order_date', 'work_start', 'work_end')
     def _onchange_dates(self):
         self._compute_fines_internal()
 
-    @api.depends("date_planned", "date_order")
+    @api.depends("date_order")
     def _compute_date_only(self):
         for rec in self:
-            rec.date_planned_date = rec.date_planned.date() if rec.date_planned else False
             rec.date_order_date = rec.date_order.date() if rec.date_order else False
 
     def _inverse_date_only(self):
         for rec in self:
-            if rec.date_planned_date:
-                rec.date_planned = datetime.combine(
-                    rec.date_planned_date,
-                    time(0, 0, 0)
-                )
-
             if rec.date_order_date:
                 rec.date_order = datetime.combine(
                     rec.date_order_date,
@@ -144,9 +108,7 @@ class PurchaseOrder(models.Model):
 
         domain = [
             ('state', '=', 'purchase'),
-            "|",
             ('work_end', '<=', today),
-            ('date_planned_date', '<=', today),
         ]
 
         orders = self.search(domain)
@@ -156,14 +118,14 @@ class PurchaseOrder(models.Model):
 
     def _compute_fines_internal(self):
         today = fields.Date.today()
-        for rec in self:
-            if (rec.contract_type_id.is_construction and not rec.work_end) or not rec.date_planned_date:
-                rec.late_days = 0
-                rec.fines_late = 0
-                continue
-            end_date = rec.work_end if rec.contract_type_id.is_construction else rec.date_planned_date
-            rec.late_days = max((today - end_date).days, 0)
-            rec.fines_late = rec.fines_rate * rec.late_days if rec.fines_rate else 0
+        # for rec in self:
+        #     if (rec.contract_type_id.is_construction and not rec.work_end) or not rec.date_planned_date:
+        #         rec.late_days = 0
+        #         rec.fines_late = 0
+        #         continue
+        #     end_date = rec.work_end if rec.contract_type_id.is_construction else rec.date_planned_date
+        #     rec.late_days = max((today - end_date).days, 0)
+        #     rec.fines_late = rec.fines_rate * rec.late_days if rec.fines_rate else 0
 
     def _validate_get_contract_number(self):
         if not self.account_fiscal_year_id:

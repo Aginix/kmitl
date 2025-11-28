@@ -298,7 +298,7 @@ msgstr ""
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_order__date_order_date
 msgid "Order Date (Date Only)"
-msgstr "วันที่เริ่มสัญญา"
+msgstr "วันที่ลงนามสัญญา"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__purchase_ids
