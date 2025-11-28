@@ -25,6 +25,7 @@ class PurchaseOrder(models.Model):
         string="Work Start",
         states=READONLY_STATES,
         tracking=True,
+        default=fields.Date.today,
     )
 
     work_end = fields.Date(string="Work End",
