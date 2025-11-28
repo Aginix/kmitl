@@ -1,0 +1,6 @@
+<odoo>
+    <record id="group_enable_create_bill" model="res.groups">
+        <field name="name">Enable Create Bill on Purchase</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+</odoo>

@@ -104,7 +104,7 @@ msgstr "รอตรวจสอบความถูกต้อง"
 #: model:ir.model.fields.selection,name:purchase_request_approval_kmitl.selection__purchase_request__state__to_verify
 #: model:target.state.value,name:purchase_request_approval_kmitl.target_state_value_approved
 msgid "To be verified"
-msgstr "ตรวจสอบข้อมูล"
+msgstr "จองงบประมาณ"
 
 #. module: purchase_request_approval_kmitl
 #: model:base.substate,name:purchase_request_approval_kmitl.base_substate_waiting_for_approval

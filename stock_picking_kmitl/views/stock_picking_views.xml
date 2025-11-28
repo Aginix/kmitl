@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+      
+    <!-- View stock.picking form -->
+    <record id="view_stock_picking_form" model="ir.ui.view">
+        <field name="name">view.stock.picking.form</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_product_forecast_report']" position="attributes">
+              <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='action_show_details']" position="attributes">
+              <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='product_uom_qty']" position="after">
+              <field name="qty_available" readonly="1" attrs="{'column_invisible': [('parent.picking_type_code', '!=', 'outgoing')]}"/>
+            </xpath>
+
+            <xpath expr="//notebook" position="inside">
+              <page string="Valuation Layers">
+                <field name="stock_valuation_layer_ids" readonly="1">
+                  <tree>
+                    <field name="create_date"/>
+                    <field name="product_id"/>
+                    <field name="description"/>
+                    <field name="quantity_unsigned"/>
+                    <field name="unit_cost_unsigned"/>
+                    <field name="value_unsigned"/>
+                  </tree>
+                </field>
+              </page>
+            </xpath>
+        </field>
+    </record>
+
+  </odoo>

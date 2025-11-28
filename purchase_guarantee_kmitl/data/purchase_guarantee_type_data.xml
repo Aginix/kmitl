@@ -17,4 +17,12 @@
         <field name="active">False</field>
     </record>
 
+    <record id="l10n_th_gov_purchase_guarantee.cash" model="purchase.guarantee.type">
+        <field name="name">เงินสด/เงินโอน</field>
+        <field name="is_create_invoice">True</field>
+    </record>
+
+    <record id="l10n_th_gov_purchase_guarantee.bank_guarantee" model="purchase.guarantee.type">
+        <field name="name">หนังสือค้ำประกันออกโดยธนาคาร</field>
+    </record>
 </odoo>

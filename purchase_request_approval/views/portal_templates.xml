@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Purchase Request Approval Portal List -->
+    <template id="portal_my_home_purchase_request_approval" name="Portal My Home: Purchase Request Approval" inherit_id="portal.portal_my_home" priority="40">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Purchase Request Approvals</t>
+                <t t-set="url" t-value="'/my/purchase_request_approvals'"/>
+                <t t-set="placeholder_count" t-value="'purchase_request_approval_count'"/>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Purchase Request Approval List View -->
+    <template id="portal_my_purchase_request_approvals" name="My Purchase Request Approvals">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Purchase Request Approvals</t>
+            </t>
+
+            <t t-if="not purchase_request_approvals">
+                <div class="alert alert-warning mt-3" role="alert">
+                    There are no purchase requests.
+                </div>
+            </t>
+            <t t-if="purchase_request_approvals" t-call="portal.portal_table">
+                <thead>
+                    <tr class="active">
+                        <th>Reference</th>
+                        <th>Date</th>
+                        <th>Department</th>
+                        <th class="text-end">Amount</th>
+                        <th>State</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="purchase_request_approvals" t-as="request">
+                        <tr>
+                            <td>
+                                <a t-att-href="request.get_portal_url()">
+                                    <t t-esc="request.name"/>
+                                </a>
+                            </td>
+                            <td>
+                                <span t-field="request.create_date" t-options='{"widget": "date"}'/>
+                            </td>
+                            <td>
+                                <span t-field="request.department_id"/>
+                            </td>
+                            <td class="text-end">
+                                <span t-field="request.amount_total" t-options='{"widget": "monetary", "display_currency": request.currency_id}'/>
+                            </td>
+                            <td>
+                                <span t-field="request.state" class="badge badge-pill"/>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </t>
+        </t>
+    </template>
+
+    <!-- Purchase Request Approval Detail Page with iframe -->
+    <template id="portal_purchase_request_approval_page" name="Portal Purchase Request Approval Page" inherit_id="portal.portal_sidebar" primary="True">
+        <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">
+            <t t-set="o_portal_fullwidth_alert" groups="sales_team.group_sale_salesman,account.group_account_purchase_request_approval,account.group_account_readonly">
+                <t t-call="portal.portal_back_in_edit_mode">
+                    <t t-set="backend_url" t-value="'/web#model=purchase.request.approval&amp;id=%s&amp;action=&amp;view_type=form' % (purchase_request_approval.id)"/>
+                </t>
+            </t>
+
+            <div class="row mt16 o_portal_purchase_request_approval_sidebar">
+                <!-- Sidebar -->
+                <t t-call="portal.portal_record_sidebar">
+                    <t t-set="classes" t-value="'col-lg-auto d-print-none'"/>
+                    <t t-set="title">
+                        <h2 class="mb-0">
+                            <b t-field="purchase_request_approval.estimated_cost"/>
+                        </h2>
+                        <!--<div class="small" t-if="purchase_request_approval.payment_state not in ('paid', 'in_payment', 'reversed') and purchase_request_approval.move_type == 'out_purchase_request_approval'"><i class="fa fa-clock-o"/><span class="o_portal_sidebar_timeago ml4" t-att-datetime="purchase_request_approval.purchase_request_approval_date_due"/></div>-->
+                    </t>
+
+                    <t t-set="entries">
+                        <ul class="list-group list-group-flush flex-wrap flex-row flex-lg-column">
+                            <li class="list-group-item flex-grow-1">
+                                <div class="o_download_pdf btn-toolbar flex-sm-nowrap">
+                                    <div class="btn-group  flex-grow-1 me-1 mb-1">
+                                        <a class="btn btn-secondary btn-block o_download_btn" t-att-href="purchase_request_approval.get_portal_url(report_type='pdf', download=True)" title="Download">
+                                            <i class="fa fa-download"/>
+ Download</a>
+                                    </div>
+                                    <div class="btn-group flex-grow-1 mb-1">
+                                        <a class="btn btn-secondary btn-block o_print_btn o_portal_purchase_request_approval_print" t-att-href="purchase_request_approval.get_portal_url(report_type='pdf')" id="print_purchase_request_approval_report" title="Print" target="_blank">
+                                            <i class="fa fa-print"/>
+ Print</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li t-if="purchase_request_approval.requested_by" class="list-group-item flex-grow-1">
+                                <div class="small mb-1">
+                                    <strong class="text-muted">
+                                        Requested by
+                                    </strong>
+                                </div>
+                                <div class="row">
+                                    <div class="col flex-grow-0 pe-2">
+                                        <img class="rounded-circle mt-1 o_portal_contact_img" t-att-src="image_data_uri(purchase_request_approval.requested_by.avatar_128)" alt="Contact"/>
+                                    </div>
+                                    <div class="col ps-0">
+                                        <span t-field="purchase_request_approval.requested_by" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True}"/>
+                                        <a href="#discussion" class="small">
+                                            <i class="fa fa-fw fa-comments"/>
+                                            <b>Send message</b>
+                                        </a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </t>
+                </t>
+                <div id="portal_purchase_request_approval_content" class="col-12 col-lg">
+
+                    <div class="o_portal_html_view shadow p-3">
+                        <div class="o_portal_html_loader text-center">
+                            <i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw text-black-50"/>
+                        </div>
+                        <iframe id="purchase_request_approval_html" class="mt8 mb8" width="100%" height="100%" frameborder="0" scrolling="no" t-att-src="purchase_request_approval.get_portal_url(report_type='html')"/>
+                    </div>
+                    <!-- chatter -->
+                    <div id="purchase_request_approval_communication" class="mt-4">
+                        <h2>History</h2>
+                        <t t-call="portal.message_thread"/>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

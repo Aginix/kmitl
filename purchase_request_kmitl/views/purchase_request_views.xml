@@ -6,10 +6,13 @@
         <field name="inherit_id" ref="purchase_request.view_purchase_request_tree" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='requested_by']" position="after">
-                <field name="procurement_type_id" optional="show" />
+                <field name="procurement_type_id" optional="hide" />
             </xpath>
             <xpath expr="//field[@name='estimated_cost']" position="attributes">
                 <attribute name="optional">show</attribute>
+            </xpath>
+            <xpath expr="//field[@name='main_exception_id']" position="attributes">
+                <attribute name="optional">hide</attribute>
             </xpath>
         </field>
     </record>

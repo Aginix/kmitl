@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- View purchase.request form -->
+    <record id="view_purchase_request_form" model="ir.ui.view">
+        <field name="name">view.purchase.request.form</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='button_done']" position="before">
+                <field name="hide_create_approval_button" invisible="1" />
+                <field name="need_make_purchase_order" invisible="1" />
+                <button
+                    name="button_create_approval"
+                    string="Create approval"
+                    type="object"
+                    class="oe_highlight"
+                    groups="purchase_request_security.group_purchase_request_user_all"
+                    attrs="{'invisible': [('hide_create_approval_button', '=', True)]}"
+                />
+                <button
+                    name="approval_make_purchase_order"
+                    string="Create Purchase Order"
+                    type="object"
+                    class="oe_highlight"
+                    groups="purchase_request_security.group_purchase_request_user_all"
+                    attrs="{'invisible':[('need_make_purchase_order', '!=', True)]}"
+                />
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <field name="request_approval_count" invisible="1" />
+                <button
+                    type="object"
+                    name="action_view_request_approval"
+                    class="oe_stat_button"
+                    attrs="{'invisible':[('request_approval_count', '=', 0)]}"
+                    groups="purchase_request.group_purchase_request_user"
+                    icon="fa-file-contract"
+                    string="PA"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

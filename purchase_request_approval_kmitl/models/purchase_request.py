@@ -23,8 +23,39 @@ class PurchaseRequest(models.Model):
             "to_verify": "set default",
         },
     )
-
     can_request = fields.Boolean(compute="_compute_can_request")
+    hide_request_validation_button = fields.Boolean(
+        compute="_compute_hide_request_validation_button",
+        string="Hide Request Validation Button",
+        store=False,
+    )
+    hide_restart_validation_button = fields.Boolean(
+        compute="_compute_hide_restart_validation_button",
+        string="Hide Restart Validation Button",
+        store=False,
+    )
+
+    @api.depends("need_validation", "validation_status", "can_request")
+    def _compute_hide_restart_validation_button(self):
+        for record in self:
+            record.hide_restart_validation_button = (
+                record.need_validation != True
+                or record.validation_status != "pending"
+                or record.can_request is False
+            )
+
+    @api.depends('need_validation', 'validation_status', 'rejected', 'state', 'can_request')
+    def _compute_hide_request_validation_button(self):
+        current_user = self.env.user
+        for record in self:
+            record.hide_request_validation_button = (
+                record.need_validation != True
+                or record.validation_status == 'pending'
+                or record.rejected
+                or record.state != 'to_approve'
+                or record.can_request is False
+                or record.requested_by != current_user
+            )
 
     def _compute_is_purchase_request(self):
         for rec in self:
@@ -46,7 +77,7 @@ class PurchaseRequest(models.Model):
             lambda r: r.status == "pending" and (self.env.user in r.reviewer_ids)
         )
         if not reviews:
-            return self.write({"state": "approved"})
+            return self.button_approved()
 
     @api.model
     def _get_after_validation_exceptions(self):
@@ -71,7 +102,6 @@ class PurchaseRequest(models.Model):
     def request_validation(self):
         self.ensure_one()
         res = super().request_validation()
-        self.write({"state": "to_approve"})
         return res
 
     def restart_validation(self):
@@ -85,79 +115,10 @@ class PurchaseRequest(models.Model):
         res = super()._get_under_validation_exceptions()
         res.append("state")
         res.append("substate_id")
+        res.append("approved_by")
+        res.append("date_verified")
+        res.append("date_approved")
         return res
-
-    def action_reserve_budget(self):
-        """Reserve budget by creating commitment"""
-        self.ensure_one()
-
-        if not self.budget_account_id:
-            raise ValidationError(_("Please specify budget account"))
-
-        if not all(
-            [
-                self.activity_analytic_id,
-                self.department_analytic_id,
-                self.fund_analytic_id,
-                self.source_analytic_id,
-            ]
-        ):
-            raise ValidationError(
-                _("Please specify analytic dimensions for budget commitment")
-            )
-
-        amount = sum(self.line_ids.mapped("estimated_cost"))
-
-        check_result = self._check_budget_availability(
-            amount=amount,
-            activity_analytic_id=self.activity_analytic_id.id,
-            department_analytic_id=self.department_analytic_id.id,
-            fund_analytic_id=self.fund_analytic_id.id,
-            source_analytic_id=self.source_analytic_id.id,
-        )
-
-        if not check_result["is_sufficient"]:
-            raise UserError(
-                _("Cannot reserve budget due to insufficient funds: %s")
-                % check_result["message"]
-            )
-
-        try:
-            commitment = self._create_budget_commitment(
-                amount=amount,
-                activity_analytic_id=self.activity_analytic_id.id,
-                department_analytic_id=self.department_analytic_id.id,
-                fund_analytic_id=self.fund_analytic_id.id,
-                source_analytic_id=self.source_analytic_id.id,
-                ref=self.name,
-                description=f"Purchase Request: {self.name}",
-                date=self.date_start,
-                auto_reserve=True,
-            )
-            self.message_post(
-                body=_("Budget reserved: %s for amount %s") % (commitment.name, amount)
-            )
-            substate = self.env["base.substate"].search(
-                [("model", "=", "purchase.request"), ("sequence", "=", 20)], limit=1
-            )
-            self.write(
-                {
-                    "substate_id": substate.id,
-                    "verified_by": self.env.user.id,
-                    "date_verified": fields.Date.context_today(self),
-                }
-            )
-            return {
-                "type": "ir.actions.act_window",
-                "res_model": "purchase.request",
-                "view_mode": "form",
-                "res_id": self.id,
-                "target": "current",
-                "context": self.env.context,
-            }
-
-        except UserError as e:
-            raise UserError(_("Cannot reserve budget: %s") % str(e))
 
     @api.depends("requested_by")
     def _compute_can_request(self):
@@ -173,7 +134,7 @@ class PurchaseRequest(models.Model):
     def _compute_hide_reserve_budget_button(self):
         super()._compute_hide_reserve_budget_button()
         for rec in self:
-            if rec.substate_sequence == 10 and rec.state == "to_verify":
+            if rec.state == "to_verify":
                 rec.hide_reserve_budget_button = False
 
     def _compute_is_budget_editable(self):

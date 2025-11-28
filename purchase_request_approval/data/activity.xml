@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <record id="mail_activity_awaiting_approval_creation" model="mail.activity.type">
+        <field name="name">Purchase Request: Awaiting PA Creation</field>
+        <field name="summary">Create a PA</field>
+        <field name="category">default</field>
+        <field name="res_model">purchase.request</field>
+        <field name="icon">fa-tasks</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>
