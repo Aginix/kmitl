@@ -26,6 +26,7 @@
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01" />
         <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0200" />
         <field name="source_analytic_id" ref="account_analytic_kmitl.source_2" />
+        <field name="is_required_partner_id" eval="True" />
     </record>
     <record id="purchase_request_line_1" model="purchase.request.line">
         <field name="name">ซื้อ/จ้าง/เช่า</field>
