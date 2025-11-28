@@ -8,7 +8,11 @@
             <xpath expr="//field[@name='date_order']" position="after">
                 <field name="contract_name" />
                 <field name="contract_number" readonly="1" />
-                <field name="contract_type_id" required="1" options="{'no_open': True}" />
+                <field
+                    name="contract_type_id"
+                    required="1"
+                    options="{'no_open': True}"
+                />
                 <field name="fines_rate" widget="float" />
                 <field name="fines_late" widget="float" readonly="1" />
                 <field name="late_days" readonly="1" />
@@ -98,7 +102,7 @@
                 <filter
                     string="Work delayed"
                     name="work_delayed"
-                    domain="[('state', '=', 'order'), ('late_days', '>', 0)]"
+                    domain="[('state', 'in', ['purchase', 'done']), ('late_days', '&gt;', 0)]"
                 />
             </xpath>
             <xpath expr="//group" position="inside">
@@ -106,6 +110,28 @@
                     string="Contract Type"
                     name="contract_type_id"
                     context="{'group_by': 'contract_type_id'}"
+                />
+            </xpath>
+            <xpath expr="//separator[1]" position="after">
+                <filter
+                    string="Contract period 0 - 15 days"
+                    name="period_0_15"
+                    domain="[('contract_period_days', '&gt;=', 0), ('contract_period_days', '&lt;=', 15)]"
+                />
+                <filter
+                    string="Contract period 0 - 30 days"
+                    name="period_0_30"
+                    domain="[('contract_period_days', '&gt;=', 0), ('contract_period_days', '&lt;=', 30)]"
+                />
+                <filter
+                    string="Contract period 0 - 60 days"
+                    name="period_0_60"
+                    domain="[('contract_period_days', '&gt;=', 0), ('contract_period_days', '&lt;=', 60)]"
+                />
+                <filter
+                    string="Contract period 60+ days"
+                    name="period_60"
+                    domain="[('contract_period_days', '&gt;', 60)]"
                 />
             </xpath>
         </field>
