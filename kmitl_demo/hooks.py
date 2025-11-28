@@ -6,6 +6,9 @@ def post_init(cr, registry):
     # This is a placeholder for the post-init method.
     env = api.Environment(cr, SUPERUSER_ID, {})
 
+    request = env.ref('kmitl_demo.purchase_request_5', raise_if_not_found=False)
+    if request:
+        request.button_to_verify()
     # Install the Thai language pack
     th = (
         env["res.lang"].with_context(active_test=False).search([("code", "=", "th_TH")])
