@@ -13,7 +13,6 @@
         "account_fiscal_year",
         "account_analytic_kmitl",
         "hr_department_short_name",
-        "operating_unit_kmitl",
         "purchase_request_kmitl",
         "purchase_request_vendor_kmitl",
         "purchase_request_tender_kmitl",

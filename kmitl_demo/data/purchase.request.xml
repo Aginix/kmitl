@@ -20,7 +20,6 @@
         <field name="user_id" ref="base.user_admin" />
         <field name="department_id" ref="kmitl_demo.01" />
         <field name="product_id" ref="l10n_th_gov_purchase_request.product_type_001" />
-        <field name="operating_unit_id" ref="operating_unit_kmitl.operating_unit_01" />
         <field name="budget_account_id" ref="budget.budget_account_5101020008" />
         <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01" />
