@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -12,7 +12,7 @@ class PurchaseRequest(models.Model):
 
     partner_id = fields.Many2one("res.partner", tracking=True)
 
-    is_required_partner_id = fields.Boolean(compute="_compute_is_required_partner_id")
+    is_required_partner_id = fields.Boolean(string="Required Partner", compute="_compute_is_required_partner_id")
 
     @api.depends("state", "estimated_cost")
     def _compute_is_required_partner_id(self):
