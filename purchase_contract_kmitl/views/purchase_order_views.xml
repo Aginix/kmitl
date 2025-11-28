@@ -23,7 +23,11 @@
 
             <xpath expr="//field[@name='date_order']" position="after">
                 <field name="date_order_date" required="1" />
-                <field name="contract_period_days" required="1" />
+                <label for="contract_period_days" />
+                <div name="contract_period_days_div" class="o_row">
+                    <field name="contract_period_days" required="1" />
+                    <span>วัน</span>
+                </div>
                 <label for="work_start" string="Date Work" />
                 <div name="work_start_div" class="o_row">
                     <field name="work_start" required="1" />
