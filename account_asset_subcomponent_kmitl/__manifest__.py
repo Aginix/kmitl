@@ -9,7 +9,6 @@
     'depends': ['account_asset_kmitl'],
     'data': [
         "security/ir.model.access.csv",
-        "views/account_asset_subcomponent_views.xml",
         "views/account_asset_views.xml",
     ],
     'installable': True,
