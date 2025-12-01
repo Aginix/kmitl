@@ -21,18 +21,6 @@ if not self.contract_type_id:
         </field>
     </record>
 
-    <record id="purchase_order_is_construction_exception" model="exception.rule">
-        <field name="name">ต้องระบุวันที่เริ่มงาน-วันที่สิ้นสุดงาน</field>
-        <field name="description">ประเภทสัญญางานก่อสร้าง</field>
-        <field name="model">purchase.order</field>
-        <field name="exception_type">by_py_code</field>
-        <field name="code">
-if self.contract_type_id.is_construction:
-    if not self.work_start or not self.work_end:
-        failed = True
-        </field>
-    </record>
-
     <record id="purchase_order_fines_rate_exception" model="exception.rule">
         <field name="name">ต้องระบุค่าปรับต่อวัน</field>
         <field name="description">ข้อมูลใบสั่งซื้อ/จ้าง/สัญญา</field>
@@ -50,9 +38,41 @@ if self.fines_rate &lt; 0:
         <field name="model">purchase.order</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
-if self.contract_type_id.is_construction and self.work_start:
-    if self.work_start &lt; self.date_order_date:
-        failed = True
+if self.work_start &lt; self.date_order_date:
+    failed = True
+        </field>
+    </record>
+
+    <record id="purchase_order_work_start_must_be_valid_exception" model="exception.rule">
+        <field name="name">วันที่เริ่มงาน ต้องไม่เริ่มก่อนวันที่เริ่มสัญญา</field>
+        <field name="description">ประเภทสัญญางานก่อสร้าง</field>
+        <field name="model">purchase.order</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+if self.work_start &lt; self.date_order_date:
+    failed = True
+        </field>
+    </record>
+
+    <record id="purchase_order_contract_name_requried_exception" model="exception.rule">
+        <field name="name">จำเป็นต้องมีชื่อสัญญา/ใบสั่งซื้อ/จ้าง</field>
+        <field name="description">ประเภทสัญญางานก่อสร้าง</field>
+        <field name="model">purchase.order</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+if not self.contract_name:
+    failed = True
+        </field>
+    </record>
+
+    <record id="purchase_order_contract_number_requried_exception" model="exception.rule">
+        <field name="name">จำเป็นต้องมีเลขที่สัญญา</field>
+        <field name="description">ประเภทสัญญางานก่อสร้าง</field>
+        <field name="model">purchase.order</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+if not self.contract_number:
+    failed = True
         </field>
     </record>
 </odoo>

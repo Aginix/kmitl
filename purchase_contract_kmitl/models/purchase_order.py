@@ -25,11 +25,14 @@ class PurchaseOrder(models.Model):
         string="Work Start",
         states=READONLY_STATES,
         tracking=True,
+        default=fields.Date.today,
     )
 
     work_end = fields.Date(string="Work End",
         states=READONLY_STATES,
         tracking=True,
+        compute="_compute_work_end",
+        store=True,
     )
 
     fines_rate = fields.Monetary(string="Fines Rate",
@@ -64,20 +67,6 @@ class PurchaseOrder(models.Model):
         copy=False,
     )
 
-    is_construction = fields.Boolean(
-        string="Is Construction",
-        related="contract_type_id.is_construction",
-        store=True,
-    )
-
-    date_planned_date = fields.Date(
-        string="Expected Arrival (Date Only)",
-        compute="_compute_date_only",
-        inverse="_inverse_date_only",
-        states=READONLY_STATES,
-        store=False,
-    )
-
     date_order_date = fields.Date(
         string="Order Date (Date Only)",
         compute="_compute_date_only",
@@ -88,24 +77,15 @@ class PurchaseOrder(models.Model):
 
     contract_period_days = fields.Integer(
         string="Contract Period Days",
-        compute="_compute_contract_period_days",
-        store=True,
-        readonly=True
+        tracking=True,
+        states=READONLY_STATES,
     )
 
-    @api.onchange("is_construction")
-    def _onchange_is_construction_clear_dates(self):
-        if not self.is_construction:
-            self.work_start = False
-            self.work_end = False
-
-    @api.depends('date_planned_date', 'date_order_date')
-    def _compute_contract_period_days(self):
-        for rec in self:
-            if rec.date_planned_date and rec.date_order_date:
-                rec.contract_period_days = (rec.date_planned_date - rec.date_order_date).days + 1
-            else:
-                rec.contract_period_days = 0
+    supervision_cost = fields.Monetary(
+        string="Supervision Cost",
+        tracking=True,
+        states=READONLY_STATES,
+    )
 
     _sql_constraints = [
         (
@@ -115,24 +95,38 @@ class PurchaseOrder(models.Model):
         ),
     ]
 
-    @api.onchange('date_order_date', 'date_planned_date', 'work_start', 'work_end')
+    @api.onchange('date_order_date', 'work_start')
+    def _onchange_sync_work_start(self):
+        for rec in self:
+            if rec.date_order_date and rec.work_start:
+                if rec.date_order_date > rec.work_start:
+                    rec.work_start = rec.date_order_date
+
+    @api.depends('work_start', 'contract_period_days')
+    def _compute_work_end(self):
+        for rec in self:
+            if rec.work_start and rec.contract_period_days is not None:
+                rec.work_end = rec.work_start + timedelta(days=rec.contract_period_days)
+            else:
+                rec.work_end = False
+
+    @api.constrains('contract_period_days')
+    def _check_contract_period_days(self):
+        for rec in self:
+            if rec.contract_period_days < 0:
+                raise ValidationError(_('Contract Period Days must be >= 0'))
+
+    @api.onchange('date_order_date', 'work_start', 'work_end')
     def _onchange_dates(self):
         self._compute_fines_internal()
 
-    @api.depends("date_planned", "date_order")
+    @api.depends("date_order")
     def _compute_date_only(self):
         for rec in self:
-            rec.date_planned_date = rec.date_planned.date() if rec.date_planned else False
             rec.date_order_date = rec.date_order.date() if rec.date_order else False
 
     def _inverse_date_only(self):
         for rec in self:
-            if rec.date_planned_date:
-                rec.date_planned = datetime.combine(
-                    rec.date_planned_date,
-                    time(0, 0, 0)
-                )
-
             if rec.date_order_date:
                 rec.date_order = datetime.combine(
                     rec.date_order_date,
@@ -144,9 +138,7 @@ class PurchaseOrder(models.Model):
 
         domain = [
             ('state', '=', 'purchase'),
-            "|",
             ('work_end', '<=', today),
-            ('date_planned_date', '<=', today),
         ]
 
         orders = self.search(domain)
@@ -157,54 +149,9 @@ class PurchaseOrder(models.Model):
     def _compute_fines_internal(self):
         today = fields.Date.today()
         for rec in self:
-            if (rec.contract_type_id.is_construction and not rec.work_end) or not rec.date_planned_date:
+            if not rec.work_end:
                 rec.late_days = 0
                 rec.fines_late = 0
                 continue
-            end_date = rec.work_end if rec.contract_type_id.is_construction else rec.date_planned_date
-            rec.late_days = max((today - end_date).days, 0)
+            rec.late_days = max((today - rec.work_end).days, 0)
             rec.fines_late = rec.fines_rate * rec.late_days if rec.fines_rate else 0
-
-    def _validate_get_contract_number(self):
-        if not self.account_fiscal_year_id:
-            raise ValidationError(_("Account fiscal year is required."))
-        if not self.department_id or not self.department_id.short_name:
-            raise ValidationError(_("Department's short name is required."))
-        if not self.source_analytic_id:
-            raise ValidationError(_("Source analytic is required."))
-
-    def _get_next_contract_number(self):
-        fiscal_year = self.account_fiscal_year_id.name
-        short_name = self.department_id.short_name
-        seq_code = f"purchase.contract.{fiscal_year}.{short_name}"
-
-        Sequence = self.env['ir.sequence'].sudo()
-
-        if not Sequence.search([('code', '=', seq_code)], limit=1):
-            Sequence.create({
-                'name': f'Purchase Contract {fiscal_year} {short_name}',
-                'code': seq_code,
-                'prefix': f'{short_name}. ',
-                'padding': 2,
-                'number_increment': 1,
-            })
-
-        return Sequence.next_by_code(seq_code)
-
-    def create_contract_number(self):
-        prefix_src = "ร."
-        source_analytic_ids = [
-            self.env.ref("account_analytic_kmitl.source_2").id,
-            self.env.ref("account_analytic_kmitl.source_4").id,
-        ]
-
-        for rec in self:
-            rec._validate_get_contract_number()
-
-            fiscal_year = rec.account_fiscal_year_id.name
-            next_num = rec._get_next_contract_number()
-
-            if rec.source_analytic_id.id in source_analytic_ids:
-                rec.contract_number = f"{prefix_src}{next_num}/{fiscal_year}"
-            else:
-                rec.contract_number = f"{next_num}/{fiscal_year}"

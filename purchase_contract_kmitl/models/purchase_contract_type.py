@@ -14,8 +14,6 @@ class PurchaseContractType(models.Model):
         comodel_name="purchase.order",
         inverse_name="contract_type_id",
     )
-    is_construction = fields.Boolean(tracking=True, default=False)
-
 
     def unlink(self):
         for rec in self:
