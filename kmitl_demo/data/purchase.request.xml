@@ -109,7 +109,7 @@
         <field name="partner_id" ref="kmitl_demo.vendor_demo_013" />
         <field name="user_id" ref="base.user_admin" />
         <field name="department_id" ref="kmitl_demo.06" />
-        <field name="budget_account_id" ref="budget.budget_account_5101020001" />
+        <field name="budget_account_id" ref="budget.budget_account_5101020011" />
         <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06" />
         <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0400" />
@@ -192,7 +192,7 @@
         <field name="partner_id" ref="kmitl_demo.vendor_demo_012" />
         <field name="user_id" ref="base.user_admin" />
         <field name="department_id" ref="kmitl_demo.06" />
-        <field name="budget_account_id" ref="budget.budget_account_5101020002" />
+        <field name="budget_account_id" ref="budget.budget_account_5101020016" />
         <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06" />
         <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100" />
@@ -282,8 +282,7 @@
         <field name="partner_id" ref="kmitl_demo.vendor_demo_013" />
         <field name="user_id" ref="base.user_admin" />
         <field name="department_id" ref="kmitl_demo.04" />
-        <field name="product_id" ref="l10n_th_gov_purchase_request.product_type_001" />
-        <field name="budget_account_id" ref="budget.budget_account_5101020004" />
+        <field name="budget_account_id" ref="budget.budget_account_5101020014" />
         <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_04" />
         <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0500" />
@@ -373,7 +372,7 @@
         <field name="partner_id" ref="kmitl_demo.vendor_demo_011" />
         <field name="user_id" ref="base.user_admin" />
         <field name="department_id" ref="kmitl_demo.02" />
-        <field name="budget_account_id" ref="budget.budget_account_5101020002" />
+        <field name="budget_account_id" ref="budget.budget_account_5101020023" />
         <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_02" />
         <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100" />
