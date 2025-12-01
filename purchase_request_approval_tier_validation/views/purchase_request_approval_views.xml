@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_request_approval_form" model="ir.ui.view">
+        <field name="name">view.purchase.request.approval.form(Tier Validation)</field>
+        <field name="model">purchase.request.approval</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval.view_purchase_request_approval_form"
+        />
+        <field name="arch" type="xml">
+            <button name="button_approved" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </button>
+            <button name="button_rejected" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </button>
+            <field name="state" position="after">
+                <field name="validation_status" invisible="1" />
+            </field>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_approval_filter" model="ir.ui.view">
+        <field name="name"
+            >purchase.request.approval.select - purchase_request_approval_tier_validation</field
+        >
+        <field name="model">purchase.request.approval</field>
+        <field name="inherit_id" ref="purchase_request_approval.view_purchase_request_approval_search" />
+        <field name="arch" type="xml">
+            <search position="inside">
+                <group expand="0" string="Need actions">
+                    <filter
+                        name="needs_review"
+                        string="Needs my Review"
+                        domain="[('reviewer_ids','in',uid), ('state', 'not in', ['done', 'cancel'])]"
+                        help="Purchase Requests Approval"
+                    />
+                    <filter
+                        name="tier_validated"
+                        string="Validated"
+                        domain="[('validation_status', '=', 'validated')]"
+                        help="Purchase Requests Approval validated and ready to be confirmed"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>
