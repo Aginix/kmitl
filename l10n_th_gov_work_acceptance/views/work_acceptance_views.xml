@@ -66,7 +66,6 @@
                                 <field
                                     name="status"
                                     decoration-success="status == 'accept'"
-                                    decoration-info="status == 'other'"
                                     decoration-danger="status == 'not_accept'"
                                     attrs="{'readonly': [('employee_id', '!=', False)]}"
                                 />
@@ -186,15 +185,6 @@
                             type="object"
                             class="btn-icon btn-danger"
                             icon="fa-thumbs-down"
-                        />
-                        <button
-                            name="reject_tier"
-                            string="Other"
-                            attrs="{'invisible': [('can_review', '=', False)]}"
-                            type="object"
-                            class="btn-icon btn-warning"
-                            icon="fa-arrow-circle-right"
-                            context="{'validate_as_other': True, 'default_comment': 'ไม่เข้าร่วมเพราะ...'}"
                         />
                     </p>
                 </div>
