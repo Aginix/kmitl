@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+      
+    <!-- View purchase.request.approval form -->
+    <record id="view_purchase_request_approval_form" model="ir.ui.view">
+        <field name="name">view.purchase.request.approval.form</field>
+        <field name="model">purchase.request.approval</field>
+        <field name="inherit_id" ref="purchase_request_approval.view_purchase_request_approval_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Other Information" name="other">
+                    <group>
+                        <group>
+                            <field name="requesting_operating_unit_id" readonly="1"/>
+                            <field name="operating_unit_id" readonly="1"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+  </odoo>
