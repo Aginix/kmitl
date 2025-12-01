@@ -39,12 +39,6 @@
                         domain="[('reviewer_ids','in',uid), ('state', 'not in', ['approved', 'rejected'])]"
                         help="Purchase Requests Approval"
                     />
-                    <filter
-                        name="tier_validated"
-                        string="Validated"
-                        domain="[('validation_status', '=', 'validated')]"
-                        help="Purchase Requests Approval validated and ready to be confirmed"
-                    />
                 </group>
             </xpath>
         </field>
