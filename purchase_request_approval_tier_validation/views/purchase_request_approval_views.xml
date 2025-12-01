@@ -14,9 +14,9 @@
             <button name="button_rejected" position="attributes">
                 <attribute name="invisible">1</attribute>
             </button>
-            <field name="state" position="after">
+            <xpath expr="//field[@name='report_html_url']" position="after">
                 <field name="validation_status" invisible="1" />
-            </field>
+            </xpath>
         </field>
     </record>
 
