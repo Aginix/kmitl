@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ class PurchaseOrder(models.Model):
         store=False
     )
 
-    @api.depends('use_invoice_plan', 'wa_accepted', 'invoice_plan_ids', 'invoice_plan_ids.installment', 'invoice_plan_ids.wa_id.state')
+    @api.depends('use_invoice_plan', 'wa_accepted', 'invoice_plan_ids', 'invoice_plan_ids.installment')
     def _compute_show_create_incoming_button(self):
         for order in self:
             if order.use_invoice_plan:

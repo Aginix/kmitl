@@ -13,6 +13,7 @@ class PurchaseGuarantee(models.Model):
     name = fields.Char(
         string="Guarantee Number",
         default="/",
+        copy=False
     )
     reference = fields.Reference(
         selection=[

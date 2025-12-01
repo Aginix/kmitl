@@ -8,7 +8,7 @@
             </div>
         </xpath>
 
-        <xpath expr="//div[@class='col-lg-6']" position="inside">
+        <xpath expr="//div[hasclass('col-lg-6')]" position="inside">
             <div t-if="committee">
                 <strong>การตรวจรับ : </strong>
                 <a t-att-href="'%s&amp;committee_token=%s' % (committee.wa_id.get_portal_link(), committee.access_token)">
