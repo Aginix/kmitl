@@ -22,17 +22,21 @@
 
     <record id="view_purchase_request_approval_filter" model="ir.ui.view">
         <field name="name"
-            >purchase.request.approval.select - purchase_request_approval_tier_validation</field
+            >purchase.request.approval.select -
+            purchase_request_approval_tier_validation</field
         >
         <field name="model">purchase.request.approval</field>
-        <field name="inherit_id" ref="purchase_request_approval.view_purchase_request_approval_search" />
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval.view_purchase_request_approval_search"
+        />
         <field name="arch" type="xml">
-            <search position="inside">
+            <xpath expr="//search" position="inside">
                 <group expand="0" string="Need actions">
                     <filter
                         name="needs_review"
                         string="Needs my Review"
-                        domain="[('reviewer_ids','in',uid), ('state', 'not in', ['done', 'cancel'])]"
+                        domain="[('reviewer_ids','in',uid), ('state', 'not in', ['approved', 'rejected'])]"
                         help="Purchase Requests Approval"
                     />
                     <filter
@@ -42,7 +46,7 @@
                         help="Purchase Requests Approval validated and ready to be confirmed"
                     />
                 </group>
-            </search>
+            </xpath>
         </field>
     </record>
 </odoo>
