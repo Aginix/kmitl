@@ -19,6 +19,7 @@
         "purchase_request_egp_kmitl",
         "purchase_request_department",
         "purchase_request_budget",
+        "purchase_request_approval_kmitl",
         "purchase_request_payment_type",
 
     ],

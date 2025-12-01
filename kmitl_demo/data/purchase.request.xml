@@ -205,6 +205,12 @@
     >
         <value eval="[ref('kmitl_demo.purchase_request_3')]" />
     </function>
+    <function
+        model="purchase.request"
+        name="button_approved"
+    >
+        <value eval="[ref('kmitl_demo.purchase_request_3')]" />
+    </function>
     <record id="committee_wa_07" model="procurement.committee">
         <field name="request_id" ref="kmitl_demo.purchase_request_3" />
         <field name="employee_id" ref="kmitl_demo.employee_demo_001" />
@@ -342,9 +348,6 @@
         <value eval="[ref('kmitl_demo.purchase_request_4')]" />
     </function>
     <function model="purchase.request" name="button_to_verify">
-        <value eval="[ref('kmitl_demo.purchase_request_4')]" />
-    </function>
-    <function model="purchase.request" name="action_reserve_budget">
         <value eval="[ref('kmitl_demo.purchase_request_4')]" />
     </function>
 
