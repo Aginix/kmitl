@@ -9,6 +9,7 @@
     'depends': ['l10n_th_gov_work_acceptance'],
     "data": [
         "data/server_action.xml",
+        "data/tier.definition.csv",
         "views/work_acceptance_views.xml"
     ],
     'installable': True,
