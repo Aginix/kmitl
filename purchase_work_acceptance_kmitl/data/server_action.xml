@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="ir_server_action_wa_committee_approve" model="ir.actions.server">
+        <field name="name">WA: Committee Approved (Customized)</field> 
+        <field name="code">
+tier_reviews = record.review_ids.filtered(lambda l: l.done_by == env.user)
+committee = record.work_acceptance_committee_ids.filtered(lambda l: l.employee_id.user_id == env.user)
+committee.write({"status": "accept"})
+        </field>
+    </record>
+
+    <record id="ir_server_action_wa_committee_reject" model="ir.actions.server">
+        <field name="name">WA: Committee Rejected (Customized)</field> 
+        <field name="code">
+tier_reviews = record.review_ids.filtered(lambda l: l.done_by == env.user)
+comment = ",".join(tier_reviews.mapped("comment"))
+committee = record.work_acceptance_committee_ids.filtered(lambda l: l.employee_id.user_id == env.user)
+committee.write({"status": "not_accept", "note": comment})
+        </field>
+    </record>
+</odoo>

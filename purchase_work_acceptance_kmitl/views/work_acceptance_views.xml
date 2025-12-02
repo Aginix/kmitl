@@ -83,4 +83,22 @@
             </xpath>
         </field>
     </record>
+
+    <record id="view_work_acceptance_form_tier_validation_custom" model="ir.ui.view">
+    <field name="name">view.work.acceptance.form.tier_validation.custom</field>
+    <field name="model">work.acceptance</field>
+    <field name="inherit_id" ref="your_module.view_work_acceptance_form_tier_validation"/>
+    <field name="arch" type="xml">
+
+        <xpath expr="//button[@name='validate_tier'][2]" position="attributes">
+            <attribute name="name">rejected_tier</attribute>
+            <attribute name="context"/>
+        </xpath>
+
+        <xpath expr="//button[@name='validate_tier'][3]" position="attributes">
+            <attribute name="attrs">{'invisible': True}</attribute>
+        </xpath>
+
+    </field>
+</record>
 </odoo>

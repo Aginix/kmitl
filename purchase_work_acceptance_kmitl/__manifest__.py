@@ -8,6 +8,7 @@
     "website": "https://github.com/aginix/kmitl",
     'depends': ['l10n_th_gov_work_acceptance'],
     "data": [
+        "data/server_action.xml",
         "views/work_acceptance_views.xml"
     ],
     'installable': True,
