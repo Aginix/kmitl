@@ -43,12 +43,6 @@ class PurchaseRequestApproval(models.Model):
         store=False,
     )
 
-    is_move_request_allowed = fields.Boolean(
-        string="Can Create Move Request",
-        compute="_compute_move_request",
-        store=False,
-    )
-
     purchase_count = fields.Integer(
         related="request_id.purchase_count",
         store=True,
@@ -67,7 +61,6 @@ class PurchaseRequestApproval(models.Model):
     def _compute_move_request(self):
         for approval in self:
             approval.move_request_total = sum(approval.account_move_request_ids.mapped("amount_total"))
-            # approval.is_move_request_allowed = approval.move_request_total < approval.amount_total
             approval.move_request_count = len(approval.account_move_request_ids)
 
     @api.depends("account_move_request_ids", "account_move_request_ids.state")
