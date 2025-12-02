@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record id="ir_server_action_wa_committee_approve" model="ir.actions.server">
-        <field name="name">WA: Committee Approved (Customized)</field>
+    <record id="l10n_th_gov_work_acceptance.ir_server_action_wa_committee_approve" model="ir.actions.server">
+        <field name="name">WA: Committee Approved</field>
         <field name="model_id" ref="purchase_work_acceptance.model_work_acceptance" />
         <field name="state">code</field>
         <field name="code">
@@ -11,8 +11,8 @@ committee.write({"status": "accept"})
         </field>
     </record>
 
-    <record id="ir_server_action_wa_committee_reject" model="ir.actions.server">
-        <field name="name">WA: Committee Rejected (Customized)</field>
+    <record id="l10n_th_gov_work_acceptance.ir_server_action_wa_committee_reject" model="ir.actions.server">
+        <field name="name">WA: Committee Rejected</field>
         <field name="model_id" ref="purchase_work_acceptance.model_work_acceptance" />
         <field name="state">code</field>
         <field name="code">
