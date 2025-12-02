@@ -12,8 +12,8 @@
                 <page string="Other Information" name="other">
                     <group>
                         <group>
-                            <field name="requesting_operating_unit_id" readonly="1"/>
-                            <field name="operating_unit_id" readonly="1"/>
+                            <field name="requesting_operating_unit_id" groups="operating_unit.group_multi_operating_unit"/>
+                            <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit"/>
                         </group>
                     </group>
                 </page>
