@@ -44,6 +44,14 @@ class PurchaseRequestApproval(models.Model):
         store=False,
     )
 
+    purchase_count = fields.Integer(related="request_id.purchase_count", store=True,)
+
+    def approval_make_purchase_order(self):
+        return self.request_id.approval_make_purchase_order()
+
+    def action_view_purchase_order(self):
+        return self.request_id.action_view_purchase_order()
+
     @api.depends("account_move_request_ids", "account_move_request_ids.amount_total")
     def _compute_move_request(self):
         for approval in self:

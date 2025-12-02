@@ -8,6 +8,31 @@
             ref="purchase_request_approval.view_purchase_request_approval_form"
         />
         <field name="arch" type="xml">
+            <xpath expr="//button[@name='button_to_approve']" position="after">
+                <field name="use_purchase_order" invisible="1" />
+                <field name="purchase_count" invisible="1" />
+                <button
+                    name="approval_make_purchase_order"
+                    string="Create Purchase Order"
+                    type="object"
+                    class="oe_highlight"
+                    attrs="{'invisible': ['|', '|', ('use_purchase_order', '=', False), ('purchase_count', '&gt;', 0), ('state', 'not in', ['approved'])]}"
+                />
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_view_purchase_order"
+                    type="object"
+                    icon="fa-book"
+                    class="oe_highlight"
+                >
+                    <field
+                        name="purchase_count"
+                        widget="statinfo"
+                        string="Purchase Orders"
+                    />
+                </button>
+            </xpath>
             <xpath expr="//div" position="after">
                 <group>
                     <group>
