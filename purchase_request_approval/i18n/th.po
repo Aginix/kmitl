@@ -914,7 +914,7 @@ msgstr ""
 msgid ""
 "This record has been created from: <a href=\"%(link)s\" "
 "target=\"_blank\">%(name)s</a>"
-msgstr "เอกสารนี้ถูกต้องจาก : <a href=\"%(link)s\" target=\"_blank\">%(name)s</a>"
+msgstr "เอกสารนี้ถูกสร้างจาก : <a href=\"%(link)s\" target=\"_blank\">%(name)s</a>"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__to_approve_allowed

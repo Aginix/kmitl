@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_request_approval_form" model="ir.ui.view">
+        <field name="name">view.form(Approval Account Move Request)</field>
+        <field name="model">purchase.request.approval</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval.view_purchase_request_approval_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//div" position="after">
+                <group>
+                    <group>
+                        <field
+                            name="use_purchase_order"
+                            attrs="{'readonly': [('state', 'not in', ['draft'])]}"
+                        />
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_approval_tree" model="ir.ui.view">
+        <field name="name">view.tree(Approval Account Move Request)</field>
+        <field name="model">purchase.request.approval</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval.view_purchase_request_approval_tree"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="billing_status" optional="hide" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_approval_search" model="ir.ui.view">
+        <field name="name">view.search(Approval Account Move Request)</field>
+        <field name="model">purchase.request.approval</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval.view_purchase_request_approval_search"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <field name="billing_status" string="Bill Status" />
+            </xpath>
+        </field>
+    </record>
+</odoo>
