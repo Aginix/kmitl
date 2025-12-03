@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_request_approval_form" model="ir.ui.view">
+        <field name="name">view.purchase.request.approval.form(Tier Validation)</field>
+        <field name="model">purchase.request.approval</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval.view_purchase_request_approval_form"
+        />
+        <field name="arch" type="xml">
+            <button name="button_approved" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </button>
+            <button name="button_rejected" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </button>
+            <xpath expr="//field[@name='report_html_url']" position="after">
+                <field name="validation_status" invisible="1" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_approval_filter" model="ir.ui.view">
+        <field name="name"
+            >purchase.request.approval.select -
+            purchase_request_approval_tier_validation</field
+        >
+        <field name="model">purchase.request.approval</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval.view_purchase_request_approval_search"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <group expand="0" string="Need actions">
+                    <filter
+                        name="needs_review"
+                        string="Needs my Review"
+                        domain="[('reviewer_ids','in',uid), ('state', 'not in', ['approved', 'rejected'])]"
+                        help="Purchase Requests Approval"
+                    />
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
