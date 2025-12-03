@@ -5,6 +5,7 @@ from odoo.exceptions import UserError, ValidationError
 
 class PurchaseRequestTender(models.Model):
     _name = 'purchase.request.tender'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Purchase Request Tender'
 
     name = fields.Char(string='Tender Name', required=True, tracking=True)
