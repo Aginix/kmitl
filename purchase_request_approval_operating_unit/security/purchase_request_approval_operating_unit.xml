@@ -10,36 +10,15 @@
         <record id="ir_rule_purchase_request_approval_allowed_operating_units" model="ir.rule">
             <field name="name">PA from allowed operating units</field>
             <field name="model_id" ref="purchase_request_approval.model_purchase_request_approval"/>
-            <field name="domain_force">[
-                '|', '|', '|', '|',
-                    '&amp;', ('operating_unit_id', '=', False), ('requesting_operating_unit_id', '=', False),
-                    ('operating_unit_id', 'in', user.operating_unit_ids.ids),
-                    ('requesting_operating_unit_id', 'in', user.operating_unit_ids.ids),
-                    ('operating_unit_id', '=', False),
-                    ('requesting_operating_unit_id', '=', False)
-            ]</field>
+            <field name="domain_force">
+                ['|','|', ('operating_unit_id','=',False), ('operating_unit_id','in', user.operating_unit_ids.ids), ('requesting_operating_unit_id','in', user.operating_unit_ids.ids)]
+            </field>
             <field name="perm_read" eval="1"/>
             <field name="perm_create" eval="0"/>
             <field name="perm_write" eval="0"/>
             <field name="perm_unlink" eval="0"/>
             <field name="global" eval="True"/>
         </record>
-
-        <!-- Override rule for users in group_all_ou_purchase_request_approval -->
-        <function model="ir.rule" name="write">
-            <value eval="[ref('ir_rule_purchase_request_approval_allowed_operating_units')]"/>
-            <value eval="{
-                'domain_force': &quot;['|',
-                    (1, '=', 1) if user.has_group('purchase_request_approval_operating_unit.group_all_ou_purchase_request_approval') else (0, '=', 1),
-                    '|', '|', '|', '|',
-                        '&amp;', ('operating_unit_id', '=', False), ('requesting_operating_unit_id', '=', False),
-                        ('operating_unit_id', 'in', user.operating_unit_ids.ids),
-                        ('requesting_operating_unit_id', 'in', user.operating_unit_ids.ids),
-                        ('operating_unit_id', '=', False),
-                        ('requesting_operating_unit_id', '=', False)
-                ]&quot;
-            }"/>
-        </function>
 
     </data>
 </odoo>
