@@ -28,6 +28,7 @@
         "data/company.xml",
         "data/hr.department.csv",
         "data/hr.employee.xml",
+        "data/res.users.xml",
         "data/res.partner.xml",
         "data/res.bank.xml",
         "data/res.partner.bank.xml",

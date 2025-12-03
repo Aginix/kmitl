@@ -1,4 +1,5 @@
 <odoo>
+    <!-- purchase Request 1 -->
     <record id="purchase_request_1" model="purchase.request">
         <field name="title">โครงการจัดหาบ้านให้น้องแมว</field>
         <field name="description">แมวภายในสถาบันไม่มีที่อยู่</field>
@@ -15,9 +16,9 @@
             ref="l10n_th_gov_purchase_request.procurement_general"
         />
         <field name="payment_type">direct</field>
-        <field name="requested_by" ref="base.user_admin" />
+        <field name="requested_by" ref="kmitl_demo.user_demo_008" />
         <field name="partner_id" ref="kmitl_demo.vendor_demo_014" />
-        <field name="user_id" ref="base.user_admin" />
+        <field name="user_id" ref="kmitl_demo.user_demo_008" />
         <field name="department_id" ref="kmitl_demo.01" />
         <field name="budget_account_id" ref="budget.budget_account_5101020008" />
         <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
@@ -88,6 +89,96 @@
         <value eval="[ref('kmitl_demo.purchase_request_1')]" />
     </function>
 
+    <!-- Purchase Request 1 EGP -->
+    <record id="purchase_request_1_egp" model="purchase.request">
+        <field name="title">สร้างตึกคณะใหม่ของ สจล.</field>
+        <field name="description">ตึกไม่พอเรียน</field>
+        <field
+            name="account_fiscal_year_id"
+            ref="kmitl_demo.account_fiscal_year_y2568"
+        />
+        <field
+            name="procurement_type_id"
+            ref="purchase_request_kmitl.procurement_type_006"
+        />
+        <field
+            name="procurement_method_id"
+            ref="l10n_th_gov_purchase_request.procurement_general"
+        />
+        <field name="payment_type">direct</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_008" />
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_014" />
+        <field name="user_id" ref="kmitl_demo.user_demo_008" />
+        <field name="department_id" ref="kmitl_demo.01" />
+        <field name="budget_account_id" ref="budget.budget_account_5101020008" />
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01" />
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0200" />
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_2" />
+    </record>
+    <function
+        model="purchase.request"
+        name="_onchange_budget_account_id"
+        context="{'default_price_unit': 5000000}"
+    >
+        <value eval="[ref('kmitl_demo.purchase_request_1_egp')]" />
+    </function>
+
+    <record id="committee_wa_01" model="procurement.committee">
+        <field name="request_id" ref="kmitl_demo.purchase_request_1_egp" />
+        <field name="employee_id" ref="kmitl_demo.employee_demo_005" />
+        <field name="committee_type">work_acceptance</field>
+        <field name="approve_role">chairman</field>
+        <field
+            name="name"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_005').name"
+        />
+        <field
+            name="phone"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_005').work_phone"
+        />
+    </record>
+    <record id="committee_wa_02" model="procurement.committee">
+        <field name="request_id" ref="kmitl_demo.purchase_request_1_egp" />
+        <field name="employee_id" ref="kmitl_demo.employee_demo_008" />
+        <field name="committee_type">work_acceptance</field>
+        <field name="approve_role">committee</field>
+        <field
+            name="name"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_008').name"
+        />
+        <field
+            name="phone"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_008').work_phone"
+        />
+    </record>
+    <record id="committee_wa_03" model="procurement.committee">
+        <field name="request_id" ref="kmitl_demo.purchase_request_1_egp" />
+        <field name="employee_id" ref="kmitl_demo.employee_demo_007" />
+        <field name="committee_type">work_acceptance</field>
+        <field name="approve_role">committee</field>
+        <field
+            name="name"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_007').name"
+        />
+        <field
+            name="phone"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_007').work_phone"
+        />
+    </record>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.purchase_request_1_egp')]" />
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.purchase_request_1_egp')]" />
+    </function>
+
     <!-- purchase requst 2 -->
     <record id="purchase_request_2" model="purchase.request">
         <field name="title">โครงการทำสวนประกวดงานแข่งประกวดประจำอำเภอ</field>
@@ -105,9 +196,9 @@
             ref="l10n_th_gov_purchase_request.procurement_general"
         />
         <field name="payment_type">direct</field>
-        <field name="requested_by" ref="base.user_admin" />
+        <field name="requested_by" ref="kmitl_demo.user_demo_014" />
         <field name="partner_id" ref="kmitl_demo.vendor_demo_013" />
-        <field name="user_id" ref="base.user_admin" />
+        <field name="user_id" ref="kmitl_demo.user_demo_014" />
         <field name="department_id" ref="kmitl_demo.06" />
         <field name="budget_account_id" ref="budget.budget_account_5101020011" />
         <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
@@ -171,6 +262,89 @@
         />
     </record>
 
+    <!-- purchase requst 2 EGP -->
+    <record id="purchase_request_2_egp" model="purchase.request">
+        <field name="title">ประกวดกระทงประจำปี และเงินรางวัล</field>
+        <field name="description">แข่งขันจัดทำกระทง</field>
+        <field
+            name="account_fiscal_year_id"
+            ref="kmitl_demo.account_fiscal_year_y2569"
+        />
+        <field
+            name="procurement_type_id"
+            ref="purchase_request_kmitl.procurement_type_006"
+        />
+        <field
+            name="procurement_method_id"
+            ref="l10n_th_gov_purchase_request.procurement_general"
+        />
+        <field name="payment_type">direct</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_014" />
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_013" />
+        <field name="user_id" ref="kmitl_demo.user_demo_014" />
+        <field name="department_id" ref="kmitl_demo.06" />
+        <field name="budget_account_id" ref="budget.budget_account_5101020011" />
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06" />
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0400" />
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_3" />
+    </record>
+    <function
+        model="purchase.request"
+        name="_onchange_budget_account_id"
+        context="{'default_price_unit': 1500000}"
+    >
+        <value eval="[ref('kmitl_demo.purchase_request_2_egp')]" />
+    </function>
+    <record id="committee_wa_04" model="procurement.committee">
+        <field name="request_id" ref="kmitl_demo.purchase_request_2_egp" />
+        <field name="employee_id" ref="kmitl_demo.employee_demo_006" />
+        <field name="committee_type">work_acceptance</field>
+        <field name="approve_role">chairman</field>
+        <field
+            name="name"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_006').name"
+        />
+        <field
+            name="phone"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_006').work_phone"
+        />
+    </record>
+    <record id="committee_wa_05" model="procurement.committee">
+        <field name="request_id" ref="kmitl_demo.purchase_request_2_egp" />
+        <field name="employee_id" ref="kmitl_demo.employee_demo_007" />
+        <field name="committee_type">work_acceptance</field>
+        <field name="approve_role">committee</field>
+        <field
+            name="name"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_007').name"
+        />
+        <field
+            name="phone"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_007').work_phone"
+        />
+    </record>
+    <record id="committee_wa_06" model="procurement.committee">
+        <field name="request_id" ref="kmitl_demo.purchase_request_2_egp" />
+        <field name="employee_id" ref="kmitl_demo.employee_demo_008" />
+        <field name="committee_type">work_acceptance</field>
+        <field name="approve_role">committee</field>
+        <field
+            name="name"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_008').name"
+        />
+        <field
+            name="phone"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_008').work_phone"
+        />
+    </record>
+
     <!-- purchase Request 3 -->
     <record id="purchase_request_3" model="purchase.request">
         <field name="title">แข่งขันประกอบหุ่นยนต์นานาชาติ</field>
@@ -188,10 +362,10 @@
             ref="l10n_th_gov_purchase_request.procurement_general"
         />
         <field name="payment_type">direct</field>
-        <field name="requested_by" ref="base.user_admin" />
+        <field name="requested_by" ref="kmitl_demo.user_demo_006" />
         <field name="partner_id" ref="kmitl_demo.vendor_demo_012" />
-        <field name="user_id" ref="base.user_admin" />
-        <field name="department_id" ref="kmitl_demo.06" />
+        <field name="user_id" ref="kmitl_demo.user_demo_006" />
+        <field name="department_id" ref="kmitl_demo.05" />
         <field name="budget_account_id" ref="budget.budget_account_5101020016" />
         <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
         <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06" />
@@ -259,14 +433,106 @@
     <function model="purchase.request" name="button_to_verify">
         <value eval="[ref('kmitl_demo.purchase_request_3')]" />
     </function>
-    <function
-        model="purchase.request"
-        name="action_reserve_budget"
-    >
+    <function model="purchase.request" name="action_reserve_budget">
         <value eval="[ref('kmitl_demo.purchase_request_3')]" />
     </function>
     <function model="purchase.request" name="request_validation">
         <value eval="[ref('kmitl_demo.purchase_request_3')]" />
+    </function>
+
+    <!-- purchase Request 3 EGP -->
+    <record id="purchase_request_3_egp" model="purchase.request">
+        <field name="title">แข่งขันทำทดลองผสมสาร</field>
+        <field name="description">นักวิจัยห้องทดลอง อยากให้มีการแข่งขัน</field>
+        <field
+            name="account_fiscal_year_id"
+            ref="kmitl_demo.account_fiscal_year_y2569"
+        />
+        <field
+            name="procurement_type_id"
+            ref="purchase_request_kmitl.procurement_type_006"
+        />
+        <field
+            name="procurement_method_id"
+            ref="l10n_th_gov_purchase_request.procurement_general"
+        />
+        <field name="payment_type">direct</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_006" />
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_012" />
+        <field name="user_id" ref="kmitl_demo.user_demo_006" />
+        <field name="department_id" ref="kmitl_demo.05" />
+        <field name="budget_account_id" ref="budget.budget_account_5101020016" />
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06" />
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100" />
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_1" />
+    </record>
+    <function
+        model="purchase.request"
+        name="_onchange_budget_account_id"
+        context="{'default_price_unit': 1506000}"
+    >
+        <value eval="[ref('kmitl_demo.purchase_request_3_egp')]" />
+    </function>
+    <record id="committee_wa_07" model="procurement.committee">
+        <field name="request_id" ref="kmitl_demo.purchase_request_3_egp" />
+        <field name="employee_id" ref="kmitl_demo.employee_demo_001" />
+        <field name="committee_type">work_acceptance</field>
+        <field name="approve_role">chairman</field>
+        <field
+            name="name"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_001').name"
+        />
+        <field
+            name="phone"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_001').work_phone"
+        />
+    </record>
+    <record id="committee_wa_08" model="procurement.committee">
+        <field name="request_id" ref="kmitl_demo.purchase_request_3_egp" />
+        <field name="employee_id" ref="kmitl_demo.employee_demo_002" />
+        <field name="committee_type">work_acceptance</field>
+        <field name="approve_role">committee</field>
+        <field
+            name="name"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_002').name"
+        />
+        <field
+            name="phone"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_002').work_phone"
+        />
+    </record>
+    <record id="committee_wa_09" model="procurement.committee">
+        <field name="request_id" ref="kmitl_demo.purchase_request_3_egp" />
+        <field name="employee_id" ref="kmitl_demo.employee_demo_003" />
+        <field name="committee_type">work_acceptance</field>
+        <field name="approve_role">committee</field>
+        <field
+            name="name"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_003').name"
+        />
+        <field
+            name="phone"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_003').work_phone"
+        />
+    </record>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.purchase_request_3_egp')]" />
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.purchase_request_3_egp')]" />
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.purchase_request_3_egp')]" />
+    </function>
+    <function model="purchase.request" name="request_validation">
+        <value eval="[ref('kmitl_demo.purchase_request_3_egp')]" />
     </function>
 
     <!-- purchase Request 4 -->
@@ -287,9 +553,9 @@
         />
         <field name="is_egp" eval="True" />
         <field name="payment_type">direct</field>
-        <field name="requested_by" ref="base.user_admin" />
+        <field name="requested_by" ref="kmitl_demo.user_demo_011" />
         <field name="partner_id" ref="kmitl_demo.vendor_demo_013" />
-        <field name="user_id" ref="base.user_admin" />
+        <field name="user_id" ref="kmitl_demo.user_demo_011" />
         <field name="department_id" ref="kmitl_demo.04" />
         <field name="budget_account_id" ref="budget.budget_account_5101020014" />
         <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
@@ -300,7 +566,7 @@
     <function
         model="purchase.request"
         name="_onchange_budget_account_id"
-        context="{'default_price_unit': 500000}"
+        context="{'default_price_unit': 50000}"
     >
         <value eval="[ref('kmitl_demo.purchase_request_4')]" />
     </function>
@@ -359,6 +625,96 @@
         <value eval="[ref('kmitl_demo.purchase_request_4')]" />
     </function>
 
+    <!-- purchase Request 4 EGP -->
+    <record id="purchase_request_4_egp" model="purchase.request">
+        <field name="title">ลาดจอดฮอฉุกเฉิน</field>
+        <field name="description">ไว้ยามจำเป็น</field>
+        <field
+            name="account_fiscal_year_id"
+            ref="kmitl_demo.account_fiscal_year_y2567"
+        />
+        <field
+            name="procurement_type_id"
+            ref="purchase_request_kmitl.procurement_type_006"
+        />
+        <field
+            name="procurement_method_id"
+            ref="l10n_th_gov_purchase_request.procurement_bidding"
+        />
+        <field name="is_egp" eval="True" />
+        <field name="payment_type">direct</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_011" />
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_013" />
+        <field name="user_id" ref="kmitl_demo.user_demo_011" />
+        <field name="department_id" ref="kmitl_demo.04" />
+        <field name="budget_account_id" ref="budget.budget_account_5101020014" />
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_04" />
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0500" />
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_2" />
+    </record>
+    <function
+        model="purchase.request"
+        name="_onchange_budget_account_id"
+        context="{'default_price_unit': 50000000}"
+    >
+        <value eval="[ref('kmitl_demo.purchase_request_4_egp')]" />
+    </function>
+    <record id="committee_wa_010" model="procurement.committee">
+        <field name="request_id" ref="kmitl_demo.purchase_request_4_egp" />
+        <field name="employee_id" ref="kmitl_demo.employee_demo_002" />
+        <field name="committee_type">work_acceptance</field>
+        <field name="approve_role">chairman</field>
+        <field
+            name="name"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_002').name"
+        />
+        <field
+            name="phone"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_002').work_phone"
+        />
+    </record>
+    <record id="committee_wa_011" model="procurement.committee">
+        <field name="request_id" ref="kmitl_demo.purchase_request_4_egp" />
+        <field name="employee_id" ref="kmitl_demo.employee_demo_009" />
+        <field name="committee_type">work_acceptance</field>
+        <field name="approve_role">committee</field>
+        <field
+            name="name"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_009').name"
+        />
+        <field
+            name="phone"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_009').work_phone"
+        />
+    </record>
+    <record id="committee_wa_12" model="procurement.committee">
+        <field name="request_id" ref="kmitl_demo.purchase_request_4_egp" />
+        <field name="employee_id" ref="kmitl_demo.employee_demo_007" />
+        <field name="committee_type">work_acceptance</field>
+        <field name="approve_role">committee</field>
+        <field
+            name="name"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_007').name"
+        />
+        <field
+            name="phone"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_007').work_phone"
+        />
+    </record>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.purchase_request_4_egp')]" />
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.purchase_request_4_egp')]" />
+    </function>
+
     <!-- purchase Request 5 -->
     <record id="purchase_request_5" model="purchase.request">
         <field name="title">ตู้กรองน้ำขนาดใหญ่</field>
@@ -377,9 +733,9 @@
         />
         <field name="is_egp" eval="True" />
         <field name="payment_type">direct</field>
-        <field name="requested_by" ref="base.user_admin" />
+        <field name="requested_by" ref="kmitl_demo.user_demo_009" />
         <field name="partner_id" ref="kmitl_demo.vendor_demo_011" />
-        <field name="user_id" ref="base.user_admin" />
+        <field name="user_id" ref="kmitl_demo.user_demo_009" />
         <field name="department_id" ref="kmitl_demo.02" />
         <field name="budget_account_id" ref="budget.budget_account_5101020023" />
         <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
@@ -448,10 +804,100 @@
     <function model="purchase.request" name="button_to_verify">
         <value eval="[ref('kmitl_demo.purchase_request_5')]" />
     </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.purchase_request_5')]" />
+    </function>
+
+    <!-- purchase Request 5 EGP -->
+    <record id="purchase_request_5_egp" model="purchase.request">
+        <field name="title">เครื่องปรับอากาศตึกครุ</field>
+        <field name="description">อากาศค่อนข้างร้อนมาก</field>
+        <field
+            name="account_fiscal_year_id"
+            ref="kmitl_demo.account_fiscal_year_y2567"
+        />
+        <field
+            name="procurement_type_id"
+            ref="purchase_request_kmitl.procurement_type_006"
+        />
+        <field
+            name="procurement_method_id"
+            ref="l10n_th_gov_purchase_request.procurement_bidding"
+        />
+        <field name="is_egp" eval="True" />
+        <field name="payment_type">direct</field>
+        <field name="requested_by" ref="kmitl_demo.user_demo_009" />
+        <field name="partner_id" ref="kmitl_demo.vendor_demo_011" />
+        <field name="user_id" ref="kmitl_demo.user_demo_009" />
+        <field name="department_id" ref="kmitl_demo.02" />
+        <field name="budget_account_id" ref="budget.budget_account_5101020023" />
+        <field name="activity_analytic_id" ref="account_analytic_kmitl.activity_06" />
+        <field name="department_analytic_id" ref="account_analytic_kmitl.dept_02" />
+        <field name="fund_analytic_id" ref="account_analytic_kmitl.fund_0100" />
+        <field name="source_analytic_id" ref="account_analytic_kmitl.source_3" />
+    </record>
     <function
         model="purchase.request"
-        name="action_reserve_budget"
+        name="_onchange_budget_account_id"
+        context="{'default_price_unit': 1500000}"
     >
-        <value eval="[ref('kmitl_demo.purchase_request_5')]" />
+        <value eval="[ref('kmitl_demo.purchase_request_5_egp')]" />
+    </function>
+    <record id="committee_wa_013" model="procurement.committee">
+        <field name="request_id" ref="kmitl_demo.purchase_request_5_egp" />
+        <field name="employee_id" ref="kmitl_demo.employee_demo_008" />
+        <field name="committee_type">work_acceptance</field>
+        <field name="approve_role">chairman</field>
+        <field
+            name="name"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_008').name"
+        />
+        <field
+            name="phone"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_008').work_phone"
+        />
+    </record>
+    <record id="committee_wa_014" model="procurement.committee">
+        <field name="request_id" ref="kmitl_demo.purchase_request_5_egp" />
+        <field name="employee_id" ref="kmitl_demo.employee_demo_002" />
+        <field name="committee_type">work_acceptance</field>
+        <field name="approve_role">committee</field>
+        <field
+            name="name"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_002').name"
+        />
+        <field
+            name="phone"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_002').work_phone"
+        />
+    </record>
+    <record id="committee_wa_15" model="procurement.committee">
+        <field name="request_id" ref="kmitl_demo.purchase_request_5_egp" />
+        <field name="employee_id" ref="kmitl_demo.employee_demo_014" />
+        <field name="committee_type">work_acceptance</field>
+        <field name="approve_role">committee</field>
+        <field
+            name="name"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_014').name"
+        />
+        <field
+            name="phone"
+            model="base"
+            eval="obj().env.ref('kmitl_demo.employee_demo_014').work_phone"
+        />
+    </record>
+    <function model="purchase.request" name="action_ignore_exceptions">
+        <value eval="[ref('kmitl_demo.purchase_request_5_egp')]" />
+    </function>
+    <function model="purchase.request" name="button_to_verify">
+        <value eval="[ref('kmitl_demo.purchase_request_5_egp')]" />
+    </function>
+    <function model="purchase.request" name="action_reserve_budget">
+        <value eval="[ref('kmitl_demo.purchase_request_5_egp')]" />
     </function>
 </odoo>
