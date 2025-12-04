@@ -16,7 +16,17 @@ class AccountExpenseRequestCompensation(models.Model):
     compensation_type_id = fields.Many2one(
         string="Compensation Type",
         comodel_name="account.expense.request.compensation.type",
-        required=True
+        required=True,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
+    payment_type = fields.Selection(
+        string="Payment Type",
+        selection=[("direct", "Direct paid"), ("loan", "Loan"), ("prepaid", "Prepaid")],
+        required=True,
+        tracking=True,
+        states=READONLY_STATES,
     )
 
     line_ids = fields.One2many(

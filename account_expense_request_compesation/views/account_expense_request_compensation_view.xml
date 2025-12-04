@@ -42,13 +42,14 @@
                             <field name="responsible_id" />
                             <field name="department_id" />
                             <field name="compensation_type_id" attrs="{'readonly': [('can_edit_type', '!=', True)]}"/>
+                            <field name="payment_type" />
                         </group>
                         <group>
                             <field name="company_id" groups="base.group_multi_company" invisible="1"/>
                         </group>
                     </group>
                     <notebook>
-                        <page string="รายการ" name="Lines">
+                        <page string="Request Lines" name="lines">
                             <field name="line_ids">
                                 <tree editable="bottom">
                                     <field name="allowed_product_ids" invisible="1"/>
@@ -60,7 +61,7 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="รายละเอียด" name="detail">
+                        <page string="Details" name="detail">
                             <group>
                                 <field name="amount_total" />
                                 <field name="description" />
