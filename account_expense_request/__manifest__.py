@@ -5,8 +5,10 @@
     "license": "LGPL-3",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["account", "hr"],
-    "data": [],
+    "depends": ["account", "hr", "product"],
+    "data": [
+        "views/account_expense_request_menu.xml"
+    ],
     "installable": True,
     "application": False,
 }

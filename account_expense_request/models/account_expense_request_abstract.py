@@ -14,7 +14,7 @@ class AccountExpenseRequestAbstract(models.AbstractModel):
     }
 
     name = fields.Char(
-        string="เลขที่",
+        string="Number",
         required=True,
         readonly=True,
         copy=False,
@@ -24,7 +24,7 @@ class AccountExpenseRequestAbstract(models.AbstractModel):
 
     requester_id = fields.Many2one(
         comodel_name="res.partner",
-        string="ผู้ขอ",
+        string="Requester",
         required=True,
         tracking=True,
         states=READONLY_STATES,
@@ -32,15 +32,7 @@ class AccountExpenseRequestAbstract(models.AbstractModel):
 
     responsible_id = fields.Many2one(
         comodel_name="res.partner",
-        string="ผู้สร้างข้อมูล",
-        required=True,
-        tracking=True,
-        states=READONLY_STATES,
-    )
-
-    approver_id = fields.Many2one(
-        comodel_name="res.partner",
-        string="ผู้อนุมัติ",
+        string="Responsible Person",
         required=True,
         tracking=True,
         states=READONLY_STATES,
@@ -48,14 +40,14 @@ class AccountExpenseRequestAbstract(models.AbstractModel):
 
     department_id = fields.Many2one(
         "hr.department",
-        string="หน่วยงาน",
+        string="Department",
         required=True,
         tracking=True,
         states=READONLY_STATES,
     )
 
     date = fields.Date(
-        string="วันที่",
+        string="Date",
         required=True,
         default=fields.Date.context_today,
         tracking=True,
@@ -79,7 +71,7 @@ class AccountExpenseRequestAbstract(models.AbstractModel):
     )
 
     amount_total = fields.Monetary(
-        string="จำนวนเงินทั้งหมด",
+        string="Amount Total",
         currency_field="currency_id",
         required=True,
         tracking=True,
@@ -93,7 +85,7 @@ class AccountExpenseRequestAbstract(models.AbstractModel):
             ("approved", "Approved"),
             ("cancel", "Cancelled"),
         ],
-        string="สถานะ",
+        string="Status",
         required=True,
         readonly=True,
         copy=False,
@@ -102,7 +94,7 @@ class AccountExpenseRequestAbstract(models.AbstractModel):
     )
 
     description = fields.Text(
-        string="รายละเอียด",
+        string="Description",
         tracking=True,
         states=READONLY_STATES,
     )
