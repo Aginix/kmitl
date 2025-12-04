@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-24 09:09+0000\n"
-"PO-Revision-Date: 2025-11-24 09:09+0000\n"
+"POT-Creation-Date: 2025-11-28 04:50+0000\n"
+"PO-Revision-Date: 2025-11-28 04:50+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,23 +16,9 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: purchase_contract_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_order_form_contract
-msgid ""
-"<i class=\"fa fa-long-arrow-right mx-2 oe_edit_only\" aria-label=\"Arrow "
-"icon\" title=\"Arrow\"/>"
-msgstr ""
-
-#. module: purchase_contract_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_contract_type_form
 msgid "<span class=\"o_form_label\">Purchase Contract Type </span>"
 msgstr "<span class=\"o_form_label\">ประเภทสัญญา </span>"
-
-#. module: purchase_contract_kmitl
-#. odoo-python
-#: code:addons/purchase_contract_kmitl/models/purchase_order.py:0
-#, python-format
-msgid "Account fiscal year is required."
-msgstr "ปีงบประมาณบัญชีต้องระบุ"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__message_needaction
@@ -90,10 +76,37 @@ msgid "Contract Period Days"
 msgstr "กำหนดวันส่งมอบภายใน"
 
 #. module: purchase_contract_kmitl
+#. odoo-python
+#: code:addons/purchase_contract_kmitl/models/purchase_order.py:0
+#, python-format
+msgid "Contract Period Days must be >= 0"
+msgstr ""
+
+#. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_order__contract_type_id
 #: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.purchase_order_view_search_kmitl
 msgid "Contract Type"
 msgstr "ประเภทสัญญา"
+
+#. module: purchase_contract_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.purchase_order_view_search_kmitl
+msgid "Contract period 0 - 15 days"
+msgstr "อายุสัญญา 0 - 15 วัน"
+
+#. module: purchase_contract_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.purchase_order_view_search_kmitl
+msgid "Contract period 0 - 30 days"
+msgstr "อายุสัญญา 0 - 30 วัน"
+
+#. module: purchase_contract_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.purchase_order_view_search_kmitl
+msgid "Contract period 0 - 60 days"
+msgstr "อายุสัญญา 0 - 60 วัน"
+
+#. module: purchase_contract_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.purchase_order_view_search_kmitl
+msgid "Contract period 60+ days"
+msgstr "อายุสัญญามากกว่า 60 วัน"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__create_uid
@@ -106,31 +119,9 @@ msgid "Created on"
 msgstr ""
 
 #. module: purchase_contract_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_order_form_contract
-msgid "Date Order"
-msgstr "วันที่เริ่มสัญญา"
-
-#. module: purchase_contract_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_order_form_contract
-msgid "Date Work"
-msgstr "วันที่เริ่มงาน"
-
-#. module: purchase_contract_kmitl
-#. odoo-python
-#: code:addons/purchase_contract_kmitl/models/purchase_order.py:0
-#, python-format
-msgid "Department's short name is required."
-msgstr "หน่วยงานต้องระบุชื่อย่อ"
-
-#. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__display_name
 msgid "Display Name"
 msgstr ""
-
-#. module: purchase_contract_kmitl
-#: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_order__date_planned_date
-msgid "Expected Arrival (Date Only)"
-msgstr "วันที่สิ้นสุดสัญญา"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_order__fines_late
@@ -140,7 +131,7 @@ msgstr "ค่าปรับล่าช้า"
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_order__fines_rate
 msgid "Fines Rate"
-msgstr "ค่าปรับต่อวัน"
+msgstr "ค่าปรับรายวัน"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__message_follower_ids
@@ -156,11 +147,6 @@ msgstr ""
 #: model:ir.model.fields,help:purchase_contract_kmitl.field_purchase_contract_type__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
 msgstr ""
-
-#. module: purchase_contract_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_order_form_contract
-msgid "Get Contract Number"
-msgstr "รับเลขที่สัญญา"
 
 #. module: purchase_contract_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_contract_type_search
@@ -197,12 +183,6 @@ msgstr ""
 #: model:ir.model.fields,help:purchase_contract_kmitl.field_purchase_contract_type__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr ""
-
-#. module: purchase_contract_kmitl
-#: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__is_construction
-#: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_order__is_construction
-msgid "Is Construction"
-msgstr "งานก่อสร้าง"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__message_is_follower
@@ -298,7 +278,7 @@ msgstr ""
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_order__date_order_date
 msgid "Order Date (Date Only)"
-msgstr "วันที่เริ่มสัญญา"
+msgstr "วันที่ลงนามสัญญา"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__purchase_ids
@@ -333,13 +313,6 @@ msgid "SMS Delivery error"
 msgstr ""
 
 #. module: purchase_contract_kmitl
-#. odoo-python
-#: code:addons/purchase_contract_kmitl/models/purchase_order.py:0
-#, python-format
-msgid "Source analytic is required."
-msgstr "แหล่งเงินต้องระบุ"
-
-#. module: purchase_contract_kmitl
 #: model:ir.model.fields,help:purchase_contract_kmitl.field_purchase_contract_type__activity_state
 msgid ""
 "Status based on activities\n"
@@ -347,6 +320,16 @@ msgid ""
 "Today: Activity date is today\n"
 "Planned: Future activities."
 msgstr ""
+
+#. module: purchase_contract_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_contract_kmitl.view_purchase_order_form_contract
+msgid "Date Work"
+msgstr "วันที่เริ่มงาน"
+
+#. module: purchase_contract_kmitl
+#: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_order__supervision_cost
+msgid "Supervision Cost"
+msgstr "ค่าใข้จ่ายควบคุมงาน"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.constraint,message:purchase_contract_kmitl.constraint_purchase_order_unique_contract_number
@@ -430,5 +413,11 @@ msgstr ""
 
 #. module: purchase_contract_kmitl
 #: model:exception.rule,description:purchase_contract_kmitl.purchase_order_is_construction_exception
+#: model:exception.rule,description:purchase_contract_kmitl.purchase_order_work_start_must_be_valid_exception
 msgid "ประเภทสัญญางานก่อสร้าง"
+msgstr ""
+
+#. module: purchase_contract_kmitl
+#: model:exception.rule,name:purchase_contract_kmitl.purchase_order_work_start_must_be_valid_exception
+msgid "วันที่เริ่มงาน ต้องไม่เริ่มก่อนวันที่เริ่มสัญญา"
 msgstr ""

@@ -21,8 +21,10 @@ class PurchaseRequest(models.Model):
 
             seq_code = f"purchase.request.{fiscal_year}.{short_name}"
 
-            if not self.env['ir.sequence'].search([('code', '=', seq_code)], limit=1):
-                self.env['ir.sequence'].create({
+            Sequence = self.env['ir.sequence'].sudo()
+
+            if not Sequence.search([('code', '=', seq_code)], limit=1):
+                Sequence.create({
                     'name': f'Purchase Request {fiscal_year} {short_name}',
                     'code': seq_code,
                     'prefix': f'PR/{fiscal_year}/{short_name}/',
@@ -30,6 +32,6 @@ class PurchaseRequest(models.Model):
                     'number_increment': 1,
                 })
 
-            vals['name'] = self.env['ir.sequence'].next_by_code(seq_code) or _('New')
+            vals['name'] = Sequence.next_by_code(seq_code) or _('New')
 
         return super().create(vals_list)

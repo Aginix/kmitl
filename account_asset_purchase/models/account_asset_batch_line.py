@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -9,11 +9,11 @@ _logger = logging.getLogger(__name__)
 
 class AccountAssetBatchLine(models.Model):
     _name = 'account.asset.batch.line'
-    _inherit = "analytic.mixin"
+    _inherit = ['analytic.mixin', 'mail.thread', 'mail.activity.mixin']
     _description = 'AccountAssetBatchLine'
 
     name = fields.Char(
-        string="Name", 
+        string="Name",
         store=True,
         tracking=True,
     )
@@ -21,7 +21,7 @@ class AccountAssetBatchLine(models.Model):
     sequence = fields.Integer(
         default=1
     )
-    
+
     batch_id = fields.Many2one(
         "account.asset.batch",
         required=True,

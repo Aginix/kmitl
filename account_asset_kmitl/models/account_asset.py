@@ -53,7 +53,7 @@ class AccountAsset(models.Model):
     def _compute_access_url(self):
         super()._compute_access_url()
         for rec in self:
-        	rec.access_url = f"/account_assets/{self.access_uid}"
+        	rec.access_url = f"/account_assets/{rec.access_uid}"
 
     def action_open_portal_view(self):
         self.ensure_one()

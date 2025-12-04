@@ -8,7 +8,7 @@
             <xpath expr="//notebook" position="inside">
                 <page string="Committee" name="committee">
                     <separator string="Work Acceptance Committee" />
-                    <field name="work_acceptance_committee_ids" nolabel="1" context="{'default_committee_type': 'work_acceptance'}" />
+                    <field name="work_acceptance_committee_ids" readonly="1" nolabel="1" context="{'default_committee_type': 'work_acceptance'}" />
                 </page>
             </xpath>
             <field name="requesting_operating_unit_id" position="attributes">

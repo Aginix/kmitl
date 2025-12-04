@@ -19,9 +19,6 @@
         "reports/report_purchase_request.xml",
         "reports/paperformat_purchase_request.xml",
     ],
-    "assets": {
-        "web.assets_backend": ["purchase_request_report_kmitl/static/src/**/*"],
-    },
     "installable": True,
     "auto_install": False,
     "license": "LGPL-3",

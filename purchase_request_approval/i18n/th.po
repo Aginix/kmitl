@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 04:14+0000\n"
-"PO-Revision-Date: 2025-11-07 04:14+0000\n"
+"POT-Creation-Date: 2025-11-25 09:59+0000\n"
+"PO-Revision-Date: 2025-11-25 09:59+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -17,7 +17,14 @@ msgstr ""
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
-msgid ") นั้น"
+msgid ""
+")\n"
+"                            นั้น"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
+msgid "1.1 ตาม อนุมัติให้จัดซื้อ"
 msgstr ""
 
 #. module: purchase_request_approval
@@ -194,11 +201,6 @@ msgid "Contact"
 msgstr ""
 
 #. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__contract_type
-msgid "Contract type"
-msgstr "ประเภทสัญญา"
-
-#. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_form
 msgid "Create Purchase Order"
 msgstr "สร้างคำสั่งซื้อ/จ้าง"
@@ -229,11 +231,6 @@ msgid "Created on"
 msgstr ""
 
 #. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__date_start
-msgid "Creation date"
-msgstr ""
-
-#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__currency_id
 msgid "Currency"
 msgstr ""
@@ -246,19 +243,19 @@ msgstr ""
 #. module: purchase_request_approval
 #. odoo-python
 #: code:addons/purchase_request_approval/controllers/portal.py:0
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__date
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.portal_my_purchase_request_approvals
 #, python-format
 msgid "Date"
 msgstr "วันที่เอกสาร"
 
 #. module: purchase_request_approval
-#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__date_start
-msgid "Date when the user initiated the request."
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__date_start
+msgid "Date Start"
 msgstr ""
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__department_id
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__requesting_department_id
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.portal_my_purchase_request_approvals
 msgid "Department"
 msgstr ""
@@ -351,8 +348,18 @@ msgid "Hide Create Po Button"
 msgstr ""
 
 #. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__hide_request_validation_button
+msgid "Hide Request Validation Button"
+msgstr ""
+
+#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__hide_reserve_budget_button
 msgid "Hide Reserve Budget Button"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__hide_restart_validation_button
+msgid "Hide Restart Validation Button"
 msgstr ""
 
 #. module: purchase_request_approval
@@ -467,16 +474,6 @@ msgid "Message Delivery error"
 msgstr ""
 
 #. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__message_search
-msgid "Message Search"
-msgstr ""
-
-#. module: purchase_request_approval
-#: model:ir.model.fields,help:purchase_request_approval.field_purchase_request_approval__message_search
-msgid "Message search, to be used only in searches"
-msgstr ""
-
-#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__message_ids
 msgid "Messages"
 msgstr ""
@@ -505,11 +502,6 @@ msgstr ""
 #: code:addons/purchase_request_approval/models/purchase_request_approval.py:0
 #, python-format
 msgid "New"
-msgstr ""
-
-#. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__activity_calendar_event_id
-msgid "Next Activity Calendar Event"
 msgstr ""
 
 #. module: purchase_request_approval
@@ -745,6 +737,11 @@ msgid "Reference"
 msgstr "เลขที่"
 
 #. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
+msgid "Reject"
+msgstr "ไม่อนุมัติ"
+
+#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__rejected
 #: model:ir.model.fields.selection,name:purchase_request_approval.selection__purchase_request_approval__state__rejected
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
@@ -781,7 +778,7 @@ msgstr ""
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
 msgid "Request approval"
-msgstr "ยื่นขออนุมัติ"
+msgstr "ยืนยัน"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__requested_by
@@ -1032,11 +1029,6 @@ msgid "You cannot delete a purchase approval which is not draft."
 msgstr ""
 
 #. module: purchase_request_approval
-#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__activity_team_user_ids
-msgid "test field"
-msgstr ""
-
-#. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__title
 msgid "title"
 msgstr "เรื่อง"
@@ -1085,12 +1077,27 @@ msgstr ""
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
+msgid "จาก"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
 msgid "จำนวน"
 msgstr ""
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
+msgid "จำนวน 1 รายการ เป็นเงิน"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
 msgid "จำนวนเงิน"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
+msgid "ชุด"
 msgstr ""
 
 #. module: purchase_request_approval
@@ -1110,12 +1117,42 @@ msgstr ""
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
+msgid ""
+"ตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 มาตรา\n"
+"                            56 (2) ข้อ (ข) และกฎกระทรวง เรื่อง\n"
+"                            กำหนดวงเงินการจัดซื้อจัดจ้างพัสดุโดยวิธี"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
+msgid "บันทึกชี้แจงเพิ่มเติม (ถ้ามี)"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
 msgid "บันทึกรายงานขอซื้อ/จ้าง"
 msgstr ""
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
+msgid ""
+"บันทึกเสนอซื้อ/จ้าง (พัสดุ) <span class=\"fw-bolder text-decoration-"
+"underline\">1</span> ชุด"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
 msgid "บาท ("
+msgstr ""
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
+msgid "บาท โดยวิธี"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
+msgid "ประจำปีพ.ศ."
 msgstr ""
 
 #. module: purchase_request_approval
@@ -1187,6 +1224,14 @@ msgstr ""
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
+msgid ""
+"วงเงินจัดซื้อจัดจ้างที่ไม่ทำข้อตกลงเป็นหนังสือและวงเงินจัดซื้อจัดจ้างในการแต่งตั้งผู้ตรวจรับพัสดุ\n"
+"                            พ.ศ. 2560 ข้อ 1 ซึ่งอยู่ใต้อำนาจจัดซื้อจัดจ้างและบริหารพัสดุภาครัฐ พ.ศ.\n"
+"                            2560 และได้ตรวจสอบเอกสารการเงินเป็นที่เรียบร้อยแล้ว โดยขอเบิกจ่ายจาก"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
 msgid "วันที่"
 msgstr ""
 
@@ -1199,6 +1244,16 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_budget
 msgid "หน่วยงาน"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
+msgid "อนุมัติให้คณะกรรมการตรวจรับพัสดุ ประกอบด้วย"
+msgstr ""
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
+msgid "เนื่องจากเป็นผู้ประกอบการ"
 msgstr ""
 
 #. module: purchase_request_approval
@@ -1250,4 +1305,9 @@ msgstr ""
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
 msgid "โดยใช้งบประมาณ ประจำปีงบประมาณ พ.ศ."
+msgstr ""
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
+msgid "ใบเสนอราคาพัสดุ"
 msgstr ""

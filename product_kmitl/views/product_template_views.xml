@@ -8,8 +8,7 @@
         <field name="arch" type="xml">
             <xpath expr="//div[@name='options']" position="inside">
                 <span name="purchase_request_option" class="d-inline-flex">
-                    <field name="purchase_request_ok"/>
-                    <label for="purchase_request_ok"/>
+                    <field name="purchase_request_ok" string="Purchase Request" />
                 </span>
             </xpath>
         </field>

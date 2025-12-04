@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- View stock.request View Tree -->
+    <record id="view_stock_request_tree" model="ir.ui.view">
+        <field name="name">view.stock.request.tree</field>
+        <field name="model">stock.request</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="location_id" />
+                <field name="location_dest_id" />
+                <field
+                    name="state"
+                    widget="badge"
+                    decoration-success="state == 'done'"
+                    decoration-info="state == 'approved'"
+                    decoration-warning="state == 'submitted'"
+                    decoration-danger="state == 'cancel'"
+                    decoration-muted="state == 'draft'"
+                />
+            </tree>
+        </field>
+    </record>
+
+    <!-- View stock.request form -->
+    <record id="view_stock_request_form" model="ir.ui.view">
+        <field name="name">view.stock.request.form</field>
+        <field name="model">stock.request</field>
+        <field name="arch" type="xml">
+            <form string="Stock Request">
+                <header>
+                    <button
+                        name="action_submitted"
+                        string="Submit"
+                        type="object"
+                        states="draft"
+                    />
+                    <button
+                        name="action_approved"
+                        string="Approved"
+                        type="object"
+                        states="submitted"
+                        groups="stock_request_aginix.group_stock_request_approver"
+                    />
+                    <button
+                        name="action_create_picking"
+                        type="object"
+                        string="Create Picking"
+                        class="btn-primary"
+                        attrs="{'invisible': ['|', ('picking_id', '!=', False), ('state', '!=', 'approved')]}"
+                        groups="stock.group_stock_user"
+                    />
+                    <field name="picking_id" invisible="1" />
+                    <button
+                        name="action_done"
+                        string="Done"
+                        type="object"
+                        states="approved"
+                        groups="stock.group_stock_user"
+                    />
+                    <button
+                        name="action_cancel"
+                        string="Cancel"
+                        type="object"
+                        states="submitted"
+                        groups="stock.group_stock_user"
+                    />
+                    <button
+                        name="action_reset"
+                        string="Reset"
+                        type="object"
+                        states="cancel"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,submitted,approved,done"
+                    />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_view_picking"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-truck"
+                            attrs="{'invisible': [('picking_id', '=', False)]}"
+                            groups="stock.group_stock_user"
+                        >
+                            <field name="picking_id" invisible="1" />
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Picking</span>
+                            </div>
+                        </button>
+                    </div>
+                    <widget
+                        name="web_ribbon"
+                        title="Done"
+                        bg_color="bg-success"
+                        attrs="{'invisible': [('state', '!=', 'done')]}"
+                    />
+                    <div class="oe_title">
+                        <label for="name" string="Stock request" />
+                        <h1>
+                            <field name="name" readonly="1" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group name="left">
+                            <field name="is_editable" invisible="1"/>
+                            <field name="picking_type_id" readonly="1" />
+                            <field name="location_id" readonly="1" />
+                            <field name="location_dest_id" readonly="1" />
+                            <field name="user_id" />
+                        </group>
+                        <group name="right">
+                            <field name="request_date" attrs="{'readonly': [('is_editable','=', False)]}"/>
+                            <field name="requested_by" attrs="{'readonly': [('is_editable','=', False)]}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Lines">
+                            <field name="request_line_ids" attrs="{'readonly': [('is_editable','=', False)]}">
+                                <tree editable="bottom">
+                                    <field
+                                        name="product_id"
+                                        can_create="False"
+                                        can_write="False"
+                                    />
+                                    <field name="quantity" />
+                                    <field name="product_uom_id" />
+                                    <field
+                                        name="qty_done"
+                                        readonly="1"
+                                        attrs="{'column_invisible': [('parent.picking_id', '=', False)]}"
+                                    />
+                                    <field
+                                        name="price_unit"
+                                        readonly="1"
+                                        attrs="{'column_invisible': [('parent.picking_id', '=', False)]}"
+                                    />
+                                    <field
+                                        name="total_price"
+                                        readonly="1"
+                                        attrs="{'column_invisible': [('parent.picking_id', '=', False)]}"
+                                    />
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action stock.request -->
+    <record id="action_stock_request" model="ir.actions.act_window">
+        <field name="name">Stock Request</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">stock.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Stock Request.
+            </p>
+        </field>
+    </record>
+</odoo>
