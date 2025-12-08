@@ -26,32 +26,4 @@
             </xpath>
         </field>
     </record>
-
-    <record id="view_purchase_order_invisible" model="ir.ui.view">
-        <field name="name">view.purchase.order(Purchase Order Change)</field>
-        <field name="model">purchase.order</field>
-        <field name="arch" type="xml">
-            <form string="Purchase Order">
-                <sheet>
-                    <group>
-                        <group>
-                            <field name="fines_rate" />
-                            <field name="fines_late" />
-                            <field name="late_days" />
-                            <field name="supervision_cost" />
-                        </group>
-                    </group>
-                </sheet>
-                <footer>
-                    <button
-                        string="Save"
-                        name="action_save_purchase_order_change"
-                        type="object"
-                        class="btn-primary"
-                    />
-                    <button string="Cancel" class="btn-secondary" special="cancel" />
-                </footer>
-            </form>
-        </field>
-    </record>
 </odoo>
