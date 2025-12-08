@@ -7,9 +7,50 @@
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
                 <page string="Order Changes">
-                    <field name="change_ids"> </field>
+                    <field name="change_ids" readonly="1" />
+                    <div>
+                        <button
+                            string="แก้ไขงวดงาน งวดเงิน"
+                            type="object"
+                            class="oe_highlight me-2"
+                            name="action_open_purchase_order_change"
+                        />
+                        <button
+                            string="แก้ไขสัญญารายละเอียดอื่นๆ"
+                            type="action"
+                            class="oe_highlight"
+                            name="%(action_purchase_order_change)d"
+                        />
+                    </div>
                 </page>
             </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_order_invisible" model="ir.ui.view">
+        <field name="name">view.purchase.order(Purchase Order Change)</field>
+        <field name="model">purchase.order</field>
+        <field name="arch" type="xml">
+            <form string="Purchase Order">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="fines_rate" />
+                            <field name="fines_late" />
+                            <field name="late_days" />
+                            <field name="supervision_cost" />
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button
+                        string="Save"
+                        name="action_save_purchase_order_change"
+                        type="object"
+                        class="btn-primary"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+            </form>
         </field>
     </record>
 </odoo>

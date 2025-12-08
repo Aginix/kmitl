@@ -1,0 +1,10 @@
+<odoo>
+    <data noupdate="1">
+        <record id="seq_purchase_order_change" model="ir.sequence">
+            <field name="name">Purchase Order Change Sequence</field>
+            <field name="code">purchase.order.change</field>
+            <field name="padding">1</field>
+            <field name="number_next">1</field>
+        </record>
+    </data>
+</odoo>

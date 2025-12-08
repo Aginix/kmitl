@@ -14,3 +14,25 @@ class PurchaseOrderChange(models.Model):
     state = fields.Selection(selection=[("draft", "Draft"), ("done", "Done")] , default="draft")
     purchase_id = fields.Many2one(comodel_name="purchase.order")
 
+    @api.model
+    def create(self, vals):
+        if vals.get('number', 'New') in (False, 'New'):
+            vals['number'] = self.env['ir.sequence'].next_by_code('purchase.order.change') or 'New'
+        return super().create(vals)
+
+    def action_done(self):
+        for record in self:
+            record.state = 'done'
+
+    def action_next(self):
+        self.ensure_one()
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Purchase Order (Change)',
+            'res_model': 'purchase.order',
+            'view_mode': 'form',
+            'view_id': self.env.ref('purchase_order_change.view_purchase_order_invisible').id,
+            'target': 'new',
+            'res_id': self.purchase_id.id,
+        }

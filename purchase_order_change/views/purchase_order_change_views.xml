@@ -19,17 +19,38 @@
         <field name="model">purchase.order.change</field>
         <field name="arch" type="xml">
             <form string="Purchase Order Change">
+                <header>
+                    <button
+                        name="action_done"
+                        string="Done"
+                        type="object"
+                        states="draft"
+                        class="oe_highlight"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,done"
+                    />
+                </header>
                 <sheet>
                     <group>
                         <group>
-                            <field name="number" />
-                            <field name="date" />
+                            <field name="number" readonly="1" />
+                            <field name="date" readonly="1" />
                             <field name="change_type" />
-                            <field name="section_ids" />
-                            <field name="state" />
+                            <field name="section_ids" widget="many2many_checkboxes" />
                         </group>
                     </group>
                 </sheet>
+                <footer>
+                    <button
+                        string="next"
+                        name="action_next"
+                        type="object"
+                        class="btn-primary"
+                    />
+                </footer>
             </form>
         </field>
     </record>
