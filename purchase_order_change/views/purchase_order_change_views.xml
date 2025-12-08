@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_order_change_tree" model="ir.ui.view">
+        <field name="name">view.purchase.order.change.tree</field>
+        <field name="model">purchase.order.change</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="number" />
+                <field name="date" />
+                <field name="change_type" />
+                <field name="section_ids" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_purchase_order_change_form" model="ir.ui.view">
+        <field name="name">view.purchase.order.change.form</field>
+        <field name="model">purchase.order.change</field>
+        <field name="arch" type="xml">
+            <form string="Purchase Order Change">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="number" />
+                            <field name="date" />
+                            <field name="change_type" />
+                            <field name="section_ids" />
+                            <field name="state" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_purchase_order_change_search" model="ir.ui.view">
+        <field name="name">view.purchase.order.change.search</field>
+        <field name="model">purchase.order.change</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter
+                        string="Number"
+                        name="number"
+                        domain="[]"
+                        context="{'group_by':'number'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_purchase_order_change" model="ir.actions.act_window">
+        <field name="name">Purchase Order Change</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.order.change</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Purchase Order Change.
+            </p>
+        </field>
+    </record>
+</odoo>
