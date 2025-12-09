@@ -13,6 +13,11 @@ class PurchaseOrderChange(models.Model):
     section_ids = fields.Many2many(comodel_name="purchase.change.section")
     state = fields.Selection(selection=[("draft", "Draft"), ("done", "Done")] , default="draft")
     purchase_id = fields.Many2one(comodel_name="purchase.order")
+    change_field_ids = fields.One2many(
+        comodel_name='purchase.order.change.field',
+        inverse_name='change_id',
+        string='Change Fields'
+    )
 
     @api.model
     def create(self, vals):
@@ -34,6 +39,7 @@ class PurchaseOrderChange(models.Model):
             "view_mode": "form",
             "target": "new",
             "context": {
+                "default_change_id": self.id,
                 "default_purchase_id": self.purchase_id.id,
                 "default_fines_rate": self.purchase_id.fines_rate,
                 "default_fines_late": self.purchase_id.fines_late,
