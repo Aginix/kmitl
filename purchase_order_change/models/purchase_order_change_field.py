@@ -8,7 +8,7 @@ class PurchaseOrderChangeField(models.Model):
     _description = 'Purchase Order Change Field'
 
     change_id = fields.Many2one(comodel_name="purchase.order.change")
-    section_id = fields.Many2one(comodel_name="purchase.change.section")
+    section_id = fields.Many2one(comodel_name="purchase.change.section") #ไม่รู้จำเป็นต้องใช้ไหม
     field_id = fields.Many2one(comodel_name="ir.model.fields")
     old_value = fields.Char(string='Old Value')
     new_value = fields.Char(string='New Value')

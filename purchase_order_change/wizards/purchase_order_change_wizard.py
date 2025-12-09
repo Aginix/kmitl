@@ -18,6 +18,7 @@ class PurchaseOrderChangeWizard(models.TransientModel):
         related="purchase_id.currency_id",
         readonly=True
     )
+    section_ids = fields.Many2many("purchase.change.section")
 
     def action_save_changes(self):
         self.ensure_one()
@@ -38,7 +39,6 @@ class PurchaseOrderChangeWizard(models.TransientModel):
             # ถ้าเปลี่ยนจริง
             if old_value != new_value:
 
-                # บันทึก history
                 ChangeField.create({
                     "change_id": self.change_id.id,
                     "field_name": label,
@@ -58,3 +58,16 @@ class PurchaseOrderChangeWizard(models.TransientModel):
         })
 
         return {"type": "ir.actions.act_window_close"}
+
+    is_addition_section = fields.Boolean(
+        string="Is Addition Section",
+        compute="_compute_is_addition_section",
+        store=False
+    )
+
+    @api.depends("section_ids")
+    def _compute_is_addition_section(self):
+        for rec in self:
+            rec.is_addition_section = any(
+                sec.section_type == "addition" for sec in rec.section_ids
+            )

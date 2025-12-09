@@ -39,8 +39,8 @@
                             <field name="number" readonly="1" />
                             <field name="date" readonly="1" />
                             <field name="change_type" />
+                            <field name="editor_id" />
                             <field name="section_ids" widget="many2many_checkboxes" />
-
                         </group>
                     </group>
                     <notebook>

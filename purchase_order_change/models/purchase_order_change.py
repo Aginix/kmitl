@@ -18,6 +18,7 @@ class PurchaseOrderChange(models.Model):
         inverse_name='change_id',
         string='Change Fields'
     )
+    editor_id = fields.Many2one(comodel_name="res.users", string="Editor", default=lambda self: self.env.user)
 
     @api.model
     def create(self, vals):
@@ -45,5 +46,6 @@ class PurchaseOrderChange(models.Model):
                 "default_fines_late": self.purchase_id.fines_late,
                 "default_late_days": self.purchase_id.late_days,
                 "default_supervision_cost": self.purchase_id.supervision_cost,
+                "default_section_ids": [(6, 0, self.section_ids.ids)],
             },
         }
