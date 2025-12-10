@@ -84,6 +84,11 @@ class PurchaseOrderChange(models.Model):
             "target": "new",
             "context": {
                 "default_change_id": self.id,
+                "default_work_start": self.purchase_id.work_start,
+                "default_contract_period_days": self.purchase_id.contract_period_days,
+                "default_date_order_date": self.purchase_id.date_order_date,
+                "default_contract_name": self.purchase_id.contract_name,
+                "default_contract_number": self.purchase_id.contract_number,
                 "default_purchase_id": self.purchase_id.id,
                 "default_fines_rate": self.purchase_id.fines_rate,
                 "default_fines_late": self.purchase_id.fines_late,

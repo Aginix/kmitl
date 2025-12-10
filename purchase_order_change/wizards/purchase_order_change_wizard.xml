@@ -6,10 +6,29 @@
         <field name="arch" type="xml">
             <form string="Change Purchase Order">
                 <group>
+                    <!-- กลุ่ม 1: ค่าปรับ -->
+                    <field name="show_fines_fields" invisible="1" />
+                    <field name="show_work_fields" invisible="1" />
+                    <field name="show_contract_fields" invisible="1" />
                     <field name="fines_rate" />
+
                     <field name="fines_late" readonly="1" />
+
                     <field name="late_days" readonly="1" />
+
                     <field name="supervision_cost" />
+
+                    <!-- กลุ่ม 2: ขยายเวลา / ลดยอด -->
+                    <field name="work_start" />
+
+                    <field name="contract_period_days" />
+
+                    <field name="date_order_date" />
+
+                    <!-- กลุ่ม 3: อื่นๆ -->
+                    <field name="contract_name" />
+
+                    <field name="contract_number" />
                 </group>
                 <footer>
                     <button
