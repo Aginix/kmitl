@@ -28,7 +28,50 @@ class PurchaseOrderChange(models.Model):
 
     def action_done(self):
         for record in self:
-            record.state = 'done'
+            po = record.purchase_id.sudo()
+
+            vals = {}
+
+            for line in record.change_field_ids:
+                field = line.field_id
+                field_name = field.name
+                new_value = line.new_value
+
+                # แปลงค่าตาม type
+                if field.ttype in ("float", "monetary"):
+                    try:
+                        converted = float(new_value)
+                    except:
+                        converted = 0.0
+
+                elif field.ttype == "integer":
+                    try:
+                        converted = int(new_value)
+                    except:
+                        converted = 0
+
+                elif field.ttype == "boolean":
+                    converted = new_value.lower() in ("1", "true", "yes")
+
+                elif field.ttype == "date":
+                    converted = new_value
+
+                elif field.ttype == "many2one":
+                    try:
+                        converted = int(new_value)
+                    except:
+                        converted = False
+
+                else:
+                    converted = new_value
+
+                vals[field_name] = converted
+
+            if vals:
+                po.write(vals)
+
+            record.state = "done"
+
 
     def action_next(self):
         self.ensure_one()

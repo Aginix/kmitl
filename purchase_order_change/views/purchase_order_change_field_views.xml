@@ -5,8 +5,6 @@
         <field name="model">purchase.order.change.field</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="change_id" />
-                <field name="section_id" />
                 <field name="field_id" />
                 <field name="old_value" />
                 <field name="new_value" />
@@ -23,9 +21,9 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="change_id" />
-                            <field name="section_id" />
-                            <field name="field_id" />
+                            <field name="change_id" options="{'no_create_edit': True, 'no_open': True}" />
+                            <field name="section_id" options="{'no_create_edit': True, 'no_open': True}" />
+                            <field name="field_id" options="{'no_create_edit': True, 'no_open': True}" />
                             <field name="old_value" />
                             <field name="new_value" />
                             <field name="field_name" />

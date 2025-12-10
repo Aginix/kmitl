@@ -36,7 +36,6 @@ class PurchaseOrderChangeWizard(models.TransientModel):
             old_value = po[field_name]
             new_value = self[field_name]
 
-            # ถ้าเปลี่ยนจริง
             if old_value != new_value:
 
                 ChangeField.create({
@@ -49,13 +48,6 @@ class PurchaseOrderChangeWizard(models.TransientModel):
                         ("name", "=", field_name)
                     ], limit=1).id,
                 })
-
-        po.write({
-            "fines_rate": self.fines_rate,
-            "fines_late": self.fines_late,
-            "late_days": self.late_days,
-            "supervision_cost": self.supervision_cost,
-        })
 
         return {"type": "ir.actions.act_window_close"}
 

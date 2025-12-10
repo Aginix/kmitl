@@ -10,6 +10,7 @@
                 <field name="change_type" />
                 <field name="section_ids" />
                 <field name="state" />
+                <field name="editor_id" />
             </tree>
         </field>
     </record>
@@ -39,7 +40,7 @@
                             <field name="number" readonly="1" />
                             <field name="date" readonly="1" />
                             <field name="change_type" />
-                            <field name="editor_id" />
+                            <field name="editor_id" readonly="1" options="{'no_create_edit': True, 'no_open': True}" />
                             <field name="section_ids" widget="many2many_checkboxes" />
                         </group>
                     </group>
