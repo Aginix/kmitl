@@ -8,9 +8,8 @@
                 <field name="number" />
                 <field name="date" />
                 <field name="change_type" />
-                <field name="section_ids" />
-                <field name="state" />
-                <field name="editor_id" />
+                <field name="state" widget='badge' decoration-success="state == 'done'" decoration-info="state == 'draft'"/>
+                <field name="editor_id" widget="many2one_avatar_user" />
             </tree>
         </field>
     </record>
@@ -56,6 +55,7 @@
                         name="action_next"
                         type="object"
                         class="btn-primary"
+                        attrs="{'invisible': [('state', '=', 'done')]}"
                     />
                 </footer>
             </form>
