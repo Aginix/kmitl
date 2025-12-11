@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+      
+    <!-- View purchase.request form -->
+    <record id="view_purchase_request_team_form" model="ir.ui.view">
+        <field name="name">view.purchase.request.team.form</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request_kmitl.view_purchase_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='logs']/group" position="inside">
+              <field name="team_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_approval_form" model="ir.ui.view">
+        <field name="name">view.purchase.request.approval.form</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request_approval.view_purchase_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='hide_create_approval_button']" position="after">
+              <field name="is_user_in_team" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//button[@name='button_create_approval']" position="replace">
+              <button
+                    name="button_create_approval"
+                    string="Create approval"
+                    type="object"
+                    class="oe_highlight"
+                    groups="purchase_request_security.group_purchase_request_user_all"
+                    attrs="{
+                        'invisible': [
+                            '|',
+                            ('hide_create_approval_button', '=', True),
+                            ('is_user_in_team', '!=', True)
+                        ]
+                    }"
+                />
+            </xpath>
+
+            <xpath expr="//button[@name='approval_make_purchase_order']" position="replace">
+              <button
+                    name="approval_make_purchase_order"
+                    string="Create Purchase Order"
+                    type="object"
+                    class="oe_highlight"
+                    groups="purchase_request_security.group_purchase_request_user_all"
+                    attrs="{
+                        'invisible': [
+                            '|',
+                            ('need_make_purchase_order', '!=', True),
+                            ('is_user_in_team', '!=', True)
+                        ]
+                    }"
+                />
+            </xpath>
+        </field>
+    </record>
+  </odoo>

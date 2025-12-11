@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+      
+    <!-- View purchase.request.approval form -->
+    <record id="view_purchase_request_approval_team_form" model="ir.ui.view">
+        <field name="name">view.purchase.request.approval.form</field>
+        <field name="model">purchase.request.approval</field>
+        <field name="inherit_id" ref="purchase_request_approval.view_purchase_request_approval_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+              <field name="is_user_in_team" invisible="1"/>
+            </xpath>
+            <xpath expr="//button[@name='button_to_approve']" position="replace">
+              <button
+                name="button_to_approve"
+                states="draft"
+                string="Request approval"
+                type="object"
+                class="oe_highlight"
+                attrs="{
+                  'invisible': [
+                      ('is_user_in_team', '!=', True)
+                  ]
+                }"
+              />  
+            </xpath>
+        </field>
+    </record>
+
+  </odoo>

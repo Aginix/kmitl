@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View purchase.team View Tree -->
+    <record id="view_purchase_team_tree" model="ir.ui.view">
+        <field name="name">purchase.team.tree</field>
+        <field name="model">purchase.team</field>
+        <field name="arch" type="xml">
+            <tree string="Purchase Teams">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="department_id"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="member_ids" widget="many2many_avatar_user"/>
+                <field name="pr_count"/>
+                <field name="po_count"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- View purchase.team form -->
+    <record id="view_purchase_team_form" model="ir.ui.view">
+        <field name="name">purchase.team.form</field>
+        <field name="model">purchase.team</field>
+        <field name="arch" type="xml">
+            <form string="Purchase Team">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_purchase_requests" 
+                                type="object" 
+                                class="oe_stat_button" 
+                                icon="fa-file-text-o"
+                                attrs="{'invisible': [('pr_count', '=', 0)]}">
+                            <field name="pr_count" widget="statinfo" string="PRs"/>
+                        </button>
+                        <button name="action_view_purchase_orders" 
+                                type="object" 
+                                class="oe_stat_button" 
+                                icon="fa-shopping-cart">
+                            <field name="po_count" widget="statinfo" string="POs"/>
+                        </button>
+                    </div>
+                    
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" 
+                            attrs="{'invisible': [('active', '=', True)]}"/>
+                    
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Central Purchase Team"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="user_id" widget="many2one_avatar_user" 
+                                   options="{'no_create': True}"/>
+                            <field name="department_id"/>
+                            <field name="company_id" groups="base.group_multi_company" 
+                                   options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                            <field name="sequence"/>
+                            <field name="is_membership_multi" invisible="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Members" name="members">
+                            <field name="member_ids" widget="many2many" 
+                                   options="{'no_create': True}">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="email"/>
+                                    <field name="phone"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Assignment Rules" name="rules">
+                            
+                            <group string="Apply this team to">
+                                <field name="assign_on_pr"/>
+                                <field name="assign_on_pa"/>
+                                <field name="assign_on_po"/>
+                            </group>
+                            
+                            <field name="filter_domain" 
+                                    widget="domain" 
+                                    options="{'model': 'purchase.request'}"
+                                    placeholder="e.g. [('amount_total', '>', 10000)]"
+                                    nolabel="1"/>
+                            
+                            
+                            <!-- <div class="alert alert-info mt-3" role="alert">
+                                <p><strong>How Assignment Works:</strong></p>
+                                <ul>
+                                    <li><strong>Purchase Request (PR):</strong> When checked, this team will be assigned to PRs from the selected department</li>
+                                    <li><strong>Purchase Approval (PA):</strong> When checked, this team will be assigned to PAs from the selected department</li>
+                                    <li><strong>Purchase Order (PO):</strong> When checked, this team will be assigned to POs from the selected department</li>
+                                    <li>Optional: Add additional filters using the domain field for more specific assignment rules</li>
+                                    <li>When assigned, the team leader will receive an activity notification</li>
+                                </ul>
+                            </div> -->
+                        </page>
+                        <page string="Description" name="description">
+                            <field name="description" placeholder="Team description and responsibilities..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action purchase.team -->
+    <record id="action_purchase_team" model="ir.actions.act_window">
+        <field name="name">Purchase Team</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.team</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Purchase Team.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_purchase_team"
+              name="Purchase Teams"
+              parent="purchase.menu_purchase_config"
+              action="action_purchase_team"
+              sequence="20"/>
+
+</odoo>
