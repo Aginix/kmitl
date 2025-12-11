@@ -8,7 +8,12 @@
                 <field name="number" />
                 <field name="date" />
                 <field name="change_type" />
-                <field name="state" widget='badge' decoration-success="state == 'done'" decoration-info="state == 'draft'"/>
+                <field
+                    name="state"
+                    widget="badge"
+                    decoration-success="state == 'done'"
+                    decoration-info="state == 'draft'"
+                />
                 <field name="editor_id" widget="many2one_avatar_user" />
             </tree>
         </field>
@@ -39,8 +44,13 @@
                             <field name="number" readonly="1" />
                             <field name="date" readonly="1" />
                             <field name="change_type" />
-                            <field name="editor_id" readonly="1" options="{'no_create_edit': True, 'no_open': True}" />
+                            <field
+                                name="editor_id"
+                                readonly="1"
+                                options="{'no_create_edit': True, 'no_open': True}"
+                            />
                             <field name="section_ids" widget="many2many_checkboxes" />
+                            <field name="has_change_fields" invisible="1" />
                         </group>
                     </group>
                     <notebook>
@@ -55,7 +65,7 @@
                         name="action_next"
                         type="object"
                         class="btn-primary"
-                        attrs="{'invisible': [('state', '=', 'done')]}"
+                        attrs="{'invisible': ['|',('state', '=', 'done'),('has_change_fields', '=', True)]}"
                     />
                 </footer>
             </form>

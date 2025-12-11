@@ -28,9 +28,10 @@ class PurchaseOrderChangeWizard(models.TransientModel):
     show_work_fields = fields.Boolean()
     show_contract_fields = fields.Boolean()
 
-    @api.onchange("section_ids")
+    @api.onchange("change_id")
     def _compute_visible_fields(self):
         for rec in self:
+            print('===============================>', rec.section_ids)
             xml_ids_map = rec.section_ids.get_external_id()
             xml_id_list = [xml.split(".")[-1] for xml in xml_ids_map.values()]
 
@@ -38,6 +39,38 @@ class PurchaseOrderChangeWizard(models.TransientModel):
             rec.show_work_fields = "purchase_change_section_2" in xml_id_list
             rec.show_contract_fields = "purchase_change_section_3" in xml_id_list
 
+    @api.model
+    def default_get(self, fields):
+        vals = super().default_get(fields)
+
+        default_section_ids = self.env.context.get("default_section_ids")
+        if default_section_ids and isinstance(default_section_ids, list):
+            ids = default_section_ids[0][2]
+        else:
+            ids = []
+
+        sections = self.env["purchase.change.section"].browse(ids)
+
+        xml_ids_map = sections.get_external_id()
+        xml_id_list = [xml.split(".")[-1] for xml in xml_ids_map.values()]
+
+        vals["show_fines_fields"] = "purchase_change_section_1" in xml_id_list
+        vals["show_work_fields"] = "purchase_change_section_2" in xml_id_list
+        vals["show_contract_fields"] = "purchase_change_section_3" in xml_id_list
+
+        return vals
+
+    @api.constrains("work_start", "date_order_date")
+    def _check_work_start(self):
+        for rec in self:
+            if not rec.show_work_fields:
+                continue
+
+            if rec.work_start and rec.date_order_date:
+                if rec.work_start < rec.date_order_date:
+                    raise ValidationError(
+                        _("Work Start Date must be greater than or equal to Order Date.")
+                    )
 
     def action_save_changes(self):
         self.ensure_one()
@@ -74,16 +107,3 @@ class PurchaseOrderChangeWizard(models.TransientModel):
                 })
 
         return {"type": "ir.actions.act_window_close"}
-
-    is_addition_section = fields.Boolean(
-        string="Is Addition Section",
-        compute="_compute_is_addition_section",
-        store=False
-    )
-
-    @api.depends("section_ids")
-    def _compute_is_addition_section(self):
-        for rec in self:
-            rec.is_addition_section = any(
-                sec.section_type == "addition" for sec in rec.section_ids
-            )

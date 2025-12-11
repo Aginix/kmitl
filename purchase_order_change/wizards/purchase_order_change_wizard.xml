@@ -10,25 +10,38 @@
                     <field name="show_fines_fields" invisible="1" />
                     <field name="show_work_fields" invisible="1" />
                     <field name="show_contract_fields" invisible="1" />
-                    <field name="fines_rate" />
-
-                    <field name="fines_late" readonly="1" />
-
-                    <field name="late_days" readonly="1" />
-
-                    <field name="supervision_cost" />
+                    <field
+                        name="fines_rate"
+                        attrs="{'invisible': [('show_fines_fields', '=', False)]}"
+                    />
+                    <field
+                        name="supervision_cost"
+                        attrs="{'invisible': [('show_fines_fields', '=', False)]}"
+                    />
 
                     <!-- กลุ่ม 2: ขยายเวลา / ลดยอด -->
-                    <field name="work_start" />
-
-                    <field name="contract_period_days" />
-
-                    <field name="date_order_date" />
+                    <field
+                        name="date_order_date"
+                        attrs="{'invisible': [('show_work_fields', '=', False)]}"
+                    />
+                    <field
+                        name="contract_period_days"
+                        attrs="{'invisible': [('show_work_fields', '=', False)]}"
+                    />
+                    <field
+                        name="work_start"
+                        attrs="{'invisible': [('show_work_fields', '=', False)]}"
+                    />
 
                     <!-- กลุ่ม 3: อื่นๆ -->
-                    <field name="contract_name" />
-
-                    <field name="contract_number" />
+                    <field
+                        name="contract_name"
+                        attrs="{'invisible': [('show_contract_fields', '=', False)]}"
+                    />
+                    <field
+                        name="contract_number"
+                        attrs="{'invisible': [('show_contract_fields', '=', False)]}"
+                    />
                 </group>
                 <footer>
                     <button

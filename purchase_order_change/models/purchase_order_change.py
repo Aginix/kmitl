@@ -19,6 +19,15 @@ class PurchaseOrderChange(models.Model):
         string='Change Fields'
     )
     editor_id = fields.Many2one(comodel_name="res.users", string="Editor", default=lambda self: self.env.user)
+    has_change_fields = fields.Boolean(
+        compute="_compute_has_change_fields",
+        store=False
+    )
+
+    @api.depends("change_field_ids")
+    def _compute_has_change_fields(self):
+        for rec in self:
+            rec.has_change_fields = bool(rec.change_field_ids)
 
     @api.model
     def create(self, vals):
