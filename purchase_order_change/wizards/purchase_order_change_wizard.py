@@ -28,17 +28,6 @@ class PurchaseOrderChangeWizard(models.TransientModel):
     show_work_fields = fields.Boolean()
     show_contract_fields = fields.Boolean()
 
-    @api.onchange("change_id")
-    def _compute_visible_fields(self):
-        for rec in self:
-            print('===============================>', rec.section_ids)
-            xml_ids_map = rec.section_ids.get_external_id()
-            xml_id_list = [xml.split(".")[-1] for xml in xml_ids_map.values()]
-
-            rec.show_fines_fields = "purchase_change_section_1" in xml_id_list
-            rec.show_work_fields = "purchase_change_section_2" in xml_id_list
-            rec.show_contract_fields = "purchase_change_section_3" in xml_id_list
-
     @api.model
     def default_get(self, fields):
         vals = super().default_get(fields)
@@ -56,7 +45,7 @@ class PurchaseOrderChangeWizard(models.TransientModel):
 
         vals["show_fines_fields"] = "purchase_change_section_1" in xml_id_list
         vals["show_work_fields"] = "purchase_change_section_2" in xml_id_list
-        vals["show_contract_fields"] = "purchase_change_section_3" in xml_id_list
+        vals["show_contract_fields"] = bool(not ids)
 
         return vals
 

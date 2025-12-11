@@ -17,9 +17,9 @@
                         />
                         <button
                             string="แก้ไขสัญญารายละเอียดอื่นๆ"
-                            type="action"
+                            type="object"
                             class="oe_highlight"
-                            name="%(action_purchase_order_change)d"
+                            name="action_other"
                         />
                     </div>
                 </page>

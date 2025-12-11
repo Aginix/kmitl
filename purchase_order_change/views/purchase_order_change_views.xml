@@ -72,6 +72,58 @@
         </field>
     </record>
 
+    <record id="view_purchase_order_change_form_other" model="ir.ui.view">
+        <field name="name">view.purchase.order.change.form</field>
+        <field name="model">purchase.order.change</field>
+        <field name="arch" type="xml">
+            <form string="Purchase Order Change">
+                <header>
+                    <button
+                        name="action_done"
+                        string="Done"
+                        type="object"
+                        states="draft"
+                        class="oe_highlight"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,done"
+                    />
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="number" readonly="1" />
+                            <field name="date" readonly="1" />
+                            <field name="change_type" />
+                            <field
+                                name="editor_id"
+                                readonly="1"
+                                options="{'no_create_edit': True, 'no_open': True}"
+                            />
+                            <field name="has_change_fields" invisible="1" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Change Details">
+                            <field name="change_field_ids" readonly="1" />
+                        </page>
+                    </notebook>
+                </sheet>
+                <footer>
+                    <button
+                        string="next"
+                        name="action_next_other"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': ['|',('state', '=', 'done'),('has_change_fields', '=', True)]}"
+                    />
+                </footer>
+            </form>
+        </field>
+    </record>
+
     <record id="view_purchase_order_change_search" model="ir.ui.view">
         <field name="name">view.purchase.order.change.search</field>
         <field name="model">purchase.order.change</field>

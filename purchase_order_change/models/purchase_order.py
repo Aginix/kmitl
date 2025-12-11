@@ -19,6 +19,22 @@ class PurchaseOrder(models.Model):
             'name': 'Purchase Order Change',
             'res_model': 'purchase.order.change',
             'view_mode': 'form',
+            "views": [[self.env.ref('purchase_order_change.view_purchase_order_change_form').id, "form"]],
+            'target': 'new',
+            'context': {
+                'default_purchase_id': self.id,
+                'default_date': fields.Date.today(),
+            },
+        }
+
+    def action_other(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Purchase Order Change',
+            'res_model': 'purchase.order.change',
+            'view_mode': 'form',
+            "views": [[self.env.ref('purchase_order_change.view_purchase_order_change_form_other').id, "form"]],
             'target': 'new',
             'context': {
                 'default_purchase_id': self.id,
