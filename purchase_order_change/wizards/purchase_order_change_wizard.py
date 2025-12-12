@@ -61,9 +61,41 @@ class PurchaseOrderChangeWizard(models.TransientModel):
                         _("Work Start Date must be greater than or equal to Order Date.")
                     )
 
-    def action_save_changes(self):
+    def _save_changes(self, track_fields):
         self.ensure_one()
+
         po = self.purchase_id.sudo()
+        ChangeField = self.env["purchase.order.change.field"].sudo()
+
+        model_fields = self.env["ir.model.fields"].search_read(
+            [("model", "=", "purchase.order"), ("name", "in", list(track_fields.keys()))],
+            ["id", "name"]
+        )
+        field_map = {m["name"]: m["id"] for m in model_fields}
+
+        for field_name, label in track_fields.items():
+            old_value = po[field_name]
+            new_value = self[field_name]
+
+            if old_value != new_value:
+                ChangeField.create({
+                    "change_id": self.change_id.id,
+                    "field_name": label,
+                    "field_id": field_map.get(field_name),
+                    "old_value": self._format_value(old_value),
+                    "new_value": self._format_value(new_value),
+                })
+
+        return {"type": "ir.actions.act_window_close"}
+
+    def _format_value(self, value):
+        if value in (False, None):
+            return ""
+        if hasattr(value, "display_name"):
+            return value.display_name
+        return str(value)
+
+    def action_save_changes(self):
         track_fields = {
             "fines_rate": "อัตราค่าปรับ",
             "fines_late": "ค่าปรับล่าช้า",
@@ -72,27 +104,13 @@ class PurchaseOrderChangeWizard(models.TransientModel):
             "work_start": "วันที่เริ่มงาน",
             "date_order_date": "วันที่ลงนามสัญญา",
             "contract_period_days": "กำหนดวันส่งมอบภายใน",
+        }
+        return self._save_changes(track_fields)
+
+    def action_save_changes_other(self):
+        track_fields = {
             "contract_name": "ชื่อสัญญา",
             "contract_number": "เลขที่สัญญา",
         }
+        return self._save_changes(track_fields)
 
-        ChangeField = self.env["purchase.order.change.field"].sudo()
-
-        for field_name, label in track_fields.items():
-            old_value = po[field_name]
-            new_value = self[field_name]
-
-            if old_value != new_value:
-
-                ChangeField.create({
-                    "change_id": self.change_id.id,
-                    "field_name": label,
-                    "old_value": str(old_value or ''),
-                    "new_value": str(new_value or ''),
-                    "field_id": self.env["ir.model.fields"].search([
-                        ("model", "=", "purchase.order"),
-                        ("name", "=", field_name)
-                    ], limit=1).id,
-                })
-
-        return {"type": "ir.actions.act_window_close"}
