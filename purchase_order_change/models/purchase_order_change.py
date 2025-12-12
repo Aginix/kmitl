@@ -80,6 +80,10 @@ class PurchaseOrderChange(models.Model):
                 po.write(vals)
 
             record.state = "done"
+        return {
+            "type": "ir.actions.client",
+            "tag": "reload",
+        }
 
     def _prepare_wizard_context(self, extra_context=None):
         self.ensure_one()

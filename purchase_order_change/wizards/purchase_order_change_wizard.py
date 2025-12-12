@@ -9,21 +9,28 @@ class PurchaseOrderChangeWizard(models.TransientModel):
 
     change_id = fields.Many2one("purchase.order.change", string="Change Record")
     purchase_id = fields.Many2one("purchase.order", string="Purchase Order")
-    fines_rate = fields.Monetary(string="Fines Rate")
     fines_late = fields.Monetary(string="Fines Amount")
     late_days = fields.Integer(string="Late Days")
-    supervision_cost = fields.Monetary(string="Supervision Cost")
     currency_id = fields.Many2one(
         "res.currency",
         related="purchase_id.currency_id",
         readonly=True
     )
     section_ids = fields.Many2many("purchase.change.section")
+    fines_rate = fields.Monetary(string="Fines Rate")
+    supervision_cost = fields.Monetary(string="Supervision Cost")
     work_start = fields.Date(string="Work Start")
     date_order_date = fields.Date(string="Order Date")
     contract_period_days = fields.Integer(string="Contract Period Days")
     contract_name = fields.Char(string="Contract Name")
     contract_number = fields.Char(string="Contract No.")
+    fines_rate_old = fields.Monetary(string="Old Fines Rate", readonly=True)
+    supervision_cost_old = fields.Monetary(string="Old Supervision Cost", readonly=True)
+    work_start_old = fields.Date(string="Old Work Start", readonly=True)
+    date_order_date_old = fields.Date(string="Old Order Date", readonly=True)
+    contract_period_days_old = fields.Integer(string="Old Contract Period", readonly=True)
+    contract_name_old = fields.Char(string="Old Contract Name", readonly=True)
+    contract_number_old = fields.Char(string="Old Contract No.", readonly=True)
     show_fines_fields = fields.Boolean()
     show_work_fields = fields.Boolean()
     show_contract_fields = fields.Boolean()
@@ -31,6 +38,21 @@ class PurchaseOrderChangeWizard(models.TransientModel):
     @api.model
     def default_get(self, fields):
         vals = super().default_get(fields)
+
+        purchase = self.env["purchase.order"].browse(self.env.context.get("default_purchase_id"))
+
+        if purchase:
+            vals.update({
+                "fines_rate_old": purchase.fines_rate,
+                "supervision_cost_old": purchase.supervision_cost,
+
+                "work_start_old": purchase.work_start,
+                "date_order_date_old": purchase.date_order_date,
+                "contract_period_days_old": purchase.contract_period_days,
+
+                "contract_name_old": purchase.contract_name,
+                "contract_number_old": purchase.contract_number,
+            })
 
         default_section_ids = self.env.context.get("default_section_ids")
         if default_section_ids and isinstance(default_section_ids, list):
