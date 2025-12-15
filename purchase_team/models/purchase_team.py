@@ -40,13 +40,6 @@ class PurchaseTeam(models.Model):
         default=lambda self: self.env.company
     )
     
-    department_id = fields.Many2one(
-        'hr.department',
-        string='Department',
-        tracking=True,
-        help="This team will be auto-assigned for documents from this department"
-    )
-    
     user_id = fields.Many2one(
         'res.users',
         string='Team Leader',
@@ -68,26 +61,33 @@ class PurchaseTeam(models.Model):
         help='If True, users may belong to several purchase teams. Otherwise membership is limited to a single team.'
     )
     
-    filter_domain = fields.Char(
-        string='Apply On',
-        help="Additional filter domain for auto-assignment (e.g., amount, category)"
+    filter_domain_pr = fields.Char(
+        string='PR Filter Domain'
+    )
+
+    filter_domain_pa = fields.Char(
+        string='PA Filter Domain'
+    )
+
+    filter_domain_po = fields.Char(
+        string='PO Filter Domain'
     )
 
     assign_on_pr = fields.Boolean(
         string='Purchase Request (PR)',
-        default=True,
+        default=False,
         help='Auto-assign this team for Purchase Requests'
     )
     
     assign_on_pa = fields.Boolean(
         string='Purchase Approval (PA)',
-        default=True,
+        default=False,
         help='Auto-assign this team for Purchase Approvals'
     )
     
     assign_on_po = fields.Boolean(
         string='Purchase Order (PO)',
-        default=True,
+        default=False,
         help='Auto-assign this team for Purchase Orders'
     )
     
@@ -113,6 +113,19 @@ class PurchaseTeam(models.Model):
         help='Check if current user is member of this team'
     )
 
+    @api.depends('filter_domain_pr', 'filter_domain_pa', 'filter_domain_po',
+                 'assign_on_pr', 'assign_on_pa', 'assign_on_po')
+    def _compute_filter_domain_all_json(self):
+        for rec in self:
+            result = {}
+            if rec.assign_on_pr and rec.filter_domain_pr:
+                result['purchase.request'] = rec.filter_domain_pr
+            if rec.assign_on_pa and rec.filter_domain_pa:
+                result['purchase.request.approval'] = rec.filter_domain_pa
+            if rec.assign_on_po and rec.filter_domain_po:
+                result['purchase.order'] = rec.filter_domain_po
+            rec.filter_domain_all_json = str(result)
+
     @api.depends('member_ids', 'user_id')
     def _compute_is_member(self):
         """Check if current user is a member of this team"""
@@ -124,7 +137,7 @@ class PurchaseTeam(models.Model):
         """Check if multiple team membership is allowed"""
         # This could be configurable via system parameter
         multi = self.env['ir.config_parameter'].sudo().get_param(
-            'purchase_team.membership_multi', 
+            'purchase_team.membership_multi',
             default='True'
         )
         is_multi = multi == 'True'
@@ -197,52 +210,3 @@ class PurchaseTeam(models.Model):
         action['domain'] = [('team_id', '=', self.id)]
         action['context'] = {'default_team_id': self.id}
         return action
-
-    def assign_activity_to_team(self, record, summary=None):
-        """
-        Create activity for team leader or first member
-        
-        :param record: Record to attach activity to
-        :param summary: Activity summary (optional)
-        """
-        self.ensure_one()
-        
-        activity_type = self.env.ref('mail.mail_activity_data_todo', raise_if_not_found=False)
-        if not activity_type:
-            return False
-        
-        # Assign to team leader, or first member if no leader
-        user = self.user_id or (self.member_ids and self.member_ids[0])
-        if not user:
-            return False
-        
-        if not summary:
-            summary = _('New %(model)s from %(dept)s', 
-                       model=record._description,
-                       dept=record.department_id.name if hasattr(record, 'department_id') else '')
-        
-        return record.activity_schedule(
-            activity_type_id=activity_type.id,
-            user_id=user.id,
-            summary=summary
-        )
-
-    @api.model
-    def get_team_for_department(self, department_id, additional_domain=None):
-        """
-        Find appropriate team for a department
-        
-        :param department_id: Department ID
-        :param additional_domain: Additional domain for filtering
-        :return: purchase.team record or False
-        """
-        domain = [
-            ('department_id', '=', department_id),
-            ('active', '=', True),
-            ('company_id', 'in', [self.env.company.id, False])
-        ]
-        
-        if additional_domain:
-            domain.extend(additional_domain)
-        
-        return self.search(domain, limit=1)

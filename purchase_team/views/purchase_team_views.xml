@@ -9,7 +9,6 @@
             <tree string="Purchase Teams">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
-                <field name="department_id"/>
                 <field name="user_id" widget="many2one_avatar_user"/>
                 <field name="member_ids" widget="many2many_avatar_user"/>
                 <field name="pr_count"/>
@@ -57,7 +56,6 @@
                         <group>
                             <field name="user_id" widget="many2one_avatar_user" 
                                    options="{'no_create': True}"/>
-                            <field name="department_id"/>
                             <field name="company_id" groups="base.group_multi_company" 
                                    options="{'no_create': True}"/>
                         </group>
@@ -87,23 +85,24 @@
                                 <field name="assign_on_po"/>
                             </group>
                             
-                            <field name="filter_domain" 
-                                    widget="domain" 
-                                    options="{'model': 'purchase.request'}"
-                                    placeholder="e.g. [('amount_total', '>', 10000)]"
-                                    nolabel="1"/>
+                            <field name="filter_domain_pr"
+                                widget="domain"
+                                options="{'model': 'purchase.request'}"
+                                attrs="{'invisible': [('assign_on_pr', '=', False)]}"
+                                placeholder="e.g. [('amount_total', '>', 10000)]"/>
                             
-                            
-                            <!-- <div class="alert alert-info mt-3" role="alert">
-                                <p><strong>How Assignment Works:</strong></p>
-                                <ul>
-                                    <li><strong>Purchase Request (PR):</strong> When checked, this team will be assigned to PRs from the selected department</li>
-                                    <li><strong>Purchase Approval (PA):</strong> When checked, this team will be assigned to PAs from the selected department</li>
-                                    <li><strong>Purchase Order (PO):</strong> When checked, this team will be assigned to POs from the selected department</li>
-                                    <li>Optional: Add additional filters using the domain field for more specific assignment rules</li>
-                                    <li>When assigned, the team leader will receive an activity notification</li>
-                                </ul>
-                            </div> -->
+                            <field name="filter_domain_pa"
+                                widget="domain"
+                                options="{'model': 'purchase.request.approval'}"
+                                attrs="{'invisible': [('assign_on_pa', '=', False)]}"
+                                placeholder="e.g. [('approval_type','=','director')]"/>
+
+                            <field name="filter_domain_po"
+                                widget="domain"
+                                options="{'model': 'purchase.order'}"
+                                attrs="{'invisible': [('assign_on_po', '=', False)]}"
+                                placeholder="e.g. [('partner_id.country_id.code','=','TH')]"/>
+
                         </page>
                         <page string="Description" name="description">
                             <field name="description" placeholder="Team description and responsibilities..."/>

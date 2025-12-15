@@ -15,7 +15,7 @@ class PurchaseRequest(models.Model):
         string='Purchase Team',
         tracking=True,
         index=True,
-        domain="[('department_id', '=', department_id), ('assign_on_pr', '=', True)]",
+        domain="[('assign_on_pr', '=', True)]",
         help='Purchase team responsible for this request'
     )
 
