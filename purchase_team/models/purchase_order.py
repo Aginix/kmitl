@@ -19,17 +19,3 @@ class PurchaseOrder(models.Model):
         help='Purchase team responsible for this request'
     )
     
-    is_user_in_team = fields.Boolean(
-        string='Is User in Team',
-        compute='_compute_is_user_in_team',
-        store=False
-    )
-
-    @api.depends('team_id.member_ids', 'team_id.user_id')
-    def _compute_is_user_in_team(self):
-        current_user = self.env.user
-        for po in self:
-            po.is_user_in_team = (
-                current_user in (po.team_id.member_ids | po.team_id.user_id)
-                if po.team_id else False
-            )

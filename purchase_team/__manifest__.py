@@ -10,6 +10,7 @@
     'depends': ['purchase_request_department_operating_unit', 'purchase_order_department_operating_unit', 'purchase_request_approval'],
     "data": [
         "security/ir.model.access.csv",
+        "views/purchase_order_views.xml",
         "views/purchase_request_approval_views.xml",
         "views/purchase_request_views.xml",
         "views/purchase_team_views.xml"
