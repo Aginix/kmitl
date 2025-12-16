@@ -91,22 +91,6 @@ class PurchaseTeam(models.Model):
         help='Auto-assign this team for Purchase Orders'
     )
     
-    # Computed counts
-    pr_count = fields.Integer(
-        string='Purchase Requests',
-        compute='_compute_document_counts'
-    )
-    
-    # pa_count = fields.Integer(
-    #     string='Purchase Approvals',
-    #     compute='_compute_document_counts'
-    # )
-    
-    po_count = fields.Integer(
-        string='Purchase Orders',
-        compute='_compute_document_counts'
-    )
-    
     is_member = fields.Boolean(
         string='Is Team Member',
         compute='_compute_is_member',
@@ -144,30 +128,6 @@ class PurchaseTeam(models.Model):
         for team in self:
             team.is_membership_multi = is_multi
 
-    def _compute_document_counts(self):
-        """Compute count of PR, PA, PO for this team"""
-        for team in self:
-            # Purchase Request count
-            if 'purchase.request' in self.env:
-                team.pr_count = self.env['purchase.request'].search_count([
-                    ('team_id', '=', team.id)
-                ])
-            else:
-                team.pr_count = 0
-            
-            # Purchase Approval count  
-            # if 'purchase.request.approval' in self.env:
-            #     team.pa_count = self.env['purchase.request.approval'].search_count([
-            #         ('team_id', '=', team.id)
-            #     ])
-            # else:
-            #     team.pa_count = 0
-            
-            # Purchase Order count
-            team.po_count = self.env['purchase.order'].search_count([
-                ('team_id', '=', team.id)
-            ])
-
     @api.constrains('user_id', 'member_ids')
     def _check_leader_in_members(self):
         """Ensure team leader is in team members"""
@@ -196,7 +156,6 @@ class PurchaseTeam(models.Model):
                         ))
 
     def action_view_purchase_requests(self):
-        """View all purchase requests for this team"""
         self.ensure_one()
         action = self.env.ref('purchase.action_purchase_request').read()[0]
         action['domain'] = [('team_id', '=', self.id)]
@@ -204,7 +163,6 @@ class PurchaseTeam(models.Model):
         return action
 
     def action_view_purchase_orders(self):
-        """View all purchase orders for this team"""
         self.ensure_one()
         action = self.env.ref('purchase.purchase_rfq').read()[0]
         action['domain'] = [('team_id', '=', self.id)]

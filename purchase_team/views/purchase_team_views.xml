@@ -11,8 +11,6 @@
                 <field name="name"/>
                 <field name="user_id" widget="many2one_avatar_user"/>
                 <field name="member_ids" widget="many2many_avatar_user"/>
-                <field name="pr_count"/>
-                <field name="po_count"/>
                 <field name="company_id" groups="base.group_multi_company"/>
                 <field name="active" invisible="1"/>
             </tree>
@@ -26,22 +24,6 @@
         <field name="arch" type="xml">
             <form string="Purchase Team">
                 <sheet>
-                    <div class="oe_button_box" name="button_box">
-                        <button name="action_view_purchase_requests" 
-                                type="object" 
-                                class="oe_stat_button" 
-                                icon="fa-file-text-o"
-                                attrs="{'invisible': [('pr_count', '=', 0)]}">
-                            <field name="pr_count" widget="statinfo" string="PRs"/>
-                        </button>
-                        <button name="action_view_purchase_orders" 
-                                type="object" 
-                                class="oe_stat_button" 
-                                icon="fa-shopping-cart">
-                            <field name="po_count" widget="statinfo" string="POs"/>
-                        </button>
-                    </div>
-                    
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" 
                             attrs="{'invisible': [('active', '=', True)]}"/>
                     
