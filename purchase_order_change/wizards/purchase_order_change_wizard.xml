@@ -6,11 +6,10 @@
         <field name="arch" type="xml">
             <form string="Change Purchase Order">
                 <group>
-                    <!-- กลุ่ม 1: ค่าปรับ -->
                     <field name="show_fines_fields" invisible="1" />
                     <field name="show_work_fields" invisible="1" />
                     <field name="show_contract_fields" invisible="1" />
-                    <group>
+                    <group name="old_fines_field_group">
                         <field
                             name="fines_rate_old"
                             attrs="{'invisible': [('show_fines_fields', '=', False)]}"
@@ -19,7 +18,18 @@
                             name="supervision_cost_old"
                             attrs="{'invisible': [('show_fines_fields', '=', False)]}"
                         />
-
+                    </group>
+                    <group name="new_fines_field_group">
+                        <field
+                            name="fines_rate"
+                            attrs="{'invisible': [('show_fines_fields', '=', False)]}"
+                        />
+                        <field
+                            name="supervision_cost"
+                            attrs="{'invisible': [('show_fines_fields', '=', False)]}"
+                        />
+                    </group>
+                    <group name="old_work_field_group">
                         <field
                             name="date_order_date_old"
                             attrs="{'invisible': [('show_work_fields', '=', False)]}"
@@ -32,27 +42,8 @@
                             name="work_start_old"
                             attrs="{'invisible': [('show_work_fields', '=', False)]}"
                         />
-
-                        <field
-                            name="contract_name_old"
-                            attrs="{'invisible': [('show_contract_fields', '=', False)]}"
-                        />
-                        <field
-                            name="contract_number_old"
-                            attrs="{'invisible': [('show_contract_fields', '=', False)]}"
-                        />
                     </group>
-                    <group>
-                        <field
-                            name="fines_rate"
-                            attrs="{'invisible': [('show_fines_fields', '=', False)]}"
-                        />
-                        <field
-                            name="supervision_cost"
-                            attrs="{'invisible': [('show_fines_fields', '=', False)]}"
-                        />
-
-                        <!-- กลุ่ม 2: ขยายเวลา / ลดยอด -->
+                    <group name="new_work_field_group">
                         <field
                             name="date_order_date"
                             attrs="{'invisible': [('show_work_fields', '=', False)]}"
@@ -65,8 +56,18 @@
                             name="work_start"
                             attrs="{'invisible': [('show_work_fields', '=', False)]}"
                         />
-
-                        <!-- กลุ่ม 3: อื่นๆ -->
+                    </group>
+                    <group name="old_contract_field_group">
+                        <field
+                            name="contract_name_old"
+                            attrs="{'invisible': [('show_contract_fields', '=', False)]}"
+                        />
+                        <field
+                            name="contract_number_old"
+                            attrs="{'invisible': [('show_contract_fields', '=', False)]}"
+                        />
+                    </group>
+                    <group name="new_contract_field_group">
                         <field
                             name="contract_name"
                             attrs="{'invisible': [('show_contract_fields', '=', False)]}"
