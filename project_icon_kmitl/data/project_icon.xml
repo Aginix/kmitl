@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <data>
-        <record id="project.menu_main_pm" model="ir.ui.menu">
-            <field name="web_icon">project_icon_kmitl,static/description/logo.png</field>
-        </record>
-    </data>
-</odoo>
