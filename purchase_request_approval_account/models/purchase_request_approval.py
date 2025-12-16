@@ -45,7 +45,7 @@ class PurchaseRequestApproval(models.Model):
 
     purchase_count = fields.Integer(
         related="request_id.purchase_count",
-        store=True,
+        store=False,
     )
 
     def _get_record_url(self):
