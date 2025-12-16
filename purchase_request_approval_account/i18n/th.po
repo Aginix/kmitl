@@ -19,7 +19,7 @@ msgstr ""
 #: model:ir.model,name:purchase_request_approval_account.model_account_move_request
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval_account.view_purchase_request_approval_form
 msgid "Account Move Request"
-msgstr "คำขอเบิกจ่าย"
+msgstr "ใบขอเบิก"
 
 #. module: purchase_request_approval_account
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval_account.view_purchase_request_approval_search
