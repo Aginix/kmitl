@@ -9,6 +9,7 @@
     # missing PA ou
     'depends': ['purchase_request_department_operating_unit', 'purchase_order_department_operating_unit', 'purchase_request_approval'],
     "data": [
+        "data/purchase.team.csv",
         "security/ir.model.access.csv",
         "views/purchase_order_views.xml",
         "views/purchase_request_approval_views.xml",
