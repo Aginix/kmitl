@@ -23,6 +23,31 @@ class PurchaseOrderChange(models.Model):
         compute="_compute_has_change_fields",
         store=False
     )
+    allowed_section_ids = fields.Many2many(
+        comodel_name="purchase.change.section",
+        compute="_compute_allowed_sections",
+        store=False,
+    )
+
+    @api.depends("change_type")
+    def _compute_allowed_sections(self):
+        for rec in self:
+            if rec.change_type == "impact":
+                rec.allowed_section_ids = [
+                    self.env.ref("purchase_order_change.purchase_change_section_1").id,
+                    self.env.ref("purchase_order_change.purchase_change_section_2").id,
+                ]
+
+            elif rec.change_type == "none":
+                rec.allowed_section_ids = [
+                    self.env.ref("purchase_order_change.purchase_change_section_3").id,
+                ]
+            else:
+                rec.allowed_section_ids = [(5, 0, 0)]
+
+    @api.onchange("change_type")
+    def _onchange_change_type(self):
+        self.section_ids = [(5, 0, 0)]
 
     @api.depends("change_field_ids")
     def _compute_has_change_fields(self):
@@ -99,6 +124,8 @@ class PurchaseOrderChange(models.Model):
             "default_late_days": self.purchase_id.late_days,
             "default_supervision_cost": self.purchase_id.supervision_cost,
             "default_section_ids": [(6, 0, self.section_ids.ids)],
+            "default_contract_name": self.purchase_id.contract_name,
+            "default_contract_number": self.purchase_id.contract_number,
         }
 
         if extra_context:
@@ -114,19 +141,4 @@ class PurchaseOrderChange(models.Model):
             "view_mode": "form",
             "target": "new",
             "context": self._prepare_wizard_context(),
-        }
-
-    def action_next_other(self):
-        extra_context = {
-            "default_contract_name": self.purchase_id.contract_name,
-            "default_contract_number": self.purchase_id.contract_number,
-        }
-
-        return {
-            "name": "Change Purchase Order",
-            "type": "ir.actions.act_window",
-            "res_model": "purchase.order.change.wizard",
-            "view_mode": "form",
-            "target": "new",
-            "context": self._prepare_wizard_context(extra_context),
         }

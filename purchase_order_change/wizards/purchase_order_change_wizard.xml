@@ -84,14 +84,6 @@
                         name="action_save_changes"
                         type="object"
                         class="btn-primary"
-                        attrs="{'invisible': [('show_contract_fields', '=', True)]}"
-                    />
-                    <button
-                        string="Save"
-                        name="action_save_changes_other"
-                        type="object"
-                        class="btn-primary"
-                        attrs="{'invisible': [('show_contract_fields', '=', False)]}"
                     />
                     <button string="Cancel" special="cancel" />
                 </footer>

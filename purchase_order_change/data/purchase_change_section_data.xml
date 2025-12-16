@@ -13,5 +13,13 @@
             <field name="section_type">deletion</field>
             <field name="active">True</field>
         </record>
+
+        <record id="purchase_change_section_3" model="purchase.change.section">
+            <field name="name"
+                >อื่นๆ</field
+            >
+            <field name="section_type">deletion</field>
+            <field name="active">True</field>
+        </record>
     </data>
 </odoo>

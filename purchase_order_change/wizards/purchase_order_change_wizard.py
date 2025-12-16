@@ -67,7 +67,7 @@ class PurchaseOrderChangeWizard(models.TransientModel):
 
         vals["show_fines_fields"] = "purchase_change_section_1" in xml_id_list
         vals["show_work_fields"] = "purchase_change_section_2" in xml_id_list
-        vals["show_contract_fields"] = bool(not ids)
+        vals["show_contract_fields"] = "purchase_change_section_3" in xml_id_list
 
         return vals
 
@@ -126,11 +126,6 @@ class PurchaseOrderChangeWizard(models.TransientModel):
             "work_start": "วันที่เริ่มงาน",
             "date_order_date": "วันที่ลงนามสัญญา",
             "contract_period_days": "กำหนดวันส่งมอบภายใน",
-        }
-        return self._save_changes(track_fields)
-
-    def action_save_changes_other(self):
-        track_fields = {
             "contract_name": "ชื่อสัญญา",
             "contract_number": "เลขที่สัญญา",
         }

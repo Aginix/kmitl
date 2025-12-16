@@ -15,12 +15,6 @@
                             class="oe_highlight me-2"
                             name="action_open_purchase_order_change"
                         />
-                        <button
-                            string="แก้ไขสัญญารายละเอียดอื่นๆ"
-                            type="object"
-                            class="oe_highlight"
-                            name="action_other"
-                        />
                     </div>
                 </page>
             </xpath>
