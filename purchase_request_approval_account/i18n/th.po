@@ -96,7 +96,7 @@ msgstr "คำสั่งซื้อ/จ้าง"
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval_account.view_account_move_request_form
 #, python-format
 msgid "Purchase Request Approval"
-msgstr "รายงานขอซื้อ/จ้าง (พจ.1)"
+msgstr "พจ.1"
 
 #. module: purchase_request_approval_account
 #: model:ir.model,name:purchase_request_approval_account.model_purchase_request_line

@@ -17,16 +17,17 @@
         "portal",
     ],
     "data": [
-        "data/purchase_request_approval_sequence.xml",
         "data/activity.xml",
+        "data/purchase_request_approval_sequence.xml",
         "security/ir.model.access.csv",
         "security/purchase_request_approval.xml",
-        "report/paperformat.xml",
         "views/portal_templates.xml",
+        "views/purchase_order_views.xml",
         "views/purchase_request_approval_report.xml",
         "views/purchase_request_approval_views.xml",
         "views/purchase_request_views.xml",
-        "report/report_purchase_request_approval.xml",
+        "report/paperformat.xml",
+        "report/report_purchase_request_approval.xml"
     ],
     "assets": {
         "web.assets_backend": ["purchase_request_approval/static/src/**/*"],
