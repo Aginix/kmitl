@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
   <odoo>
-      
+
     <!-- View account.asset form -->
     <record id="view_account_asset_form" model="ir.ui.view">
         <field name="name">view.account.asset.form</field>
@@ -9,6 +9,7 @@
         <field name="arch" type="xml">
             <xpath expr="//tree/field[last()]" position="after">
                 <field name="batch_id" optional="hide"/>
+                <field name="purchase_value" optional="show"/>
             </xpath>
         </field>
     </record>
