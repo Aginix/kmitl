@@ -25,7 +25,7 @@ class PurchaseOrder(models.Model):
             "type": "ir.actions.act_window",
             "name": "Purchase Request Approvals",
             "res_model": "purchase.request.approval",
-            "view_mode": "tree,form",
+            "view_mode": "form",
             "domain": [("request_id", "=", self.request_id.id)],
             "context": {
                 "default_request_id": self.request_id.id,
