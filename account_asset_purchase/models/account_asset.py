@@ -30,12 +30,12 @@ class AccountAsset(models.Model):
         tracking=True,
     )
 
-    @api.depends("purchase_id.line_ids.price_unit")
+    @api.depends("purchase_id.order_line.price_unit")
     def _compute_purchase_value(self):
         for rec in self:
             purchase = rec.purchase_id
-            if purchase and purchase.line_ids:
-                first_line = purchase.line_ids[0]
+            if purchase and purchase.order_line:
+                first_line = purchase.order_line[0]
                 rec.purchase_value = first_line.price_unit
             else:
                 rec.purchase_value = 0.0
