@@ -7,7 +7,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     # missing PA ou
-    'depends': ['purchase_request_department_operating_unit', 'purchase_order_department_operating_unit', 'purchase_request_approval'],
+    'depends': ['purchase_request_department_operating_unit', 'purchase_order_department_operating_unit', 'purchase_request_approval', 'purchase_request_security'],
     "data": [
         "security/ir.model.access.csv",
         "data/purchase.team.csv",
