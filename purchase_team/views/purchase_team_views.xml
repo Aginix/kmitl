@@ -100,6 +100,19 @@
         </field>
     </record>
 
+    <record id="view_purchase_team_search" model="ir.ui.view">
+        <field name="name">purchase.team.search</field>
+        <field name="model">purchase.team</field>
+        <field name="arch" type="xml">
+            <search string="Search Purchase Teams">
+                <field name="name"/>
+                <filter string="PR Teams" name="assign_on_pr" domain="[('assign_on_pr', '=', True)]"/>
+                <filter string="PA Teams" name="assign_on_pa" domain="[('assign_on_pa', '=', True)]"/>
+                <filter string="PO Teams" name="assign_on_po" domain="[('assign_on_po', '=', True)]"/>
+            </search>
+        </field>
+    </record>
+
     <!-- Action purchase.team -->
     <record id="action_purchase_team" model="ir.actions.act_window">
         <field name="name">Purchase Team</field>
