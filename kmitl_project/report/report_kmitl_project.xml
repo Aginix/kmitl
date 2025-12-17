@@ -49,9 +49,8 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-8">
+                            <div class="col-12">
                                 <b>1. ชื่อโครงการ : </b>
-                                <span t-field="o.name" />
                             </div>
                         </div>
 
