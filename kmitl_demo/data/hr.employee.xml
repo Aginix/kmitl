@@ -9,6 +9,7 @@
             <field name="job_title">คณบดี</field>
             <field name="work_email">somchai.v@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8000</field>
+            <field name="user_id" ref="user_demo_001" />
         </record>
 
         <!-- Employee 2 - Vice Dean Academic -->
@@ -19,6 +20,7 @@
             <field name="job_title">รองคณบดีฝ่ายวิชาการ</field>
             <field name="work_email">supaporn.j@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8001</field>
+            <field name="user_id" ref="user_demo_002" />
         </record>
 
         <!-- Employee 3 - Vice Dean Administration -->
@@ -29,6 +31,7 @@
             <field name="job_title">รองคณบดีฝ่ายบริหาร</field>
             <field name="work_email">wichai.k@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8002</field>
+            <field name="user_id" ref="user_demo_003" />
         </record>
 
         <!-- Employee 4 - Vice Dean Research -->
@@ -39,6 +42,7 @@
             <field name="job_title">รองคณบดีฝ่ายวิจัย</field>
             <field name="work_email">prateep.n@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8003</field>
+            <field name="user_id" ref="user_demo_004" />
         </record>
 
         <!-- Employee 5 - Professor -->
@@ -49,6 +53,7 @@
             <field name="job_title">ศาสตราจารย์</field>
             <field name="work_email">thanakorn.t@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8010</field>
+            <field name="user_id" ref="user_demo_005" />
         </record>
 
         <!-- Employee 6 - Professor -->
@@ -59,6 +64,7 @@
             <field name="job_title">ศาสตราจารย์</field>
             <field name="work_email">malee.w@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8011</field>
+            <field name="user_id" ref="user_demo_006" />
         </record>
 
         <!-- Employee 7 - Associate Professor -->
@@ -69,6 +75,7 @@
             <field name="job_title">รองศาสตราจารย์</field>
             <field name="work_email">surachai.n@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8012</field>
+            <field name="user_id" ref="user_demo_007" />
         </record>
 
         <!-- Employee 8 - Associate Professor -->
@@ -79,6 +86,7 @@
             <field name="job_title">รองศาสตราจารย์</field>
             <field name="work_email">wanna.p@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8013</field>
+            <field name="user_id" ref="user_demo_008" />
         </record>
 
         <!-- Employee 9 - Assistant Professor -->
@@ -89,6 +97,7 @@
             <field name="job_title">ผู้ช่วยศาสตราจารย์</field>
             <field name="work_email">chaiwat.p@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8014</field>
+            <field name="user_id" ref="user_demo_009" />
         </record>
 
         <!-- Employee 10 - Assistant Professor -->
@@ -99,6 +108,7 @@
             <field name="job_title">ผู้ช่วยศาสตราจารย์</field>
             <field name="work_email">napaporn.s@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8015</field>
+            <field name="user_id" ref="user_demo_010" />
         </record>
 
         <!-- Employee 11 - Lecturer -->
@@ -109,6 +119,7 @@
             <field name="job_title">อาจารย์</field>
             <field name="work_email">pichai.k@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8020</field>
+            <field name="user_id" ref="user_demo_011" />
         </record>
 
         <!-- Employee 12 - Lecturer -->
@@ -119,6 +130,7 @@
             <field name="job_title">อาจารย์</field>
             <field name="work_email">chanida.c@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8021</field>
+            <field name="user_id" ref="user_demo_012" />
         </record>
 
         <!-- Employee 13 - Lecturer -->
@@ -129,6 +141,7 @@
             <field name="job_title">อาจารย์</field>
             <field name="work_email">kittipong.m@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8022</field>
+            <field name="user_id" ref="user_demo_013" />
         </record>
 
         <!-- Employee 14 - Lecturer -->
@@ -139,6 +152,7 @@
             <field name="job_title">อาจารย์</field>
             <field name="work_email">thanya.k@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8023</field>
+            <field name="user_id" ref="user_demo_014" />
         </record>
 
         <!-- Employee 15 - Lecturer -->
@@ -149,6 +163,7 @@
             <field name="job_title">อาจารย์</field>
             <field name="work_email">siripong.c@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8024</field>
+            <field name="user_id" ref="user_demo_015" />
         </record>
 
         <!-- Employee 16 - Staff Academic Support -->
@@ -159,6 +174,7 @@
             <field name="job_title">เจ้าหน้าที่ฝ่ายวิชาการ</field>
             <field name="work_email">arunee.b@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8030</field>
+            <field name="user_id" ref="user_demo_016" />
         </record>
 
         <!-- Employee 17 - Staff Financial -->
@@ -169,6 +185,7 @@
             <field name="job_title">เจ้าหน้าที่การเงิน</field>
             <field name="work_email">prasit.b@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8031</field>
+            <field name="user_id" ref="user_demo_017" />
         </record>
 
         <!-- Employee 18 - Staff HR -->
@@ -179,6 +196,7 @@
             <field name="job_title">เจ้าหน้าที่บุคคล</field>
             <field name="work_email">sudarat.s@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8032</field>
+            <field name="user_id" ref="user_demo_018" />
         </record>
 
         <!-- Employee 19 - Staff General -->
@@ -189,6 +207,7 @@
             <field name="job_title">เจ้าหน้าที่บริหารงานทั่วไป</field>
             <field name="work_email">weerachai.t@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8033</field>
+            <field name="user_id" ref="user_demo_019" />
         </record>
 
         <!-- Employee 20 - Staff IT Support -->
@@ -199,6 +218,7 @@
             <field name="job_title">เจ้าหน้าที่เทคโนโลยีสารสนเทศ</field>
             <field name="work_email">piyanuch.t@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8034</field>
+            <field name="user_id" ref="user_demo_020" />
         </record>
     </data>
 </odoo>
