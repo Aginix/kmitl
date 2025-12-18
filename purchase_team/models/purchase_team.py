@@ -155,16 +155,3 @@ class PurchaseTeam(models.Model):
                             team=other_teams[0].name
                         ))
 
-    def action_view_purchase_requests(self):
-        self.ensure_one()
-        action = self.env.ref('purchase.action_purchase_request').read()[0]
-        action['domain'] = [('team_id', '=', self.id)]
-        action['context'] = {'default_team_id': self.id}
-        return action
-
-    def action_view_purchase_orders(self):
-        self.ensure_one()
-        action = self.env.ref('purchase.purchase_rfq').read()[0]
-        action['domain'] = [('team_id', '=', self.id)]
-        action['context'] = {'default_team_id': self.id}
-        return action

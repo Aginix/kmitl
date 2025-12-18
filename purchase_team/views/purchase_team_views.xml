@@ -44,7 +44,7 @@
                         <group>
                             <field name="active"/>
                             <field name="sequence"/>
-                            <field name="is_membership_multi" invisible="1"/>
+                            <field name="is_membership_multi" invisible="0"/>
                         </group>
                     </group>
 
