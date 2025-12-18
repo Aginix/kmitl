@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-02 10:03+0000\n"
-"PO-Revision-Date: 2025-12-02 10:03+0000\n"
+"POT-Creation-Date: 2025-12-18 07:50+0000\n"
+"PO-Revision-Date: 2025-12-18 07:50+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -34,17 +34,13 @@ msgid ""
 "Billing %(mr_name)s for %(pa_name)s created successfully, waiting for "
 "operation."
 msgstr ""
-"สร้างใบขอเบิกเลขที่ %(mr_name)s สำหรับรายงานขอซื้อขอจ้างเลขที่ %(pa_name)s แล้ว อยู่ระหว่างรอดำเนินการ"
+"สร้างใบขอเบิกเลขที่ %(mr_name)s สำหรับรายงานขอซื้อขอจ้างเลขที่ %(pa_name)s "
+"แล้ว อยู่ระหว่างรอดำเนินการ"
 
 #. module: purchase_request_approval_account
 #: model:ir.model.fields,field_description:purchase_request_approval_account.field_purchase_request_approval__billing_status
 msgid "Billing Status"
 msgstr "สถานะเบิกจ่าย"
-
-#. module: purchase_request_approval_account
-#: model:ir.model.fields,field_description:purchase_request_approval_account.field_purchase_request_approval__is_move_request_allowed
-msgid "Can Create Move Request"
-msgstr "สามารถสร้างใบเบิกจ่ายได้"
 
 #. module: purchase_request_approval_account
 #: model:ir.model.fields.selection,name:purchase_request_approval_account.selection__purchase_request_approval__billing_status__cancel
@@ -84,6 +80,11 @@ msgid "No Purchase Request Approval linked to this request."
 msgstr ""
 
 #. module: purchase_request_approval_account
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval_account.view_account_move_request_form
+msgid "PA"
+msgstr "พจ.1"
+
+#. module: purchase_request_approval_account
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval_account.view_purchase_request_approval_form
 msgid "Purchase Orders"
 msgstr "คำสั่งซื้อ/จ้าง"
@@ -93,10 +94,9 @@ msgstr "คำสั่งซื้อ/จ้าง"
 #: code:addons/purchase_request_approval_account/models/account_move_request.py:0
 #: model:ir.model,name:purchase_request_approval_account.model_purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval_account.field_account_move_request__purchase_request_approval_id
-#: model_terms:ir.ui.view,arch_db:purchase_request_approval_account.view_account_move_request_form
 #, python-format
 msgid "Purchase Request Approval"
-msgstr "พจ.1"
+msgstr "รายงานขอซื้อ/จ้าง (พจ.1)"
 
 #. module: purchase_request_approval_account
 #: model:ir.model,name:purchase_request_approval_account.model_purchase_request_line
@@ -120,9 +120,8 @@ msgstr "ยืนยันแล้ว"
 msgid ""
 "This record has been created from: <a href=\"%(link)s\" "
 "target=\"_blank\">%(name)s</a>"
-msgstr ""
-"เอกสารนี้ถูกสร้างจาก : <a href=\"%(link)s\" "
-"target=\"_blank\">%(name)s</a>"
+msgstr "เอกสารนี้ถูกสร้างจาก : <a href=\"%(link)s\" target=\"_blank\">%(name)s</a>"
+
 #. module: purchase_request_approval_account
 #: model:ir.model.fields,field_description:purchase_request_approval_account.field_purchase_request_approval__move_request_total
 msgid "Total Move Request"
