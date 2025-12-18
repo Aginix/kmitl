@@ -19,3 +19,14 @@ class PurchaseOrder(models.Model):
         help='Purchase team responsible for this request'
     )
     
+    @api.model
+    def create(self, vals):
+        rec = super().create(vals)
+
+        if rec.team_id:
+            rec.team_id.assign_activity_to_team(
+                rec,
+                summary=_('Purchase Order %(name)s created', name=rec.name)
+            )
+        
+        return rec

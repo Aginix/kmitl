@@ -155,3 +155,29 @@ class PurchaseTeam(models.Model):
                             team=other_teams[0].name
                         ))
 
+    def assign_activity_to_team(self, record, summary=None):
+        self.ensure_one()
+        
+        activity_type = self.env.ref('mail.mail_activity_data_todo', raise_if_not_found=False)
+        if not activity_type:
+            return False
+        
+        users = self.member_ids
+        if not users:
+            return False
+        
+        if not summary:
+            summary = _('New %(model)s from %(dept)s', 
+                       model=record._description,
+                       dept=record.department_id.name if hasattr(record, 'department_id') else '')
+        
+        activities = self.env['mail.activity']
+        for user in users:
+            activity = record.activity_schedule(
+                activity_type_id=activity_type.id,
+                user_id=user.id,
+                summary=summary
+            )
+            activities |= activity
+        
+        return activities

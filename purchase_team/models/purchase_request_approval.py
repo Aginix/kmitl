@@ -18,3 +18,15 @@ class PurchaseRequestApproval(models.Model):
         domain="[('assign_on_pa', '=', True)]",
         help='Purchase team responsible for this request'
     )
+
+    @api.model
+    def create(self, vals):
+        rec = super().create(vals)
+        
+        if rec.team_id:
+            rec.team_id.assign_activity_to_team(
+                rec,
+                summary=_('Purchase Approval %(name)s needs review', name=rec.name)
+            )
+        
+        return rec
