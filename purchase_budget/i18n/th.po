@@ -53,7 +53,7 @@ msgstr "รหัสงบประมาณ"
 #. module: purchase_budget
 #: model:ir.model.fields,field_description:purchase_budget.field_purchase_order__budget_commitment_id
 msgid "Budget Commitment"
-msgstr "การจองงบประมาณ"
+msgstr "งบประมาณ"
 
 #. module: purchase_budget
 #: model:ir.model.fields,help:purchase_budget.field_purchase_order__budget_account_id
