@@ -14,8 +14,8 @@
                     name="action_view_purchase_approval"
                     type="object"
                     class="oe_stat_button"
-                    icon="fa-paperclip"
-                    string="Purchase Request Approval"
+                    icon="fa-file-contract"
+                    string="PA"
                     attrs="{'invisible': [('purchase_request_approval_id', '=', False)]}"
                 ></button>
             </xpath>
