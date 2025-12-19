@@ -3,8 +3,9 @@
 import {Component, onMounted, useRef, useState} from "@odoo/owl";
 
 import {CharField} from "@web/views/fields/char/char_field";
-import { isValidAnchor } from "web.utils";
+import {isValidAnchor} from "web.utils";
 import {registry} from "@web/core/registry";
+import {standardFieldProps} from "@web/views/fields/standard_field_props";
 
 class IFrameViewerWidget extends CharField {
     setup() {
@@ -24,6 +25,42 @@ class IFrameViewerWidget extends CharField {
     onIframeLoad() {
         this.state.loading = false;
         this.state.error = false;
+
+        if (!this.props.resize) {
+            return;
+        }
+
+        var $el = $(`iframe#${this.name}`);
+        var updateIframeSize = this._updateIframeSize.bind(this, $el);
+
+        $(window).on("resize", updateIframeSize);
+
+        var iframeDoc = $el[0].contentDocument || $el[0].contentWindow.document;
+        if (iframeDoc.readyState === "complete") {
+            updateIframeSize();
+        } else {
+            $el.on("load", updateIframeSize);
+        }
+    }
+
+    _updateIframeSize($el) {
+        var $wrapwrap = $el.contents().find("div#wrapwrap");
+        // Set it to 0 first to handle the case where scrollHeight is too big for its content.
+
+        if (!$wrapwrap[0]) return;
+
+        $el.height(0);
+        $el.height($wrapwrap[0].scrollHeight);
+
+        // scroll to the right place after iframe resize
+        if (!isValidAnchor(window.location.hash)) {
+            return;
+        }
+        var $target = $(window.location.hash);
+        if (!$target.length) {
+            return;
+        }
+        dom.scrollTo($target[0], {duration: 0});
     }
 
     onIframeError() {
@@ -45,7 +82,15 @@ class IFrameViewerWidget extends CharField {
 
 IFrameViewerWidget.template = "iframe_widget.IFrameViewerWidget";
 IFrameViewerWidget.components = {};
-
+IFrameViewerWidget.props = {
+    ...standardFieldProps,
+    resize: {type: Boolean, optional: true},
+};
+IFrameViewerWidget.extractProps = ({attrs}) => {
+    return {
+        resize: attrs.options.resize ?? true,
+    };
+};
 registry.category("fields").add("iframe_viewer", IFrameViewerWidget);
 
 // Template definition
