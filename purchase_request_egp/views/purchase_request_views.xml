@@ -17,7 +17,7 @@
                         <field name="egp_project_url" widget="url" />
                     </group>
                     <div attrs="{'invisible': [('egp_project_url', '=', False)]}">
-                        <field name="egp_project_url" widget="iframe_viewer" options="{'resize': false}" />
+                        <field name="egp_project_url" widget="iframe_viewer" options="{'auto_height': false}" />
                     </div>
                 </page>
             </xpath>

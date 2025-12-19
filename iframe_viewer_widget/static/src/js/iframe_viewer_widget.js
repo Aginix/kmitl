@@ -26,7 +26,7 @@ class IFrameViewerWidget extends CharField {
         this.state.loading = false;
         this.state.error = false;
 
-        if (!this.props.resize) {
+        if (!this.props.autoHeight) {
             return;
         }
 
@@ -84,11 +84,11 @@ IFrameViewerWidget.template = "iframe_widget.IFrameViewerWidget";
 IFrameViewerWidget.components = {};
 IFrameViewerWidget.props = {
     ...standardFieldProps,
-    resize: {type: Boolean, optional: true},
+    autoHeight: {type: Boolean, optional: true},
 };
 IFrameViewerWidget.extractProps = ({attrs}) => {
     return {
-        resize: attrs.options.resize ?? true,
+        autoHeight: attrs.options.auto_height ?? true,
     };
 };
 registry.category("fields").add("iframe_viewer", IFrameViewerWidget);
