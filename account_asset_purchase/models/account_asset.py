@@ -23,14 +23,3 @@ class AccountAsset(models.Model):
         readonly=True,
         tracking=True,
     )
-    purchase_value = fields.Float(
-        string="Purchase Value",
-        compute="_compute_purchase_value",
-        store=True,
-        tracking=True,
-    )
-
-    @api.depends("batch_line_id", "batch_line_id.price_per_unit")
-    def _compute_purchase_value(self):
-        for asset in self:
-            asset.purchase_value = asset.batch_line_id.price_per_unit or 0.0
