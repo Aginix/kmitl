@@ -5,6 +5,7 @@
 # 	* account_asset_number
 # 	* account_asset_management
 # 	* l10n_th_account_asset_management
+# 	* account_asset_operating_unit
 #
 msgid ""
 msgstr ""
@@ -1449,7 +1450,7 @@ msgstr ""
 #. module: l10n_th_gov_account_asset_management
 #: model:ir.model.fields,field_description:l10n_th_gov_account_asset_management.field_account_asset__purchase_id
 msgid "Purchase Order"
-msgstr ""
+msgstr "อ้างอิงสัญญา/ใบสั่งซื้อ/จ้าง"
 
 #. module: l10n_th_gov_account_asset_management
 #: model:ir.model,name:l10n_th_gov_account_asset_management.model_purchase_order_line
