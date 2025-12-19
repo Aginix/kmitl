@@ -28,5 +28,5 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         data = super()._prepare_purchase_order(picking_type, group_id, company, origin)
         purchase_request = self.item_ids.mapped('request_id')
         if purchase_request.is_egp:
-            data["state"] = "purchase"
+            data["state"] = "draft"
         return data

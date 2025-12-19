@@ -10,6 +10,7 @@ _logger = logging.getLogger(__name__)
 class AccountAssetSubcomponent(models.Model):
     _name = 'account.asset.subcomponent'
     _description = 'AccountAssetSubcomponent'
+    _inherit = ["mail.thread", "mail.activity.mixin"]
 
     sequence = fields.Integer(
         default=lambda self: self._default_sequence()

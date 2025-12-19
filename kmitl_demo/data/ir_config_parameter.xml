@@ -12,4 +12,9 @@
         name="set_param"
         eval="('auth_signup.reset_password', 'False')"
     />
+    <!-- เปิดให้จองงบติดลบได้ -->
+    <record id="demo_budget_allow_negative" model="ir.config_parameter">
+        <field name="key">budget.allow_negative</field>
+        <field name="value" eval="True" />
+    </record>
 </odoo>
