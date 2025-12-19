@@ -3,8 +3,9 @@
 import {Component, onMounted, useRef, useState} from "@odoo/owl";
 
 import {CharField} from "@web/views/fields/char/char_field";
-import { isValidAnchor } from "web.utils";
+import {isValidAnchor} from "web.utils";
 import {registry} from "@web/core/registry";
+import {standardFieldProps} from "@web/views/fields/standard_field_props";
 
 class IFrameViewerWidget extends CharField {
     setup() {
@@ -24,6 +25,10 @@ class IFrameViewerWidget extends CharField {
     onIframeLoad() {
         this.state.loading = false;
         this.state.error = false;
+
+        if (!this.props.autoHeight) {
+            return;
+        }
 
         var $el = $(`iframe#${this.name}`);
         var updateIframeSize = this._updateIframeSize.bind(this, $el);
@@ -77,7 +82,15 @@ class IFrameViewerWidget extends CharField {
 
 IFrameViewerWidget.template = "iframe_widget.IFrameViewerWidget";
 IFrameViewerWidget.components = {};
-
+IFrameViewerWidget.props = {
+    ...standardFieldProps,
+    autoHeight: {type: Boolean, optional: true},
+};
+IFrameViewerWidget.extractProps = ({attrs}) => {
+    return {
+        autoHeight: attrs.options.auto_height ?? true,
+    };
+};
 registry.category("fields").add("iframe_viewer", IFrameViewerWidget);
 
 // Template definition
