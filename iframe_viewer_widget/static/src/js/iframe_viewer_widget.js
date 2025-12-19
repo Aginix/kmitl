@@ -24,38 +24,6 @@ class IFrameViewerWidget extends CharField {
     onIframeLoad() {
         this.state.loading = false;
         this.state.error = false;
-
-        var $el = $(`iframe#${this.name}`);
-        var updateIframeSize = this._updateIframeSize.bind(this, $el);
-
-        $(window).on("resize", updateIframeSize);
-
-        var iframeDoc = $el[0].contentDocument || $el[0].contentWindow.document;
-        if (iframeDoc.readyState === "complete") {
-            updateIframeSize();
-        } else {
-            $el.on("load", updateIframeSize);
-        }
-    }
-
-    _updateIframeSize($el) {
-        var $wrapwrap = $el.contents().find("div#wrapwrap");
-        // Set it to 0 first to handle the case where scrollHeight is too big for its content.
-
-        if (!$wrapwrap[0]) return;
-
-        $el.height(0);
-        $el.height($wrapwrap[0].scrollHeight);
-
-        // scroll to the right place after iframe resize
-        if (!isValidAnchor(window.location.hash)) {
-            return;
-        }
-        var $target = $(window.location.hash);
-        if (!$target.length) {
-            return;
-        }
-        dom.scrollTo($target[0], {duration: 0});
     }
 
     onIframeError() {
