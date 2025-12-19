@@ -208,7 +208,7 @@ msgstr ""
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_form
 msgid "Create Purchase Order"
-msgstr "สร้างคำสั่งซื้อ/จ้าง"
+msgstr "สร้างสัญญา/ใบสั่งซื้อ/จ้าง"
 
 #. module: purchase_request_approval
 #: model:mail.activity.type,summary:purchase_request_approval.mail_activity_awaiting_approval_creation
