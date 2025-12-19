@@ -30,3 +30,19 @@ class PurchaseRequestApproval(models.Model):
             )
         
         return rec
+
+    def write(self, vals):
+        for rec in self:
+            old_team = rec.team_id
+            res = super().write(vals)
+
+            new_team = rec.team_id
+            if 'team_id' in vals and new_team != old_team:
+                rec.activity_ids.filtered(lambda a: a.res_model == rec._name and a.res_id == rec.id).unlink()
+                
+                if new_team:
+                    new_team.assign_activity_to_team(
+                        rec,
+                        summary=_('Purchase Approval %(name)s needs review', name=rec.name)
+                    )
+        return res
