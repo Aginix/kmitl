@@ -44,7 +44,6 @@ class PurchaseTeam(models.Model):
         'res.users',
         string='Team Leader',
         tracking=True,
-        domain="[('id', 'in', member_ids)]"
     )
     
     member_ids = fields.Many2many(
