@@ -19,14 +19,30 @@ class PurchaseRequest(models.Model):
         help='Purchase team responsible for this request'
     )
 
-    def button_to_approve(self):
-        res = super().button_to_approve()
+    @api.model
+    def create(self, vals):
+        rec = super().create(vals)
         
+        if rec.team_id:
+            rec.team_id.assign_activity_to_team(
+                rec,
+                summary=_('Purchase Request %(name)s needs review', name=rec.name)
+            )
+        
+        return rec
+
+    def write(self, vals):
         for rec in self:
-            if rec.team_id:
-                rec.team_id.assign_activity_to_team(
-                    rec,
-                    summary=_('Purchase Request %(name)s ready for approval', name=rec.name)
-                )
-        
+            old_team = rec.team_id
+            res = super().write(vals)
+
+            new_team = rec.team_id
+            if 'team_id' in vals and new_team != old_team:
+                rec.activity_ids.filtered(lambda a: a.res_model == rec._name and a.res_id == rec.id).unlink()
+                
+                if new_team:
+                    new_team.assign_activity_to_team(
+                        rec,
+                        summary=_('Purchase Request %(name)s needs review', name=rec.name)
+                    )
         return res

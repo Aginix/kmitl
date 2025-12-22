@@ -91,11 +91,6 @@ class PurchaseTeam(models.Model):
         help='Auto-assign this team for Purchase Orders'
     )
     
-    is_member = fields.Boolean(
-        string='Is Team Member',
-        compute='_compute_is_member',
-        help='Check if current user is member of this team'
-    )
 
     @api.depends('filter_domain_pr', 'filter_domain_pa', 'filter_domain_po',
                  'assign_on_pr', 'assign_on_pa', 'assign_on_po')
@@ -110,13 +105,6 @@ class PurchaseTeam(models.Model):
                 result['purchase.order'] = rec.filter_domain_po
             rec.filter_domain_all_json = str(result)
 
-    @api.depends('member_ids', 'user_id')
-    def _compute_is_member(self):
-        """Check if current user is a member of this team"""
-        current_user = self.env.user
-        for team in self:
-            team.is_member = current_user in (team.member_ids | team.user_id)
-
     def _compute_is_membership_multi(self):
         """Check if multiple team membership is allowed"""
         # This could be configurable via system parameter
@@ -127,6 +115,13 @@ class PurchaseTeam(models.Model):
         is_multi = multi == 'True'
         for team in self:
             team.is_membership_multi = is_multi
+
+    @api.onchange('user_id')
+    def _onchange_user_id_add_to_members(self):
+        for team in self:
+            if team.user_id:
+                if team.user_id not in team.member_ids:
+                    team.member_ids = [(4, team.user_id.id)]
 
     @api.constrains('user_id', 'member_ids')
     def _check_leader_in_members(self):
