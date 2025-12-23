@@ -5,7 +5,6 @@
         <field name="login">somchai.v@kmitl.ac.th</field>
         <field name="email">somchai.v@kmitl.ac.th</field>
         <field name="password">123456</field>
-        <field name="employee_id" ref="employee_demo_001" />
         <field
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_manager')])]"
@@ -18,7 +17,6 @@
         <field name="login">supaporn.j@kmitl.ac.th</field>
         <field name="email">supaporn.j@kmitl.ac.th</field>
         <field name="password">123456</field>
-        <field name="employee_id" ref="employee_demo_002" />
         <field
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_manager')])]"
@@ -31,7 +29,6 @@
         <field name="login">wichai.k@kmitl.ac.th</field>
         <field name="email">wichai.k@kmitl.ac.th</field>
         <field name="password">123456</field>
-        <field name="employee_id" ref="employee_demo_003" />
         <field
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_manager')])]"
@@ -44,7 +41,6 @@
         <field name="login">prateep.n@kmitl.ac.th</field>
         <field name="email">prateep.n@kmitl.ac.th</field>
         <field name="password">123456</field>
-        <field name="employee_id" ref="employee_demo_004" />
         <field
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_manager')])]"
@@ -57,7 +53,6 @@
         <field name="login">thanakorn.t@kmitl.ac.th</field>
         <field name="email">thanakorn.t@kmitl.ac.th</field>
         <field name="password">123456</field>
-        <field name="employee_id" ref="employee_demo_005" />
         <field
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_user')])]"
@@ -70,7 +65,6 @@
         <field name="login">malee.w@kmitl.ac.th</field>
         <field name="email">malee.w@kmitl.ac.th</field>
         <field name="password">123456</field>
-        <field name="employee_id" ref="employee_demo_006" />
         <field
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_user')])]"
@@ -83,7 +77,6 @@
         <field name="login">surachai.n@kmitl.ac.th</field>
         <field name="email">surachai.n@kmitl.ac.th</field>
         <field name="password">123456</field>
-        <field name="employee_id" ref="employee_demo_007" />
         <field
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_user')])]"
@@ -96,7 +89,6 @@
         <field name="login">wanna.p@kmitl.ac.th</field>
         <field name="email">wanna.p@kmitl.ac.th</field>
         <field name="password">123456</field>
-        <field name="employee_id" ref="employee_demo_008" />
         <field
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_user')])]"
@@ -109,7 +101,6 @@
         <field name="login">chaiwat.p@kmitl.ac.th</field>
         <field name="email">chaiwat.p@kmitl.ac.th</field>
         <field name="password">123456</field>
-        <field name="employee_id" ref="employee_demo_009" />
         <field
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_user')])]"
@@ -122,7 +113,6 @@
         <field name="login">napaporn.s@kmitl.ac.th</field>
         <field name="email">napaporn.s@kmitl.ac.th</field>
         <field name="password">123456</field>
-        <field name="employee_id" ref="employee_demo_010" />
         <field
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_user')])]"
@@ -135,7 +125,6 @@
         <field name="login">pichai.k@kmitl.ac.th</field>
         <field name="email">pichai.k@kmitl.ac.th</field>
         <field name="password">123456</field>
-        <field name="employee_id" ref="employee_demo_011" />
         <field
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_user')])]"
@@ -148,7 +137,6 @@
         <field name="login">chanida.c@kmitl.ac.th</field>
         <field name="email">chanida.c@kmitl.ac.th</field>
         <field name="password">123456</field>
-        <field name="employee_id" ref="employee_demo_012" />
         <field
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_user')])]"
@@ -161,7 +149,6 @@
         <field name="login">kittipong.m@kmitl.ac.th</field>
         <field name="email">kittipong.m@kmitl.ac.th</field>
         <field name="password">123456</field>
-        <field name="employee_id" ref="employee_demo_013" />
         <field
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_user')])]"
@@ -174,7 +161,6 @@
         <field name="login">thanya.k@kmitl.ac.th</field>
         <field name="email">thanya.k@kmitl.ac.th</field>
         <field name="password">123456</field>
-        <field name="employee_id" ref="employee_demo_014" />
         <field
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_user')])]"
@@ -187,7 +173,6 @@
         <field name="login">siripong.c@kmitl.ac.th</field>
         <field name="email">siripong.c@kmitl.ac.th</field>
         <field name="password">123456</field>
-        <field name="employee_id" ref="employee_demo_015" />
         <field
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_user')])]"
@@ -200,7 +185,6 @@
         <field name="login">arunee.b@kmitl.ac.th</field>
         <field name="email">arunee.b@kmitl.ac.th</field>
         <field name="password">123456</field>
-        <field name="employee_id" ref="employee_demo_016" />
         <field
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_manager')])]"
@@ -213,7 +197,6 @@
         <field name="login">prasit.b@kmitl.ac.th</field>
         <field name="email">prasit.b@kmitl.ac.th</field>
         <field name="password">123456</field>
-        <field name="employee_id" ref="employee_demo_017" />
         <field
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_manager')])]"
@@ -226,7 +209,6 @@
         <field name="login">sudarat.s@kmitl.ac.th</field>
         <field name="email">sudarat.s@kmitl.ac.th</field>
         <field name="password">123456</field>
-        <field name="employee_id" ref="employee_demo_018" />
         <field
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_manager')])]"
@@ -239,7 +221,6 @@
         <field name="login">weerachai.t@kmitl.ac.th</field>
         <field name="email">weerachai.t@kmitl.ac.th</field>
         <field name="password">123456</field>
-        <field name="employee_id" ref="employee_demo_019" />
         <field
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_manager')])]"
@@ -252,7 +233,6 @@
         <field name="login">piyanuch.t@kmitl.ac.th</field>
         <field name="email">piyanuch.t@kmitl.ac.th</field>
         <field name="password">123456</field>
-        <field name="employee_id" ref="employee_demo_020" />
         <field
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request_security.group_purchase_request_user_all')])]"
