@@ -264,6 +264,7 @@ class PurchaseRequest(models.Model):
 
     @api.onchange("budget_account_id")
     def _onchange_budget_account_id(self):
+        default_price = self.env.context.get("default_price_unit", 0)
         product_id = self.budget_account_id.product_id
 
         if not product_id:
@@ -281,7 +282,7 @@ class PurchaseRequest(models.Model):
                         "product_id": product_id.id,
                         "name": product_id.display_name,
                         "product_uom_id": product_id.uom_id.id,
-                        "price_unit": self.procurement_plan_id.total_price or 0.0,
+                        "price_unit": self.procurement_plan_id.total_price or default_price,
                         "product_qty": 1.0,
                     }
                 )

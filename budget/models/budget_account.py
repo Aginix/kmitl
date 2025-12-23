@@ -124,7 +124,12 @@ class BudgetAccount(models.Model):
         default=lambda self: self.env.company,
         tracking=True,
     )
-
+    
+    is_asset = fields.Boolean(
+        string="Is Asset",
+        compute="_compute_is_asset",
+        store=True,
+    )
     _sql_constraints = [
         (
             "unique_budget_account_line",
@@ -215,3 +220,17 @@ class BudgetAccount(models.Model):
                 if vals.get("budget_type") != account.budget_type:
                     raise UserError(_("You cannot change the budget type."))
         return super().write(vals)
+
+    @api.depends("code", "parent_id", "parent_id.is_asset")
+    def _compute_is_asset(self):
+        asset_code = "5412000000"
+        
+        for record in self:
+            is_asset = False
+            
+            if record.code and record.code.startswith(asset_code):
+                is_asset = True
+            elif record.parent_id:
+                is_asset = record.parent_id.is_asset
+            
+            record.is_asset = is_asset

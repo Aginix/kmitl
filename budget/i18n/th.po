@@ -857,6 +857,11 @@ msgid "Budget Type"
 msgstr "ประเภทงบประมาณ"
 
 #. module: budget
+#: model:ir.model.fields,field_description:budget.field_budget_account__is_asset
+msgid "Is Asset"
+msgstr "เป็นครุภัณฑ์"
+
+#. module: budget
 #: model:res.groups,name:budget.group_budget_user
 msgid "Budget User"
 msgstr ""

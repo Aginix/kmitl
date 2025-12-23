@@ -12,6 +12,7 @@
                     name="unlink"
                     type="object"
                     icon="fa-trash"
+                    title="Delete"
                 />
             </tree>
         </field>
