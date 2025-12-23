@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Purchase Request Approval Tier Validation',
+    'name': 'Purchase Request Approval Account',
     'version': '16.0.1.0.0',
-    'summary': """ Purchase Request Approval Tier Validation Summary """,
+    'summary': """ Purchase Request Approval Account Move Request Summary """,
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    'depends': ['base_tier_validation', 'purchase_request_approval'],
+    'depends': ['purchase_request_approval', 'account_move_request'],
     "data": [
-        "data/tier_validation.xml",
+        "views/account_move_request_views.xml",
         "views/purchase_request_approval_views.xml"
     ],
     'installable': True,
