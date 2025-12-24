@@ -90,6 +90,11 @@ class PurchaseTeam(models.Model):
         help='Auto-assign this team for Purchase Orders'
     )
     
+    member_count = fields.Integer(
+        string='Members',
+        compute='_compute_member_count',
+        store=True
+    )
 
     @api.depends('filter_domain_pr', 'filter_domain_pa', 'filter_domain_po',
                  'assign_on_pr', 'assign_on_pa', 'assign_on_po')
@@ -175,3 +180,8 @@ class PurchaseTeam(models.Model):
             activities |= activity
         
         return activities
+    
+    @api.depends('member_ids')
+    def _compute_member_count(self):
+        for team in self:
+            team.member_count = len(team.member_ids)
