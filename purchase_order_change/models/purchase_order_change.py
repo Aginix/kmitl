@@ -32,14 +32,15 @@ class PurchaseOrderChange(models.Model):
     @api.depends("change_type")
     def _compute_allowed_sections(self):
         for rec in self:
+            # กระทบโครงสร้าง
             if rec.change_type == "impact":
                 rec.allowed_section_ids = [
-                    self.env.ref("purchase_order_change.purchase_change_section_1").id,
                     self.env.ref("purchase_order_change.purchase_change_section_2").id,
                 ]
-
+            # ไม่กระทบโครงสร้าง
             elif rec.change_type == "none":
                 rec.allowed_section_ids = [
+                    self.env.ref("purchase_order_change.purchase_change_section_1").id,
                     self.env.ref("purchase_order_change.purchase_change_section_3").id,
                 ]
             else:
