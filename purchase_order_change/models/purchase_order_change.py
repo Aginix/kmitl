@@ -11,7 +11,7 @@ class PurchaseOrderChange(models.Model):
     date = fields.Date(string='Date', default=fields.Date.context_today)
     change_type = fields.Selection(selection=[('none', 'None'), ('impact', 'Impact')])
     section_ids = fields.Many2many(comodel_name="purchase.change.section")
-    state = fields.Selection(selection=[("draft", "Draft"), ("done", "Done")] , default="draft")
+    state = fields.Selection(selection=[("draft", "Draft"), ("done", "Done"), ("cancel", "Cancel")] , default="draft")
     purchase_id = fields.Many2one(comodel_name="purchase.order")
     change_field_ids = fields.One2many(
         comodel_name='purchase.order.change.field',
@@ -141,4 +141,13 @@ class PurchaseOrderChange(models.Model):
             "view_mode": "form",
             "target": "new",
             "context": self._prepare_wizard_context(),
+        }
+
+    def action_cancel(self):
+        for record in self:
+            record.state = "cancel"
+
+        return {
+            "type": "ir.actions.client",
+            "tag": "reload",
         }
