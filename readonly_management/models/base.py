@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import ast
 import json
 
 from lxml import etree
@@ -29,6 +30,12 @@ class Base(models.AbstractModel):
         managed_fields = set()
         for cfg in configs:
             managed_fields.update(cfg.field_ids.mapped('name'))
+            unlock_domain = False
+            if cfg.unlock_domain:
+                try:
+                    unlock_domain = ast.literal_eval(cfg.unlock_domain)
+                except Exception:
+                    unlock_domain = False
 
         if not managed_fields:
             return result
@@ -40,7 +47,11 @@ class Base(models.AbstractModel):
             for node in nodes:
                 modifiers = json.loads(node.get('modifiers', '{}'))
 
-                modifiers['readonly'] = False
+                # กลับด้านอยู่
+                if unlock_domain:
+                        modifiers['readonly'] = unlock_domain
+                else:
+                    modifiers['readonly'] = False
 
                 if 'attrs' in modifiers:
                     attrs = modifiers.get('attrs', {})

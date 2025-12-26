@@ -22,3 +22,9 @@ class ReadonlyManagement(models.Model):
         domain="[('model_id', '=', model)]",
         required=True,
     )
+    model_name = fields.Char(
+        related='model.model',
+        store=False,
+        readonly=True
+    )
+    unlock_domain = fields.Char()
