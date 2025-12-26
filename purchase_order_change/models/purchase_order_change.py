@@ -28,6 +28,22 @@ class PurchaseOrderChange(models.Model):
         compute="_compute_allowed_sections",
         store=False,
     )
+    attachment_ids = fields.One2many(
+        'ir.attachment',
+        'res_id',
+        string='Document Attachments',
+        tracking=True,
+    )
+    is_editable = fields.Boolean(
+        string="Is Editable",
+        compute="_compute_is_editable",
+        store=False
+    )
+
+    @api.depends('state')
+    def _compute_is_editable(self):
+        for rec in self:
+            rec.is_editable = rec.state == 'draft'
 
     @api.depends("change_type")
     def _compute_allowed_sections(self):

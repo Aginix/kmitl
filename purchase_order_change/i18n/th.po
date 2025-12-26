@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-25 04:16+0000\n"
-"PO-Revision-Date: 2025-12-25 04:16+0000\n"
+"POT-Creation-Date: 2025-12-26 08:40+0000\n"
+"PO-Revision-Date: 2025-12-26 08:40+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -29,6 +29,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_order_change.field_purchase_order_change__allowed_section_ids
 msgid "Allowed Section"
 msgstr ""
+
+#. module: purchase_order_change
+#: model_terms:ir.ui.view,arch_db:purchase_order_change.view_purchase_order_change_form
+msgid "Attachment"
+msgstr "เอกสารแนบ"
 
 #. module: purchase_order_change
 #: model:ir.model.fields.selection,name:purchase_order_change.selection__purchase_order_change__state__cancel
@@ -114,11 +119,21 @@ msgid "Deletion"
 msgstr ""
 
 #. module: purchase_order_change
+#: model_terms:ir.ui.view,arch_db:purchase_order_change.view_purchase_order_change_form
+msgid "Description"
+msgstr ""
+
+#. module: purchase_order_change
 #: model:ir.model.fields,field_description:purchase_order_change.field_purchase_change_section__display_name
 #: model:ir.model.fields,field_description:purchase_order_change.field_purchase_order_change__display_name
 #: model:ir.model.fields,field_description:purchase_order_change.field_purchase_order_change_field__display_name
 #: model:ir.model.fields,field_description:purchase_order_change.field_purchase_order_change_wizard__display_name
 msgid "Display Name"
+msgstr ""
+
+#. module: purchase_order_change
+#: model:ir.model.fields,field_description:purchase_order_change.field_purchase_order_change__attachment_ids
+msgid "Document Attachments"
 msgstr ""
 
 #. module: purchase_order_change
@@ -140,12 +155,17 @@ msgstr "ผู้แก้ไข"
 #. module: purchase_order_change
 #: model:ir.model.fields,field_description:purchase_order_change.field_purchase_order_change_field__field_id
 msgid "Field"
-msgstr "ฟิลด์"
+msgstr "ข้อมูลที่แก้ไข"
 
 #. module: purchase_order_change
 #: model:ir.model.fields,field_description:purchase_order_change.field_purchase_order_change_field__field_name
 msgid "Field Name"
 msgstr "ชื่อฟิลด์"
+
+#. module: purchase_order_change
+#: model_terms:ir.ui.view,arch_db:purchase_order_change.view_purchase_order_change_form
+msgid "File Name"
+msgstr "ชื่อเอกสาร"
 
 #. module: purchase_order_change
 #: model:ir.model.fields,field_description:purchase_order_change.field_purchase_order_change_wizard__fines_late
@@ -181,6 +201,11 @@ msgstr ""
 #: model:ir.model.fields.selection,name:purchase_order_change.selection__purchase_order_change__change_type__impact
 msgid "Impact"
 msgstr "กระทบโครงสร้าง"
+
+#. module: purchase_order_change
+#: model:ir.model.fields,field_description:purchase_order_change.field_purchase_order_change__is_editable
+msgid "Is Editable"
+msgstr ""
 
 #. module: purchase_order_change
 #: model:ir.model.fields,field_description:purchase_order_change.field_purchase_change_section____last_update
@@ -225,7 +250,7 @@ msgstr "ชื่อ"
 #. module: purchase_order_change
 #: model:ir.model.fields,field_description:purchase_order_change.field_purchase_order_change_field__new_value
 msgid "New Value"
-msgstr "ค่าใหม่"
+msgstr "หลังแก้ไข"
 
 #. module: purchase_order_change
 #: model:ir.model.fields.selection,name:purchase_order_change.selection__purchase_order_change__change_type__none
@@ -271,7 +296,7 @@ msgstr "ค่าใข้จ่ายควบคุมงานเดิม"
 #. module: purchase_order_change
 #: model:ir.model.fields,field_description:purchase_order_change.field_purchase_order_change_field__old_value
 msgid "Old Value"
-msgstr "ค่าเดิม"
+msgstr "ก่อนแก้ไข"
 
 #. module: purchase_order_change
 #: model:ir.model.fields,field_description:purchase_order_change.field_purchase_order_change_wizard__work_start_old
