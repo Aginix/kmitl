@@ -27,4 +27,4 @@ class ReadonlyManagement(models.Model):
         store=False,
         readonly=True
     )
-    unlock_domain = fields.Char()
+    domain = fields.Char()

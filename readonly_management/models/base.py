@@ -30,12 +30,12 @@ class Base(models.AbstractModel):
         managed_fields = set()
         for cfg in configs:
             managed_fields.update(cfg.field_ids.mapped('name'))
-            unlock_domain = False
-            if cfg.unlock_domain:
+            domain = False
+            if cfg.domain:
                 try:
-                    unlock_domain = ast.literal_eval(cfg.unlock_domain)
+                    domain = ast.literal_eval(cfg.domain)
                 except Exception:
-                    unlock_domain = False
+                    domain = False
 
         if not managed_fields:
             return result
@@ -47,9 +47,8 @@ class Base(models.AbstractModel):
             for node in nodes:
                 modifiers = json.loads(node.get('modifiers', '{}'))
 
-                # กลับด้านอยู่
-                if unlock_domain:
-                        modifiers['readonly'] = unlock_domain
+                if domain:
+                        modifiers['readonly'] = domain
                 else:
                     modifiers['readonly'] = False
 

@@ -28,7 +28,7 @@
                             <group name="bottom">
                                 <field name="model_name" invisible="1" />
                                 <field
-                                    name="unlock_domain"
+                                    name="domain"
                                     widget="domain"
                                     options="{'model': 'model_name'}"
                                 />
