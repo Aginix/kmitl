@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="approval_request_form_view_inherit" model="ir.ui.view">
+        <field name="name">approval.request.view.form.inherit</field>
+        <field name="model">approval.request</field>
+        <field name="inherit_id" ref="aginix_approval.approval_request_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/group" position="inside">
+                <group>
+                    <field name="budget_commitment_id" required="1" />
+                    <field name="source_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
+                    <field name="department_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
+                    <field name="fund_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
+                    <field name="activity_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
+                    <field name="budget_account_id" readonly="1" required="1" options="{'no_create': True, 'no_open': True}" />
+                    <field name="budget_account_id" invisible="1" />
+                    <field name="analytic_distribution" invisible="1"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

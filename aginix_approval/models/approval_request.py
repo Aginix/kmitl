@@ -6,7 +6,7 @@ class ApprovalRequest(models.Model):
 
     _name = "approval.request"
     _description = "Approval Request"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ["analytic.mixin", "mail.thread", "mail.activity.mixin"]
     _order = "name"
 
     READONLY_STATES = {
