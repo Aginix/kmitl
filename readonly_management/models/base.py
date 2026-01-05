@@ -48,7 +48,7 @@ class Base(models.AbstractModel):
                 modifiers = json.loads(node.get('modifiers', '{}'))
 
                 if domain:
-                        modifiers['readonly'] = domain
+                    modifiers['readonly'] = domain
                 else:
                     modifiers['readonly'] = False
 

@@ -6,7 +6,7 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['base', 'purchase'],
+    'depends': ['base', 'purchase', 'base_tier_validation'],
     'data': [
         'views/readonly_management_views.xml',
         'security/ir.model.access.csv'
