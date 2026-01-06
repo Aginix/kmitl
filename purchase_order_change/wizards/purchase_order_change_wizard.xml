@@ -85,7 +85,7 @@
                         type="object"
                         class="btn-primary"
                     />
-                    <button string="Cancel" special="cancel" />
+                    <button string="Cancel" type="object" name="cancel" />
                 </footer>
             </form>
         </field>

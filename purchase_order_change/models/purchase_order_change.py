@@ -33,6 +33,15 @@ class PurchaseOrderChange(models.Model):
         string='Document Attachments',
         tracking=True,
     )
+    has_sections = fields.Boolean(
+    compute="_compute_has_sections",
+    store=False
+    )
+
+    @api.depends("section_ids")
+    def _compute_has_sections(self):
+        for rec in self:
+            rec.has_sections = bool(rec.section_ids)
 
     @api.depends("change_type")
     def _compute_allowed_sections(self):

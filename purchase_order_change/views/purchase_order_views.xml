@@ -13,13 +13,15 @@
                             string="Edit Work And Payment Milestones"
                             type="object"
                             class="oe_highlight me-2"
-                            name="action_open_purchase_order_impact_change"
+                            name="action_open_purchase_order_change"
+                            context="{'change_type': 'impact'}"
                         />
                         <button
                             string="Edit Additional Contract Details"
                             type="object"
                             class="oe_highlight"
                             name="action_open_purchase_order_change"
+                            context="{'change_type': 'none'}"
                         />
                     </div>
                 </page>

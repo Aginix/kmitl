@@ -12,34 +12,35 @@ class PurchaseOrder(models.Model):
         string='Purchase Order Changes'
     )
 
-    def action_open_purchase_order_impact_change(self):
+    def action_open_purchase_order_change(self):
+        change_type = self.env.context.get("change_type", "none")
+        return self._action_open_purchase_order_change(change_type)
+
+    def _action_open_purchase_order_change(self, change_type):
         self.ensure_one()
+
         return {
-            'type': 'ir.actions.act_window',
-            'name': 'Purchase Order Change',
-            'res_model': 'purchase.order.change',
-            'view_mode': 'form',
-            "views": [[self.env.ref('purchase_order_change.view_purchase_order_change_form').id, "form"]],
-            'target': 'new',
-            'context': {
-                'default_purchase_id': self.id,
-                'default_date': fields.Date.today(),
-                'default_change_type': 'impact',
-            },
+            "type": "ir.actions.act_window",
+            "name": "Purchase Order Change",
+            "res_model": "purchase.order.change",
+            "view_mode": "form",
+            "views": [
+                (
+                    self.env.ref(
+                        "purchase_order_change.view_purchase_order_change_form"
+                    ).id,
+                    "form",
+                )
+            ],
+            "target": "new",
+            "context": self._get_purchase_order_change_context(change_type),
         }
 
-    def action_open_purchase_order_change(self):
+    def _get_purchase_order_change_context(self, change_type):
         self.ensure_one()
+
         return {
-            'type': 'ir.actions.act_window',
-            'name': 'Purchase Order Change',
-            'res_model': 'purchase.order.change',
-            'view_mode': 'form',
-            "views": [[self.env.ref('purchase_order_change.view_purchase_order_change_form').id, "form"]],
-            'target': 'new',
-            'context': {
-                'default_purchase_id': self.id,
-                'default_date': fields.Date.today(),
-                'default_change_type': 'none',
-            },
+            "default_purchase_id": self.id,
+            "default_date": fields.Date.today(),
+            "default_change_type": change_type,
         }

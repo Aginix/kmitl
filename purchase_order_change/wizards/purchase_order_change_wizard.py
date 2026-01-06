@@ -131,3 +131,8 @@ class PurchaseOrderChangeWizard(models.TransientModel):
         }
         return self._save_changes(track_fields)
 
+    def cancel(self):
+        for wizard in self:
+            wizard.change_id.sudo().unlink()
+            seq = wizard.env.ref('purchase_order_change.seq_purchase_order_change')
+            seq.number_next_actual -= 1
