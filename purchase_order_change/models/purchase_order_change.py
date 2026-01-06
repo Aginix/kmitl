@@ -111,7 +111,6 @@ class PurchaseOrderChange(models.Model):
             if vals:
                 po.write(vals)
 
-            record.state = "done"
         return {
             "type": "ir.actions.client",
             "tag": "reload",
@@ -148,13 +147,4 @@ class PurchaseOrderChange(models.Model):
             "view_mode": "form",
             "target": "new",
             "context": self._prepare_wizard_context(),
-        }
-
-    def action_cancel(self):
-        for record in self:
-            record.state = "cancel"
-
-        return {
-            "type": "ir.actions.client",
-            "tag": "reload",
         }

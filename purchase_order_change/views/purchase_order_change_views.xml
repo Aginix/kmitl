@@ -18,20 +18,6 @@
         <field name="model">purchase.order.change</field>
         <field name="arch" type="xml">
             <form string="Purchase Order Change">
-                <header>
-                    <button
-                        name="action_done"
-                        string="Done"
-                        type="object"
-                        class="oe_highlight"
-                    />
-                    <button
-                        name="action_cancel"
-                        string="Cancel"
-                        type="object"
-                        class="btn-secondary"
-                    />
-                </header>
                 <sheet>
                     <group>
                         <group>
