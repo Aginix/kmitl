@@ -34,16 +34,6 @@ class PurchaseOrderChange(models.Model):
         string='Document Attachments',
         tracking=True,
     )
-    is_editable = fields.Boolean(
-        string="Is Editable",
-        compute="_compute_is_editable",
-        store=False
-    )
-
-    @api.depends('state')
-    def _compute_is_editable(self):
-        for rec in self:
-            rec.is_editable = rec.state == 'draft'
 
     @api.depends("change_type")
     def _compute_allowed_sections(self):

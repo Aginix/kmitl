@@ -10,9 +10,15 @@
                     <field name="change_ids" readonly="1" />
                     <div>
                         <button
-                            string="แก้ไขงวดงาน งวดเงิน"
+                            string="Edit Work And Payment Milestones"
                             type="object"
                             class="oe_highlight me-2"
+                            name="action_open_purchase_order_impact_change"
+                        />
+                        <button
+                            string="Edit Additional Contract Details"
+                            type="object"
+                            class="oe_highlight"
                             name="action_open_purchase_order_change"
                         />
                     </div>

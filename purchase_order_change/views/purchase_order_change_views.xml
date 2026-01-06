@@ -8,13 +8,6 @@
                 <field name="number" />
                 <field name="date" />
                 <field name="change_type" />
-                <field
-                    name="state"
-                    widget="badge"
-                    decoration-success="state == 'done'"
-                    decoration-info="state == 'draft'"
-                    decoration-danger="state == 'cancel'"
-                />
                 <field name="editor_id" widget="many2one_avatar_user" />
             </tree>
         </field>
@@ -30,29 +23,21 @@
                         name="action_done"
                         string="Done"
                         type="object"
-                        states="draft"
                         class="oe_highlight"
                     />
                     <button
                         name="action_cancel"
                         string="Cancel"
                         type="object"
-                        states="draft"
                         class="btn-secondary"
-                    />
-                    <field
-                        name="state"
-                        widget="statusbar"
-                        statusbar_visible="draft,done"
                     />
                 </header>
                 <sheet>
                     <group>
                         <group>
-                            <field name="is_editable" invisible="1" />
                             <field name="number" invisible="1" />
                             <field name="date" readonly="1" />
-                            <field name="change_type" required="1" attrs="{'readonly': [('is_editable','=', False)]}" />
+                            <field name="change_type" required="1" />
                             <field
                                 name="editor_id"
                                 readonly="1"
@@ -62,7 +47,6 @@
                                 name="section_ids"
                                 widget="many2many_checkboxes"
                                 domain="[('id', 'in', allowed_section_ids)]"
-                                attrs="{'readonly': [('is_editable','=', False)]}"
                             />
                             <field name="allowed_section_ids" invisible="1" />
                             <field name="has_change_fields" invisible="1" />
@@ -76,7 +60,6 @@
                             <field
                                 name="attachment_ids"
                                 context="{'default_res_model': 'purchase.order.change'}"
-                                attrs="{'readonly': [('is_editable','=', False)]}"
                             >
                                 <tree default_order="sequence">
                                     <field name="sequence" widget="handle" />
@@ -127,7 +110,7 @@
                         name="action_next"
                         type="object"
                         class="btn-primary"
-                        attrs="{'invisible': ['|',('state', '=', 'done'),('has_change_fields', '=', True)]}"
+                        attrs="{'invisible': [('has_change_fields', '=', True)]}"
                     />
                 </footer>
             </form>

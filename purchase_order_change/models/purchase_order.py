@@ -12,6 +12,22 @@ class PurchaseOrder(models.Model):
         string='Purchase Order Changes'
     )
 
+    def action_open_purchase_order_impact_change(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Purchase Order Change',
+            'res_model': 'purchase.order.change',
+            'view_mode': 'form',
+            "views": [[self.env.ref('purchase_order_change.view_purchase_order_change_form').id, "form"]],
+            'target': 'new',
+            'context': {
+                'default_purchase_id': self.id,
+                'default_date': fields.Date.today(),
+                'default_change_type': 'impact',
+            },
+        }
+
     def action_open_purchase_order_change(self):
         self.ensure_one()
         return {
@@ -24,5 +40,6 @@ class PurchaseOrder(models.Model):
             'context': {
                 'default_purchase_id': self.id,
                 'default_date': fields.Date.today(),
+                'default_change_type': 'none',
             },
         }

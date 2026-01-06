@@ -108,7 +108,7 @@ class PurchaseOrderChangeWizard(models.TransientModel):
                     "new_value": self._format_value(new_value),
                 })
 
-        return {"type": "ir.actions.act_window_close"}
+        return self.change_id.action_done()
 
     def _format_value(self, value):
         if value in (False, None):
