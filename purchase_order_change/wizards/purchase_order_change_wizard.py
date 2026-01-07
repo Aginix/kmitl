@@ -133,6 +133,14 @@ class PurchaseOrderChangeWizard(models.TransientModel):
 
     def cancel(self):
         for wizard in self:
-            wizard.change_id.sudo().unlink()
-            seq = wizard.env.ref('purchase_order_change.seq_purchase_order_change')
-            seq.number_next_actual -= 1
+            if wizard.change_id:
+                wizard.change_id.sudo().unlink()
+
+            if wizard.purchase_id:
+                seq_code = f"purchase.order.change.po_{wizard.purchase_id.id}"
+                seq = self.env["ir.sequence"].sudo().search(
+                    [("code", "=", seq_code)],
+                    limit=1,
+                )
+                if seq:
+                    seq.number_next_actual -= 1

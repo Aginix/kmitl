@@ -9,7 +9,6 @@
     'depends': ['purchase', 'purchase_contract_kmitl'],
     "data": [
         "data/purchase_change_section_data.xml",
-        "data/purchase_order_change.xml",
         "security/ir.model.access.csv",
         "views/purchase_change_section_views.xml",
         "views/purchase_order_change_field_views.xml",

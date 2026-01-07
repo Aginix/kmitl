@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
 
 
 class PurchaseOrderChange(models.Model):
@@ -71,9 +70,29 @@ class PurchaseOrderChange(models.Model):
 
     @api.model
     def create(self, vals):
-        if vals.get('number', 'New') in (False, 'New'):
-            vals['number'] = self.env['ir.sequence'].next_by_code('purchase.order.change') or 'New'
+        if vals.get("number", "New") in (False, "New"):
+            purchase_id = (vals.get("purchase_id") or self.env.context.get("default_purchase_id"))
+            sequence = self._get_or_create_po_sequence(purchase_id)
+            vals["number"] = sequence.next_by_code(f"purchase.order.change.po_{purchase_id}")
         return super().create(vals)
+
+    def _get_or_create_po_sequence(self, purchase_id):
+
+        seq_code = f"purchase.order.change.po_{purchase_id}"
+        sequence = self.env["ir.sequence"].sudo().search(
+            [("code", "=", seq_code)],
+            limit=1,
+        )
+
+        if not sequence:
+            sequence = self.env["ir.sequence"].sudo().create({
+                "name": _("PO Change %s") % purchase_id,
+                "code": seq_code,
+                "padding": 1,
+                "number_next": 1,
+            })
+
+        return sequence
 
     def action_done(self):
         for record in self:
