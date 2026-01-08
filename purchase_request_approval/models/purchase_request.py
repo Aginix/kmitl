@@ -114,6 +114,8 @@ class PurchaseRequest(models.Model):
         for rec in self:
             if rec.request_approval_count > 0:
                 rec.hide_create_approval_button = True
+            elif rec.is_egp:
+                rec.hide_create_approval_button = True
             elif rec.state in ("approved") and rec.estimated_cost <= 100000:
                 rec.hide_create_approval_button = False
             else:

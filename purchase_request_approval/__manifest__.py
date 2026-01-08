@@ -15,6 +15,7 @@
         "purchase_request_vendor_kmitl",
         "thai_date_utils",
         "portal",
+        "purchase_request_egp",
     ],
     "data": [
         "data/purchase_request_approval_sequence.xml",
