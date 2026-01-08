@@ -84,4 +84,7 @@ class PurchaseRequest(models.Model):
     @api.depends("estimated_cost")
     def _compute_is_egp_readonly(self):
         for record in self:
-            record.is_egp_readonly = record.estimated_cost > 100000
+            if record.is_editable == False:
+                record.is_egp_readonly = record.estimated_cost > 100000
+            else:
+                record.is_egp_readonly = False
