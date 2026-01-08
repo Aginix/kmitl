@@ -70,7 +70,7 @@ class StockRequest(models.Model):
     )
     requested_by = fields.Many2one(
         'res.partner',
-        default=lambda self: self.env.user,
+        default=lambda self: self.env.user.partner_id,
         tracking=True
     )
     request_line_ids = fields.One2many(
