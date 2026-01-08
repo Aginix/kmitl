@@ -47,11 +47,6 @@ class PurchaseRequest(models.Model):
         for record in self:
             record.can_edit_egp = bool(user_in_group and record.egp_status == "waiting")
 
-    @api.depends("estimated_cost", "state")
-    def _compute_is_egp(self):
-        for record in self:
-            record.is_egp = record.estimated_cost > 100000
-
     def write(self, vals):
         res = super().write(vals)
         for record in self:
