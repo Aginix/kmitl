@@ -22,6 +22,12 @@ class PurchaseRequest(models.Model):
         default=False,
     )
 
+    is_egp_readonly = fields.Boolean(
+        string="Is eGP Readonly",
+        compute="_compute_is_egp_readonly",
+        store=False
+    )
+
     show_egp_create_purchase_order_button = fields.Boolean(compute="_show_egp_create_purchase_order_button")
 
     def button_draft(self):
@@ -74,3 +80,8 @@ class PurchaseRequest(models.Model):
         for rec in self:
             if rec.is_egp:
                 rec.hide_create_po_button = True
+
+    @api.depends("estimated_cost")
+    def _compute_is_egp_readonly(self):
+        for record in self:
+            record.is_egp_readonly = record.estimated_cost > 100000
