@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Readonly Management',
+    'name': 'Field Management',
     'version': '16.0.1.0.0',
-    'summary': """ Readonly Management Summary """,
+    'summary': """ Field Management Summary """,
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['base', 'base_tier_validation'],
+    'depends': ['base'],
     'data': [
         'views/readonly_management_views.xml',
         'security/ir.model.access.csv'
