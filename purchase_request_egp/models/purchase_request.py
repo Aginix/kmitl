@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
-    is_egp = fields.Boolean(string="e-GP", store=True, tracking=True)
+    is_egp = fields.Boolean(string="e-GP", tracking=True)
 
     egp_project_id = fields.Char(string="เลขที่โครงการ e-GP", tracking=True)
     egp_project_url = fields.Char(
