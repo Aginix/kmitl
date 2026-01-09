@@ -36,7 +36,7 @@ class Base(models.AbstractModel):
 
     def _get_readonly_management_configs(self):
         return self.env['readonly.management'].sudo().search([
-            ('model.model', '=', self._name)
+            ('model_id.model', '=', self._name)
         ])
 
     def _prepare_field_domain_map(self, configs):

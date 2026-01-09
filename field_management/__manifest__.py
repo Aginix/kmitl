@@ -9,7 +9,8 @@
     'depends': ['base'],
     'data': [
         'views/readonly_management_views.xml',
-        'security/ir.model.access.csv'
+        'security/ir.model.access.csv',
+        'views/readonly_management_fields_views.xml'
     ],
     'installable': True,
     'auto_install': False,

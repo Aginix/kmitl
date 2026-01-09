@@ -1,2 +1,3 @@
 id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
 access_readonly_management_manager,readonly_management_manager,model_readonly_management,,1,1,1,1
+access_readonly_management_fields_manager,readonly_management_fields_manager,model_readonly_management_fields,,1,1,1,1

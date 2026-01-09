@@ -6,7 +6,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
-                <field name="model" />
+                <field name="model_id" />
                 <field name="field_ids" />
             </tree>
         </field>
@@ -20,18 +20,27 @@
                 <sheet>
                     <group>
                         <field name="name" />
-                        <field name="model" />
-                        <field name="field_ids" widget="many2many_tags" />
+                        <field name="model_id" />
                     </group>
                     <notebook>
                         <page name="domain" string="Domain">
-                            <group name="bottom">
+                            <group>
                                 <field name="model_name" invisible="1" />
                                 <field
-                                    name="domain"
+                                    name="apply_on_domain"
                                     widget="domain"
                                     options="{'model': 'model_name'}"
                                 />
+                            </group>
+                        </page>
+                        <page name="Field" string="Field">
+                            <group>
+                                <field name="field_ids" />
+                            </group>
+                        </page>
+                        <page name="note" string="Note">
+                            <group>
+                                <field name="note" />
                             </group>
                         </page>
                     </notebook>
@@ -71,13 +80,13 @@
         </field>
     </record>
     <menuitem
-        id="menu_readonly_management"
-        name="Readonly Management"
+        id="menu_field_management"
+        name="Field Management"
         parent="base.menu_custom"
     />
     <menuitem
         id="menu_readonly_management_settings"
-        parent="menu_readonly_management"
+        parent="menu_field_management"
         action="action_readonly_management"
         sequence="10"
     />
