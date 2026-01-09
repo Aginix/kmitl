@@ -54,7 +54,8 @@ class PurchaseOrder(models.Model):
                 Command.create(line._prepare_move_request_line_vals())
                 for line in self.order_line
             ],
-            "ref": self.name
+            "ref": self.name,
+            "payment_type": self.payment_type,
         }
 
     def action_move_request(self):
@@ -76,6 +77,20 @@ class PurchaseOrder(models.Model):
 
     def action_view_move_request(self):
         self.ensure_one()
+        move_requests = self.env['account.move.request'].search(
+            [('purchase_id', '=', self.id)]
+        )
+        
+        if len(move_requests) == 1:
+            return {
+                'type': 'ir.actions.act_window',
+                'name': 'Move Request',
+                'res_model': 'account.move.request',
+                'res_id': move_requests.id,
+                'view_mode': 'form',
+                'context': {'default_purchase_id': self.id},
+            }
+        
         return {
             'type': 'ir.actions.act_window',
             'name': 'Move Requests',

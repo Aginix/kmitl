@@ -39,5 +39,6 @@ msgstr "ใบขอเบิก"
 #. module: purchase_order_account_move_request
 #: model:ir.model,name:purchase_order_account_move_request.model_purchase_order
 #: model:ir.model.fields,field_description:purchase_order_account_move_request.field_account_move_request__purchase_id
+#: model_terms:ir.ui.view,arch_db:purchase_order_account_move_request.view_account_move_request_form
 msgid "Purchase Order"
 msgstr "คำสั่งซื้อ"

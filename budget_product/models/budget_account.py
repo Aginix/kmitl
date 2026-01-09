@@ -69,7 +69,8 @@ class BudgetAccount(models.Model):
     def _get_or_create_product_category(self):
         parent_ids = [int(n) for n in self.parent_path.strip("/").split("/")]
         # Pop the self ID
-        budget_account_ids = self.env["budget.account"].browse(parent_ids.pop())
+        parent_ids.pop()
+        budget_account_ids = self.env["budget.account"].browse(parent_ids)
 
         parent_id = self.env.ref("product.cat_expense", raise_if_not_found=False)
         for budget_account_id in budget_account_ids:
@@ -79,8 +80,7 @@ class BudgetAccount(models.Model):
 
             if not categ:
                 vals = budget_account_id._prepare_product_category_vals()
-                if parent_id:
-                    vals["parent_id"] = parent_id.id
+                vals["parent_id"] = parent_id.id
                 categ = self.env["product.category"].create(vals)
 
             parent_id = categ
