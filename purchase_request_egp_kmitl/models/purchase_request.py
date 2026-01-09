@@ -81,10 +81,10 @@ class PurchaseRequest(models.Model):
             if rec.is_egp:
                 rec.hide_create_po_button = True
 
-    @api.depends("estimated_cost")
+    @api.depends("estimated_cost", "is_editable")
     def _compute_is_egp_readonly(self):
         for record in self:
-            if record.is_editable == True:
-                record.is_egp_readonly = record.estimated_cost > 100000
+            if not record.is_editable:
+                record.is_egp_readonly = True
             else:
-                record.is_egp_readonly = False
+                record.is_egp_readonly = record.estimated_cost > 100000
