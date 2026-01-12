@@ -24,6 +24,11 @@ class PurchaseRequest(models.Model):
 
     show_egp_create_purchase_order_button = fields.Boolean(compute="_show_egp_create_purchase_order_button")
 
+    is_egp_ro = fields.Boolean(
+        string="e-GP", 
+        default=True
+    )
+
     def button_draft(self):
         res = super().button_draft()
         self.write({"egp_status": False})
