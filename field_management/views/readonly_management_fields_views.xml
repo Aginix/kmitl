@@ -20,7 +20,7 @@
             <form string="Readonly Management Fields">
                 <sheet>
                     <group>
-                        <field name="model_id" />
+                        <field name="model_id" invisible="1" />
                         <field name="model_name" invisible="1" />
                         <field name="management_id" invisible="1" />
                         <field name="used_field_ids" invisible="1" />
