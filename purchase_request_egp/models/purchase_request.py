@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
-    is_egp = fields.Boolean(string="e-GP", compute="_compute_is_egp", store=True)
+    is_egp = fields.Boolean(string="e-GP")
 
     egp_project_id = fields.Char(string="เลขที่โครงการ e-GP", tracking=True)
     egp_project_url = fields.Char(
@@ -30,7 +30,8 @@ class PurchaseRequest(models.Model):
         project_id = self.egp_project_id
         return f"https://process.gprocurement.go.th/egp2procmainWeb/jsp/public_announ_search.jsp?projectId={project_id}&homeflag=QR"
 
-    @api.depends("estimated_cost")
-    def _compute_is_egp(self):
-        for record in self:
-            record.is_egp = record.estimated_cost > 100000
+    @api.onchange('estimated_cost')
+    def _onchange_estimated_cost(self):
+        for rec in self:
+            if rec.estimated_cost and rec.estimated_cost > 100000:
+                rec.is_egp = True
