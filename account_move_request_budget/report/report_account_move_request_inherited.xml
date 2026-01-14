@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit base report template to add budget dimensions -->
+    <template id="report_account_move_request_budget" inherit_id="account_move_request.report_account_move_request">
+        <!-- Insert financial dimensions after payment type field -->
+        <xpath expr="//div[@class='row'][div/text()[contains(.,'ประเภทการจ่าย')]]" position="after">
+            <!-- Financial Dimensions (Budget Module) -->
+            <div class="row">
+                <div class="mt-8">
+
+                </div>
+            </div>
+            <div class="row" t-if="o.department_analytic_id">
+                <div class="col">
+                    หน่วยงาน                    <span class="ms-2" t-out="o.department_analytic_id.display_name"/>
+                </div>
+            </div>
+
+            <div class="row" t-if="o.activity_analytic_id">
+                <div class="col">
+                    กิจกรรม                    <span class="ms-2" t-out="o.activity_analytic_id.display_name"/>
+                </div>
+            </div>
+
+            <div class="row" t-if="o.fund_analytic_id">
+                <div class="col">
+                    กองทุน                    <span class="ms-2" t-out="o.fund_analytic_id.display_name"/>
+                </div>
+            </div>
+
+            <div class="row" t-if="o.source_analytic_id">
+                <div class="col">
+                    แหล่งเงิน                    <span class="ms-2" t-out="o.source_analytic_id.display_name"/>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

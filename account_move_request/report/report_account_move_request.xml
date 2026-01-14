@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_account_move_request">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <!-- Thai context -->
+                    <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})"/>
+                    <t t-set="currency" t-value="o.currency_id"/>
+
+                    <!-- CSS styling -->
+                    <style>
+                        /* Thai font */
+                        * {
+                            font-family: "THSarabunNew", Arial, sans-serif;
+                            --bs-body-font-size: 16pt;
+                        }
+                        p, span, div {
+                            font-size: 16pt;
+                            line-height: 1.2;
+                        }
+                    </style>
+
+                    <div class="page">
+                        <!-- Company Logo (top-left) -->
+                        <div style="position: absolute; top: 0px; left: 0px">
+                            <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 110px" alt="Logo"/>
+                        </div>
+
+                        <!-- Document Header -->
+                        <div class="page-header mt-5 mb-5">
+                            <h3 class="text-center fw-bolder" style="line-height: 1.575">
+                                ใบขอเบิกเงิน
+                            </h3>
+                        </div>
+
+                        <!-- Document Information -->
+                        <div class="row pt-8">
+                            <div class="col-8">
+                                เลขที่                                <span class="ms-2 fw-normal" t-out="o.name"/>
+                            </div>
+                            <div class="col">
+                                วันที่                                <span class="ms-2 fw-normal" t-field="o.date"/>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                ผู้รับเงิน                                <span class="ms-2" t-out="o.partner_id.name"/>
+                            </div>
+                        </div>
+
+                        <div class="row" t-if="o.ref">
+                            <div class="col">
+                                อ้างอิง                                <span class="ms-2" t-out="o.ref"/>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                ประเภทการจ่าย                                <span class="ms-2" t-field="o.payment_type"/>
+                            </div>
+                        </div>
+
+                        <div class="my-4"/>
+
+                        <!-- Line Items Table -->
+                        <table class="table table-bordered table-sm mb-4">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" style="width: 8%">ลำดับ</th>
+                                    <th class="text-center">รายละเอียด</th>
+                                    <th class="text-center">จำนวน</th>
+                                    <th class="text-end">ราคาต่อหน่วย</th>
+                                    <th class="text-end">จำนวนเงิน</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="row_no" t-value="1"/>
+                                <t t-foreach="o.line_ids" t-as="line">
+                                    <tr>
+                                        <td class="text-center" style="width: 8%" t-out="row_no"/>
+                                        <td t-out="line.name"/>
+                                        <td class="text-center" t-out="'{0:,.2f}'.format(line.quantity)"/>
+                                        <td class="text-end" t-out="'{0:,.2f}'.format(line.price_unit)"/>
+                                        <td class="text-end" t-out="'{0:,.2f}'.format(line.price_subtotal)"/>
+                                    </tr>
+                                    <t t-set="row_no" t-value="row_no + 1"/>
+                                </t>
+
+                                <!-- Totals Section -->
+                                <tr>
+                                    <td colspan="2" rowspan="3" class="text-center align-middle">
+                                        (                                        <t t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)"/>
+ )
+                                    </td>
+                                    <td class="text-center" colspan="2">ราคาก่อนรวมภาษีมูลค่าเพิ่ม</td>
+                                    <td class="text-end" t-out="'{0:,.2f}'.format(o.amount_untaxed)"/>
+                                </tr>
+                                <tr>
+                                    <td class="text-center" colspan="2">ภาษีมูลค่าเพิ่ม (VAT 7%)</td>
+                                    <td class="text-end" t-out="'{0:,.2f}'.format(o.amount_tax)"/>
+                                </tr>
+                                <tr>
+                                    <td class="text-center" colspan="2">ราคาสุทธิ</td>
+                                    <td class="text-end" t-out="'{0:,.2f}'.format(o.amount_total)"/>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="my-4"/>
+
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Signature Template -->
+    <template id="report_account_move_request_signature">
+        <div class="my-5">
+            <div class="my-2 d-inline-block">
+                <div>ลงชื่อ                    <t t-out="'.' * 80"/>
+ ผู้ขอเบิก</div>
+                <div class="text-center my-2">
+                    (                    <span t-out="o.create_uid.name"/>
+ )
+                </div>
+                <div class="text-center">
+                    วันที่ ......../......../..........
+                </div>
+            </div>
+        </div>
+
+        <div class="my-5"/>
+
+        <div class="my-5">
+            <div class="my-2 d-inline-block">
+                <div>ลงชื่อ                    <t t-out="'.' * 80"/>
+ ผู้อนุมัติ</div>
+                <div class="text-center my-2">
+                    ( ........................................... )
+                </div>
+                <div class="text-center">
+                    วันที่ ......../......../..........
+                </div>
+            </div>
+        </div>
+    </template>
+</odoo>
