@@ -6,7 +6,7 @@
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
-            <xpath expr="//sheet" position="after">
+            <xpath expr="//field[@name='origin']" position="before">
                 <field
                     name="egp_status"
                     readonly="1"
