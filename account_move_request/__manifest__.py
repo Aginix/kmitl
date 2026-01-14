@@ -20,7 +20,7 @@
     ],
     "assets": {
         "web.assets_frontend": [
-            "account_move_request_portal/static/src/js/account_move_request_portal_sidebar.js",
+            "account_move_request/static/src/js/account_move_request_sidebar.js",
         ],
     },
     "installable": True,

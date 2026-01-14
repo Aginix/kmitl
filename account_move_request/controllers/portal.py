@@ -79,7 +79,7 @@ class AccountMoveRequestPortal(CustomerPortal):
         auth="public",
         website=True,
     )
-    def portal_my_account_move_request(self, request_id=None, access_token=None, **kw):
+    def portal_my_account_move_request(self, report_type=None, download=False, request_id=None, access_token=None, **kw):
         """Display single account move request detail"""
         try:
             move_request_sudo = self._document_check_access(
@@ -87,6 +87,9 @@ class AccountMoveRequestPortal(CustomerPortal):
             )
         except (AccessError, MissingError):
             return request.redirect("/my")
+
+        if report_type in ('html', 'pdf', 'text'):
+            return self._show_report(model=move_request_sudo, report_type=report_type, report_ref='account_move_request.action_report_account_move_request', download=download)
 
         values = self._account_move_request_get_page_view_values(
             move_request_sudo, access_token, **kw
