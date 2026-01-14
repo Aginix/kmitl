@@ -14,7 +14,11 @@ class PurchaseRequest(models.Model):
         ("done", "done e-GP")
     ]
 
-    is_egp = fields.Boolean(string="e-GP")
+    is_egp = fields.Boolean(
+        string="e-GP",
+        compute="_compute_is_egp",
+        store=True,
+    )
     egp_project_id = fields.Char(string="เลขที่โครงการ e-GP", tracking=True)
     egp_project_url = fields.Char(
         string="ลิงค์ e-GP", compute="_compute_egp_project_url", readonly=True
@@ -42,11 +46,10 @@ class PurchaseRequest(models.Model):
         project_id = self.egp_project_id
         return f"https://process.gprocurement.go.th/egp2procmainWeb/jsp/public_announ_search.jsp?projectId={project_id}&homeflag=QR"
 
-    @api.onchange('estimated_cost')
-    def _onchange_estimated_cost(self):
+    @api.depends('estimated_cost')
+    def _compute_is_egp(self):
         for rec in self:
-            if rec.estimated_cost and rec.estimated_cost > 100000:
-                rec.is_egp = True
+            rec.is_egp = bool(rec.estimated_cost and rec.estimated_cost > 100000)
 
     def _show_egp_create_purchase_order_button(self):
         for rec in self:
@@ -61,11 +64,6 @@ class PurchaseRequest(models.Model):
         )
         for record in self:
             record.can_edit_egp = bool(user_in_group and record.egp_status == "waiting")
-
-    # @api.depends("estimated_cost", "state")
-    # def _compute_is_egp(self):
-    #     for record in self:
-    #         record.is_egp = record.estimated_cost > 100000
 
     def _hide_create_po_button(self):
         super()._hide_create_po_button()

@@ -19,7 +19,7 @@
                 <field name="can_edit_egp" invisible="1" />
                 <field
                     name="is_egp"
-                    attrs="{'readonly': [('estimated_cost', '>', 100000)]}"
+                    attrs="{'readonly': ['|', ('estimated_cost', '>', 100000), ('is_editable', '=', False)]}"
                 />
             </xpath>
             <xpath expr="//sheet/notebook" position="inside">
