@@ -6,8 +6,10 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['l10n_th_gov_work_acceptance'],
+    'depends': ['l10n_th_gov_work_acceptance', 'base_tier_validation_comment'],
     "data": [
+        "data/server_action.xml",
+        "data/tier.definition.csv",
         "views/work_acceptance_views.xml"
     ],
     'installable': True,

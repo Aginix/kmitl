@@ -43,7 +43,7 @@
                 <button
                     name="action_view_move_request"
                     type="object"
-                    icon="fa-list"
+                    icon="fa-exchange"
                     class="oe_highlight"
                     attrs="{'invisible': [('move_request_count', '=', 0)]}"
                 >

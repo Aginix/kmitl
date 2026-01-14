@@ -238,4 +238,12 @@
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request_security.group_purchase_request_user_all')])]"
         />
     </record>
+
+    <!-- default role Admin  -->
+    <record id="base_exception.group_exception_rule_manager" model="res.groups">
+        <field name="users" eval="[(4, ref('base.user_admin'))]" />
+    </record>
+    <record id="budget.group_budget_commitment" model="res.groups">
+        <field name="users" eval="[(4, ref('base.user_admin'))]" />
+    </record>
 </odoo>
