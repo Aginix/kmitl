@@ -13,22 +13,22 @@
         parent="menu_sarabun_root"
         sequence="10"/>
 
-    <menuitem id="menu_sarabun_document_outgoing"
-        name="Outgoing (ขาออก)"
-        parent="menu_sarabun_documents"
-        action="action_sarabun_document_outgoing"
-        sequence="5"/>
-
     <menuitem id="menu_sarabun_document_incoming"
         name="Incoming (ขาเข้า)"
         parent="menu_sarabun_documents"
         action="action_sarabun_document_incoming"
-        sequence="10"/>
+        sequence="5"/>
 
     <menuitem id="menu_sarabun_document_inbox"
         name="Inbox (รอดำเนินการ)"
         parent="menu_sarabun_documents"
         action="action_sarabun_document_inbox"
+        sequence="10"/>
+
+    <menuitem id="menu_sarabun_document_outgoing"
+        name="Outgoing (ขาออก)"
+        parent="menu_sarabun_documents"
+        action="action_sarabun_document_outgoing"
         sequence="15"/>
 
     <menuitem id="menu_sarabun_routing_pending"

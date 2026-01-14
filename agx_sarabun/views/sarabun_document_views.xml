@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Tree View -->
+    <!-- Tree View (Default) -->
     <record id="sarabun_document_view_tree" model="ir.ui.view">
         <field name="name">sarabun.document.view.tree</field>
         <field name="model">sarabun.document</field>
@@ -11,6 +11,42 @@
                 <field name="document_type_id"/>
                 <field name="subject"/>
                 <field name="sender_display" string="From"/>
+                <field name="recipient" string="To"/>
+                <field name="urgency" optional="hide"/>
+                <field name="routing_progress" widget="progressbar"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'sent'" decoration-success="state == 'completed'" decoration-danger="state == 'cancelled'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Tree View for Incoming Documents (กล่องขาเข้า) -->
+    <record id="sarabun_document_view_tree_incoming" model="ir.ui.view">
+        <field name="name">sarabun.document.view.tree.incoming</field>
+        <field name="model">sarabun.document</field>
+        <field name="arch" type="xml">
+            <tree string="Incoming Documents" decoration-info="state == 'draft'" decoration-warning="state == 'sent'" decoration-success="state == 'completed'" decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="document_type_id"/>
+                <field name="subject"/>
+                <field name="sender_display" string="From"/>
+                <field name="urgency" optional="hide"/>
+                <field name="routing_progress" widget="progressbar"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'sent'" decoration-success="state == 'completed'" decoration-danger="state == 'cancelled'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Tree View for Outgoing Documents (กล่องขาออก) -->
+    <record id="sarabun_document_view_tree_outgoing" model="ir.ui.view">
+        <field name="name">sarabun.document.view.tree.outgoing</field>
+        <field name="model">sarabun.document</field>
+        <field name="arch" type="xml">
+            <tree string="Outgoing Documents" decoration-info="state == 'draft'" decoration-warning="state == 'sent'" decoration-success="state == 'completed'" decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="document_type_id"/>
+                <field name="subject"/>
                 <field name="recipient" string="To"/>
                 <field name="urgency" optional="hide"/>
                 <field name="routing_progress" widget="progressbar"/>
@@ -291,6 +327,10 @@
         <field name="view_mode">tree,kanban,form</field>
         <field name="domain">[('routing_line_ids.user_id', '=', uid)]</field>
         <field name="context">{'search_default_pending_action': 1}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('sarabun_document_view_tree_incoming')}),
+            (0, 0, {'view_mode': 'kanban', 'view_id': ref('sarabun_document_view_kanban')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('sarabun_document_view_form')})]"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 No pending documents
@@ -308,6 +348,10 @@
         <field name="view_mode">tree,kanban,form</field>
         <field name="domain">[('sender_user_id', '=', uid)]</field>
         <field name="context">{}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('sarabun_document_view_tree_outgoing')}),
+            (0, 0, {'view_mode': 'kanban', 'view_id': ref('sarabun_document_view_kanban')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('sarabun_document_view_form')})]"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create your first outgoing document
@@ -324,9 +368,13 @@
         <field name="res_model">sarabun.document</field>
         <field name="view_mode">tree,kanban,form</field>
         <field name="domain">[('routing_line_ids.user_id', '=', uid)]</field>
-        <field name="context">{}</field>
+        <field name="context">{'create': False}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('sarabun_document_view_tree_incoming')}),
+            (0, 0, {'view_mode': 'kanban', 'view_id': ref('sarabun_document_view_kanban')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('sarabun_document_view_form')})]"/>
         <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
+            <p class="o_view_nocontent_neutral_face">
                 No incoming documents
             </p>
             <p>
