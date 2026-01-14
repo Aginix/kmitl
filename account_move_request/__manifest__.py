@@ -16,7 +16,13 @@
         "report/paperformat.xml",
         "report/report_account_move_request_action.xml",
         "report/report_account_move_request.xml",
+        "views/portal_templates.xml"
     ],
+    "assets": {
+        "web.assets_frontend": [
+            "account_move_request_portal/static/src/js/account_move_request_portal_sidebar.js",
+        ],
+    },
     "installable": True,
     "application": False,
 }

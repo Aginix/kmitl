@@ -70,7 +70,7 @@ class AccountMoveRequestPortal(CustomerPortal):
             "sortby": sortby,
         }
         return request.render(
-            "account_move_request_portal.portal_my_account_move_requests", values
+            "account_move_request.portal_my_account_move_requests", values
         )
 
     @http.route(
@@ -92,7 +92,7 @@ class AccountMoveRequestPortal(CustomerPortal):
             move_request_sudo, access_token, **kw
         )
         return request.render(
-            "account_move_request_portal.portal_account_move_request_page", values
+            "account_move_request.portal_account_move_request_page", values
         )
 
     def _account_move_request_get_page_view_values(

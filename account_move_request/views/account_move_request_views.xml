@@ -30,11 +30,17 @@
                     <button name="action_draft" string="Reset to draft" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', '!=', 'submitted')]}" groups="account.group_account_manager" />
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', '!=', 'validated')]}" />
                     <field name="state" widget="statusbar" statusbar_visible="draft,submitted,validated" />
+
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_bill" type="object" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible': [('bill_count', '=', 0)]}">
                             <field name="bill_count" widget="statinfo" string="Bill" />
+                        </button>
+                        <button name="open_preview" type="object" class="oe_stat_button" icon="fa-globe">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Preview</span>
+                            </div>
                         </button>
                     </div>
                     <div class="oe_title">

@@ -10,29 +10,38 @@
 
                     <!-- CSS styling -->
                     <style>
-                        /* Thai font */
                         * {
-                            font-family: "THSarabunNew", Arial, sans-serif;
-                            --bs-body-font-size: 16pt;
+                        font-family: "THSarabunNew", Arial, sans-serif;
+                        --bs-body-font-size: 16pt;
                         }
-                        p, span, div {
-                            font-size: 16pt;
-                            line-height: 1.2;
+                        table.budget tr td:first-child {
+                        width: 30%;
+                        }
+                        p,
+                        span,
+                        div {
+                        font-size: 16pt;
+                        line-height: 1.2;
                         }
                     </style>
 
                     <div class="page">
                         <!-- Company Logo (top-left) -->
                         <div style="position: absolute; top: 0px; left: 0px">
-                            <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 110px" alt="Logo"/>
+                            <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 110px" alt="Logo" />
                         </div>
 
-                        <!-- Document Header -->
+                        <div class="oe_structure" />
+                        <div style="height: 1px" />
+
                         <div class="page-header mt-5 mb-5">
                             <h3 class="text-center fw-bolder" style="line-height: 1.575">
                                 ใบขอเบิกเงิน
                             </h3>
                         </div>
+
+                        <div class="my-5" />
+                        <div class="my-5" />
 
                         <!-- Document Information -->
                         <div class="row pt-8">
