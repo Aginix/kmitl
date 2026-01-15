@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View sarabun.document form -->
+    <record id="view_sarabun_document_form" model="ir.ui.view">
+        <field name="name">view.sarabun.document.form</field>
+        <field name="model">sarabun.document</field>
+        <field name="inherit_id" ref="agx_sarabun.sarabun_document_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <button class="oe_stat_button" type="object" name="open_preview" icon="fa-search-plus" string="Preview" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

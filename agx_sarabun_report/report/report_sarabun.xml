@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="report_sarabun_document_template">
+        <t t-call="web.external_layout">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page">
+                    <h2 class="text-center">
+                        <strong><t t-esc="doc.name"/></strong>
+                    </h2>
+
+                    <h3 class="mt16">
+                        <strong>Subject:</strong>
+                        <t t-esc="doc.subject"/>
+                    </h3>
+
+                    <p><strong>Date:</strong> <t t-esc="doc.date"/></p>
+                    <p><strong>From:</strong> <t t-esc="doc.sender_display"/></p>
+                    <p><strong>To:</strong> <t t-esc="doc.recipient"/></p>
+
+                    <hr/>
+
+                    <div class="mt16">
+                        <strong>Content:</strong>
+                        <div t-raw="doc.content"/>
+                    </div>
+
+                    <hr/>
+
+                    <div class="mt16">
+                        <strong>Status:</strong>
+                        <t t-esc="doc.state"/>
+                    </div>
+
+                    <t t-if="doc.attachment_ids">
+                        <h4 class="mt32">Attachments</h4>
+                        <ul>
+                            <t t-foreach="doc.attachment_ids" t-as="att">
+                                <li><t t-esc="att.name"/></li>
+                            </t>
+                        </ul>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_sarabun_documents" model="ir.actions.report">
+        <field name="name">Sarabun Document</field>
+        <field name="binding_model_id" ref="agx_sarabun.model_sarabun_document"/>
+        <field name="model">sarabun.document</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">agx_sarabun_report.report_sarabun_document_template</field>
+        <field name="report_file">agx_sarabun_report.report_sarabun_document_template</field>
+        <field name="print_report_name">'Sarabun Document - %s' % (object.name)</field>
+        <field name="paperformat_id" ref="agx_sarabun_report.paperformat_sarabun_document_report"/>
+    </record>
+
+</odoo>
