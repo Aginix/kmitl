@@ -1,74 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Tree View for standalone view (Inbox) -->
+    <!-- Tree View (Route Definition) -->
     <record id="sarabun_routing_line_view_tree" model="ir.ui.view">
         <field name="name">sarabun.routing.line.view.tree</field>
         <field name="model">sarabun.routing.line</field>
         <field name="arch" type="xml">
-            <tree string="My Pending Documents" decoration-info="state == 'pending'" decoration-success="state in ('acknowledged', 'approved')" decoration-danger="state == 'rejected'">
+            <tree string="Routing Lines">
+                <field name="sequence" widget="handle"/>
                 <field name="document_id"/>
-                <field name="document_subject"/>
                 <field name="routing_type"/>
+                <field name="recipient_type"/>
                 <field name="recipient_name"/>
-                <field name="state" widget="badge"/>
-                <field name="signed_as_text" optional="show"/>
-                <field name="actioned_date"/>
-                <button name="action_acknowledge" string="Acknowledge" type="object" icon="fa-check" attrs="{'invisible': ['|', ('state', '!=', 'pending'), ('routing_type', '=', 'approve')]}"/>
-                <button name="action_approve" string="Approve" type="object" icon="fa-thumbs-up" class="text-success" attrs="{'invisible': ['|', ('state', '!=', 'pending'), ('routing_type', '!=', 'approve')]}"/>
-                <button name="action_reject" string="Reject" type="object" icon="fa-thumbs-down" class="text-danger" attrs="{'invisible': [('state', '!=', 'pending')]}"/>
-                <button name="action_forward" string="Forward" type="object" icon="fa-share" attrs="{'invisible': [('state', '!=', 'pending')]}"/>
             </tree>
         </field>
     </record>
 
-    <!-- Form View -->
+    <!-- Form View (Route Definition) -->
     <record id="sarabun_routing_line_view_form" model="ir.ui.view">
         <field name="name">sarabun.routing.line.view.form</field>
         <field name="model">sarabun.routing.line</field>
         <field name="arch" type="xml">
             <form string="Routing Line">
-                <header>
-                    <button name="action_acknowledge" string="Acknowledge" type="object" class="btn-primary" attrs="{'invisible': ['|', ('state', '!=', 'pending'), ('routing_type', '=', 'approve')]}"/>
-                    <button name="action_approve" string="Approve" type="object" class="btn-success" attrs="{'invisible': ['|', ('state', '!=', 'pending'), ('routing_type', '!=', 'approve')]}"/>
-                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'pending')]}"/>
-                    <button name="action_forward" string="Forward" type="object" attrs="{'invisible': [('state', '!=', 'pending')]}"/>
-                    <field name="state" widget="statusbar"/>
-                </header>
                 <sheet>
                     <group>
                         <group>
                             <field name="document_id" readonly="1"/>
-                            <field name="document_subject" readonly="1"/>
+                            <field name="sequence"/>
                             <field name="routing_type"/>
                         </group>
                         <group>
                             <field name="recipient_type"/>
-                            <field name="user_id" attrs="{'invisible': [('recipient_type', '!=', 'user')]}"/>
-                            <field name="department_id" attrs="{'invisible': [('recipient_type', '!=', 'department')]}"/>
-                            <field name="role_id" attrs="{'invisible': [('recipient_type', '!=', 'role')]}"/>
+                            <field name="user_id" attrs="{'invisible': [('recipient_type', '!=', 'user')], 'required': [('recipient_type', '=', 'user')]}"/>
+                            <field name="department_text" attrs="{'invisible': [('recipient_type', '!=', 'department')]}"/>
+                            <field name="department_id" attrs="{'invisible': [('recipient_type', '!=', 'department')]}" string="Route To (System)"/>
+                            <field name="role_id" attrs="{'invisible': [('recipient_type', '!=', 'role')], 'required': [('recipient_type', '=', 'role')]}"/>
                         </group>
                     </group>
-                    <group>
-                        <group>
-                            <field name="actioned_by"/>
-                            <field name="actioned_date"/>
-                            <field name="signed_as_text" attrs="{'invisible': [('signed_as_text', '=', False)]}"/>
-                        </group>
-                        <group>
-                            <field name="forward_to_user_id" attrs="{'invisible': [('state', '!=', 'forwarded')]}"/>
-                            <field name="forward_to_department_id" attrs="{'invisible': [('state', '!=', 'forwarded')]}"/>
-                        </group>
-                    </group>
-                    <group>
-                        <field name="comment"/>
-                    </group>
-                    <field name="sequence" invisible="1"/>
-                    <field name="is_notified" invisible="1"/>
-                    <field name="notification_date" invisible="1"/>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_ids"/>
-                </div>
             </form>
         </field>
     </record>
@@ -80,42 +48,17 @@
         <field name="arch" type="xml">
             <search string="Routing Lines">
                 <field name="document_id"/>
-                <field name="document_subject"/>
                 <field name="user_id"/>
                 <field name="department_id"/>
-                <separator/>
-                <filter string="Pending" name="pending" domain="[('state', '=', 'pending')]"/>
-                <filter string="My Pending" name="my_pending" domain="[('user_id', '=', uid), ('state', '=', 'pending')]"/>
-                <filter string="Acknowledged" name="acknowledged" domain="[('state', '=', 'acknowledged')]"/>
-                <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]"/>
-                <filter string="Rejected" name="rejected" domain="[('state', '=', 'rejected')]"/>
                 <separator/>
                 <filter string="For Acknowledgement" name="acknowledge" domain="[('routing_type', '=', 'acknowledge')]"/>
                 <filter string="For Approval" name="approve" domain="[('routing_type', '=', 'approve')]"/>
                 <separator/>
                 <group expand="0" string="Group By">
-                    <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
                     <filter string="Type" name="group_type" context="{'group_by': 'routing_type'}"/>
                     <filter string="Document" name="group_document" context="{'group_by': 'document_id'}"/>
                 </group>
             </search>
-        </field>
-    </record>
-
-    <!-- Action for My Pending -->
-    <record id="action_sarabun_routing_line_pending" model="ir.actions.act_window">
-        <field name="name">My Pending Actions</field>
-        <field name="res_model">sarabun.routing.line</field>
-        <field name="view_mode">tree,form</field>
-        <field name="domain">[('user_id', '=', uid), ('state', '=', 'pending')]</field>
-        <field name="context">{'search_default_my_pending': 1}</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                No pending actions
-            </p>
-            <p>
-                Documents requiring your action will appear here.
-            </p>
         </field>
     </record>
 </odoo>

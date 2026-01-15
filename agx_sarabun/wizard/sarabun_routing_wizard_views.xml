@@ -118,6 +118,24 @@
         <field name="target">new</field>
     </record>
 
+    <!-- Recipient Reject Wizard Form -->
+    <record id="sarabun_recipient_reject_wizard_view_form" model="ir.ui.view">
+        <field name="name">sarabun.recipient.reject.wizard.form</field>
+        <field name="model">sarabun.recipient.reject.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Reject Document">
+                <group>
+                    <field name="recipient_id" invisible="1"/>
+                    <field name="comment" placeholder="Please provide the reason for rejection..." required="1"/>
+                </group>
+                <footer>
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
     <!-- Signing Position Wizard Form -->
     <record id="sarabun_signing_wizard_view_form" model="ir.ui.view">
         <field name="name">sarabun.signing.wizard.form</field>
@@ -126,6 +144,7 @@
             <form string="Select Signing Position">
                 <group>
                     <field name="routing_line_id" invisible="1"/>
+                    <field name="recipient_id" invisible="1"/>
                     <field name="action_type" invisible="1"/>
                     <field name="available_role_ids" invisible="1"/>
                 </group>

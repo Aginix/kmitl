@@ -30,6 +30,7 @@
                 <field name="document_type_id"/>
                 <field name="subject"/>
                 <field name="sender_display" string="From"/>
+                <field name="activity_ids" widget="list_activity" optional="show"/>
                 <field name="urgency" optional="hide"/>
                 <field name="routing_progress" widget="progressbar"/>
                 <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'sent'" decoration-success="state == 'completed'" decoration-danger="state == 'cancelled'"/>
@@ -63,8 +64,7 @@
             <form string="Document">
                 <header>
                     <button name="action_send" string="Send" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                    <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}"/>
-                    <button name="action_reset_to_draft" string="Reset to Draft" type="object" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
+                    <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,sent,completed"/>
                 </header>
                 <sheet>
@@ -137,7 +137,8 @@
                             <group>
                                 <field name="route_template_id" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             </group>
-                            <field name="routing_line_ids" attrs="{'readonly': [('state', 'not in', ['draft'])]}">
+                            <!-- Route Definition (editable in draft) -->
+                            <field name="routing_line_ids" attrs="{'invisible': [('state', '!=', 'draft')]}">
                                 <tree string="Routing" editable="bottom">
                                     <field name="sequence" widget="handle"/>
                                     <field name="routing_type"/>
@@ -146,10 +147,20 @@
                                     <field name="department_text" attrs="{'invisible': [('recipient_type', '!=', 'department')]}"/>
                                     <field name="department_id" attrs="{'invisible': [('recipient_type', '!=', 'department')]}" optional="hide" string="Route To (System)"/>
                                     <field name="role_id" attrs="{'invisible': [('recipient_type', '!=', 'role')], 'required': [('recipient_type', '=', 'role')]}"/>
-                                    <field name="state" widget="badge" decoration-info="state == 'pending'" decoration-success="state in ('acknowledged', 'approved', 'forwarded')" decoration-danger="state == 'rejected'"/>
+                                </tree>
+                            </field>
+                            <!-- Recipients Status (readonly after sent) -->
+                            <field name="recipient_ids" attrs="{'invisible': [('state', '=', 'draft')]}" readonly="1">
+                                <tree string="Recipients" decoration-muted="state == 'waiting'" decoration-info="state == 'pending'" decoration-success="state in ('acknowledged', 'approved')" decoration-danger="state == 'rejected'">
+                                    <field name="sequence" string="#"/>
+                                    <field name="routing_type"/>
+                                    <field name="recipient_name" string="Recipient"/>
+                                    <field name="state" widget="badge"/>
+                                    <field name="sent_date" optional="show"/>
+                                    <field name="read_date" optional="hide"/>
+                                    <field name="actioned_date" optional="show"/>
                                     <field name="signed_as_text" optional="show"/>
                                     <field name="actioned_by" optional="hide"/>
-                                    <field name="actioned_date" optional="hide"/>
                                     <field name="comment" optional="hide"/>
                                 </tree>
                             </field>
@@ -207,8 +218,8 @@
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
+                    <!-- <field name="activity_ids" widget="mail_activity" /> -->
+                    <field name="message_ids" widget="mail_thread" />
                 </div>
             </form>
         </field>
@@ -228,8 +239,8 @@
                 <field name="document_type_id"/>
                 <separator/>
                 <filter string="My Documents" name="my_documents" domain="[('sender_user_id', '=', uid)]"/>
-                <filter string="To Me" name="to_me" domain="[('routing_line_ids.user_id', '=', uid)]"/>
-                <filter string="Pending Action" name="pending_action" domain="[('routing_line_ids.user_id', '=', uid), ('routing_line_ids.state', '=', 'pending')]"/>
+                <filter string="To Me" name="to_me" domain="[('recipient_ids.user_id', '=', uid)]"/>
+                <filter string="Pending Action" name="pending_action" domain="[('recipient_ids.user_id', '=', uid), ('recipient_ids.state', '=', 'pending')]"/>
                 <separator/>
                 <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
                 <filter string="Sent" name="sent" domain="[('state', '=', 'sent')]"/>
@@ -325,8 +336,8 @@
         <field name="name">Inbox</field>
         <field name="res_model">sarabun.document</field>
         <field name="view_mode">tree,kanban,form</field>
-        <field name="domain">[('routing_line_ids.user_id', '=', uid)]</field>
-        <field name="context">{'search_default_pending_action': 1}</field>
+        <field name="domain">[('recipient_ids.user_id', '=', uid), ('recipient_ids.state', '=', 'pending')]</field>
+        <field name="context">{}</field>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('sarabun_document_view_tree_incoming')}),
             (0, 0, {'view_mode': 'kanban', 'view_id': ref('sarabun_document_view_kanban')}),

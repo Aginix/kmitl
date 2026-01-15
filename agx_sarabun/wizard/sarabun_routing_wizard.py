@@ -98,6 +98,32 @@ class SarabunDepartmentLookupWizard(models.TransientModel):
         return {"type": "ir.actions.act_window_close"}
 
 
+class SarabunRecipientRejectWizard(models.TransientModel):
+    """Reject wizard for document recipient"""
+
+    _name = "sarabun.recipient.reject.wizard"
+    _description = "Reject Document Wizard (Recipient)"
+
+    recipient_id = fields.Many2one(
+        comodel_name="sarabun.document.recipient",
+        string="Recipient",
+        required=True,
+    )
+    comment = fields.Text(
+        string="Rejection Reason",
+        required=True,
+    )
+
+    def action_reject(self):
+        """Confirm rejection with comment"""
+        self.ensure_one()
+        if not self.comment:
+            raise UserError(_("Please provide a rejection reason."))
+
+        self.recipient_id.action_do_reject(self.comment)
+        return {"type": "ir.actions.act_window_close"}
+
+
 class SarabunNumberSelectionWizard(models.TransientModel):
     """Wizard to select document number (reserved, available, or manual)"""
 

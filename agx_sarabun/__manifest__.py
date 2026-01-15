@@ -21,6 +21,7 @@
         "views/sarabun_route_template_views.xml",
         "views/sarabun_document_views.xml",
         "views/sarabun_routing_line_views.xml",
+        "views/sarabun_document_recipient_views.xml",
         "views/sarabun_document_sequence_views.xml",
         "views/sarabun_role_views.xml",
         "views/hr_department_views.xml",

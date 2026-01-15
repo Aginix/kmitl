@@ -34,7 +34,7 @@
     <menuitem id="menu_sarabun_routing_pending"
         name="Pending Actions"
         parent="menu_sarabun_documents"
-        action="action_sarabun_routing_line_pending"
+        action="action_sarabun_recipient_inbox"
         sequence="20"/>
 
     <menuitem id="menu_sarabun_document_all"

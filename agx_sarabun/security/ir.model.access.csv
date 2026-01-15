@@ -22,3 +22,6 @@ access_sarabun_number_selection_wizard,sarabun.number.selection.wizard,model_sar
 access_sarabun_role_user,sarabun.role.user,model_sarabun_role,group_sarabun_user,1,0,0,0
 access_sarabun_role_manager,sarabun.role.manager,model_sarabun_role,group_sarabun_manager,1,1,1,1
 access_sarabun_signing_wizard,sarabun.signing.wizard,model_sarabun_signing_wizard,group_sarabun_user,1,1,1,1
+access_sarabun_document_recipient_user,sarabun.document.recipient.user,model_sarabun_document_recipient,group_sarabun_user,1,1,1,0
+access_sarabun_document_recipient_manager,sarabun.document.recipient.manager,model_sarabun_document_recipient,group_sarabun_manager,1,1,1,1
+access_sarabun_recipient_reject_wizard,sarabun.recipient.reject.wizard,model_sarabun_recipient_reject_wizard,group_sarabun_user,1,1,1,1

@@ -199,6 +199,14 @@ class SarabunDocument(models.Model):
         states=READONLY_STATES,
     )
 
+    # === Recipients (Delivery Tracking) ===
+    recipient_ids = fields.One2many(
+        comodel_name="sarabun.document.recipient",
+        inverse_name="document_id",
+        string="Recipients",
+        readonly=True,
+    )
+
     # === Computed Routing Status ===
     routing_progress = fields.Float(
         string="Routing Progress",
@@ -287,28 +295,30 @@ class SarabunDocument(models.Model):
             else:
                 record.origin_reference = False
 
-    @api.depends("routing_line_ids", "routing_line_ids.state")
+    @api.depends("recipient_ids", "recipient_ids.state")
     def _compute_routing_progress(self):
         for record in self:
-            total = len(record.routing_line_ids)
+            total = len(record.recipient_ids)
             if total:
                 done = len(
-                    record.routing_line_ids.filtered(
-                        lambda l: l.state not in ("pending",)
+                    record.recipient_ids.filtered(
+                        lambda r: r.state not in ("waiting", "pending")
                     )
                 )
                 record.routing_progress = (done / total) * 100
             else:
                 record.routing_progress = 0
 
-    @api.depends("routing_line_ids", "routing_line_ids.state")
+    @api.depends("recipient_ids", "recipient_ids.state")
     def _compute_routing_counts(self):
         for record in self:
             record.pending_routing_count = len(
-                record.routing_line_ids.filtered(lambda l: l.state == "pending")
+                record.recipient_ids.filtered(lambda r: r.state == "pending")
             )
             record.completed_routing_count = len(
-                record.routing_line_ids.filtered(lambda l: l.state != "pending")
+                record.recipient_ids.filtered(
+                    lambda r: r.state not in ("waiting", "pending")
+                )
             )
 
     @api.depends("attachment_ids")
@@ -376,7 +386,7 @@ class SarabunDocument(models.Model):
 
     # === Actions ===
     def action_send(self):
-        """Send document and activate routing"""
+        """Send document and create recipients from routing lines"""
         for document in self:
             if document.state != "draft":
                 raise UserError(_("Only draft documents can be sent."))
@@ -388,10 +398,26 @@ class SarabunDocument(models.Model):
             if document.name == "/":
                 document.name = document._generate_document_number()
 
+            # Create recipients from routing lines (all start as waiting)
+            Recipient = self.env["sarabun.document.recipient"]
+            for line in document.routing_line_ids:
+                Recipient.create({
+                    "document_id": document.id,
+                    "routing_line_id": line.id,
+                    "sequence": line.sequence,
+                    "routing_type": line.routing_type,
+                    "recipient_type": line.recipient_type,
+                    "user_id": line.user_id.id if line.user_id else False,
+                    "department_id": line.department_id.id if line.department_id else False,
+                    "department_text": line.department_text,
+                    "role_id": line.role_id.id if line.role_id else False,
+                    "state": "waiting",
+                })
+
             document.state = "sent"
 
-            # Notify first pending recipients
-            document._notify_pending_recipients()
+            # Activate first recipient (sequential delivery)
+            document._activate_next_recipient()
 
             document.message_post(
                 body=_("Document sent for routing by %s") % document.sender_user_id.name,
@@ -399,30 +425,15 @@ class SarabunDocument(models.Model):
             )
 
     def action_cancel(self):
-        """Cancel document"""
+        """Cancel draft document - like email, once sent cannot be cancelled"""
         for document in self:
-            if document.state == "completed":
-                raise UserError(_("Completed documents cannot be cancelled."))
+            if document.state != "draft":
+                raise UserError(_("Only draft documents can be cancelled. Once sent, documents cannot be cancelled."))
+
             document.state = "cancelled"
             document.message_post(
                 body=_("Document cancelled."),
                 message_type="notification",
-            )
-
-    def action_reset_to_draft(self):
-        """Reset cancelled document to draft"""
-        for document in self:
-            if document.state != "cancelled":
-                raise UserError(_("Only cancelled documents can be reset to draft."))
-            document.state = "draft"
-            # Reset routing lines
-            document.routing_line_ids.write(
-                {
-                    "state": "pending",
-                    "actioned_by": False,
-                    "actioned_date": False,
-                    "comment": False,
-                }
             )
 
     def action_view_origin(self):
@@ -523,30 +534,73 @@ class SarabunDocument(models.Model):
 
         return f"สจล./{seq}"
 
-    def _check_routing_completion(self):
-        """Check if all routing is complete and update document state"""
+    def _activate_next_recipient(self):
+        """Activate the next waiting recipient (sequential delivery)"""
         self.ensure_one()
 
         if self.state != "sent":
             return
 
-        pending_lines = self.routing_line_ids.filtered(lambda l: l.state == "pending")
+        # Find next waiting recipient
+        next_recipient = self.recipient_ids.filtered(
+            lambda r: r.state == "waiting"
+        ).sorted("sequence")[:1]
 
-        rejected_lines = self.routing_line_ids.filtered(lambda l: l.state == "rejected")
+        if next_recipient:
+            # Activate this recipient
+            next_recipient.write({
+                "state": "pending",
+                "sent_date": fields.Datetime.now(),
+            })
+            next_recipient._send_notification()
+        else:
+            # No more waiting recipients - check if completed
+            self._check_completion()
 
-        if rejected_lines:
-            # Notify sender about rejection
-            self._on_routing_rejected(rejected_lines[0])
-        elif not pending_lines:
+    def _check_completion(self):
+        """Check if all recipients are done and update document state"""
+        self.ensure_one()
+
+        if self.state != "sent":
+            return
+
+        # Check for rejected recipients
+        rejected = self.recipient_ids.filtered(lambda r: r.state == "rejected")
+        if rejected:
+            # Document stays in sent state, origin notified
+            return
+
+        # Check if all are completed (not waiting or pending)
+        waiting_or_pending = self.recipient_ids.filtered(
+            lambda r: r.state in ("waiting", "pending")
+        )
+
+        if not waiting_or_pending:
             self.state = "completed"
             self._on_routing_completed()
 
-    def _notify_pending_recipients(self):
-        """Send notifications to pending recipients"""
-        for line in self.routing_line_ids.filtered(
-            lambda l: l.state == "pending" and not l.is_notified
-        ):
-            line._send_notification()
+    def _mark_recipient_read(self):
+        """Mark the current user's pending recipient as read"""
+        self.ensure_one()
+        user = self.env.user
+
+        # Find pending recipients for current user
+        for recipient in self.recipient_ids.filtered(lambda r: r.state == "pending"):
+            if recipient._can_user_access(user):
+                recipient.mark_as_read()
+
+    def read(self, fields=None, load="_classic_read"):
+        """Override to track read_date when document form is opened"""
+        result = super().read(fields=fields, load=load)
+
+        # Only track when reading full record (form view)
+        # Avoid tracking when reading partial fields (list view)
+        if fields is None or "subject" in fields:
+            for record in self:
+                if record.state == "sent":
+                    record.sudo()._mark_recipient_read()
+
+        return result
 
     def _on_routing_completed(self):
         """Called when all routing lines are completed"""
@@ -564,11 +618,11 @@ class SarabunDocument(models.Model):
             except Exception:
                 pass
 
-    def _on_routing_rejected(self, routing_line):
-        """Called when a routing line is rejected"""
+    def _on_routing_rejected(self, recipient):
+        """Called when a recipient rejects the document"""
         self.message_post(
             body=_("Document rejected by %s. Reason: %s")
-            % (routing_line.actioned_by.name, routing_line.comment or _("No reason")),
+            % (recipient.actioned_by.name, recipient.comment or _("No reason")),
             message_type="notification",
         )
 
@@ -577,7 +631,7 @@ class SarabunDocument(models.Model):
             try:
                 origin_record = self.env[self.origin_model].browse(self.origin_res_id)
                 if hasattr(origin_record, "_on_sarabun_rejected"):
-                    origin_record._on_sarabun_rejected(self, routing_line)
+                    origin_record._on_sarabun_rejected(self, recipient)
             except Exception:
                 pass
 
