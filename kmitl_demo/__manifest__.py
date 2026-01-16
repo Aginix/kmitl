@@ -17,7 +17,7 @@
         "purchase_request_exception",
         "purchase_request_vendor_kmitl",
         "purchase_request_tender_kmitl",
-        "purchase_request_egp_kmitl",
+        "purchase_request_egp",
         "purchase_request_department",
         "purchase_request_budget",
         "purchase_request_price_tax_included",
