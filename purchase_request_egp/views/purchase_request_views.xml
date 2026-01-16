@@ -1,61 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
     <!-- View purchase.request form -->
     <record id="view_purchase_request_form" model="ir.ui.view">
         <field name="name">view.purchase.request.form (e-GP)</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request.view_purchase_request_form"/>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
         <field name="arch" type="xml">
             <xpath expr="//sheet" position="after">
-                <field name="is_egp" invisible="1"/>
+                <field name="is_egp" invisible="1" />
             </xpath>
             <xpath expr="//sheet/notebook" position="inside">
-                <page string="e-GP" name="egp_page" attrs="{'invisible': [('is_egp', '=', False)]}">
+                <page
+                    string="e-GP"
+                    name="egp_page"
+                    attrs="{'invisible': [('is_egp', '=', False)]}"
+                >
                     <group>
                         <field name="egp_project_id" />
                         <field name="egp_project_url" widget="url" />
                     </group>
-                    <div attrs="{'invisible': [('egp_project_url', '=', False)]}">
-                        <field name="egp_project_url" widget="iframe_viewer" options="{'auto_height': false}" />
+                    <div
+                        attrs="{'invisible': [('egp_project_url', '=', False)]}"
+                        style="width: 100%; height: 800px"
+                    >
+                        <field
+                            name="egp_project_url"
+                            widget="iframe_viewer"
+                            options="{'auto_height': false, 'width': '100%', 'height': '800px'}"
+                        />
                     </div>
                 </page>
             </xpath>
         </field>
     </record>
 
-
     <!-- View purchase.request tree -->
     <record id="view_purchase_request_tree" model="ir.ui.view">
         <field name="name">view.purchase.request.tree (e-GP)</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request.view_purchase_request_tree"/>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_tree" />
         <field name="arch" type="xml">
             <field name="state" position="after">
-                <field name="is_egp" invisible="1"/>
+                <field name="is_egp" invisible="1" />
             </field>
         </field>
     </record>
-
 
     <!-- View purchase.request kanban -->
     <record id="view_purchase_request_kanban" model="ir.ui.view">
         <field name="name">view.purchase.request.kanban (e-GP)</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request.view_purchase_request_kanban"/>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_kanban" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='state']" position="after">
-                <field name="is_egp" invisible="1"/>
+                <field name="is_egp" invisible="1" />
             </xpath>
         </field>
     </record>
-
 
     <!-- View purchase.request search -->
     <record id="view_purchase_request_search" model="ir.ui.view">
         <field name="name">view.purchase.request.search</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request.view_purchase_request_search"/>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_search" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='product_id']" position="after">
                 <field name="egp_project_id" />
@@ -64,21 +71,20 @@
         </field>
     </record>
 
-
     <!-- View purchase.request kanban -->
     <record id="view_purchase_request_kanban" model="ir.ui.view">
         <field name="name">view.purchase.request.kanban</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request.view_purchase_request_kanban"/>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_kanban" />
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('o_kanban_record_bottom')]" position="after">
                 <div class="o_kanban_record_bottom">
                     <div class="oe_kanban_bottom_left">
                         <span>e-GP</span>
-                        <field name="is_egp"/>
+                        <field name="is_egp" />
                     </div>
                     <div class="oe_kanban_bottom_right">
-                        <field name="egp_project_id"/>
+                        <field name="egp_project_id" />
                     </div>
                 </div>
             </xpath>
