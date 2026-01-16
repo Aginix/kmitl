@@ -1,45 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <template id="report_sarabun_document_template">
-        <t t-call="web.external_layout">
-            <t t-foreach="docs" t-as="doc">
-                <div class="page">
-                    <h2 class="text-center">
-                        <strong><t t-esc="doc.name"/></strong>
-                    </h2>
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <t t-foreach="docs" t-as="doc">
+                    <div class="page">
+                        <h2 class="text-center">
+                            <strong><t t-esc="doc.name"/></strong>
+                        </h2>
 
-                    <h3 class="mt16">
-                        <strong>Subject:</strong>
-                        <t t-esc="doc.subject"/>
-                    </h3>
+                        <h3 class="mt16">
+                            <strong>Subject:</strong>
+                            <t t-esc="doc.subject"/>
+                        </h3>
 
-                    <p><strong>Date:</strong> <t t-esc="doc.date"/></p>
-                    <p><strong>From:</strong> <t t-esc="doc.sender_display"/></p>
-                    <p><strong>To:</strong> <t t-esc="doc.recipient"/></p>
+                        <p><strong>Date:</strong> <t t-esc="doc.date"/></p>
+                        <p><strong>From:</strong> <t t-esc="doc.sender_display or ''"/></p>
+                        <p><strong>To:</strong> <t t-esc="doc.recipient or ''"/></p>
 
-                    <hr/>
+                        <hr/>
 
-                    <div class="mt16">
-                        <strong>Content:</strong>
-                        <div t-raw="doc.content"/>
+                        <t t-if="doc.content">
+                            <div class="mt16">
+                                <strong>Content:</strong>
+                                <div t-raw="doc.content"/>
+                            </div>
+                        </t>
+
+                        <hr/>
+
+                        <div class="mt16">
+                            <strong>Status:</strong>
+                            <t t-esc="doc.state or ''"/>
+                        </div>
+
+                        <t t-if="doc.attachment_ids">
+                            <h4 class="mt32">Attachments</h4>
+                            <ul>
+                                <t t-foreach="doc.attachment_ids" t-as="att">
+                                    <li><t t-esc="att.name"/></li>
+                                </t>
+                            </ul>
+                        </t>
                     </div>
-
-                    <hr/>
-
-                    <div class="mt16">
-                        <strong>Status:</strong>
-                        <t t-esc="doc.state"/>
-                    </div>
-
-                    <t t-if="doc.attachment_ids">
-                        <h4 class="mt32">Attachments</h4>
-                        <ul>
-                            <t t-foreach="doc.attachment_ids" t-as="att">
-                                <li><t t-esc="att.name"/></li>
-                            </t>
-                        </ul>
-                    </t>
-                </div>
+                </t>
             </t>
         </t>
     </template>
