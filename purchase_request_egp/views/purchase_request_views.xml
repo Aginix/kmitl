@@ -41,7 +41,7 @@
                         <field
                             name="egp_project_url"
                             widget="iframe_viewer"
-                            options="{'auto_height': false}"
+                            options="{'auto_height': false, 'width': '100%', 'height': '800px'}"
                         />
                     </div>
                 </page>
