@@ -5,9 +5,10 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["purchase", "purchase_request", "l10n_th_gov_purchase_request", "iframe_viewer_widget"],
+    "depends": ["l10n_th_gov_purchase_request", "iframe_viewer_widget", 'purchase_request_security', 'purchase_request_tier_validation'],
     "data": [
-        "views/purchase_request_views.xml"
+        "data/tier_validation_exception.xml",
+        "views/purchase_request_views.xml",
     ],
     "application": False,
     "installable": True,
