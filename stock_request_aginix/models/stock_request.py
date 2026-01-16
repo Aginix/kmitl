@@ -69,8 +69,8 @@ class StockRequest(models.Model):
         copy=False
     )
     requested_by = fields.Many2one(
-        'res.users',
-        default=lambda self: self.env.user,
+        'res.partner',
+        default=lambda self: self.env.user.partner_id,
         tracking=True
     )
     request_line_ids = fields.One2many(
@@ -116,6 +116,7 @@ class StockRequest(models.Model):
         self.ensure_one()
         return {
             'picking_type_id': self.picking_type_id.id,
+            'partner_id': self.requested_by.id,
             'location_id': self.location_id.id,
             'location_dest_id': self.location_dest_id.id,
             'origin': self.name,
