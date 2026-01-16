@@ -2,43 +2,80 @@
 <odoo>
     <template id="report_sarabun_document_template">
         <t t-call="web.html_container">
-            <t t-call="web.external_layout">
-                <t t-foreach="docs" t-as="doc">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.basic_layout">
+                    <t t-set="doc" t-value="doc.with_context({'lang': 'th_TH'})" />
+                    <style>
+                        * {
+                            font-family: "THSarabunNew", Arial, sans-serif;
+                            --bs-body-font-size: 16pt;
+                        }
+                        table.budget tr td:first-child {
+                            width: 30%;
+                        }
+                        p,
+                        span,
+                        div {
+                            font-size: 16pt;
+                            line-height: 1.2;
+                        }
+                    </style>
                     <div class="page">
-                        <h2 class="text-center">
-                            <strong><t t-esc="doc.name"/></strong>
-                        </h2>
+                        <div style="position: absolute; top: 0px; left: 0px">
+                            <img
+                                t-if="doc.company_id.logo"
+                                t-att-src="image_data_uri(doc.company_id.logo)"
+                                style="max-height: 110px"
+                                alt="Logo"
+                            />
+                        </div>
 
-                        <h3 class="mt16">
+                        <div class="oe_structure" />
+                        <div style="height: 1px" />
+                        <div class="page-header mt-5 mb-5">
+                            <h3
+                                class="text-center fw-bolder"
+                                style="line-height: 1.575"
+                            >
+                                Sarabun Document
+                            </h3>
+                        </div>
+                        <p class="mt16">
+                            <strong> Number: </strong>
+                            <t t-esc="doc.name" />
+                        </p>
+
+                        <p class="mt16">
                             <strong>Subject:</strong>
-                            <t t-esc="doc.subject"/>
-                        </h3>
+                            <t t-esc="doc.subject" />
+                        </p>
 
-                        <p><strong>Date:</strong> <t t-esc="doc.date"/></p>
-                        <p><strong>From:</strong> <t t-esc="doc.sender_display or ''"/></p>
-                        <p><strong>To:</strong> <t t-esc="doc.recipient or ''"/></p>
+                        <p><strong>Date:</strong> <t t-esc="doc.date" /></p>
+                        <p>
+                            <strong>From:</strong>
+                            <t t-esc="doc.sender_display or ''" />
+                        </p>
+                        <p><strong>To:</strong> <t t-esc="doc.recipient or ''" /></p>
 
-                        <hr/>
+                        <hr />
 
-                        <t t-if="doc.content">
-                            <div class="mt16">
-                                <strong>Content:</strong>
-                                <div t-raw="doc.content"/>
-                            </div>
-                        </t>
+                        <div class="mt16">
+                            <strong>Content:</strong>
+                            <div t-raw="doc.content" />
+                        </div>
 
-                        <hr/>
+                        <hr />
 
                         <div class="mt16">
                             <strong>Status:</strong>
-                            <t t-esc="doc.state or ''"/>
+                            <t t-esc="doc.state or ''" />
                         </div>
 
                         <t t-if="doc.attachment_ids">
                             <h4 class="mt32">Attachments</h4>
                             <ul>
                                 <t t-foreach="doc.attachment_ids" t-as="att">
-                                    <li><t t-esc="att.name"/></li>
+                                    <li><t t-esc="att.name" /></li>
                                 </t>
                             </ul>
                         </t>
@@ -50,13 +87,19 @@
 
     <record id="action_report_sarabun_documents" model="ir.actions.report">
         <field name="name">Sarabun Document</field>
-        <field name="binding_model_id" ref="agx_sarabun.model_sarabun_document"/>
+        <field name="binding_model_id" ref="agx_sarabun.model_sarabun_document" />
         <field name="model">sarabun.document</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">agx_sarabun_report.report_sarabun_document_template</field>
-        <field name="report_file">agx_sarabun_report.report_sarabun_document_template</field>
+        <field name="report_name"
+            >agx_sarabun_report.report_sarabun_document_template</field
+        >
+        <field name="report_file"
+            >agx_sarabun_report.report_sarabun_document_template</field
+        >
         <field name="print_report_name">'Sarabun Document - %s' % (object.name)</field>
-        <field name="paperformat_id" ref="agx_sarabun_report.paperformat_sarabun_document_report"/>
+        <field
+            name="paperformat_id"
+            ref="agx_sarabun_report.paperformat_sarabun_document_report"
+        />
     </record>
-
 </odoo>
