@@ -33,52 +33,59 @@
                         <div class="oe_structure" />
                         <div style="height: 1px" />
                         <div class="page-header mt-5 mb-5">
-                            <h3
+                            <h2
                                 class="text-center fw-bolder"
                                 style="line-height: 1.575"
                             >
-                                Sarabun Document
-                            </h3>
+                                บันทึกข้อความ
+                            </h2>
                         </div>
-                        <p class="mt16">
-                            <strong> Number: </strong>
-                            <t t-esc="doc.name" />
+
+                        <p>
+                            <strong>หน่วนงาน:</strong>
+                            <t t-esc="doc.sender_department_name or ''" />
                         </p>
 
-                        <p class="mt16">
-                            <strong>Subject:</strong>
+                        <div class="row">
+                            <div class="col">
+                                <p>
+                                    <strong> ที่: </strong>
+                                    <t t-esc="doc.name" />
+                                </p>
+                            </div>
+
+                            <div class="col">
+                                <p>
+                                    <strong>วันที่:</strong> 
+                                    <t t-esc="doc.format_date_thai(doc.date)" />
+                                </p>
+                            </div>
+                        </div>
+
+                        <p>
+                            <strong>เรื่อง:</strong>
                             <t t-esc="doc.subject" />
                         </p>
-
-                        <p><strong>Date:</strong> <t t-esc="doc.date" /></p>
+                        
                         <p>
-                            <strong>From:</strong>
-                            <t t-esc="doc.sender_display or ''" />
+                            <strong>เรียน:</strong> 
+                            <t t-esc="doc.recipient or ''" />
                         </p>
-                        <p><strong>To:</strong> <t t-esc="doc.recipient or ''" /></p>
 
-                        <hr />
-
-                        <div class="mt16">
-                            <strong>Content:</strong>
+                        <div>
+                            <strong>เนื้อหาบันทึกข้อความ:</strong>
                             <div t-raw="doc.content" />
                         </div>
 
-                        <hr />
-
-                        <div class="mt16">
-                            <strong>Status:</strong>
-                            <t t-esc="doc.state or ''" />
+                        <div class="mt32" style="margin-top: 80px;">
+                            <div style="width: 50%; text-align: center; float: right;">
+                                <div class="">
+                                    ( <t t-out="'.' * 80" />
+                                    )
+                                </div>
+                            </div>
                         </div>
 
-                        <t t-if="doc.attachment_ids">
-                            <h4 class="mt32">Attachments</h4>
-                            <ul>
-                                <t t-foreach="doc.attachment_ids" t-as="att">
-                                    <li><t t-esc="att.name" /></li>
-                                </t>
-                            </ul>
-                        </t>
                     </div>
                 </t>
             </t>
