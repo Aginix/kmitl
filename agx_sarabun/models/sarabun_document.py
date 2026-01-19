@@ -173,6 +173,16 @@ class SarabunDocument(models.Model):
         compute="_compute_origin_reference",
     )
 
+    # === Report Delegation ===
+    has_delegated_report = fields.Boolean(
+        compute="_compute_delegated_report",
+        string="Has Delegated Report",
+    )
+    delegated_report_url = fields.Char(
+        compute="_compute_delegated_report",
+        string="Report Preview URL",
+    )
+
     # === Workflow State ===
     state = fields.Selection(
         selection=[
@@ -235,6 +245,9 @@ class SarabunDocument(models.Model):
     )
     current_user_can_approve = fields.Boolean(
         compute="_compute_current_user_recipient",
+    )
+    report_preview_url = fields.Char(
+        compute="_compute_report_preview_url",
     )
 
     # === References ===
@@ -313,6 +326,25 @@ class SarabunDocument(models.Model):
                     record.origin_reference = False
             else:
                 record.origin_reference = False
+
+    @api.depends("origin_model", "origin_res_id")
+    def _compute_delegated_report(self):
+        for record in self:
+            delegated_report = record._get_delegated_report_action()
+            record.has_delegated_report = bool(delegated_report)
+
+            # Compute report URL for iframe preview
+            if delegated_report and record.origin_model and record.origin_res_id:
+                try:
+                    origin = record.env[record.origin_model].browse(record.origin_res_id)
+                    if origin.exists() and hasattr(origin, "get_portal_url"):
+                        record.delegated_report_url = origin.get_portal_url(report_type="html")
+                    else:
+                        record.delegated_report_url = False
+                except Exception:
+                    record.delegated_report_url = False
+            else:
+                record.delegated_report_url = False
 
     @api.depends("recipient_ids", "recipient_ids.state", "routing_line_ids")
     def _compute_routing_progress(self):
@@ -787,8 +819,36 @@ class SarabunDocument(models.Model):
         for document in self:
             document.access_url = f"/my/sarabun_document/{document.id}"
 
-    def _get_report_base_filename(self):
+    def _compute_report_preview_url(self):
+        """Compute the preview URL for report preview."""
+        for document in self:
+            document.report_preview_url = document.get_portal_url(report_type='html')
+
+    def _get_delegated_report_action(self):
+        """Get report action from origin model if available for delegation"""
         self.ensure_one()
+        if self.origin_model and self.origin_res_id:
+            try:
+                origin = self.env[self.origin_model].browse(self.origin_res_id)
+                if origin.exists() and hasattr(origin, "_get_sarabun_report_action"):
+                    return origin._get_sarabun_report_action()
+            except Exception:
+                pass
+        return False
+
+    def _get_report_base_filename(self):
+        """Override to use origin filename when delegating report"""
+        self.ensure_one()
+        report_action = self._get_delegated_report_action()
+        if report_action and self.origin_model and self.origin_res_id:
+            try:
+                origin = self.env[self.origin_model].browse(self.origin_res_id)
+                if origin.exists():
+                    if hasattr(origin, '_get_report_base_filename'):
+                        return origin._get_report_base_filename()
+                    return origin.display_name
+            except Exception:
+                pass
         return 'Sarabun Document-%s' % (self.name)
 
     def open_preview(self):

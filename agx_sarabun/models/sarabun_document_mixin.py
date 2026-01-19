@@ -126,3 +126,20 @@ class SarabunDocumentMixin(models.AbstractModel):
             routing_line: The rejected sarabun.routing.line record
         """
         pass
+
+    def _get_sarabun_report_action(self):
+        """
+        Return ir.actions.report to use for Sarabun document rendering.
+        Override this to delegate report rendering to origin model's report.
+
+        When a Sarabun Document is printed/downloaded from portal, it will
+        use this report action instead of the default Sarabun report.
+
+        Returns:
+            ir.actions.report record or False
+
+        Example:
+            def _get_sarabun_report_action(self):
+                return self.env.ref("my_module.action_report_my_model")
+        """
+        return False

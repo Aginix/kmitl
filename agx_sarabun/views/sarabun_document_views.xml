@@ -131,10 +131,15 @@
                     </group>
 
                     <notebook>
-                        <page name="content" string="Content">
+                        <!-- Content page - hidden when report is delegated from origin -->
+                        <page name="content" string="Content" attrs="{'invisible': [('has_delegated_report', '=', True)]}">
                             <field name="content" placeholder="Enter document content..." class="oe-bordered-editor" options="{'style-inline': true, 'codeview': true, 'dynamic_placeholder': true}" />
                             <label for="attachment_ids" string="Attachments"/>
                             <field name="attachment_ids" widget="many2many_binary" attrs="{'readonly': [('state', 'not in', ['draft'])]}" class="w-100" />
+                        </page>
+                        <!-- Report Preview page - shown when origin has delegated report -->
+                        <page name="report_preview" string="Document Preview" attrs="{'invisible': [('has_delegated_report', '=', False)]}">
+                            <field name="report_preview_url" widget="iframe_viewer" nolabel="1"/>
                         </page>
                         <page string="Routing" name="routing">
                             <group>
@@ -203,6 +208,7 @@
                     <field name="current_user_recipient_id" invisible="1"/>
                     <field name="current_user_can_acknowledge" invisible="1"/>
                     <field name="current_user_can_approve" invisible="1"/>
+                    <field name="has_delegated_report" invisible="1"/>
                 </sheet>
                 <!-- Attachment preview -->
                 <div class="o_attachment_preview"

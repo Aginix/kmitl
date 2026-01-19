@@ -87,6 +87,21 @@ class SarabunDocumentPortal(CustomerPortal):
             return request.redirect("/my")
 
         if report_type in ('html', 'pdf', 'text'):
+            # Check for delegated report from origin model
+            delegated_report = sarabun_document_sudo._get_delegated_report_action()
+            if delegated_report and sarabun_document_sudo.origin_model and sarabun_document_sudo.origin_res_id:
+                # Use origin model's report
+                origin = request.env[sarabun_document_sudo.origin_model].sudo().browse(
+                    sarabun_document_sudo.origin_res_id
+                )
+                if origin.exists():
+                    return self._show_report(
+                        model=origin,
+                        report_type=report_type,
+                        report_ref=delegated_report.report_name,
+                        download=download
+                    )
+            # Fallback to Sarabun's own report
             return self._show_report(model=sarabun_document_sudo, report_type=report_type, report_ref='agx_sarabun.action_report_sarabun_documents', download=download)
 
         values = self._sarabun_document_get_page_view_values(sarabun_document_sudo, access_token, **kw)

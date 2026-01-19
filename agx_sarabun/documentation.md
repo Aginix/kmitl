@@ -305,3 +305,140 @@ if template.match_origin_record(purchase_request):
 - **Sender Access**: ผู้สร้างเอกสารเห็นเอกสารของตนเอง
 - **Recipient Access**: ผู้รับเอกสารเห็นเอกสารที่ส่งถึงตน
 - **Manager Access**: Manager เห็นเอกสารทั้งหมด
+
+---
+
+## Using Sarabun Document Mixin
+
+### Basic Usage
+
+สำหรับโมเดลที่ต้องการสร้างเอกสาร Sarabun อย่างง่าย ให้ inherit `sarabun.document.mixin`:
+
+```python
+from odoo import models
+
+class PurchaseRequest(models.Model):
+    _name = "purchase.request"
+    _inherit = ["purchase.request", "sarabun.document.mixin"]
+
+    def _prepare_sarabun_document_vals(self):
+        """Override to customize Sarabun document values"""
+        vals = super()._prepare_sarabun_document_vals()
+        vals.update({
+            "subject": f"ขออนุมัติจัดซื้อ: {self.name}",
+        })
+        return vals
+
+    def _get_sarabun_subject(self):
+        """Override to customize default subject"""
+        return f"Purchase Request: {self.name}"
+```
+
+### Mixin Fields
+
+Mixin provides computed fields:
+
+| Field | Type | คำอธิบาย |
+|-------|------|----------|
+| `sarabun_document_ids` | One2many (computed) | เอกสาร Sarabun ที่ผูกกับ record นี้ |
+| `sarabun_document_count` | Integer (computed) | จำนวนเอกสาร Sarabun |
+
+### Mixin Methods
+
+| Method | คำอธิบาย |
+|--------|----------|
+| `action_create_sarabun_document()` | สร้างเอกสาร Sarabun และเปิด form |
+| `action_view_sarabun_documents()` | ดูเอกสาร Sarabun ที่เกี่ยวข้อง |
+| `_prepare_sarabun_document_vals()` | Override เพื่อกำหนดค่าเริ่มต้นของเอกสาร |
+| `_get_sarabun_subject()` | Override เพื่อกำหนด subject เริ่มต้น |
+| `_on_sarabun_completed(document)` | Callback เมื่อ routing เสร็จสิ้น |
+| `_on_sarabun_rejected(document, recipient)` | Callback เมื่อถูก reject |
+| `_get_sarabun_report_action()` | Override เพื่อ delegate report ไปยัง origin model |
+
+---
+
+## Report Delegation
+
+### Concept
+
+เมื่อ Sarabun Document ถูกสร้างจาก origin record (เช่น Purchase Request) คุณอาจต้องการให้ portal/print ใช้ report ของ origin model แทน report ของ Sarabun
+
+### Implementation
+
+Override `_get_sarabun_report_action()` ใน origin model:
+
+```python
+class PurchaseRequest(models.Model):
+    _name = "purchase.request"
+    _inherit = ["purchase.request", "sarabun.document.mixin"]
+
+    def _get_sarabun_report_action(self):
+        """Delegate Sarabun report to Purchase Request report"""
+        return self.env.ref("purchase_request.action_report_purchase_request")
+```
+
+### How It Works
+
+```
+Portal/Print Request
+    │
+    ▼
+sarabun_document._get_delegated_report_action()
+    │
+    ├── Has origin with _get_sarabun_report_action()
+    │       │
+    │       ├── Portal/Print → Use origin model's report (PDF/HTML)
+    │       │
+    │       └── Form View → Show iframe preview (hide Content tab)
+    │
+    └── No delegation
+            │
+            └── Use Sarabun's default report + Content tab
+```
+
+### Form View Behavior
+
+เมื่อ origin model มี report delegation:
+
+- **Content tab**: ซ่อนอัตโนมัติ
+- **Document Preview tab**: แสดง report จาก origin เป็น iframe
+
+### Benefits
+
+- **Real-time data**: Report แสดงข้อมูลปัจจุบันของ origin record
+- **No file attachment**: ไม่ต้อง generate และ attach PDF ล่วงหน้า
+- **Single source of truth**: ใช้ report template เดียวกับ origin model
+- **Inline preview**: ดู report ได้ในหน้าฟอร์มโดยไม่ต้องเปิด tab ใหม่
+
+### Example: Complete Integration
+
+```python
+class PurchaseRequest(models.Model):
+    _name = "purchase.request"
+    _inherit = ["purchase.request", "sarabun.document.mixin"]
+
+    def _prepare_sarabun_document_vals(self):
+        """Customize Sarabun document creation"""
+        vals = super()._prepare_sarabun_document_vals()
+        vals.update({
+            "subject": f"ขออนุมัติจัดซื้อ: {self.name} ({self.amount_total:,.0f} บาท)",
+        })
+        return vals
+
+    def _get_sarabun_report_action(self):
+        """Use Purchase Request report in Sarabun portal"""
+        return self.env.ref("purchase_request.action_report_purchase_request")
+
+    def _on_sarabun_completed(self, document):
+        """Auto-approve when Sarabun routing completes"""
+        self.state = "approved"
+
+    def _on_sarabun_rejected(self, document, recipient):
+        """Handle rejection"""
+        self.state = "rejected"
+```
+
+เมื่อ user เปิด Sarabun Document ที่สร้างจาก Purchase Request:
+- หน้า Portal จะแสดง report ของ Purchase Request
+- กด Download PDF จะได้ไฟล์ของ Purchase Request
+- ข้อมูลเป็นปัจจุบันเสมอ (real-time rendering)
