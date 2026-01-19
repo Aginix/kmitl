@@ -93,7 +93,7 @@
                 />
             </xpath>
             <xpath expr="//group/group[1]" position="inside">
-                <field name="product_id" />
+                <field name="product_id" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}" />
             </xpath>
             <xpath
                 expr="//field[@name='order_line']//tree/field[@name='product_id']"

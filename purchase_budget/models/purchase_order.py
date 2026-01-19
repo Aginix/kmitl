@@ -17,6 +17,9 @@ class PurchaseOrder(models.Model):
         "cancel": [("readonly", True)],
     }
 
+    def _domain_budget_account_id(self):
+        return [("purchase_ok", "=", True), ("product_id", "!=", False)]
+
     budget_commitment_id = fields.Many2one(
         "budget.commitment",
         string="Budget Commitment",
@@ -28,7 +31,7 @@ class PurchaseOrder(models.Model):
     budget_account_id = fields.Many2one(
         "budget.account",
         string="Budget Account",
-        domain=[("budgetable", "=", True), ("budget_type", "=", "expense")],
+        domain=lambda self: self._domain_budget_account_id(),
         help="Budget account to be used for commitment",
     )
 
