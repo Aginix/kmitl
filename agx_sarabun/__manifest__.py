@@ -6,7 +6,7 @@
     "category": "KMITL/Correspondence",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["mail", "hr"],
+    "depends": ["mail", "hr", 'portal', 'thai_date_utils', 'l10n_th_fonts', 'l10n_th_amount_to_text'],
     "data": [
         # Security
         "security/security.xml",
@@ -14,9 +14,12 @@
         # Data
         "data/sarabun_sequence.xml",
         "data/sarabun_document_type.xml",
+        "report/paperformat.xml",
+        "report/report_sarabun.xml",
         # Wizard
         "wizard/sarabun_routing_wizard_views.xml",
         # Views
+        "views/portal_template.xml",
         "views/sarabun_document_type_views.xml",
         "views/sarabun_route_template_views.xml",
         "views/sarabun_document_views.xml",
@@ -27,6 +30,11 @@
         "views/hr_department_views.xml",
         "views/sarabun_menus.xml",
     ],
+    "assets": {
+        'web.assets_frontend': [
+            'agx_sarabun/static/src/js/sarabun_document_portal_sidebar.js',
+        ],
+    },
     "application": True,
     "installable": True,
     "auto_install": False,

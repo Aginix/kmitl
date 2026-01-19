@@ -1,4 +1,4 @@
-odoo.define('agx_sarabun_portal.SarabunDocumentPortalSidebar', function (require) {
+odoo.define('agx_sarabun.SarabunDocumentPortalSidebar', function (require) {
 'use strict';
 
 const dom = require('web.dom');

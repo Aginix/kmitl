@@ -98,15 +98,15 @@
         <field name="model">sarabun.document</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name"
-            >agx_sarabun_report.report_sarabun_document_template</field
+            >agx_sarabun.report_sarabun_document_template</field
         >
         <field name="report_file"
-            >agx_sarabun_report.report_sarabun_document_template</field
+            >agx_sarabun.report_sarabun_document_template</field
         >
         <field name="print_report_name">'Sarabun Document - %s' % (object.name)</field>
         <field
             name="paperformat_id"
-            ref="agx_sarabun_report.paperformat_sarabun_document_report"
+            ref="agx_sarabun.paperformat_sarabun_document_report"
         />
     </record>
 </odoo>

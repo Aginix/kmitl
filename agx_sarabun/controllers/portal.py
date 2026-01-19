@@ -69,7 +69,7 @@ class SarabunDocumentPortal(CustomerPortal):
                 "sortby": sortby,
             }
         )
-        return request.render("agx_sarabun_portal.portal_my_sarabun_documents", values)
+        return request.render("agx_sarabun.portal_my_sarabun_documents", values)
 
     @http.route(
         ["/my/sarabun_document/<int:document_id>"],
@@ -87,10 +87,10 @@ class SarabunDocumentPortal(CustomerPortal):
             return request.redirect("/my")
 
         if report_type in ('html', 'pdf', 'text'):
-            return self._show_report(model=sarabun_document_sudo, report_type=report_type, report_ref='agx_sarabun_report.action_report_sarabun_documents', download=download)
+            return self._show_report(model=sarabun_document_sudo, report_type=report_type, report_ref='agx_sarabun.action_report_sarabun_documents', download=download)
 
         values = self._sarabun_document_get_page_view_values(sarabun_document_sudo, access_token, **kw)
-        return request.render("agx_sarabun_portal.portal_sarabun_document_page", values)
+        return request.render("agx_sarabun.portal_sarabun_document_page", values)
 
     def _sarabun_document_get_page_view_values(self, sarabun_document, access_token, **kwargs):
         values = {
@@ -119,7 +119,7 @@ class SarabunDocumentPortal(CustomerPortal):
 
         if report_type == "html":
             # Render HTML report directly
-            report = request.env.ref("agx_sarabun_report.report_sarabun_document_template")
+            report = request.env.ref("agx_sarabun.report_sarabun_document_template")
             html = request.env["ir.actions.report"]._render_qweb_html(
                 report.id, [sarabun_document_sudo.id]
             )[0]
@@ -132,7 +132,7 @@ class SarabunDocumentPortal(CustomerPortal):
             )
         elif report_type == "pdf":
             # Render PDF report
-            report = request.env.ref("agx_sarabun_report.report_sarabun_document_template")
+            report = request.env.ref("agx_sarabun.report_sarabun_document_template")
             pdf_content, _ = request.env["ir.actions.report"]._render_qweb_pdf(
                 report.id, [sarabun_document_sudo.id]
             )

@@ -16,7 +16,7 @@ READONLY_STATES = {
 class SarabunDocument(models.Model):
     _name = "sarabun.document"
     _description = "Sarabun Document"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ["mail.thread", "mail.activity.mixin", "portal.mixin", 'thai.date.mixin']
     _order = "date desc, name desc, id desc"
     _rec_names_search = ["name", "subject"]
 
@@ -777,3 +777,22 @@ class SarabunDocument(models.Model):
             if len(approve_lines) > 1:
                 # Allow multiple approvers but warn via tracking
                 pass
+
+    # === Portal ===
+    def _compute_access_url(self):
+        """Compute the access URL for portal access."""
+        super()._compute_access_url()
+        for document in self:
+            document.access_url = f"/my/sarabun_document/{document.id}"
+
+    def _get_report_base_filename(self):
+        self.ensure_one()
+        return 'Sarabun Document-%s' % (self.name)
+
+    def open_preview(self):
+        if self.id:
+            return {
+                'type': 'ir.actions.act_url',
+                'url': self.access_url,
+                'target': 'new',
+            }
