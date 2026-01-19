@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+
+_logger = logging.getLogger(__name__)
 
 READONLY_STATES = {
     "sent": [("readonly", True)],
@@ -516,6 +520,70 @@ class SarabunDocument(models.Model):
             },
         }
 
+    def action_select_route(self):
+        """Open wizard to select route template when multiple match"""
+        self.ensure_one()
+        templates = self._get_matching_route_templates()
+
+        if not templates:
+            raise UserError(_("No route templates available for this document."))
+
+        if len(templates) == 1:
+            # Only one template, apply directly
+            self._apply_route_template(templates)
+            return True
+
+        # Multiple templates, open selection wizard
+        return {
+            "name": _("Select Route"),
+            "type": "ir.actions.act_window",
+            "res_model": "sarabun.route.selection.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "default_document_id": self.id,
+                "default_available_template_ids": [(6, 0, templates.ids)],
+            },
+        }
+
+    def _get_matching_route_templates(self):
+        """Get route templates that match this document's context"""
+        self.ensure_one()
+
+        origin_record = False
+        if self.origin_model and self.origin_res_id:
+            try:
+                origin_record = self.env[self.origin_model].browse(self.origin_res_id)
+                if not origin_record.exists():
+                    origin_record = False
+            except Exception:
+                origin_record = False
+
+        return self.env["sarabun.route.template"].find_matching_templates(
+            origin_record=origin_record,
+            department_id=self.sender_department_id.id if self.sender_department_id else False,
+            document_type_id=self.document_type_id.id if self.document_type_id else False,
+        )
+
+    def _apply_route_template(self, template):
+        """Apply route template to this document"""
+        self.ensure_one()
+        self.route_template_id = template
+        # Create routing lines from template
+        lines = []
+        for tmpl_line in template.line_ids:
+            line_vals = {
+                "sequence": tmpl_line.sequence,
+                "routing_type": tmpl_line.routing_type,
+                "recipient_type": tmpl_line.recipient_type,
+                "user_id": tmpl_line.user_id.id if tmpl_line.user_id else False,
+                "department_id": tmpl_line.department_id.id if tmpl_line.department_id else False,
+                "role_id": tmpl_line.role_id.id if tmpl_line.role_id else False,
+            }
+            lines.append((0, 0, line_vals))
+        # Clear existing and set new
+        self.routing_line_ids = [(5, 0, 0)] + lines
+
     # === Helper Methods ===
     def _generate_document_number(self):
         """Generate document number based on numbering mode"""
@@ -658,13 +726,21 @@ class SarabunDocument(models.Model):
         )
 
         # Callback to origin record if exists
+        # Use sudo() because the approver may not have access to the origin record
         if self.origin_model and self.origin_res_id:
             try:
-                origin_record = self.env[self.origin_model].browse(self.origin_res_id)
-                if hasattr(origin_record, "_on_sarabun_completed"):
+                origin_record = self.env[self.origin_model].sudo().browse(self.origin_res_id)
+                if origin_record.exists() and hasattr(origin_record, "_on_sarabun_completed"):
+                    _logger.info(
+                        "Calling _on_sarabun_completed on %s (id=%s)",
+                        self.origin_model, self.origin_res_id
+                    )
                     origin_record._on_sarabun_completed(self)
-            except Exception:
-                pass
+            except Exception as e:
+                _logger.exception(
+                    "Error calling _on_sarabun_completed for %s (id=%s): %s",
+                    self.origin_model, self.origin_res_id, e
+                )
 
     def _on_routing_rejected(self, recipient):
         """Called when a recipient rejects the document"""
@@ -675,13 +751,21 @@ class SarabunDocument(models.Model):
         )
 
         # Callback to origin record if exists
+        # Use sudo() because the approver may not have access to the origin record
         if self.origin_model and self.origin_res_id:
             try:
-                origin_record = self.env[self.origin_model].browse(self.origin_res_id)
-                if hasattr(origin_record, "_on_sarabun_rejected"):
+                origin_record = self.env[self.origin_model].sudo().browse(self.origin_res_id)
+                if origin_record.exists() and hasattr(origin_record, "_on_sarabun_rejected"):
+                    _logger.info(
+                        "Calling _on_sarabun_rejected on %s (id=%s)",
+                        self.origin_model, self.origin_res_id
+                    )
                     origin_record._on_sarabun_rejected(self, recipient)
-            except Exception:
-                pass
+            except Exception as e:
+                _logger.exception(
+                    "Error calling _on_sarabun_rejected for %s (id=%s): %s",
+                    self.origin_model, self.origin_res_id, e
+                )
 
     # === Constraints ===
     @api.constrains("routing_line_ids")

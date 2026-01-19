@@ -6,8 +6,11 @@
         <field name="model">sarabun.route.template</field>
         <field name="arch" type="xml">
             <tree string="Route Templates">
+                <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="department_id"/>
+                <field name="document_type_id"/>
+                <field name="origin_model"/>
                 <field name="active" widget="boolean_toggle"/>
             </tree>
         </field>
@@ -27,12 +30,12 @@
                         </h1>
                     </div>
                     <group>
-                        <group>
-                            <field name="department_id" options="{'no_create': True}"/>
+                        <group string="Basic">
+                            <field name="sequence"/>
                             <field name="active"/>
                         </group>
-                        <group>
-                            <field name="description" placeholder="Description..."/>
+                        <group string="Description">
+                            <field name="description" placeholder="Description..." nolabel="1"/>
                         </group>
                     </group>
                     <notebook>
@@ -47,6 +50,27 @@
                                     <field name="role_id" attrs="{'invisible': [('recipient_type', '!=', 'role')], 'required': [('recipient_type', '=', 'role')]}"/>
                                 </tree>
                             </field>
+                        </page>
+                        <page string="Scope &amp; Conditions" name="scope">
+                            <group>
+                                <group string="Scope">
+                                    <field name="department_id" options="{'no_create': True}"/>
+                                    <field name="document_type_id" options="{'no_create': True}"/>
+                                    <field name="origin_model"/>
+                                </group>
+                                <group string="Condition">
+                                    <field name="condition_domain" placeholder="[('amount_total', '>=', 100000)]"/>
+                                </group>
+                            </group>
+                            <group>
+                                <p class="text-muted">
+                                    <strong>Scope:</strong> Leave empty to match all. If set, template only matches documents with matching criteria.<br/>
+                                    <strong>Condition Domain:</strong> Python domain expression evaluated against origin record. Examples:<br/>
+                                    - <code>[('amount_total', '&gt;=', 100000)]</code> - Amount >= 100,000<br/>
+                                    - <code>[('is_urgent', '=', True)]</code> - Urgent flag is set<br/>
+                                    - <code>[('state', '=', 'approved')]</code> - State is approved
+                                </p>
+                            </group>
                         </page>
                     </notebook>
                 </sheet>

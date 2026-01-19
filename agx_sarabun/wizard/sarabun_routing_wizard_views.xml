@@ -170,4 +170,34 @@
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
+
+    <!-- Route Selection Wizard Form -->
+    <record id="sarabun_route_selection_wizard_view_form" model="ir.ui.view">
+        <field name="name">sarabun.route.selection.wizard.form</field>
+        <field name="model">sarabun.route.selection.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Select Route">
+                <group>
+                    <field name="document_id" invisible="1"/>
+                    <field name="available_template_ids" invisible="1"/>
+                    <field name="origin_info" readonly="1" attrs="{'invisible': [('origin_info', '=', '')]}"/>
+                </group>
+                <group string="Available Routes">
+                    <field name="selected_template_id" widget="radio" options="{'horizontal': false}" required="1"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" string="Apply Route" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action for Route Selection -->
+    <record id="action_sarabun_route_selection" model="ir.actions.act_window">
+        <field name="name">Select Route</field>
+        <field name="res_model">sarabun.route.selection.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
 </odoo>
