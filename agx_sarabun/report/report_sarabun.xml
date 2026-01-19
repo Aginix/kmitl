@@ -41,51 +41,45 @@
                             </h2>
                         </div>
 
-                        <p>
+                        <div>
                             <strong>หน่วนงาน:</strong>
                             <t t-esc="doc.sender_department_name or ''" />
-                        </p>
+                        </div>
 
                         <div class="row">
-                            <div class="col">
-                                <p>
-                                    <strong> ที่: </strong>
-                                    <t t-esc="doc.name" />
-                                </p>
+                            <div class="col-8">
+                                <strong> ที่: </strong>
+                                <t t-esc="doc.name" />
                             </div>
 
                             <div class="col">
-                                <p>
-                                    <strong>วันที่:</strong> 
-                                    <t t-esc="doc.format_date_thai(doc.date)" />
-                                </p>
+                                <strong>วันที่:</strong>
+                                <t t-esc="doc.format_date_thai(doc.date)" />
                             </div>
                         </div>
 
-                        <p>
+                        <div>
                             <strong>เรื่อง:</strong>
                             <t t-esc="doc.subject" />
-                        </p>
-                        
-                        <p>
-                            <strong>เรียน:</strong> 
-                            <t t-esc="doc.recipient or ''" />
-                        </p>
+                        </div>
 
                         <div>
-                            <strong>เนื้อหาบันทึกข้อความ:</strong>
+                            <strong>เรียน:</strong>
+                            <t t-esc="doc.recipient or ''" />
+                        </div>
+
+                        <div>
                             <div t-raw="doc.content" />
                         </div>
 
-                        <div class="mt32" style="margin-top: 80px;">
-                            <div style="width: 50%; text-align: center; float: right;">
+                        <div class="mt32" style="margin-top: 80px">
+                            <div style="width: 50%; text-align: center; float: right">
                                 <div class="">
                                     ( <t t-out="'.' * 80" />
                                     )
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </t>
             </t>
@@ -97,12 +91,8 @@
         <field name="binding_model_id" ref="agx_sarabun.model_sarabun_document" />
         <field name="model">sarabun.document</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name"
-            >agx_sarabun.report_sarabun_document_template</field
-        >
-        <field name="report_file"
-            >agx_sarabun.report_sarabun_document_template</field
-        >
+        <field name="report_name">agx_sarabun.report_sarabun_document_template</field>
+        <field name="report_file">agx_sarabun.report_sarabun_document_template</field>
         <field name="print_report_name">'Sarabun Document - %s' % (object.name)</field>
         <field
             name="paperformat_id"
