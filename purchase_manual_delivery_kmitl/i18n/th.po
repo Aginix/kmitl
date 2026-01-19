@@ -36,7 +36,7 @@ msgstr "ตั้งค่าการกำหนดค่า"
 #. module: purchase_manual_delivery
 #: model_terms:ir.ui.view,arch_db:purchase_manual_delivery.purchase_order_view_form_inherit
 msgid "Confirm Order"
-msgstr ""
+msgstr "ยืนยัน"
 
 #. module: purchase_manual_delivery
 #: model_terms:ir.ui.view,arch_db:purchase_manual_delivery.purchase_order_view_form_inherit

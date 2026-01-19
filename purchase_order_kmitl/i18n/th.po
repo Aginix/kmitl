@@ -2,6 +2,7 @@
 # This file contains the translation of the following modules:
 # 	* purchase
 # 	* purchase_order_kmitl
+#   * purchase_no_rfq
 #
 msgid ""
 msgstr ""
@@ -1116,8 +1117,13 @@ msgstr "ดาวน์โหลด"
 
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order__state__draft
+msgid "RFQ"
+msgstr "Test"
+
+#. module: purchase_no_rfq
+#: model:ir.model.fields.selection,name:purchase_no_rfq.selection__purchase_order__state__draft
 msgid "Draft"
-msgstr "ใบแจ้งขอใบเสนอราคา"
+msgstr "Test"
 
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_report__state__draft
@@ -2174,7 +2180,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_report__state__sent
 #: model:mail.message.subtype,name:purchase.mt_rfq_sent
 msgid "RFQ Sent"
-msgstr ""
+msgstr "Test"
 
 #. module: purchase
 #: model:mail.template,report_name:purchase.email_template_edi_purchase
@@ -2448,7 +2454,7 @@ msgstr "ส่งคำขอใบเสนอราคาไปยังผู
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order__state__sent
 msgid "Sent"
-msgstr "RFQ Sent"
+msgstr "Test"
 
 #. module: purchase
 #: model:mail.template,description:purchase.email_template_edi_purchase
@@ -3088,3 +3094,12 @@ msgstr "วันก่อนหน้า"
 #: model:mail.template,subject:purchase.email_template_edi_purchase_reminder
 msgid "{{ object.company_id.name }} Order (Ref {{ object.name or 'n/a' }})"
 msgstr "{{ object.company_id.name }} คำสั่งซื้อ (Ref {{ object.name or 'n/a' }})"
+
+#. module: purchase_no_rfq
+#: model_terms:ir.ui.view,arch_db:purchase_no_rfq.purchase_order_form
+msgid ""
+"<span class=\"o_form_label\" attrs=\"{'invisible': [('state','not "
+"in',('draft','sent'))]}\">Purchase Order </span>"
+msgstr ""
+"<span class=\"o_form_label\" attrs=\"{'invisible': [('state','not "
+"in',('draft','sent'))]}\">สัญญา/ใบสั่งซื้อ/จ้าง </span>"
