@@ -31,8 +31,25 @@ class PurchaseOrder(models.Model):
     budget_account_id = fields.Many2one(
         "budget.account",
         string="Budget Account",
+        states=READONLY_STATES,
         domain=lambda self: self._domain_budget_account_id(),
         help="Budget account to be used for commitment",
+    )
+
+    activity_analytic_id = fields.Many2one(
+        states=READONLY_STATES,
+    )
+
+    department_analytic_id = fields.Many2one(
+        states=READONLY_STATES,
+    )
+
+    fund_analytic_id = fields.Many2one(
+        states=READONLY_STATES,
+    )
+
+    source_analytic_id = fields.Many2one(
+        states=READONLY_STATES,
     )
 
     use_procurement_plan = fields.Boolean(
