@@ -101,6 +101,9 @@
             >
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//field[@name='order_line']//tree" position="attributes">
+                <attribute name="create">0</attribute>
+            </xpath>
         </field>
     </record>
 </odoo>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -112,9 +112,34 @@ class PurchaseOrder(models.Model):
 
     def _prepare_invoice(self):
         vals = super()._prepare_invoice()
-        # vals["account_fiscal_year_id"] = purchase_request.account_fiscal_year_id.id
         vals["analytic_distribution"] = self.analytic_distribution
         vals["budget_commitment_id"] = self.budget_commitment_id.id
         vals["budget_account_id"] = self.budget_account_id.id
         vals["procurement_plan_analytic_id"] = self.procurement_plan_analytic_id.id
         return vals
+
+    @api.onchange("budget_account_id")
+    def _onchange_budget_account_id(self):
+        default_price = self.env.context.get("default_price_unit", 0)
+        product_id = self.budget_account_id.product_id
+
+        if not product_id:
+            return
+
+        self.product_id = product_id.id
+
+        if self.order_line:
+            for line in self.order_line:
+                line.product_id = product_id.id
+        else:
+            self.order_line = [
+                Command.create(
+                    {
+                        "product_id": product_id.id,
+                        "name": product_id.display_name,
+                        "product_uom_id": product_id.uom_id.id,
+                        "price_unit": self.procurement_plan_id.total_price or default_price,
+                        "product_qty": 1.0,
+                    }
+                )
+            ]
