@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -114,7 +114,7 @@ class PurchaseRequest(models.Model):
         for rec in self:
             if rec.request_approval_count > 0:
                 rec.hide_create_approval_button = True
-            elif rec.state in ("approved") and rec.estimated_cost <= 100000:
+            elif rec.state in ("approved") and rec.estimated_cost <= 100000 and not rec.is_egp:
                 rec.hide_create_approval_button = False
             else:
                 rec.hide_create_approval_button = True
