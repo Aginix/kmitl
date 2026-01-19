@@ -124,24 +124,24 @@ class PurchaseOrder(models.Model):
     @api.onchange("budget_account_id")
     def _onchange_budget_account_id(self):
         default_price = self.env.context.get("default_price_unit", 0)
-        product_id = self.budget_account_id.product_id
+        product = self.budget_account_id.product_id
 
-        if not product_id:
+        if not product:
             return
 
-        self.product_id = product_id.id
+        self.product_id = product.id
+
+        vals = {
+            "product_id": product.id,
+            "name": product.display_name,
+            "price_unit": self.procurement_plan_id.total_price or default_price,
+            "product_qty": 1.0,
+            "product_uom": product.uom_id.id,
+            "date_planned": fields.Datetime.now(),
+        }
 
         if self.order_line:
             for line in self.order_line:
-                line.product_id = product_id.id
+                line.update(vals)
         else:
-            self.order_line = [
-                Command.create(
-                    {
-                        "product_id": product_id.id,
-                        "name": product_id.display_name,
-                        "price_unit": self.procurement_plan_id.total_price or default_price,
-                        "product_qty": 1.0,
-                    }
-                )
-            ]
+            self.order_line = [Command.create(vals)]
