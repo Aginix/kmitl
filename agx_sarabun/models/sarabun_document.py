@@ -254,8 +254,10 @@ class SarabunDocument(models.Model):
     )
 
     # === Attachments ===
-    attachment_ids = fields.Many2many(
-        comodel_name="ir.attachment",
+    attachment_ids = fields.One2many(
+        "ir.attachment",
+        "res_id",
+        domain=[("res_model", "=", "sarabun.document")],
         string="Attachments",
     )
     attachment_count = fields.Integer(

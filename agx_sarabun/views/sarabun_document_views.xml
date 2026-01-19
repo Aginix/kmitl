@@ -76,10 +76,7 @@
                         <button name="action_view_origin" type="object" class="oe_stat_button" icon="fa-link" attrs="{'invisible': [('origin_model', '=', False)]}">
                             <field name="origin_reference" widget="statinfo" string="Origin"/>
                         </button>
-                        <button class="oe_stat_button" icon="fa-paperclip" name="%(base.action_attachment)d" type="action" context="{'default_res_model': 'sarabun.document', 'default_res_id': id}">
-                            <field name="attachment_count" widget="statinfo" string="Attachments"/>
-                        </button>
-                        <button class="oe_stat_button" type="object" name="open_preview" icon="fa-search-plus" string="Preview" />
+                        <button class="oe_stat_button" type="object" name="open_preview" icon="fa-search-plus" string="เปิดเอกสาร" />
                     </div>
                     <div class="oe_title" invisible="1">
                         <h1>
@@ -109,8 +106,8 @@
                         <field name="sender_display" invisible="1"/>
 
                         <!-- Document Sequence -->
-                        <label for="document_sequence_id" string="Specify Document No."/>
-                        <div class="o_row">
+                        <label for="document_sequence_id" string="Specify Document No." attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                        <div class="o_row" attrs="{'invisible': [('state', '!=', 'draft')]}">
                             <field name="document_sequence_id" class="oe_inline" options="{'no_create': True}" domain="['|', ('department_ids', '=', False), ('department_ids', 'in', [sender_department_id])]"/>
                             <button name="action_select_number" string="Select" type="object" class="btn-link" icon="fa-list-ol" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('document_sequence_id', '=', False)]}"/>
                         </div>
@@ -128,16 +125,17 @@
                         <!-- Recipient (ปลายทาง) -->
                         <label for="recipient" string="To (เรียน)"/>
                         <div class="o_row">
-                            <field name="recipient" placeholder="Enter recipient name/department..." style="width: 80%;"/>
+                            <field name="recipient" placeholder="Enter recipient name/department..." style="width: 80%;" required="1" />
                             <button name="action_lookup_recipient" string="Lookup" type="object" class="btn-link" icon="fa-search" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                         </div>
                     </group>
 
                     <notebook>
-                        <page string="Content" name="content">
-                            <field name="content" placeholder="Enter document content..."/>
+                        <page name="content" string="Content">
+                            <field name="content" placeholder="Enter document content..." class="oe-bordered-editor" options="{'style-inline': true, 'codeview': true, 'dynamic_placeholder': true}" />
+                            <label for="attachment_ids" string="Attachments"/>
+                            <field name="attachment_ids" widget="many2many_binary" attrs="{'readonly': [('state', 'not in', ['draft'])]}" class="w-100" />
                         </page>
-
                         <page string="Routing" name="routing">
                             <group>
                                 <field name="route_template_id" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
@@ -184,10 +182,6 @@
                             </group>
                         </page>
 
-                        <page string="Attachments" name="attachments">
-                            <field name="attachment_ids" widget="many2many_binary" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
-                        </page>
-
                         <page string="Other Information" name="other_informations">
                             <group>
                                 <group>
@@ -210,9 +204,12 @@
                     <field name="current_user_can_acknowledge" invisible="1"/>
                     <field name="current_user_can_approve" invisible="1"/>
                 </sheet>
+                <!-- Attachment preview -->
+                <div class="o_attachment_preview"
+                        attrs="{'invisible': [('state', '=', 'draft')]}" />
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>
-                    <!-- <field name="activity_ids" widget="mail_activity" /> -->
+                    <field name="activity_ids" widget="mail_activity" />
                     <field name="message_ids" widget="mail_thread" />
                 </div>
             </form>
@@ -285,10 +282,12 @@
                                 <div class="o_kanban_record_body">
                                     <field name="subject"/>
                                     <div class="text-muted small">
-                                        <span>From: </span><field name="sender_display"/>
+                                        <span>From: </span>
+                                        <field name="sender_display"/>
                                     </div>
                                     <div class="text-muted small" t-if="record.recipient.raw_value">
-                                        <span>To: </span><field name="recipient"/>
+                                        <span>To: </span>
+                                        <field name="recipient"/>
                                     </div>
                                 </div>
                                 <div class="o_kanban_record_bottom">
