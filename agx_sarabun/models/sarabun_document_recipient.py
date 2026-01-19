@@ -77,23 +77,18 @@ class SarabunDocumentRecipient(models.Model):
     # === State ===
     state = fields.Selection(
         selection=[
-            ("waiting", "Waiting"),
-            ("pending", "Pending"),
+            ("new", "New"),
             ("acknowledged", "Acknowledged"),
             ("approved", "Approved"),
             ("rejected", "Rejected"),
         ],
         string="Status",
-        default="waiting",
+        default="new",
         tracking=True,
     )
 
     # === Timestamps ===
-    sent_date = fields.Datetime(
-        string="Sent Date",
-        readonly=True,
-        help="When document was delivered to this recipient (state → pending)",
-    )
+    # Note: use create_date as sent_date (recipient created = sent to recipient)
     read_date = fields.Datetime(
         string="Read Date",
         readonly=True,
@@ -310,8 +305,8 @@ class SarabunDocumentRecipient(models.Model):
         """Check if current user can perform action on this recipient"""
         self.ensure_one()
 
-        if self.state != "pending":
-            raise UserError(_("This recipient is not in pending state."))
+        if self.state != "new":
+            raise UserError(_("This recipient has already been actioned."))
 
         if self.document_id.state != "sent":
             raise UserError(_("Document is not in sent state."))
@@ -360,14 +355,14 @@ class SarabunDocumentRecipient(models.Model):
         routing_type_labels = dict(self._fields["routing_type"].selection)
         action_label = routing_type_labels.get(self.routing_type, self.routing_type)
 
-        for user in users_to_notify:
-            self.document_id.activity_schedule(
-                "mail.mail_activity_data_todo",
-                user_id=user.id,
-                summary=_("Document requires your action: %s") % action_label,
-                note=_("Document: %s\nSubject: %s")
-                % (self.document_id.name, self.document_id.subject),
-            )
+        # for user in users_to_notify:
+        #     self.document_id.activity_schedule(
+        #         "mail.mail_activity_data_todo",
+        #         user_id=user.id,
+        #         summary=_("Document requires your action: %s") % action_label,
+        #         note=_("Document: %s\nSubject: %s")
+        #         % (self.document_id.name, self.document_id.subject),
+        #     )
 
         self.write({
             "is_notified": True,
@@ -384,7 +379,7 @@ class SarabunDocumentRecipient(models.Model):
     def mark_as_read(self):
         """Mark recipient as read (first time opening)"""
         self.ensure_one()
-        if self.state == "pending" and not self.read_date:
+        if self.state == "new" and not self.read_date:
             self.read_date = fields.Datetime.now()
 
     def read(self, fields=None, load="_classic_read"):

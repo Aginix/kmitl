@@ -64,6 +64,10 @@
             <form string="Document">
                 <header>
                     <button name="action_send" string="Send" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <!-- Action buttons for recipient -->
+                    <button name="action_acknowledge" string="Acknowledge" type="object" class="btn-primary" attrs="{'invisible': [('current_user_can_acknowledge', '=', False)]}"/>
+                    <button name="action_approve" string="Approve" type="object" class="btn-success" attrs="{'invisible': [('current_user_can_approve', '=', False)]}"/>
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': ['|', ('current_user_recipient_id', '=', False), ('state', '!=', 'sent')]}"/>
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,sent,completed"/>
                 </header>
@@ -137,9 +141,9 @@
                             <group>
                                 <field name="route_template_id" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             </group>
-                            <!-- Route Definition (editable in draft) -->
-                            <field name="routing_line_ids" attrs="{'invisible': [('state', '!=', 'draft')]}">
-                                <tree string="Routing" editable="bottom">
+                            <!-- Route Definition (editable in draft, readonly with status after sent) -->
+                            <field name="routing_line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}">
+                                <tree string="Routing" editable="bottom" decoration-muted="recipient_state == 'waiting'" decoration-info="recipient_state == 'new'" decoration-success="recipient_state in ('acknowledged', 'approved')" decoration-danger="recipient_state == 'rejected'">
                                     <field name="sequence" widget="handle"/>
                                     <field name="routing_type"/>
                                     <field name="recipient_type"/>
@@ -147,24 +151,10 @@
                                     <field name="department_text" attrs="{'invisible': [('recipient_type', '!=', 'department')]}"/>
                                     <field name="department_id" attrs="{'invisible': [('recipient_type', '!=', 'department')]}" optional="hide" string="Route To (System)"/>
                                     <field name="role_id" attrs="{'invisible': [('recipient_type', '!=', 'role')], 'required': [('recipient_type', '=', 'role')]}"/>
+                                    <field name="recipient_state" widget="badge" attrs="{'invisible': [('parent.state', '=', 'draft')]}" decoration-muted="recipient_state == 'waiting'" decoration-info="recipient_state == 'new'" decoration-success="recipient_state in ('acknowledged', 'approved')" decoration-danger="recipient_state == 'rejected'"/>
                                 </tree>
                             </field>
-                            <!-- Recipients Status (readonly after sent) -->
-                            <field name="recipient_ids" attrs="{'invisible': [('state', '=', 'draft')]}" readonly="1">
-                                <tree string="Recipients" decoration-muted="state == 'waiting'" decoration-info="state == 'pending'" decoration-success="state in ('acknowledged', 'approved')" decoration-danger="state == 'rejected'">
-                                    <field name="sequence" string="#"/>
-                                    <field name="routing_type"/>
-                                    <field name="recipient_name" string="Recipient"/>
-                                    <field name="state" widget="badge"/>
-                                    <field name="sent_date" optional="show"/>
-                                    <field name="read_date" optional="hide"/>
-                                    <field name="actioned_date" optional="show"/>
-                                    <field name="signed_as_text" optional="show"/>
-                                    <field name="actioned_by" optional="hide"/>
-                                    <field name="comment" optional="hide"/>
-                                </tree>
-                            </field>
-                            <group attrs="{'invisible': [('state', '!=', 'sent')]}">
+                            <group attrs="{'invisible': [('state', 'not in', ['sent', 'completed'])]}">
                                 <field name="routing_progress" widget="progressbar"/>
                             </group>
                         </page>
@@ -215,6 +205,9 @@
                     <field name="origin_model" invisible="1"/>
                     <field name="origin_res_id" invisible="1"/>
                     <field name="document_type_code" invisible="1"/>
+                    <field name="current_user_recipient_id" invisible="1"/>
+                    <field name="current_user_can_acknowledge" invisible="1"/>
+                    <field name="current_user_can_approve" invisible="1"/>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>
@@ -240,7 +233,7 @@
                 <separator/>
                 <filter string="My Documents" name="my_documents" domain="[('sender_user_id', '=', uid)]"/>
                 <filter string="To Me" name="to_me" domain="[('recipient_ids.user_id', '=', uid)]"/>
-                <filter string="Pending Action" name="pending_action" domain="[('recipient_ids.user_id', '=', uid), ('recipient_ids.state', '=', 'pending')]"/>
+                <filter string="Pending Action" name="pending_action" domain="[('recipient_ids.user_id', '=', uid), ('recipient_ids.state', '=', 'new')]"/>
                 <separator/>
                 <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
                 <filter string="Sent" name="sent" domain="[('state', '=', 'sent')]"/>
@@ -336,7 +329,7 @@
         <field name="name">Inbox</field>
         <field name="res_model">sarabun.document</field>
         <field name="view_mode">tree,kanban,form</field>
-        <field name="domain">[('recipient_ids.user_id', '=', uid), ('recipient_ids.state', '=', 'pending')]</field>
+        <field name="domain">[('recipient_ids.user_id', '=', uid), ('recipient_ids.state', '=', 'new')]</field>
         <field name="context">{}</field>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('sarabun_document_view_tree_incoming')}),

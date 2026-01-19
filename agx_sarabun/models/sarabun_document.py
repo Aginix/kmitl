@@ -220,6 +220,19 @@ class SarabunDocument(models.Model):
         compute="_compute_routing_counts",
     )
 
+    # === Current User Action ===
+    current_user_recipient_id = fields.Many2one(
+        comodel_name="sarabun.document.recipient",
+        compute="_compute_current_user_recipient",
+        string="My Pending Action",
+    )
+    current_user_can_acknowledge = fields.Boolean(
+        compute="_compute_current_user_recipient",
+    )
+    current_user_can_approve = fields.Boolean(
+        compute="_compute_current_user_recipient",
+    )
+
     # === References ===
     reference_ids = fields.One2many(
         comodel_name="sarabun.reference",
@@ -295,14 +308,14 @@ class SarabunDocument(models.Model):
             else:
                 record.origin_reference = False
 
-    @api.depends("recipient_ids", "recipient_ids.state")
+    @api.depends("recipient_ids", "recipient_ids.state", "routing_line_ids")
     def _compute_routing_progress(self):
         for record in self:
-            total = len(record.recipient_ids)
+            total = len(record.routing_line_ids)
             if total:
                 done = len(
                     record.recipient_ids.filtered(
-                        lambda r: r.state not in ("waiting", "pending")
+                        lambda r: r.state in ("acknowledged", "approved")
                     )
                 )
                 record.routing_progress = (done / total) * 100
@@ -313,12 +326,28 @@ class SarabunDocument(models.Model):
     def _compute_routing_counts(self):
         for record in self:
             record.pending_routing_count = len(
-                record.recipient_ids.filtered(lambda r: r.state == "pending")
+                record.recipient_ids.filtered(lambda r: r.state == "new")
             )
             record.completed_routing_count = len(
                 record.recipient_ids.filtered(
-                    lambda r: r.state not in ("waiting", "pending")
+                    lambda r: r.state in ("acknowledged", "approved")
                 )
+            )
+
+    @api.depends("recipient_ids", "recipient_ids.state")
+    def _compute_current_user_recipient(self):
+        for record in self:
+            recipient = False
+            for r in record.recipient_ids.filtered(lambda x: x.state == "new"):
+                if r._can_user_access():
+                    recipient = r
+                    break
+            record.current_user_recipient_id = recipient
+            record.current_user_can_acknowledge = (
+                bool(recipient) and recipient.routing_type == "acknowledge"
+            )
+            record.current_user_can_approve = (
+                bool(recipient) and recipient.routing_type == "approve"
             )
 
     @api.depends("attachment_ids")
@@ -398,25 +427,9 @@ class SarabunDocument(models.Model):
             if document.name == "/":
                 document.name = document._generate_document_number()
 
-            # Create recipients from routing lines (all start as waiting)
-            Recipient = self.env["sarabun.document.recipient"]
-            for line in document.routing_line_ids:
-                Recipient.create({
-                    "document_id": document.id,
-                    "routing_line_id": line.id,
-                    "sequence": line.sequence,
-                    "routing_type": line.routing_type,
-                    "recipient_type": line.recipient_type,
-                    "user_id": line.user_id.id if line.user_id else False,
-                    "department_id": line.department_id.id if line.department_id else False,
-                    "department_text": line.department_text,
-                    "role_id": line.role_id.id if line.role_id else False,
-                    "state": "waiting",
-                })
-
             document.state = "sent"
 
-            # Activate first recipient (sequential delivery)
+            # Create only the first recipient (not all at once)
             document._activate_next_recipient()
 
             document.message_post(
@@ -435,6 +448,27 @@ class SarabunDocument(models.Model):
                 body=_("Document cancelled."),
                 message_type="notification",
             )
+
+    def action_acknowledge(self):
+        """Acknowledge - delegate to current recipient"""
+        self.ensure_one()
+        if not self.current_user_recipient_id:
+            raise UserError(_("No pending action for you."))
+        return self.current_user_recipient_id.action_acknowledge()
+
+    def action_approve(self):
+        """Approve - delegate to current recipient"""
+        self.ensure_one()
+        if not self.current_user_recipient_id:
+            raise UserError(_("No pending action for you."))
+        return self.current_user_recipient_id.action_approve()
+
+    def action_reject(self):
+        """Reject - delegate to current recipient"""
+        self.ensure_one()
+        if not self.current_user_recipient_id:
+            raise UserError(_("No pending action for you."))
+        return self.current_user_recipient_id.action_reject()
 
     def action_view_origin(self):
         """View origin record"""
@@ -535,30 +569,42 @@ class SarabunDocument(models.Model):
         return f"สจล./{seq}"
 
     def _activate_next_recipient(self):
-        """Activate the next waiting recipient (sequential delivery)"""
+        """Create the next recipient from routing lines (sequential delivery)"""
         self.ensure_one()
 
         if self.state != "sent":
             return
 
-        # Find next waiting recipient
-        next_recipient = self.recipient_ids.filtered(
-            lambda r: r.state == "waiting"
+        # Find which routing lines already have recipients
+        existing_line_ids = self.recipient_ids.mapped("routing_line_id").ids
+
+        # Find next routing line that doesn't have a recipient yet
+        next_line = self.routing_line_ids.filtered(
+            lambda l: l.id not in existing_line_ids
         ).sorted("sequence")[:1]
 
-        if next_recipient:
-            # Activate this recipient
-            next_recipient.write({
-                "state": "pending",
-                "sent_date": fields.Datetime.now(),
+        if next_line:
+            # Create new recipient (state=new)
+            Recipient = self.env["sarabun.document.recipient"].sudo()
+            new_recipient = Recipient.create({
+                "document_id": self.id,
+                "routing_line_id": next_line.id,
+                "sequence": next_line.sequence,
+                "routing_type": next_line.routing_type,
+                "recipient_type": next_line.recipient_type,
+                "user_id": next_line.user_id.id if next_line.user_id else False,
+                "department_id": next_line.department_id.id if next_line.department_id else False,
+                "department_text": next_line.department_text,
+                "role_id": next_line.role_id.id if next_line.role_id else False,
+                "state": "new",
             })
-            next_recipient._send_notification()
+            new_recipient._send_notification()
         else:
-            # No more waiting recipients - check if completed
+            # No more routing lines - check if completed
             self._check_completion()
 
     def _check_completion(self):
-        """Check if all recipients are done and update document state"""
+        """Check if all routing lines are done and update document state"""
         self.ensure_one()
 
         if self.state != "sent":
@@ -570,22 +616,24 @@ class SarabunDocument(models.Model):
             # Document stays in sent state, origin notified
             return
 
-        # Check if all are completed (not waiting or pending)
-        waiting_or_pending = self.recipient_ids.filtered(
-            lambda r: r.state in ("waiting", "pending")
-        )
+        # Check if all routing lines have been processed
+        # (recipient exists and state is not 'new')
+        all_lines_count = len(self.routing_line_ids)
+        completed_count = len(self.recipient_ids.filtered(
+            lambda r: r.state in ("acknowledged", "approved")
+        ))
 
-        if not waiting_or_pending:
+        if completed_count >= all_lines_count:
             self.state = "completed"
             self._on_routing_completed()
 
     def _mark_recipient_read(self):
-        """Mark the current user's pending recipient as read"""
+        """Mark the current user's new recipient as read"""
         self.ensure_one()
         user = self.env.user
 
-        # Find pending recipients for current user
-        for recipient in self.recipient_ids.filtered(lambda r: r.state == "pending"):
+        # Find new recipients for current user
+        for recipient in self.recipient_ids.filtered(lambda r: r.state == "new"):
             if recipient._can_user_access(user):
                 recipient.mark_as_read()
 

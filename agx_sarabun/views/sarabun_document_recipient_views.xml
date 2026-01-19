@@ -5,18 +5,19 @@
         <field name="name">sarabun.document.recipient.view.tree</field>
         <field name="model">sarabun.document.recipient</field>
         <field name="arch" type="xml">
-            <tree string="My Pending Documents" decoration-info="state == 'pending'" decoration-success="state in ('acknowledged', 'approved')" decoration-danger="state == 'rejected'" decoration-muted="state == 'waiting'">
+            <tree string="My Pending Documents" decoration-info="state == 'new'" decoration-success="state in ('acknowledged', 'approved')" decoration-danger="state == 'rejected'">
                 <field name="document_id"/>
                 <field name="document_subject"/>
                 <field name="routing_type"/>
                 <field name="recipient_name"/>
-                <field name="state" widget="badge"/>
-                <field name="sent_date"/>
+                <field name="state" widget="badge" decoration-info="state == 'new'" decoration-success="state in ('acknowledged', 'approved')" decoration-danger="state == 'rejected'"/>
+                <field name="create_date" string="Sent Date"/>
+                <field name="read_date" optional="show"/>
                 <field name="signed_as_text" optional="show"/>
                 <field name="actioned_date" optional="hide"/>
-                <button name="action_acknowledge" string="Acknowledge" type="object" icon="fa-check" attrs="{'invisible': ['|', ('state', '!=', 'pending'), ('routing_type', '=', 'approve')]}"/>
-                <button name="action_approve" string="Approve" type="object" icon="fa-thumbs-up" class="text-success" attrs="{'invisible': ['|', ('state', '!=', 'pending'), ('routing_type', '!=', 'approve')]}"/>
-                <button name="action_reject" string="Reject" type="object" icon="fa-thumbs-down" class="text-danger" attrs="{'invisible': [('state', '!=', 'pending')]}"/>
+                <button name="action_acknowledge" string="Acknowledge" type="object" icon="fa-check" attrs="{'invisible': ['|', ('state', '!=', 'new'), ('routing_type', '=', 'approve')]}"/>
+                <button name="action_approve" string="Approve" type="object" icon="fa-thumbs-up" class="text-success" attrs="{'invisible': ['|', ('state', '!=', 'new'), ('routing_type', '!=', 'approve')]}"/>
+                <button name="action_reject" string="Reject" type="object" icon="fa-thumbs-down" class="text-danger" attrs="{'invisible': [('state', '!=', 'new')]}"/>
             </tree>
         </field>
     </record>
@@ -28,9 +29,9 @@
         <field name="arch" type="xml">
             <form string="Document Recipient">
                 <header>
-                    <button name="action_acknowledge" string="Acknowledge" type="object" class="btn-primary" attrs="{'invisible': ['|', ('state', '!=', 'pending'), ('routing_type', '=', 'approve')]}"/>
-                    <button name="action_approve" string="Approve" type="object" class="btn-success" attrs="{'invisible': ['|', ('state', '!=', 'pending'), ('routing_type', '!=', 'approve')]}"/>
-                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'pending')]}"/>
+                    <button name="action_acknowledge" string="Acknowledge" type="object" class="btn-primary" attrs="{'invisible': ['|', ('state', '!=', 'new'), ('routing_type', '=', 'approve')]}"/>
+                    <button name="action_approve" string="Approve" type="object" class="btn-success" attrs="{'invisible': ['|', ('state', '!=', 'new'), ('routing_type', '!=', 'approve')]}"/>
+                    <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': [('state', '!=', 'new')]}"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -42,7 +43,7 @@
                             <field name="recipient_name" readonly="1"/>
                         </group>
                         <group>
-                            <field name="sent_date" readonly="1"/>
+                            <field name="create_date" string="Sent Date" readonly="1"/>
                             <field name="read_date" readonly="1"/>
                             <field name="actioned_date" readonly="1"/>
                             <field name="actioned_by" readonly="1"/>
@@ -71,11 +72,13 @@
                 <field name="document_id"/>
                 <field name="document_subject"/>
                 <separator/>
-                <filter string="Pending" name="pending" domain="[('state', '=', 'pending')]"/>
-                <filter string="Waiting" name="waiting" domain="[('state', '=', 'waiting')]"/>
+                <filter string="New" name="new" domain="[('state', '=', 'new')]"/>
                 <filter string="Acknowledged" name="acknowledged" domain="[('state', '=', 'acknowledged')]"/>
                 <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]"/>
                 <filter string="Rejected" name="rejected" domain="[('state', '=', 'rejected')]"/>
+                <separator/>
+                <filter string="Unread" name="unread" domain="[('read_date', '=', False), ('state', '=', 'new')]"/>
+                <filter string="Read" name="read" domain="[('read_date', '!=', False)]"/>
                 <separator/>
                 <filter string="For Acknowledgement" name="acknowledge" domain="[('routing_type', '=', 'acknowledge')]"/>
                 <filter string="For Approval" name="approve" domain="[('routing_type', '=', 'approve')]"/>
@@ -94,8 +97,8 @@
         <field name="name">Inbox</field>
         <field name="res_model">sarabun.document.recipient</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('state', '=', 'pending')]</field>
-        <field name="context">{'search_default_pending': 1}</field>
+        <field name="domain">[('state', '=', 'new')]</field>
+        <field name="context">{'search_default_new': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 No pending documents

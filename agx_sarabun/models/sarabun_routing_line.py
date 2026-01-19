@@ -72,7 +72,36 @@ class SarabunRoutingLine(models.Model):
         store=True,
     )
 
+    # === Status from Recipient (for display) ===
+    recipient_id = fields.Many2one(
+        comodel_name="sarabun.document.recipient",
+        string="Recipient Record",
+        compute="_compute_recipient_status",
+        store=False,
+    )
+    recipient_state = fields.Selection(
+        selection=[
+            ("waiting", "Waiting"),
+            ("new", "New"),
+            ("acknowledged", "Acknowledged"),
+            ("approved", "Approved"),
+            ("rejected", "Rejected"),
+        ],
+        string="Status",
+        compute="_compute_recipient_status",
+        store=False,
+    )
+
     # === Computed Fields ===
+    @api.depends("document_id.recipient_ids", "document_id.recipient_ids.state", "document_id.recipient_ids.routing_line_id")
+    def _compute_recipient_status(self):
+        for line in self:
+            recipient = line.document_id.recipient_ids.filtered(
+                lambda r: r.routing_line_id.id == line.id
+            )[:1]
+            line.recipient_id = recipient
+            line.recipient_state = recipient.state if recipient else "waiting"
+
     @api.depends("recipient_type", "user_id", "department_id", "department_text", "role_id")
     def _compute_recipient_name(self):
         for record in self:

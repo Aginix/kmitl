@@ -153,7 +153,7 @@
                     <field name="document_subject" readonly="1"/>
                 </group>
                 <group string="Select Position to Sign As">
-                    <field name="selected_role_id" widget="selection" required="1"/>
+                    <field name="selected_role_id" widget="radio" required="1"/>
                 </group>
                 <footer>
                     <button name="action_confirm" string="Confirm" type="object" class="btn-primary"/>
