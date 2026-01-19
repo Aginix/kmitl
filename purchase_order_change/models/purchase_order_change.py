@@ -42,22 +42,45 @@ class PurchaseOrderChange(models.Model):
         for rec in self:
             rec.has_sections = bool(rec.section_ids)
 
+    @api.model
+    def _get_change_type_section_map(self):
+        """
+        ในอนาคต จะใช้การ ihnerit แบบนี้ เพื่อเพิ่ม section type ใหม่ ๆ ได้ง่ายขึ้น
+
+        @api.model
+        def _get_change_type_section_map(self):
+            res = super()._get_change_type_section_map()
+
+            res.setdefault("impact", []).append(
+                "purchase_order_change.purchase_change_section_4"
+            )
+            res.setdefault("none", []).append(
+                "purchase_order_change.purchase_change_section_4"
+            )
+
+            return res
+        """
+        return {
+            "impact": [
+                "purchase_order_change.purchase_change_section_2",
+            ],
+            "none": [
+                "purchase_order_change.purchase_change_section_1",
+                "purchase_order_change.purchase_change_section_3",
+            ],
+        }
+
     @api.depends("change_type")
     def _compute_allowed_sections(self):
+        section_map = self._get_change_type_section_map()
+
         for rec in self:
-            # กระทบโครงสร้าง
-            if rec.change_type == "impact":
-                rec.allowed_section_ids = [
-                    self.env.ref("purchase_order_change.purchase_change_section_2").id,
-                ]
-            # ไม่กระทบโครงสร้าง
-            elif rec.change_type == "none":
-                rec.allowed_section_ids = [
-                    self.env.ref("purchase_order_change.purchase_change_section_1").id,
-                    self.env.ref("purchase_order_change.purchase_change_section_3").id,
-                ]
-            else:
-                rec.allowed_section_ids = [(5, 0, 0)]
+            xml_ids = section_map.get(rec.change_type, [])
+            rec.allowed_section_ids = [
+                self.env.ref(xml_id).id
+                for xml_id in xml_ids
+                if xml_id
+            ] or [(5, 0, 0)]
 
     @api.onchange("change_type")
     def _onchange_change_type(self):
