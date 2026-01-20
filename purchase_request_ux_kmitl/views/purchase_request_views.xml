@@ -75,6 +75,9 @@
             <xpath expr="//field[@name='ignore_exception']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//field[@name='operating_unit_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
 
             <!-- Tree name='line_ids' -->
             <xpath
@@ -177,6 +180,11 @@
                         <field
                             name="is_egp"
                             attrs="{'readonly': ['|', ('estimated_cost', '>', 100000), ('is_editable', '=', False)]}"
+                        />
+                        <field
+                            name="operating_unit_id"
+                            widget="selection"
+                            groups="operating_unit.group_multi_operating_unit"
                         />
                     </group>
                 </group>
