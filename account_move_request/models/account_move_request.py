@@ -33,6 +33,24 @@ class AccountMoveRequest(models.Model):
         states=READONLY_STATES,
     )
 
+    is_company = fields.Boolean(
+        related="partner_id.is_company",
+        string="Is Company",
+        readonly=True,
+    )
+
+    partner_bank_id = fields.Many2one(
+        comodel_name="res.partner.bank",
+        string="Recipient Bank",
+        compute="_compute_partner_bank_id",
+        store=True,
+        readonly=False,
+        tracking=True,
+        states=READONLY_STATES,
+        check_company=True,
+        domain="[('partner_id', '=', partner_id)]",
+    )
+
     date = fields.Date(
         string="Date",
         required=True,
@@ -48,9 +66,13 @@ class AccountMoveRequest(models.Model):
     )
 
     payment_type = fields.Selection(
-        selection=[("direct", "Direct paid"), ("loan", "Loan"), ("prepaid", "Prepaid")],
+        selection=[
+            ("vendor", "จ่ายตรงคู่ค้า"),
+            ("reimburse", "จ่ายคืนบุคคลากร"),
+            ("guarantee", "จ่ายคืนเงินประกัน")
+        ],
         tracking=True,
-        string="Payment Type",
+        string="ประเภทการขอเบิก",
         states=READONLY_STATES,
     )
 
@@ -146,6 +168,14 @@ class AccountMoveRequest(models.Model):
         """Compute the number of bills linked to this request"""
         for record in self:
             record.bill_count = 1 if record.bill_id else 0
+
+    @api.depends("partner_id", "company_id")
+    def _compute_partner_bank_id(self):
+        for request in self:
+            bank_ids = request.partner_id.bank_ids.filtered(
+                lambda bank: not bank.company_id or bank.company_id == request.company_id
+            )
+            request.partner_bank_id = bank_ids[0] if bank_ids else False
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -246,6 +276,7 @@ class AccountMoveRequest(models.Model):
         bill = self.env["account.move"].create(
             {
                 "partner_id": self.partner_id.id,
+                "partner_bank_id": self.partner_bank_id.id,
                 "move_type": "in_invoice",
                 "invoice_date": self.date,
                 "ref": self.ref,
