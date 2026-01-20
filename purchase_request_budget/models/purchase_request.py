@@ -22,7 +22,6 @@ class PurchaseRequest(models.Model):
     budget_account_id = fields.Many2one(
         "budget.account",
         string="Budget Account",
-        compute="_compute_budget_account_id",
         domain=lambda self: self._domain_budget_account_id(),
         help="Budget account to be used for commitment",
         store=True,
