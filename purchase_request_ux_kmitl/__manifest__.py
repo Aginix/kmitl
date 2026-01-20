@@ -5,7 +5,7 @@
     "category": "Purchase Management",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["l10n_th_gov_purchase_request"],
+    "depends": ["l10n_th_gov_purchase_request", "purchase_request_title", 'purchase_request_responsible_user', 'purchase_request_department'],
     "data": [
         "views/purchase_request_views.xml"
     ],
