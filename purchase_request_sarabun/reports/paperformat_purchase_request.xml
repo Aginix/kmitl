@@ -19,6 +19,7 @@
 
     <record id="purchase_request.action_report_purchase_requests" model="ir.actions.report">
         <field name="paperformat_id" ref="paperformat_purchase_request_report"/>
+        <field name="binding_model_id" />
         <field name="print_report_name">'Purchase Request - %s' % (object.name)</field>
     </record>
 </odoo>

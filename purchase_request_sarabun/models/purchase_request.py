@@ -8,37 +8,40 @@ _logger = logging.getLogger(__name__)
 
 class PurchaseRequest(models.Model):
     _name = 'purchase.request'
-    _inherit = ["purchase.request", "sarabun.document.mixin"]
+    _inherit = ["purchase.request", "sarabun.document.mixin", "portal.mixin", 'thai.date.mixin']
+    _state_from = [""]
+    _state_to = [""]
+
+    main_sarabun_document_id = fields.Many2one(
+        comodel_name="sarabun.document",
+        string="Main Sarabun Document",
+        copy=False,
+    )
+
+    def _compute_access_url(self):
+        """Compute the access URL for portal access."""
+        super()._compute_access_url()
+        for request in self:
+            request.access_url = f"/my/purchase_request/{request.id}"
+
+    def _get_report_base_filename(self):
+        self.ensure_one()
+        return 'Purchase Request-%s' % (self.name)
+
+    def open_preview(self):
+        if self.id:
+            return {
+                'type': 'ir.actions.act_url',
+                'url': self.access_url,
+                'target': 'new',
+            }
 
     def _prepare_sarabun_document_vals(self):
         """Prepare values for creating a sarabun document."""
         self.ensure_one()
         vals = super()._prepare_sarabun_document_vals()
-        vals["subject"] = _("Purchase Request: %s") % self.name
-        vals["content"] = self._get_sarabun_content()
+        vals["subject"] = self.title
         return vals
-
-    def _get_sarabun_content(self):
-        """Generate HTML content for sarabun document."""
-        self.ensure_one()
-        lines_html = "".join(
-            f"<tr><td>{line.product_id.name or line.name}</td>"
-            f"<td style='text-align: right;'>{line.product_qty}</td>"
-            f"<td>{line.product_uom_id.name}</td></tr>"
-            for line in self.line_ids
-        )
-        return _(
-            "<p><strong>Requested by:</strong> %(requested_by)s</p>"
-            "<p><strong>Description:</strong> %(description)s</p>"
-            "<table class='table table-sm'>"
-            "<thead><tr><th>Product</th><th>Qty</th><th>UoM</th></tr></thead>"
-            "<tbody>%(lines)s</tbody>"
-            "</table>"
-        ) % {
-            "requested_by": self.requested_by.name,
-            "description": self.description or "-",
-            "lines": lines_html,
-        }
 
     def _on_sarabun_completed(self, document):
         """Called when sarabun document routing is completed."""
@@ -64,10 +67,18 @@ class PurchaseRequest(models.Model):
         self.ensure_one()
         result = self.action_create_sarabun_document()
         document = self.env["sarabun.document"].browse(result.get("res_id"))
+        self.main_sarabun_document_id = document
         self.message_post(
             body=_("Submitted to Sarabun for approval: %s") % document.name,
         )
-        return document.action_select_route()
+        # return document.action_select_route()
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": 'sarabun.document',
+            "res_id": document.id,
+            "view_mode": "form",
+            "target": "current",
+        }
 
     def _get_sarabun_report_action(self):
         """Delegate Sarabun report to Purchase Request report."""

@@ -68,14 +68,12 @@
                     <button name="action_acknowledge" string="Acknowledge" type="object" class="btn-primary" attrs="{'invisible': [('current_user_can_acknowledge', '=', False)]}"/>
                     <button name="action_approve" string="Approve" type="object" class="btn-success" attrs="{'invisible': [('current_user_can_approve', '=', False)]}"/>
                     <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': ['|', ('current_user_recipient_id', '=', False), ('state', '!=', 'sent')]}"/>
+                    <button name="action_print_report" string="Print" type="object" icon="fa-print" attrs="{'invisible': [('state', '=', 'draft')]}"/>
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,sent,completed"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_view_origin" type="object" class="oe_stat_button" icon="fa-link" attrs="{'invisible': [('origin_model', '=', False)]}">
-                            <field name="origin_reference" widget="statinfo" string="Origin"/>
-                        </button>
                         <button class="oe_stat_button" type="object" name="open_preview" icon="fa-search-plus" string="เปิดเอกสาร" />
                     </div>
                     <div class="oe_title" invisible="1">
@@ -87,7 +85,12 @@
                     <!-- Document Form Layout (like บันทึกข้อความ) -->
                     <group>
                         <group>
-                            <field name="document_type_id" options="{'no_create': True}"/>
+                            <field name="document_type_id" options="{'no_create': True, 'no_open': True}"/>
+                            <label for="origin_reference" string="From Record" attrs="{'invisible': [('origin_model', '=', False)]}"/>
+                            <div class="o_row" attrs="{'invisible': [('origin_model', '=', False)]}">
+                                <field name="origin_reference" class="oe_inline" readonly="1"/>
+                                <button name="action_view_origin" type="object" class="btn-link" icon="fa-external-link" string="Open" attrs="{'invisible': [('origin_model', '=', False)]}"/>
+                            </div>
                         </group>
                         <group>
                             <field name="urgency" widget="selection" />
@@ -99,7 +102,7 @@
                         <!-- Sender Department (ต้นทาง) -->
                         <label for="sender_department_id" string="From (ต้นทาง)"/>
                         <div class="o_row">
-                            <field name="sender_department_id" options="{'no_create': True}" style="width: 60%;"/>
+                            <field name="sender_department_id" options="{'no_create': True, 'no_open': True}" style="width: 60%;"/>
                             <field name="sender_suffix" placeholder="หน่วยงานย่อย/เบอร์ต่อ" style="width: 35%;"/>
                         </div>
                         <field name="sender_department_name" invisible="1"/>

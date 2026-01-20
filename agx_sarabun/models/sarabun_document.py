@@ -137,6 +137,7 @@ class SarabunDocument(models.Model):
     )
     sender_department_name = fields.Char(
         string="Sender Department Name",
+        related="sender_department_id.complete_name",
         help="Stored department name at the time of document creation",
     )
     sender_suffix = fields.Char(
@@ -435,21 +436,6 @@ class SarabunDocument(models.Model):
         self.document_number_id = False
         self.manual_number = False
         self.numbering_mode = "auto"
-
-    @api.onchange("sender_department_id")
-    def _onchange_sender_department_id(self):
-        """Copy department name and reset sequence if not matching"""
-        if self.sender_department_id:
-            self.sender_department_name = self.sender_department_id.name
-            # Reset document_sequence_id if it doesn't match the new department
-            if self.document_sequence_id:
-                seq = self.document_sequence_id
-                if seq.department_ids and self.sender_department_id not in seq.department_ids:
-                    self.document_sequence_id = False
-                    self.document_number_id = False
-                    self.manual_number = False
-        else:
-            self.sender_department_name = False
 
     # === Actions ===
     def action_send(self):
@@ -876,3 +862,15 @@ class SarabunDocument(models.Model):
                 'url': self.access_url,
                 'target': 'new',
             }
+
+    def action_print_report(self):
+        """Print report - uses delegated report from origin if available"""
+        self.ensure_one()
+        delegated_report = self._get_delegated_report_action()
+        if delegated_report and self.origin_model and self.origin_res_id:
+            # Use origin model's report
+            origin = self.env[self.origin_model].browse(self.origin_res_id)
+            if origin.exists():
+                return delegated_report.report_action(origin)
+        # Fallback to Sarabun's own report
+        return self.env.ref('agx_sarabun.action_report_sarabun_documents').report_action(self)

@@ -69,7 +69,7 @@ class PurchaseRequestPortal(CustomerPortal):
                 "sortby": sortby,
             }
         )
-        return request.render("purchase_request_portal.portal_my_purchase_requests", values)
+        return request.render("purchase_request_sarabun.portal_my_purchase_requests", values)
 
     @http.route(
         ["/my/purchase_request/<int:request_id>"],
@@ -90,7 +90,7 @@ class PurchaseRequestPortal(CustomerPortal):
             return self._show_report(model=purchase_request_sudo, report_type=report_type, report_ref='purchase_request.action_report_purchase_requests', download=download)
 
         values = self._purchase_request_get_page_view_values(purchase_request_sudo, access_token, **kw)
-        return request.render("purchase_request_portal.portal_purchase_request_page", values)
+        return request.render("purchase_request_sarabun.portal_purchase_request_page", values)
 
     def _purchase_request_get_page_view_values(self, purchase_request, access_token, **kwargs):
         values = {

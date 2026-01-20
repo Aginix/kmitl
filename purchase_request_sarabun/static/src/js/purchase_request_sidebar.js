@@ -1,4 +1,4 @@
-odoo.define('purchase_request_portal.PurchaseRequestPortalSidebar', function (require) {
+odoo.define('purchase_request_sarabun.PurchaseRequestPortalSidebar', function (require) {
 'use strict';
 
 const dom = require('web.dom');

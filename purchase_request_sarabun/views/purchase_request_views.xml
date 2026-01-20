@@ -10,28 +10,28 @@
             <xpath expr="//button[@name='button_to_approve']" position="after">
                 <button
                     name="action_submit_to_sarabun"
-                    string="Submit to Sarabun"
+                    string="สร้างเอกสาร"
                     type="object"
                     class="oe_highlight"
                     attrs="{'invisible': ['|', ('state', '!=', 'to_approve'), ('sarabun_document_count', '>', 0)]}"
                 />
             </xpath>
 
+            <!-- <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <button class="oe_stat_button" type="object" name="open_preview" icon="fa-search-plus" string="Preview" />
+            </xpath> -->
+
             <!-- Add Sarabun Documents smart button -->
             <xpath expr="//div[@name='button_box']" position="inside">
+                <field name="sarabun_document_count" invisible="1" />
                 <button
                     type="object"
                     name="action_view_sarabun_documents"
                     class="oe_stat_button"
                     icon="fa-file-text-o"
                     attrs="{'invisible': [('sarabun_document_count', '=', 0)]}"
-                >
-                    <field
-                        name="sarabun_document_count"
-                        widget="statinfo"
-                        string="Sarabun"
-                    />
-                </button>
+                    string="เอกสาร"
+                />
             </xpath>
         </field>
     </record>

@@ -88,7 +88,7 @@
 
     <record id="action_report_sarabun_documents" model="ir.actions.report">
         <field name="name">Sarabun Document</field>
-        <field name="binding_model_id" ref="agx_sarabun.model_sarabun_document" />
+        <!-- binding_model_id removed - use action_print_report() button instead for delegation support -->
         <field name="model">sarabun.document</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">agx_sarabun.report_sarabun_document_template</field>

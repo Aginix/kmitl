@@ -42,25 +42,30 @@
                     <div class="row">
                         <div class="col-8">
                             เลขที่เอกสาร
-                            <span class="ms-2 fw-normal" t-out="o.name" />
+                            <span class="ms-2 fw-normal" t-out="o.main_sarabun_document_id.name" />
                         </div>
                         <div class="col">
                             วันที่
                             <span
                                 class="ms-2 fw-normal"
-                                t-esc="o.format_date_thai(o.create_date)"
+                                t-esc="o.format_date_thai(o.main_sarabun_document_id.date)"
                             />
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
                             หน่วยงาน
-                            <span class="ms-2" t-out="o.department_id.complete_name" />
+                            <span class="ms-2" t-out="o.main_sarabun_document_id.sender_display" />
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            เรื่อง <span class="ms-2" t-out="o.title" />
+                            เรื่อง <span class="ms-2" t-out="o.main_sarabun_document_id.subject" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            เรียน <span class="ms-2" t-out="o.main_sarabun_document_id.recipient" />
                         </div>
                     </div>
 
@@ -204,7 +209,7 @@
                     <div class="my-4" />
                     <p>รายละเอียดงบประมาณ</p>
                     <t
-                        t-call="purchase_request_report_kmitl.report_purchase_request_budget"
+                        t-call="purchase_request_sarabun.report_purchase_request_budget"
                     />
 
                     <div class="my-4"></div>
@@ -234,15 +239,15 @@
                             ชุด
                         </li>
                         <t
-                            t-call="purchase_request_report_kmitl.report_purchase_request_committee"
+                            t-call="purchase_request_sarabun.report_purchase_request_committee"
                         />
                     </ol>
 
                     <div class="my-5" style="height: 10px" />
 
-                    <t
-                        t-call="purchase_request_report_kmitl.report_purchase_request_sign"
-                    />
+                    <!-- <t
+                        t-call="purchase_request_sarabun.report_purchase_request_sign"
+                    /> -->
                 </div>
             </t>
         </xpath>
