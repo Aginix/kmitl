@@ -9,6 +9,9 @@ _logger = logging.getLogger(__name__)
 class PurchaseRequest(models.Model):
     _name = 'purchase.request'
     _inherit = ["purchase.request", "sarabun.document.mixin", "portal.mixin", 'thai.date.mixin']
+
+    # To disable tier validation
+    # todo: refactor move out to individual module
     _state_from = [""]
     _state_to = [""]
 
