@@ -225,6 +225,9 @@ class SarabunDocumentRecipient(models.Model):
         # Mark activities as done
         self._mark_activities_done()
 
+        # Trigger callback on origin
+        self.document_id._trigger_origin_action_callback(self, "acknowledge")
+
         # Activate next recipient
         self.document_id._activate_next_recipient()
 
@@ -254,6 +257,9 @@ class SarabunDocumentRecipient(models.Model):
 
         # Mark activities as done
         self._mark_activities_done()
+
+        # Trigger callback on origin
+        self.document_id._trigger_origin_action_callback(self, "approve")
 
         # Activate next recipient
         self.document_id._activate_next_recipient()
@@ -297,6 +303,9 @@ class SarabunDocumentRecipient(models.Model):
 
         # Mark activities as done
         self._mark_activities_done()
+
+        # Trigger callback on origin
+        self.document_id._trigger_origin_action_callback(self, "reject")
 
         # Notify origin about rejection
         self.document_id._on_routing_rejected(self)

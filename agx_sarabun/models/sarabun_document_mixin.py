@@ -116,14 +116,33 @@ class SarabunDocumentMixin(models.AbstractModel):
         """
         pass
 
-    def _on_sarabun_rejected(self, document, routing_line):
+    def _on_sarabun_rejected(self, document, recipient):
         """
         Callback when sarabun document is rejected.
         Override this to handle rejection.
 
         Args:
             document: The sarabun.document record
-            routing_line: The rejected sarabun.routing.line record
+            recipient: The sarabun.document.recipient record that rejected
+        """
+        pass
+
+    def _on_sarabun_action(self, document, recipient, action):
+        """
+        Callback for every action on sarabun document.
+        Called for acknowledge, approve, and reject actions.
+        Override this to track all actions on the document.
+
+        Args:
+            document: The sarabun.document record
+            recipient: The sarabun.document.recipient record that performed the action
+            action: The action type ('acknowledge', 'approve', 'reject')
+
+        Example:
+            def _on_sarabun_action(self, document, recipient, action):
+                self.message_post(
+                    body=f"Sarabun action: {action} by {recipient.actioned_by.name}"
+                )
         """
         pass
 

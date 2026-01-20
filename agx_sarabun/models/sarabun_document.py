@@ -801,6 +801,24 @@ class SarabunDocument(models.Model):
                     self.origin_model, self.origin_res_id, e
                 )
 
+    def _trigger_origin_action_callback(self, recipient, action):
+        """Trigger _on_sarabun_action callback on origin record for every action"""
+        self.ensure_one()
+        if self.origin_model and self.origin_res_id:
+            try:
+                origin_record = self.env[self.origin_model].sudo().browse(self.origin_res_id)
+                if origin_record.exists() and hasattr(origin_record, "_on_sarabun_action"):
+                    _logger.info(
+                        "Calling _on_sarabun_action on %s (id=%s) with action=%s",
+                        self.origin_model, self.origin_res_id, action
+                    )
+                    origin_record._on_sarabun_action(self, recipient, action)
+            except Exception as e:
+                _logger.exception(
+                    "Error calling _on_sarabun_action for %s (id=%s): %s",
+                    self.origin_model, self.origin_res_id, e
+                )
+
     # === Constraints ===
     @api.constrains("routing_line_ids")
     def _check_routing_lines(self):

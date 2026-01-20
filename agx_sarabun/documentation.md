@@ -86,6 +86,7 @@ class PurchaseRequest(models.Model):
 
 | Method | เมื่อไหร่ | Parameters |
 |--------|----------|------------|
+| `_on_sarabun_action(sarabun_doc, recipient, action)` | ทุกครั้งที่มี action | `sarabun_doc`: เอกสาร Sarabun, `recipient`: ผู้ดำเนินการ, `action`: 'acknowledge' / 'approve' / 'reject' |
 | `_on_sarabun_completed(sarabun_doc)` | เมื่อ routing ครบทุกขั้นตอน | `sarabun_doc`: เอกสาร Sarabun |
 | `_on_sarabun_rejected(sarabun_doc, recipient)` | เมื่อมีการ reject | `sarabun_doc`: เอกสาร Sarabun, `recipient`: ผู้ reject |
 
@@ -351,6 +352,7 @@ Mixin provides computed fields:
 | `action_view_sarabun_documents()` | ดูเอกสาร Sarabun ที่เกี่ยวข้อง |
 | `_prepare_sarabun_document_vals()` | Override เพื่อกำหนดค่าเริ่มต้นของเอกสาร |
 | `_get_sarabun_subject()` | Override เพื่อกำหนด subject เริ่มต้น |
+| `_on_sarabun_action(document, recipient, action)` | Callback สำหรับทุก action (acknowledge/approve/reject) |
 | `_on_sarabun_completed(document)` | Callback เมื่อ routing เสร็จสิ้น |
 | `_on_sarabun_rejected(document, recipient)` | Callback เมื่อถูก reject |
 | `_get_sarabun_report_action()` | Override เพื่อ delegate report ไปยัง origin model |
