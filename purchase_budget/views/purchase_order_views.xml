@@ -6,45 +6,43 @@
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_form" />
         <field name="arch" type="xml">
-            <xpath expr="//notebook" position="before">
-                <group
-                    string="การใช้งบประมาณ"
-                    attrs="{'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}"
-                >
-                    <field
-                        name="analytic_distribution"
-                        widget="analytic_distribution"
-                        invisible="1"
-                    />
-                    <field
-                        name="analytic_distribution"
-                        widget="analytic_distribution"
-                        invisible="0"
-                        groups="base.group_erp_manager"
-                    />
-                    <field
-                        name="budget_account_id"
-                    />
-                    <field name="activity_analytic_id" />
-                    <field name="department_analytic_id" />
-                    <field name="fund_analytic_id" />
-                    <field name="source_analytic_id" />
-                    <field name="procurement_plan_analytic_id" invisible="1" />
-                </group>
-            </xpath>
-            <xpath expr="//notebook" position="before">
-                <group string="แผนจัดซื้อจัดจ้าง">
-                    <field
-                        name="use_procurement_plan"
+            <xpath expr="//notebook" position="inside">
+                <page string="งบประมาณ" name="budget_page">
+                    <group
+                        string="การใช้งบประมาณ"
                         attrs="{'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}"
-                    />
-                    <field
-                        name="procurement_plan_id"
-                        options="{'no_create_edit': True, 'no_open': True}"
-                        domain="[('state', '=', 'pending'), ('account_fiscal_year_id', '=', account_fiscal_year_id)]"
-                        attrs="{'invisible': [('use_procurement_plan', '=', False)], 'required': [('use_procurement_plan', '=', True)], 'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}"
-                    />
-                </group>
+                    >
+                        <field
+                            name="analytic_distribution"
+                            widget="analytic_distribution"
+                            invisible="1"
+                        />
+                        <field
+                            name="analytic_distribution"
+                            widget="analytic_distribution"
+                            invisible="0"
+                            groups="base.group_erp_manager"
+                        />
+                        <field name="budget_account_id" />
+                        <field name="activity_analytic_id" />
+                        <field name="department_analytic_id" />
+                        <field name="fund_analytic_id" />
+                        <field name="source_analytic_id" />
+                        <field name="procurement_plan_analytic_id" invisible="1" />
+                    </group>
+                    <group string="แผนจัดซื้อจัดจ้าง">
+                        <field
+                            name="use_procurement_plan"
+                            attrs="{'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}"
+                        />
+                        <field
+                            name="procurement_plan_id"
+                            options="{'no_create_edit': True, 'no_open': True}"
+                            domain="[('state', '=', 'pending'), ('account_fiscal_year_id', '=', account_fiscal_year_id)]"
+                            attrs="{'invisible': [('use_procurement_plan', '=', False)], 'required': [('use_procurement_plan', '=', True)], 'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}"
+                        />
+                    </group>
+                </page>
             </xpath>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <button
@@ -91,17 +89,11 @@
                     groups="base.group_erp_manager"
                 />
             </xpath>
-            <xpath expr="//group/group[1]" position="inside">
-                <field name="product_id" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}" />
-            </xpath>
             <xpath
                 expr="//field[@name='order_line']//tree/field[@name='product_id']"
                 position="attributes"
             >
                 <attribute name="invisible">1</attribute>
-            </xpath>
-            <xpath expr="//field[@name='order_line']//tree" position="attributes">
-                <attribute name="create">0</attribute>
             </xpath>
         </field>
     </record>
