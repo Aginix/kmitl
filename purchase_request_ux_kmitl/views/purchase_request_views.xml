@@ -48,11 +48,26 @@
             <xpath expr="//field[@name='user_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//field[@name='title']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='requested_by']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='account_fiscal_year_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='payment_type']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='is_egp']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
             <xpath expr="//field[@name='procurement_type_id']" position="attributes">
-                <attribute name="widget">selection</attribute>
+                <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//field[@name='procurement_method_id']" position="attributes">
-                <attribute name="widget">selection</attribute>
+                <attribute name="invisible">1</attribute>
             </xpath>
 
             <!-- Tree name='line_ids' -->
@@ -105,24 +120,58 @@
                     string="รายละเอียดคำขอซื้อขอจ้าง"
                     name="purchase_request_details_group"
                 >
-                    <field
-                        name="title"
-                        required="1"
-                        attrs="{'readonly': [('is_editable','=', False)]}"
-                    />
-                    <field
-                        name="description"
-                        attrs="{'readonly': [('is_editable','=', False)]}"
-                    />
-                    <field
-                        name="requested_by"
-                        attrs="{'readonly': [('is_editable','=', False)]}"
-                    />
-                    <field
-                        name="department_id"
-                        attrs="{'readonly': [('state', '!=', 'draft')]}"
-                    />
-                    <field name="user_id" readonly="1" />
+                    <group>
+                        <field
+                            name="title"
+                            required="1"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
+                        />
+                        <field
+                            name="description"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
+                        />
+                        <field
+                            name="requested_by"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
+                        />
+                        <field
+                            name="department_id"
+                            attrs="{'readonly': [('state', '!=', 'draft')]}"
+                        />
+                        <field name="user_id" readonly="1" />
+                    </group>
+                </group>
+
+                <group string="คำขอซื้อขอจ้าง" name="purchase_request_group">
+                    <group>
+                        <field
+                            name="account_fiscal_year_id"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
+                            required="1"
+                            widget="selection"
+                        />
+                        <field
+                            name="procurement_type_id"
+                            required="1"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
+                        />
+                        <field
+                            name="procurement_method_id"
+                            required="1"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
+                        />
+                        <field
+                            name="payment_type"
+                            required="1"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
+                            widget="radio"
+                            options="{'horizontal': true}"
+                        />
+                        <field
+                            name="is_egp"
+                            attrs="{'readonly': ['|', ('estimated_cost', '>', 100000), ('is_editable', '=', False)]}"
+                        />
+                    </group>
                 </group>
             </xpath>
         </field>
