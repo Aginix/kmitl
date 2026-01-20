@@ -124,11 +124,12 @@ class BudgetAccount(models.Model):
         default=lambda self: self.env.company,
         tracking=True,
     )
-    
+
     is_asset = fields.Boolean(
         string="Is Asset",
         compute="_compute_is_asset",
         store=True,
+        recursive=True,
     )
     _sql_constraints = [
         (
@@ -224,13 +225,13 @@ class BudgetAccount(models.Model):
     @api.depends("code", "parent_id", "parent_id.is_asset")
     def _compute_is_asset(self):
         asset_code = "5412000000"
-        
+
         for record in self:
             is_asset = False
-            
+
             if record.code and record.code.startswith(asset_code):
                 is_asset = True
             elif record.parent_id:
                 is_asset = record.parent_id.is_asset
-            
+
             record.is_asset = is_asset
