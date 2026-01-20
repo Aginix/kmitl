@@ -19,16 +19,19 @@ class SarabunDocumentSequence(models.Model):
     )
     code = fields.Char(
         string="Code",
+        trim=False,
         required=True,
         help="Unique code for this sequence",
     )
     active = fields.Boolean(default=True)
     prefix = fields.Char(
         string="Prefix",
+        trim=False,
         help="Prefix for document numbers (e.g., 'สจล.', 'อว 6801.')",
     )
     suffix = fields.Char(
         string="Suffix",
+        trim=False,
         help="Suffix for document numbers",
     )
     padding = fields.Integer(

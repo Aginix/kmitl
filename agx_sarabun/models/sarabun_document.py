@@ -446,6 +446,20 @@ class SarabunDocument(models.Model):
 
             if not document.routing_line_ids:
                 raise UserError(_("Please add at least one routing line."))
+            
+            # # === VALIDATE ROUTING ORDER BEFORE SENDING ===
+            lines = document.routing_line_ids.sorted("sequence")
+            approve_lines = lines.filtered(lambda l: l.routing_type == "approve")
+
+            if approve_lines:
+                max_seq = max(lines.mapped("sequence"))
+                for approve_line in approve_lines:
+                    if approve_line.sequence < max_seq:
+                        raise ValidationError(
+                            _("Cannot send document: All approval steps must be at the end of routing. "
+                            "Please reorder your routing lines.")
+                        )
+            # # === END VALIDATION ===
 
             # Generate document number
             if document.name == "/":

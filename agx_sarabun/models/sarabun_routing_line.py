@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
+ROUTING_TYPE_SEQUENCE= {
+    "acknowledge": 10,
+    "approve": 100,
+}
 
 class SarabunRoutingLine(models.Model):
     """
@@ -23,7 +27,6 @@ class SarabunRoutingLine(models.Model):
     )
     sequence = fields.Integer(
         string="Sequence",
-        default=10,
     )
 
     # === Routing Type ===
@@ -91,6 +94,18 @@ class SarabunRoutingLine(models.Model):
         compute="_compute_recipient_status",
         store=False,
     )
+
+    @api.model
+    def create(self, vals):
+        if not vals.get('sequence'):
+            routing_type = vals.get('routing_type')
+            vals['sequence'] = ROUTING_TYPE_SEQUENCE.get(routing_type, 10)
+        return super().create(vals)
+    
+    def write(self, vals):
+        if 'routing_type' in vals and not vals.get('sequence'):
+            vals['sequence'] = ROUTING_TYPE_SEQUENCE.get(vals['routing_type'], 10)
+        return super().write(vals)
 
     # === Computed Fields ===
     @api.depends("document_id.recipient_ids", "document_id.recipient_ids.state", "document_id.recipient_ids.routing_line_id")
