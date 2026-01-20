@@ -41,6 +41,11 @@ class AccountAssetBatch(models.Model):
         "purchase.order"
     )
 
+    contract_number = fields.Char(
+        related='purchase_id.contract_number',
+        string="Contract Number"
+    )
+
     company_id = fields.Many2one(
         "res.company",
         string="Company",
@@ -106,6 +111,11 @@ class AccountAssetBatch(models.Model):
         string="Source of asset",
         tracking=True,
     )
+
+    @api.onchange('purchase_id')
+    def _onchange_purchase_id_set_source(self):
+        if self.purchase_id:
+            self.source_of_asset = 'procurement'
 
     @api.depends('line_ids.amount_total')
     def _compute_total_amount(self):
