@@ -95,6 +95,9 @@
             >
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//field[@name='order_line']" position="attributes">
+                <attribute name="context">{'default_state': 'draft', 'default_product_id': product_id}</attribute>
+            </xpath>
         </field>
     </record>
 </odoo>
