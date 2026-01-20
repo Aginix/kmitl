@@ -18,6 +18,20 @@ class BatchSubcomponentWizard(models.TransientModel):
         string="Subcomponents"
     )
 
+    @api.model
+    def default_get(self, fields):
+        res = super().default_get(fields)
+        batch_line_id = self.env.context.get('default_batch_line_id')
+        if batch_line_id:
+            subcomponents = self.env['account.asset.batch.subcomponent'].search([
+                ('batch_line_id', '=', batch_line_id)
+            ])
+            res['line_ids'] = [(0, 0, {
+                'name': sub.name,
+                'sequence': sub.sequence,
+            }) for sub in subcomponents]
+        return res
+
     @api.onchange('line_ids')
     def _onchange_line_ids(self):
         for index, line in enumerate(self.line_ids, start=1):
@@ -25,6 +39,7 @@ class BatchSubcomponentWizard(models.TransientModel):
 
     def confirm(self):
         for wizard in self:
+            wizard.batch_line_id.subcomponent_ids.unlink()
             for index, line in enumerate(wizard.line_ids, start=1):
                 self.env['account.asset.batch.subcomponent'].create({
                     'batch_line_id': wizard.batch_line_id.id,
