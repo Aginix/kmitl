@@ -8,21 +8,21 @@
         >
             <t t-set-slot="toggler">
                 <span class="o_sarabun_systray_dropdown_toggle">
-                    <i class="fa fa-file-text-o" role="img" aria-label="Sarabun" title="Sarabun Documents"/>
+                    <i class="fa fa-fw fa-inbox" role="img" aria-label="Sarabun" title="Sarabun Documents"/>
                     <t t-if="state.totalCount > 0">
-                        <span class="o_notification_counter badge rounded-pill" t-esc="state.totalCount"/>
+                        <span class="o_notification_counter badge" t-esc="state.totalCount"/>
                     </t>
                 </span>
             </t>
             <div class="o_sarabun_systray_dropdown" style="min-width: 320px;">
                 <div class="o_sarabun_systray_header d-flex align-items-center px-3 py-2 border-bottom">
-                    <span class="fw-bold">Sarabun Inbox</span>
-                    <span class="ms-auto badge rounded-pill bg-primary" t-if="state.totalCount > 0" t-esc="state.totalCount"/>
+                    <span class="fw-bold">Inbox</span>
+                    <span class="ms-auto badge bg-primary" t-if="state.totalCount > 0" t-esc="state.totalCount"/>
                 </div>
                 <t t-if="state.documents.length === 0">
                     <div class="o_sarabun_systray_empty text-muted text-center py-4">
                         <i class="fa fa-check-circle fa-2x mb-2 d-block"/>
-                        <span>No documents to review</span>
+                        <span>No documents in your index.</span>
                     </div>
                 </t>
                 <t t-else="">
