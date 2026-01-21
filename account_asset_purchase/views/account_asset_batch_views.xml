@@ -23,7 +23,7 @@
         <field name="model">account.asset.batch</field>
         <field name="arch" type="xml">
             <form string="Asset Registration">
-                <header>                
+                <header>
                     <button name="action_register_assets" type="object"
                             string="Register Asset" states="draft" class="btn-primary"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
@@ -52,6 +52,7 @@
                         <field name="source_of_asset" required="1" attrs="{'readonly': [('is_editable','=', False)]}" widget="radio" options="{'horizontal': true}"/>
                         <field name="company_id" groups="base.group_multi_company"/>
                         <field name="notes" />
+                        <field name="date" />
                     </group>
                     <notebook>
                         <page string="List">
@@ -71,7 +72,7 @@
                                 <field name="currency_id" invisible="1" />
                                 <field class="fw-bold" widget="monetary" options="{'currency_field': 'currency_id'}" name="total_amount" readonly="1"/>
                             </group>
-                            
+
                         </page>
                     </notebook>
                 </sheet>
