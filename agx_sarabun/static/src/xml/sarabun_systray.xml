@@ -10,7 +10,7 @@
                 <span class="o_sarabun_systray_dropdown_toggle">
                     <i class="fa fa-fw fa-inbox" role="img" aria-label="Sarabun" title="Sarabun Documents"/>
                     <t t-if="state.totalCount > 0">
-                        <span class="o_notification_counter badge" t-esc="state.totalCount"/>
+                        <span class="badge" t-esc="state.totalCount"/>
                     </t>
                 </span>
             </t>
