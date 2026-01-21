@@ -4,7 +4,7 @@
     <t t-name="agx_sarabun.SarabunSystray" owl="1">
         <Dropdown
             position="'bottom-end'"
-            onStateChanged="(state) => this.onDropdownToggle(state.open)"
+            beforeOpen.bind="fetchData"
         >
             <t t-set-slot="toggler">
                 <span class="o_sarabun_systray_dropdown_toggle">

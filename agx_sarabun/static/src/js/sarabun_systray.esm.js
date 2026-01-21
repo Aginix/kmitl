@@ -12,7 +12,6 @@ export class SarabunSystray extends Component {
         this.rpc = useService("rpc");
         this.action = useService("action");
         this.state = useState({
-            isOpen: false,
             documents: [],
             totalCount: 0,
         });
@@ -35,13 +34,6 @@ export class SarabunSystray extends Component {
             console.error("Failed to fetch Sarabun inbox count:", error);
             this.state.documents = [];
             this.state.totalCount = 0;
-        }
-    }
-
-    async onDropdownToggle(isOpen) {
-        this.state.isOpen = isOpen;
-        if (isOpen) {
-            await this.fetchData();
         }
     }
 
