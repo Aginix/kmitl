@@ -72,14 +72,6 @@
                       </tr>
                       <tr>
                         <td class="label">
-                          <b>สัญญาเลขที่:</b>
-                        </td>
-                        <td>
-                          <t t-esc="asset.purchase_id.contract_number or '-'"/>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td class="label">
                           <b>ประเภทครุภัณฑ์:</b>
                         </td>
                         <td>
@@ -88,10 +80,18 @@
                       </tr>
                       <tr>
                         <td class="label">
-                          <b>Service Tag:</b>
+                          <b>Serial Number:</b>
                         </td>
                         <td>
                           <t t-esc="asset.asset_serial_number or '-'"/>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="label">
+                          <b>สถานะใช้งาน:</b>
+                        </td>
+                        <td>
+                          <t t-esc="asset.state or '-'"/>
                         </td>
                       </tr>
                     </tbody>
