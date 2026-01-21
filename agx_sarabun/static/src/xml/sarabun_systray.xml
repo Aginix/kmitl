@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="agx_sarabun.SarabunSystray" owl="1">
+        <Dropdown
+            position="'bottom-end'"
+            onStateChanged="(state) => this.onDropdownToggle(state.open)"
+        >
+            <t t-set-slot="toggler">
+                <span class="o_sarabun_systray_dropdown_toggle">
+                    <i class="fa fa-file-text-o" role="img" aria-label="Sarabun" title="Sarabun Documents"/>
+                    <t t-if="state.totalCount > 0">
+                        <span class="o_notification_counter badge rounded-pill" t-esc="state.totalCount"/>
+                    </t>
+                </span>
+            </t>
+            <div class="o_sarabun_systray_dropdown" style="min-width: 280px;">
+                <div class="o_sarabun_systray_header d-flex align-items-center px-3 py-2 border-bottom">
+                    <span class="fw-bold">Sarabun Inbox</span>
+                    <span class="ms-auto badge rounded-pill bg-primary" t-if="state.totalCount > 0" t-esc="state.totalCount"/>
+                </div>
+                <t t-if="state.groups.length === 0">
+                    <div class="o_sarabun_systray_empty text-muted text-center py-4">
+                        <i class="fa fa-check-circle fa-2x mb-2 d-block"/>
+                        <span>No documents to review</span>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="o_sarabun_systray_items" style="max-height: 300px; overflow-y: auto;">
+                        <t t-foreach="state.groups" t-as="group" t-key="group.id">
+                            <DropdownItem
+                                onSelected="() => this.onGroupClick(group)"
+                                class="'o_sarabun_systray_item d-flex align-items-center px-3 py-2'"
+                            >
+                                <i class="fa fa-folder-o me-2 text-muted"/>
+                                <span class="flex-grow-1" t-esc="group.name"/>
+                                <span class="badge rounded-pill bg-primary ms-2" t-esc="group.count"/>
+                            </DropdownItem>
+                        </t>
+                    </div>
+                    <div class="border-top px-3 py-2">
+                        <a href="#" class="text-primary small" t-on-click.prevent="onViewAllClick">
+                            <i class="fa fa-arrow-right me-1"/>View All
+                        </a>
+                    </div>
+                </t>
+            </div>
+        </Dropdown>
+    </t>
+
+</templates>

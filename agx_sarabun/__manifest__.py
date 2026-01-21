@@ -34,6 +34,11 @@
         'web.assets_frontend': [
             'agx_sarabun/static/src/js/sarabun_document_portal_sidebar.js',
         ],
+        'web.assets_backend': [
+            'agx_sarabun/static/src/js/sarabun_systray.esm.js',
+            'agx_sarabun/static/src/scss/sarabun_systray.scss',
+            'agx_sarabun/static/src/xml/sarabun_systray.xml',
+        ],
     },
     "application": True,
     "installable": True,
