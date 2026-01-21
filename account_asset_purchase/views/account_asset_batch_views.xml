@@ -52,7 +52,7 @@
                         <field name="source_of_asset" required="1" attrs="{'readonly': [('is_editable','=', False)]}" widget="radio" options="{'horizontal': true}"/>
                         <field name="company_id" groups="base.group_multi_company"/>
                         <field name="notes" />
-                        <field name="date" string="Date" />
+                        <field name="date" />
                     </group>
                     <notebook>
                         <page string="List">

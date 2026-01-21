@@ -38,7 +38,7 @@ msgstr "ไม่มีชื่อย่อของแผนก"
 #: model_terms:ir.ui.view,arch_db:account_asset_number_kmitl.view_account_asset_form
 #: model_terms:ir.ui.view,arch_db:account_asset_number_kmitl.view_account_asset_tree
 msgid "Get Asset Number"
-msgstr "รับเลขทะเบียนครุภัณฑ์"
+msgstr "ออกเลขทะเบียนครุภัณฑ์"
 
 #. module: account_asset_number_kmitl
 #: model:ir.model.fields,field_description:account_asset_number_kmitl.field_account_asset__has_asset_number
