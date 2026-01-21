@@ -2,6 +2,7 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from .budget_tree import BudgetTree, TreeNode
 
 _logger = logging.getLogger(__name__)
 
@@ -35,7 +36,7 @@ class BudgetAccount(models.Model):
     _name = "budget.account"
     _description = "Budget Account"
     _parent_store = True
-    _order = "sequence, code"
+    _order = "code"
     _rec_names_search = ["name", "code"]
 
     _inherit = ["mail.thread"]
@@ -58,6 +59,7 @@ class BudgetAccount(models.Model):
         string="Parent",
         index=True,
         ondelete="cascade",
+        domain="[('budget_type', '=', budget_type)]",
         copy=True,
     )
     child_ids = fields.One2many("budget.account", "parent_id", string="Childs")
@@ -124,6 +126,12 @@ class BudgetAccount(models.Model):
         )
     ]
 
+    def copy_data(self, default=None):
+        default = dict(default or {})
+        default.setdefault('code', _("%s (copy)", self.code))
+        default.setdefault('name', _("%s (copy)", self.name))
+        return super().copy_data(default)
+
     @api.depends("name", "parent_id.complete_name")
     def _compute_complete_name(self):
         for record in self:
@@ -176,3 +184,27 @@ class BudgetAccount(models.Model):
             "view_mode": "list,form",
         }
         return result
+
+    @api.model
+    def get_as_tree(self, domain=[]):
+        accounts = self.env['budget.account'].search(domain, order="code")
+
+        def convert(item):
+            return dict(
+                id=item.id,
+                code=item.code,
+                name=item.name,
+                parent_id=item.parent_id.id,
+            )
+
+        nodes = {item.id: convert(item) for item in accounts}
+
+        tree = []
+        for item in nodes.values():
+            if item.parent_id and item.parent_id in nodes and item.parent_id != item.id:
+                nodes[item.parent_id].add_child(item)
+                item.parent = nodes[item.parent_id]
+            else:
+                tree.append(item)
+        print(tree[0].to_dict())
+        return tree
