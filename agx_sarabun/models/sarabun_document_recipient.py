@@ -373,6 +373,17 @@ class SarabunDocumentRecipient(models.Model):
         #         % (self.document_id.name, self.document_id.subject),
         #     )
 
+        # Send bus notification for real-time systray update
+        bus_notifications = []
+        for user in users_to_notify:
+            bus_notifications.append((
+                (self.env.cr.dbname, 'sarabun_inbox', user.partner_id.id),
+                'sarabun_inbox_update',
+                {'refresh': True}
+            ))
+        if bus_notifications:
+            self.env['bus.bus']._sendmany(bus_notifications)
+
         self.write({
             "is_notified": True,
             "notification_date": fields.Datetime.now(),

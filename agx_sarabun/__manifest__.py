@@ -6,7 +6,7 @@
     "category": "KMITL/Correspondence",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["mail", "hr", 'portal', 'thai_date_utils', 'l10n_th_fonts', 'l10n_th_amount_to_text', 'iframe_viewer_widget'],
+    "depends": ["mail", "hr", 'portal', 'thai_date_utils', 'l10n_th_fonts', 'l10n_th_amount_to_text', 'iframe_viewer_widget', 'bus'],
     "data": [
         # Security
         "security/security.xml",
