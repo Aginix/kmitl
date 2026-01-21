@@ -8,7 +8,7 @@ class ResUsers(models.Model):
     @api.model
     def get_sarabun_inbox_count(self):
         """
-        Return unread sarabun documents grouped by document type.
+        Return recent unread sarabun documents (up to 10).
         Used by the systray notification widget.
         """
         Recipient = self.env["sarabun.document.recipient"]
@@ -19,35 +19,29 @@ class ResUsers(models.Model):
         recipients = Recipient.sudo().search([
             ("state", "=", "new"),
             ("document_id.state", "=", "sent"),
-        ])
+        ], order="create_date desc")
 
         # Filter to only recipients this user can access
         accessible_recipients = recipients.filtered(
             lambda r: r._can_user_access(user)
         )
 
-        # Group by document type
-        result = []
-        type_groups = {}
-
+        # Get unique documents (a document may have multiple recipients)
+        seen_docs = set()
+        documents = []
         for recipient in accessible_recipients:
             doc = recipient.document_id
-            doc_type = doc.document_type_id
-
-            type_key = doc_type.id if doc_type else 0
-            if type_key not in type_groups:
-                type_groups[type_key] = {
-                    "id": type_key,
-                    "name": doc_type.name if doc_type else "Other",
-                    "count": 0,
-                    "recipient_ids": [],
-                }
-            type_groups[type_key]["count"] += 1
-            type_groups[type_key]["recipient_ids"].append(recipient.id)
-
-        result = list(type_groups.values())
+            if doc.id not in seen_docs:
+                seen_docs.add(doc.id)
+                documents.append({
+                    "id": doc.id,
+                    "name": doc.name or "Draft",
+                    "subject": doc.subject or "",
+                    "date": doc.date.strftime("%d/%m/%Y") if doc.date else "",
+                    "document_type": doc.document_type_id.name if doc.document_type_id else "",
+                })
 
         return {
-            "groups": result,
-            "total_count": len(accessible_recipients),
+            "documents": documents[:10],
+            "total_count": len(seen_docs),
         }

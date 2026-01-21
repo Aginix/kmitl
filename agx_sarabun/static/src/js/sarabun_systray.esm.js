@@ -13,7 +13,7 @@ export class SarabunSystray extends Component {
         this.action = useService("action");
         this.state = useState({
             isOpen: false,
-            groups: [],
+            documents: [],
             totalCount: 0,
         });
         onWillStart(async () => {
@@ -29,11 +29,11 @@ export class SarabunSystray extends Component {
                 args: [],
                 kwargs: {},
             });
-            this.state.groups = result.groups || [];
+            this.state.documents = result.documents || [];
             this.state.totalCount = result.total_count || 0;
         } catch (error) {
             console.error("Failed to fetch Sarabun inbox count:", error);
-            this.state.groups = [];
+            this.state.documents = [];
             this.state.totalCount = 0;
         }
     }
@@ -45,29 +45,20 @@ export class SarabunSystray extends Component {
         }
     }
 
-    onGroupClick(group) {
+    onDocumentClick(doc) {
         this.action.doAction({
             type: "ir.actions.act_window",
-            name: "Inbox - " + group.name,
-            res_model: "sarabun.document.recipient",
-            view_mode: "list,form",
-            views: [[false, "list"], [false, "form"]],
-            domain: [["id", "in", group.recipient_ids]],
+            name: doc.subject || doc.name,
+            res_model: "sarabun.document",
+            res_id: doc.id,
+            view_mode: "form",
+            views: [[false, "form"]],
             target: "current",
         });
     }
 
     onViewAllClick() {
-        this.action.doAction({
-            type: "ir.actions.act_window",
-            name: "Sarabun Inbox",
-            res_model: "sarabun.document.recipient",
-            view_mode: "list,form",
-            views: [[false, "list"], [false, "form"]],
-            domain: [["state", "=", "new"]],
-            context: { search_default_my_inbox: 1 },
-            target: "current",
-        });
+        this.action.doAction("agx_sarabun.action_sarabun_document_inbox");
     }
 }
 
