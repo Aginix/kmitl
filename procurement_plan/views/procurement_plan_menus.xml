@@ -6,7 +6,7 @@
         <field name="tag">procurement_plan_report</field>
     </record>
 
-    <menuitem id="procurement_plan_root_menu" name="Procurement Plan" sequence="10" web_icon="procurement_plan,static/description/logo.png">
+    <menuitem id="procurement_plan_root_menu" name="Procurement Plan" sequence="10" web_icon="procurement_plan,static/description/icon.png">
         <menuitem
             id="action_procurement_plan_menu_action"
             name="Procurement Plan"
