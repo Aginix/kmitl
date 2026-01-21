@@ -23,27 +23,43 @@ Think carefully and only action the specific task I have given you with the most
 
 ## Git Branch and PR Naming Conventions
 
-### Branch Naming
-Branches must follow the pattern: `16.0-{type}-{module_name}`
+Following [OCA Contributing Guidelines](https://github.com/OCA/odoo-community.org/blob/master/website/Ede/contribute/CONTRIBUTING.rst).
 
-**Type prefixes:**
-- `imp`: Improvements to existing features
+### Branch Naming
+Branches must follow the OCA pattern: `{version}-{type}-{module_name}-{short_description}`
+
+**Type prefixes (lowercase):**
 - `add`: New features or modules
-- `mig`: Migration-related changes
+- `imp`: Improvements to existing features
 - `fix`: Bug fixes
+- `mig`: Migration to new Odoo version
+- `ref`: Code refactoring (no functional changes)
+- `rem`: Removal of deprecated features
 
 **Examples:**
-- `16.0-fix-budget-some-bug`
-- `16.0-add-account_analytic_kmitl-dimension-filter`
-- `16.0-imp-procurement_plan-performance`
+- `16.0-fix-budget-nan_value_in_report`
+- `16.0-add-account_analytic_kmitl-dimension_filter`
+- `16.0-imp-procurement_plan-performance_optimization`
+- `16.0-mig-budget-migration_to_16`
+- `16.0-ref-account_move-cleanup_deprecated_methods`
 
 ### Pull Request Naming
-PR titles must follow the pattern: `[16.0][TYPE] module_name: description`
+PR titles must follow the OCA pattern: `[{version}][{TYPE}] {module_name}: {description}`
+
+**Type prefixes (UPPERCASE):**
+- `ADD`: New features or modules
+- `IMP`: Improvements to existing features
+- `FIX`: Bug fixes
+- `MIG`: Migration to new Odoo version
+- `REF`: Code refactoring (no functional changes)
+- `REM`: Removal of deprecated features
 
 **Examples:**
 - `[16.0][FIX] budget: fix NaN value in report`
 - `[16.0][ADD] account_analytic_kmitl: add financial dimension framework`
 - `[16.0][IMP] budget: improve transfer approval workflow`
+- `[16.0][MIG] procurement_plan: migration to 16.0`
+- `[16.0][REF] account_move: refactor validation logic`
 
 ## Architecture Overview
 
@@ -194,13 +210,43 @@ domain=[("root_plan_id.code", "=", "departments")]  # For departments
 
 ## Git Commit Guidelines
 
-When committing changes, do NOT include:
+Following [OCA Commit Message Guidelines](https://github.com/OCA/odoo-community.org/blob/master/website/Ede/contribute/CONTRIBUTING.rst).
+
+### Commit Message Format
+```
+[{TYPE}] {module_name}: {short description}
+
+{Optional longer description explaining the change.}
+```
+
+**Type prefixes (UPPERCASE):**
+- `[ADD]`: New features or modules
+- `[IMP]`: Improvements to existing features
+- `[FIX]`: Bug fixes
+- `[MIG]`: Migration to new Odoo version
+- `[REF]`: Code refactoring (no functional changes)
+- `[REM]`: Removal of deprecated features
+- `[I18N]`: Translation updates
+
+**Examples:**
+```
+[FIX] budget: fix NaN value when amount is zero
+
+The budget report was showing NaN when the amount field was empty.
+Added a default value of 0.0 to prevent this issue.
+```
+
+```
+[ADD] account_analytic_kmitl: add 4-dimensional financial framework
+
+Implements the four financial dimensions required by KMITL:
+- Activities (กิจกรรม)
+- Departments (หน่วยงาน)
+- Funds (กองทุน)
+- Sources (แหล่งเงิน)
+```
+
+### Do NOT Include
 - `🤖 Generated with [Claude Code](https://claude.com/claude-code)` footer
 - `Co-Authored-By: Claude` lines
-
-Commit messages should follow standard OCA format:
-```
-[TYPE] module_name: short description
-
-Optional longer description if needed.
-```
+- Emojis in commit messages
