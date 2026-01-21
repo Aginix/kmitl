@@ -1268,7 +1268,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_search
 #, python-format
 msgid "New"
-msgstr "ใหม่"
+msgstr "รอลงนาม"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__activity_calendar_event_id
@@ -2630,7 +2630,7 @@ msgstr ""
 #. module: agx_sarabun
 #: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_routing_line__recipient_state__waiting
 msgid "Waiting"
-msgstr ""
+msgstr "รอลงนาม"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document__website_message_ids
