@@ -17,12 +17,12 @@
             <div class="o_sarabun_systray_dropdown" style="min-width: 320px;">
                 <div class="o_sarabun_systray_header d-flex align-items-center px-3 py-2 border-bottom">
                     <span class="fw-bold">Inbox</span>
-                    <span class="ms-auto badge bg-primary" t-if="state.totalCount > 0" t-esc="state.totalCount"/>
+                    <span class="ms-auto badge bg-primary text-white" t-if="state.totalCount > 0" t-esc="state.totalCount"/>
                 </div>
                 <t t-if="state.documents.length === 0">
                     <div class="o_sarabun_systray_empty text-muted text-center py-4">
                         <i class="fa fa-check-circle fa-2x mb-2 d-block"/>
-                        <span>No documents in your index.</span>
+                        <span>No documents in your index</span>
                     </div>
                 </t>
                 <t t-else="">
