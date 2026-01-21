@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Module Category -->
+        <record id="module_category_sarabun" model="ir.module.category">
+            <field name="name">e-Sarabun</field>
+            <field name="description">Electronic Correspondence Management</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <!-- User Groups -->
+        <!-- Sarabun User inherits from base.group_user to get mail.activity access -->
+        <record id="group_sarabun_user" model="res.groups">
+            <field name="name">User</field>
+            <field name="category_id" ref="module_category_sarabun"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="group_sarabun_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="category_id" ref="module_category_sarabun"/>
+            <field name="implied_ids" eval="[(4, ref('group_sarabun_user'))]"/>
+        </record>
+    </data>
+
+    <data noupdate="0">
+        <!-- Record Rules -->
+
+        <!-- Users can see documents where they are sender -->
+        <record id="sarabun_document_sender_rule" model="ir.rule">
+            <field name="name">Sarabun Document: Sender Access</field>
+            <field name="model_id" ref="model_sarabun_document"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
+            <field name="domain_force">[('sender_user_id', '=', user.id)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Users can read documents where they are recipient -->
+        <record id="sarabun_document_recipient_rule" model="ir.rule">
+            <field name="name">Sarabun Document: Recipient Read Access</field>
+            <field name="model_id" ref="model_sarabun_document"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
+            <field name="domain_force">[('recipient_ids.user_id', '=', user.id)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Users can read documents where they have activities assigned -->
+        <record id="sarabun_document_activity_rule" model="ir.rule">
+            <field name="name">Sarabun Document: Activity Access</field>
+            <field name="model_id" ref="model_sarabun_document"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
+            <field name="domain_force">[('activity_ids.user_id', '=', user.id)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Managers can see all documents -->
+        <record id="sarabun_document_manager_rule" model="ir.rule">
+            <field name="name">Sarabun Document: Manager Access</field>
+            <field name="model_id" ref="model_sarabun_document"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- Company rule -->
+        <record id="sarabun_document_company_rule" model="ir.rule">
+            <field name="name">Sarabun Document: Multi-company</field>
+            <field name="model_id" ref="model_sarabun_document"/>
+            <field name="domain_force">[
+                '|', ('company_id', '=', False), ('company_id', 'in', company_ids)
+            ]</field>
+        </record>
+
+        <!-- Routing Line Rules -->
+        <!-- Users can see all routing lines of documents they are involved in -->
+        <record id="sarabun_routing_line_user_rule" model="ir.rule">
+            <field name="name">Sarabun Routing Line: User Access</field>
+            <field name="model_id" ref="model_sarabun_routing_line"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
+            <field name="domain_force">[
+                '|',
+                ('document_id.sender_user_id', '=', user.id),
+                ('document_id.recipient_ids.user_id', '=', user.id)
+            ]</field>
+        </record>
+
+        <!-- Recipient Rules -->
+        <!-- Users can see recipients where they are the recipient or sender of document -->
+        <record id="sarabun_recipient_user_rule" model="ir.rule">
+            <field name="name">Sarabun Recipient: User Access</field>
+            <field name="model_id" ref="model_sarabun_document_recipient"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
+            <field name="domain_force">[
+                '|',
+                ('document_id.sender_user_id', '=', user.id),
+                ('user_id', '=', user.id)
+            ]</field>
+        </record>
+
+        <!-- Managers can see all recipients -->
+        <record id="sarabun_recipient_manager_rule" model="ir.rule">
+            <field name="name">Sarabun Recipient: Manager Access</field>
+            <field name="model_id" ref="model_sarabun_document_recipient"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- Route Template - All users can read -->
+        <record id="sarabun_route_template_read_rule" model="ir.rule">
+            <field name="name">Sarabun Route Template: Read Access</field>
+            <field name="model_id" ref="model_sarabun_route_template"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Managers can manage route templates -->
+        <record id="sarabun_route_template_manager_rule" model="ir.rule">
+            <field name="name">Sarabun Route Template: Manager Access</field>
+            <field name="model_id" ref="model_sarabun_route_template"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+    </data>
+</odoo>

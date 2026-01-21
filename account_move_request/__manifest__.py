@@ -13,7 +13,16 @@
         "security/ir.model.access.csv",
         "data/sequence.xml",
         "views/account_move_request_views.xml",
+        "report/paperformat.xml",
+        "report/report_account_move_request_action.xml",
+        "report/report_account_move_request.xml",
+        "views/portal_templates.xml"
     ],
+    "assets": {
+        "web.assets_frontend": [
+            "account_move_request/static/src/js/account_move_request_sidebar.js",
+        ],
+    },
     "installable": True,
     "application": False,
 }

@@ -23,7 +23,7 @@
                 'purchase_order_received_qty_percent', 'purchase_order_report_kmitl', 'purchase_request_activity_kmitl',
                 'purchase_request_approval_account', 'purchase_request_approval_attach_existing_attachments', 'purchase_request_approval_tier_validation',
                 'purchase_request_attachment', 'purchase_request_hide_create_po_button', 'purchase_request_operating_unit_access_all',
-                'purchase_sequence_kmitl', 'purchase_request_portal', 'purchase_request_report_kmitl', 'purchase_request_sequence_kmitl',
+                'purchase_sequence_kmitl', 'purchase_request_sarabun', 'purchase_request_sequence_kmitl',
                 'purchase_request_ux_kmitl', 'purchase_work_acceptance_invoice_plan_deliverables', 'purchase_work_acceptance_invoice_plan_usability',
                 'purchase_work_acceptance_kmitl', 'purchase_work_acceptance_portal', 'purchase_work_acceptance_purchase_order',
                 'purchase_work_acceptance_ribbon', 'stock_inventory_department', 'stock_inventory_kmitl', 'stock_inventory_restriction',
