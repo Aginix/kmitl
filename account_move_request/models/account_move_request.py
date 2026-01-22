@@ -67,12 +67,12 @@ class AccountMoveRequest(models.Model):
 
     payment_type = fields.Selection(
         selection=[
-            ("vendor", "จ่ายตรงคู่ค้า"),
-            ("reimburse", "จ่ายคืนบุคคลากร"),
-            ("guarantee", "จ่ายคืนเงินประกัน")
+            ("direct", "Direct paid"),
+            ("loan", "Loan"),
+            ("prepaid", "Prepaid")
         ],
         tracking=True,
-        string="ประเภทการขอเบิก",
+        string="Payment Type",
         states=READONLY_STATES,
     )
 
