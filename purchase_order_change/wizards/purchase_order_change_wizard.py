@@ -126,6 +126,19 @@ class PurchaseOrderChangeWizard(models.TransientModel):
         for field_name, label in track_fields.items():
             old_value = po[field_name]
             new_value = self[field_name]
+            if old_value._name == "procurement.committee":
+                old_ids = set(old_value.ids)
+                new_ids = set(new_value.ids)
+
+                if old_ids != new_ids:
+                    ChangeField.create({
+                        "change_id": self.change_id.id,
+                        "field_name": label,
+                        "field_id": field_map.get(field_name),
+                        "old_value": ", ".join(old_value.mapped("name")),
+                        "new_value": ", ".join(new_value.mapped("name")),
+                    })
+                continue
 
             if old_value != new_value:
                 ChangeField.create({

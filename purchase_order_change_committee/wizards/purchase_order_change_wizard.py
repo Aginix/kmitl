@@ -52,7 +52,14 @@ class PurchaseOrderChangeWizard(models.TransientModel):
             "work_acceptance_committee_ids": commands
         })
 
-    def action_save_changes(self):
-        res = super().action_save_changes()
-        self._save_committee_changes()
-        return res
+    def _get_track_fields(self):
+        fields = super()._get_track_fields()
+        fields.update({
+            "work_acceptance_committee_ids": "คณะกรรมการตรวจรับพัสดุ"
+        })
+        return fields
+
+    # def action_save_changes(self):
+    #     res = super().action_save_changes()
+    #     self._save_committee_changes()
+    #     return res
