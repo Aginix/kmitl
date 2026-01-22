@@ -151,31 +151,22 @@ class AccountMoveRequest(models.Model):
             line._update_analytic_distribution("sources")
 
     def write(self, values):
-        res = super().write(values)
-
+        # Log unlinking if budget_commitment_id is being changed
         if "budget_commitment_id" in values:
             for rec in self:
-                if rec.budget_commitment_id:
-                    rec.budget_commitment_id.message_post(
-                        body=_("Account move request '%(name)s' has been linked to")
-                        % {"name": rec.name}
-                    )
-
-        return res
-
-    def write(self, values):
-        # ถ้า budget_commitment_id เปลี่ยนแปลงค่า
-        if (
-            "budget_commitment_id" in values
-            and values.get("budget_commitment_id") != self.budget_commitment_id.id
-        ):
-            self._log_budget_commitment_unlinked()
+                # Only log if there's currently a budget commitment and it's being changed
+                if (
+                    rec.budget_commitment_id
+                    and values.get("budget_commitment_id") != rec.budget_commitment_id.id
+                ):
+                    rec._log_budget_commitment_unlinked()
 
         res = super().write(values)
 
-        # ถ้า budget_commitment_id เปลี่ยนแปลงค่า
+        # Log linking if budget_commitment_id is set to a value
         if "budget_commitment_id" in values and values.get("budget_commitment_id"):
-            self._log_budget_commitment_linked()
+            for rec in self:
+                rec._log_budget_commitment_linked()
 
         return res
 
@@ -184,6 +175,7 @@ class AccountMoveRequest(models.Model):
         super().action_submit()
 
     def _log_budget_commitment_linked(self):
+        self.ensure_one()
         link = f"/web#id={self.id}&model={self._name}&view_type=form"
         self.budget_commitment_id.message_post(
             body=_(
@@ -194,6 +186,7 @@ class AccountMoveRequest(models.Model):
         )
 
     def _log_budget_commitment_unlinked(self):
+        self.ensure_one()
         link = f"/web#id={self.id}&model={self._name}&view_type=form"
         self.budget_commitment_id.message_post(
             body=_("The account move request '%(name)s' has been unlinked.")

@@ -13,7 +13,8 @@
     ],
     "data": [
         "views/account_move_request_views.xml",
-        "views/budget_commitment_views.xml"
+        "views/budget_commitment_views.xml",
+        "report/report_account_move_request_inherited.xml",
     ],
     "auto_install": False,
     "application": False,

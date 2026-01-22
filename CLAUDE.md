@@ -191,3 +191,16 @@ domain=[("root_plan_id.code", "=", "departments")]  # For departments
 - Write descriptive docstrings explaining business purpose
 - Use proper state management and validation in models
 - When working with analytic dimensions, always use the provided mixins and domain filters
+
+## Git Commit Guidelines
+
+When committing changes, do NOT include:
+- `🤖 Generated with [Claude Code](https://claude.com/claude-code)` footer
+- `Co-Authored-By: Claude` lines
+
+Commit messages should follow standard OCA format:
+```
+[TYPE] module_name: short description
+
+Optional longer description if needed.
+```

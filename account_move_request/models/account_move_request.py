@@ -7,7 +7,7 @@ from odoo.exceptions import UserError
 class AccountMoveRequest(models.Model):
     _name = "account.move.request"
     _description = "Account Move Request"
-    _inherit = ["analytic.mixin", "mail.thread", "mail.activity.mixin"]
+    _inherit = ["analytic.mixin", "mail.thread", "mail.activity.mixin", "portal.mixin"]
     _order = "date desc, id desc"
 
     READONLY_STATES = {
@@ -33,6 +33,24 @@ class AccountMoveRequest(models.Model):
         states=READONLY_STATES,
     )
 
+    is_company = fields.Boolean(
+        related="partner_id.is_company",
+        string="Is Company",
+        readonly=True,
+    )
+
+    partner_bank_id = fields.Many2one(
+        comodel_name="res.partner.bank",
+        string="Recipient Bank",
+        compute="_compute_partner_bank_id",
+        store=True,
+        readonly=False,
+        tracking=True,
+        states=READONLY_STATES,
+        check_company=True,
+        domain="[('partner_id', '=', partner_id)]",
+    )
+
     date = fields.Date(
         string="Date",
         required=True,
@@ -48,7 +66,11 @@ class AccountMoveRequest(models.Model):
     )
 
     payment_type = fields.Selection(
-        selection=[("direct", "Direct paid"), ("loan", "Loan"), ("prepaid", "Prepaid")],
+        selection=[
+            ("direct", "Direct paid"),
+            ("loan", "Loan"),
+            ("prepaid", "Prepaid")
+        ],
         tracking=True,
         string="Payment Type",
         states=READONLY_STATES,
@@ -146,6 +168,14 @@ class AccountMoveRequest(models.Model):
         """Compute the number of bills linked to this request"""
         for record in self:
             record.bill_count = 1 if record.bill_id else 0
+
+    @api.depends("partner_id", "company_id")
+    def _compute_partner_bank_id(self):
+        for request in self:
+            bank_ids = request.partner_id.bank_ids.filtered(
+                lambda bank: not bank.company_id or bank.company_id == request.company_id
+            )
+            request.partner_bank_id = bank_ids[0] if bank_ids else False
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -246,6 +276,7 @@ class AccountMoveRequest(models.Model):
         bill = self.env["account.move"].create(
             {
                 "partner_id": self.partner_id.id,
+                "partner_bank_id": self.partner_bank_id.id,
                 "move_type": "in_invoice",
                 "invoice_date": self.date,
                 "ref": self.ref,
@@ -312,4 +343,24 @@ class AccountMoveRequest(models.Model):
             "res_id": bill.id,
             "view_mode": "form",
             "target": "current",
+        }
+
+    def _compute_access_url(self):
+        """Compute the portal URL for the account move request."""
+        super()._compute_access_url()
+        for request in self:
+            request.access_url = f"/my/account_move_request/{request.id}"
+
+    def _get_report_base_filename(self):
+        """Return the base filename for the report."""
+        self.ensure_one()
+        return f"Account Move Request-{self.name}"
+
+    def open_preview(self):
+        """Open preview in portal."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "target": "new",
+            "url": self.get_portal_url(),
         }

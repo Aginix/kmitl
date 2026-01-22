@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit base report template to add budget dimensions -->
+    <template id="report_account_move_request_budget" inherit_id="account_move_request.report_account_move_request">
+        <!-- Insert financial dimensions after payment type field -->
+        <xpath expr="//div[@class='row'][div/text()[contains(.,'ประเภทการจ่าย')]]" position="after">
+            <!-- Financial Dimensions (Budget Module) -->
+            <div class="my-5" />
+
+            <table class="table table-bordered border table-sm budget">
+                <tbody>
+                    <tr class="o_field_budget_commitment_id">
+                        <td>เลขที่ใบจองงบประมาณ</td>
+                        <td>
+                            <span t-field="o.budget_commitment_id" />
+                        </td>
+                    </tr>
+                    <tr class="o_field_budget_account_id">
+                        <td>รหัสงบประมาณค่าใช้จ่าย</td>
+                        <td>
+                            <span t-field="o.budget_account_id" />
+                        </td>
+                    </tr>
+                    <tr class="o_field_source_analytic_id">
+                        <td>แหล่งเงิน</td>
+                        <td>
+                            <span t-field="o.source_analytic_id" />
+                        </td>
+                    </tr>
+                    <tr class="o_field_department_analytic_id">
+                        <td>หน่วยงาน</td>
+                        <td>
+                            <span t-field="o.department_analytic_id" />
+                        </td>
+                    </tr>
+                    <tr class="o_field_activity_analytic_id">
+                        <td>ด้าน/แผนงาน/กิจกรรม</td>
+                        <td>
+                            <span t-field="o.activity_analytic_id" />
+                        </td>
+                    </tr>
+                    <tr class="o_field_fund_analytic_id">
+                        <td>กองทุน</td>
+                        <td>
+                            <span t-field="o.fund_analytic_id" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </xpath>
+    </template>
+</odoo>
