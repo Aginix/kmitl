@@ -29,7 +29,7 @@ class PurchaseOrderChangeWizard(models.TransientModel):
 
         committees = purchase.work_acceptance_committee_ids
 
-        vals["work_acceptance_committee_ids"] = [
+        vals["work_acceptance_committee_ids_old"] = [
             (6, 0, committees.ids)
         ]
 
