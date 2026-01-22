@@ -325,7 +325,7 @@
                     <filter string="Date" name="group_date" context="{'group_by': 'date'}"/>
                 </group>
                 <searchpanel>
-                    <field name="read_status" string="สถานะการอ่าน" select="one" icon="fa-envelope"/>
+                    <field name="state" string="สถานะเอกสาร" select="one" icon="fa-flag"/>
                 </searchpanel>
             </search>
         </field>
