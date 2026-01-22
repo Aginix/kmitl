@@ -3,12 +3,15 @@
 import { registry } from "@web/core/registry";
 
 export const sarabunNotificationHandler = {
-    dependencies: ["bus_service", "action"],
+    dependencies: ["bus_service"],
 
-    start(env, { bus_service, action }) {
-        bus_service.subscribe("sarabun_inbox/updated", (payload) => {
-            // Trigger custom event that systray can listen to
-            env.bus.trigger("sarabun_inbox_updated", payload);
+    start(env, { bus_service }) {
+        bus_service.addEventListener("notification", ({ detail: notifications }) => {
+            for (const { payload, type } of notifications) {
+                if (type === "sarabun_inbox/updated") {
+                    env.bus.trigger("sarabun_inbox_updated", payload);
+                }
+            }
         });
     },
 };
