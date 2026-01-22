@@ -7,7 +7,7 @@ class PurchaseOrderChangeWizard(models.TransientModel):
     _description = _('Purchase Order ChangeWizard')
 
     show_committee = fields.Boolean()
-    work_acceptance_committee_ids = fields.One2many(comodel_name="procurement.committee", inverse_name="purchase_id")
+    work_acceptance_committee_ids = fields.One2many(comodel_name="procurement.committee")
 
     def _prepare_old_values(self, purchase):
         vals = super()._prepare_old_values(purchase)
