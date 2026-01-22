@@ -9,3 +9,4 @@ from . import sarabun_document_recipient
 from . import sarabun_reference
 from . import sarabun_document_mixin
 from . import hr_department
+from . import res_users

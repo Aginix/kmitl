@@ -136,7 +136,7 @@
                     <notebook>
                         <!-- Content page - hidden when report is delegated from origin -->
                         <page name="content" string="Content" attrs="{'invisible': [('has_delegated_report', '=', True)]}">
-                            <field name="content" placeholder="Enter document content..." class="oe-bordered-editor" options="{'style-inline': true, 'codeview': true, 'dynamic_placeholder': true}" />
+                            <field name="content" placeholder="Enter document content..." class="oe-bordered-editor" options="{'codeview': true, 'dynamic_placeholder': true}" />
                             <label for="attachment_ids" string="Attachments"/>
                             <field name="attachment_ids" widget="many2many_binary" attrs="{'readonly': [('state', 'not in', ['draft'])]}" class="w-100" />
                         </page>
