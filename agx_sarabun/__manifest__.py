@@ -14,6 +14,7 @@
         # Data
         "data/sarabun_sequence.xml",
         "data/sarabun_document_type.xml",
+        "data/sarabun_role.xml",
         "report/paperformat.xml",
         "report/report_sarabun.xml",
         # Wizard
