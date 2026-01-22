@@ -7,9 +7,21 @@ class PurchaseOrderChangeWizard(models.TransientModel):
     _description = _('Purchase Order ChangeWizard')
 
     show_committee = fields.Boolean()
-    work_acceptance_committee_ids_old = fields.Many2many(comodel_name="procurement.committee", string="Old Committee", readonly=True)
+    work_acceptance_committee_ids_old = fields.Many2many(
+        comodel_name="procurement.committee",
+        relation="purchase_change_wizard_committee_old_rel",
+        column1="wizard_id",
+        column2="committee_id",
+        string="Old Committee",
+        readonly=True,
+    )
+
     work_acceptance_committee_ids = fields.Many2many(
         comodel_name="procurement.committee",
+        relation="purchase_change_wizard_committee_new_rel",
+        column1="wizard_id",
+        column2="committee_id",
+        string="New Committee",
     )
 
     def _prepare_old_values(self, purchase):
