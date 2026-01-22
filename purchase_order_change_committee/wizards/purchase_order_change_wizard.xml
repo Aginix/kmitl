@@ -1,4 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
+    <record id="view_purchase_order_change_wizard" model="ir.ui.view">
+        <field name="name">purchase.order.change.wizard.form(Change Committee)</field>
+        <field name="model">purchase.order.change.wizard</field>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='old_work_field_group']" position="after">
+                <group name="old_committee_group">
+                    <field
+                        name="work_acceptance_committee_ids_old"
+                        attrs="{'invisible': [('show_committee', '=', False)]}"
+                    />
+                </group>
+            </xpath>
+            <xpath expr="//group[@name='new_contract_field_group']" position="after">
+                <group name="new_committee_group">
+                    <field
+                        name="work_acceptance_committee_ids"
+                        attrs="{'invisible': [('show_committee', '=', False)]}"
+                    />
+                </group>
+            </xpath>
+        </field>
+    </record>
 </odoo>

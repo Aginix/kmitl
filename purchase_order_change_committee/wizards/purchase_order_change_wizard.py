@@ -7,6 +7,7 @@ class PurchaseOrderChangeWizard(models.TransientModel):
     _description = _('Purchase Order ChangeWizard')
 
     show_committee = fields.Boolean()
+    work_acceptance_committee_ids_old = fields.Many2many(comodel_name="procurement.committee", string="Old Committee", readonly=True)
     work_acceptance_committee_ids = fields.Many2many(
         comodel_name="procurement.committee",
     )
