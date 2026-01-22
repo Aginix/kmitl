@@ -56,6 +56,39 @@
         </field>
     </record>
 
+    <!-- Tree View for Inbox (กล่องขาเข้า - with read/unread) -->
+    <record id="sarabun_document_view_tree_inbox" model="ir.ui.view">
+        <field name="name">sarabun.document.view.tree.inbox</field>
+        <field name="model">sarabun.document</field>
+        <field name="arch" type="xml">
+            <tree string="Inbox"
+                  decoration-muted="state == 'completed'"
+                  decoration-warning="read_status == 'unread'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="document_type_id"/>
+                <field name="subject"/>
+                <field name="sender_display" string="From"/>
+                <field name="activity_ids" widget="list_activity" optional="show"/>
+                <field name="urgency" optional="hide"/>
+                <field name="routing_progress" widget="progressbar"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'sent'"
+                       decoration-success="state == 'completed'"
+                       decoration-danger="state == 'cancelled'"/>
+                <field name="read_status" invisible="1"/>
+                <!-- Inline buttons at end of row -->
+                <button name="action_mark_as_read" type="object"
+                        icon="fa-envelope-open-o" title="Mark as Read"
+                        attrs="{'invisible': [('read_status', '=', 'read')]}"/>
+                <button name="action_mark_as_unread" type="object"
+                        icon="fa-envelope" title="Mark as Unread"
+                        attrs="{'invisible': [('read_status', '=', 'unread')]}"/>
+            </tree>
+        </field>
+    </record>
+
     <!-- Form View -->
     <record id="sarabun_document_view_form" model="ir.ui.view">
         <field name="name">sarabun.document.view.form</field>
@@ -69,6 +102,8 @@
                     <button name="action_approve" string="Approve" type="object" class="btn-success" attrs="{'invisible': [('current_user_can_approve', '=', False)]}"/>
                     <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': ['|', ('current_user_recipient_id', '=', False), ('state', '!=', 'sent')]}"/>
                     <button name="action_print_report" string="Print" type="object" icon="fa-print" attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                    <button name="action_mark_as_unread" string="Mark as Unread" type="object" icon="fa-envelope"
+                            attrs="{'invisible': ['|', ('state', '=', 'draft'), ('read_status', '=', 'unread')]}"/>
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,sent,completed"/>
                 </header>
@@ -212,6 +247,7 @@
                     <field name="current_user_can_acknowledge" invisible="1"/>
                     <field name="current_user_can_approve" invisible="1"/>
                     <field name="has_delegated_report" invisible="1"/>
+                    <field name="read_status" invisible="1"/>
                 </sheet>
                 <!-- Attachment preview -->
                 <div class="o_attachment_preview"
@@ -255,6 +291,42 @@
                     <filter string="Sender Department" name="group_sender" context="{'group_by': 'sender_department_id'}"/>
                     <filter string="Date" name="group_date" context="{'group_by': 'date'}"/>
                 </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Search View for Inbox (with search panel) -->
+    <record id="sarabun_document_view_search_inbox" model="ir.ui.view">
+        <field name="name">sarabun.document.view.search.inbox</field>
+        <field name="model">sarabun.document</field>
+        <field name="arch" type="xml">
+            <search string="Inbox">
+                <field name="name"/>
+                <field name="subject"/>
+                <field name="sender_display" string="Sender"/>
+                <field name="sender_department_id"/>
+                <field name="document_type_id"/>
+                <separator/>
+                <filter string="Unread" name="unread" domain="[('read_status', '=', 'unread')]"/>
+                <filter string="Read" name="read" domain="[('read_status', '=', 'read')]"/>
+                <separator/>
+                <filter string="Pending Action" name="pending_action"
+                        domain="[('recipient_ids.user_id', '=', uid), ('recipient_ids.state', '=', 'new')]"/>
+                <separator/>
+                <filter string="Sent" name="sent" domain="[('state', '=', 'sent')]"/>
+                <filter string="Completed" name="completed" domain="[('state', '=', 'completed')]"/>
+                <separator/>
+                <filter string="Urgent" name="urgent" domain="[('urgency', 'in', ['urgent', 'very_urgent', 'immediate'])]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Document Type" name="group_type" context="{'group_by': 'document_type_id'}"/>
+                    <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Sender Department" name="group_sender" context="{'group_by': 'sender_department_id'}"/>
+                    <filter string="Date" name="group_date" context="{'group_by': 'date'}"/>
+                </group>
+                <searchpanel>
+                    <field name="read_status" string="สถานะการอ่าน" select="one" icon="fa-envelope"/>
+                </searchpanel>
             </search>
         </field>
     </record>
@@ -338,18 +410,20 @@
         <field name="name">Inbox</field>
         <field name="res_model">sarabun.document</field>
         <field name="view_mode">tree,kanban,form</field>
-        <field name="domain">[('recipient_ids.user_id', '=', uid), ('recipient_ids.state', '=', 'new')]</field>
+        <!-- Show all documents where user is a recipient (including completed) -->
+        <field name="domain">[('recipient_ids.user_id', '=', uid)]</field>
         <field name="context">{}</field>
+        <field name="search_view_id" ref="sarabun_document_view_search_inbox"/>
         <field name="view_ids" eval="[(5, 0, 0),
-            (0, 0, {'view_mode': 'tree', 'view_id': ref('sarabun_document_view_tree_incoming')}),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('sarabun_document_view_tree_inbox')}),
             (0, 0, {'view_mode': 'kanban', 'view_id': ref('sarabun_document_view_kanban')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('sarabun_document_view_form')})]"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                No pending documents
+                No incoming documents
             </p>
             <p>
-                Documents requiring your action will appear here.
+                Documents sent to you will appear here.
             </p>
         </field>
     </record>

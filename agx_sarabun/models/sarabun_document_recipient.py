@@ -403,6 +403,11 @@ class SarabunDocumentRecipient(models.Model):
         if self.state == "new" and not self.read_date:
             self.read_date = fields.Datetime.now()
 
+    def mark_as_unread(self):
+        """Mark recipient as unread"""
+        self.ensure_one()
+        self.read_date = False
+
     def read(self, fields=None, load="_classic_read"):
         """Override to track read_date when recipient form is opened"""
         result = super().read(fields=fields, load=load)

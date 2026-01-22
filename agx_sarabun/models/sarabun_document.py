@@ -251,6 +251,17 @@ class SarabunDocument(models.Model):
         compute="_compute_report_preview_url",
     )
 
+    # === Read Status (for current user) ===
+    read_status = fields.Selection(
+        selection=[
+            ("unread", "Unread"),
+            ("read", "Read"),
+        ],
+        string="Read Status",
+        compute="_compute_read_status",
+        search="_search_read_status",
+    )
+
     # === References ===
     reference_ids = fields.One2many(
         comodel_name="sarabun.reference",
@@ -394,6 +405,39 @@ class SarabunDocument(models.Model):
         for record in self:
             record.attachment_count = len(record.attachment_ids)
 
+    @api.depends("recipient_ids", "recipient_ids.read_date", "recipient_ids.user_id")
+    def _compute_read_status(self):
+        """Compute read status for current user"""
+        user = self.env.user
+        for record in self:
+            recipient = record.recipient_ids.filtered(
+                lambda r: r._can_user_access(user)
+            )[:1]
+            if recipient and recipient.read_date:
+                record.read_status = "read"
+            else:
+                record.read_status = "unread"
+
+    def _search_read_status(self, operator, value):
+        """Enable search on read_status for search panel"""
+        user = self.env.user
+        Recipient = self.env["sarabun.document.recipient"]
+
+        if operator == "=" and value == "read":
+            recipients = Recipient.search([
+                ("user_id", "=", user.id),
+                ("read_date", "!=", False),
+            ])
+        elif operator == "=" and value == "unread":
+            recipients = Recipient.search([
+                ("user_id", "=", user.id),
+                ("read_date", "=", False),
+            ])
+        else:
+            return [("id", "=", False)]
+
+        return [("id", "in", recipients.mapped("document_id").ids)]
+
     # === Onchange ===
     @api.onchange("route_template_id")
     def _onchange_route_template_id(self):
@@ -507,6 +551,33 @@ class SarabunDocument(models.Model):
         if not self.current_user_recipient_id:
             raise UserError(_("No pending action for you."))
         return self.current_user_recipient_id.action_reject()
+
+    def action_mark_as_unread(self):
+        """Mark current user's recipient as unread and redirect to inbox"""
+        self.ensure_one()
+        user = self.env.user
+        for recipient in self.recipient_ids.filtered(lambda r: r._can_user_access(user)):
+            recipient.sudo().mark_as_unread()
+
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Inbox"),
+            "res_model": "sarabun.document",
+            "view_mode": "tree,kanban,form",
+            "domain": [("recipient_ids.user_id", "=", user.id)],
+            "context": {},
+            "target": "current",
+            "views": [
+                (self.env.ref("agx_sarabun.sarabun_document_view_tree_inbox").id, "tree"),
+                (self.env.ref("agx_sarabun.sarabun_document_view_kanban").id, "kanban"),
+                (self.env.ref("agx_sarabun.sarabun_document_view_form").id, "form"),
+            ],
+        }
+
+    def action_mark_as_read(self):
+        """Mark current user's recipient as read (for tree view button)"""
+        self.ensure_one()
+        self._mark_recipient_read()
 
     def action_view_origin(self):
         """View origin record"""
