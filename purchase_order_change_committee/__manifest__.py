@@ -6,10 +6,10 @@
     'author': 'Aginix Technologies',
     'website': 'https://github.com/aginix/kmitl',
     'category': 'KMITL',
-    'depends': ['purchase_order_change'],
+    'depends': ['purchase_order_change', 'purchase_order_procurement_committee'],
     "data": [
         "data/purchase_change_section_data.xml",
-        "wizards/purchase_order_change_wizard.xml"
+        "views/purchase_order_change_wizard_views.xml",
     ],
     'installable': True,
     'auto_install': False,
