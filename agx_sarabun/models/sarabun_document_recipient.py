@@ -378,7 +378,11 @@ class SarabunDocumentRecipient(models.Model):
             self.env['bus.bus']._sendone(
                 user.partner_id,
                 'sarabun_inbox/updated',
-                {'refresh': True}
+                {
+                    'refresh': True,
+                    'subject': self.document_id.subject or self.document_id.name,
+                    'document_id': self.document_id.id,
+                }
             )
 
         self.write({
