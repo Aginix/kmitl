@@ -14,3 +14,16 @@ class PurchaseOrderChange(models.Model):
         )
 
         return res
+
+    def _prepare_wizard_context(self, extra_context=None):
+        context = super()._prepare_wizard_context(extra_context=extra_context)
+
+        purchase = self.purchase_id
+        if purchase and purchase.work_acceptance_committee_ids:
+            context.update({
+                "default_work_acceptance_committee_ids": [
+                    (6, 0, purchase.work_acceptance_committee_ids.ids)
+                ]
+            })
+
+        return context

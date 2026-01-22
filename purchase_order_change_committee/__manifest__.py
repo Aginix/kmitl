@@ -7,8 +7,9 @@
     'website': 'https://github.com/aginix/kmitl',
     'category': 'KMITL',
     'depends': ['purchase_order_change'],
-    'data': [
+    "data": [
         "data/purchase_change_section_data.xml",
+        "wizards/purchase_order_change_wizard.xml"
     ],
     'installable': True,
     'auto_install': False,

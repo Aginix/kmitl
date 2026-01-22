@@ -39,22 +39,43 @@ class PurchaseOrderChangeWizard(models.TransientModel):
     def default_get(self, fields):
         vals = super().default_get(fields)
 
-        purchase = self.env["purchase.order"].browse(self.env.context.get("default_purchase_id"))
-
+        purchase = self._get_default_purchase()
         if purchase:
-            vals.update({
-                "fines_rate_old": purchase.fines_rate,
-                "supervision_cost_old": purchase.supervision_cost,
+            vals.update(self._prepare_old_values(purchase))
 
-                "work_start_old": purchase.work_start,
-                "date_order_date_old": purchase.date_order_date,
-                "contract_period_days_old": purchase.contract_period_days,
+        section_xml_ids = self._get_default_section_xml_ids()
+        vals.update(self._prepare_section_visibility(section_xml_ids))
 
-                "contract_name_old": purchase.contract_name,
-                "contract_number_old": purchase.contract_number,
-            })
+        return vals
 
+    def _get_default_purchase(self):
+        purchase_id = self.env.context.get("default_purchase_id")
+        if not purchase_id:
+            return False
+        return self.env["purchase.order"].browse(purchase_id)
+
+    def _prepare_old_values(self, purchase):
+        """ ตัวอย่างการขยาย method
+            def _prepare_old_values(self, purchase):
+                vals = super()._prepare_old_values(purchase)
+                vals["new_field_old"] = purchase.new_field
+                return vals
+        """
+        return {
+            "fines_rate_old": purchase.fines_rate,
+            "supervision_cost_old": purchase.supervision_cost,
+
+            "work_start_old": purchase.work_start,
+            "date_order_date_old": purchase.date_order_date,
+            "contract_period_days_old": purchase.contract_period_days,
+
+            "contract_name_old": purchase.contract_name,
+            "contract_number_old": purchase.contract_number,
+        }
+
+    def _get_default_section_xml_ids(self):
         default_section_ids = self.env.context.get("default_section_ids")
+
         if default_section_ids and isinstance(default_section_ids, list):
             ids = default_section_ids[0][2]
         else:
@@ -63,13 +84,20 @@ class PurchaseOrderChangeWizard(models.TransientModel):
         sections = self.env["purchase.change.section"].browse(ids)
 
         xml_ids_map = sections.get_external_id()
-        xml_id_list = [xml.split(".")[-1] for xml in xml_ids_map.values()]
+        return [xml.split(".")[-1] for xml in xml_ids_map.values()]
 
-        vals["show_fines_fields"] = "purchase_change_section_1" in xml_id_list
-        vals["show_work_fields"] = "purchase_change_section_2" in xml_id_list
-        vals["show_contract_fields"] = "purchase_change_section_3" in xml_id_list
-
-        return vals
+    def _prepare_section_visibility(self, section_xml_ids):
+        """ ตัวอย่างการขยาย method
+        def _prepare_section_visibility(self, section_xml_ids):
+            vals = super()._prepare_section_visibility(section_xml_ids)
+            vals["show_new_section"] = "purchase_change_section_4" in section_xml_ids
+            return vals
+        """
+        return {
+            "show_fines_fields": "purchase_change_section_1" in section_xml_ids,
+            "show_work_fields": "purchase_change_section_2" in section_xml_ids,
+            "show_contract_fields": "purchase_change_section_3" in section_xml_ids,
+        }
 
     @api.constrains("work_start", "date_order_date")
     def _check_work_start(self):
