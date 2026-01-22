@@ -31,24 +31,24 @@ class KmitlProjectDashboard(http.Controller):
             "account_analytic_kmitl.analytic_plan_activities"
         )
         activities = AnalyticAccount.search(
-            [("root_plan_id", "=", activities_plan.id)], order="sequence, code"
+            [("root_plan_id", "=", activities_plan.id)], order="code"
         )
 
         departments_plan = request.env.ref(
             "account_analytic_kmitl.analytic_plan_departments"
         )
         departments = AnalyticAccount.search(
-            [("root_plan_id", "=", departments_plan.id)], order="sequence, code"
+            [("root_plan_id", "=", departments_plan.id)], order="code"
         )
 
         funds_plan = request.env.ref("account_analytic_kmitl.analytic_plan_funds")
         funds = AnalyticAccount.search(
-            [("root_plan_id", "=", funds_plan.id)], order="sequence, code"
+            [("root_plan_id", "=", funds_plan.id)], order="code"
         )
 
         sources_plan = request.env.ref("account_analytic_kmitl.analytic_plan_sources")
         sources = AnalyticAccount.search(
-            [("root_plan_id", "=", sources_plan.id)], order="sequence, code"
+            [("root_plan_id", "=", sources_plan.id)], order="code"
         )
 
         # Build domain based on filters
