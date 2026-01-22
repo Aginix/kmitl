@@ -145,8 +145,8 @@ class PurchaseOrderChangeWizard(models.TransientModel):
             return value.display_name
         return str(value)
 
-    def action_save_changes(self):
-        track_fields = {
+    def _get_track_fields(self):
+        return {
             "fines_rate": "อัตราค่าปรับ",
             "fines_late": "ค่าปรับล่าช้า",
             "late_days": "จำนวนวันล่าช้า",
@@ -157,6 +157,9 @@ class PurchaseOrderChangeWizard(models.TransientModel):
             "contract_name": "ชื่อสัญญา",
             "contract_number": "เลขที่สัญญา",
         }
+
+    def action_save_changes(self):
+        track_fields = self._get_track_fields()
         return self._save_changes(track_fields)
 
     def cancel(self):
