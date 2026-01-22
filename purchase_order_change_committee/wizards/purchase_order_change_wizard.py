@@ -40,11 +40,17 @@ class PurchaseOrderChangeWizard(models.TransientModel):
             vals["show_committee"] = "purchase_change_section_4" in section_xml_ids
             return vals
 
-    def _get_track_fields(self):
-        track_fields = super()._get_track_fields()
+    def _save_committee_changes(self):
+        po = self.purchase_id.sudo()
 
-        track_fields.update({
-            "work_acceptance_committee_ids": "คณะกรรมการตรวจรับพัสดุ",
-        })
+        if self.work_acceptance_committee_ids:
+            po.write({
+                "work_acceptance_committee_ids": [
+                    (6, 0, self.work_acceptance_committee_ids.ids)
+                ]
+            })
 
-        return track_fields
+    def action_save_changes(self):
+        res = super().action_save_changes()
+        self._save_committee_changes()
+        return res
