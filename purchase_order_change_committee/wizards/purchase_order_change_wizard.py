@@ -44,11 +44,13 @@ class PurchaseOrderChangeWizard(models.TransientModel):
         po = self.purchase_id.sudo()
 
         if self.work_acceptance_committee_ids:
-            po.write({
-                "work_acceptance_committee_ids": [
-                    (6, 0, self.work_acceptance_committee_ids.ids)
-                ]
-            })
+            commands = [(6, 0, self.work_acceptance_committee_ids.ids)]
+        else:
+            commands = [(5, 0, 0)]
+
+        po.write({
+            "work_acceptance_committee_ids": commands
+        })
 
     def action_save_changes(self):
         res = super().action_save_changes()
