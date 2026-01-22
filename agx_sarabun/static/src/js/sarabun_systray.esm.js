@@ -5,14 +5,12 @@ import { useService, useBus } from "@web/core/utils/hooks";
 import { Dropdown } from "@web/core/dropdown/dropdown";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 
-const { Component, useState, onWillStart, onMounted } = owl;
+const { Component, useState, onWillStart } = owl;
 
 export class SarabunSystray extends Component {
     setup() {
         this.rpc = useService("rpc");
         this.action = useService("action");
-        this.user = useService("user");
-        this.busService = this.env.services.bus_service;
 
         this.state = useState({
             documents: [],
@@ -23,18 +21,9 @@ export class SarabunSystray extends Component {
             await this.fetchData();
         });
 
-        // Subscribe to bus channel for real-time updates
-        onMounted(() => {
-            this.busService.addChannel(`sarabun_inbox_${this.user.partnerId}`);
-        });
-
-        // Listen for bus notifications
-        useBus(this.env.bus, "notification", ({ detail: notifications }) => {
-            for (const { payload, type } of notifications) {
-                if (type === "sarabun_inbox_update") {
-                    this.fetchData();
-                }
-            }
+        // Listen for real-time bus notifications via sarabunNotificationHandler service
+        useBus(this.env.bus, "sarabun_inbox_updated", () => {
+            this.fetchData();
         });
     }
 
