@@ -5,6 +5,7 @@
         name="e-Sarabun"
         sequence="50"
         web_icon="agx_sarabun,static/description/icon.png"
+        action="action_sarabun_document_inbox"
         groups="group_sarabun_user"/>
 
     <!-- Documents Menu -->
