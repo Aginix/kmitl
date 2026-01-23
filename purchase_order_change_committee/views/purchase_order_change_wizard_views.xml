@@ -11,14 +11,12 @@
         />
         <field name="arch" type="xml">
             <xpath expr="//group[@name='new_contract_field_group']" position="after">
-                <group name="old_committee_group">
+                <group name="new_committee_group">
                     <field name="show_committee" invisible="1" />
                     <field
                         name="work_acceptance_committee_ids_old"
                         attrs="{'invisible': [('show_committee', '=', False)]}"
                     />
-                </group>
-                <group name="new_committee_group">
                     <field
                         name="work_acceptance_committee_ids"
                         attrs="{'invisible': [('show_committee', '=', False)]}"
