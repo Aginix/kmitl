@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <function name="write" model="ir.model.data">
+        <value model="ir.model.data" search="[
+            ('module', '=', 'account_analytic_kmitl'),
+            ('model', '=', 'account.analytic.account'),
+            ('name', 'like', 'dept_%')
+        ]" />
+        <value eval="{'noupdate': False}" />
+    </function>
+
+    <record id="account_analytic_kmitl.dept_01" model="account.analytic.account">
+        <field name="operating_unit_ids" ref="operating_unit_kmitl.operating_unit_01" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01030" model="account.analytic.account">
+        <field name="operating_unit_ids" ref="operating_unit_kmitl.operating_unit_01" />
+    </record>
+    
+
+</odoo>
