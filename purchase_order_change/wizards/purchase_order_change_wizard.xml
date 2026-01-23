@@ -5,7 +5,7 @@
         <field name="model">purchase.order.change.wizard</field>
         <field name="arch" type="xml">
             <form string="Change Purchase Order">
-                <group>
+                <group name="field_groups">
                     <field name="show_fines_fields" invisible="1" />
                     <field name="show_work_fields" invisible="1" />
                     <field name="show_contract_fields" invisible="1" />

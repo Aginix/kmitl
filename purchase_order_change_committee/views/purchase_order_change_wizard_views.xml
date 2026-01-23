@@ -10,7 +10,7 @@
             ref="purchase_order_change.view_purchase_order_change_wizard"
         />
         <field name="arch" type="xml">
-            <xpath expr="//group[@name='new_contract_field_group']" position="after">
+            <xpath expr="//group[@name='field_groups']" position="after">
                 <group name="new_committee_group">
                     <field name="show_committee" invisible="1" />
                     <field
