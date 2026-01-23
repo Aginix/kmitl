@@ -13,6 +13,7 @@
         "account_fiscal_year",
         "account_analytic_kmitl",
         "hr_department_short_name",
+        "hr_department_operating_unit",
         "purchase_request_kmitl",
         "purchase_request_exception",
         "purchase_request_vendor_kmitl",
@@ -23,6 +24,7 @@
         "purchase_request_price_tax_included",
         "purchase_request_approval_kmitl",
         "purchase_request_payment_type",
+        "operating_unit_kmitl",
 
     ],
     "data": [
