@@ -59,7 +59,7 @@ class PurchaseOrderChangeWizard(models.TransientModel):
         })
         return fields
 
-    # def action_save_changes(self):
-    #     res = super().action_save_changes()
-    #     self._save_committee_changes()
-    #     return res
+    def action_save_changes(self):
+        res = super().action_save_changes()
+        self._save_committee_changes()
+        return res
