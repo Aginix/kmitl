@@ -11,11 +11,546 @@
     </function>
 
     <record id="account_analytic_kmitl.dept_01" model="account.analytic.account">
-        <field name="operating_unit_ids" ref="operating_unit_kmitl.operating_unit_01" />
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
     </record>
     <record id="account_analytic_kmitl.dept_01030" model="account.analytic.account">
-        <field name="operating_unit_ids" ref="operating_unit_kmitl.operating_unit_01" />
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
     </record>
-    
-
+    <record id="account_analytic_kmitl.dept_01031" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01040" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01041" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01042" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01043" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01050" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01060" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01070" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01071" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01072" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01080" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01081" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01090" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01091" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01120" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01130" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01160" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01170" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01280" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01281" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01290" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01300" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01310" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01302" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01303" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01304" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01305" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01306" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01307" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01308" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01309" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01311" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01312" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01320" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_01330" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_02" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_02'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_02090" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_02'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_02020" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_02'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_02040" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_02'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_02050" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_02'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_02130" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_02'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_02140" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_02'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_02160" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_02'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_02180" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_02'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_02200" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_02'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_03" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_03'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_03020" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_03'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_03040" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_03'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_03050" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_03'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_03070" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_03'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_03130" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_03'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_03140" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_03'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_03150" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_03'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_05" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_05'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_05100" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_05'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_05170" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_05'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_05180" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_05'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_05190" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_05'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_05200" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_05'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_05210" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_05'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_05220" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_05'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_05230" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_05'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_05240" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_05'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_04" model="account.analytic.account">
+       <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_04'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_04040" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_04'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_04110" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_04'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_04150" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_04'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_04160" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_04'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_04170" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_04'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_04180" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_04'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_06" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_06'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_06030" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_06'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_06040" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_06'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_06050" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_06'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_17" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_17'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_17030" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_17'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_17040" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_17'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_17050" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_17'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_17060" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_17'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_17070" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_17'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_17080" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_17'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_08" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_08'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_09" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_09'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_10" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_10'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_11" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_11'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_11080" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_11'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_11090" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_11'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_11100" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_11'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_11140" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_11'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_11150" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_11'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_11160" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_11'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89300" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89310" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89320" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89330" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89340" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89350" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89360" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89370" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89380" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89390" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89400" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89410" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89401" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89402" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89403" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89404" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89405" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89406" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89407" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89408" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89420" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89430" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89440" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_89450" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_99" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_99'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_99040" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_99'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_99060" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_99'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_99070" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_99'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_99080" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_99'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_31" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_31'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_31020" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_31'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_31030" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_31'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_31040" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_31'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_31050" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_31'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_32" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_32'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_32020" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_32'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_32030" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_32'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_32040" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_32'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_33" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_33'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_33030" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_33'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_33040" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_33'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_33050" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_33'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_33060" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_33'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_36" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_36'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_36010" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_36'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_36060" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_36'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_36090" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_36'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_37" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_37'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_38" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_38'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_38010" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_38'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_38020" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_38'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_38030" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_38'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_38040" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_38'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_39" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_39'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_39010" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_39'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_39020" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_39'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_39030" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_39'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_39050" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_39'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_40" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_40'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_40010" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_40'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_40020" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_40'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_40030" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_40'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_40040" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_40'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_41" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_41'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_41010" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_41'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_41020" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_41'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_41030" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_41'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_41040" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_41'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_42" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_42'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_42010" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_42'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_42020" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_42'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_42030" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_42'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_42040" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_42'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_43" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_43'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_44" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_44'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_44010" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_44'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_44020" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_44'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_44030" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_44'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_45" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_45'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_45010" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_45'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_45020" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_45'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_45030" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_45'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_45040" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_45'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_46" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_46'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_47" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_47'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_47010" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_47'))]" />
+    </record>
+    <record id="account_analytic_kmitl.dept_47020" model="account.analytic.account">
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_47'))]" />
+    </record>
 </odoo>
