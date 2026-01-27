@@ -33,7 +33,7 @@
                             string="⇒ Remove Invoice Plan"
                             type="object"
                             class="btn btn-danger"
-                            attrs="{'invisible': [('invoice_plan_ids', '=', [])}"
+                            attrs="{'invisible': [('invoice_plan_ids', '=', [])]}"
                             confirm="Are you sure to remove this invoice plan?"
                         />
                     </div>
