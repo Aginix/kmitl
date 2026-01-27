@@ -17,6 +17,7 @@
                         name="invoice_plan_ids_old"
                         attrs="{'invisible': [('show_invoice', '=', False)]}"
                     />
+                    <field name="invoice_plan_ids" invisible="1" />
                     <!-- <field
                         name="invoice_plan_ids"
                         attrs="{'invisible': [('show_invoice', '=', False)]}"
