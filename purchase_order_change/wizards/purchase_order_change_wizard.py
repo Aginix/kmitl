@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
-
+_logger = logging.getLogger(__name__)
 class PurchaseOrderChangeWizard(models.TransientModel):
     _name = 'purchase.order.change.wizard'
     _description = _('PurchaseOrderChangeWizard')
@@ -75,6 +77,7 @@ class PurchaseOrderChangeWizard(models.TransientModel):
 
     def _get_default_section_xml_ids(self):
         default_section_ids = self.env.context.get("default_section_ids")
+
         if default_section_ids and isinstance(default_section_ids, list):
             ids = default_section_ids[0][2]
         else:
