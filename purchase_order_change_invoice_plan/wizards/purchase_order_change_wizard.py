@@ -67,3 +67,7 @@ class PurchaseOrderChangeWizard(models.TransientModel):
         res = super().action_save_changes()
         self._save_invoice_changes()
         return res
+
+    def action_remove_invoice_plan(self):
+        self.ensure_one()
+        return self.purchase_id.remove_invoice_plan()
