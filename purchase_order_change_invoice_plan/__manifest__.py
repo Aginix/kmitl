@@ -8,6 +8,7 @@
     'category': 'KMITL',
     'depends': ['purchase_order_change', 'purchase_invoice_plan'],
     'data': [
+        "wizards/purchase_order_change_wizard_views.xml",
         "data/purchase_change_section_data.xml",
     ],
     'installable': True,
