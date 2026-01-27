@@ -39,7 +39,7 @@ class PurchaseOrderChangeWizard(models.TransientModel):
 
     def _prepare_section_visibility(self, section_xml_ids):
             vals = super()._prepare_section_visibility(section_xml_ids)
-            vals["show_invoice"] = "purchase_change_section_5" in section_xml_ids
+            vals["show_invoice"] = "purchase_order_change_invoice_plan.purchase_change_section_5" in section_xml_ids
             return vals
 
     def _get_track_fields(self):
