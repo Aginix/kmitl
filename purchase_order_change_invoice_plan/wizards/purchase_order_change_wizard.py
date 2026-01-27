@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from odoo import _, api, fields, models
 
+_logger = logging.getLogger(__name__)
 
 class PurchaseOrderChangeWizard(models.TransientModel):
     _inherit = 'purchase.order.change.wizard'
@@ -38,8 +41,9 @@ class PurchaseOrderChangeWizard(models.TransientModel):
         return vals
 
     def _prepare_section_visibility(self, section_xml_ids):
+            _logger.warning("SECTION XML IDS >>> %s", section_xml_ids)
             vals = super()._prepare_section_visibility(section_xml_ids)
-            vals["show_invoice"] = "purchase_order_change_invoice_plan.purchase_change_section_5" in section_xml_ids
+            vals["show_invoice"] = "purchase_change_section_5" in section_xml_ids
             return vals
 
     def _get_track_fields(self):
