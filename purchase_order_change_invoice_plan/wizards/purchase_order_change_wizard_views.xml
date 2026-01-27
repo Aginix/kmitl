@@ -29,7 +29,7 @@
                             class="btn btn-primary"
                         />
                         <button
-                            name="remove_invoice_plan"
+                            name="purchase_invoice_plan.remove_invoice_plan"
                             string="⇒ Remove Invoice Plan"
                             type="object"
                             class="btn btn-danger"
