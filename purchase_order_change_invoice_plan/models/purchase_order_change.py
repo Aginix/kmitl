@@ -16,21 +16,14 @@ class PurchaseOrderChange(models.Model):
         return res
 
     def _prepare_wizard_context(self, extra_context=None):
-        self.ensure_one()
+        context = super()._prepare_wizard_context(extra_context=extra_context)
 
-        base_context = {
-            "default_invoice_plan_ids": [
-                (0, 0, {
-                    "installment": plan.installment,
-                    "plan_date": plan.plan_date,
-                    "percent": plan.percent,
-                    "invoice_plan_id": plan.id,
-                })
-                for plan in self.purchase_id.invoice_plan_ids
-            ],
-        }
+        purchase = self.purchase_id
+        if purchase and purchase.invoice_plan_ids:
+            context.update({
+                "default_invoice_plan_ids": [
+                    (6, 0, purchase.invoice_plan_ids.ids)
+                ]
+            })
 
-        if extra_context:
-            base_context.update(extra_context)
-
-        return base_context
+        return context
