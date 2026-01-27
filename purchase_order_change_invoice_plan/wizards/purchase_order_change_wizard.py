@@ -26,7 +26,6 @@ class PurchaseOrderChangeWizard(models.TransientModel):
         column1="wizard_id",
         column2="invoice_plan_id",
         string="New Invoice Plan",
-        readonly=True,
     )
 
     def _prepare_old_values(self, purchase):
