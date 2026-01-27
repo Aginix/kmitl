@@ -10,15 +10,13 @@
             ref="purchase_order_change.view_purchase_order_change_wizard"
         />
         <field name="arch" type="xml">
-            <xpath expr="//group[@name='field_groups']" position="inside">
-                <group name="old_invoice_group">
+            <xpath expr="//group[@name='field_groups']" position="after">
+                <group name="invoice_group">
                     <field name="show_invoice" invisible="1" />
                     <field
                         name="invoice_plan_ids_old"
                         attrs="{'invisible': [('show_invoice', '=', False)]}"
                     />
-                </group>
-                <group name="new_invoice_group">
                     <field
                         name="invoice_plan_ids"
                         attrs="{'invisible': [('show_invoice', '=', False)]}"
