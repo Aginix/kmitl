@@ -3,6 +3,7 @@
     <menuitem
         id="budget_root_menu"
         name="Budgeting"
+        action="action_budget_dashboard"
         sequence="10"
         groups="budget.group_budget_user"
         web_icon="budget,static/description/icon.png">

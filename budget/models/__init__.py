@@ -1,4 +1,5 @@
 from . import budget_account
+from . import budget_dashboard
 from . import budget_move
 from . import budget_move_line
 from . import budget_journal
