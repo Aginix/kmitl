@@ -1,14 +1,17 @@
 /** @odoo-module */
 
-import {Component, onWillStart, useState} from "@odoo/owl";
+import {Component, onWillStart, onMounted, onPatched, useState, useRef} from "@odoo/owl";
 import {useService} from "@web/core/utils/hooks";
 import {registry} from "@web/core/registry";
+import {loadJS} from "@web/core/assets";
 
 export class BudgetDashboard extends Component {
     static template = "budget.BudgetDashboard";
 
     setup() {
         this.orm = useService("orm");
+        this.chartRefs = {};
+        this.charts = {};
 
         this.state = useState({
             loading: false,
@@ -23,12 +26,24 @@ export class BudgetDashboard extends Component {
             stats: {
                 total_appropriation: 0,
                 total_balance: 0,
+                disbursement: 0,
+                disbursement_percent: 0,
+                budget_breakdown: [],
             },
         });
 
         onWillStart(async () => {
+            await loadJS("https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js");
             await this.loadFilterOptions();
             await this.loadData();
+        });
+
+        onMounted(() => {
+            this.renderCharts();
+        });
+
+        onPatched(() => {
+            this.renderCharts();
         });
     }
 
@@ -69,6 +84,94 @@ export class BudgetDashboard extends Component {
         }
     }
 
+    renderCharts() {
+        if (this.state.loading || !this.state.stats.budget_breakdown) {
+            return;
+        }
+
+        // Dispose existing charts
+        Object.values(this.charts).forEach((chart) => {
+            if (chart) {
+                chart.dispose();
+            }
+        });
+        this.charts = {};
+
+        // Render pie chart for each budget category
+        this.state.stats.budget_breakdown.forEach((category, index) => {
+            const chartEl = document.getElementById(`budget-chart-${index}`);
+            if (!chartEl || !window.echarts) {
+                return;
+            }
+
+            const chart = window.echarts.init(chartEl);
+            this.charts[index] = chart;
+
+            const disbursement = Math.max(0, category.disbursement);
+            const balance = Math.max(0, category.balance);
+
+            const option = {
+                tooltip: {
+                    trigger: "item",
+                    formatter: (params) => {
+                        return `${params.name}: ${this.formatCurrency(params.value)} บาท (${params.percent}%)`;
+                    },
+                },
+                legend: {
+                    orient: "horizontal",
+                    bottom: 0,
+                    data: ["เบิกจ่าย", "คงเหลือ"],
+                },
+                series: [
+                    {
+                        type: "pie",
+                        radius: ["40%", "70%"],
+                        center: ["50%", "45%"],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 4,
+                            borderColor: "#fff",
+                            borderWidth: 2,
+                        },
+                        label: {
+                            show: false,
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: 14,
+                                fontWeight: "bold",
+                            },
+                        },
+                        data: [
+                            {
+                                value: disbursement,
+                                name: "เบิกจ่าย",
+                                itemStyle: {color: "#dc3545"},
+                            },
+                            {
+                                value: balance,
+                                name: "คงเหลือ",
+                                itemStyle: {color: "#28a745"},
+                            },
+                        ],
+                    },
+                ],
+            };
+
+            chart.setOption(option);
+        });
+
+        // Handle window resize
+        window.addEventListener("resize", () => {
+            Object.values(this.charts).forEach((chart) => {
+                if (chart) {
+                    chart.resize();
+                }
+            });
+        });
+    }
+
     async onFiscalYearChange(ev) {
         const value = ev.target.value;
         this.state.filters.fiscal_year_id = value ? parseInt(value) : null;
@@ -86,6 +189,13 @@ export class BudgetDashboard extends Component {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
         }).format(amount);
+    }
+
+    formatPercent(value) {
+        return new Intl.NumberFormat("th-TH", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(value);
     }
 
     get selectedFiscalYearName() {
