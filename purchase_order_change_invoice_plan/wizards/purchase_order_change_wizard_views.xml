@@ -11,31 +11,23 @@
         />
         <field name="arch" type="xml">
             <xpath expr="//group[@name='field_groups']" position="after">
-                <group name="invoice_group">
+                <group name="invoice_group" string="Invoice Plan">
                     <field name="show_invoice" invisible="1" />
+
                     <field
                         name="invoice_plan_ids_old"
                         attrs="{'invisible': [('show_invoice', '=', False)]}"
                     />
-                    <field name="invoice_plan_ids" invisible="1" />
-                    <!-- <field
-                        name="invoice_plan_ids"
+
+                    <div
+                        class="o_form_button_group"
                         attrs="{'invisible': [('show_invoice', '=', False)]}"
-                    /> -->
-                    <div>
+                    >
                         <button
                             name="%(purchase_invoice_plan.action_purchase_create_invoice_plan)d"
-                            string="⇒ Create Invoice Plan"
+                            string="Create Invoice Plan"
                             type="action"
-                            class="btn btn-primary"
-                        />
-                        <button
-                            name="action_remove_invoice_plan"
-                            string="⇒ Remove Invoice Plan"
-                            type="object"
-                            class="btn btn-danger"
-                            attrs="{'invisible': [('invoice_plan_ids', '=', [])]}"
-                            confirm="Are you sure to remove this invoice plan?"
+                            class="btn btn-primary btn-lg"
                         />
                     </div>
                 </group>
