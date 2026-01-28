@@ -24,6 +24,7 @@
                         name="%(purchase_invoice_plan.action_purchase_create_invoice_plan)d"
                         string="Create Invoice Plan"
                         type="action"
+                        context="{'default_purchase_id': purchase_id}"
                         class="btn btn-primary"
                         attrs="{'invisible': [('show_invoice', '=', False)]}"
                     />
