@@ -1,11 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
     <div t-name="budget.BudgetDashboard" class="o_action budget_dashboard" owl="1">
-        <div class="container-fluid py-4">
-            <div class="row">
-                <div class="col-12 text-center text-muted">
-                    <h2>Budget Dashboard</h2>
-                    <p>Dashboard content will be added here.</p>
+        <!-- Control Panel -->
+        <div class="o_control_panel d-flex flex-wrap justify-content-between align-items-center p-3 border-bottom">
+            <div class="d-flex align-items-center">
+                <h4 class="mb-0">Dashboard</h4>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <label class="mb-0 me-2">ปีงบประมาณ:</label>
+                <select
+                    class="form-select form-select-sm"
+                    style="width: auto;"
+                    t-on-change="onFiscalYearChange"
+                >
+                    <option value="">ทุกปีงบประมาณ</option>
+                    <t t-foreach="state.filterOptions.fiscal_years" t-as="fy" t-key="fy.id">
+                        <option
+                            t-att-value="fy.id"
+                            t-att-selected="state.filters.fiscal_year_id === fy.id"
+                        >
+                            <t t-esc="fy.name"/>
+                        </option>
+                    </t>
+                </select>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="o_content p-4">
+            <!-- Loading State -->
+            <div t-if="state.loading" class="d-flex justify-content-center align-items-center p-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div t-else="" class="row g-4">
+                <!-- งบประมาณจัดสรรทั้งหมด -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card h-100 border-primary">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                                    <i class="fa fa-money fa-2x text-primary"/>
+                                </div>
+                                <div>
+                                    <h6 class="card-subtitle text-muted mb-1">งบประมาณจัดสรรทั้งหมด</h6>
+                                    <h3 class="card-title mb-0 text-primary">
+                                        <t t-esc="formatCurrency(state.stats.total_appropriation)"/>
+                                    </h3>
+                                </div>
+                            </div>
+                            <p class="card-text text-muted small mb-0">
+                                ยอดรวมงบประมาณที่จัดสรรแล้ว (Posted)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- งบประมาณคงเหลือ -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card h-100 border-success">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                                    <i class="fa fa-balance-scale fa-2x text-success"/>
+                                </div>
+                                <div>
+                                    <h6 class="card-subtitle text-muted mb-1">งบประมาณคงเหลือ</h6>
+                                    <h3 class="card-title mb-0 text-success">
+                                        <t t-esc="formatCurrency(state.stats.total_balance)"/>
+                                    </h3>
+                                </div>
+                            </div>
+                            <p class="card-text text-muted small mb-0">
+                                ยอดคงเหลือจากทุกประเภทรายการ (Posted)
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
