@@ -11,4 +11,52 @@
         <field name="tag">budget_appropriation_revenue_overview_report</field>
         <field name="target">main</field>
     </record>
+
+    <record id="action_report_f2_w_003" model="ir.actions.client">
+        <field name="name">จําแนกตามประเภท (F2-W-วง-003)</field>
+        <field name="tag">report_f2_w_003</field>
+        <field name="target">main</field>
+    </record>
+
+    <record id="action_report_f3_p_005" model="ir.actions.client">
+        <field name="name">สรุปประมาณการรายรับและรายจ่าย (F3-P-วง-005)</field>
+        <field name="tag">report_f3_p_005</field>
+        <field name="target">main</field>
+    </record>
+
+    <record id="action_report_f7_w_003" model="ir.actions.client">
+        <field name="name">สรุปเปรียบเทียบประมาณการรายจ่าย จําแนกตามงบรายจ่าย (F7-W-วง-003)</field>
+        <field name="tag">report_f7_w_003</field>
+        <field name="target">main</field>
+    </record>
+
+    <record id="action_report_f5_p_003" model="ir.actions.client">
+        <field name="name">สรุปประมาณการรายจ่าย (F5-P-วง-003)</field>
+        <field name="tag">report_f5_p_003</field>
+        <field name="target">main</field>
+    </record>
+
+    <record id="action_report_f5_w_003" model="ir.actions.client">
+        <field name="name">สรุปเปรียบเทียบประมาณการรายจ่าย จําแนกตามแผนงาน (F5-W-วง-003)</field>
+        <field name="tag">report_f5_w_003</field>
+        <field name="target">main</field>
+    </record>
+
+    <record id="action_report_f8_w_003" model="ir.actions.client">
+        <field name="name">สรุปเปรียบเทียบประมาณการรายจ่าย จำแนกตามหน่วยงานและแผนงาน (F8-W-วง-003)</field>
+        <field name="tag">report_f8_w_003</field>
+        <field name="target">main</field>
+    </record>
+
+    <record id="action_report_f9_w_003" model="ir.actions.client">
+        <field name="name">สรุปสัดส่วนประมาณการรายจ่าย จําแนกตามหน่วยงาน/แผนงาน/งบรายจ่าย (F9-W-วง-003)</field>
+        <field name="tag">report_f9_w_003</field>
+        <field name="target">main</field>
+    </record>
+
+    <record id="action_report_f10_w_003" model="ir.actions.client">
+        <field name="name">สรุปประมาณการรายจ่าย จําแนกตามแผนงาน-งานและงบรายจ่าย (F10-W-วง-003)</field>
+        <field name="tag">report_f10_w_003</field>
+        <field name="target">main</field>
+    </record>
 </odoo>

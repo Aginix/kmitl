@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="budget_appropriation_report.ReportPlaceholder" owl="1">
+        <div class="o_action d-flex align-items-center justify-content-center" style="min-height: 400px;">
+            <div class="text-center text-muted">
+                <i class="fa fa-file-text-o fa-4x mb-3" style="opacity: 0.3;"></i>
+                <h4 t-esc="reportName"/>
+                <p>รายงานนี้อยู่ระหว่างการพัฒนา</p>
+            </div>
+        </div>
+    </t>
+</templates>

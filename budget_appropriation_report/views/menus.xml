@@ -2,6 +2,14 @@
 <odoo>
     <menuitem id="menu_budget_appropriation_report_menu" name="รายงานประมาณการ" parent="budget_appropriation.menu_budget_appropriation_root" sequence="90">
         <menuitem id="menu_budget_appropriation_f5_expense" name="สรุปประมาณการรายจ่าย (F5)" action="action_budget_appropriation_f5_expense" sequence="10"/>
-        <menuitem id="menu_budget_appropriation_revenue_overview_report" name="สรุปประมาณการรายรับ (F4-P-วง-003)" action="action_budget_appropriation_revenue_overview_report" sequence="20" />
+        <menuitem id="menu_budget_appropriation_revenue_overview_report" name="สรุปประมาณการรายรับ (F4-P-วง-003)" action="action_budget_appropriation_revenue_overview_report" sequence="20"/>
+        <menuitem id="menu_f2_w_003" name="จําแนกตามประเภท (F2-W-วง-003)" action="action_report_f2_w_003" sequence="30"/>
+        <menuitem id="menu_f3_p_005" name="สรุปประมาณการรายรับและรายจ่าย (F3-P-วง-005)" action="action_report_f3_p_005" sequence="50"/>
+        <menuitem id="menu_f7_w_003" name="สรุปเปรียบเทียบประมาณการรายจ่าย จําแนกตามงบรายจ่าย (F7-W-วง-003)" action="action_report_f7_w_003" sequence="60"/>
+        <menuitem id="menu_f5_p_003" name="สรุปประมาณการรายจ่าย (F5-P-วง-003)" action="action_report_f5_p_003" sequence="70"/>
+        <menuitem id="menu_f5_w_003" name="สรุปเปรียบเทียบประมาณการรายจ่าย จําแนกตามแผนงาน (F5-W-วง-003)" action="action_report_f5_w_003" sequence="80"/>
+        <menuitem id="menu_f8_w_003" name="สรุปเปรียบเทียบประมาณการรายจ่าย จำแนกตามหน่วยงานและแผนงาน (F8-W-วง-003)" action="action_report_f8_w_003" sequence="90"/>
+        <menuitem id="menu_f9_w_003" name="สรุปสัดส่วนประมาณการรายจ่าย จําแนกตามหน่วยงาน/แผนงาน/งบรายจ่าย (F9-W-วง-003)" action="action_report_f9_w_003" sequence="100"/>
+        <menuitem id="menu_f10_w_003" name="สรุปประมาณการรายจ่าย จําแนกตามแผนงาน-งานและงบรายจ่าย (F10-W-วง-003)" action="action_report_f10_w_003" sequence="110"/>
     </menuitem>
 </odoo>
