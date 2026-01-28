@@ -60,13 +60,17 @@ export class BudgetDashboard extends Component {
             if (options.fiscal_years.length > 0) {
                 this.state.filters.fiscal_year_id = options.fiscal_years[0].id;
             }
+            // Set default source to first one (required)
+            if (options.sources.length > 0) {
+                this.state.filters.source_id = options.sources[0].id;
+            }
         } catch (error) {
             console.error("Error loading filter options:", error);
         }
     }
 
     async loadData() {
-        if (!this.state.filters.fiscal_year_id) {
+        if (!this.state.filters.fiscal_year_id || !this.state.filters.source_id) {
             return;
         }
         this.state.loading = true;

@@ -39,10 +39,8 @@ class BudgetDashboard(models.TransientModel):
         domain = [
             ("move_id.state", "=", "posted"),
             ("move_id.account_fiscal_year_id", "=", filters["fiscal_year_id"]),
+            ("source_analytic_id", "=", filters["source_id"]),
         ]
-
-        if filters.get("source_id"):
-            domain.append(("source_analytic_id", "=", filters["source_id"]))
 
         BudgetMoveLine = self.env["budget.move.line"]
 
