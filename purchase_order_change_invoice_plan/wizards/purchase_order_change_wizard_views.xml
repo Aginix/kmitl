@@ -19,8 +19,6 @@
                         attrs="{'invisible': [('show_invoice', '=', False)]}"
                     />
                 </div>
-            </xpath>
-            <xpath expr="//group[@name='field_groups']" position="after">
                 <div>
                     <button
                         name="628"
