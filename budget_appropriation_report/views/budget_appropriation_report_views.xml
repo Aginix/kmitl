@@ -29,13 +29,14 @@
                     <group>
                         <group>
                             <field name="account_fiscal_year_id"/>
+                            <field name="source_analytic_id"/>
                             <field name="council_meeting_no"/>
                             <field name="council_meeting_date"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="ประมาณการรายรับ" name="revenue_appropriations">
-                            <field name="revenue_appropriation_ids" domain="[('account_fiscal_year_id', '=', account_fiscal_year_id), ('budget_type', '=', 'revenue')]">
+                            <field name="revenue_appropriation_ids" domain="[('account_fiscal_year_id', '=', account_fiscal_year_id), ('budget_type', '=', 'revenue'), '|', ('source_analytic_id', '=', source_analytic_id), ('source_analytic_id', '=', False)]">
                                 <tree>
                                     <field name="name"/>
                                     <field name="date"/>
@@ -47,7 +48,7 @@
                             </field>
                         </page>
                         <page string="ประมาณการรายจ่าย" name="expense_appropriations">
-                            <field name="expense_appropriation_ids" domain="[('account_fiscal_year_id', '=', account_fiscal_year_id), ('budget_type', '=', 'expense')]">
+                            <field name="expense_appropriation_ids" domain="[('account_fiscal_year_id', '=', account_fiscal_year_id), ('budget_type', '=', 'expense'), '|', ('source_analytic_id', '=', source_analytic_id), ('source_analytic_id', '=', False)]">
                                 <tree>
                                     <field name="name"/>
                                     <field name="date"/>

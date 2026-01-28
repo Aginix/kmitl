@@ -36,6 +36,14 @@ class BudgetAppropriationReport(models.Model):
         readonly=False,
         states=READONLY_STATES,
     )
+    source_analytic_id = fields.Many2one(
+        comodel_name="account.analytic.account",
+        string="แหล่งเงิน",
+        domain=[("root_plan_id.code", "=", "sources")],
+        tracking=True,
+        readonly=False,
+        states=READONLY_STATES,
+    )
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
