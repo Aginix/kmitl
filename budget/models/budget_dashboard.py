@@ -90,7 +90,7 @@ class BudgetDashboard(models.TransientModel):
             # Filter lines by parent_path containing this account's ID
             # parent_path format: "1/2/3/" where numbers are account IDs
             category_domain = base_domain + [
-                ("account_id.parent_path", "like", f"/{account.id}/"),
+                ("account_id.parent_path", "like", f"{account.id}/"),
             ]
 
             # Also include lines directly on this account
