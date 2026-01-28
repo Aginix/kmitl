@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class BudgetAppropriationReport(models.Model):
@@ -32,6 +33,14 @@ class BudgetAppropriationReport(models.Model):
         comodel_name="account.fiscal.year",
         string="ปีงบประมาณ",
         required=True,
+        tracking=True,
+        readonly=False,
+        states=READONLY_STATES,
+    )
+    compare_report_id = fields.Many2one(
+        comodel_name="budget.appropriation.report",
+        string="รายงานเปรียบเทียบ",
+        help="สำหรับรายงานที่ต้องเปรียบเทียบกับรายงานอื่น",
         tracking=True,
         readonly=False,
         states=READONLY_STATES,
@@ -131,6 +140,12 @@ class BudgetAppropriationReport(models.Model):
         F4PModel = self.env["budget.appropriation.f4p.revenue"]
         for record in self:
             record.f4p_revenue_data = F4PModel.get_data(record.id)
+
+    @api.constrains("compare_report_id")
+    def _check_compare_report_id(self):
+        for record in self:
+            if record.compare_report_id and record.compare_report_id.id == record.id:
+                raise ValidationError(_("ไม่สามารถเลือกรายงานตัวเองเป็นรายงานเปรียบเทียบได้"))
 
     @api.depends("revenue_appropriation_ids", "expense_appropriation_ids")
     def _compute_appropriation_ids(self):
