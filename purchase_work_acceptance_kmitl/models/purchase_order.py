@@ -14,10 +14,3 @@ class PurchaseOrder(models.Model):
         committees = self.mapped("work_acceptance_committee_ids")
         lines = [(0, 0, self._prepare_committee_line(line)) for line in committees]
         return lines
-
-    def action_view_wa(self):
-        result = super().action_view_wa()
-        lines = self._get_committee_line()
-        result["context"]["default_work_acceptance_committee_ids"] = lines
-        result["context"]["default_wa_tier_validation"] = self.wa_tier_validation
-        return result
