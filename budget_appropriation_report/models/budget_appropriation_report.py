@@ -36,6 +36,14 @@ class BudgetAppropriationReport(models.Model):
         readonly=False,
         states=READONLY_STATES,
     )
+    previous_fiscal_year_id = fields.Many2one(
+        comodel_name="account.fiscal.year",
+        string="ปีงบประมาณก่อนหน้า",
+        help="สำหรับรายงานที่ต้องเปรียบเทียบกับปีก่อนหน้า",
+        tracking=True,
+        readonly=False,
+        states=READONLY_STATES,
+    )
     source_analytic_id = fields.Many2one(
         comodel_name="account.analytic.account",
         string="แหล่งเงิน",
