@@ -6,23 +6,45 @@
             <div class="d-flex align-items-center">
                 <h4 class="mb-0">Dashboard</h4>
             </div>
-            <div class="d-flex align-items-center gap-2">
-                <label class="mb-0 me-2">ปีงบประมาณ:</label>
-                <select
-                    class="form-select form-select-sm"
-                    style="width: auto;"
-                    t-on-change="onFiscalYearChange"
-                >
-                    <option value="">ทุกปีงบประมาณ</option>
-                    <t t-foreach="state.filterOptions.fiscal_years" t-as="fy" t-key="fy.id">
-                        <option
-                            t-att-value="fy.id"
-                            t-att-selected="state.filters.fiscal_year_id === fy.id"
-                        >
-                            <t t-esc="fy.name"/>
-                        </option>
-                    </t>
-                </select>
+            <div class="d-flex align-items-center gap-3">
+                <!-- Fiscal Year Filter (Required) -->
+                <div class="d-flex align-items-center gap-2">
+                    <label class="mb-0">ปีงบประมาณ:</label>
+                    <select
+                        class="form-select form-select-sm"
+                        style="width: auto;"
+                        t-on-change="onFiscalYearChange"
+                    >
+                        <t t-foreach="state.filterOptions.fiscal_years" t-as="fy" t-key="fy.id">
+                            <option
+                                t-att-value="fy.id"
+                                t-att-selected="state.filters.fiscal_year_id === fy.id"
+                            >
+                                <t t-esc="fy.name"/>
+                            </option>
+                        </t>
+                    </select>
+                </div>
+
+                <!-- Source Filter -->
+                <div class="d-flex align-items-center gap-2">
+                    <label class="mb-0">แหล่งเงิน:</label>
+                    <select
+                        class="form-select form-select-sm"
+                        style="width: auto;"
+                        t-on-change="onSourceChange"
+                    >
+                        <option value="">ทุกแหล่งเงิน</option>
+                        <t t-foreach="state.filterOptions.sources" t-as="src" t-key="src.id">
+                            <option
+                                t-att-value="src.id"
+                                t-att-selected="state.filters.source_id === src.id"
+                            >
+                                <t t-if="src.code"><t t-esc="src.code"/> - </t><t t-esc="src.name"/>
+                            </option>
+                        </t>
+                    </select>
+                </div>
             </div>
         </div>
 

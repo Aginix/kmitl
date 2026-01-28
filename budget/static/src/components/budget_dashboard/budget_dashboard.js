@@ -14,9 +14,11 @@ export class BudgetDashboard extends Component {
             loading: false,
             filters: {
                 fiscal_year_id: null,
+                source_id: null,
             },
             filterOptions: {
                 fiscal_years: [],
+                sources: [],
             },
             stats: {
                 total_appropriation: 0,
@@ -39,7 +41,7 @@ export class BudgetDashboard extends Component {
             );
             this.state.filterOptions = options;
 
-            // Set default fiscal year to first one if available
+            // Set default fiscal year to first one (required)
             if (options.fiscal_years.length > 0) {
                 this.state.filters.fiscal_year_id = options.fiscal_years[0].id;
             }
@@ -49,6 +51,9 @@ export class BudgetDashboard extends Component {
     }
 
     async loadData() {
+        if (!this.state.filters.fiscal_year_id) {
+            return;
+        }
         this.state.loading = true;
         try {
             const data = await this.orm.call(
@@ -70,6 +75,12 @@ export class BudgetDashboard extends Component {
         await this.loadData();
     }
 
+    async onSourceChange(ev) {
+        const value = ev.target.value;
+        this.state.filters.source_id = value ? parseInt(value) : null;
+        await this.loadData();
+    }
+
     formatCurrency(amount) {
         return new Intl.NumberFormat("th-TH", {
             minimumFractionDigits: 2,
@@ -78,13 +89,10 @@ export class BudgetDashboard extends Component {
     }
 
     get selectedFiscalYearName() {
-        if (!this.state.filters.fiscal_year_id) {
-            return "ทุกปีงบประมาณ";
-        }
         const fy = this.state.filterOptions.fiscal_years.find(
             (f) => f.id === this.state.filters.fiscal_year_id
         );
-        return fy ? fy.name : "ทุกปีงบประมาณ";
+        return fy ? fy.name : "";
     }
 }
 
