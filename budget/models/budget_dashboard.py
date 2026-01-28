@@ -12,6 +12,7 @@ class BudgetDashboard(models.TransientModel):
         ("budget_account_53000", "งบลงทุน"),
         ("budget_account_54000", "งบเงินอุดหนุน"),
         ("budget_account_55000", "งบรายจ่ายอื่น"),
+        ("budget_account_07020", "งบกองทุนสำรอง"),
     ]
 
     @api.model
