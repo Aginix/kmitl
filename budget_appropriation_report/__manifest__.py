@@ -10,7 +10,9 @@
     "data": [
         "data/budget_appropriation_report_action.xml",
         "security/ir.model.access.csv",
-        "views/menus.xml"
+        "report/budget_appropriation_report_templates.xml",
+        "report/budget_appropriation_report_actions.xml",
+        "views/menus.xml",
     ],
     "assets": {
         "web.assets_backend": [

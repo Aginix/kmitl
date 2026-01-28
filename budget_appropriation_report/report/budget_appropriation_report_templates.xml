@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- F2-W-วง-003: จําแนกตามประเภท -->
+    <template id="report_f2_w_003_document">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2 class="text-center">จําแนกตามประเภท (F2-W-วง-003)</h2>
+                    <p class="text-center text-muted">รายงานนี้อยู่ระหว่างการพัฒนา</p>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- F3-P-วง-005: สรุปประมาณการรายรับและรายจ่าย -->
+    <template id="report_f3_p_005_document">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2 class="text-center">สรุปประมาณการรายรับและรายจ่าย (F3-P-วง-005)</h2>
+                    <p class="text-center text-muted">รายงานนี้อยู่ระหว่างการพัฒนา</p>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- F5-P-วง-003: สรุปประมาณการรายจ่าย -->
+    <template id="report_f5_p_003_document">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2 class="text-center">สรุปประมาณการรายจ่าย (F5-P-วง-003)</h2>
+                    <p class="text-center text-muted">รายงานนี้อยู่ระหว่างการพัฒนา</p>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- F5-W-วง-003: สรุปเปรียบเทียบประมาณการรายจ่าย จําแนกตามแผนงาน -->
+    <template id="report_f5_w_003_document">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2 class="text-center">สรุปเปรียบเทียบประมาณการรายจ่าย จําแนกตามแผนงาน (F5-W-วง-003)</h2>
+                    <p class="text-center text-muted">รายงานนี้อยู่ระหว่างการพัฒนา</p>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- F7-W-วง-003: สรุปเปรียบเทียบประมาณการรายจ่าย จําแนกตามงบรายจ่าย -->
+    <template id="report_f7_w_003_document">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2 class="text-center">สรุปเปรียบเทียบประมาณการรายจ่าย จําแนกตามงบรายจ่าย (F7-W-วง-003)</h2>
+                    <p class="text-center text-muted">รายงานนี้อยู่ระหว่างการพัฒนา</p>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- F8-W-วง-003: สรุปเปรียบเทียบประมาณการรายจ่าย จำแนกตามหน่วยงานและแผนงาน -->
+    <template id="report_f8_w_003_document">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2 class="text-center">สรุปเปรียบเทียบประมาณการรายจ่าย จำแนกตามหน่วยงานและแผนงาน (F8-W-วง-003)</h2>
+                    <p class="text-center text-muted">รายงานนี้อยู่ระหว่างการพัฒนา</p>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- F9-W-วง-003: สรุปสัดส่วนประมาณการรายจ่าย จําแนกตามหน่วยงาน/แผนงาน/งบรายจ่าย -->
+    <template id="report_f9_w_003_document">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2 class="text-center">สรุปสัดส่วนประมาณการรายจ่าย จําแนกตามหน่วยงาน/แผนงาน/งบรายจ่าย (F9-W-วง-003)</h2>
+                    <p class="text-center text-muted">รายงานนี้อยู่ระหว่างการพัฒนา</p>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- F10-W-วง-003: สรุปประมาณการรายจ่าย จําแนกตามแผนงาน-งานและงบรายจ่าย -->
+    <template id="report_f10_w_003_document">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2 class="text-center">สรุปประมาณการรายจ่าย จําแนกตามแผนงาน-งานและงบรายจ่าย (F10-W-วง-003)</h2>
+                    <p class="text-center text-muted">รายงานนี้อยู่ระหว่างการพัฒนา</p>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

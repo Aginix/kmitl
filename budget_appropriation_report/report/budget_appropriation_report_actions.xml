@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- F2-W-วง-003 -->
+    <record id="action_report_f2_w_003_print" model="ir.actions.report">
+        <field name="name">จําแนกตามประเภท (F2-W-วง-003)</field>
+        <field name="model">budget.appropriation.report.f2.w.003</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_appropriation_report.report_f2_w_003_document</field>
+        <field name="report_file">budget_appropriation_report.report_f2_w_003_document</field>
+    </record>
+
+    <!-- F3-P-วง-005 -->
+    <record id="action_report_f3_p_005_print" model="ir.actions.report">
+        <field name="name">สรุปประมาณการรายรับและรายจ่าย (F3-P-วง-005)</field>
+        <field name="model">budget.appropriation.report.f3.p.005</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_appropriation_report.report_f3_p_005_document</field>
+        <field name="report_file">budget_appropriation_report.report_f3_p_005_document</field>
+    </record>
+
+    <!-- F5-P-วง-003 -->
+    <record id="action_report_f5_p_003_print" model="ir.actions.report">
+        <field name="name">สรุปประมาณการรายจ่าย (F5-P-วง-003)</field>
+        <field name="model">budget.appropriation.report.f5.p.003</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_appropriation_report.report_f5_p_003_document</field>
+        <field name="report_file">budget_appropriation_report.report_f5_p_003_document</field>
+    </record>
+
+    <!-- F5-W-วง-003 -->
+    <record id="action_report_f5_w_003_print" model="ir.actions.report">
+        <field name="name">สรุปเปรียบเทียบประมาณการรายจ่าย จําแนกตามแผนงาน (F5-W-วง-003)</field>
+        <field name="model">budget.appropriation.report.f5.w.003</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_appropriation_report.report_f5_w_003_document</field>
+        <field name="report_file">budget_appropriation_report.report_f5_w_003_document</field>
+    </record>
+
+    <!-- F7-W-วง-003 -->
+    <record id="action_report_f7_w_003_print" model="ir.actions.report">
+        <field name="name">สรุปเปรียบเทียบประมาณการรายจ่าย จําแนกตามงบรายจ่าย (F7-W-วง-003)</field>
+        <field name="model">budget.appropriation.report.f7.w.003</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_appropriation_report.report_f7_w_003_document</field>
+        <field name="report_file">budget_appropriation_report.report_f7_w_003_document</field>
+    </record>
+
+    <!-- F8-W-วง-003 -->
+    <record id="action_report_f8_w_003_print" model="ir.actions.report">
+        <field name="name">สรุปเปรียบเทียบประมาณการรายจ่าย จำแนกตามหน่วยงานและแผนงาน (F8-W-วง-003)</field>
+        <field name="model">budget.appropriation.report.f8.w.003</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_appropriation_report.report_f8_w_003_document</field>
+        <field name="report_file">budget_appropriation_report.report_f8_w_003_document</field>
+    </record>
+
+    <!-- F9-W-วง-003 -->
+    <record id="action_report_f9_w_003_print" model="ir.actions.report">
+        <field name="name">สรุปสัดส่วนประมาณการรายจ่าย จําแนกตามหน่วยงาน/แผนงาน/งบรายจ่าย (F9-W-วง-003)</field>
+        <field name="model">budget.appropriation.report.f9.w.003</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_appropriation_report.report_f9_w_003_document</field>
+        <field name="report_file">budget_appropriation_report.report_f9_w_003_document</field>
+    </record>
+
+    <!-- F10-W-วง-003 -->
+    <record id="action_report_f10_w_003_print" model="ir.actions.report">
+        <field name="name">สรุปประมาณการรายจ่าย จําแนกตามแผนงาน-งานและงบรายจ่าย (F10-W-วง-003)</field>
+        <field name="model">budget.appropriation.report.f10.w.003</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_appropriation_report.report_f10_w_003_document</field>
+        <field name="report_file">budget_appropriation_report.report_f10_w_003_document</field>
+    </record>
+</odoo>
