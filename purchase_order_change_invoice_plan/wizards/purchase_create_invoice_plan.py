@@ -14,5 +14,4 @@ class PurchaseCreateInvoicePlan(models.TransientModel):
         res = super().purchase_create_invoice_plan()
         purchase = self.env["purchase.order"].browse(self._context.get("active_id"))
         purchase.use_invoice_plan = True
-        purchase.remove_invoice_plan()
         return res
