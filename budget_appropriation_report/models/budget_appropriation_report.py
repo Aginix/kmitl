@@ -112,6 +112,11 @@ class BudgetAppropriationReport(models.Model):
         compute="_compute_f2_revenue_data",
         store=False,
     )
+    f4p_revenue_data = fields.Json(
+        string="F4-P Revenue Data",
+        compute="_compute_f4p_revenue_data",
+        store=False,
+    )
 
     @api.depends("revenue_appropriation_ids")
     def _compute_f2_revenue_data(self):
@@ -119,6 +124,13 @@ class BudgetAppropriationReport(models.Model):
         F2Model = self.env["budget.appropriation.f2.revenue"]
         for record in self:
             record.f2_revenue_data = F2Model.get_data(record.id)
+
+    @api.depends("revenue_appropriation_ids")
+    def _compute_f4p_revenue_data(self):
+        """Compute F4-P revenue data for this report."""
+        F4PModel = self.env["budget.appropriation.f4p.revenue"]
+        for record in self:
+            record.f4p_revenue_data = F4PModel.get_data(record.id)
 
     @api.depends("revenue_appropriation_ids", "expense_appropriation_ids")
     def _compute_appropriation_ids(self):
