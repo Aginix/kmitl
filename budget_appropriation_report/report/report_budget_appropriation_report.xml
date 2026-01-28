@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="report_budget_appropriation_report">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
+                    <style>
+                        * {
+                            font-family: "THSarabunNew", Arial, sans-serif;
+                            --bs-body-font-size: 16pt;
+                        }
+                        p, span, div {
+                            font-size: 16pt;
+                            line-height: 1.2;
+                        }
+                        .header-box {
+                            border: 1px solid #000;
+                            padding: 15px 30px;
+                            text-align: center;
+                            display: inline-block;
+                        }
+                        .header-text {
+                            font-size: 18pt;
+                            font-weight: normal;
+                        }
+                    </style>
+
+                    <div class="page">
+                        <div class="text-center mt-5 mb-5">
+                            <div class="header-box">
+                                <div class="header-text">
+                                    มติที่ประชุมสภาสถาบัน ครั้งที่ <t t-esc="o.council_meeting_no or '-'"/>
+                                </div>
+                                <div class="header-text">
+                                    วันที่ <t t-if="o.council_meeting_date"><t t-esc="o.council_meeting_date.strftime('%d')"/> <t t-esc="dict([('01','มกราคม'),('02','กุมภาพันธ์'),('03','มีนาคม'),('04','เมษายน'),('05','พฤษภาคม'),('06','มิถุนายน'),('07','กรกฎาคม'),('08','สิงหาคม'),('09','กันยายน'),('10','ตุลาคม'),('11','พฤศจิกายน'),('12','ธันวาคม')]).get(o.council_meeting_date.strftime('%m'), '')"/> พ.ศ. <t t-esc="o.council_meeting_date.year + 543"/></t><t t-else="">-</t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_budget_appropriation_report" model="ir.actions.report">
+        <field name="name">Budget Appropriation Report</field>
+        <field name="binding_model_id" ref="model_budget_appropriation_report"/>
+        <field name="model">budget.appropriation.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_appropriation_report.report_budget_appropriation_report</field>
+        <field name="report_file">budget_appropriation_report.report_budget_appropriation_report</field>
+    </record>
+</odoo>

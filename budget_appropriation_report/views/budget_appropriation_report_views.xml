@@ -7,9 +7,19 @@
         <field name="arch" type="xml">
             <form string="Budget Appropriation Report">
                 <header>
+                    <button name="action_confirm" string="ยืนยัน" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_done" string="เสร็จสิ้น" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'confirmed')]}"/>
+                    <button name="action_draft" string="กลับไปร่าง" type="object" attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                    <button name="action_open_report" string="ดูรายงาน" type="object" class="btn-secondary"/>
+                    <button name="action_print_pdf" string="พิมพ์ PDF" type="object" class="btn-secondary"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(action_budget_appropriation_report)d" type="action" class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="appropriation_count" widget="statinfo" string="รายการ"/>
+                        </button>
+                    </div>
                     <div class="oe_title">
                         <label for="name"/>
                         <h1>
@@ -25,7 +35,7 @@
                     </group>
                     <notebook>
                         <page string="รายการจัดสรรงบประมาณ" name="appropriations">
-                            <field name="appropriation_ids">
+                            <field name="appropriation_ids" domain="[('account_fiscal_year_id', '=', account_fiscal_year_id)]">
                                 <tree>
                                     <field name="name"/>
                                     <field name="date"/>

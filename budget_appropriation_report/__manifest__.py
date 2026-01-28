@@ -10,6 +10,7 @@
     "data": [
         "data/budget_appropriation_report_action.xml",
         "security/ir.model.access.csv",
+        "report/report_budget_appropriation_report.xml",
         "views/budget_appropriation_report_views.xml",
         "views/menus.xml"
     ],
