@@ -110,3 +110,15 @@ class BudgetAppropriationReport(models.Model):
             "url": f"/budget_appropriation_report/{self.id}/pdf",
             "target": "new",
         }
+
+    def action_view_appropriations(self):
+        """Open list of appropriations linked to this report."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("รายการจัดสรรงบประมาณ"),
+            "res_model": "budget.appropriation",
+            "view_mode": "tree,form",
+            "domain": [("id", "in", self.appropriation_ids.ids)],
+            "context": {"default_account_fiscal_year_id": self.account_fiscal_year_id.id},
+        }

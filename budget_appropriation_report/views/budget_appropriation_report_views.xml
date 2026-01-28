@@ -16,7 +16,7 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="%(action_budget_appropriation_report)d" type="action" class="oe_stat_button" icon="fa-file-text-o">
+                        <button name="action_view_appropriations" type="object" class="oe_stat_button" icon="fa-file-text-o">
                             <field name="appropriation_count" widget="statinfo" string="รายการ"/>
                         </button>
                     </div>
