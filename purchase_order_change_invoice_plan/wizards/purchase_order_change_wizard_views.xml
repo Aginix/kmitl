@@ -21,7 +21,7 @@
                 </div>
                 <div>
                     <button
-                        name="628"
+                        name="%(purchase_invoice_plan.action_purchase_create_invoice_plan)d"
                         string="Create Invoice Plan"
                         type="action"
                         class="btn btn-primary"
