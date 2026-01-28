@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_budget_appropriation_report_form" model="ir.ui.view">
+        <field name="name">budget.appropriation.report.form</field>
+        <field name="model">budget.appropriation.report</field>
+        <field name="arch" type="xml">
+            <form string="Budget Appropriation Report">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="ชื่อรายงาน"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="account_fiscal_year_id"/>
+                            <field name="council_meeting_no"/>
+                            <field name="council_meeting_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="รายการจัดสรรงบประมาณ" name="appropriations">
+                            <field name="appropriation_ids">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="department_analytic_id"/>
+                                    <field name="source_analytic_id"/>
+                                    <field name="budget_type"/>
+                                    <field name="amount_net"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="หมายเหตุ" name="note">
+                            <field name="note" placeholder="หมายเหตุ..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_budget_appropriation_report_tree" model="ir.ui.view">
+        <field name="name">budget.appropriation.report.tree</field>
+        <field name="model">budget.appropriation.report</field>
+        <field name="arch" type="xml">
+            <tree string="Budget Appropriation Reports">
+                <field name="name"/>
+                <field name="account_fiscal_year_id"/>
+                <field name="council_meeting_no"/>
+                <field name="council_meeting_date"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_budget_appropriation_report_search" model="ir.ui.view">
+        <field name="name">budget.appropriation.report.search</field>
+        <field name="model">budget.appropriation.report</field>
+        <field name="arch" type="xml">
+            <search string="Search Budget Appropriation Reports">
+                <field name="name"/>
+                <field name="account_fiscal_year_id"/>
+                <field name="council_meeting_no"/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Confirmed" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Fiscal Year" name="group_by_fiscal_year" context="{'group_by': 'account_fiscal_year_id'}"/>
+                    <filter string="State" name="group_by_state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_budget_appropriation_report" model="ir.actions.act_window">
+        <field name="name">สรุปประมาณการรายรับและรายจ่าย</field>
+        <field name="res_model">budget.appropriation.report</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_budget_appropriation_report_search"/>
+    </record>
+</odoo>
