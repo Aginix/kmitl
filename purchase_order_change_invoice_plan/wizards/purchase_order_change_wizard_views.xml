@@ -13,6 +13,7 @@
             <xpath expr="//group[@name='field_groups']" position="after">
                 <separator string="ข้อมูลงวดงาน" />
                 <div>
+                    <field name="purchase_id" invisible="1" />
                     <field name="show_invoice" invisible="1" />
                     <field
                         name="invoice_plan_ids_old"
