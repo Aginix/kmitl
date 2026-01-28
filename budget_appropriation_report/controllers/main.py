@@ -19,7 +19,7 @@ class BudgetAppropriationReportController(http.Controller):
 
         if report_type == "html":
             report = request.env.ref(
-                "budget_appropriation_report.report_budget_appropriation_report"
+                "budget_appropriation_report.action_report_budget_appropriation_report"
             )
             html = request.env["ir.actions.report"]._render_qweb_html(
                 report.id, [report_record.id]
@@ -33,7 +33,7 @@ class BudgetAppropriationReportController(http.Controller):
             )
         elif report_type == "pdf":
             report = request.env.ref(
-                "budget_appropriation_report.report_budget_appropriation_report"
+                "budget_appropriation_report.action_report_budget_appropriation_report"
             )
             pdf_content, _ = request.env["ir.actions.report"]._render_qweb_pdf(
                 report.id, [report_record.id]
