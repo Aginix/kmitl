@@ -107,6 +107,18 @@ class BudgetAppropriationReport(models.Model):
         string="จำนวนรายการ",
         compute="_compute_appropriation_count",
     )
+    f2_revenue_data = fields.Json(
+        string="F2 Revenue Data",
+        compute="_compute_f2_revenue_data",
+        store=False,
+    )
+
+    @api.depends("revenue_appropriation_ids")
+    def _compute_f2_revenue_data(self):
+        """Compute F2 revenue data for this report."""
+        F2Model = self.env["budget.appropriation.f2.revenue"]
+        for record in self:
+            record.f2_revenue_data = F2Model.get_data(record.id)
 
     @api.depends("revenue_appropriation_ids", "expense_appropriation_ids")
     def _compute_appropriation_ids(self):
