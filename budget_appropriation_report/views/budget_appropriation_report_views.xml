@@ -29,7 +29,7 @@
                     <group>
                         <group>
                             <field name="account_fiscal_year_id"/>
-                            <field name="previous_fiscal_year_id"/>
+                            <field name="compare_report_id"/>
                             <field name="source_analytic_id"/>
                         </group>
                         <group>
