@@ -54,12 +54,33 @@ class BudgetAppropriationReport(models.Model):
         readonly=False,
         states=READONLY_STATES,
     )
-    appropriation_ids = fields.Many2many(
+    revenue_appropriation_ids = fields.Many2many(
         comodel_name="budget.appropriation",
-        string="รายการจัดสรรงบประมาณ",
+        relation="budget_appropriation_report_revenue_rel",
+        column1="report_id",
+        column2="appropriation_id",
+        string="รายการประมาณการรายรับ",
+        domain=[("budget_type", "=", "revenue")],
         tracking=True,
         readonly=False,
         states=READONLY_STATES,
+    )
+    expense_appropriation_ids = fields.Many2many(
+        comodel_name="budget.appropriation",
+        relation="budget_appropriation_report_expense_rel",
+        column1="report_id",
+        column2="appropriation_id",
+        string="รายการประมาณการรายจ่าย",
+        domain=[("budget_type", "=", "expense")],
+        tracking=True,
+        readonly=False,
+        states=READONLY_STATES,
+    )
+    appropriation_ids = fields.Many2many(
+        comodel_name="budget.appropriation",
+        string="รายการจัดสรรงบประมาณทั้งหมด",
+        compute="_compute_appropriation_ids",
+        store=False,
     )
     council_meeting_no = fields.Char(
         string="ครั้งที่ประชุม",
@@ -79,10 +100,15 @@ class BudgetAppropriationReport(models.Model):
         compute="_compute_appropriation_count",
     )
 
-    @api.depends("appropriation_ids")
+    @api.depends("revenue_appropriation_ids", "expense_appropriation_ids")
+    def _compute_appropriation_ids(self):
+        for record in self:
+            record.appropriation_ids = record.revenue_appropriation_ids | record.expense_appropriation_ids
+
+    @api.depends("revenue_appropriation_ids", "expense_appropriation_ids")
     def _compute_appropriation_count(self):
         for record in self:
-            record.appropriation_count = len(record.appropriation_ids)
+            record.appropriation_count = len(record.revenue_appropriation_ids) + len(record.expense_appropriation_ids)
 
     def action_confirm(self):
         self.write({"state": "confirmed"})

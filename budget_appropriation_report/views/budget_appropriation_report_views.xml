@@ -34,15 +34,26 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="รายการจัดสรรงบประมาณ" name="appropriations">
-                            <field name="appropriation_ids" domain="[('account_fiscal_year_id', '=', account_fiscal_year_id)]">
+                        <page string="ประมาณการรายรับ" name="revenue_appropriations">
+                            <field name="revenue_appropriation_ids" domain="[('account_fiscal_year_id', '=', account_fiscal_year_id), ('budget_type', '=', 'revenue')]">
                                 <tree>
                                     <field name="name"/>
                                     <field name="date"/>
                                     <field name="department_analytic_id"/>
                                     <field name="source_analytic_id"/>
-                                    <field name="budget_type"/>
-                                    <field name="amount_net"/>
+                                    <field name="amount_net" sum="รวม"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="ประมาณการรายจ่าย" name="expense_appropriations">
+                            <field name="expense_appropriation_ids" domain="[('account_fiscal_year_id', '=', account_fiscal_year_id), ('budget_type', '=', 'expense')]">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="department_analytic_id"/>
+                                    <field name="source_analytic_id"/>
+                                    <field name="amount_net" sum="รวม"/>
                                     <field name="state"/>
                                 </tree>
                             </field>
