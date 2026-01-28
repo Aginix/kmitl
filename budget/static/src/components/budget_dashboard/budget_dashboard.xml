@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    <t t-name="budget.BudgetDashboard">
-        <div class="o_action budget_dashboard">
-            <div class="container-fluid py-4">
-                <div class="row">
-                    <div class="col-12 text-center text-muted">
-                        <h2>Budget Dashboard</h2>
-                        <p>Dashboard content will be added here.</p>
-                    </div>
+    <div t-name="budget.BudgetDashboard" class="o_action budget_dashboard" owl="1">
+        <div class="container-fluid py-4">
+            <div class="row">
+                <div class="col-12 text-center text-muted">
+                    <h2>Budget Dashboard</h2>
+                    <p>Dashboard content will be added here.</p>
                 </div>
             </div>
         </div>
-    </t>
+    </div>
 </templates>
