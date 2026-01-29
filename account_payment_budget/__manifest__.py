@@ -27,7 +27,7 @@ budget controls and financial tracking requirements.
     "depends": [
         "account",
         "budget",
-        "account_move_budget_commitment"
+        "account_move_budget"
     ],
     "data": [
         "security/ir.model.access.csv",
