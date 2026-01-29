@@ -37,6 +37,9 @@
 
                     <!-- F11-W-วง-003 - สรุปประมาณการรายจ่าย จําแนกตามหน่วยงาน และกองทุน -->
                     <t t-call="budget_appropriation_report.report_f11w_expense_content" />
+
+                    <!-- F10-W-วง-003 - สรุปประมาณการรายจ่าย -->
+                    <t t-call="budget_appropriation_report.report_f10w_expense_content" />
                 </t>
             </t>
         </t>

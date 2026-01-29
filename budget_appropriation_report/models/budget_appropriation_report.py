@@ -164,6 +164,11 @@ class BudgetAppropriationReport(models.Model):
         compute="_compute_f11w_expense_data",
         store=False,
     )
+    f10w_expense_data = fields.Json(
+        string="F10-W Expense Data",
+        compute="_compute_f10w_expense_data",
+        store=False,
+    )
 
     @api.depends("revenue_appropriation_ids", "compare_report_id")
     def _compute_f2_revenue_data(self):
@@ -228,6 +233,13 @@ class BudgetAppropriationReport(models.Model):
         for record in self:
             record.f11w_expense_data = F11WModel.get_data(record.id)
 
+    @api.depends("expense_appropriation_ids")
+    def _compute_f10w_expense_data(self):
+        """Compute F10-W expense data (hierarchical by activity plans and expense types)."""
+        F10WModel = self.env["budget.appropriation.f10w.expense"]
+        for record in self:
+            record.f10w_expense_data = F10WModel.get_data(record.id)
+
     @api.constrains("compare_report_id")
     def _check_compare_report_id(self):
         for record in self:
@@ -285,6 +297,7 @@ class BudgetAppropriationReport(models.Model):
             "budget_appropriation_report.action_report_f5w_expense",
             "budget_appropriation_report.action_report_f8w_expense",
             "budget_appropriation_report.action_report_f9w_expense",
+            "budget_appropriation_report.action_report_f10w_expense",
             "budget_appropriation_report.action_report_f11w_expense",
         ]
 
