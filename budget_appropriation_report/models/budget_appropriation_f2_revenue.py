@@ -13,7 +13,8 @@ class BudgetAppropriationF2Revenue(models.AbstractModel):
     Business Purpose:
         Generates F2 revenue report data by aggregating budget appropriation
         lines into predefined parent account categories. Used for council
-        presentation and budget overview reporting.
+        presentation and budget overview reporting. Includes comparison with
+        compare_report_id.
 
     Revenue Categories:
         - r49000: ค่าธรรมเนียมการศึกษา และค่าธรรมเนียมอื่น ๆ (includes 43100, 43200)
@@ -35,16 +36,28 @@ class BudgetAppropriationF2Revenue(models.AbstractModel):
     @api.model
     def get_data(self, report_id):
         """
-        Get F2 revenue data from linked revenue_appropriation_ids.
+        Get F2 revenue data from linked revenue_appropriation_ids with comparison.
 
         Args:
             report_id: ID of budget.appropriation.report record
 
         Returns:
             dict: {
-                "categories": [{"code", "name", "amount"}, ...],
-                "summary": {"total_amount": float},
-                "report": {"id", "name", "fiscal_year", "source"}
+                "categories": [
+                    {
+                        "code", "name", "amount", "percentage",
+                        "compare_amount", "diff_amount", "diff_percentage"
+                    },
+                    ...
+                ],
+                "summary": {
+                    "total_amount": float,
+                    "compare_total_amount": float,
+                    "diff_amount": float,
+                    "diff_percentage": float
+                },
+                "report": {"id", "name", "fiscal_year", "source"},
+                "compare_report": {"id", "name", "fiscal_year", "source"} or None
             }
         """
         report = self.env["budget.appropriation.report"].browse(report_id)
@@ -52,11 +65,83 @@ class BudgetAppropriationF2Revenue(models.AbstractModel):
         if not report.exists():
             return {
                 "categories": [],
-                "summary": {"total_amount": 0},
+                "summary": {"total_amount": 0, "compare_total_amount": 0, "diff_amount": 0, "diff_percentage": 0},
                 "report": None,
+                "compare_report": None,
             }
 
-        # Get revenue appropriation lines from linked appropriations
+        # Build current report totals: category_code -> balance
+        category_totals = self._build_category_totals(report)
+
+        # Build comparison totals if compare_report_id exists
+        compare_report = report.compare_report_id
+        compare_totals = {}
+        if compare_report:
+            compare_totals = self._build_category_totals(compare_report)
+
+        # Aggregate by categories with comparison
+        categories = []
+        for code, name in self.REVENUE_CATEGORIES:
+            amount = category_totals.get(code, 0)
+            compare_amount = compare_totals.get(code, 0)
+            diff_amount = amount - compare_amount
+            diff_percentage = round((diff_amount / compare_amount) * 100, 2) if compare_amount else 0
+
+            categories.append({
+                "code": code,
+                "name": name,
+                "amount": amount,
+                "compare_amount": compare_amount,
+                "diff_amount": diff_amount,
+                "diff_percentage": diff_percentage,
+            })
+
+        # Calculate total and percentages
+        total_amount = sum(c["amount"] for c in categories)
+        compare_total_amount = sum(c["compare_amount"] for c in categories)
+
+        for category in categories:
+            if total_amount:
+                category["percentage"] = round((category["amount"] / total_amount) * 100, 2)
+            else:
+                category["percentage"] = 0.0
+
+        # Summary with comparison
+        diff_total = total_amount - compare_total_amount
+        diff_total_percentage = round((diff_total / compare_total_amount) * 100, 2) if compare_total_amount else 0
+
+        return {
+            "categories": categories,
+            "summary": {
+                "total_amount": total_amount,
+                "compare_total_amount": compare_total_amount,
+                "diff_amount": diff_total,
+                "diff_percentage": diff_total_percentage,
+            },
+            "report": {
+                "id": report.id,
+                "name": report.name,
+                "fiscal_year": report.account_fiscal_year_id.name if report.account_fiscal_year_id else None,
+                "source": report.source_analytic_id.name if report.source_analytic_id else None,
+            },
+            "compare_report": {
+                "id": compare_report.id,
+                "name": compare_report.name,
+                "fiscal_year": compare_report.account_fiscal_year_id.name if compare_report.account_fiscal_year_id else None,
+                "source": compare_report.source_analytic_id.name if compare_report.source_analytic_id else None,
+            } if compare_report else None,
+        }
+
+    def _build_category_totals(self, report):
+        """
+        Build category_code -> balance mapping for a report.
+
+        Args:
+            report: budget.appropriation.report record
+
+        Returns:
+            dict: category_code -> balance
+        """
         lines = report.revenue_appropriation_ids.mapped("line_ids")
 
         # Build account_id -> total balance mapping
@@ -65,35 +150,13 @@ class BudgetAppropriationF2Revenue(models.AbstractModel):
             acc_id = line.account_id.id
             account_totals[acc_id] = account_totals.get(acc_id, 0) + line.balance
 
-        # Aggregate by categories using parent_path hierarchy
-        categories = []
-        for code, name in self.REVENUE_CATEGORIES:
+        # Aggregate by categories
+        totals = {}
+        for code, _ in self.REVENUE_CATEGORIES:
             account_ids = self._get_accounts_in_category(code)
-            total = sum(account_totals.get(acc_id, 0) for acc_id in account_ids)
-            categories.append({
-                "code": code,
-                "name": name,
-                "amount": total,
-            })
+            totals[code] = sum(account_totals.get(acc_id, 0) for acc_id in account_ids)
 
-        # Calculate total and percentages
-        total_amount = sum(c["amount"] for c in categories)
-        for category in categories:
-            if total_amount:
-                category["percentage"] = round((category["amount"] / total_amount) * 100, 2)
-            else:
-                category["percentage"] = 0.0
-
-        return {
-            "categories": categories,
-            "summary": {"total_amount": total_amount},
-            "report": {
-                "id": report.id,
-                "name": report.name,
-                "fiscal_year": report.account_fiscal_year_id.name if report.account_fiscal_year_id else None,
-                "source": report.source_analytic_id.name if report.source_analytic_id else None,
-            },
-        }
+        return totals
 
     def _get_accounts_in_category(self, category_code):
         """

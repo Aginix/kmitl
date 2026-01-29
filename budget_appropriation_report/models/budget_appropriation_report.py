@@ -132,9 +132,9 @@ class BudgetAppropriationReport(models.Model):
         store=False,
     )
 
-    @api.depends("revenue_appropriation_ids")
+    @api.depends("revenue_appropriation_ids", "compare_report_id")
     def _compute_f2_revenue_data(self):
-        """Compute F2 revenue data for this report."""
+        """Compute F2 revenue data for this report with comparison."""
         F2Model = self.env["budget.appropriation.f2.revenue"]
         for record in self:
             record.f2_revenue_data = F2Model.get_data(record.id)
