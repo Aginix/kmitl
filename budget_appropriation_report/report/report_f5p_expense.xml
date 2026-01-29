@@ -38,12 +38,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <th colspan="4">
-                                <strong>
-                                    <u> รายจ่าย :- </u>
-                                </strong>
-                            </th>
+                        <tr style="font-weight: bold">
+                            <td colspan="4">
+                                <u> รายจ่าย :- </u>
+                            </td>
                         </tr>
                     </tbody>
                     <t t-set="row_no" t-value="1" />
