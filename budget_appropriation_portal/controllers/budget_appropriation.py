@@ -53,3 +53,60 @@ class BudgetAppropriation(http.Controller):
                 "format_monetary": format_monetary,
             },
         )
+
+    @http.route(
+        ["/budget/budget_appropriation/multi/<string:budget_appropriation_ids>"],
+        type="http",
+        auth="public",
+        website=True,
+    )
+    def object_multi(self, budget_appropriation_ids=None, access_token=None, **kw):
+        """
+        Display merged F5 report for multiple expense appropriations.
+
+        Args:
+            budget_appropriation_ids: Comma-separated IDs (e.g., "1,2,3")
+        """
+        # Parse comma-separated IDs
+        try:
+            ids = [int(id_str.strip()) for id_str in budget_appropriation_ids.split(",") if id_str.strip()]
+        except ValueError:
+            return request.not_found()
+
+        if not ids:
+            return request.not_found()
+
+        appropriations = request.env["budget.appropriation"].browse(ids)
+        if not appropriations.exists():
+            return request.not_found()
+
+        # Only expense type supported for multi-ID
+        non_expense = appropriations.filtered(lambda a: a.budget_type != "expense")
+        if non_expense:
+            return request.not_found()
+
+        first = appropriations[0]
+
+        def format_monetary(number):
+            return (
+                format_amount(request.env, number, first.currency_id)
+                .replace(first.currency_id.symbol, "")
+                .strip()
+            )
+
+        report = request.env['budget.appropriation.f5.report'].get_f5_data_flat(ids)
+
+        # Check for validation errors
+        if report.get("error"):
+            _logger.warning("F5 multi-report error: %s", report["error"])
+            return request.not_found()
+
+        return http.request.render(
+            "budget_appropriation_portal.expense",
+            {
+                "object": first,
+                "objects": appropriations,
+                "report": report,
+                "format_monetary": format_monetary,
+            },
+        )
