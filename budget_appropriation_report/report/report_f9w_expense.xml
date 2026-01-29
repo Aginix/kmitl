@@ -3,10 +3,6 @@
     <!-- Partial template for F9-W-วง-003 content (reusable) -->
     <template id="report_f9w_expense_content">
         <style>
-            .f9w * {
-                --bs-body-font-size: 14pt;
-                font-size: 14pt;
-            }
         </style>
         <div class="page f9w">
             <div class="text-center mt-5 mb-3" style="font-weight: bold">
