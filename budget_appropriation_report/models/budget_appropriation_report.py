@@ -144,6 +144,11 @@ class BudgetAppropriationReport(models.Model):
         compute="_compute_f5p_expense_data",
         store=False,
     )
+    f5w_expense_data = fields.Json(
+        string="F5-W Expense Data",
+        compute="_compute_f5w_expense_data",
+        store=False,
+    )
 
     @api.depends("revenue_appropriation_ids", "compare_report_id")
     def _compute_f2_revenue_data(self):
@@ -179,6 +184,13 @@ class BudgetAppropriationReport(models.Model):
         F5PModel = self.env["budget.appropriation.f5p.expense"]
         for record in self:
             record.f5p_expense_data = F5PModel.get_data(record.id)
+
+    @api.depends("expense_appropriation_ids", "compare_report_id")
+    def _compute_f5w_expense_data(self):
+        """Compute F5-W expense data for this report with comparison."""
+        F5WModel = self.env["budget.appropriation.f5w.expense"]
+        for record in self:
+            record.f5w_expense_data = F5WModel.get_data(record.id)
 
     @api.constrains("compare_report_id")
     def _check_compare_report_id(self):

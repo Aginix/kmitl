@@ -25,6 +25,9 @@
 
                     <!-- F5-P Report - สรุปประมาณการรายจ่าย -->
                     <t t-call="budget_appropriation_report.report_f5p_expense_content" />
+
+                    <!-- F5-W Report - สรุปเปรียบเทียบประมาณการรายจ่ายจําแนกตามกิจกรรม -->
+                    <t t-call="budget_appropriation_report.report_f5w_expense_content" />
                 </t>
             </t>
         </t>
