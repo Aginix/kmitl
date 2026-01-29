@@ -31,7 +31,8 @@
 
     <!-- Council meeting header template (reusable) -->
     <template id="report_council_header">
-        <t t-if="o.show_council_header">
+        <t t-set="show_council_header" t-value="o.env.context.get('show_council_header', False)" />
+        <t t-if="show_council_header">
             <div class="text-center mt-5 mb-5">
                 <div class="header-box">
                     <div class="header-text">
