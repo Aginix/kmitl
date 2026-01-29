@@ -22,6 +22,7 @@
         "report/report_f8w_expense.xml",
         "report/report_f9w_expense.xml",
         "report/report_f11w_expense.xml",
+        "report/report_f10w_expense.xml",
         "report/report_budget_appropriation_report.xml",
         "views/budget_appropriation_report_views.xml",
         "views/menus.xml"
