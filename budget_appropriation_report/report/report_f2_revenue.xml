@@ -6,6 +6,9 @@
             .f2-w tr:last-child td {
                 padding-bottom: 36px;
             }
+            .table {
+                border-color: #000 !important;
+            }
         </style>
         <div class="page" style="width: 100%;">
             <div class="text-center mt-5 mb-5">

@@ -9,6 +9,9 @@
             .f4-w table .table td {
                 border-color: #000 !important;
             }
+            .f4-w .table-bordered td {
+                border-color: #000 !important;
+            }
         </style>
         <div class="page f4-w">
             <div class="text-center mt-5 mb-3" style="font-weight: bold">
