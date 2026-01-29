@@ -350,7 +350,7 @@
                             <div>จําแนกตามหน่วยงานและประเภท</div>
                         </div>
                         <div>
-                            <table class="table table-sm table-bordered ">
+                            <table class="table table-sm table-bordered">
                                 <thead>
                                     <tr>
                                         <th class="text-center" style="width: 40%" rowspan="2">หน่วยงาน</th>
@@ -374,7 +374,7 @@
                                     t-as="row"
                                 >
                                         <tr class="border-0">
-                                            <td class="border-0 border-start border-black">
+                                            <td class="border-0 border-start">
                                                 <strong>
                                                     <u>
                                                         <t t-esc="row_no" />.
@@ -382,23 +382,23 @@
                                                     </u>
                                                 </strong>
                                             </td>
-                                            <td class="border-0 text-end">
-                                                <t t-out="'{0:,.2f}'.format(row['compare_amount'])" />
+                                            <td class="text-end border-bottom border-black">
+                                                <strong><t t-out="'{0:,.2f}'.format(row['compare_amount'])" /></strong>
                                             </td>
-                                            <td class="border-0 text-end">
-                                                100.0
+                                            <td class="text-end border-bottom border-black">
+                                                <strong>100.0</strong>
                                             </td>
-                                            <td class="border-0 text-end">
-                                                <t t-out="'{0:,.2f}'.format(row['amount'])" />
+                                            <td class="text-end border-bottom border-black">
+                                                <strong><t t-out="'{0:,.2f}'.format(row['amount'])" /></strong>
                                             </td>
-                                            <td class="border-0 text-end">
-                                                100.0
+                                            <td class="text-end border-bottom border-black">
+                                                <strong>100.0</strong>
                                             </td>
-                                            <td class="border-0 text-end">
-                                                <t t-out="'{0:,.2f}'.format(row['diff_amount'])" />
+                                            <td class="text-end border-bottom border-black">
+                                                <strong><t t-out="'{0:,.2f}'.format(row['diff_amount'])" /></strong>
                                             </td>
-                                            <td class="border-0 text-end border-end">
-                                                <t t-out="'{0:,.2f}'.format(row['diff_percentage'])" />
+                                            <td class="text-end border-bottom border-black">
+                                                <strong><t t-out="'{0:,.2f}'.format(row['diff_percentage'])" /></strong>
                                             </td>
                                         </tr>
                                         <t t-foreach="row['categories']" t-as="category">
@@ -406,26 +406,26 @@
                                                 <td class="ps-5 border-0 border-start">
                                                     - <t t-esc="category['name']" />
                                                 </td>
-                                                <td class="text-end border-0">
+                                                <td class="text-end">
                                                     <t
                                                         t-out="'{0:,.2f}'.format(category['amount'])"
                                                     />
                                                 </td>
-                                                <td class="text-end border-0">
+                                                <td class="text-end">
                                                     <t t-out="category['percentage']" />
                                                 </td>
-                                                <td class="text-end border-0">
+                                                <td class="text-end">
                                                     <t
                                                         t-out="'{0:,.2f}'.format(category['amount'])"
                                                     />
                                                 </td>
-                                                <td class="text-end border-0">
+                                                <td class="text-end">
                                                     <t t-out="category['percentage']" />
                                                 </td>
-                                                <td class="text-end border-0">
+                                                <td class="text-end">
                                                     <t t-out="'{0:,.2f}'.format(category['diff_amount'])" />
                                                 </td>
-                                                <td class="text-end border-0 border-end">
+                                                <td class="text-end">
                                                     <t t-out="'{0:,.2f}'.format(category['diff_percentage'])" />
                                                 </td>
                                             </tr>
