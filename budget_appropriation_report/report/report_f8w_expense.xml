@@ -3,7 +3,20 @@
     <!-- Partial template for F8-W-วง-003 content (reusable) -->
     <template id="report_f8w_expense_content">
         <style>
-            .f8-w table .table td {
+            .f8w table .table td {
+                border-color: #000 !important;
+            }
+            .f8w .table-bordered td {
+                border-color: #000 !important;
+            }
+            .table tbody td, .table tbody tr {
+                border-top: 0;
+                border-bottom: 0;
+            }
+            .table tbody .category .border-bottom {
+                border-bottom: 1pt solid #000 !important;
+            }
+            .table {
                 border-color: #000 !important;
             }
         </style>
@@ -38,7 +51,7 @@
                         <t t-set="row_no" t-value="1" />
                         <t t-foreach="o.f8w_expense_data['departments']" t-as="department">
                             <tr class="border-0">
-                                <td class="">
+                                <td class="border-0 border-start">
                                     <strong>
                                         <u>
                                             <t t-out="row_no" />.
@@ -67,7 +80,7 @@
                             </tr>
                             <t t-foreach="department['activities']" t-as="activity">
                                 <tr class="department border-0">
-                                    <td class="ps-5">
+                                    <td class="ps-5 border-0 border-start">
                                         - <t t-out="activity['name']" />
                                     </td>
                                     <td class="text-end">

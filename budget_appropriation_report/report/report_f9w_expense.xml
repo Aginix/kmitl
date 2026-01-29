@@ -3,6 +3,16 @@
     <!-- Partial template for F9-W-วง-003 content (reusable) -->
     <template id="report_f9w_expense_content">
         <style>
+            .table {
+                border-color: #000 !important;
+            }
+            .table tbody td, .table tbody tr {
+                border-top: 0;
+                border-bottom: 0;
+            }
+            .border-end {
+                border-right: 1pt solid #000 !important;
+            }
         </style>
         <div class="page f9w">
             <t t-call="budget_appropriation_report.report_council_header" />
@@ -37,7 +47,7 @@
                     <tbody>
                         <t t-set="row_no" t-value="1" />
                         <t t-foreach="o.f9w_expense_data['departments']" t-as="department">
-                            <tr class="border-0">
+                            <tr class="border-0 border-end">
                                 <td class="">
                                     <strong>
                                         <u>
@@ -47,15 +57,15 @@
                                     </strong>
                                 </td>
                                 <t t-foreach="o.f9w_expense_data['columns']" t-as="column">
-                                    <th class="text-center">
+                                    <th class="text-center border-0 border-end">
                                         <t t-out="'{0:,.2f}'.format(department['columns'][column['code']]['amount'])" />
                                     </th>
-                                    <th class="text-center">
+                                    <th class="text-center border-0 border-end">
                                         0.00
                                         <!-- <t t-out="department['columns'][column['code']]['percentage']" /> -->
                                     </th>
                                 </t>
-                                <th class="text-center">
+                                <th class="text-center border-0">
                                     <t t-out="'{0:,.2f}'.format(department['total']['amount'])" />
                                 </th>
                             </tr>
