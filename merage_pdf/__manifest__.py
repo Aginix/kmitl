@@ -6,8 +6,9 @@
     'author': '',
     'website': '',
     'category': '',
-    'depends': ['purchase_request', 'purchase_order_report_kmitl'],
+    'depends': ['purchase_request', 'purchase_order_report_kmitl', 'purchase_order_link_purchase_request','purchase_request_sarabun'],
     "data": [
+        "views/purchase_order_views.xml",
         "views/purchase_request_views.xml"
     ],
     'application': True,
