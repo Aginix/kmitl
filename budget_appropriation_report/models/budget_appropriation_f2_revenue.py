@@ -46,7 +46,8 @@ class BudgetAppropriationF2Revenue(models.AbstractModel):
                 "categories": [
                     {
                         "code", "name", "amount", "percentage",
-                        "compare_amount", "diff_amount", "diff_percentage"
+                        "compare_amount", "compare_percentage",
+                        "diff_amount", "diff_percentage"
                     },
                     ...
                 ],
@@ -105,6 +106,10 @@ class BudgetAppropriationF2Revenue(models.AbstractModel):
                 category["percentage"] = round((category["amount"] / total_amount) * 100, 2)
             else:
                 category["percentage"] = 0.0
+            if compare_total_amount:
+                category["compare_percentage"] = round((category["compare_amount"] / compare_total_amount) * 100, 2)
+            else:
+                category["compare_percentage"] = 0.0
 
         # Summary with comparison
         diff_total = total_amount - compare_total_amount
