@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, onWillStart, useState } from "@odoo/owl";
+import { Component, onWillStart, onMounted, onWillUnmount, useState, useRef } from "@odoo/owl";
 
 import { ControlPanel } from "@web/search/control_panel/control_panel";
 import { registry } from "@web/core/registry";
@@ -27,14 +27,33 @@ export class BudgetAppropriationF5Expense extends Component {
             appropriations: [],  // Now hierarchical structure
             selected_appropriation_ids: [],
             expanded_departments: [],  // Track expanded department IDs
+            sidebarWidth: 320,  // Default sidebar width
         });
 
         this.orm = useService("orm");
         this.notification = useService("notification");
 
+        // Sidebar resize
+        this.sidebarRef = useRef("sidebar");
+        this.isResizing = false;
+
+        // Bind resize handlers
+        this._onMouseMove = this._onMouseMove.bind(this);
+        this._onMouseUp = this._onMouseUp.bind(this);
+
         onWillStart(async () => {
             await this.loadFilterOptions();
             await this.loadAppropriations();
+        });
+
+        onMounted(() => {
+            document.addEventListener("mousemove", this._onMouseMove);
+            document.addEventListener("mouseup", this._onMouseUp);
+        });
+
+        onWillUnmount(() => {
+            document.removeEventListener("mousemove", this._onMouseMove);
+            document.removeEventListener("mouseup", this._onMouseUp);
         });
     }
 
@@ -112,6 +131,17 @@ export class BudgetAppropriationF5Expense extends Component {
         if (ids.length === 0) {
             return "";
         } else if (ids.length === 1) {
+            return `/budget/budget_appropriation/${ids[0]}/content`;
+        } else {
+            return `/budget/budget_appropriation/multi/${ids.join(",")}/content`;
+        }
+    }
+
+    get printUrl() {
+        const ids = this.state.selected_appropriation_ids;
+        if (ids.length === 0) {
+            return "";
+        } else if (ids.length === 1) {
             return `/budget/budget_appropriation/${ids[0]}`;
         } else {
             return `/budget/budget_appropriation/multi/${ids.join(",")}`;
@@ -159,7 +189,7 @@ export class BudgetAppropriationF5Expense extends Component {
 
     onPrint() {
         if (this.hasSelection) {
-            window.open(this.portalUrl, '_blank');
+            window.open(this.printUrl, '_blank');
         }
     }
 
@@ -254,6 +284,38 @@ export class BudgetAppropriationF5Expense extends Component {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0
         }).format(amount);
+    }
+
+    // ---- Sidebar Resize Methods ----
+
+    onResizeStart(ev) {
+        ev.preventDefault();
+        this.isResizing = true;
+        document.body.style.cursor = "col-resize";
+        document.body.style.userSelect = "none";
+    }
+
+    _onMouseMove(ev) {
+        if (!this.isResizing) return;
+
+        const sidebar = this.sidebarRef.el;
+        if (!sidebar) return;
+
+        const containerRect = sidebar.parentElement.getBoundingClientRect();
+        const newWidth = ev.clientX - containerRect.left;
+
+        // Constrain width between 200px and 500px
+        const minWidth = 200;
+        const maxWidth = 500;
+        this.state.sidebarWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
+    }
+
+    _onMouseUp() {
+        if (this.isResizing) {
+            this.isResizing = false;
+            document.body.style.cursor = "";
+            document.body.style.userSelect = "";
+        }
     }
 }
 

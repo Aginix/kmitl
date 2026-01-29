@@ -225,5 +225,87 @@
                 </div>
             </xpath>
         </template>
+
+        <!-- Standalone content template for iframe embedding (no portal chrome) -->
+        <template id="expense_content" name="Budget Appropriation F5 Content">
+            <t t-call="web.basic_layout">
+                <style>
+                    body { background: #f8f9fa; margin: 0; padding: 16px; }
+                    .f5-content { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); max-width: 860px; margin: 0 auto; }
+                </style>
+                <div class="f5-content">
+                    <div class="text-end p-4">
+                        <div t-out="object.display_name" />
+                        <div class="badge text-bg-secondary" t-out="object.state" />
+                    </div>
+                    <div style="padding: 2rem">
+                        <p class="text-center fw-semibold">
+                            <t t-out="report.get('source') or object.source_analytic_id.name" />
+                            <br />
+                            ประมาณการรายจ่าย ประจำปีงบประมาณ พ.ศ.
+                            <t t-out="report.get('fiscal_year') or object.account_fiscal_year_id.name" />
+                            <br />
+                            สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง
+                            <br />
+                            <t t-out="report.get('department') or object.department_analytic_id.complete_name" />
+                            <br />
+                            วงเงิน
+                            <t t-out="format_monetary(report.get('amount_total', object.amount_net))" />
+ บาท
+                        </p>
+                        <table class="table table-sm table-borderless">
+                            <thead>
+                                <tr>
+                                    <th>รายการ</th>
+                                    <th class="text-end" style="width: 140px">
+                                        รหัสงบประมาณ
+                                    </th>
+                                    <th class="text-end" style="width: 180px">
+                                        งบประมาณ
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="report['hierarchy']" t-as="line">
+                                    <tr>
+                                        <td>
+                                            <div t-attf-style="padding-left: #{16 * line['indent']}px;">
+                                                <span t-attf-class="{{'fw-bolder' if line['indent'] == 0 else ''}}">
+                                                    <t t-out="line['name']" />
+                                                </span>
+
+                                                <div t-if="line['note']" class="text-black-50 fs-6" t-attf-style="padding-left: 16px; white-space: pre-wrap;" t-out="line['note']"></div>
+                                            </div>
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-out="line['code']" />
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-out="format_monetary(line['amount_total'])" />
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <div class="row mt-5">
+                            <div class="col-6"></div>
+                            <div class="col-6">
+                                <dl class="row">
+                                    <dt class="col-sm-6">
+                                        <div class="text-end">รายจ่ายรวม</div>
+                                    </dt>
+                                    <dd class="col-sm-6">
+                                        <div class="text-end text-decoration-underline" style="text-decoration-style: double;">
+                                            <t t-out="format_monetary(report.get('amount_total', object.amount_net))" />
+                                        </div>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
     </data>
 </odoo>

@@ -44,47 +44,60 @@
                 </t>
             </ControlPanel>
 
-            <!-- Appropriation Selection Panel (below control panel) -->
-            <div class="appropriation-selection-panel border-bottom p-3 bg-light">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <strong>เลือกคำขอตั้งงบประมาณ:</strong>
-                    <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-secondary" t-on-click="onExpandAll" title="ขยายทั้งหมด">
-                            <i class="fa fa-expand"/>
-                        </button>
-                        <button class="btn btn-outline-secondary" t-on-click="onCollapseAll" title="ย่อทั้งหมด">
-                            <i class="fa fa-compress"/>
-                        </button>
-                        <button class="btn btn-outline-secondary" t-on-click="onSelectAll">เลือกทั้งหมด</button>
-                        <button class="btn btn-outline-secondary" t-on-click="onDeselectAll">ยกเลิกทั้งหมด</button>
+            <!-- Main Content Area with Left Sidebar -->
+            <div class="o_content flex-grow-1 d-flex">
+                <!-- Left Sidebar: Appropriation Selection -->
+                <div class="appropriation-sidebar bg-light" t-ref="sidebar"
+                     t-att-style="'width: ' + state.sidebarWidth + 'px; min-width: ' + state.sidebarWidth + 'px;'">
+                    <div class="sidebar-header p-2 border-bottom">
+                        <strong class="d-block mb-2">เลือกคำขอตั้งงบประมาณ</strong>
+                        <div class="btn-group btn-group-sm w-100">
+                            <button class="btn btn-outline-secondary" t-on-click="onExpandAll" title="ขยายทั้งหมด">
+                                <i class="fa fa-expand"/>
+                            </button>
+                            <button class="btn btn-outline-secondary" t-on-click="onCollapseAll" title="ย่อทั้งหมด">
+                                <i class="fa fa-compress"/>
+                            </button>
+                            <button class="btn btn-outline-secondary" t-on-click="onSelectAll" title="เลือกทั้งหมด">
+                                <i class="fa fa-check-square-o"/>
+                            </button>
+                            <button class="btn btn-outline-secondary" t-on-click="onDeselectAll" title="ยกเลิกทั้งหมด">
+                                <i class="fa fa-square-o"/>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="sidebar-content p-2">
+                        <div t-if="state.loading" class="text-center py-3">
+                            <i class="fa fa-spinner fa-spin"/> กำลังโหลด...
+                        </div>
+                        <div t-elif="state.appropriations.length === 0" class="text-muted py-2">
+                            ไม่พบคำขอตั้งงบประมาณ
+                        </div>
+                        <div t-else="" class="department-tree">
+                            <t t-foreach="state.appropriations" t-as="dept" t-key="dept.id">
+                                <t t-call="budget_appropriation_report.DepartmentNode">
+                                    <t t-set="department" t-value="dept"/>
+                                    <t t-set="level" t-value="0"/>
+                                </t>
+                            </t>
+                        </div>
                     </div>
                 </div>
-                <div t-if="state.loading" class="text-center py-3">
-                    <i class="fa fa-spinner fa-spin"/> กำลังโหลด...
-                </div>
-                <div t-elif="state.appropriations.length === 0" class="text-muted py-2">
-                    ไม่พบคำขอตั้งงบประมาณ
-                </div>
-                <div t-else="" class="department-tree" style="max-height: 250px; overflow-y: auto;">
-                    <t t-foreach="state.appropriations" t-as="dept" t-key="dept.id">
-                        <t t-call="budget_appropriation_report.DepartmentNode">
-                            <t t-set="department" t-value="dept"/>
-                            <t t-set="level" t-value="0"/>
-                        </t>
-                    </t>
-                </div>
-            </div>
 
-            <!-- Content Area -->
-            <div class="o_content flex-grow-1">
-                <div t-if="hasSelection" class="h-100">
-                    <iframe t-att-src="portalUrl" class="w-100 h-100 border-0"/>
-                </div>
-                <div t-else="" class="d-flex align-items-center justify-content-center h-100">
-                    <div class="text-center text-muted">
-                        <i class="fa fa-hand-pointer-o fa-3x mb-3"/>
-                        <h4>กรุณาเลือกคำขอตั้งงบประมาณ</h4>
-                        <p>เลือกรายการด้านบนเพื่อแสดงรายงาน</p>
+                <!-- Resize Handle -->
+                <div class="sidebar-resize-handle" t-on-mousedown="onResizeStart"/>
+
+                <!-- Right: Report Content -->
+                <div class="report-content flex-grow-1">
+                    <div t-if="hasSelection" class="h-100">
+                        <iframe t-att-src="portalUrl" class="w-100 h-100 border-0"/>
+                    </div>
+                    <div t-else="" class="d-flex align-items-center justify-content-center h-100 bg-white">
+                        <div class="text-center text-muted">
+                            <i class="fa fa-hand-pointer-o fa-3x mb-3"/>
+                            <h4>กรุณาเลือกคำขอตั้งงบประมาณ</h4>
+                            <p>เลือกรายการด้านซ้ายเพื่อแสดงรายงาน</p>
+                        </div>
                     </div>
                 </div>
             </div>
