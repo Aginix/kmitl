@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Partial template for F5-P content (reusable) -->
+    <template id="report_f5p_expense_content">
+        <style>
+            .f5-p table tbody.category tr:last-child td {
+                padding-bottom: 36px;
+            }
+        </style>
+        <div class="page f5-p">
+            <div class="text-center mt-5 mb-3" style="font-weight: bold">
+                <div>
+                    สรุปประมาณการรายจ่าย ประจําปีงบประมาณ
+                    <t t-esc="o.account_fiscal_year_id.name" />
+                </div>
+                <div>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</div>
+            </div>
+            <div>
+                <table class="table table-sm table-borderless">
+                    <thead>
+                        <tr>
+                            <th />
+                            <th class="text-center" colspan="3">
+                                แหล่งเงิน (หน่วย: บาท)
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="width: 60%" />
+                            <th style="width: 13.33%" class="text-end">
+                                <small>เงินงบประมาณ</small>
+                            </th>
+                            <th style="width: 13.33%" class="text-end">
+                                <small>เงินรายได้</small>
+                            </th>
+                            <th style="width: 13.33%" class="text-end">
+                                <small>รวมทั้งสิ้น</small>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th colspan="4">
+                                <strong>
+                                    <u> รายจ่าย :- </u>
+                                </strong>
+                            </th>
+                        </tr>
+                    </tbody>
+                    <t t-set="row_no" t-value="1" />
+                    <t t-foreach="o.f5p_expense_data['expense_types']" t-as="expense">
+                        <tbody class="expense">
+                            <tr>
+                                <td class="ps-2" style="font-weight: bold">
+                                    <u>
+                                        <t
+                                            t-out="'%s %s' % (row_no, expense['name'])"
+                                        />
+                                    </u>
+                                </td>
+                                <td
+                                    class="text-end border-2 border-bottom border-black"
+                                    style="font-weight: bold"
+                                >
+                                    0
+                                </td>
+                                <td
+                                    class="text-end border-2 border-bottom border-black"
+                                    style="font-weight: bold"
+                                >
+                                    <t t-out="'{0:,.2f}'.format(expense['amount'])" />
+                                </td>
+                                <td
+                                    class="text-end border-2 border-bottom border-black"
+                                    style="font-weight: bold"
+                                >
+                                    <t t-out="'{0:,.2f}'.format(expense['amount'])" />
+                                </td>
+                            </tr>
+                            <t t-set="category_no" t-value="1" />
+                            <t t-foreach="expense['categories']" t-as="category">
+                                <tr class="category">
+                                    <td class="ps-3">
+                                        <t
+                                            t-out="'%s.%s %s' % (row_no, category_no, category['name'])"
+                                        />
+                                    </td>
+                                    <td
+                                        class="text-end border-2 border-bottom border-black"
+                                    >
+                                        0
+                                    </td>
+                                    <td
+                                        class="text-end border-2 border-bottom border-black"
+                                    >
+                                        <t
+                                            t-out="'{0:,.2f}'.format(category['amount'])"
+                                        />
+                                    </td>
+                                    <td
+                                        class="text-end border-2 border-bottom border-black"
+                                    >
+                                        <t
+                                            t-out="'{0:,.2f}'.format(category['amount'])"
+                                        />
+                                    </td>
+                                </tr>
+                                <t t-set="category_no" t-value="category_no + 1" />
+                                <t t-foreach="category['departments']" t-as="dept">
+                                    <tr class="departments">
+                                        <td class="ps-5">
+                                            <t t-out="dept['name']" />
+                                        </td>
+                                        <td class="text-end">0</td>
+                                        <td class="text-end">
+                                            <t t-out="'{0:,.2f}'.format(dept['amount'])" />
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-out="'{0:,.2f}'.format(dept['amount'])" />
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+
+                        </tbody>
+                        <t t-set="row_no" t-value="row_no + 1" />
+                    </t>
+                    <tbody>
+                        <tr>
+                            <td class="text-end ps-0 pb-0">
+                                <strong>รวมทั้งสิ้น</strong>
+                            </td>
+                            <td class="text-end border-4 border-bottom border-black ps-0 pb-0">0</td>
+                            <td class="text-end border-4 border-bottom border-black ps-0 pb-0">
+                                <t
+                                    t-out="'{0:,.2f}'.format(o.f5p_expense_data['summary']['total_amount'])"
+                                />
+                            </td>
+                            <td class="text-end border-4 border-bottom border-black ps-0 pb-0">
+                                <t
+                                    t-out="'{0:,.2f}'.format(o.f5p_expense_data['summary']['total_amount'])"
+                                />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </template>
+
+    <!-- Main F5-P report template -->
+    <template id="report_f5p_expense">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
+                    <t t-call="budget_appropriation_report.report_common_styles" />
+                    <t
+                        t-call="budget_appropriation_report.report_f5p_expense_content"
+                    />
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_f5p_expense" model="ir.actions.report">
+        <field name="name">F5-P - สรุปประมาณการรายจ่าย</field>
+        <field name="model">budget.appropriation.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_appropriation_report.report_f5p_expense</field>
+        <field name="report_file">budget_appropriation_report.report_f5p_expense</field>
+    </record>
+</odoo>

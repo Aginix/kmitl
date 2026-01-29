@@ -19,6 +19,12 @@
 
                     <!-- F3-W-วง-003 และ F6-W-วง-003 Report - สรุปเปรียบเทียบประมาณการรายรับจําแนกตามหน่วยงานและประเภท -->
                     <t t-call="budget_appropriation_report.report_f3w_f6w_revenue" />
+
+                    <!-- F7-W-วง-003 Report - สรุปเปรียบเทียบประมาณการรายจ่ายจําแนกตามประเภท -->
+                    <t t-call="budget_appropriation_report.report_f7w_expense_content" />
+
+                    <!-- F5-P Report - สรุปประมาณการรายจ่าย -->
+                    <t t-call="budget_appropriation_report.report_f5p_expense_content" />
                 </t>
             </t>
         </t>

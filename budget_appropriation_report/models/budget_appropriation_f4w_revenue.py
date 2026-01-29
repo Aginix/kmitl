@@ -52,9 +52,10 @@ class BudgetAppropriationF4WRevenue(models.AbstractModel):
                         "diff_amount": float,
                         "diff_percentage": float,
                         "percentage": float,
+                        "compare_percentage": float,
                         "categories": [
                             {
-                                "code", "name", "amount", "percentage",
+                                "code", "name", "amount", "percentage", "compare_percentage",
                                 "compare_amount", "diff_amount", "diff_percentage"
                             },
                             ...
@@ -143,6 +144,7 @@ class BudgetAppropriationF4WRevenue(models.AbstractModel):
                             "diff_amount": diff_amount,
                             "diff_percentage": diff_percentage,
                             "percentage": round((amount / dept_total) * 100, 2) if dept_total else 0,
+                            "compare_percentage": round((compare_amount / compare_dept_total) * 100, 2) if compare_dept_total else 0,
                         })
 
                 diff_dept_amount = dept_total - compare_dept_total
@@ -162,6 +164,7 @@ class BudgetAppropriationF4WRevenue(models.AbstractModel):
         compare_total_amount = sum(d["compare_amount"] for d in departments)
         for dept in departments:
             dept["percentage"] = round((dept["amount"] / total_amount) * 100, 2) if total_amount else 0
+            dept["compare_percentage"] = round((dept["compare_amount"] / compare_total_amount) * 100, 2) if compare_total_amount else 0
 
         # Sort departments by code
         departments = sorted(departments, key=lambda x: x["code"])
@@ -255,7 +258,7 @@ class BudgetAppropriationF4WRevenue(models.AbstractModel):
             recordset: account.analytic.account records for top-level departments
         """
         return self.env["account.analytic.account"].search([
-            ("plan_id.code", "=", "departments"),
+            ("root_plan_id.code", "=", "departments"),
             ("parent_id", "=", False),
         ], order="code ASC")
 

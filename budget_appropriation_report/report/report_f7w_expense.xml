@@ -1,44 +1,41 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <!-- Partial template for F4-W content (reusable) -->
-    <template id="report_f4w_revenue_content">
+    <!-- Partial template for F7-W-วง-003 content (reusable) -->
+    <template id="report_f7w_expense_content">
         <style>
-            .f4-w table tbody.category tr:last-child td {
-                padding-bottom: 0px;
-            }
             .f4-w table .table td {
                 border-color: #000 !important;
             }
         </style>
-        <div class="page f4-w">
+        <div class="page f7w">
             <div class="text-center mt-5 mb-3" style="font-weight: bold">
                 <div>
-                    สรุปเปรียบเทียบประมาณการรายรับ ปีงบประมาณ พ.ศ. <t t-esc="o.compare_report_id.account_fiscal_year_id.name" /> และ <t t-esc="o.account_fiscal_year_id.name" />
+                    สรุปเปรียบเทียบประมาณการรายรับ - รายจ่าย ปีงบประมาณ พ.ศ. <t t-esc="o.compare_report_id.account_fiscal_year_id.name" /> และ <t t-esc="o.account_fiscal_year_id.name" />
                 </div>
                 <div>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</div>
-                <div>จําแนกตามหน่วยงานและประเภท</div>
+                <div>จําแนกตามประเภทงบรายจ่าย</div>
             </div>
             <div>
                 <table class="table table-sm table-bordered">
                     <thead>
                         <tr>
-                            <th class="text-center" style="width: 40%" rowspan="2">หน่วยงาน</th>
-                            <th class="text-center" style="width: 20%" colspan="2">ปีงบประมาณ <t t-esc="o.compare_report_id.account_fiscal_year_id.name" /></th>
-                            <th class="text-center" style="width: 20%" colspan="2">ปีงบประมาณ <t t-esc="o.account_fiscal_year_id.name" /></th>
-                            <th class="text-center" style="width: 20%" colspan="2">+ เพิ่ม - ลด</th>
+                            <th class="text-center" rowspan="2" style="width: 35%;">หน่วยงาน</th>
+                            <th class="text-center" colspan="2">ปีงบประมาณ <t t-esc="o.compare_report_id.account_fiscal_year_id.name" /></th>
+                            <th class="text-center" colspan="2">ปีงบประมาณ <t t-esc="o.account_fiscal_year_id.name" /></th>
+                            <th class="text-center" colspan="2">+ เพิ่ม - ลด</th>
                         </tr>
                         <tr>
-                            <th class="text-center" style="width: 15%">เงินรายได้</th>
-                            <th class="text-center" style="width: 5%">%</th>
-                            <th class="text-center" style="width: 15%">เงินรายได้</th>
-                            <th class="text-center" style="width: 5%">%</th>
-                            <th class="text-center" style="width: 15%">เงินรายได้</th>
-                            <th class="text-center" style="width: 5%">%</th>
+                            <th class="text-center">เงินรายได้</th>
+                            <th class="text-center">%</th>
+                            <th class="text-center">เงินรายได้</th>
+                            <th class="text-center">%</th>
+                            <th class="text-center">เงินรายได้</th>
+                            <th class="text-center">%</th>
                         </tr>
                     </thead>
                     <tbody class="category">
                         <t t-set="row_no" t-value="1" />
-                        <t t-foreach="o.f4w_revenue_data['departments']" t-as="row">
+                        <t t-foreach="o.f7w_expense_data['expense_types']" t-as="row">
                             <tr class="border-0">
                                 <td class="border-0 border-start">
                                     <strong>
@@ -101,22 +98,22 @@
                                 <strong>รวมทั้งสิ้น</strong>
                             </td>
                             <td class="text-end" style="font-weight: bold;">
-                                <t t-out="'{0:,.2f}'.format(o.f4w_revenue_data['summary']['compare_total_amount'])" />
+                                <t t-out="'{0:,.2f}'.format(o.f7w_expense_data['summary']['compare_total_amount'])" />
                             </td>
                             <td class="text-end" style="font-weight: bold;">
                                 <t t-out="'{0:,.2f}'.format(100)" />
                             </td>
                             <td class="text-end" style="font-weight: bold;">
-                                <t t-out="'{0:,.2f}'.format(o.f4w_revenue_data['summary']['total_amount'])" />
+                                <t t-out="'{0:,.2f}'.format(o.f7w_expense_data['summary']['total_amount'])" />
                             </td>
                             <td class="text-end" style="font-weight: bold;">
                                 <t t-out="'{0:,.2f}'.format(100)" />
                             </td>
                             <td class="text-end" style="font-weight: bold;">
-                                <t t-out="'{0:,.2f}'.format(o.f4w_revenue_data['summary']['diff_amount'])" />
+                                <t t-out="'{0:,.2f}'.format(o.f7w_expense_data['summary']['diff_amount'])" />
                             </td>
                             <td class="text-end" style="font-weight: bold;">
-                                <t t-out="'{0:,.2f}'.format(o.f4w_revenue_data['summary']['diff_percentage'])" />
+                                <t t-out="'{0:,.2f}'.format(o.f7w_expense_data['summary']['diff_percentage'])" />
                             </td>
                         </tr>
                     </tbody>
@@ -125,25 +122,24 @@
         </div>
     </template>
 
-    <!-- Main F4-W report template -->
-    <template id="report_f4w_revenue">
+    <!-- Main F7-W-วง-003 report template -->
+    <template id="report_f7w_expense">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <t t-call="web.basic_layout">
                     <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
                     <t t-call="budget_appropriation_report.report_common_styles" />
-                    <t t-call="budget_appropriation_report.report_f4w_revenue_content" />
+                    <t t-call="budget_appropriation_report.report_f7w_expense_content" />
                 </t>
             </t>
         </t>
     </template>
 
-    <record id="action_report_f4w_revenue" model="ir.actions.report">
-        <field name="name">F4-W - สรุปเปรียบเทียบประมาณการรายรับจําแนกตามหน่วยงานและประเภท</field>
+    <record id="action_report_f7w_expense" model="ir.actions.report">
+        <field name="name">F7-W-วง-003 - สรุปเปรียบเทียบรายจ่าย</field>
         <field name="model">budget.appropriation.report</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">budget_appropriation_report.report_f4w_revenue</field>
-        <field name="report_file">budget_appropriation_report.report_f4w_revenue</field>
-        <field name="paperformat_id" ref="paperformat_landscape" />
+        <field name="report_name">budget_appropriation_report.report_f7w_expense</field>
+        <field name="report_file">budget_appropriation_report.report_f7w_expense</field>
     </record>
 </odoo>

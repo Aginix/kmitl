@@ -328,7 +328,7 @@ class BudgetAppropriationF5PExpense(models.AbstractModel):
             recordset: account.analytic.account records for top-level departments
         """
         return self.env["account.analytic.account"].search([
-            ("plan_id.code", "=", "departments"),
+            ("root_plan_id.code", "=", "departments"),
             ("parent_id", "=", False),
         ], order="code ASC")
 
