@@ -14,6 +14,7 @@
         "report/report_common.xml",
         "report/report_f2_revenue.xml",
         "report/report_f4p_revenue.xml",
+        "report/report_f3w_f6w_revenue.xml",
         "report/report_f4w_revenue.xml",
         "report/report_budget_appropriation_report.xml",
         "views/budget_appropriation_report_views.xml",
