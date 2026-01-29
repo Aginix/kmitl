@@ -11,6 +11,7 @@
             }
         </style>
         <div class="page f3w_f6w">
+            <t t-call="budget_appropriation_report.report_council_header" />
             <div class="text-center mt-5 mb-3" style="font-weight: bold">
                 <div>
                     สรุปเปรียบเทียบประมาณการรายรับ - รายจ่าย

@@ -11,10 +11,8 @@
                     <button name="action_done" string="เสร็จสิ้น" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'confirmed')]}"/>
                     <button name="action_draft" string="กลับไปร่าง" type="object" attrs="{'invisible': [('state', '=', 'draft')]}"/>
                     <button name="action_open_report" string="ดูรายงาน" type="object" class="btn-secondary"/>
-                    <button name="action_print_all" string="พิมพ์รวม" type="object" class="btn-secondary"/>
-                    <button name="action_print_f2_revenue" string="พิมพ์ F2" type="object" class="btn-secondary"/>
-                    <button name="action_print_f4p_revenue" string="พิมพ์ F4-P" type="object" class="btn-secondary"/>
-                    <button name="action_print_f4w_revenue" string="พิมพ์ F4-W" type="object" class="btn-secondary"/>
+                    <button name="action_print_all_with_header" string="พิมพ์เล่มประมาณการ (มีมติ)" type="object" class="btn-secondary"/>
+                    <button name="action_print_all_without_header" string="พิมพ์เล่มประมาณการ (ไม่มีมติ)" type="object" class="btn-secondary"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done"/>
                 </header>
                 <sheet>

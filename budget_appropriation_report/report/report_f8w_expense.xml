@@ -8,6 +8,7 @@
             }
         </style>
         <div class="page f8w">
+            <t t-call="budget_appropriation_report.report_council_header" />
             <div class="text-center mt-5 mb-3" style="font-weight: bold">
                 <div>
                     สรุปเปรียบเทียบประมาณการรายจ่าย ปีงบประมาณ พ.ศ. <t t-out="o.compare_report_id.account_fiscal_year_id.name" /> และ <t t-out="o.account_fiscal_year_id.name" />
@@ -141,6 +142,6 @@
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">budget_appropriation_report.report_f8w_expense</field>
         <field name="report_file">budget_appropriation_report.report_f8w_expense</field>
-        <field name="paperformat_id" ref="budget_appropriation_report_paperformat_landscape" />
+        <field name="paperformat_id" ref="budget_appropriation_report_paperformat_portrait" />
     </record>
 </odoo>

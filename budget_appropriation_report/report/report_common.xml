@@ -28,4 +28,28 @@
             }
         </style>
     </template>
+
+    <!-- Council meeting header template (reusable) -->
+    <template id="report_council_header">
+        <t t-if="o.show_council_header">
+            <div class="text-center mt-5 mb-5">
+                <div class="header-box">
+                    <div class="header-text">
+                        มติที่ประชุมสภาสถาบัน ครั้งที่
+                        <t t-out="o.council_meeting_no or '-'" />
+                    </div>
+                    <div class="header-text">
+                        วันที่
+                        <t t-if="o.council_meeting_date">
+                            <t t-out="o.council_meeting_date.strftime('%d')" />
+                            <t t-out="dict([('01','มกราคม'),('02','กุมภาพันธ์'),('03','มีนาคม'),('04','เมษายน'),('05','พฤษภาคม'),('06','มิถุนายน'),('07','กรกฎาคม'),('08','สิงหาคม'),('09','กันยายน'),('10','ตุลาคม'),('11','พฤศจิกายน'),('12','ธันวาคม')]).get(o.council_meeting_date.strftime('%m'), '')" />
+                            พ.ศ.
+                            <t t-out="o.council_meeting_date.year + 543" />
+                        </t>
+                        <t t-else="">-</t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
 </odoo>

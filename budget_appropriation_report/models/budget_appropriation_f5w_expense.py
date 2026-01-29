@@ -164,7 +164,6 @@ class BudgetAppropriationF5WExpense(models.AbstractModel):
             activity = line.activity_analytic_id
             # Check which plan this activity belongs to
             for prefix, xml_id in path_prefix_map.items():
-                _logger.info("%s.startswith(%s)", activity.parent_path, prefix)
                 if prefix in activity.parent_path or activity.parent_path.startswith(prefix):
                     totals[xml_id] = totals.get(xml_id, 0) + line.balance
                     break

@@ -259,33 +259,33 @@ class BudgetAppropriationReport(models.Model):
             "target": "new",
         }
 
-    def action_print_all(self):
-        """Print all reports combined - รายงานรวมทั้งหมด."""
+    def _print_all_reports(self, show_council_header=False):
+        """Internal method to print all reports combined with optional council header."""
         self.ensure_one()
         pdf_streams = []
+        report_actions = [
+            "budget_appropriation_report.action_report_f2_revenue",
+            "budget_appropriation_report.action_report_f4p_revenue",
+            "budget_appropriation_report.action_report_f4w_revenue",
+            "budget_appropriation_report.action_report_f3w_f6w_revenue",
+            "budget_appropriation_report.action_report_f7w_expense",
+            "budget_appropriation_report.action_report_f5p_expense",
+            "budget_appropriation_report.action_report_f5w_expense",
+            "budget_appropriation_report.action_report_f8w_expense",
+            "budget_appropriation_report.action_report_f9w_expense",
+        ]
 
-        pdf1, _ = self.env['ir.actions.report']._render_qweb_pdf("budget_appropriation_report.action_report_f2_revenue", self.id)
-        pdf_streams.append(pdf1)
-
-        pdf2, _ = self.env['ir.actions.report']._render_qweb_pdf("budget_appropriation_report.action_report_f4p_revenue", self.id)
-        pdf_streams.append(pdf2)
-
-        pdf3, _ = self.env['ir.actions.report']._render_qweb_pdf("budget_appropriation_report.action_report_f4w_revenue", self.id)
-        pdf_streams.append(pdf3)
-
-        pdf4, _ = self.env['ir.actions.report']._render_qweb_pdf("budget_appropriation_report.action_report_f3w_f6w_revenue", self.id)
-        pdf_streams.append(pdf4)
-
-        pdf5, _ = self.env['ir.actions.report']._render_qweb_pdf("budget_appropriation_report.action_report_f7w_expense", self.id)
-        pdf_streams.append(pdf5)
-
-        pdf6, _ = self.env['ir.actions.report']._render_qweb_pdf("budget_appropriation_report.action_report_f5p_expense", self.id)
-        pdf_streams.append(pdf6)
+        for report_action in report_actions:
+            pdf, _ = self.env['ir.actions.report'].with_context(
+                show_council_header=show_council_header
+            )._render_qweb_pdf(report_action, self.id)
+            pdf_streams.append(pdf)
 
         merged_pdf = merge_pdf(pdf_streams)
 
+        suffix = "_with_header" if show_council_header else "_without_header"
         attachment = self.env["ir.attachment"].create({
-            "name": f"{self.name}.pdf",
+            "name": f"{self.name}{suffix}.pdf",
             "type": "binary",
             "datas": base64.b64encode(merged_pdf),
             "mimetype": "application/pdf",
@@ -297,26 +297,17 @@ class BudgetAppropriationReport(models.Model):
             "target": "self",
         }
 
-    def action_print_f2_revenue(self):
-        """Print F2 Revenue Report - สรุปเปรียบเทียบประมาณการรายรับจําแนกตามประเภท."""
-        self.ensure_one()
-        return self.env.ref(
-            "budget_appropriation_report.action_report_f2_revenue"
-        ).report_action(self)
+    def action_print_all(self):
+        """Print all reports combined - รายงานรวมทั้งหมด (ไม่มีมติ)."""
+        return self._print_all_reports(show_council_header=False)
 
-    def action_print_f4p_revenue(self):
-        """Print F4-P Revenue Report - สรุปประมาณการรายรับจําแนกตามหน่วยงานและประเภท."""
-        self.ensure_one()
-        return self.env.ref(
-            "budget_appropriation_report.action_report_f4p_revenue"
-        ).report_action(self)
+    def action_print_all_with_header(self):
+        """Print all reports combined with council meeting header - พิมพ์เล่มประมาณการ (มีมติ)."""
+        return self._print_all_reports(show_council_header=True)
 
-    def action_print_f4w_revenue(self):
-        """Print F4-W Revenue Report - สรุปเปรียบเทียบประมาณการรายรับจําแนกตามหน่วยงานและประเภท."""
-        self.ensure_one()
-        return self.env.ref(
-            "budget_appropriation_report.action_report_f4w_revenue"
-        ).report_action(self)
+    def action_print_all_without_header(self):
+        """Print all reports combined without council meeting header - พิมพ์เล่มประมาณการ (ไม่มีมติ)."""
+        return self._print_all_reports(show_council_header=False)
 
     def action_view_appropriations(self):
         """Open list of appropriations linked to this report."""

@@ -5,6 +5,7 @@
         <style>
         </style>
         <div class="page f9w">
+            <t t-call="budget_appropriation_report.report_council_header" />
             <div class="text-center mt-5 mb-3" style="font-weight: bold">
                 <div>
                     สรุปสัดส่วนประมาณการรายจ่าย ปีงบประมาณ พ.ศ. <t t-out="o.account_fiscal_year_id.name" />
