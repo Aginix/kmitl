@@ -139,16 +139,16 @@ class BudgetAppropriationReport(models.Model):
         for record in self:
             record.f2_revenue_data = F2Model.get_data(record.id)
 
-    @api.depends("revenue_appropriation_ids")
+    @api.depends("revenue_appropriation_ids", "compare_report_id")
     def _compute_f4p_revenue_data(self):
-        """Compute F4-P revenue data for this report."""
+        """Compute F4-P revenue data for this report with comparison."""
         F4PModel = self.env["budget.appropriation.f4p.revenue"]
         for record in self:
             record.f4p_revenue_data = F4PModel.get_data(record.id)
 
-    @api.depends("revenue_appropriation_ids")
+    @api.depends("revenue_appropriation_ids", "compare_report_id")
     def _compute_f4w_revenue_data(self):
-        """Compute F4-W revenue data for this report."""
+        """Compute F4-W revenue data for this report with comparison."""
         F4WModel = self.env["budget.appropriation.f4w.revenue"]
         for record in self:
             record.f4w_revenue_data = F4WModel.get_data(record.id)

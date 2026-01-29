@@ -13,7 +13,7 @@ class BudgetAppropriationF4PRevenue(models.AbstractModel):
     Business Purpose:
         Generates F4-P revenue report data by aggregating budget appropriation
         lines into predefined parent account categories, further broken down
-        by top-level departments.
+        by top-level departments. Includes comparison with compare_report_id.
 
     Revenue Categories:
         - r49000: ค่าธรรมเนียมการศึกษา และค่าธรรมเนียมอื่น ๆ (includes 43100, 43200)
@@ -35,7 +35,7 @@ class BudgetAppropriationF4PRevenue(models.AbstractModel):
     @api.model
     def get_data(self, report_id):
         """
-        Get F4-P revenue data from linked revenue_appropriation_ids.
+        Get F4-P revenue data from linked revenue_appropriation_ids with comparison.
 
         Args:
             report_id: ID of budget.appropriation.report record
@@ -47,17 +47,29 @@ class BudgetAppropriationF4PRevenue(models.AbstractModel):
                         "code": str,
                         "name": str,
                         "amount": float,
+                        "compare_amount": float,
+                        "diff_amount": float,
+                        "diff_percentage": float,
                         "percentage": float,
                         "departments": [
-                            {"id", "code", "name", "amount", "percentage"},
+                            {
+                                "id", "code", "name", "amount", "percentage",
+                                "compare_amount", "diff_amount", "diff_percentage"
+                            },
                             ...
                         ]
                     },
                     ...
                 ],
                 "departments": [{"id", "code", "name"}, ...],
-                "summary": {"total_amount": float},
-                "report": {"id", "name", "fiscal_year", "source"}
+                "summary": {
+                    "total_amount": float,
+                    "compare_total_amount": float,
+                    "diff_amount": float,
+                    "diff_percentage": float
+                },
+                "report": {"id", "name", "fiscal_year", "source"},
+                "compare_report": {"id", "name", "fiscal_year", "source"} or None
             }
         """
         report = self.env["budget.appropriation.report"].browse(report_id)
@@ -66,75 +78,138 @@ class BudgetAppropriationF4PRevenue(models.AbstractModel):
             return {
                 "categories": [],
                 "departments": [],
-                "summary": {"total_amount": 0},
+                "summary": {"total_amount": 0, "compare_total_amount": 0, "diff_amount": 0, "diff_percentage": 0},
                 "report": None,
+                "compare_report": None,
             }
-
-        # Get revenue appropriation lines from linked appropriations
-        lines = report.revenue_appropriation_ids.mapped("line_ids")
 
         # Get top-level departments
         top_level_depts = self._get_top_level_departments()
         dept_map = {d.id: {"id": d.id, "code": d.code, "name": d.name} for d in top_level_depts}
 
-        # Build (account_id, top_dept_id) -> balance mapping
-        account_dept_totals = {}
-        for line in lines:
-            acc_id = line.account_id.id
-            top_dept_id = self._extract_top_level_dept_id(line.department_analytic_id)
+        # Build current report totals: (category_code, dept_id) -> balance
+        category_dept_totals = self._build_category_dept_totals(report, dept_map)
 
-            if top_dept_id:
-                key = (acc_id, top_dept_id)
-                account_dept_totals[key] = account_dept_totals.get(key, 0) + line.balance
+        # Build comparison totals if compare_report_id exists
+        compare_report = report.compare_report_id
+        compare_totals = {}
+        if compare_report:
+            compare_totals = self._build_category_dept_totals(compare_report, dept_map)
 
-        # Aggregate by categories
+        # Aggregate by categories with comparison
         categories = []
         for code, name in self.REVENUE_CATEGORIES:
-            account_ids = self._get_accounts_in_category(code)
-
             # Sum by department within category
             dept_totals = {}
-            for acc_id in account_ids:
-                for dept_id in dept_map.keys():
-                    key = (acc_id, dept_id)
-                    if key in account_dept_totals:
-                        dept_totals[dept_id] = dept_totals.get(dept_id, 0) + account_dept_totals[key]
+            compare_dept_totals = {}
+            for dept_id in dept_map.keys():
+                key = (code, dept_id)
+                if key in category_dept_totals:
+                    dept_totals[dept_id] = category_dept_totals[key]
+                if key in compare_totals:
+                    compare_dept_totals[dept_id] = compare_totals[key]
 
             category_total = sum(dept_totals.values())
+            compare_category_total = sum(compare_dept_totals.values())
 
-            # Build department list with percentages
+            # Build department list with comparison
             departments = []
-            for dept_id, amount in dept_totals.items():
-                if amount:  # Only include non-zero
+            all_dept_ids = set(dept_totals.keys()) | set(compare_dept_totals.keys())
+            for dept_id in all_dept_ids:
+                amount = dept_totals.get(dept_id, 0)
+                compare_amount = compare_dept_totals.get(dept_id, 0)
+
+                if amount or compare_amount:
+                    diff_amount = amount - compare_amount
+                    diff_percentage = round((diff_amount / compare_amount) * 100, 2) if compare_amount else 0
+
                     departments.append({
                         **dept_map[dept_id],
                         "amount": amount,
+                        "compare_amount": compare_amount,
+                        "diff_amount": diff_amount,
+                        "diff_percentage": diff_percentage,
                         "percentage": round((amount / category_total) * 100, 2) if category_total else 0,
                     })
+
+            # Category comparison
+            diff_cat_amount = category_total - compare_category_total
+            diff_cat_percentage = round((diff_cat_amount / compare_category_total) * 100, 2) if compare_category_total else 0
 
             categories.append({
                 "code": code,
                 "name": name,
                 "amount": category_total,
+                "compare_amount": compare_category_total,
+                "diff_amount": diff_cat_amount,
+                "diff_percentage": diff_cat_percentage,
                 "departments": sorted(departments, key=lambda x: x["code"]),
             })
 
         # Calculate category percentages
         total_amount = sum(c["amount"] for c in categories)
+        compare_total_amount = sum(c["compare_amount"] for c in categories)
         for cat in categories:
             cat["percentage"] = round((cat["amount"] / total_amount) * 100, 2) if total_amount else 0
+
+        # Summary with comparison
+        diff_total = total_amount - compare_total_amount
+        diff_total_percentage = round((diff_total / compare_total_amount) * 100, 2) if compare_total_amount else 0
 
         return {
             "categories": categories,
             "departments": sorted(dept_map.values(), key=lambda x: x["code"]),
-            "summary": {"total_amount": total_amount},
+            "summary": {
+                "total_amount": total_amount,
+                "compare_total_amount": compare_total_amount,
+                "diff_amount": diff_total,
+                "diff_percentage": diff_total_percentage,
+            },
             "report": {
                 "id": report.id,
                 "name": report.name,
                 "fiscal_year": report.account_fiscal_year_id.name if report.account_fiscal_year_id else None,
                 "source": report.source_analytic_id.name if report.source_analytic_id else None,
             },
+            "compare_report": {
+                "id": compare_report.id,
+                "name": compare_report.name,
+                "fiscal_year": compare_report.account_fiscal_year_id.name if compare_report.account_fiscal_year_id else None,
+                "source": compare_report.source_analytic_id.name if compare_report.source_analytic_id else None,
+            } if compare_report else None,
         }
+
+    def _build_category_dept_totals(self, report, dept_map):
+        """
+        Build (category_code, dept_id) -> balance mapping for a report.
+
+        Args:
+            report: budget.appropriation.report record
+            dept_map: dict of dept_id -> dept_info
+
+        Returns:
+            dict: (category_code, dept_id) -> balance
+        """
+        lines = report.revenue_appropriation_ids.mapped("line_ids")
+
+        # Build category code -> account_ids mapping
+        category_accounts = {}
+        for code, _ in self.REVENUE_CATEGORIES:
+            category_accounts[code] = set(self._get_accounts_in_category(code))
+
+        totals = {}
+        for line in lines:
+            acc_id = line.account_id.id
+            top_dept_id = self._extract_top_level_dept_id(line.department_analytic_id)
+
+            if top_dept_id and top_dept_id in dept_map:
+                for code, _ in self.REVENUE_CATEGORIES:
+                    if acc_id in category_accounts[code]:
+                        key = (code, top_dept_id)
+                        totals[key] = totals.get(key, 0) + line.balance
+                        break
+
+        return totals
 
     def _get_accounts_in_category(self, category_code):
         """

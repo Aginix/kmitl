@@ -334,7 +334,7 @@
                                                 </strong>
                                             </td>
                                             <td class="border-0 text-end">
-                                                <t t-out="'{0:,.2f}'.format(row['amount'])" />
+                                                <t t-out="'{0:,.2f}'.format(row['compare_amount'])" />
                                             </td>
                                             <td class="border-0 text-end">
                                                 100.0
@@ -345,8 +345,12 @@
                                             <td class="border-0 text-end">
                                                 100.0
                                             </td>
-                                            <td class="border-0 text-end"></td>
-                                            <td class="border-0 text-end border-end"></td>
+                                            <td class="border-0 text-end">
+                                                <t t-out="'{0:,.2f}'.format(row['diff_amount'])" />
+                                            </td>
+                                            <td class="border-0 text-end border-end">
+                                                <t t-out="'{0:,.2f}'.format(row['diff_percentage'])" />
+                                            </td>
                                         </tr>
                                         <t t-foreach="row['categories']" t-as="category">
                                             <tr class="department border-0">
@@ -369,8 +373,12 @@
                                                 <td class="text-end border-0">
                                                     <t t-out="category['percentage']" />
                                                 </td>
-                                                <td class="text-end border-0"></td>
-                                                <td class="text-end border-0 border-end"></td>
+                                                <td class="text-end border-0">
+                                                    <t t-out="'{0:,.2f}'.format(category['diff_amount'])" />
+                                                </td>
+                                                <td class="text-end border-0 border-end">
+                                                    <t t-out="'{0:,.2f}'.format(category['diff_percentage'])" />
+                                                </td>
                                             </tr>
                                         </t>
                                         <t t-set="row_no" t-value="row_no + 1" />
@@ -386,7 +394,7 @@
                                             style="font-weight: bold;"
                                         >
                                             <t
-                                                t-out="'{0:,.2f}'.format(o.compare_report_id.f4p_revenue_data['summary']['total_amount'])"
+                                                t-out="'{0:,.2f}'.format(o.f4p_revenue_data['summary']['compare_total_amount'])"
                                             />
                                         </td>
                                         <td
@@ -414,14 +422,14 @@
                                             style="font-weight: bold;"
                                         >
                                             <t
-                                                t-out="'{0:,.2f}'.format(o.f4p_revenue_data['summary']['total_amount'] - o.compare_report_id.f4p_revenue_data['summary']['total_amount'])"
+                                                t-out="'{0:,.2f}'.format(o.f4p_revenue_data['summary']['diff_amount'])"
                                             />
                                         </td>
                                         <td
                                             class="text-end"
                                             style="font-weight: bold;"
                                         >
-                                            <t t-out="'{0:,.2f}'.format((o.f4p_revenue_data['summary']['total_amount'] - o.compare_report_id.f4p_revenue_data['summary']['total_amount']) / o.compare_report_id.f4p_revenue_data['summary']['total_amount'] * 100 if o.compare_report_id.f4p_revenue_data['summary']['total_amount'] else 0)" />
+                                            <t t-out="'{0:,.2f}'.format(o.f4p_revenue_data['summary']['diff_percentage'])" />
                                         </td>
                                     </tr>
                                 </tbody>
