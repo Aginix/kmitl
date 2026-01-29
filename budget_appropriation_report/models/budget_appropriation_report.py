@@ -249,7 +249,7 @@ class BudgetAppropriationReport(models.Model):
         merged_pdf = merge_pdf(pdf_streams)
 
         attachment = self.env["ir.attachment"].create({
-            "name": "merged_report.pdf",
+            "name": f"{self.name}.pdf",
             "type": "binary",
             "datas": base64.b64encode(merged_pdf),
             "mimetype": "application/pdf",
