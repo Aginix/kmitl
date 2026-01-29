@@ -149,6 +149,16 @@ class BudgetAppropriationReport(models.Model):
         compute="_compute_f5w_expense_data",
         store=False,
     )
+    f8w_expense_data = fields.Json(
+        string="F8-W Expense Data",
+        compute="_compute_f8w_expense_data",
+        store=False,
+    )
+    f9w_expense_data = fields.Json(
+        string="F9-W Expense Data",
+        compute="_compute_f9w_expense_data",
+        store=False,
+    )
 
     @api.depends("revenue_appropriation_ids", "compare_report_id")
     def _compute_f2_revenue_data(self):
@@ -191,6 +201,20 @@ class BudgetAppropriationReport(models.Model):
         F5WModel = self.env["budget.appropriation.f5w.expense"]
         for record in self:
             record.f5w_expense_data = F5WModel.get_data(record.id)
+
+    @api.depends("expense_appropriation_ids", "compare_report_id")
+    def _compute_f8w_expense_data(self):
+        """Compute F8-W expense data for this report with comparison."""
+        F8WModel = self.env["budget.appropriation.f8w.expense"]
+        for record in self:
+            record.f8w_expense_data = F8WModel.get_data(record.id)
+
+    @api.depends("expense_appropriation_ids", "compare_report_id")
+    def _compute_f9w_expense_data(self):
+        """Compute F9-W expense data (pivot table) for this report with comparison."""
+        F9WModel = self.env["budget.appropriation.f9w.expense"]
+        for record in self:
+            record.f9w_expense_data = F9WModel.get_data(record.id)
 
     @api.constrains("compare_report_id")
     def _check_compare_report_id(self):
