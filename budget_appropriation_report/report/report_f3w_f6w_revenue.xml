@@ -17,15 +17,19 @@
                     สรุปเปรียบเทียบประมาณการรายรับ - รายจ่าย
                 </div>
                 <div>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</div>
-                <div>จําแนกตามหน่วยงาน ปีงบประมาณ พ.ศ. <t t-esc="o.compare_report_id.account_fiscal_year_id.name" /> และ <t t-esc="o.account_fiscal_year_id.name" /></div>
+                <div>จําแนกตามหน่วยงาน ปีงบประมาณ พ.ศ.                    <t t-out="o.compare_report_id.account_fiscal_year_id.name" />
+ และ                    <t t-out="o.account_fiscal_year_id.name" />
+                </div>
             </div>
             <div>
                 <table class="table table-sm table-bordered">
                     <thead>
                         <tr>
                             <th class="text-center" rowspan="2" style="width: 35%;">หน่วยงาน</th>
-                            <th class="text-center" colspan="2">ปีงบประมาณ <t t-esc="o.compare_report_id.account_fiscal_year_id.name" /></th>
-                            <th class="text-center" colspan="2">ปีงบประมาณ <t t-esc="o.account_fiscal_year_id.name" /></th>
+                            <th class="text-center" colspan="2">ปีงบประมาณ                                <t t-out="o.compare_report_id.account_fiscal_year_id.name" />
+                            </th>
+                            <th class="text-center" colspan="2">ปีงบประมาณ                                <t t-out="o.account_fiscal_year_id.name" />
+                            </th>
                             <th class="text-center" colspan="2">+ เพิ่ม - ลด</th>
                         </tr>
                         <tr>
@@ -38,37 +42,38 @@
                         </tr>
                     </thead>
                     <tbody class="category">
-                        <t t-set="row_no" t-value="1" />
                         <t t-foreach="o.f4w_revenue_data['departments']" t-as="row">
                             <tr class="border-0">
                                 <td class="border-0 border-start">
+                                    <t t-out="row['name']" />
+                                </td>
+                                <td class="text-end border-bottom border-black">
                                     <strong>
-                                        <u>
-                                            <t t-esc="row_no" />.
-                                            <t t-esc="row['name']" />
-                                        </u>
+                                        <t t-out="'{0:,.2f}'.format(row['compare_amount'])" />
                                     </strong>
                                 </td>
                                 <td class="text-end border-bottom border-black">
-                                    <strong><t t-out="'{0:,.2f}'.format(row['compare_amount'])" /></strong>
+                                    <strong>100.0</strong>
+                                </td>
+                                <td class="text-end border-bottom border-black">
+                                    <strong>
+                                        <t t-out="'{0:,.2f}'.format(row['amount'])" />
+                                    </strong>
                                 </td>
                                 <td class="text-end border-bottom border-black">
                                     <strong>100.0</strong>
                                 </td>
                                 <td class="text-end border-bottom border-black">
-                                    <strong><t t-out="'{0:,.2f}'.format(row['amount'])" /></strong>
+                                    <strong>
+                                        <t t-out="'{0:,.2f}'.format(row['diff_amount'])" />
+                                    </strong>
                                 </td>
                                 <td class="text-end border-bottom border-black">
-                                    <strong>100.0</strong>
-                                </td>
-                                <td class="text-end border-bottom border-black">
-                                    <strong><t t-out="'{0:,.2f}'.format(row['diff_amount'])" /></strong>
-                                </td>
-                                <td class="text-end border-bottom border-black">
-                                    <strong><t t-out="'{0:,.2f}'.format(row['diff_percentage'])" /></strong>
+                                    <strong>
+                                        <t t-out="'{0:,.2f}'.format(row['diff_percentage'])" />
+                                    </strong>
                                 </td>
                             </tr>
-                            <t t-set="row_no" t-value="row_no + 1" />
                         </t>
                     </tbody>
                     <tfoot>

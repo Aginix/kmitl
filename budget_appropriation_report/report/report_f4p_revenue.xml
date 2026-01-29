@@ -4,7 +4,7 @@
     <template id="report_f4p_revenue_content">
         <style>
             .f4-p table tbody.category tr:last-child td {
-                padding-bottom: 36px;
+                padding-bottom: 12pt;
             }
         </style>
         <div class="page f4-p">
@@ -28,7 +28,7 @@
                     <tbody>
                         <tr style="font-weight: bold">
                             <td colspan="3">
-                                <strong><u> รายรับ :- </u></strong>
+                                <u> รายรับ :- </u>
                             </td>
                         </tr>
                         <tr style="font-weight: bold">
