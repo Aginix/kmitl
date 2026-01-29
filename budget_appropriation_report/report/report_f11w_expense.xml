@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Partial template for F11-W content (reusable) -->
+    <template id="report_f11w_expense_content">
+        <style>
+            .f11w table {
+                font-size: 9pt;
+            }
+            .f11w table .column-name {
+                font-size: 8pt;
+            }
+            .f11w th, .f11w td {
+                padding: 2px 3px;
+            }
+            .table {
+                border-color: #000 !important;
+            }
+            .table > :not(:first-child) {
+                border-top: 0;
+            }
+            .table tbody td, .table tbody tr {
+                border-top: 0;
+                border-bottom: 0;
+            }
+        </style>
+        <div class="page f11w">
+            <t t-call="budget_appropriation_report.report_council_header" />
+            <div class="text-center mt-5 mb-3" style="font-weight: bold">
+                <div>
+                    สรุปสัดส่วนประมาณการรายจ่าย ปีงบประมาณ พ.ศ. <t t-out="o.account_fiscal_year_id.name" />
+                </div>
+                <div>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</div>
+                <div>จําแนกตามหน่วยงานและกองทุน</div>
+            </div>
+            <div>
+                <table class="table table-sm table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="text-center" rowspan="2" style="width: 10%;">หน่วยงาน</th>
+                            <t t-foreach="o.f11w_expense_data['columns']" t-as="column">
+                                <th class="text-center column-name" colspan="2"><t t-out="column['name']" /></th>
+                            </t>
+                            <th class="text-center" rowspan="2">รวมทุกกองทุน</th>
+                        </tr>
+                        <tr>
+                            <t t-foreach="o.f11w_expense_data['columns']" t-as="column">
+                                <th class="text-center">เงินรายได้</th>
+                                <th class="text-center" style="20pt;">%</th>
+                            </t>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="row_no" t-value="1" />
+                        <t t-foreach="o.f11w_expense_data['departments']" t-as="department">
+                            <tr>
+                                <td class="">
+                                    <t t-out="department['name']" />
+                                </td>
+                                <t t-foreach="o.f11w_expense_data['columns']" t-as="column">
+                                    <td class="text-end">
+                                        <t t-out="'{0:,.2f}'.format(department['columns'][column['code']]['amount'])" />
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-set="col_total" t-value="o.f11w_expense_data['column_totals'][column['code']]['amount']" />
+                                        <t t-set="pct" t-value="(department['columns'][column['code']]['amount'] / col_total * 100) if col_total else 0" />
+                                        <t t-out="'{0:.2f}'.format(pct)" />
+                                    </td>
+                                </t>
+                                <td class="text-end">
+                                    <strong>
+                                        <t t-out="'{0:,.2f}'.format(department['total']['amount'])" />
+                                    </strong>
+                                </td>
+                            </tr>
+                            <t t-set="row_no" t-value="row_no + 1" />
+                        </t>
+                    </tbody>
+                    <tfoot>
+                        <tr style="font-weight: bold;">
+                            <td class="text-center">
+                                รวมทั้งสิ้น
+                            </td>
+                            <t t-foreach="o.f11w_expense_data['columns']" t-as="column">
+                                <td class="text-end">
+                                    <t t-out="'{0:,.2f}'.format(o.f11w_expense_data['column_totals'][column['code']]['amount'])" />
+                                </td>
+                                <td class="text-center">
+                                    100.00
+                                </td>
+                            </t>
+                            <td class="text-end">
+                                <t t-out="'{0:,.2f}'.format(o.f11w_expense_data['summary']['total_amount'])" />
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </template>
+
+    <!-- Main F11-W report template -->
+    <template id="report_f11w_expense">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
+                    <t t-call="budget_appropriation_report.report_common_styles" />
+                    <t t-call="budget_appropriation_report.report_f11w_expense_content" />
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_f11w_expense" model="ir.actions.report">
+        <field name="name">F11-W - สรุปสัดส่วนประมาณการรายจ่าย (กองทุน)</field>
+        <field name="model">budget.appropriation.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_appropriation_report.report_f11w_expense</field>
+        <field name="report_file">budget_appropriation_report.report_f11w_expense</field>
+        <field name="paperformat_id" ref="budget_appropriation_report_paperformat_landscape" />
+    </record>
+</odoo>
