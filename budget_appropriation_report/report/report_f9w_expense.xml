@@ -37,7 +37,7 @@
                         <t t-set="row_no" t-value="1" />
                         <t t-foreach="o.f9w_expense_data['departments']" t-as="department">
                             <tr class="border-0">
-                                <td class="border-0 border-start">
+                                <td class="">
                                     <strong>
                                         <u>
                                             <t t-out="row_no" />.
@@ -61,7 +61,7 @@
                             <t t-set="row_no" t-value="row_no + 1" />
                         </t>
                     </tbody>
-                    <tbody>
+                    <tfoot>
                         <tr style="font-weight: bold;">
                             <td class="text-center">
                                 รวมทั้งสิ้น
@@ -79,7 +79,7 @@
                                 <t t-out="'{0:,.2f}'.format(o.f9w_expense_data['summary']['total_amount'])" />
                             </td>
                         </tr>
-                    </tbody>
+                    </tfoot>
                 </table>
             </div>
         </div>

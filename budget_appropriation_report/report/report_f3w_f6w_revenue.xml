@@ -3,10 +3,10 @@
     <!-- Partial template for F3-W-วง-003 และ F6-W-วง-003 content (reusable) -->
     <template id="report_f3w_f6w_revenue_content">
         <style>
-            .f4-w table .table td {
+            .f3w_f6w .table-bordered td {
                 border-color: #000 !important;
             }
-            .f3w_f6w .table-bordered td {
+            .f3w_f6w .table {
                 border-color: #000 !important;
             }
         </style>
@@ -70,7 +70,7 @@
                             <t t-set="row_no" t-value="row_no + 1" />
                         </t>
                     </tbody>
-                    <tbody>
+                    <tfoot>
                         <tr>
                             <td class="text-center">
                                 <strong>รวมทั้งสิ้น</strong>
@@ -94,7 +94,7 @@
                                 <t t-out="'{0:,.2f}'.format(o.f4w_revenue_data['summary']['diff_percentage'])" />
                             </td>
                         </tr>
-                    </tbody>
+                    </tfoot>
                 </table>
             </div>
         </div>

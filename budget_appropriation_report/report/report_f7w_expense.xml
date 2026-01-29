@@ -3,8 +3,24 @@
     <!-- Partial template for F7-W-วง-003 content (reusable) -->
     <template id="report_f7w_expense_content">
         <style>
-            .f4-w table .table td {
+            .f7w table tbody.category tr:last-child td {
+                padding-bottom: 0pt;
+            }
+            .f7w table .table td {
                 border-color: #000 !important;
+            }
+            .table tbody td, .table tbody tr {
+                border-top: 0;
+                border-bottom: 0;
+            }
+            .table tbody .category .border-bottom {
+                border-bottom: 1pt solid #000 !important;
+            }
+            .f7w .table {
+                border-color: #000 !important;
+            }
+            .border-bottom {
+                border-bottom: 1pt solid #000 !important;
             }
         </style>
         <div class="page f7w">
@@ -37,7 +53,7 @@
                         <t t-set="row_no" t-value="1" />
                         <t t-foreach="o.f7w_expense_data['expense_types']" t-as="row">
                             <tr class="border-0">
-                                <td class="border-0 border-start">
+                                <td class="">
                                     <strong>
                                         <u>
                                             <t t-esc="row_no" />.
@@ -66,7 +82,7 @@
                             </tr>
                             <t t-foreach="row['categories']" t-as="category">
                                 <tr class="department border-0">
-                                    <td class="ps-5 border-0 border-start">
+                                    <td class="ps-5">
                                         - <t t-esc="category['name']" />
                                     </td>
                                     <td class="text-end">
@@ -92,7 +108,7 @@
                             <t t-set="row_no" t-value="row_no + 1" />
                         </t>
                     </tbody>
-                    <tbody>
+                    <tfoot>
                         <tr>
                             <td class="text-center">
                                 <strong>รวมทั้งสิ้น</strong>
@@ -116,7 +132,7 @@
                                 <t t-out="'{0:,.2f}'.format(o.f7w_expense_data['summary']['diff_percentage'])" />
                             </td>
                         </tr>
-                    </tbody>
+                    </tfoot>
                 </table>
             </div>
         </div>

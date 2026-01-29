@@ -37,7 +37,7 @@
                         <t t-set="row_no" t-value="1" />
                         <t t-foreach="o.f8w_expense_data['departments']" t-as="department">
                             <tr class="border-0">
-                                <td class="border-0 border-start">
+                                <td class="">
                                     <strong>
                                         <u>
                                             <t t-out="row_no" />.
@@ -66,7 +66,7 @@
                             </tr>
                             <t t-foreach="department['activities']" t-as="activity">
                                 <tr class="department border-0">
-                                    <td class="ps-5 border-0 border-start">
+                                    <td class="ps-5">
                                         - <t t-out="activity['name']" />
                                     </td>
                                     <td class="text-end">
@@ -92,7 +92,7 @@
                             <t t-set="row_no" t-value="row_no + 1" />
                         </t>
                     </tbody>
-                    <tbody>
+                    <tfoot>
                         <tr>
                             <td class="text-center">
                                 <strong>รวมทั้งสิ้น</strong>
@@ -116,7 +116,7 @@
                                 <t t-out="'{0:,.2f}'.format(o.f8w_expense_data['summary']['diff_percentage'])" />
                             </td>
                         </tr>
-                    </tbody>
+                    </tfoot>
                 </table>
             </div>
         </div>
