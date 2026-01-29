@@ -196,6 +196,34 @@ class BudgetAppropriationReport(models.Model):
             "target": "new",
         }
 
+    def action_print_all(self):
+        """Print all reports combined - รายงานรวมทั้งหมด."""
+        self.ensure_one()
+        return self.env.ref(
+            "budget_appropriation_report.action_report_budget_appropriation_report"
+        ).report_action(self)
+
+    def action_print_f2_revenue(self):
+        """Print F2 Revenue Report - สรุปเปรียบเทียบประมาณการรายรับจําแนกตามประเภท."""
+        self.ensure_one()
+        return self.env.ref(
+            "budget_appropriation_report.action_report_f2_revenue"
+        ).report_action(self)
+
+    def action_print_f4p_revenue(self):
+        """Print F4-P Revenue Report - สรุปประมาณการรายรับจําแนกตามหน่วยงานและประเภท."""
+        self.ensure_one()
+        return self.env.ref(
+            "budget_appropriation_report.action_report_f4p_revenue"
+        ).report_action(self)
+
+    def action_print_f4w_revenue(self):
+        """Print F4-W Revenue Report - สรุปเปรียบเทียบประมาณการรายรับจําแนกตามหน่วยงานและประเภท."""
+        self.ensure_one()
+        return self.env.ref(
+            "budget_appropriation_report.action_report_f4w_revenue"
+        ).report_action(self)
+
     def action_view_appropriations(self):
         """Open list of appropriations linked to this report."""
         self.ensure_one()
