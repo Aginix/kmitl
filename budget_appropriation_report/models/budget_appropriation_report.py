@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+import base64
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.tools.pdf import merge_pdf
 
 
 class BudgetAppropriationReport(models.Model):
@@ -223,9 +226,40 @@ class BudgetAppropriationReport(models.Model):
     def action_print_all(self):
         """Print all reports combined - รายงานรวมทั้งหมด."""
         self.ensure_one()
-        return self.env.ref(
-            "budget_appropriation_report.action_report_budget_appropriation_report"
-        ).report_action(self)
+        pdf_streams = []
+
+        pdf1, _ = self.env['ir.actions.report']._render_qweb_pdf("budget_appropriation_report.action_report_f2_revenue", self.id)
+        pdf_streams.append(pdf1)
+
+        pdf2, _ = self.env['ir.actions.report']._render_qweb_pdf("budget_appropriation_report.action_report_f4p_revenue", self.id)
+        pdf_streams.append(pdf2)
+
+        pdf3, _ = self.env['ir.actions.report']._render_qweb_pdf("budget_appropriation_report.action_report_f4w_revenue", self.id)
+        pdf_streams.append(pdf3)
+
+        pdf4, _ = self.env['ir.actions.report']._render_qweb_pdf("budget_appropriation_report.action_report_f3w_f6w_revenue", self.id)
+        pdf_streams.append(pdf4)
+
+        pdf5, _ = self.env['ir.actions.report']._render_qweb_pdf("budget_appropriation_report.action_report_f7w_expense", self.id)
+        pdf_streams.append(pdf5)
+
+        pdf6, _ = self.env['ir.actions.report']._render_qweb_pdf("budget_appropriation_report.action_report_f5p_expense", self.id)
+        pdf_streams.append(pdf6)
+
+        merged_pdf = merge_pdf(pdf_streams)
+
+        attachment = self.env["ir.attachment"].create({
+            "name": "merged_report.pdf",
+            "type": "binary",
+            "datas": base64.b64encode(merged_pdf),
+            "mimetype": "application/pdf",
+        })
+
+        return {
+            "type": "ir.actions.act_url",
+            "url": f"/web/content/{attachment.id}?download=true",
+            "target": "self",
+        }
 
     def action_print_f2_revenue(self):
         """Print F2 Revenue Report - สรุปเปรียบเทียบประมาณการรายรับจําแนกตามประเภท."""
