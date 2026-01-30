@@ -1,10 +1,10 @@
 {
-    "name": "Account Move Budget Commitment",
+    "name": "Account Move Budget",
     "version": "16.0.1.0.0",
-    "summary": "Budget commitment integration for account moves",
+    "summary": "Budget integration for account moves",
     "description": """
-Account Move Budget Commitment
-===============================
+Account Move Budget
+===================
 
 This module provides integration between Odoo's standard account moves (journal entries)
 and KMITL's budget system, enabling automatic budget consumption and validation.

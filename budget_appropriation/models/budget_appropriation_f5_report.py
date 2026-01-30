@@ -14,21 +14,35 @@ class BudgetAppropriationF5Report(models.TransientModel):
 
     @api.model
     def get_f5_data(self, appropriation_id, options=None):
-        """Generate F5 hierarchical data for single budget appropriation"""
+        """
+        Generate F5 hierarchical data for budget appropriation(s).
+
+        Args:
+            appropriation_id: int or list of int - single ID or list of IDs
+            options: dict with optional keys:
+                - department_name: str - override department name for merged report
+
+        Returns:
+            dict: F5 report data with hierarchy, totals, and metadata
+        """
         if options is None:
             options = {}
 
-        appropriation = self.env["budget.appropriation"].browse(appropriation_id)
+        # Normalize to list for unified handling
+        if isinstance(appropriation_id, int):
+            appropriation_ids = [appropriation_id]
+        else:
+            appropriation_ids = appropriation_id
 
-        if not appropriation:
-            return {"error": "Invalid appropriation"}
+        appropriations = self.env["budget.appropriation"].browse(appropriation_ids)
 
-        # Validate EXPENSE type only
-        if appropriation.budget_type != 'expense':
-            return {"error": "F5 report is only available for expense type appropriations"}
+        # Validate appropriations
+        error = self._validate_appropriations(appropriations)
+        if error:
+            return {"error": error}
 
-        # Get appropriation lines
-        lines = appropriation.line_ids
+        # Merge lines from all appropriations
+        lines = appropriations.mapped("line_ids")
 
         # Build hierarchy: Activities → Funds → Budget Accounts → Lines
         hierarchy = self._build_hierarchy(lines)
@@ -36,34 +50,59 @@ class BudgetAppropriationF5Report(models.TransientModel):
         # Calculate totals
         amount_total = sum(line.balance for line in lines)
 
+        # Get metadata - use options or derive from appropriations
+        first = appropriations[0]
+        if len(appropriations) > 1:
+            department = options.get("department_name", "รวมหลายหน่วยงาน")
+        else:
+            department = self._get_complete_name_without_codes(first.department_analytic_id)
+
         return {
-            "department": self._get_complete_name_without_codes(appropriation.department_analytic_id),
-            "type": "รายจ่าย" if appropriation.budget_type == 'expense' else "รายรับ",
-            "source": appropriation.source_analytic_id.name,
-            "fiscal_year": appropriation.account_fiscal_year_id.name,
+            "department": department,
+            "type": "รายจ่าย" if first.budget_type == 'expense' else "รายรับ",
+            "source": first.source_analytic_id.name,
+            "fiscal_year": first.account_fiscal_year_id.name,
             "amount_total": amount_total,
             "hierarchy": hierarchy,
             "summary": {
                 "total_lines": len(lines),
                 "amount_total": amount_total,
                 "activities_count": len(hierarchy),
+                "appropriations_count": len(appropriations),
             }
         }
 
     @api.model
-    def get_f5_data_flat(self, appropriation_id):
-        """Generate F5 hierarchical data for single budget appropriation"""
-        appropriation = self.env["budget.appropriation"].browse(appropriation_id)
+    def get_f5_data_flat(self, appropriation_id, options=None):
+        """
+        Generate F5 flat data for budget appropriation(s).
 
-        if not appropriation:
-            return {"error": "Invalid appropriation"}
+        Args:
+            appropriation_id: int or list of int - single ID or list of IDs
+            options: dict with optional keys:
+                - department_name: str - override department name for merged report
 
-        # Validate EXPENSE type only
-        if appropriation.budget_type != 'expense':
-            return {"error": "F5 report is only available for expense type appropriations"}
+        Returns:
+            dict: F5 report data with flattened hierarchy
+        """
+        if options is None:
+            options = {}
 
-        # Get appropriation lines
-        lines = appropriation.line_ids
+        # Normalize to list for unified handling
+        if isinstance(appropriation_id, int):
+            appropriation_ids = [appropriation_id]
+        else:
+            appropriation_ids = appropriation_id
+
+        appropriations = self.env["budget.appropriation"].browse(appropriation_ids)
+
+        # Validate appropriations
+        error = self._validate_appropriations(appropriations)
+        if error:
+            return {"error": error}
+
+        # Merge lines from all appropriations
+        lines = appropriations.mapped("line_ids")
 
         # Build hierarchy: Activities → Funds → Budget Accounts → Lines
         hierarchy = self._build_hierarchy(lines, True)
@@ -71,19 +110,59 @@ class BudgetAppropriationF5Report(models.TransientModel):
         # Calculate totals
         amount_total = sum(line.balance for line in lines)
 
+        # Get metadata - use options or derive from appropriations
+        first = appropriations[0]
+        if len(appropriations) > 1:
+            department = options.get("department_name", "รวมหลายหน่วยงาน")
+        else:
+            department = self._get_complete_name_without_codes(first.department_analytic_id)
+
         return {
-            "department": self._get_complete_name_without_codes(appropriation.department_analytic_id),
-            "type": "รายจ่าย" if appropriation.budget_type == 'expense' else "รายรับ",
-            "source": appropriation.source_analytic_id.name,
-            "fiscal_year": appropriation.account_fiscal_year_id.name,
+            "department": department,
+            "type": "รายจ่าย" if first.budget_type == 'expense' else "รายรับ",
+            "source": first.source_analytic_id.name,
+            "fiscal_year": first.account_fiscal_year_id.name,
             "amount_total": amount_total,
             "hierarchy": hierarchy,
             "summary": {
                 "total_lines": len(lines),
                 "amount_total": amount_total,
                 "activities_count": len(hierarchy),
+                "appropriations_count": len(appropriations),
             }
         }
+
+    def _validate_appropriations(self, appropriations):
+        """
+        Validate all appropriations have consistent required values.
+
+        Args:
+            appropriations: recordset of budget.appropriation
+
+        Returns:
+            str: error message if validation fails, None if valid
+        """
+        if not appropriations:
+            return "No appropriations selected"
+
+        # All must be expense type
+        non_expense = appropriations.filtered(lambda a: a.budget_type != 'expense')
+        if non_expense:
+            return "F5 report is only available for expense type appropriations"
+
+        # source_analytic_id must be same across all
+        sources = appropriations.mapped("source_analytic_id")
+        if len(sources) > 1:
+            names = ", ".join(s.name for s in sources)
+            return f"แหล่งเงินต้องเหมือนกัน (พบ: {names})"
+
+        # account_fiscal_year_id must be same across all
+        years = appropriations.mapped("account_fiscal_year_id")
+        if len(years) > 1:
+            names = ", ".join(y.name for y in years)
+            return f"ปีงบประมาณต้องเหมือนกัน (พบ: {names})"
+
+        return None
 
     def _build_hierarchy(self, lines, flatten=False):
         """Build hierarchical tree structure: Activity → Fund → Account"""
