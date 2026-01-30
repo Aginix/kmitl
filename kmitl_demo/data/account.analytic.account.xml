@@ -553,4 +553,13 @@
     <record id="account_analytic_kmitl.dept_47020" model="account.analytic.account">
         <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_47'))]" />
     </record>
+
+    <function name="write" model="ir.model.data">
+        <value model="ir.model.data" search="[
+            ('module', '=', 'account_analytic_kmitl'),
+            ('model', '=', 'account.analytic.account'),
+            ('name', 'like', 'dept_%')
+        ]" />
+        <value eval="{'noupdate': True}" />
+    </function>
 </odoo>
