@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Partial template for F4-P content (reusable) -->
+    <template id="report_f4p_revenue_content">
+        <style>
+            .f4-p table tbody.category tr:last-child td {
+                padding-bottom: 12pt;
+            }
+        </style>
+        <div class="page f4-p">
+            <t t-call="budget_appropriation_report.report_council_header" />
+            <div class="text-center mt-5 mb-3" style="font-weight: bold">
+                <div>
+                    สรุปประมาณการรายรับ ประจําปีงบประมาณ
+                    <t t-esc="o.account_fiscal_year_id.name" />
+                </div>
+                <div>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</div>
+            </div>
+            <div>
+                <table class="table table-sm table-borderless">
+                    <thead>
+                        <tr>
+                            <th style="width: 60%" />
+                            <th style="width: 20%" />
+                            <th style="width: 20%" />
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="font-weight: bold">
+                            <td colspan="3">
+                                <u> รายรับ :- </u>
+                            </td>
+                        </tr>
+                        <tr style="font-weight: bold">
+                            <td class="ps-3" colspan="2">1. รายรับจากรัฐบาล</td>
+                            <td class="text-end">0 บาท</td>
+                        </tr>
+                        <tr style="font-weight: bold">
+                            <td class="ps-3" colspan="2">2. เงินรายได้</td>
+                            <td class="text-end">
+                                <t t-out="'{0:,.2f}'.format(o.f4p_revenue_data['summary']['total_amount'])" />
+                                บาท
+                            </td>
+                        </tr>
+                    </tbody>
+                    <t t-set="row_no" t-value="1" />
+                    <t t-foreach="o.f4p_revenue_data['categories']" t-as="row">
+                        <tbody class="category">
+                            <tr>
+                                <td class="ps-4" colspan="3">
+                                    <strong>
+                                        <u>
+                                            2.<t t-esc="row_no" />
+                                            <t t-esc="row['name']" />
+                                        </u>
+                                    </strong>
+                                </td>
+                            </tr>
+                            <t t-foreach="row['departments']" t-as="dept">
+                                <tr class="department">
+                                    <td class="ps-5">
+                                        - <t t-esc="dept['name']" />
+                                    </td>
+                                    <td class="text-end">
+                                        <t t-out="'{0:,.2f}'.format(dept['amount'])" />
+                                    </td>
+                                    <td />
+                                </tr>
+                            </t>
+                            <tr>
+                                <td class="text-end">รวม</td>
+                                <td class="text-end">
+                                    <strong>
+                                        <u><t t-out="'{0:,.2f}'.format(row['amount'])" /></u>
+                                    </strong>
+                                </td>
+                                <td />
+                            </tr>
+                        </tbody>
+                        <t t-set="row_no" t-value="row_no + 1" />
+                    </t>
+                    <tbody>
+                        <tr>
+                            <td class="text-end">
+                                <strong>รวมรายรับทั้งสิ้น</strong>
+                            </td>
+                            <td class="text-end" style="text-decoration: underline; text-decoration-style: double; font-weight: bold;">
+                                <t t-out="'{0:,.2f}'.format(o.f4p_revenue_data['summary']['total_amount'])" />
+                            </td>
+                            <td />
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </template>
+
+    <!-- Main F4-P report template -->
+    <template id="report_f4p_revenue">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
+                    <t t-call="budget_appropriation_report.report_common_styles" />
+                    <t t-call="budget_appropriation_report.report_f4p_revenue_content" />
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_f4p_revenue" model="ir.actions.report">
+        <field name="name">F4-P - สรุปประมาณการรายรับจําแนกตามหน่วยงานและประเภท</field>
+        <field name="model">budget.appropriation.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_appropriation_report.report_f4p_revenue</field>
+        <field name="report_file">budget_appropriation_report.report_f4p_revenue</field>
+        <field name="paperformat_id" ref="budget_appropriation_report_paperformat_portrait" />
+    </record>
+</odoo>
