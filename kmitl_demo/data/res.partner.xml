@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="0">
+    <data noupdate="1">
         <!-- Company Vendors -->
         <record id="vendor_demo_001" model="res.partner">
             <field name="name">บริษัท เทคโนโลยีสมัยใหม่ จำกัด</field>

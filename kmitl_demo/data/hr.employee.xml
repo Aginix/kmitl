@@ -5,70 +5,77 @@
         <record id="employee_demo_001" model="hr.employee">
             <field name="name">ศาสตราจารย์ ดร.สมชาย วิศวกรรม</field>
             <field name="gender">male</field>
-            <field name="department_id" ref="01"/>
+            <field name="department_id" ref="89"/>
             <field name="job_title">คณบดี</field>
             <field name="work_email">somchai.v@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8000</field>
+            <field name="user_id" ref="user_demo_001" />
         </record>
 
         <!-- Employee 2 - Vice Dean Academic -->
         <record id="employee_demo_002" model="hr.employee">
             <field name="name">ผู้ช่วยศาสตราจารย์ ดร.สุภาพร ใจดี</field>
             <field name="gender">female</field>
-            <field name="department_id" ref="01"/>
+            <field name="department_id" ref="89"/>
             <field name="job_title">รองคณบดีฝ่ายวิชาการ</field>
             <field name="work_email">supaporn.j@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8001</field>
+            <field name="user_id" ref="user_demo_002" />
         </record>
 
         <!-- Employee 3 - Vice Dean Administration -->
         <record id="employee_demo_003" model="hr.employee">
             <field name="name">รองศาสตราจารย์ ดร.วิชัย เก่งกาจ</field>
             <field name="gender">male</field>
-            <field name="department_id" ref="01"/>
+            <field name="department_id" ref="89"/>
             <field name="job_title">รองคณบดีฝ่ายบริหาร</field>
             <field name="work_email">wichai.k@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8002</field>
+            <field name="user_id" ref="user_demo_003" />
         </record>
 
         <!-- Employee 4 - Vice Dean Research -->
         <record id="employee_demo_004" model="hr.employee">
             <field name="name">รองศาสตราจารย์ ดร.ประทีป นักวิจัย</field>
             <field name="gender">female</field>
-            <field name="department_id" ref="01"/>
+            <field name="department_id" ref="89"/>
             <field name="job_title">รองคณบดีฝ่ายวิจัย</field>
             <field name="work_email">prateep.n@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8003</field>
+            <field name="user_id" ref="user_demo_004" />
         </record>
 
         <!-- Employee 5 - Professor -->
         <record id="employee_demo_005" model="hr.employee">
             <field name="name">ศาสตราจารย์ ดร.ธนากร เทคโนโลยี</field>
             <field name="gender">male</field>
-            <field name="department_id" ref="01"/>
+            <field name="department_id" ref="06"/>
             <field name="job_title">ศาสตราจารย์</field>
             <field name="work_email">thanakorn.t@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8010</field>
+            <field name="user_id" ref="user_demo_005" />
         </record>
 
         <!-- Employee 6 - Professor -->
         <record id="employee_demo_006" model="hr.employee">
             <field name="name">ศาสตราจารย์ ดร.มาลี วิทยาศาสตร์</field>
             <field name="gender">female</field>
-            <field name="department_id" ref="01"/>
+            <field name="department_id" ref="05"/>
             <field name="job_title">ศาสตราจารย์</field>
             <field name="work_email">malee.w@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8011</field>
+            <field name="user_id" ref="user_demo_006" />
         </record>
 
         <!-- Employee 7 - Associate Professor -->
         <record id="employee_demo_007" model="hr.employee">
             <field name="name">รองศาสตราจารย์ ดร.สุรชัย นวัตกรรม</field>
             <field name="gender">male</field>
-            <field name="department_id" ref="01"/>
+            <field name="department_id" ref="31"/>
             <field name="job_title">รองศาสตราจารย์</field>
             <field name="work_email">surachai.n@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8012</field>
+            <field name="user_id" ref="user_demo_007" />
         </record>
 
         <!-- Employee 8 - Associate Professor -->
@@ -79,46 +86,51 @@
             <field name="job_title">รองศาสตราจารย์</field>
             <field name="work_email">wanna.p@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8013</field>
+            <field name="user_id" ref="user_demo_008" />
         </record>
 
         <!-- Employee 9 - Assistant Professor -->
         <record id="employee_demo_009" model="hr.employee">
             <field name="name">ผู้ช่วยศาสตราจารย์ ดร.ชัยวัฒน์ พัฒนา</field>
             <field name="gender">male</field>
-            <field name="department_id" ref="01"/>
+            <field name="department_id" ref="02"/>
             <field name="job_title">ผู้ช่วยศาสตราจารย์</field>
             <field name="work_email">chaiwat.p@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8014</field>
+            <field name="user_id" ref="user_demo_009" />
         </record>
 
         <!-- Employee 10 - Assistant Professor -->
         <record id="employee_demo_010" model="hr.employee">
             <field name="name">ผู้ช่วยศาสตราจารย์ ดร.นภาพร สร้างสรรค์</field>
             <field name="gender">female</field>
-            <field name="department_id" ref="01"/>
+            <field name="department_id" ref="03"/>
             <field name="job_title">ผู้ช่วยศาสตราจารย์</field>
             <field name="work_email">napaporn.s@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8015</field>
+            <field name="user_id" ref="user_demo_010" />
         </record>
 
         <!-- Employee 11 - Lecturer -->
         <record id="employee_demo_011" model="hr.employee">
             <field name="name">ดร.พิชัย คิดค้น</field>
             <field name="gender">male</field>
-            <field name="department_id" ref="01"/>
+            <field name="department_id" ref="04"/>
             <field name="job_title">อาจารย์</field>
             <field name="work_email">pichai.k@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8020</field>
+            <field name="user_id" ref="user_demo_011" />
         </record>
 
         <!-- Employee 12 - Lecturer -->
         <record id="employee_demo_012" model="hr.employee">
             <field name="name">ดร.ชนิดา เฉลียวฉลาด</field>
             <field name="gender">female</field>
-            <field name="department_id" ref="01"/>
+            <field name="department_id" ref="05"/>
             <field name="job_title">อาจารย์</field>
             <field name="work_email">chanida.c@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8021</field>
+            <field name="user_id" ref="user_demo_012" />
         </record>
 
         <!-- Employee 13 - Lecturer -->
@@ -129,76 +141,84 @@
             <field name="job_title">อาจารย์</field>
             <field name="work_email">kittipong.m@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8022</field>
+            <field name="user_id" ref="user_demo_013" />
         </record>
 
         <!-- Employee 14 - Lecturer -->
         <record id="employee_demo_014" model="hr.employee">
             <field name="name">อาจารย์ ธัญญา ขยันหมั่นเพียร</field>
             <field name="gender">female</field>
-            <field name="department_id" ref="01"/>
+            <field name="department_id" ref="06"/>
             <field name="job_title">อาจารย์</field>
             <field name="work_email">thanya.k@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8023</field>
+            <field name="user_id" ref="user_demo_014" />
         </record>
 
         <!-- Employee 15 - Lecturer -->
         <record id="employee_demo_015" model="hr.employee">
             <field name="name">อาจารย์ ศิริพงษ์ ชาญฉลาด</field>
             <field name="gender">male</field>
-            <field name="department_id" ref="01"/>
+            <field name="department_id" ref="03"/>
             <field name="job_title">อาจารย์</field>
             <field name="work_email">siripong.c@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8024</field>
+            <field name="user_id" ref="user_demo_015" />
         </record>
 
         <!-- Employee 16 - Staff Academic Support -->
         <record id="employee_demo_016" model="hr.employee">
             <field name="name">นางสาว อรุณี บริการดี</field>
             <field name="gender">female</field>
-            <field name="department_id" ref="01"/>
+            <field name="department_id" ref="89"/>
             <field name="job_title">เจ้าหน้าที่ฝ่ายวิชาการ</field>
             <field name="work_email">arunee.b@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8030</field>
+            <field name="user_id" ref="user_demo_016" />
         </record>
 
         <!-- Employee 17 - Staff Financial -->
         <record id="employee_demo_017" model="hr.employee">
             <field name="name">นาย ประสิทธิ์ บัญชีดี</field>
             <field name="gender">male</field>
-            <field name="department_id" ref="01"/>
+            <field name="department_id" ref="89"/>
             <field name="job_title">เจ้าหน้าที่การเงิน</field>
             <field name="work_email">prasit.b@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8031</field>
+            <field name="user_id" ref="user_demo_017" />
         </record>
 
         <!-- Employee 18 - Staff HR -->
         <record id="employee_demo_018" model="hr.employee">
             <field name="name">นางสาว สุดารัตน์ ใส่ใจ</field>
             <field name="gender">female</field>
-            <field name="department_id" ref="01"/>
+            <field name="department_id" ref="89"/>
             <field name="job_title">เจ้าหน้าที่บุคคล</field>
             <field name="work_email">sudarat.s@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8032</field>
+            <field name="user_id" ref="user_demo_018" />
         </record>
 
         <!-- Employee 19 - Staff General -->
         <record id="employee_demo_019" model="hr.employee">
             <field name="name">นาย วีระชัย ทำงานดี</field>
             <field name="gender">male</field>
-            <field name="department_id" ref="01"/>
+            <field name="department_id" ref="89"/>
             <field name="job_title">เจ้าหน้าที่บริหารงานทั่วไป</field>
             <field name="work_email">weerachai.t@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8033</field>
+            <field name="user_id" ref="user_demo_019" />
         </record>
 
         <!-- Employee 20 - Staff IT Support -->
         <record id="employee_demo_020" model="hr.employee">
             <field name="name">นางสาว ปิยะนุช เทคนิค</field>
             <field name="gender">female</field>
-            <field name="department_id" ref="01"/>
+            <field name="department_id" ref="06"/>
             <field name="job_title">เจ้าหน้าที่เทคโนโลยีสารสนเทศ</field>
             <field name="work_email">piyanuch.t@kmitl.ac.th</field>
             <field name="work_phone">+66 2 329 8034</field>
+            <field name="user_id" ref="user_demo_020" />
         </record>
     </data>
 </odoo>

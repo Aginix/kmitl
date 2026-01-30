@@ -13,7 +13,7 @@
         "purchase_order_kmitl",
         "purchase_operating_unit",
         "purchase_request_account_fiscal_year",
-        "purchase_request_contract_type",
+        "purchase_contract_kmitl",
         "purchase_request_description_required",
         "purchase_request_line_mandatory_exception",
         "purchase_request_line_name_text",

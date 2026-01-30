@@ -32,7 +32,6 @@
                     <field name="procurement_plan_id" options="{'no_create_edit': True}" domain="[('state', '=', 'new')]" attrs="{'invisible': [('use_procurement_plan', '=', False)], 'required': [('use_procurement_plan', '=', True)], 'readonly': [('is_editable','=', False)]}" />
                     <field name="procurement_plan_analytic_id" invisible="1" />
                 </group>
-                <separator string="ขอซื้อขอจ้าง" />
             </xpath>
         </field>
     </record>

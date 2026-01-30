@@ -3,8 +3,9 @@
 import {Component, onMounted, useRef, useState} from "@odoo/owl";
 
 import {CharField} from "@web/views/fields/char/char_field";
-import { isValidAnchor } from "web.utils";
+import {isValidAnchor} from "web.utils";
 import {registry} from "@web/core/registry";
+import {standardFieldProps} from "@web/views/fields/standard_field_props";
 
 class IFrameViewerWidget extends CharField {
     setup() {
@@ -24,6 +25,10 @@ class IFrameViewerWidget extends CharField {
     onIframeLoad() {
         this.state.loading = false;
         this.state.error = false;
+
+        if (!this.props.autoHeight) {
+            return;
+        }
 
         var $el = $(`iframe#${this.name}`);
         var updateIframeSize = this._updateIframeSize.bind(this, $el);
@@ -77,7 +82,19 @@ class IFrameViewerWidget extends CharField {
 
 IFrameViewerWidget.template = "iframe_widget.IFrameViewerWidget";
 IFrameViewerWidget.components = {};
-
+IFrameViewerWidget.props = {
+    ...standardFieldProps,
+    autoHeight: {type: Boolean, optional: true},
+    width: { type: String, optional: true },
+    height: { type: String, optional: true },
+};
+IFrameViewerWidget.extractProps = ({attrs}) => {
+    return {
+        autoHeight: attrs.options.auto_height ?? true,
+        width: attrs.options.width || "100%",
+        height: attrs.options.height || "400px",
+    };
+};
 registry.category("fields").add("iframe_viewer", IFrameViewerWidget);
 
 // Template definition
@@ -89,7 +106,7 @@ IFrameViewerWidget.template = xml`
             width: 100%;
         }
     </style>
-    <div t-if="iframeUrl" class="o_iframe_container mt-2" style="position: relative; width: 100%; height: 400px;">
+    <div t-if="iframeUrl" class="o_iframe_container mt-2"  t-att-style="'position: relative; width: ' + props.width + '; height: ' + props.height + ';'">
         <div t-if="state.loading" class="o_iframe_loading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
             <i class="fa fa-spinner fa-spin fa-2x"></i>
             <div class="mt-2">Loading...</div>

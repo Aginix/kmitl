@@ -434,7 +434,7 @@ msgstr ""
 #. module: l10n_th_gov_purchase_guarantee
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee__reference
 msgid "Reference"
-msgstr "เลขที่หลักประกัน"
+msgstr "อ้างอิงเลขที่คำขอซื้อ/จ้าง"
 
 #. module: l10n_th_gov_purchase_guarantee
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_guarantee.field_purchase_guarantee__reference_model

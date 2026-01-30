@@ -2,7 +2,7 @@
 import base64
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -114,6 +114,13 @@ class PurchaseRequestApproval(models.Model):
 
     def button_draft(self):
         return self.write({"state": "draft"})
+
+    def button_rejected(self):
+        for rec in self:
+            rec.state = "rejected"
+            if rec.request_id:
+                rec.request_id.state = "rejected"
+        return True
 
     def button_to_approve(self):
         for rec in self:

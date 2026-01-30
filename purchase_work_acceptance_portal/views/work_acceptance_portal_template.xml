@@ -173,9 +173,6 @@
                                 <i class="fa fa-file"></i> Work Acceptance:
                                 <em t-out="work_acceptance.name" />
                             </h3>
-                            <span class="fs-5 badge badge-light">
-                                <t t-esc="work_acceptance.state" />
-                            </span>
                         </div>
 
                         <div id="content" class="card-body">
