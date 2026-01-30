@@ -9,6 +9,7 @@
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_manager')])]"
         />
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
     </record>
 
     <!-- User 2 -->
@@ -21,6 +22,7 @@
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_manager')])]"
         />
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
     </record>
 
     <!-- User 3 -->
@@ -33,6 +35,7 @@
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_manager')])]"
         />
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
     </record>
 
     <!-- User 4 -->
@@ -45,6 +48,7 @@
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_manager')])]"
         />
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
     </record>
 
     <!-- User 5 -->
@@ -57,6 +61,7 @@
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_user')])]"
         />
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_06'))]" />
     </record>
 
     <!-- User 6 -->
@@ -69,6 +74,7 @@
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_user')])]"
         />
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_05'))]" />
     </record>
 
     <!-- User 7 -->
@@ -81,6 +87,7 @@
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_user')])]"
         />
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_31'))]" />
     </record>
 
     <!-- User 8 -->
@@ -93,6 +100,7 @@
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_user')])]"
         />
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
     </record>
 
     <!-- User 9 -->
@@ -105,6 +113,7 @@
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_user')])]"
         />
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_02'))]" />
     </record>
 
     <!-- User 10 -->
@@ -117,6 +126,7 @@
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_user')])]"
         />
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_03'))]" />
     </record>
 
     <!-- User 11 -->
@@ -129,6 +139,7 @@
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_user')])]"
         />
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_04'))]" />
     </record>
 
     <!-- User 12 -->
@@ -141,6 +152,7 @@
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_user')])]"
         />
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_05'))]" />
     </record>
 
     <!-- User 13 -->
@@ -153,6 +165,7 @@
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_user')])]"
         />
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_01'))]" />
     </record>
 
     <!-- User 14 -->
@@ -165,6 +178,7 @@
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_user')])]"
         />
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_06'))]" />
     </record>
 
     <!-- User 15 -->
@@ -177,6 +191,7 @@
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_user')])]"
         />
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_03'))]" />
     </record>
 
     <!-- User 16 -->
@@ -189,6 +204,7 @@
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_manager')])]"
         />
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
     </record>
 
     <!-- User 17 -->
@@ -201,6 +217,7 @@
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_manager')])]"
         />
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
     </record>
 
     <!-- User 18 -->
@@ -213,6 +230,7 @@
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_manager')])]"
         />
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
     </record>
 
     <!-- User 19 -->
@@ -225,6 +243,7 @@
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request.group_purchase_request_manager')])]"
         />
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_89'))]" />
     </record>
 
     <!-- User 20 -->
@@ -237,6 +256,7 @@
             name="groups_id"
             eval="[(6, 0, [ref('base.group_user'), ref('purchase_request_security.group_purchase_request_user_all')])]"
         />
+        <field name="operating_unit_ids" eval="[(4, ref('operating_unit_kmitl.operating_unit_06'))]" />
     </record>
 
     <!-- default role Admin  -->
