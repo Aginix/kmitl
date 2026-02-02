@@ -1,7 +1,0 @@
-<odoo>
-    <menuitem
-        id="purchase_request.parent_menu_purchase_request"
-        name="Purchase Requests"
-        web_icon="purchase_request_icon_kmitl,static/description/icon.png"
-    />
-</odoo>

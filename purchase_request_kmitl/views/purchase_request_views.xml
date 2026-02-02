@@ -83,6 +83,12 @@
         </field>
     </record>
 
+    <menuitem
+        id="purchase_request.parent_menu_purchase_request"
+        name="Purchase Requests"
+        web_icon="purchase_request_kmitl,static/description/icon.png"
+    />
+
     <!-- menu -->
     <menuitem id="purchase_request_kmitl_root_menu" name="PR1" parent="purchase.menu_purchase_root" action="purchase_request.purchase_request_form_action" sequence="1" />
 
