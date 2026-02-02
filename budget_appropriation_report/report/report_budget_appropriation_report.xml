@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Combined report that includes all sub-reports via t-call -->
+    <template id="report_budget_appropriation_report">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
+                    <t t-call="budget_appropriation_report.report_common_styles" />
+
+                    <!-- F2 Report - สรุปเปรียบเทียบประมาณการรายรับจําแนกตามประเภท -->
+                    <t t-call="budget_appropriation_report.report_f2_revenue_content" />
+
+                    <!-- F4-P Report - สรุปประมาณการรายรับจําแนกตามหน่วยงานและประเภท -->
+                    <t t-call="budget_appropriation_report.report_f4p_revenue_content" />
+
+                    <!-- F4-W Report - สรุปเปรียบเทียบประมาณการรายรับจําแนกตามหน่วยงานและประเภท -->
+                    <t t-call="budget_appropriation_report.report_f4w_revenue_content" />
+
+                    <!-- F3-W-วง-003 และ F6-W-วง-003 Report - สรุปเปรียบเทียบประมาณการรายรับจําแนกตามหน่วยงานและประเภท -->
+                    <t t-call="budget_appropriation_report.report_f3w_f6w_revenue" />
+
+                    <!-- F7-W-วง-003 Report - สรุปเปรียบเทียบประมาณการรายจ่ายจําแนกตามประเภท -->
+                    <t t-call="budget_appropriation_report.report_f7w_expense_content" />
+
+                    <!-- F5-P Report - สรุปประมาณการรายจ่าย -->
+                    <t t-call="budget_appropriation_report.report_f5p_expense_content" />
+
+                    <!-- F5-W Report - สรุปเปรียบเทียบประมาณการรายจ่ายจําแนกตามกิจกรรม -->
+                    <t t-call="budget_appropriation_report.report_f5w_expense_content" />
+
+                    <!-- F8-W Report - สรุปเปรียบเทียบประมาณการรายจ่าย -->
+                    <t t-call="budget_appropriation_report.report_f8w_expense_content" />
+
+                    <!-- F9-W-วง-003 - สรุปสัดส่วนประมาณการรายจ่าย -->
+                    <t t-call="budget_appropriation_report.report_f9w_expense_content" />
+
+                    <!-- F11-W-วง-003 - สรุปประมาณการรายจ่าย จําแนกตามหน่วยงาน และกองทุน -->
+                    <t t-call="budget_appropriation_report.report_f11w_expense_content" />
+
+                    <!-- F10-W-วง-003 - สรุปประมาณการรายจ่าย -->
+                    <t t-call="budget_appropriation_report.report_f10w_expense_content" />
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_budget_appropriation_report" model="ir.actions.report">
+        <field name="name">รายงานรวมทั้งหมด</field>
+        <field name="model">budget.appropriation.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_appropriation_report.report_budget_appropriation_report</field>
+        <field name="report_file">budget_appropriation_report.report_budget_appropriation_report</field>
+        <field name="paperformat_id" ref="budget_appropriation_report_paperformat_portrait" />
+    </record>
+</odoo>
