@@ -30,6 +30,11 @@
         "views/purchase_request_views.xml",
         "wizards/purchase_request_line_make_purchase_order_views.xml",
     ],
+    'assets': {
+              'web.assets_backend': [
+                  'purchase_request_kmitl/static/src/**/*'
+              ],
+    },
     "installable": True,
     "auto_install": False,
     "license": "LGPL-3",
