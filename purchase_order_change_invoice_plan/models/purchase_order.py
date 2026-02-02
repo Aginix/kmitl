@@ -28,7 +28,6 @@ class PurchaseOrder(models.Model):
 
         draft_plans.unlink()
 
-
         accepted_percent = sum(accepted_plans.mapped("percent"))
         remaining_percent = 100.0 - accepted_percent
 
@@ -41,16 +40,19 @@ class PurchaseOrder(models.Model):
         )
         percent_last = remaining_percent - (percent * (num_installment - 1))
 
+        last_installment = max(
+            accepted_plans.mapped("installment") or [0]
+        )
+
         invoice_plans = []
 
         for i in range(num_installment):
-            this_installment = i + 1
             current_percent = (
                 percent_last if i == num_installment - 1 else percent
             )
 
             vals = {
-                "installment": this_installment,
+                "installment": last_installment + i + 1,
                 "plan_date": installment_date,
                 "invoice_type": "installment",
                 "percent": current_percent,
@@ -67,3 +69,4 @@ class PurchaseOrder(models.Model):
         })
 
         return True
+
