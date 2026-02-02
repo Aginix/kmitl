@@ -4,7 +4,6 @@
     <template id="report_f10w_expense_content">
         <style>
             .f10w table {
-                font-size: 10pt;
             }
             .f10w th, .f10w td {
                 padding: 2px 4px;

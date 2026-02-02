@@ -49,12 +49,7 @@
                         <t t-foreach="o.f9w_expense_data['departments']" t-as="department">
                             <tr class="border-0 border-end">
                                 <td class="">
-                                    <strong>
-                                        <u>
-                                            <t t-out="row_no" />.
-                                            <t t-out="department['name']" />
-                                        </u>
-                                    </strong>
+                                    <t t-out="department['name']" />
                                 </td>
                                 <t t-foreach="o.f9w_expense_data['columns']" t-as="column">
                                     <th class="text-center border-0 border-end">

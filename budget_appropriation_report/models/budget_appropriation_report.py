@@ -55,6 +55,7 @@ class BudgetAppropriationReport(models.Model):
         tracking=True,
         readonly=False,
         states=READONLY_STATES,
+        required=True,
     )
     state = fields.Selection(
         selection=[
@@ -119,6 +120,26 @@ class BudgetAppropriationReport(models.Model):
         string="จำนวนรายการ",
         compute="_compute_appropriation_count",
     )
+    currency_id = fields.Many2one(
+        comodel_name="res.currency",
+        default=lambda self: self.env.company.currency_id,
+    )
+    user_id = fields.Many2one(
+        comodel_name="res.users",
+        string="ผู้สร้างรายงาน",
+        default=lambda self: self.env.user,
+        readonly=True,
+    )
+    amount_revenue_total = fields.Monetary(
+        string="รายรับรวม",
+        compute="_compute_amount_totals",
+        currency_field="currency_id",
+    )
+    amount_expense_total = fields.Monetary(
+        string="รายจ่ายรวม",
+        compute="_compute_amount_totals",
+        currency_field="currency_id",
+    )
     f2_revenue_data = fields.Json(
         string="F2 Revenue Data",
         compute="_compute_f2_revenue_data",
@@ -169,6 +190,139 @@ class BudgetAppropriationReport(models.Model):
         compute="_compute_f10w_expense_data",
         store=False,
     )
+
+    use_f23 = fields.Boolean(
+        string="ใช้รายงาน F23",
+        help="ถ้าเลือก จะแสดงแบบฟอร์มรายงาน F23 ให้ผู้ใช้กรอกข้อมูลเพิ่มเติม",
+        states=READONLY_STATES,
+        readonly=False,
+    )
+
+    parent_id = fields.Many2one(
+        comodel_name="budget.appropriation.report",
+        string="รายงานหลัก",
+        readonly=False,
+        states=READONLY_STATES,
+    )
+
+    child_ids = fields.One2many(
+        "budget.appropriation.report",
+        "parent_id",
+        string="รายงานย่อย",
+        readonly=False,
+        states=READONLY_STATES,
+    )
+
+    department_analytic_id = fields.Many2one(
+        comodel_name="account.analytic.account",
+        string="หน่วยงาน",
+        domain=[("root_plan_id.code", "=", "departments")],
+        tracking=True,
+        readonly=False,
+        states=READONLY_STATES,
+        required=True,
+    )
+
+    education_percentage = fields.Float(
+        string="สัดส่วนการจัดสรรเพื่อการศึกษา (%)",
+        help="สัดส่วนการจัดสรรงบประมาณเพื่อการศึกษา (%)",
+        default=0.0,
+        readonly=True,
+        compute="_compute_impact_percentages",
+        store=True,
+    )
+    education_amount = fields.Monetary(
+        string="จำนวนเงินจัดสรรเพื่อการศึกษา",
+        help="จำนวนเงินจัดสรรงบประมาณเพื่อการศึกษา",
+        compute="_compute_impact_amounts",
+        store=True,
+        currency_field="currency_id",
+    )
+
+    academic_percentage = fields.Float(
+        string="สัดส่วนการจัดสรรเพื่อการวิจัย (%)",
+        help="สัดส่วนการจัดสรรงบประมาณเพื่อการวิจัย (%)",
+        default=0.0,
+        readonly=True,
+        compute="_compute_impact_percentages",
+        store=True,
+    )
+    academic_amount = fields.Monetary(
+        string="จำนวนเงินจัดสรรเพื่อการวิจัย",
+        help="จำนวนเงินจัดสรรงบประมาณเพื่อการวิจัย",
+        compute="_compute_impact_amounts",
+        store=True,
+        currency_field="currency_id",
+    )
+
+    industrial_percentage = fields.Float(
+        string="สัดส่วนการจัดสรรเพื่อตอบโจทย์ภาคอุตสาหกรรม (%)",
+        help="สัดส่วนการจัดสรรงบประมาณเพื่อตอบโจทย์ภาคอุตสาหกรรม (%)",
+        default=0.0,
+        readonly=True,
+        compute="_compute_impact_percentages",
+        store=True,
+    )
+    industrial_amount = fields.Monetary(
+        string="จำนวนเงินจัดสรรเพื่อตอบโจทย์ภาคอุตสาหกรรม",
+        help="จำนวนเงินจัดสรรงบประมาณเพื่อตอบโจทย์ภาคอุตสาหกรรม",
+        compute="_compute_impact_amounts",
+        store=True,
+        currency_field="currency_id",
+    )
+
+    social_percentage = fields.Float(
+        string="สัดส่วนการจัดสรรเพื่อด้านสังคม (%)",
+        help="สัดส่วนการจัดสรรงบประมาณเพื่อด้านสังคม (%)",
+        default=0.0,
+        readonly=True,
+        compute="_compute_impact_percentages",
+        store=True,
+    )
+    social_amount = fields.Monetary(
+        string="จำนวนเงินจัดสรรเพื่อด้านสังคม",
+        help="จำนวนเงินจัดสรรงบประมาณเพื่อด้านสังคม",
+        compute="_compute_impact_amounts",
+        store=True,
+        currency_field="currency_id",
+    )
+
+    impact_line_ids = fields.One2many(
+        "budget.appropriation.impact.line",
+        "report_id",
+        string="รายการสัดส่วนผลกระทบ",
+        readonly=False,
+        states=READONLY_STATES,
+    )
+
+    @api.depends("impact_line_ids", "impact_line_ids.amount", "impact_line_ids.impact_type")
+    def _compute_impact_percentages(self):
+        for record in self:
+            record.education_percentage = 0.0
+            record.academic_percentage = 0.0
+            record.industrial_percentage = 0.0
+            record.social_percentage = 0.0
+
+    @api.depends("impact_line_ids", "impact_line_ids.amount", "amount_expense_total")
+    def _compute_impact_amounts(self):
+        for record in self:
+            education_amount = sum(
+                line.amount for line in record.impact_line_ids if line.impact_type == "education"
+            )
+            academic_amount = sum(
+                line.amount for line in record.impact_line_ids if line.impact_type == "academic"
+            )
+            industrial_amount = sum(
+                line.amount for line in record.impact_line_ids if line.impact_type == "industrial"
+            )
+            social_amount = sum(
+                line.amount for line in record.impact_line_ids if line.impact_type == "social"
+            )
+
+            record.education_amount = education_amount
+            record.academic_amount = academic_amount
+            record.industrial_amount = industrial_amount
+            record.social_amount = social_amount
 
     @api.depends("revenue_appropriation_ids", "compare_report_id")
     def _compute_f2_revenue_data(self):
@@ -255,6 +409,12 @@ class BudgetAppropriationReport(models.Model):
     def _compute_appropriation_count(self):
         for record in self:
             record.appropriation_count = len(record.revenue_appropriation_ids) + len(record.expense_appropriation_ids)
+
+    @api.depends("revenue_appropriation_ids.amount_net", "expense_appropriation_ids.amount_net")
+    def _compute_amount_totals(self):
+        for record in self:
+            record.amount_revenue_total = sum(record.revenue_appropriation_ids.mapped("amount_net"))
+            record.amount_expense_total = sum(record.expense_appropriation_ids.mapped("amount_net"))
 
     def action_confirm(self):
         self.write({"state": "confirmed"})

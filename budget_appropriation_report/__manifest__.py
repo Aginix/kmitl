@@ -7,7 +7,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "depends": ["budget_appropriation", "web"],
-    "data": [
+    'data': [
         "data/budget_appropriation_report_action.xml",
         "data/paper_format.xml",
         "security/ir.model.access.csv",
@@ -25,7 +25,8 @@
         "report/report_f10w_expense.xml",
         "report/report_budget_appropriation_report.xml",
         "views/budget_appropriation_report_views.xml",
-        "views/menus.xml"
+        "views/menus.xml",
+        'views/budget_appropriation_impact_line_views.xml'
     ],
     "assets": {
         "web.assets_backend": [
