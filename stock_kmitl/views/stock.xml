@@ -3,6 +3,6 @@
         name="Inventory"
         id="stock.menu_stock_root"
         sequence="140"
-        web_icon="stock_icon_kmitl,static/description/icon.png"
+        web_icon="stock_kmitl,static/description/icon.png"
     />
 </odoo>
