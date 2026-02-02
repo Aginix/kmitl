@@ -14,6 +14,7 @@ def _create_journals(env, company):
             "code": "JV",
             "type": "general",
             "company_id": company.id,
+            "sequence": 10,
         },
         {
             "name": "สมุดรายวันจ่าย",
@@ -21,6 +22,7 @@ def _create_journals(env, company):
             "type": "bank",
             "company_id": company.id,
             "default_account_id": get_account("1112210004").id or False,
+            "sequence": 20,
         },
         {
             "name": "สมุดรายวันรับ",
@@ -28,6 +30,7 @@ def _create_journals(env, company):
             "type": "bank",
             "company_id": company.id,
             "default_account_id": get_account("1112210004").id or False,
+            "sequence": 30,
         },
         {
             "name": "สมุดรายวันขาย",
@@ -35,6 +38,7 @@ def _create_journals(env, company):
             "type": "sale",
             "company_id": company.id,
             "default_account_id": get_account("4000000000").id or False,
+            "sequence": 40,
         },
         {
             "name": "สมุดรายวันซื้อ",
@@ -42,6 +46,7 @@ def _create_journals(env, company):
             "type": "purchase",
             "company_id": company.id,
             "default_account_id": get_account("5000000000").id or False,
+            "sequence": 50,
         },
     ]
 
