@@ -43,6 +43,11 @@ msgid "Billing Status"
 msgstr "สถานะเบิกจ่าย"
 
 #. module: purchase_request_approval_account
+#: model:ir.model.fields,field_description:purchase_request_approval_account.field_purchase_request_approval__display_purchase_order
+msgid "Purchase Order"
+msgstr "เลขที่สัญญา"
+
+#. module: purchase_request_approval_account
 #: model:ir.model.fields.selection,name:purchase_request_approval_account.selection__purchase_request_approval__billing_status__cancel
 msgid "Cancelled"
 msgstr "ยกเลิก"

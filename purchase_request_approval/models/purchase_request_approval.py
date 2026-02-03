@@ -36,13 +36,6 @@ class PurchaseRequestApproval(models.Model):
         check_company=True,
     )
 
-    purchase_order_id = fields.Many2one(
-        comodel_name='purchase.order',
-        compute='_compute_purchase_order_id',
-        string='Purchase Order',
-        store=False,
-    )
-
     name = fields.Char(
         string="Approval Reference",
         required=True,
@@ -257,9 +250,3 @@ class PurchaseRequestApproval(models.Model):
         action["views"] = [(form.id, "form")]
         action["res_id"] = self.request_id.id
         return action
-
-    @api.depends("request_id.line_ids.purchase_lines.order_id")
-    def _compute_purchase_order_id(self):
-        for rec in self:
-            orders = rec.request_id.mapped("line_ids.purchase_lines.order_id")
-            rec.purchase_order_id = orders[0] if orders else False

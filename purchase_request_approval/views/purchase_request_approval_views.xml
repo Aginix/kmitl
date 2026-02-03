@@ -19,10 +19,10 @@
             <field name="title" />
             <field name="date_start" widget="date" />
             <field name="approval_date" widget="date" />
-            <field name="estimated_cost" optional="show" />
-            <field name="procurement_type_id" optional="show" />
-            <field name="procurement_method_id" optional="show" />
-            <field name="request_id" />
+            <field name="estimated_cost" />
+            <field name="procurement_type_id" />
+            <field name="procurement_method_id" />
+            <field name="request_id" optional="show" />
 
             <field name="activity_ids" widget="list_activity" optional="hide" />
             <field
@@ -33,13 +33,11 @@
                 decoration-warning="state == 'to_approve'"
                 decoration-danger="state == 'rejected'"
             />
-            <field name="account_fiscal_year_id" optional="show" />
-            <field name="department_id" optional="show" />
-            <!-- <field name="purchase_order_id"/> -->
+            <field name="account_fiscal_year_id" />
+            <field name="department_id" />
             <field
                 name="requested_by"
                 widget="many2one_avatar_user"
-                optional="show"
             />
             </tree>
         </field>

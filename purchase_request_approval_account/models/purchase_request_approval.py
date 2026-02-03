@@ -12,6 +12,19 @@ class PurchaseRequestApproval(models.Model):
         tracking=True
     )
 
+    purchase_order_id = fields.Many2one(
+        comodel_name='purchase.order',
+        compute='_compute_purchase_order_id',
+        string='Purchase Order',
+        store=False,
+    )
+
+    display_purchase_order = fields.Char(
+        string="Purchase Order",
+        compute="_compute_display_purchase_order",
+        store=False
+    )
+
     account_move_request_ids = fields.One2many(
         comodel_name="account.move.request",
         inverse_name="purchase_request_approval_id",
@@ -120,3 +133,20 @@ class PurchaseRequestApproval(models.Model):
         }
 
         return message
+
+    @api.depends("request_id.line_ids.purchase_lines.order_id")
+    def _compute_purchase_order_id(self):
+        for rec in self:
+            orders = rec.request_id.mapped("line_ids.purchase_lines.order_id")
+            rec.purchase_order_id = orders[0] if orders else False
+
+    
+    @api.depends("use_purchase_order", "purchase_order_id.name")
+    def _compute_display_purchase_order(self):
+        for rec in self:
+            if rec.use_purchase_order and rec.purchase_order_id:
+                rec.display_purchase_order = rec.purchase_order_id.name
+            elif not rec.use_purchase_order:
+                rec.display_purchase_order = "ไม่ทำสัญญา"
+            else:
+                rec.display_purchase_order = ""
