@@ -7,9 +7,41 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     document.head.appendChild(script);
 
+    // Initialize filters from URL and sync URL state
+    initFiltersFromUrl();
+
     // Setup filter event listeners
     setupEventListeners();
 });
+
+function initFiltersFromUrl() {
+    var params = new URLSearchParams(window.location.search);
+
+    var fiscalYearFilter = document.getElementById('fiscal_year_filter');
+    var departmentFilter = document.getElementById('department_filter');
+
+    // Sync URL with current filter state (ensure URL always reflects filters)
+    var needsUpdate = false;
+    var newParams = new URLSearchParams();
+
+    if (fiscalYearFilter && fiscalYearFilter.value) {
+        var urlFiscalYear = params.get('fiscal_year_id');
+        if (urlFiscalYear !== fiscalYearFilter.value) {
+            needsUpdate = true;
+        }
+        newParams.set('fiscal_year_id', fiscalYearFilter.value);
+    }
+
+    if (departmentFilter && departmentFilter.value) {
+        newParams.set('department_id', departmentFilter.value);
+    }
+
+    // Update URL without reload to reflect current filters
+    if (needsUpdate || (fiscalYearFilter && fiscalYearFilter.value && !params.has('fiscal_year_id'))) {
+        var newUrl = '/project/dashboard?' + newParams.toString();
+        history.replaceState(null, '', newUrl);
+    }
+}
 
 function initCharts() {
     if (typeof chartData === 'undefined' || !chartData.budget_by_impact) {
