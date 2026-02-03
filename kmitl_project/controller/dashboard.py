@@ -25,6 +25,37 @@ class KmitlProjectDashboard(http.Controller):
         )
         return data
 
+    @http.route(
+        "/project/dashboard/<int:department_id>",
+        type="http",
+        auth="public",
+        website=True,
+    )
+    def department_dashboard(self, department_id, **kw):
+        """Department-specific dashboard page"""
+        AnalyticAccount = request.env["account.analytic.account"].sudo()
+        department = AnalyticAccount.browse(department_id)
+
+        if not department.exists():
+            return request.redirect("/project/dashboard")
+
+        values = self._prepare_department_filter_options(department, **kw)
+        return request.render("kmitl_project.portal_department_dashboard", values)
+
+    @http.route(
+        "/project/dashboard/<int:department_id>/api",
+        type="json",
+        auth="public",
+        csrf=False,
+    )
+    def department_dashboard_api(self, department_id, fiscal_year_id=None, **kw):
+        """API endpoint for department dashboard data"""
+        data = self._prepare_department_dashboard_data(
+            department_id=department_id,
+            fiscal_year_id=fiscal_year_id,
+        )
+        return data
+
     def _prepare_filter_options(self, **kw):
         """Prepare filter options for the dashboard template (JSON for OWL)"""
         FiscalYear = request.env["account.fiscal.year"].sudo()
@@ -220,6 +251,7 @@ class KmitlProjectDashboard(http.Controller):
             total_budget = budget_source_1 + budget_source_2 + budget_other
 
             table_data.append({
+                "department_id": dept.id,
                 "department_code": dept.code,
                 "department_name": dept.name,
                 "budget_source_1": budget_source_1,
@@ -263,3 +295,119 @@ class KmitlProjectDashboard(http.Controller):
                 continue
 
         return None
+
+    def _prepare_department_filter_options(self, department, **kw):
+        """Prepare filter options for department dashboard"""
+        FiscalYear = request.env["account.fiscal.year"].sudo()
+
+        # Fiscal years - sorted descending (newest first)
+        fiscal_years = FiscalYear.search([], order="date_from desc")
+
+        # Default to latest fiscal year if not specified
+        fiscal_year_id = kw.get("fiscal_year_id")
+        if not fiscal_year_id and fiscal_years:
+            fiscal_year_id = str(fiscal_years[0].id)
+
+        fiscal_years_json = json.dumps([
+            {"id": fy.id, "name": fy.name}
+            for fy in fiscal_years
+        ])
+
+        return {
+            "department_id": department.id,
+            "department_name": department.name,
+            "department_code": department.code,
+            "fiscal_years_json": fiscal_years_json,
+            "current_fiscal_year_id": fiscal_year_id or "",
+        }
+
+    def _prepare_department_dashboard_data(self, department_id, fiscal_year_id=None):
+        """Prepare department dashboard data for API response"""
+        Project = request.env["kmitl.project"].sudo()
+        AnalyticAccount = request.env["account.analytic.account"].sudo()
+
+        department = AnalyticAccount.browse(department_id)
+        if not department.exists():
+            return {"error": "Department not found"}
+
+        # Build domain for this department
+        domain = self._build_project_domain(
+            fiscal_year_id=fiscal_year_id,
+            department_id=department_id,
+        )
+
+        projects = Project.search(domain)
+
+        # Calculate impact statistics
+        impact_stats = self._calculate_impact_stats(projects)
+
+        # Prepare project list table
+        projects_table = self._prepare_projects_table(projects)
+
+        return {
+            "impact_stats": impact_stats,
+            "projects_table": projects_table,
+        }
+
+    def _prepare_projects_table(self, projects):
+        """Prepare project list table data for department dashboard"""
+        source_1 = request.env.ref(
+            "account_analytic_kmitl.source_1", raise_if_not_found=False
+        )
+        source_2 = request.env.ref(
+            "account_analytic_kmitl.source_2", raise_if_not_found=False
+        )
+
+        source_1_id = source_1.id if source_1 else None
+        source_2_id = source_2.id if source_2 else None
+
+        table_data = []
+
+        for proj in projects:
+            budget = proj.budget_amount or 0
+            source_id = self._get_source_id_from_distribution(proj)
+
+            budget_source_1 = budget if source_id == source_1_id else 0
+            budget_source_2 = budget if source_id == source_2_id else 0
+            budget_other = budget if source_id not in [source_1_id, source_2_id] else 0
+
+            # Collect strategic alignment badges
+            badges = []
+            if proj.impact_id:
+                badges.append({
+                    "text": proj.impact_id.name,
+                    "color": "info",
+                })
+            if proj.global_index_id:
+                badges.append({
+                    "text": proj.global_index_id.name,
+                    "color": "primary",
+                })
+            if proj.fight_id:
+                badges.append({
+                    "text": proj.fight_id.name,
+                    "color": "secondary",
+                })
+
+            table_data.append({
+                "id": proj.id,
+                "name": proj.name,
+                "budget_source_1": budget_source_1,
+                "budget_source_2": budget_source_2,
+                "budget_other": budget_other,
+                "q1": "-",
+                "q2": "-",
+                "q3": "-",
+                "q4": "-",
+                "total_actual": "-",
+                "state": proj.state,
+                "state_display": dict(proj._fields["state"].selection).get(
+                    proj.state, proj.state
+                ),
+                "badges": badges,
+                "write_date": proj.write_date.strftime("%d/%m/%Y %H:%M")
+                if proj.write_date
+                else "-",
+            })
+
+        return table_data

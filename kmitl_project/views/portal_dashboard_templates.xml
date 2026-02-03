@@ -12,4 +12,18 @@
             </div>
         </t>
     </template>
+
+    <!-- Department Dashboard Template - OWL Component Mount Point -->
+    <template id="portal_department_dashboard" name="KMITL Department Dashboard">
+        <t t-call="portal.portal_layout">
+            <!-- OWL Component Mount Point -->
+            <div id="department_dashboard_owl"
+                 t-att-data-department-id="department_id"
+                 t-att-data-department-name="department_name"
+                 t-att-data-department-code="department_code"
+                 t-att-data-fiscal-years="fiscal_years_json"
+                 t-att-data-initial-fiscal-year-id="current_fiscal_year_id">
+            </div>
+        </t>
+    </template>
 </odoo>
