@@ -9,10 +9,14 @@
                 <field name="name" />
                 <field name="partner_id" />
                 <field name="date" />
+                <field name="account_fiscal_year_id" options="{'no_open': True}" />
                 <field name="payment_type" />
                 <field name="ref" />
                 <field name="amount_total" />
                 <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'submitted'" decoration-success="state in ('approved', 'done')" />
+                <field name="main_exception_id" />
+                <field name="budget_commitment_id" optional="hide" />
+                <field name="source_analytic_id" optional="show" />
             </tree>
         </field>
     </record>
@@ -32,6 +36,26 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,submitted,validated" />
 
                 </header>
+                <!-- Exception Alert -->
+                <div
+                    class="alert alert-danger"
+                    role="alert"
+                    style="margin-bottom:0px;"
+                    attrs="{'invisible': [('exceptions_summary','=',False)]}"
+                >
+                    <p>
+                        <strong>There are exceptions blocking this Account Move Request:</strong>
+                    </p>
+                    <field name="exceptions_summary" />
+                    <button
+                        name="action_ignore_exceptions"
+                        type="object"
+                        class="btn-danger"
+                        string="Ignore Exceptions"
+                        help="Click here to be able to confirm this Account Move Request regardless of the exceptions."
+                        groups="base_exception.group_exception_rule_manager"
+                    />
+                </div>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_bill" type="object" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible': [('bill_count', '=', 0)]}">
@@ -54,11 +78,25 @@
                             <field name="is_company" readonly="1" />
                             <field name="partner_bank_id" context="{'default_partner_id': partner_id}" />
                             <field name="date" />
+                            <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}" />
                             <field name="payment_type" required="1" />
                             <field name="ref" />
+                            <field
+                                name="ignore_exception"
+                                states="to_approve"
+                                groups='base_exception.group_exception_rule_manager'
+                            />
+                            <field name="exception_ids" widget="many2many_tags" readonly="True" />
                         </group>
                         <group>
                             <field name="company_id" groups="base.group_multi_company" />
+                            <field name="budget_commitment_id" required="1" />
+                            <field name="source_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
+                            <field name="department_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
+                            <field name="fund_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
+                            <field name="activity_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
+                            <field name="budget_account_id" readonly="1" required="1" options="{'no_create': True, 'no_open': True}" />
+                            <field name="analytic_distribution" invisible="1"/>
                         </group>
                     </group>
                     <notebook>
@@ -71,6 +109,7 @@
                                     <field name="quantity" />
                                     <field name="price_unit" />
                                     <field name="tax_ids" widget="many2many_tags" />
+                                    <field name="wht_tax_id" optional="show"/>
                                     <field name="account_id" />
                                     <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting" />
                                     <field name="price_subtotal" />
@@ -106,11 +145,20 @@
             <search string="Move Requests">
                 <field name="name" string="Name" filter_domain="['|', ('name', 'ilike', self), ('ref', 'ilike', self)]" />
                 <field name="partner_id" />
+                <field name="account_fiscal_year_id" />
+                <field name="source_analytic_id" domain="[('root_plan_id.code', '=', 'sources')]" />
                 <separator />
                 <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]" />
                 <filter string="Submitted" name="submitted" domain="[('state', '=', 'submitted')]" />
                 <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]" />
                 <filter string="Done" name="done" domain="[('state', '=', 'done')]" />
+                <separator />
+                <filter
+                    icon="fa-exclamation-circle"
+                    name="tofix"
+                    string="Blocked in Draft"
+                    domain="[('main_exception_id','!=',False)]"
+                />
                 <separator />
                 <filter name="date" string="Date" date="date" />
                 <group expand="0" string="Group By">

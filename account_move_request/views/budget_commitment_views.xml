@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- View budget.commitment form -->
-    <record id="view_budget_commitment_form_inheirt" model="ir.ui.view">
+    <record id="view_budget_commitment_form_inherit" model="ir.ui.view">
         <field name="name">view.budget.commitment.form (account.move.request)</field>
         <field name="model">budget.commitment</field>
         <field name="inherit_id" ref="budget.budget_commitment_form_view" />
