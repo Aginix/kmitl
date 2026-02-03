@@ -54,8 +54,8 @@
                         <div class="card stat-card h-100">
                             <div class="card-body text-center">
                                 <h6 class="card-subtitle text-muted mb-2">จำนวนโครงการทั้งหมด</h6>
-                                <h2 class="stat-number text-primary">
-                                    <t t-out="impact_stats.get('total', 0)"/>
+                                <h2 class="stat-number text-primary" id="stat-total">
+                                    <span class="placeholder-glow"><span class="placeholder col-4"></span></span>
                                 </h2>
                             </div>
                         </div>
@@ -66,8 +66,8 @@
                         <div class="card stat-card h-100">
                             <div class="card-body text-center">
                                 <h6 class="card-subtitle text-muted mb-2">Education</h6>
-                                <h2 class="stat-number text-info">
-                                    <t t-out="impact_stats.get('education', 0)"/>
+                                <h2 class="stat-number text-info" id="stat-education">
+                                    <span class="placeholder-glow"><span class="placeholder col-4"></span></span>
                                 </h2>
                             </div>
                         </div>
@@ -78,8 +78,8 @@
                         <div class="card stat-card h-100">
                             <div class="card-body text-center">
                                 <h6 class="card-subtitle text-muted mb-2">Academic</h6>
-                                <h2 class="stat-number text-success">
-                                    <t t-out="impact_stats.get('academic', 0)"/>
+                                <h2 class="stat-number text-success" id="stat-academic">
+                                    <span class="placeholder-glow"><span class="placeholder col-4"></span></span>
                                 </h2>
                             </div>
                         </div>
@@ -90,8 +90,8 @@
                         <div class="card stat-card h-100">
                             <div class="card-body text-center">
                                 <h6 class="card-subtitle text-muted mb-2">Industrial</h6>
-                                <h2 class="stat-number text-warning">
-                                    <t t-out="impact_stats.get('industrial', 0)"/>
+                                <h2 class="stat-number text-warning" id="stat-industrial">
+                                    <span class="placeholder-glow"><span class="placeholder col-4"></span></span>
                                 </h2>
                             </div>
                         </div>
@@ -102,8 +102,8 @@
                         <div class="card stat-card h-100">
                             <div class="card-body text-center">
                                 <h6 class="card-subtitle text-muted mb-2">Social</h6>
-                                <h2 class="stat-number text-danger">
-                                    <t t-out="impact_stats.get('social', 0)"/>
+                                <h2 class="stat-number text-danger" id="stat-social">
+                                    <span class="placeholder-glow"><span class="placeholder col-4"></span></span>
                                 </h2>
                             </div>
                         </div>
@@ -151,46 +151,14 @@
                                                 <th class="text-center">ไตรมาส 4</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            <t t-foreach="department_budget_table" t-as="row">
-                                                <tr>
-                                                    <td>
-                                                        [<t t-out="row['department'].code"/>]
-                                                        <t t-out="row['department'].name"/>
-                                                    </td>
-                                                    <td class="text-end">
-                                                        <t t-out="'{:,.2f}'.format(row['budget_source_1'])"/>
-                                                    </td>
-                                                    <td class="text-end">
-                                                        <t t-out="'{:,.2f}'.format(row['budget_source_2'])"/>
-                                                    </td>
-                                                    <td class="text-end">
-                                                        <t t-out="'{:,.2f}'.format(row['budget_other'])"/>
-                                                    </td>
-                                                    <td class="text-center text-muted">
-                                                        <t t-out="row['q1']"/>
-                                                    </td>
-                                                    <td class="text-center text-muted">
-                                                        <t t-out="row['q2']"/>
-                                                    </td>
-                                                    <td class="text-center text-muted">
-                                                        <t t-out="row['q3']"/>
-                                                    </td>
-                                                    <td class="text-center text-muted">
-                                                        <t t-out="row['q4']"/>
-                                                    </td>
-                                                    <td class="text-end fw-bold">
-                                                        <t t-out="'{:,.2f}'.format(row['total_budget'])"/>
-                                                    </td>
-                                                </tr>
-                                            </t>
-                                            <t t-if="not department_budget_table">
-                                                <tr>
-                                                    <td colspan="9" class="text-center py-4 text-muted">
-                                                        ไม่มีข้อมูล
-                                                    </td>
-                                                </tr>
-                                            </t>
+                                        <tbody id="budget-table-body">
+                                            <tr>
+                                                <td colspan="9" class="text-center py-4">
+                                                    <div class="spinner-border text-primary" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -200,11 +168,6 @@
                 </div>
 
             </div>
-
-            <!-- Chart Data for JavaScript -->
-            <script type="text/javascript">
-                var chartData = <t t-out="chart_data" t-options="{'widget': 'raw'}"/>;
-            </script>
         </t>
     </template>
 </odoo>

@@ -12,13 +12,21 @@ class KmitlProjectDashboard(http.Controller):
 
     @http.route("/project/dashboard", type="http", auth="public", website=True)
     def dashboard(self, **kw):
-        """Main dashboard page with Impact-based statistics"""
-        values = self._prepare_dashboard_values(**kw)
+        """Main dashboard page - renders template with filter options"""
+        values = self._prepare_filter_options(**kw)
         return request.render("kmitl_project.portal_dashboard", values)
 
-    def _prepare_dashboard_values(self, **kw):
-        """Prepare all values for the dashboard template"""
-        Project = request.env["kmitl.project"].sudo()
+    @http.route("/project/dashboard/api", type="json", auth="public", csrf=False)
+    def dashboard_api(self, fiscal_year_id=None, department_id=None, **kw):
+        """API endpoint for dashboard data"""
+        data = self._prepare_dashboard_data(
+            fiscal_year_id=fiscal_year_id,
+            department_id=department_id,
+        )
+        return data
+
+    def _prepare_filter_options(self, **kw):
+        """Prepare filter options for the dashboard template"""
         FiscalYear = request.env["account.fiscal.year"].sudo()
         AnalyticAccount = request.env["account.analytic.account"].sudo()
 
@@ -42,10 +50,34 @@ class KmitlProjectDashboard(http.Controller):
             order="code",
         )
 
+        return {
+            "fiscal_years": fiscal_years,
+            "departments": departments,
+            "current_fiscal_year_id": fiscal_year_id or "",
+            "current_department_id": kw.get("department_id", ""),
+        }
+
+    def _prepare_dashboard_data(self, fiscal_year_id=None, department_id=None):
+        """Prepare all dashboard data for API response"""
+        Project = request.env["kmitl.project"].sudo()
+        AnalyticAccount = request.env["account.analytic.account"].sudo()
+
+        # Departments - only root level (parent_id is null)
+        departments_plan = request.env.ref(
+            "account_analytic_kmitl.analytic_plan_departments"
+        )
+        departments = AnalyticAccount.search(
+            [
+                ("root_plan_id", "=", departments_plan.id),
+                ("parent_id", "=", False),
+            ],
+            order="code",
+        )
+
         # Build domain excluding draft and cancel states
         domain = self._build_project_domain(
             fiscal_year_id=fiscal_year_id,
-            department_id=kw.get("department_id"),
+            department_id=department_id,
         )
 
         # Get all projects matching filters
@@ -65,19 +97,8 @@ class KmitlProjectDashboard(http.Controller):
         )
 
         return {
-            # Filter options
-            "fiscal_years": fiscal_years,
-            "departments": departments,
-            # Current filter values
-            "current_fiscal_year_id": fiscal_year_id or "",
-            "current_department_id": kw.get("department_id", ""),
-            # Projects data
-            "projects": projects,
-            # Impact statistics
             "impact_stats": impact_stats,
-            # Chart data (JSON for JavaScript)
             "chart_data": chart_data,
-            # Department budget table
             "department_budget_table": department_budget_table,
         }
 
@@ -147,7 +168,7 @@ class KmitlProjectDashboard(http.Controller):
             if value > 0
         ]
 
-        return json.dumps({"budget_by_impact": pie_data})
+        return {"budget_by_impact": pie_data}
 
     def _prepare_department_budget_table(self, departments, projects):
         """Prepare department budget table data"""
@@ -189,7 +210,8 @@ class KmitlProjectDashboard(http.Controller):
             total_budget = budget_source_1 + budget_source_2 + budget_other
 
             table_data.append({
-                "department": dept,
+                "department_code": dept.code,
+                "department_name": dept.name,
                 "budget_source_1": budget_source_1,
                 "budget_source_2": budget_source_2,
                 "budget_other": budget_other,
