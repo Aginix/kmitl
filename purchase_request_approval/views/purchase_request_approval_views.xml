@@ -14,29 +14,32 @@
                 edit="0"
                 delete="0"
             >
-                <field name="account_fiscal_year_id" optional="hide" />
-                <field name="request_id" />
-                <field name="title" />
-                <field name="date_start" widget="date" />
-                <field name="name" />
-                <field name="activity_ids" widget="list_activity" optional="show" />
-                <field name="department_id" optional="hide" />
-                <field name="estimated_cost" optional="hide" />
-                <field name="procurement_type_id" optional="show" />
-                <field name="procurement_method_id" optional="show" />
-                <field
-                    name="state"
-                    widget="badge"
-                    decoration-success="state in ('approved')"
-                    decoration-muted="state == 'draft'"
-                    decoration-warning="state == 'to_approve'"
-                    decoration-danger="state == 'rejected'"
-                />
-                <field
-                    name="requested_by"
-                    widget="many2one_avatar_user"
-                    optional="show"
-                />
+            <field name="name" />
+            <field name="title" />
+            <field name="date_start" widget="date" />
+            <field name="approval_date" widget="date" />
+            <field name="estimated_cost" optional="show" />
+            <field name="procurement_type_id" optional="show" />
+            <field name="procurement_method_id" optional="show" />
+            <field name="request_id" />
+
+            <field name="activity_ids" widget="list_activity" optional="hide" />
+            <field
+                name="state"
+                widget="badge"
+                decoration-success="state in ('approved')"
+                decoration-muted="state == 'draft'"
+                decoration-warning="state == 'to_approve'"
+                decoration-danger="state == 'rejected'"
+            />
+            <field name="account_fiscal_year_id" optional="show" />
+            <field name="department_id" optional="show" />
+            <field name="purchase_id"/>
+            <field
+                name="requested_by"
+                widget="many2one_avatar_user"
+                optional="show"
+            />
             </tree>
         </field>
     </record>
@@ -206,22 +209,22 @@
                 />
                 <group expand="1" string="Group By">
                     <filter
+                        name="group_by_account_fiscal_year_id"
+                        string="Fiscal Year"
+                        domain="[]"
+                        context="{'group_by':'account_fiscal_year_id'}"
+                    />
+                    <filter
+                        name="group_by_department_id"
+                        string="Department"
+                        domain="[]"
+                        context="{'group_by':'department_id'}"
+                    />
+                    <filter
                         name="group_by_state"
                         string="Status"
                         domain="[]"
                         context="{'group_by':'state'}"
-                    />
-                    <filter
-                        name="group_by_procurement_method_id"
-                        string="Productment Method"
-                        domain="[]"
-                        context="{'group_by':'procurement_method_id'}"
-                    />
-                    <filter
-                        name="group_by_procurement_type_id"
-                        string="Productment Type"
-                        domain="[]"
-                        context="{'group_by':'procurement_type_id'}"
                     />
                 </group>
                 <searchpanel>

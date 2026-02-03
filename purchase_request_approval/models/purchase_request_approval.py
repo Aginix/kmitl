@@ -36,6 +36,10 @@ class PurchaseRequestApproval(models.Model):
         check_company=True,
     )
 
+    purchase_id = fields.Many2one(
+        request_id.purchase_id
+    )
+
     name = fields.Char(
         string="Approval Reference",
         required=True,

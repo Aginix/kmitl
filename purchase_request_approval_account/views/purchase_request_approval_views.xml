@@ -75,8 +75,8 @@
             ref="purchase_request_approval.view_purchase_request_approval_tree"
         />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='state']" position="after">
-                <field name="billing_status" optional="hide" />
+            <xpath expr="//field[@name='requested_by']" position="before">
+                <field name="billing_status" optional="show" />
             </xpath>
         </field>
     </record>
