@@ -19,9 +19,9 @@
             <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
         </record>
 
-        <!-- User All: Can view all projects in company -->
+        <!-- Officer: Staff who manage all projects (full CRUD) -->
         <record id="group_kmitl_project_user_all" model="res.groups">
-            <field name="name">User: All Projects (Read)</field>
+            <field name="name">Officer</field>
             <field name="category_id" ref="module_category_kmitl_project"/>
             <field name="implied_ids" eval="[(4, ref('group_kmitl_project_user'))]"/>
         </record>
@@ -80,16 +80,12 @@
             <field name="perm_unlink" eval="True"/>
         </record>
 
-        <!-- Rule 3: User All - Read all projects in company -->
+        <!-- Rule 3: Officer - Full access to all projects -->
         <record id="kmitl_project_user_all_rule" model="ir.rule">
-            <field name="name">KMITL Project User: All Projects (Read)</field>
+            <field name="name">KMITL Project Officer: Full Access</field>
             <field name="model_id" ref="model_kmitl_project"/>
             <field name="groups" eval="[(4, ref('group_kmitl_project_user_all'))]"/>
             <field name="domain_force">[(1, '=', 1)]</field>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="False"/>
         </record>
 
         <!-- Rule 4: Manager - Full access to all projects -->
@@ -116,6 +112,13 @@
             ]</field>
         </record>
 
+        <record id="project_plan_officer_rule" model="ir.rule">
+            <field name="name">Project Plan: Officer Access</field>
+            <field name="model_id" ref="model_project_plan"/>
+            <field name="groups" eval="[(4, ref('group_kmitl_project_user_all'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
         <record id="project_plan_manager_rule" model="ir.rule">
             <field name="name">Project Plan: Manager Access</field>
             <field name="model_id" ref="model_project_plan"/>
@@ -133,6 +136,13 @@
                 ('project_id.user_id', '=', user.id),
                 ('project_id.creating_user_id', '=', user.id)
             ]</field>
+        </record>
+
+        <record id="project_target_officer_rule" model="ir.rule">
+            <field name="name">Project Target: Officer Access</field>
+            <field name="model_id" ref="model_project_target"/>
+            <field name="groups" eval="[(4, ref('group_kmitl_project_user_all'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
         </record>
 
         <record id="project_target_manager_rule" model="ir.rule">
@@ -154,6 +164,13 @@
             ]</field>
         </record>
 
+        <record id="project_output_officer_rule" model="ir.rule">
+            <field name="name">Project Output: Officer Access</field>
+            <field name="model_id" ref="model_project_output"/>
+            <field name="groups" eval="[(4, ref('group_kmitl_project_user_all'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
         <record id="project_output_manager_rule" model="ir.rule">
             <field name="name">Project Output: Manager Access</field>
             <field name="model_id" ref="model_project_output"/>
@@ -171,6 +188,13 @@
                 ('project_id.user_id', '=', user.id),
                 ('project_id.creating_user_id', '=', user.id)
             ]</field>
+        </record>
+
+        <record id="project_expected_outcome_officer_rule" model="ir.rule">
+            <field name="name">Project Expected Outcome: Officer Access</field>
+            <field name="model_id" ref="model_project_expected_outcome"/>
+            <field name="groups" eval="[(4, ref('group_kmitl_project_user_all'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
         </record>
 
         <record id="project_expected_outcome_manager_rule" model="ir.rule">
