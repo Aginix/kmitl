@@ -124,6 +124,81 @@
                     </div>
                 </div>
 
+                <!-- Department Budget Table -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                สรุปงบประมาณตามหน่วยงาน
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover mb-0 budget-table">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th rowspan="2" class="align-middle text-center" style="min-width: 200px;">หน่วยงาน</th>
+                                                <th colspan="3" class="text-center">งบประมาณที่ได้รับ</th>
+                                                <th colspan="4" class="text-center">งบประมาณที่ใช้จริง</th>
+                                                <th rowspan="2" class="align-middle text-center">งบประมาณทั้งหมด</th>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-center">เงินแผ่นดิน</th>
+                                                <th class="text-center">เงินรายได้</th>
+                                                <th class="text-center">อื่น ๆ</th>
+                                                <th class="text-center">ไตรมาส 1</th>
+                                                <th class="text-center">ไตรมาส 2</th>
+                                                <th class="text-center">ไตรมาส 3</th>
+                                                <th class="text-center">ไตรมาส 4</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="department_budget_table" t-as="row">
+                                                <tr>
+                                                    <td>
+                                                        [<t t-out="row['department'].code"/>]
+                                                        <t t-out="row['department'].name"/>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <t t-out="'{:,.2f}'.format(row['budget_source_1'])"/>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <t t-out="'{:,.2f}'.format(row['budget_source_2'])"/>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <t t-out="'{:,.2f}'.format(row['budget_other'])"/>
+                                                    </td>
+                                                    <td class="text-center text-muted">
+                                                        <t t-out="row['q1']"/>
+                                                    </td>
+                                                    <td class="text-center text-muted">
+                                                        <t t-out="row['q2']"/>
+                                                    </td>
+                                                    <td class="text-center text-muted">
+                                                        <t t-out="row['q3']"/>
+                                                    </td>
+                                                    <td class="text-center text-muted">
+                                                        <t t-out="row['q4']"/>
+                                                    </td>
+                                                    <td class="text-end fw-bold">
+                                                        <t t-out="'{:,.2f}'.format(row['total_budget'])"/>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                            <t t-if="not department_budget_table">
+                                                <tr>
+                                                    <td colspan="9" class="text-center py-4 text-muted">
+                                                        ไม่มีข้อมูล
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <!-- Chart Data for JavaScript -->

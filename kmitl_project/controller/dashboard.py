@@ -57,6 +57,13 @@ class KmitlProjectDashboard(http.Controller):
         # Prepare pie chart data for budget by impact
         chart_data = self._prepare_pie_chart_data(projects)
 
+        # Prepare department budget table (uses fiscal year filter only)
+        dept_domain = self._build_project_domain(fiscal_year_id=fiscal_year_id)
+        all_fiscal_projects = Project.search(dept_domain)
+        department_budget_table = self._prepare_department_budget_table(
+            departments, all_fiscal_projects
+        )
+
         return {
             # Filter options
             "fiscal_years": fiscal_years,
@@ -70,6 +77,8 @@ class KmitlProjectDashboard(http.Controller):
             "impact_stats": impact_stats,
             # Chart data (JSON for JavaScript)
             "chart_data": chart_data,
+            # Department budget table
+            "department_budget_table": department_budget_table,
         }
 
     def _build_project_domain(self, **kw):
@@ -128,7 +137,7 @@ class KmitlProjectDashboard(http.Controller):
 
         for proj in projects:
             impact_name = proj.impact_id.name if proj.impact_id else "ไม่ระบุ"
-            budget = sum(p.amount for p in proj.plan_ids)
+            budget = proj.budget_amount or 0
             impact_budgets[impact_name] = impact_budgets.get(impact_name, 0) + budget
 
         # Format for ECharts pie chart
@@ -139,3 +148,86 @@ class KmitlProjectDashboard(http.Controller):
         ]
 
         return json.dumps({"budget_by_impact": pie_data})
+
+    def _prepare_department_budget_table(self, departments, projects):
+        """Prepare department budget table data"""
+        # Get source references
+        source_1 = request.env.ref(
+            "account_analytic_kmitl.source_1", raise_if_not_found=False
+        )  # เงินแผ่นดิน
+        source_2 = request.env.ref(
+            "account_analytic_kmitl.source_2", raise_if_not_found=False
+        )  # เงินรายได้
+
+        source_1_id = source_1.id if source_1 else None
+        source_2_id = source_2.id if source_2 else None
+
+        table_data = []
+
+        for dept in departments:
+            # Get projects for this department (match by analytic_distribution)
+            dept_projects = projects.filtered(
+                lambda p, d=dept: self._project_matches_department(p, d)
+            )
+
+            # Calculate budget by source
+            budget_source_1 = 0.0  # เงินแผ่นดิน
+            budget_source_2 = 0.0  # เงินรายได้
+            budget_other = 0.0  # อื่น ๆ
+
+            for proj in dept_projects:
+                budget = proj.budget_amount or 0
+                source_id = self._get_source_id_from_distribution(proj)
+
+                if source_id == source_1_id:
+                    budget_source_1 += budget
+                elif source_id == source_2_id:
+                    budget_source_2 += budget
+                else:
+                    budget_other += budget
+
+            total_budget = budget_source_1 + budget_source_2 + budget_other
+
+            table_data.append({
+                "department": dept,
+                "budget_source_1": budget_source_1,
+                "budget_source_2": budget_source_2,
+                "budget_other": budget_other,
+                "q1": "-",
+                "q2": "-",
+                "q3": "-",
+                "q4": "-",
+                "total_budget": total_budget,
+            })
+
+        return table_data
+
+    def _project_matches_department(self, project, department):
+        """Check if project belongs to department via analytic_distribution"""
+        if not project.analytic_distribution:
+            return False
+        return str(department.id) in str(project.analytic_distribution)
+
+    def _get_source_id_from_distribution(self, project):
+        """Extract source analytic ID from project's analytic_distribution"""
+        if not project.analytic_distribution:
+            return None
+
+        # Get source plan
+        sources_plan = request.env.ref(
+            "account_analytic_kmitl.analytic_plan_sources", raise_if_not_found=False
+        )
+        if not sources_plan:
+            return None
+
+        # Find source in distribution
+        for key in project.analytic_distribution.keys():
+            try:
+                analytic_id = int(key)
+                analytic = request.env["account.analytic.account"].sudo().browse(analytic_id)
+                if analytic.exists() and analytic.root_plan_id.id == sources_plan.id:
+                    return analytic_id
+            except (ValueError, TypeError):
+                continue
+
+        return None

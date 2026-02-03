@@ -116,6 +116,7 @@
                             </group>
                             <group name="budget" string="งบประมาณ">
                                 <field name="budget_account_id" required="1"/>
+                                <field name="budget_amount" widget="monetary" options="{'currency_field': 'currency_id'}" />
                                 <field name="activity_analytic_id" required="1"/>
                                 <field name="fund_analytic_id" required="1"/>
                                 <field name="department_analytic_id" required="1"/>

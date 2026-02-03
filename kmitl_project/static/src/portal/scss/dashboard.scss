@@ -58,6 +58,25 @@
         border-radius: 8px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
+
+    .budget-table {
+        font-size: 0.875rem;
+
+        thead th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        tbody td {
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background-color: rgba(230, 126, 34, 0.05);
+        }
+    }
 }
 
 // Responsive adjustments

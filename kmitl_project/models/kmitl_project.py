@@ -305,6 +305,15 @@ class KmitlProject(models.Model):
         states=READONLY_STATES
     )
 
+    budget_amount = fields.Float(
+        string="งบประมาณ",
+        digits="Product Price",
+        tracking=True,
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+        help="งบประมาณที่ได้รับจัดสรร",
+    )
+
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="กิจกรรม",
