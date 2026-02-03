@@ -33,8 +33,8 @@ class KmitlProjectDashboard(http.Controller):
     )
     def department_dashboard(self, department_id, **kw):
         """Department-specific dashboard page"""
-        AnalyticAccount = request.env["account.analytic.account"].sudo()
-        department = AnalyticAccount.browse(department_id)
+        Department = request.env["hr.department"].sudo()
+        department = Department.browse(department_id)
 
         if not department.exists():
             return request.redirect("/project/dashboard")
@@ -59,7 +59,7 @@ class KmitlProjectDashboard(http.Controller):
     def _prepare_filter_options(self, **kw):
         """Prepare filter options for the dashboard template (JSON for OWL)"""
         FiscalYear = request.env["account.fiscal.year"].sudo()
-        AnalyticAccount = request.env["account.analytic.account"].sudo()
+        Department = request.env["hr.department"].sudo()
 
         # Fiscal years - sorted descending (newest first)
         fiscal_years = FiscalYear.search([], order="date_from desc")
@@ -70,15 +70,9 @@ class KmitlProjectDashboard(http.Controller):
             fiscal_year_id = str(fiscal_years[0].id)
 
         # Departments - only root level (parent_id is null)
-        departments_plan = request.env.ref(
-            "account_analytic_kmitl.analytic_plan_departments"
-        )
-        departments = AnalyticAccount.search(
-            [
-                ("root_plan_id", "=", departments_plan.id),
-                ("parent_id", "=", False),
-            ],
-            order="code",
+        departments = Department.search(
+            [("parent_id", "=", False)],
+            order="name",
         )
 
         # Convert to JSON for OWL component
@@ -87,7 +81,7 @@ class KmitlProjectDashboard(http.Controller):
             for fy in fiscal_years
         ])
         departments_json = json.dumps([
-            {"id": dept.id, "code": dept.code, "name": dept.name}
+            {"id": dept.id, "code": dept.code or "", "name": dept.name}
             for dept in departments
         ])
 
@@ -101,18 +95,12 @@ class KmitlProjectDashboard(http.Controller):
     def _prepare_dashboard_data(self, fiscal_year_id=None, department_id=None):
         """Prepare all dashboard data for API response"""
         Project = request.env["kmitl.project"].sudo()
-        AnalyticAccount = request.env["account.analytic.account"].sudo()
+        Department = request.env["hr.department"].sudo()
 
         # Departments - only root level (parent_id is null)
-        departments_plan = request.env.ref(
-            "account_analytic_kmitl.analytic_plan_departments"
-        )
-        departments = AnalyticAccount.search(
-            [
-                ("root_plan_id", "=", departments_plan.id),
-                ("parent_id", "=", False),
-            ],
-            order="code",
+        departments = Department.search(
+            [("parent_id", "=", False)],
+            order="name",
         )
 
         # Build domain excluding draft and cancel states
@@ -154,8 +142,7 @@ class KmitlProjectDashboard(http.Controller):
             domain.append(("account_fiscal_year_id", "=", int(kw["fiscal_year_id"])))
 
         if kw.get("department_id"):
-            dept_id = str(kw["department_id"])
-            domain.append(("analytic_distribution", "ilike", dept_id))
+            domain.append(("department_id", "=", int(kw["department_id"])))
 
         return domain
 
@@ -212,7 +199,7 @@ class KmitlProjectDashboard(http.Controller):
         return {"budget_by_impact": pie_data}
 
     def _prepare_department_budget_table(self, departments, projects):
-        """Prepare department budget table data"""
+        """Prepare department budget table data (hr.department)"""
         # Get source references
         source_1 = request.env.ref(
             "account_analytic_kmitl.source_1", raise_if_not_found=False
@@ -227,9 +214,9 @@ class KmitlProjectDashboard(http.Controller):
         table_data = []
 
         for dept in departments:
-            # Get projects for this department (match by analytic_distribution)
+            # Get projects for this department (match by department_id)
             dept_projects = projects.filtered(
-                lambda p, d=dept: self._project_matches_department(p, d)
+                lambda p, d=dept: p.department_id.id == d.id
             )
 
             # Calculate budget by source
@@ -252,7 +239,7 @@ class KmitlProjectDashboard(http.Controller):
 
             table_data.append({
                 "department_id": dept.id,
-                "department_code": dept.code,
+                "department_code": dept.code or "",
                 "department_name": dept.name,
                 "budget_source_1": budget_source_1,
                 "budget_source_2": budget_source_2,
@@ -265,12 +252,6 @@ class KmitlProjectDashboard(http.Controller):
             })
 
         return table_data
-
-    def _project_matches_department(self, project, department):
-        """Check if project belongs to department via analytic_distribution"""
-        if not project.analytic_distribution:
-            return False
-        return str(department.id) in str(project.analytic_distribution)
 
     def _get_source_id_from_distribution(self, project):
         """Extract source analytic ID from project's analytic_distribution"""
@@ -297,7 +278,7 @@ class KmitlProjectDashboard(http.Controller):
         return None
 
     def _prepare_department_filter_options(self, department, **kw):
-        """Prepare filter options for department dashboard"""
+        """Prepare filter options for department dashboard (hr.department)"""
         FiscalYear = request.env["account.fiscal.year"].sudo()
 
         # Fiscal years - sorted descending (newest first)
@@ -316,22 +297,22 @@ class KmitlProjectDashboard(http.Controller):
         return {
             "department_id": department.id,
             "department_name": department.name,
-            "department_code": department.code,
+            "department_code": department.code or "",
             "fiscal_years_json": fiscal_years_json,
             "current_fiscal_year_id": fiscal_year_id or "",
         }
 
     def _prepare_department_dashboard_data(self, department_id, fiscal_year_id=None):
-        """Prepare department dashboard data for API response"""
+        """Prepare department dashboard data for API response (hr.department)"""
         Project = request.env["kmitl.project"].sudo()
-        AnalyticAccount = request.env["account.analytic.account"].sudo()
+        Department = request.env["hr.department"].sudo()
 
-        department = AnalyticAccount.browse(department_id)
+        department = Department.browse(department_id)
         if not department.exists():
             return {"error": "Department not found"}
 
-        # Build domain for this department
-        domain = self._build_project_domain(
+        # Build domain for this department (using hr.department)
+        domain = self._build_project_domain_for_hr_department(
             fiscal_year_id=fiscal_year_id,
             department_id=department_id,
         )
@@ -348,6 +329,21 @@ class KmitlProjectDashboard(http.Controller):
             "impact_stats": impact_stats,
             "projects_table": projects_table,
         }
+
+    def _build_project_domain_for_hr_department(self, fiscal_year_id=None, department_id=None):
+        """Build search domain for hr.department filtering"""
+        domain = [
+            ("active", "=", True),
+            ("state", "not in", ["draft", "cancel"]),
+        ]
+
+        if fiscal_year_id:
+            domain.append(("account_fiscal_year_id", "=", int(fiscal_year_id)))
+
+        if department_id:
+            domain.append(("department_id", "=", int(department_id)))
+
+        return domain
 
     def _prepare_projects_table(self, projects):
         """Prepare project list table data for department dashboard"""
