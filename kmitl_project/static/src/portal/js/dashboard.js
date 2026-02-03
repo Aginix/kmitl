@@ -23,7 +23,7 @@ class ProjectDashboard extends Component {
                             <select class="form-select" t-on-change="onFiscalYearChange">
                                 <t t-foreach="props.fiscalYears" t-as="fy" t-key="fy.id">
                                     <option t-att-value="fy.id"
-                                            t-att-selected="String(fy.id) === String(state.fiscalYearId)">
+                                            t-att-selected="isFiscalYearSelected(fy.id)">
                                         <t t-esc="fy.name"/>
                                     </option>
                                 </t>
@@ -37,7 +37,7 @@ class ProjectDashboard extends Component {
                                 <option value="">ทั้งหมด</option>
                                 <t t-foreach="props.departments" t-as="dept" t-key="dept.id">
                                     <option t-att-value="dept.id"
-                                            t-att-selected="String(dept.id) === String(state.departmentId)">
+                                            t-att-selected="isDepartmentSelected(dept.id)">
                                         [<t t-esc="dept.code"/>] <t t-esc="dept.name"/>
                                     </option>
                                 </t>
@@ -447,6 +447,14 @@ class ProjectDashboard extends Component {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         });
+    }
+
+    isFiscalYearSelected(fyId) {
+        return String(fyId) === String(this.state.fiscalYearId);
+    }
+
+    isDepartmentSelected(deptId) {
+        return String(deptId) === String(this.state.departmentId);
     }
 }
 
