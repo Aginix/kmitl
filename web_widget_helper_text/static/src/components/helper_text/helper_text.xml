@@ -1,9 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates xml:space="preserve">
+    <!-- Template for Form View (editable mode) -->
     <t t-name="web.HelperText" t-inherit="web.Many2OneField" owl="1">
         <xpath expr="//div[hasclass('o_field_many2one_selection')]" position="after">
-            <div style="white-space: normal; word-break: break-word;" class="o_m2o_helper_text mt-2 text-muted small">
-                <t t-esc="value"/>
+            <t t-if="!props.readonly">
+                <div style="white-space: normal; word-break: break-word;" class="o_m2o_helper_text mt-2 text-muted small">
+                    <t t-esc="value"/>
+                </div>
+            </t>
+        </xpath>
+        <!-- Template for List View (readonly mode) -->
+        <xpath expr="//t[@t-if='props.readonly']/t[@t-if='!props.canOpen']/span" position="replace">
+            <div class="o_helper_text_wrapper">
+                <span>
+                    <span t-esc="displayName"/>
+                    <t t-foreach="extraLines" t-as="extraLine" t-key="extraLine_index">
+                        <br/>
+                        <span t-esc="extraLine"/>
+                    </t>
+                </span>
+                <div style="white-space: normal; word-break: break-word;" class="o_m2o_helper_text text-muted small">
+                    <t t-esc="value"/>
+                </div>
+            </div>
+        </xpath>
+        <xpath expr="//t[@t-if='props.readonly']/t[@t-else='']/a" position="replace">
+            <div class="o_helper_text_wrapper">
+                <a t-if="props.value"
+                   t-attf-class="o_form_uri #{classFromDecoration}"
+                   t-att-href="props.value ? '#id=' + props.value[0] + '&amp;model=' + relation : '#'"
+                   t-on-click.prevent="onClick">
+                    <span t-esc="displayName"/>
+                    <t t-foreach="extraLines" t-as="extraLine" t-key="extraLine_index">
+                        <br/>
+                        <span t-esc="extraLine"/>
+                    </t>
+                </a>
+                <span t-else="" t-esc="displayName"/>
+                <div style="white-space: normal; word-break: break-word;" class="o_m2o_helper_text text-muted small">
+                    <t t-esc="value"/>
+                </div>
             </div>
         </xpath>
     </t>
