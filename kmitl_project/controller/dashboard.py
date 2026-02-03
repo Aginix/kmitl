@@ -26,7 +26,7 @@ class KmitlProjectDashboard(http.Controller):
         return data
 
     def _prepare_filter_options(self, **kw):
-        """Prepare filter options for the dashboard template"""
+        """Prepare filter options for the dashboard template (JSON for OWL)"""
         FiscalYear = request.env["account.fiscal.year"].sudo()
         AnalyticAccount = request.env["account.analytic.account"].sudo()
 
@@ -50,9 +50,19 @@ class KmitlProjectDashboard(http.Controller):
             order="code",
         )
 
+        # Convert to JSON for OWL component
+        fiscal_years_json = json.dumps([
+            {"id": fy.id, "name": fy.name}
+            for fy in fiscal_years
+        ])
+        departments_json = json.dumps([
+            {"id": dept.id, "code": dept.code, "name": dept.name}
+            for dept in departments
+        ])
+
         return {
-            "fiscal_years": fiscal_years,
-            "departments": departments,
+            "fiscal_years_json": fiscal_years_json,
+            "departments_json": departments_json,
             "current_fiscal_year_id": fiscal_year_id or "",
             "current_department_id": kw.get("department_id", ""),
         }

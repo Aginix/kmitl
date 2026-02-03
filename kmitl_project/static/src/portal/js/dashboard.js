@@ -1,308 +1,484 @@
-odoo.define('kmitl_project.portal_dashboard', function (require) {
-    'use strict';
+/** @odoo-module **/
 
-    var publicWidget = require('web.public.widget');
-    var ajax = require('web.ajax');
+const { Component, useState, onMounted, onWillStart, mount, xml } = owl;
 
-    var DashboardWidget = publicWidget.Widget.extend({
-        selector: '#project_dashboard',
-        events: {
-            'change #fiscal_year_filter': '_onFilterChange',
-            'change #department_filter': '_onFilterChange',
-        },
+class ProjectDashboard extends Component {
+    static template = xml`
+        <div id="project_dashboard" class="container-fluid py-4">
+            <!-- Header Row: Title -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h1 class="mb-0 dashboard-title">โครงการหน่วยงาน</h1>
+                    <p class="text-muted mb-0">ภาพรวมโครงการ/กิจกรรม</p>
+                </div>
+            </div>
 
-        start: function () {
-            var self = this;
-            this.dashboardChart = null;
-            this.echartsLoaded = false;
+            <!-- Filter Row -->
+            <div class="card filter-card mb-4">
+                <div class="card-body py-3">
+                    <div class="row g-3 align-items-end">
+                        <!-- Fiscal Year Filter -->
+                        <div class="col-md-6">
+                            <label class="form-label small mb-1">ปีงบประมาณ</label>
+                            <select class="form-select" t-on-change="onFiscalYearChange">
+                                <t t-foreach="props.fiscalYears" t-as="fy" t-key="fy.id">
+                                    <option t-att-value="fy.id"
+                                            t-att-selected="String(fy.id) === String(state.fiscalYearId)">
+                                        <t t-esc="fy.name"/>
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
 
-            // Initialize filters from URL
+                        <!-- Department Filter -->
+                        <div class="col-md-6">
+                            <label class="form-label small mb-1">หน่วยงาน</label>
+                            <select class="form-select" t-on-change="onDepartmentChange">
+                                <option value="">ทั้งหมด</option>
+                                <t t-foreach="props.departments" t-as="dept" t-key="dept.id">
+                                    <option t-att-value="dept.id"
+                                            t-att-selected="String(dept.id) === String(state.departmentId)">
+                                        [<t t-esc="dept.code"/>] <t t-esc="dept.name"/>
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Cards Row -->
+            <div class="row mb-4 g-3">
+                <!-- Total Projects Card -->
+                <div class="col">
+                    <div class="card stat-card h-100">
+                        <div class="card-body text-center">
+                            <h6 class="card-subtitle text-muted mb-2">จำนวนโครงการทั้งหมด</h6>
+                            <h2 class="stat-number text-primary">
+                                <t t-if="state.loading">
+                                    <span class="placeholder-glow"><span class="placeholder col-4"></span></span>
+                                </t>
+                                <t t-elif="state.error">-</t>
+                                <t t-else="" t-esc="state.stats.total"/>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Education Impact Card -->
+                <div class="col">
+                    <div class="card stat-card h-100">
+                        <div class="card-body text-center">
+                            <h6 class="card-subtitle text-muted mb-2">Education</h6>
+                            <h2 class="stat-number text-info">
+                                <t t-if="state.loading">
+                                    <span class="placeholder-glow"><span class="placeholder col-4"></span></span>
+                                </t>
+                                <t t-elif="state.error">-</t>
+                                <t t-else="" t-esc="state.stats.education"/>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Academic Impact Card -->
+                <div class="col">
+                    <div class="card stat-card h-100">
+                        <div class="card-body text-center">
+                            <h6 class="card-subtitle text-muted mb-2">Academic</h6>
+                            <h2 class="stat-number text-success">
+                                <t t-if="state.loading">
+                                    <span class="placeholder-glow"><span class="placeholder col-4"></span></span>
+                                </t>
+                                <t t-elif="state.error">-</t>
+                                <t t-else="" t-esc="state.stats.academic"/>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Industrial Impact Card -->
+                <div class="col">
+                    <div class="card stat-card h-100">
+                        <div class="card-body text-center">
+                            <h6 class="card-subtitle text-muted mb-2">Industrial</h6>
+                            <h2 class="stat-number text-warning">
+                                <t t-if="state.loading">
+                                    <span class="placeholder-glow"><span class="placeholder col-4"></span></span>
+                                </t>
+                                <t t-elif="state.error">-</t>
+                                <t t-else="" t-esc="state.stats.industrial"/>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Impact Card -->
+                <div class="col">
+                    <div class="card stat-card h-100">
+                        <div class="card-body text-center">
+                            <h6 class="card-subtitle text-muted mb-2">Social</h6>
+                            <h2 class="stat-number text-danger">
+                                <t t-if="state.loading">
+                                    <span class="placeholder-glow"><span class="placeholder col-4"></span></span>
+                                </t>
+                                <t t-elif="state.error">-</t>
+                                <t t-else="" t-esc="state.stats.social"/>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pie Chart Row -->
+            <div class="row mb-4">
+                <div class="col-md-8 mx-auto">
+                    <div class="card">
+                        <div class="card-header">
+                            งบประมาณตาม Impact
+                        </div>
+                        <div class="card-body">
+                            <div id="budgetPieChart" style="height: 400px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Department Budget Table -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            สรุปงบประมาณตามหน่วยงาน
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover mb-0 budget-table">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th rowspan="2" class="align-middle text-center" style="min-width: 200px;">หน่วยงาน</th>
+                                            <th colspan="3" class="text-center">งบประมาณที่ได้รับ</th>
+                                            <th colspan="4" class="text-center">งบประมาณที่ใช้จริง</th>
+                                            <th rowspan="2" class="align-middle text-center">งบประมาณทั้งหมด</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center">เงินแผ่นดิน</th>
+                                            <th class="text-center">เงินรายได้</th>
+                                            <th class="text-center">อื่น ๆ</th>
+                                            <th class="text-center">ไตรมาส 1</th>
+                                            <th class="text-center">ไตรมาส 2</th>
+                                            <th class="text-center">ไตรมาส 3</th>
+                                            <th class="text-center">ไตรมาส 4</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-if="state.loading">
+                                            <tr>
+                                                <td colspan="9" class="text-center py-4">
+                                                    <div class="spinner-border text-primary" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <t t-elif="state.error">
+                                            <tr>
+                                                <td colspan="9" class="text-center py-4 text-danger">
+                                                    เกิดข้อผิดพลาดในการโหลดข้อมูล
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <t t-elif="!state.tableData.length">
+                                            <tr>
+                                                <td colspan="9" class="text-center py-4 text-muted">
+                                                    ไม่มีข้อมูล
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-foreach="state.tableData" t-as="row" t-key="row.department_code">
+                                                <tr>
+                                                    <td>[<t t-esc="row.department_code"/>] <t t-esc="row.department_name"/></td>
+                                                    <td class="text-end"><t t-esc="formatNumber(row.budget_source_1)"/></td>
+                                                    <td class="text-end"><t t-esc="formatNumber(row.budget_source_2)"/></td>
+                                                    <td class="text-end"><t t-esc="formatNumber(row.budget_other)"/></td>
+                                                    <td class="text-center text-muted"><t t-esc="row.q1"/></td>
+                                                    <td class="text-center text-muted"><t t-esc="row.q2"/></td>
+                                                    <td class="text-center text-muted"><t t-esc="row.q3"/></td>
+                                                    <td class="text-center text-muted"><t t-esc="row.q4"/></td>
+                                                    <td class="text-end fw-bold"><t t-esc="formatNumber(row.total_budget)"/></td>
+                                                </tr>
+                                            </t>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    setup() {
+        this.state = useState({
+            fiscalYearId: this.props.initialFiscalYearId || (this.props.fiscalYears[0]?.id || null),
+            departmentId: this.props.initialDepartmentId || null,
+            loading: true,
+            error: false,
+            stats: {
+                total: 0,
+                education: 0,
+                academic: 0,
+                industrial: 0,
+                social: 0,
+            },
+            chartData: null,
+            tableData: [],
+        });
+
+        this.chart = null;
+
+        onWillStart(async () => {
+            await this._loadECharts();
+        });
+
+        onMounted(() => {
             this._initFiltersFromUrl();
-
-            // Load ECharts from CDN then load data
-            this._loadECharts().then(function () {
-                self.echartsLoaded = true;
-                self._loadDashboardData();
-            });
-
-            return this._super.apply(this, arguments);
-        },
-
-        _loadECharts: function () {
-            var self = this;
-            return new Promise(function (resolve) {
-                if (typeof echarts !== 'undefined') {
-                    resolve();
-                    return;
-                }
-                var script = document.createElement('script');
-                script.src = 'https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js';
-                script.onload = function () {
-                    resolve();
-                };
-                script.onerror = function () {
-                    console.error('Failed to load ECharts');
-                    resolve(); // Continue anyway
-                };
-                document.head.appendChild(script);
-            });
-        },
-
-        _initFiltersFromUrl: function () {
-            var params = new URLSearchParams(window.location.search);
-            var fiscalYearFilter = this.$('#fiscal_year_filter');
-            var departmentFilter = this.$('#department_filter');
-
-            // Sync URL with current filter state
-            var needsUpdate = false;
-            var newParams = new URLSearchParams();
-
-            if (fiscalYearFilter.length && fiscalYearFilter.val()) {
-                var urlFiscalYear = params.get('fiscal_year_id');
-                if (urlFiscalYear !== fiscalYearFilter.val()) {
-                    needsUpdate = true;
-                }
-                newParams.set('fiscal_year_id', fiscalYearFilter.val());
-            }
-
-            if (departmentFilter.length && departmentFilter.val()) {
-                newParams.set('department_id', departmentFilter.val());
-            }
-
-            // Update URL without reload
-            if (needsUpdate || (fiscalYearFilter.length && fiscalYearFilter.val() && !params.has('fiscal_year_id'))) {
-                var newUrl = '/project/dashboard?' + newParams.toString();
-                history.replaceState(null, '', newUrl);
-            }
-        },
-
-        _onFilterChange: function () {
-            this._updateUrl();
             this._loadDashboardData();
-        },
+        });
+    }
 
-        _updateUrl: function () {
-            var params = new URLSearchParams();
-            var fiscalYear = this.$('#fiscal_year_filter').val();
-            var department = this.$('#department_filter').val();
-
-            if (fiscalYear) {
-                params.set('fiscal_year_id', fiscalYear);
-            }
-            if (department) {
-                params.set('department_id', department);
-            }
-
-            var newUrl = '/project/dashboard?' + params.toString();
-            history.pushState(null, '', newUrl);
-        },
-
-        _loadDashboardData: function () {
-            var self = this;
-            var fiscalYearId = this.$('#fiscal_year_filter').val() || null;
-            var departmentId = this.$('#department_filter').val() || null;
-
-            this._showLoadingState();
-
-            ajax.jsonRpc('/project/dashboard/api', 'call', {
-                fiscal_year_id: fiscalYearId,
-                department_id: departmentId,
-            }).then(function (data) {
-                self._updateDashboard(data);
-            }).guardedCatch(function (error) {
-                console.error('API Error:', error);
-                self._showErrorState();
-            });
-        },
-
-        _showLoadingState: function () {
-            var statIds = ['stat-total', 'stat-education', 'stat-academic', 'stat-industrial', 'stat-social'];
-            var self = this;
-            statIds.forEach(function (id) {
-                var el = self.$('#' + id);
-                if (el.length) {
-                    el.html('<span class="placeholder-glow"><span class="placeholder col-4"></span></span>');
-                }
-            });
-
-            var tableBody = this.$('#budget-table-body');
-            if (tableBody.length) {
-                tableBody.html('<tr><td colspan="9" class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>');
-            }
-        },
-
-        _showErrorState: function () {
-            var statIds = ['stat-total', 'stat-education', 'stat-academic', 'stat-industrial', 'stat-social'];
-            var self = this;
-            statIds.forEach(function (id) {
-                var el = self.$('#' + id);
-                if (el.length) {
-                    el.text('-');
-                }
-            });
-
-            var tableBody = this.$('#budget-table-body');
-            if (tableBody.length) {
-                tableBody.html('<tr><td colspan="9" class="text-center py-4 text-danger">เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>');
-            }
-        },
-
-        _updateDashboard: function (data) {
-            this._updateStats(data.impact_stats);
-            this._updateChart(data.chart_data);
-            this._updateTable(data.department_budget_table);
-        },
-
-        _updateStats: function (stats) {
-            this.$('#stat-total').text(stats.total || 0);
-            this.$('#stat-education').text(stats.education || 0);
-            this.$('#stat-academic').text(stats.academic || 0);
-            this.$('#stat-industrial').text(stats.industrial || 0);
-            this.$('#stat-social').text(stats.social || 0);
-        },
-
-        _updateChart: function (chartData) {
-            if (typeof echarts === 'undefined' || !chartData || !chartData.budget_by_impact) {
-                return;
-            }
-
-            var chartDom = this.$('#budgetPieChart')[0];
-            if (!chartDom) {
-                return;
-            }
-
-            // Initialize or get existing chart
-            if (!this.dashboardChart) {
-                this.dashboardChart = echarts.init(chartDom);
-
-                // Handle window resize
-                var self = this;
-                $(window).on('resize', function () {
-                    if (self.dashboardChart) {
-                        self.dashboardChart.resize();
-                    }
-                });
-            }
-
-            // Define colors for each Impact category
-            var impactColors = {
-                'Education': '#17a2b8',
-                'Academic': '#28a745',
-                'Industrial': '#ffc107',
-                'Social': '#dc3545',
+    async _loadECharts() {
+        if (typeof echarts !== 'undefined') {
+            return;
+        }
+        return new Promise((resolve) => {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js';
+            script.onload = resolve;
+            script.onerror = () => {
+                console.error('Failed to load ECharts');
+                resolve();
             };
+            document.head.appendChild(script);
+        });
+    }
 
-            // Assign colors to data
-            var pieData = chartData.budget_by_impact.map(function (item) {
-                return {
-                    name: item.name,
-                    value: item.value,
-                    itemStyle: {
-                        color: impactColors[item.name] || '#6c757d'
-                    }
-                };
+    _initFiltersFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        const urlFiscalYear = params.get('fiscal_year_id');
+        const urlDepartment = params.get('department_id');
+
+        if (urlFiscalYear) {
+            this.state.fiscalYearId = urlFiscalYear;
+        }
+        if (urlDepartment) {
+            this.state.departmentId = urlDepartment;
+        }
+
+        this._updateUrl(false);
+    }
+
+    _updateUrl(pushState = true) {
+        const params = new URLSearchParams();
+        if (this.state.fiscalYearId) {
+            params.set('fiscal_year_id', this.state.fiscalYearId);
+        }
+        if (this.state.departmentId) {
+            params.set('department_id', this.state.departmentId);
+        }
+        const newUrl = '/project/dashboard?' + params.toString();
+        if (pushState) {
+            history.pushState(null, '', newUrl);
+        } else {
+            history.replaceState(null, '', newUrl);
+        }
+    }
+
+    onFiscalYearChange(ev) {
+        this.state.fiscalYearId = ev.target.value || null;
+        this._updateUrl();
+        this._loadDashboardData();
+    }
+
+    onDepartmentChange(ev) {
+        this.state.departmentId = ev.target.value || null;
+        this._updateUrl();
+        this._loadDashboardData();
+    }
+
+    async _loadDashboardData() {
+        this.state.loading = true;
+        this.state.error = false;
+
+        try {
+            const response = await fetch('/project/dashboard/api', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    jsonrpc: '2.0',
+                    method: 'call',
+                    params: {
+                        fiscal_year_id: this.state.fiscalYearId,
+                        department_id: this.state.departmentId,
+                    },
+                    id: Date.now(),
+                }),
             });
 
-            var option = {
-                title: {
-                    text: '',
-                    left: 'center'
-                },
-                tooltip: {
-                    trigger: 'item',
-                    formatter: function (params) {
-                        var value = params.value.toLocaleString('th-TH');
-                        return params.name + ': ' + value + ' บาท (' + params.percent.toFixed(1) + '%)';
-                    }
-                },
-                legend: {
-                    orient: 'vertical',
-                    left: 'left',
-                    top: 'middle'
-                },
-                series: [
-                    {
-                        name: 'งบประมาณ',
-                        type: 'pie',
-                        radius: ['40%', '70%'],
-                        center: ['60%', '50%'],
-                        avoidLabelOverlap: true,
-                        itemStyle: {
-                            borderRadius: 10,
-                            borderColor: '#fff',
-                            borderWidth: 2
-                        },
+            const result = await response.json();
+
+            if (result.result) {
+                this.state.stats = result.result.impact_stats;
+                this.state.chartData = result.result.chart_data;
+                this.state.tableData = result.result.department_budget_table || [];
+                this.state.loading = false;
+
+                // Update chart after DOM update
+                setTimeout(() => this._updateChart(), 100);
+            } else {
+                throw new Error(result.error || 'API Error');
+            }
+        } catch (error) {
+            console.error('API Error:', error);
+            this.state.error = true;
+            this.state.loading = false;
+        }
+    }
+
+    _updateChart() {
+        if (typeof echarts === 'undefined' || !this.state.chartData?.budget_by_impact) {
+            return;
+        }
+
+        const chartDom = document.getElementById('budgetPieChart');
+        if (!chartDom) {
+            return;
+        }
+
+        if (!this.chart) {
+            this.chart = echarts.init(chartDom);
+            window.addEventListener('resize', () => {
+                if (this.chart) {
+                    this.chart.resize();
+                }
+            });
+        }
+
+        const impactColors = {
+            'Education': '#17a2b8',
+            'Academic': '#28a745',
+            'Industrial': '#ffc107',
+            'Social': '#dc3545',
+        };
+
+        const pieData = this.state.chartData.budget_by_impact.map((item) => ({
+            name: item.name,
+            value: item.value,
+            itemStyle: {
+                color: impactColors[item.name] || '#6c757d'
+            }
+        }));
+
+        const option = {
+            title: {
+                text: '',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: (params) => {
+                    const value = params.value.toLocaleString('th-TH');
+                    return `${params.name}: ${value} บาท (${params.percent.toFixed(1)}%)`;
+                }
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+                top: 'middle'
+            },
+            series: [
+                {
+                    name: 'งบประมาณ',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    center: ['60%', '50%'],
+                    avoidLabelOverlap: true,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        formatter: (params) => `${params.name}\n${params.percent.toFixed(1)}%`
+                    },
+                    emphasis: {
                         label: {
                             show: true,
-                            formatter: function (params) {
-                                return params.name + '\n' + params.percent.toFixed(1) + '%';
-                            }
+                            fontSize: 16,
+                            fontWeight: 'bold'
                         },
-                        emphasis: {
-                            label: {
-                                show: true,
-                                fontSize: 16,
-                                fontWeight: 'bold'
-                            },
-                            itemStyle: {
-                                shadowBlur: 10,
-                                shadowOffsetX: 0,
-                                shadowColor: 'rgba(0, 0, 0, 0.5)'
-                            }
-                        },
-                        labelLine: {
-                            show: true
-                        },
-                        data: pieData
-                    }
-                ]
-            };
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    },
+                    labelLine: {
+                        show: true
+                    },
+                    data: pieData
+                }
+            ]
+        };
 
-            this.dashboardChart.setOption(option, true);
-        },
+        this.chart.setOption(option, true);
+    }
 
-        _updateTable: function (tableData) {
-            var tableBody = this.$('#budget-table-body');
-            if (!tableBody.length) {
-                return;
-            }
+    formatNumber(num) {
+        if (num === null || num === undefined) {
+            return '0.00';
+        }
+        return num.toLocaleString('th-TH', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+}
 
-            if (!tableData || tableData.length === 0) {
-                tableBody.html('<tr><td colspan="9" class="text-center py-4 text-muted">ไม่มีข้อมูล</td></tr>');
-                return;
-            }
+// Mount function for portal
+function mountProjectDashboard() {
+    const container = document.getElementById('project_dashboard_owl');
+    if (!container) {
+        return;
+    }
 
-            var html = '';
-            var self = this;
-            tableData.forEach(function (row) {
-                html += '<tr>';
-                html += '<td>[' + row.department_code + '] ' + row.department_name + '</td>';
-                html += '<td class="text-end">' + self._formatNumber(row.budget_source_1) + '</td>';
-                html += '<td class="text-end">' + self._formatNumber(row.budget_source_2) + '</td>';
-                html += '<td class="text-end">' + self._formatNumber(row.budget_other) + '</td>';
-                html += '<td class="text-center text-muted">' + row.q1 + '</td>';
-                html += '<td class="text-center text-muted">' + row.q2 + '</td>';
-                html += '<td class="text-center text-muted">' + row.q3 + '</td>';
-                html += '<td class="text-center text-muted">' + row.q4 + '</td>';
-                html += '<td class="text-end fw-bold">' + self._formatNumber(row.total_budget) + '</td>';
-                html += '</tr>';
-            });
+    // Get props from data attributes
+    const fiscalYearsData = container.dataset.fiscalYears;
+    const departmentsData = container.dataset.departments;
+    const initialFiscalYearId = container.dataset.initialFiscalYearId || null;
+    const initialDepartmentId = container.dataset.initialDepartmentId || null;
 
-            tableBody.html(html);
-        },
+    const fiscalYears = fiscalYearsData ? JSON.parse(fiscalYearsData) : [];
+    const departments = departmentsData ? JSON.parse(departmentsData) : [];
 
-        _formatNumber: function (num) {
-            if (num === null || num === undefined) {
-                return '0.00';
-            }
-            return num.toLocaleString('th-TH', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
+    mount(ProjectDashboard, container, {
+        props: {
+            fiscalYears,
+            departments,
+            initialFiscalYearId,
+            initialDepartmentId,
         },
     });
+}
 
-    publicWidget.registry.KmitlProjectDashboard = DashboardWidget;
-
-    return DashboardWidget;
-});
+// Auto-mount when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', mountProjectDashboard);
+} else {
+    mountProjectDashboard();
+}
