@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Dashboard Template -->
+    <template id="portal_dashboard" name="KMITL Project Dashboard">
+        <t t-call="portal.portal_layout">
+            <div id="project_dashboard" class="container-fluid py-4">
+
+                <!-- Header Row: Title -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h1 class="mb-0 dashboard-title">โครงการหน่วยงาน</h1>
+                        <p class="text-muted mb-0">ภาพรวมโครงการ/กิจกรรม</p>
+                    </div>
+                </div>
+
+                <!-- Filter Row: Fiscal Year + Department -->
+                <div class="card filter-card mb-4">
+                    <div class="card-body py-3">
+                        <div class="row g-3 align-items-end">
+                            <!-- Fiscal Year Filter (required, no "show all") -->
+                            <div class="col-md-6">
+                                <label class="form-label small mb-1">ปีงบประมาณ</label>
+                                <select id="fiscal_year_filter" class="form-select">
+                                    <t t-foreach="fiscal_years" t-as="fy">
+                                        <option t-att-value="fy.id"
+                                                t-att-selected="str(fy.id) == str(current_fiscal_year_id)">
+                                            <t t-out="fy.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+
+                            <!-- Department Filter (root only) -->
+                            <div class="col-md-6">
+                                <label class="form-label small mb-1">หน่วยงาน</label>
+                                <select id="department_filter" class="form-select">
+                                    <option value="">ทั้งหมด</option>
+                                    <t t-foreach="departments" t-as="dept">
+                                        <option t-att-value="dept.id"
+                                                t-att-selected="str(dept.id) == str(current_department_id) if current_department_id else None">
+                                            [<t t-out="dept.code"/>] <t t-out="dept.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics Cards Row -->
+                <div class="row mb-4 g-3">
+                    <!-- Total Projects Card -->
+                    <div class="col">
+                        <div class="card stat-card h-100">
+                            <div class="card-body text-center">
+                                <h6 class="card-subtitle text-muted mb-2">จำนวนโครงการทั้งหมด</h6>
+                                <h2 class="stat-number text-primary">
+                                    <t t-out="impact_stats.get('total', 0)"/>
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Education Impact Card -->
+                    <div class="col">
+                        <div class="card stat-card h-100">
+                            <div class="card-body text-center">
+                                <h6 class="card-subtitle text-muted mb-2">Education</h6>
+                                <h2 class="stat-number text-info">
+                                    <t t-out="impact_stats.get('education', 0)"/>
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Academic Impact Card -->
+                    <div class="col">
+                        <div class="card stat-card h-100">
+                            <div class="card-body text-center">
+                                <h6 class="card-subtitle text-muted mb-2">Academic</h6>
+                                <h2 class="stat-number text-success">
+                                    <t t-out="impact_stats.get('academic', 0)"/>
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Industrial Impact Card -->
+                    <div class="col">
+                        <div class="card stat-card h-100">
+                            <div class="card-body text-center">
+                                <h6 class="card-subtitle text-muted mb-2">Industrial</h6>
+                                <h2 class="stat-number text-warning">
+                                    <t t-out="impact_stats.get('industrial', 0)"/>
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Social Impact Card -->
+                    <div class="col">
+                        <div class="card stat-card h-100">
+                            <div class="card-body text-center">
+                                <h6 class="card-subtitle text-muted mb-2">Social</h6>
+                                <h2 class="stat-number text-danger">
+                                    <t t-out="impact_stats.get('social', 0)"/>
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pie Chart Row -->
+                <div class="row mb-4">
+                    <div class="col-md-8 mx-auto">
+                        <div class="card">
+                            <div class="card-header">
+                                งบประมาณตาม Impact
+                            </div>
+                            <div class="card-body">
+                                <div id="budgetPieChart" style="height: 400px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Chart Data for JavaScript -->
+            <script type="text/javascript">
+                var chartData = <t t-out="chart_data" t-options="{'widget': 'raw'}"/>;
+            </script>
+        </t>
+    </template>
+</odoo>
