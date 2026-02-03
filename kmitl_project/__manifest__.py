@@ -5,7 +5,7 @@
     "category": "Project",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["web", "hr", "account_fiscal_year", "budget", "project", "base_exception", "l10n_th_fonts"],
+    "depends": ["web", "hr", "account_fiscal_year", "budget", "project", "base_exception", "l10n_th_fonts", "operating_unit"],
     "data": [
         "report/paperformat.xml",
         "report/report_kmitl_project.xml",
@@ -17,6 +17,7 @@
         "data/project.impact.csv",
         "data/project.methodology.csv",
         "data/project.strategic.plan.csv",
+        "security/security.xml",
         "security/ir.model.access.csv",
         "views/menu_views.xml",
         "views/kmitl_project_views.xml",

@@ -8,20 +8,35 @@ from odoo.addons.portal.controllers.portal import pager as portal_pager
 
 class KmitlProjectPortal(portal.CustomerPortal):
 
+    def _get_project_domain(self):
+        """Return domain to filter projects for current user.
+
+        Users see projects where they are:
+        - The responsible user (user_id)
+        - The creator (creating_user_id)
+        """
+        user = request.env.user
+        return [
+            '|',
+            ('user_id', '=', user.id),
+            ('creating_user_id', '=', user.id),
+        ]
+
     def _prepare_home_portal_values(self, counters):
         values = super()._prepare_home_portal_values(counters)
         if 'project_count' in counters:
-            values['project_count'] = request.env['kmitl.project'].sudo().search_count([])
+            domain = self._get_project_domain()
+            values['project_count'] = request.env['kmitl.project'].search_count(domain)
         return values
 
     @http.route(['/my/kmitl-projects', '/my/kmitl-projects/page/<int:page>'], type='http', auth="user", website=True)
     def portal_my_kmitl_projects(self, page=1, **kw):
-        """Display list of KMITL Projects"""
+        """Display list of KMITL Projects for current user"""
         values = self._prepare_portal_layout_values()
-        KmitlProject = request.env['kmitl.project'].sudo()
+        KmitlProject = request.env['kmitl.project']
 
-        # Simple domain - just show all projects
-        domain = []
+        # Apply user-based domain filter
+        domain = self._get_project_domain()
         projects_count = KmitlProject.search_count(domain)
 
         # Pager
@@ -32,7 +47,7 @@ class KmitlProjectPortal(portal.CustomerPortal):
             step=self._items_per_page
         )
 
-        # Fetch records
+        # Fetch records (no sudo - use ORM security)
         projects = KmitlProject.search(domain, order='id desc', limit=self._items_per_page, offset=pager['offset'])
 
         values.update({
@@ -44,7 +59,7 @@ class KmitlProjectPortal(portal.CustomerPortal):
 
         return request.render("kmitl_project.portal_my_kmitl_projects", values)
 
-    @http.route(['/my/kmitl-project/<int:project_id>'], type='http', auth="public", website=True)
+    @http.route(['/my/kmitl-project/<int:project_id>'], type='http', auth="user", website=True)
     def portal_my_kmitl_project(self, project_id=None, access_token=None, **kw):
         """Display single KMITL Project detail"""
         try:

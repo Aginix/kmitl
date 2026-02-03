@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- ============================================ -->
+        <!-- SECURITY GROUPS                              -->
+        <!-- ============================================ -->
+
+        <!-- Module Category -->
+        <record id="module_category_kmitl_project" model="ir.module.category">
+            <field name="name">KMITL Project</field>
+            <field name="description">Project management for KMITL</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <!-- User: Own Projects Only -->
+        <record id="group_kmitl_project_user" model="res.groups">
+            <field name="name">User: Own Projects</field>
+            <field name="category_id" ref="module_category_kmitl_project"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!-- User All: Can view all projects in company -->
+        <record id="group_kmitl_project_user_all" model="res.groups">
+            <field name="name">User: All Projects (Read)</field>
+            <field name="category_id" ref="module_category_kmitl_project"/>
+            <field name="implied_ids" eval="[(4, ref('group_kmitl_project_user'))]"/>
+        </record>
+
+        <!-- Manager: Full access -->
+        <record id="group_kmitl_project_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="category_id" ref="module_category_kmitl_project"/>
+            <field name="implied_ids" eval="[(4, ref('group_kmitl_project_user_all'))]"/>
+            <field name="users" eval="[(4, ref('base.user_admin'))]"/>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- RECORD RULES for kmitl.project               -->
+        <!-- ============================================ -->
+
+        <!-- Rule 1: Multi-company rule (Global) -->
+        <record id="kmitl_project_company_rule" model="ir.rule">
+            <field name="name">KMITL Project: Multi-company</field>
+            <field name="model_id" ref="model_kmitl_project"/>
+            <field name="domain_force">[
+                '|', ('company_id', '=', False), ('company_id', 'in', company_ids)
+            ]</field>
+            <field name="global" eval="True"/>
+        </record>
+
+        <!-- Rule 1b: Operating Unit rule (Global) -->
+        <record id="kmitl_project_operating_unit_rule" model="ir.rule">
+            <field name="name">KMITL Project: Operating Unit</field>
+            <field name="model_id" ref="model_kmitl_project"/>
+            <field name="domain_force">[
+                '|',
+                ('operating_unit_id', '=', False),
+                ('operating_unit_id', 'in', user.operating_unit_ids.ids)
+            ]</field>
+            <field name="global" eval="True"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Rule 2: User - Own projects (user_id or creating_user_id) -->
+        <record id="kmitl_project_user_own_rule" model="ir.rule">
+            <field name="name">KMITL Project User: Own Projects</field>
+            <field name="model_id" ref="model_kmitl_project"/>
+            <field name="groups" eval="[(4, ref('group_kmitl_project_user'))]"/>
+            <field name="domain_force">[
+                '|',
+                ('user_id', '=', user.id),
+                ('creating_user_id', '=', user.id)
+            ]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Rule 3: User All - Read all projects in company -->
+        <record id="kmitl_project_user_all_rule" model="ir.rule">
+            <field name="name">KMITL Project User: All Projects (Read)</field>
+            <field name="model_id" ref="model_kmitl_project"/>
+            <field name="groups" eval="[(4, ref('group_kmitl_project_user_all'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Rule 4: Manager - Full access to all projects -->
+        <record id="kmitl_project_manager_rule" model="ir.rule">
+            <field name="name">KMITL Project Manager: Full Access</field>
+            <field name="model_id" ref="model_kmitl_project"/>
+            <field name="groups" eval="[(4, ref('group_kmitl_project_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- RECORD RULES for child models                -->
+        <!-- ============================================ -->
+
+        <!-- project.plan -->
+        <record id="project_plan_user_rule" model="ir.rule">
+            <field name="name">Project Plan: User Access</field>
+            <field name="model_id" ref="model_project_plan"/>
+            <field name="groups" eval="[(4, ref('group_kmitl_project_user'))]"/>
+            <field name="domain_force">[
+                '|',
+                ('project_id.user_id', '=', user.id),
+                ('project_id.creating_user_id', '=', user.id)
+            ]</field>
+        </record>
+
+        <record id="project_plan_manager_rule" model="ir.rule">
+            <field name="name">Project Plan: Manager Access</field>
+            <field name="model_id" ref="model_project_plan"/>
+            <field name="groups" eval="[(4, ref('group_kmitl_project_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- project.target -->
+        <record id="project_target_user_rule" model="ir.rule">
+            <field name="name">Project Target: User Access</field>
+            <field name="model_id" ref="model_project_target"/>
+            <field name="groups" eval="[(4, ref('group_kmitl_project_user'))]"/>
+            <field name="domain_force">[
+                '|',
+                ('project_id.user_id', '=', user.id),
+                ('project_id.creating_user_id', '=', user.id)
+            ]</field>
+        </record>
+
+        <record id="project_target_manager_rule" model="ir.rule">
+            <field name="name">Project Target: Manager Access</field>
+            <field name="model_id" ref="model_project_target"/>
+            <field name="groups" eval="[(4, ref('group_kmitl_project_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- project.output -->
+        <record id="project_output_user_rule" model="ir.rule">
+            <field name="name">Project Output: User Access</field>
+            <field name="model_id" ref="model_project_output"/>
+            <field name="groups" eval="[(4, ref('group_kmitl_project_user'))]"/>
+            <field name="domain_force">[
+                '|',
+                ('project_id.user_id', '=', user.id),
+                ('project_id.creating_user_id', '=', user.id)
+            ]</field>
+        </record>
+
+        <record id="project_output_manager_rule" model="ir.rule">
+            <field name="name">Project Output: Manager Access</field>
+            <field name="model_id" ref="model_project_output"/>
+            <field name="groups" eval="[(4, ref('group_kmitl_project_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- project.expected.outcome -->
+        <record id="project_expected_outcome_user_rule" model="ir.rule">
+            <field name="name">Project Expected Outcome: User Access</field>
+            <field name="model_id" ref="model_project_expected_outcome"/>
+            <field name="groups" eval="[(4, ref('group_kmitl_project_user'))]"/>
+            <field name="domain_force">[
+                '|',
+                ('project_id.user_id', '=', user.id),
+                ('project_id.creating_user_id', '=', user.id)
+            ]</field>
+        </record>
+
+        <record id="project_expected_outcome_manager_rule" model="ir.rule">
+            <field name="name">Project Expected Outcome: Manager Access</field>
+            <field name="model_id" ref="model_project_expected_outcome"/>
+            <field name="groups" eval="[(4, ref('group_kmitl_project_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+    </data>
+</odoo>

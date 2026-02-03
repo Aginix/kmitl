@@ -31,6 +31,7 @@
                 <field name="account_fiscal_year_id" optional="show" />
                 <field name="project_type"/>
                 <field name="department_id" optional="show" />
+                <field name="operating_unit_id" optional="hide" groups="operating_unit.group_multi_operating_unit" />
                 <field name="state" widget="badge" />
             </tree>
         </field>
@@ -80,6 +81,7 @@
                             <field name="account_fiscal_year_id" widget="selection" attrs="{'readonly': [('id', '!=', False)]}" />
                             <field name="user_id" string="Project Manager" widget="many2one_avatar_user" attrs="{'readonly':[('active','=',False)]}" />
                             <field name="department_id" options="{'no_create_edit': True, 'no_open': True}" />
+                            <field name="operating_unit_id" widget="selection" groups="operating_unit.group_multi_operating_unit" />
 
                             <field name="active" invisible="1"/>
                         </group>
@@ -270,6 +272,7 @@
                     <filter string="ประเภทโครงการ" name="by_project_type" domain="[]" context="{'group_by':'project_type'}"/>
                     <filter string="สถานะ" name="by_state" domain="[]" context="{'group_by':'state'}"/>
                     <filter string="ปีงบประมาณ" name="by_account_fiscal_year_id" domain="[]" context="{'group_by':'account_fiscal_year_id'}"/>
+                    <filter string="Operating Unit" name="by_operating_unit" domain="[]" context="{'group_by':'operating_unit_id'}" groups="operating_unit.group_multi_operating_unit"/>
                 </group>
             </search>
         </field>

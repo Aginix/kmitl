@@ -103,6 +103,13 @@ class KmitlProject(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
+    operating_unit_id = fields.Many2one(
+        comodel_name="operating.unit",
+        string="Operating Unit",
+        default=lambda self: self.env["res.users"].operating_unit_default_get(),
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+    )
     user_id = fields.Many2one(
         "res.users",
         tracking=True,
