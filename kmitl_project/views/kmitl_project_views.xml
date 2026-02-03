@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_kmitl_project_test_tree" model="ir.actions.act_window">
+        <field name="name">KMITL Project Exception Rules</field>
+        <field name="res_model">exception.rule</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="base_exception.view_exception_rule_tree" />
+        <field
+            name="domain"
+        >[('model', 'in', ['kmitl.project'])]</field>
+        <field
+            name="context"
+        >{'active_test': False, 'default_model' : 'kmitl.project'}</field>
+    </record>
+
+    <menuitem
+        action="action_kmitl_project_test_tree"
+        id="menu_kmitl_project_test"
+        parent="kmitl_project.menu_project_config"
+    />
+
+    <!-- View kmitl.project View Tree -->
+    <record id="view_kmitl_project_tree" model="ir.ui.view">
+        <field name="name">view.kmitl.project.tree</field>
+        <field name="model">kmitl.project</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="activity_ids" widget="list_activity" optional="show"/>
+                <field name="key" optional="show" />
+                <field name="account_fiscal_year_id" optional="show" />
+                <field name="project_type"/>
+                <field name="department_id" optional="show" />
+                <field name="state" widget="badge" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- View kmitl.project form -->
+    <record id="view_kmitl_project_form" model="ir.ui.view">
+        <field name="name">view.kmitl.project.form</field>
+        <field name="model">kmitl.project</field>
+        <field name="arch" type="xml">
+            <form string="KMITL Project">
+                <header>
+                    <button string="Confirm" name="button_new" states="draft" type="object" class="oe_highlight" />
+                    <button string="In Progress" name="button_in_progress" states="new" type="object" />
+                    <button string="On hold" name="button_on_hold" states="new" type="object" />
+                    <button string="Complete" name="button_complete" states="in_progress" type="object" class="oe_highlight" />
+                    <button string="Reset to Draft" name="button_draft" groups="project.group_project_manager" states="cancel,in_progress,on_hold" type="object" />
+                    <button string="Reset to Draft" name="button_draft" states="new" type="object" />
+                    <button string="Cancel" name="button_cancel" groups="project.group_project_manager" states="draft,new,in_progress,on_hold" type="object" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,new,in_progress,complete" />
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}" />
+                    <widget name="web_ribbon" title="Cancelled" bg_color="bg-black" attrs="{'invisible': [('state', '!=', 'cancel')]}" />
+                    <widget name="web_ribbon" title="On hold" bg_color="bg-warning" attrs="{'invisible': [('state', '!=', 'on_hold')]}" />
+                    <widget name="web_ribbon" title="Completed" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'complete')]}" />
+                    <field name="is_editable" invisible="1" />
+                    <div class="oe_button_box" name="button_box" groups="base.group_user">
+                        <button
+                            string="Portal Preview"
+                            class="oe_stat_button"
+                            name="action_preview_project"
+                            icon="fa-globe" type="object"
+                            groups="project.group_project_user"
+                            attrs="{'invisible': [('state', 'in', ('draft', 'cancel'))]}">
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h2>
+                            <field name="name" placeholder="Project Name..."/>
+                        </h2>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="id" invisible="1"/>
+                            <field name="account_fiscal_year_id" widget="selection" attrs="{'readonly': [('id', '!=', False)]}" />
+                            <field name="user_id" string="Project Manager" widget="many2one_avatar_user" attrs="{'readonly':[('active','=',False)]}" />
+                            <field name="department_id" options="{'no_create_edit': True, 'no_open': True}" />
+
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="project_type" attrs="{'readonly': [('id', '!=', False)]}" />
+                            <label for="date_start" string="Period" />
+                            <div>
+                                <field name="date_start" class="oe_inline" widget="daterange" options='{"related_end_date": "date_end"}' />
+                                <i class="fa fa-long-arrow-right mx-2 oe_edit_only" aria-label="Arrow icon" title="Arrow"/>
+                                <field name="date_end" class="oe_inline" widget="daterange" options='{"related_start_date": "date_start"}' />
+                            </div>
+                            <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company" />
+                            <field name="company_id" invisible="1" />
+                        </group>
+                    </group>
+                    <group string="ความสอดคล้องกับนโยบายสถาบัน">
+                        <group>
+                            <field name="impact_id" widget="selection" required="1" />
+                            <field name="global_index_id" widget="selection" required="1" />
+                        </group>
+                        <group>
+                            <field name="fight_id" widget="selection" required="1" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="strategic" string="ความสอดคล้องแผนยุทธศาสตร์">
+                            <group>
+                                <field name="national_strategy_id" />
+                                <field name="master_plan_id" />
+                                <field name="nesdc_plan_id" />
+                                <field name="kmitl_plan_id" />
+                            </group>
+                            <group name="budget" string="งบประมาณ">
+                                <field name="budget_account_id" required="1"/>
+                                <field name="activity_analytic_id" required="1"/>
+                                <field name="fund_analytic_id" required="1"/>
+                                <field name="department_analytic_id" required="1"/>
+                                <field name="source_analytic_id" required="1"/>
+                                <field name="analytic_account_id" invisible="1" />
+                                <field name="analytic_distribution" invisible="1" />
+                            </group>
+                        </page>
+                        <page name="introduction" string="รายละเอียดโครงการ/กิจกรรม">
+                            <group>
+                                <field name="introduction" placeholder="หลักการและเหตุผล..." />
+                                <field name="objective" />
+                                <field name="location" />
+                            </group>
+                        </page>
+                        <page name="project_plan" string="แผนการดำเนินงาน">
+                            <group>
+                                <!-- <field name="total_budget" /> -->
+                                <separator string="แผนการดำเนินงาน" />
+                                <field name="plan_ids" nolabel="1" colspan="2" widget="project_plan">
+                                    <tree>
+                                        <field name="sequence" widget="handle" />
+                                        <field name="name" />
+                                        <field name="percentage" />
+                                        <field name="amount" />
+                                        <field name="m10" />
+                                        <field name="m11" />
+                                        <field name="m12" />
+                                        <field name="m1" />
+                                        <field name="m2" />
+                                        <field name="m3" />
+                                        <field name="m4" />
+                                        <field name="m5" />
+                                        <field name="m6" />
+                                        <field name="m7" />
+                                        <field name="m8" />
+                                        <field name="m9" />
+                                    </tree>
+                                </field>
+                            </group>
+                        </page>
+                        <page string="การดำเนินโครงการ">
+                            <group>
+                                <group string="การดำเนินโครงการ">
+                                    <field name="methodology_ids" widget="many2many_checkboxes" />
+                                    <field name="methodology_detail" string="รายละเอียด" />
+                                </group>
+                                <group string="วิธีการ/เครื่องมือติดตามและประเมินผล">
+                                    <field name="evaluation_ids" widget="many2many_checkboxes" string="วิธีการ" />
+                                    <field name="evaluation_detail" string="รายละเอียด" />
+                                </group>
+                            </group>
+                            <group string="เป้าหมาย ผลผลิต และผลลัพธ์">
+                                <group>
+                                    <separator string="ผลผลิต (Output)" />
+                                    <div colspan="2" class="alert alert-info" role="alert">
+                                        <i>ผลหรือสิ่งที่คาดว่าจะได้รับหรือประโยชน์จากการดำเนินโครงการ</i>
+                                    </div>
+                                    <field name="output_ids" nolabel="1" colspan="2" context="{'default_line_type': 'output'}" />
+                                </group>
+                                <group>
+                                    <separator string="ผลลัพธ์ (Outcome)" />
+                                    <div colspan="2" class="alert alert-info" role="alert">
+                                        <i>ผลที่ได้จากการบรรลุวัตถุประสงค์ของโครงการ</i>
+                                    </div>
+                                    <field name="outcome_ids" nolabel="1" colspan="2" context="{'default_line_type': 'outcome'}" />
+                                </group>
+                            </group>
+                            <group string="กลุ่มเป้าหมาย/ผู้ดำเนินโครงการ">
+                                <separator string="กลุ่มเป้าหมาย" />
+                                <div colspan="2" class="alert alert-info" role="alert">
+                                    <i>ระบุกลุ่มเป้าหมายหลักและจำนวนคน เพื่อกำหนดเป็นตัวชี้วัดและค่าเป้าหมายของโครงการ ซึ่งได้รับประโยชน์จากการดำเนินโครงการ</i>
+                                </div>
+                                <field name="target_ids" nolabel="1" colspan="2" context="{'default_line_type': 'target'}" />
+                                <separator string="ผู้เข้าร่วมโครงการ" />
+                                <div colspan="2" class="alert alert-info" role="alert">
+                                    <i>ระบุกลุ่มผู้เข้าร่วมโครงการและจำนวนคน ซึ่งมีส่วนได้ส่วนเสียและได้รับประโยชน์หลังจากดำเนินโครงการแล้ว  แต่ไม่นับเป็นค่าเป้าหมายของโครงการ</i>
+                                </div>
+                                <field name="participant_ids" nolabel="1" colspan="2" context="{'default_line_type': 'participant'}" />
+                                <separator string="ผู้ดำเนินโครงการ และวิทยากร" />
+                                <div colspan="2" class="alert alert-info" role="alert">
+                                    <i>ระบุจำนวนผู้ดำเนินโครงการและวิทยากร เพื่อนำไปคำนวณเป็นค่าใช้จ่ายเพิ่ม รวมกับค่าใช้จ่ายของกลุ่มเป้าหมาย/ผู้เข้าร่วมโครงการ แต่ไม่นับเป็นค่าเป้าหมายของโครงการ</i>
+                                </div>
+                                <field name="organizer_ids" nolabel="1" colspan="2" context="{'default_line_type': 'organizer'}"/>
+                            </group>
+                            <group string="ผลที่คาดว่าจะได้รับ">
+                                <div colspan="2" class="alert alert-info" role="alert">
+                                    <i>ผลที่เกิดโดยตรงทันทีที่สิ้นสุดโครงการ  และผลที่จะเกิดตามมาในระยะยาว</i>
+                                </div>
+                                <field name="expected_outcome_ids" nolabel="1" colspan="2">
+                                    <tree editable="bottom">
+                                        <field name="sequence" widget="handle" />
+                                        <field name="name" />
+                                    </tree>
+                                </field>
+                            </group>
+                        </page>
+                        <page name="attachment" string="เอกสารประกอบ">
+                            <div class="alert alert-info" role="alert">
+                                <li>
+                                    <b>ค่าจ้างเหมาบริการ</b> เช่น จ้างออแกไนซ์เซอร์, ใบเสนอราคา
+                                </li>
+                                <li>
+                                    <b>ค่าครุภัณฑ์</b> เช่น ใบเสนอราคา, รายละเอียดคุณลักษณะ (spec), แผนการจัดซื้อจัดจ้าง</li>
+                                <li>
+                                    <b>ปรับปรุง/สิ่งก่อสร้าง</b> เช่น แบบรูปรายการ, แบบประมาณราคากลาง, แผนการจัดซื้อจัดจ้าง, โครงการตามผังแม่บทสถาบัน, แผนผังแสดงพื้นที่ที่จะดำเนินการ
+                                </li>
+                                <li>แบบฟอร์มรายงานโครงการหรือกิจกรรม (แบบ วต)</li>
+                                <li>เอกสารอื่น ๆ</li>
+                            </div>
+                            <group>
+                                <field name="attachment_ids" widget="many2many_binary" />
+                            </group>
+                        </page>
+                        <page name="settings" string="Settings">
+                            <group>
+                                <group>
+                                    <field name="analytic_account_id" groups="analytic.group_analytic_accounting" />
+                                    <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting" />
+                                </group>
+                                <group>
+                                    <field name="creating_user_id" widget="many2one_avatar_user" attrs="{'readonly': [('id', '!=', False)]}" />
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" options="{'post_refresh':True}" groups="base.group_user"/>
+                    <field name="activity_ids" widget="mail_activity" />
+                    <field name="message_ids" widget="mail_thread" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- View kmitl.project search -->
+    <record id="view_kmitl_project_search" model="ir.ui.view">
+        <field name="name">view.kmitl.project.search</field>
+        <field name="model">kmitl.project</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="Name" filter_domain="['|', ('name', 'ilike', self), ('key', 'ilike', self)]" />
+                <separator />
+                <filter name="project_type_project" string="โครงการ/กิจกรรม" domain="[('project_type', '=', 'project')]" />
+                <filter name="project_type_strategic" string="โครงการยุทธศาสตร์" domain="[('project_type', '=', 'strategic_project')]" />
+                <separator />
+                <filter name="current_fy" string="ปีงบประมาณปัจจุบัน" domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
+                <separator />
+                <filter string="Late Activities" name="activities_overdue" domain="[('my_activity_date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]" help="Show all records which have a next action date before today"/>
+                <filter string="Today Activities" name="activities_today" domain="[('my_activity_date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Future Activities" name="activities_upcoming_all" domain="[('my_activity_date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <group expand="1" string="Group By">
+                    <filter string="ประเภทโครงการ" name="by_project_type" domain="[]" context="{'group_by':'project_type'}"/>
+                    <filter string="สถานะ" name="by_state" domain="[]" context="{'group_by':'state'}"/>
+                    <filter string="ปีงบประมาณ" name="by_account_fiscal_year_id" domain="[]" context="{'group_by':'account_fiscal_year_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_project_output_tree" model="ir.ui.view">
+        <field name="name">view.project.output.tree</field>
+        <field name="model">project.output</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="sequence" widget="handle" />
+                <field name="name" placeholder="รายการ" />
+                <field name="line_type" invisible="1" />
+                <field name="unit" placeholder="หน่วย" />
+                <field name="amount" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_project_target_tree" model="ir.ui.view">
+        <field name="name">view.project.target.tree</field>
+        <field name="model">project.target</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="sequence" widget="handle" />
+                <field name="name" placeholder="เป้าหมาย" />
+                <field name="line_type" invisible="1" />
+                <field name="amount"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_form_project_plan" model="ir.ui.view">
+        <field name="name">project.plan.form</field>
+        <field name="model">project.plan</field>
+        <field name="arch" type="xml">
+            <form string="กิจกรรม / ขั้นตอน">
+                <sheet>
+                    <group>
+                        <field name="name" />
+                        <field name="sequence" invisible="1" />
+                        <field name="amount" />
+                        <field name="percentage" />
+                        <field name="project_id" invisible="1" />
+                    </group>
+
+                    <group string="ระบุเดือนที่ดำเนินการ">
+                        <group>
+                            <separator string="ไตรมาสที่ 1 (ต.ค. - ธ.ค.)" />
+                            <field name="m10" />
+                            <field name="m11" />
+                            <field name="m12" />
+                        </group>
+
+                        <group>
+                            <separator string="ไตรมาสที่ 2 (ม.ค. - มี.ค.)" />
+                            <field name="m1" />
+                            <field name="m2" />
+                            <field name="m3" />
+                        </group>
+                    </group>
+
+                    <group>
+                        <group>
+                            <separator string="ไตรมาสที่ 3 (เม.ย. - มิ.ย.)" />
+                            <field name="m4" />
+                            <field name="m5" />
+                            <field name="m6" />
+                        </group>
+                        <group>
+                            <separator string="ไตรมาสที่ 4 (ก.ค. - ก.ย.)" />
+                            <field name="m7" />
+                            <field name="m8" />
+                            <field name="m9" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action kmitl.project -->
+    <record id="action_kmitl_project_all" model="ir.actions.act_window">
+        <field name="name">KMITL Project</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">kmitl.project</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new KMITL Project.
+            </p>
+        </field>
+    </record>
+
+    <menuitem action="action_kmitl_project_all" id="menu_projects" name="Projects" parent="menu_main_project" sequence="1"/>
+</odoo>
