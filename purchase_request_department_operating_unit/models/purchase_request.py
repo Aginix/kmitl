@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -35,3 +35,7 @@ class PurchaseRequest(models.Model):
                 rec.operating_unit_id = rec.department_id.operating_unit_id.id
             else:
                 rec.operating_unit_id = False
+
+    @api.onchange("requested_by")
+    def onchange_requested_by(self):
+        return
