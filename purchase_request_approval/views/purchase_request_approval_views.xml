@@ -14,7 +14,8 @@
                 edit="0"
                 delete="0"
             >
-            <field name="name" />
+            <field name="main_sarabun_document_id" optional="show"/>
+            <field name="name" optional="show"/>
             <field name="title" />
             <field name="date_start" widget="date" />
             <field name="approval_date" widget="date" />
@@ -34,7 +35,7 @@
             />
             <field name="account_fiscal_year_id" optional="show" />
             <field name="department_id" optional="show" />
-            <field name="purchase_id"/>
+            <!-- <field name="purchase_order_id"/> -->
             <field
                 name="requested_by"
                 widget="many2one_avatar_user"
