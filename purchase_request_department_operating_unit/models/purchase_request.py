@@ -44,3 +44,7 @@ class PurchaseRequest(models.Model):
     @api.onchange("requested_by")
     def onchange_requested_by(self):
         return
+
+    @api.onchange("department_id")
+    def _onchange_department_id(self):
+        self.requested_by = False
