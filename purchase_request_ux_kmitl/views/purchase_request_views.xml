@@ -140,13 +140,13 @@
                             attrs="{'readonly': [('is_editable','=', False)]}"
                         />
                         <field
-                            name="requested_by"
-                            attrs="{'readonly': [('is_editable','=', False)]}"
-                        />
-                        <field
                             name="department_id"
                             string="Department"
                             attrs="{'readonly': [('state', '!=', 'draft')]}"
+                        />
+                        <field
+                            name="requested_by"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
                         />
                         <field name="user_id" readonly="1" />
                     </group>

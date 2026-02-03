@@ -15,6 +15,11 @@ class PurchaseRequest(models.Model):
         readonly=False
     )
 
+    requested_by = fields.Many2one(
+        comodel_name="res.users",
+        domain="[('employee_ids.department_id', '=', department_id)]",
+    )
+
     def _default_operating_unit_id(self):
         department_id = self.env.user.employee_id.department_id
         if department_id and department_id.operating_unit_id:
