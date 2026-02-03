@@ -294,6 +294,56 @@ class BudgetAppropriationReport(models.Model):
         readonly=False,
         states=READONLY_STATES,
     )
+    education_impact_line_ids = fields.One2many(
+        "budget.appropriation.impact.line",
+        "report_id",
+        string="รายการสัดส่วนผลกระทบ (การศึกษา)",
+        domain=[("impact_type", "=", "education")],
+        readonly=False,
+        states=READONLY_STATES,
+    )
+    academic_impact_line_ids = fields.One2many(
+        "budget.appropriation.impact.line",
+        "report_id",
+        string="รายการสัดส่วนผลกระทบ (การวิจัย)",
+        domain=[("impact_type", "=", "academic")],
+        readonly=False,
+        states=READONLY_STATES,
+    )
+    industrial_impact_line_ids = fields.One2many(
+        "budget.appropriation.impact.line",
+        "report_id",
+        string="รายการสัดส่วนผลกระทบ (อุตสาหกรรม)",
+        domain=[("impact_type", "=", "industrial")],
+        readonly=False,
+        states=READONLY_STATES,
+    )
+    social_impact_line_ids = fields.One2many(
+        "budget.appropriation.impact.line",
+        "report_id",
+        string="รายการสัดส่วนผลกระทบ (สังคม)",
+        domain=[("impact_type", "=", "social")],
+        readonly=False,
+        states=READONLY_STATES,
+    )
+
+    # Helper field for wizard - captures impact_type from context
+    wizard_impact_type = fields.Selection(
+        selection=[
+            ("education", "Education"),
+            ("academic", "Academic"),
+            ("industrial", "Industrial"),
+            ("social", "Social"),
+        ],
+        compute="_compute_wizard_impact_type",
+        store=False,
+    )
+
+    @api.depends_context("default_impact_type")
+    def _compute_wizard_impact_type(self):
+        impact_type = self.env.context.get("default_impact_type", "education")
+        for record in self:
+            record.wizard_impact_type = impact_type
 
     @api.depends("impact_line_ids", "impact_line_ids.amount", "impact_line_ids.impact_type")
     def _compute_impact_percentages(self):
@@ -506,3 +556,96 @@ class BudgetAppropriationReport(models.Model):
             "domain": [("id", "in", self.appropriation_ids.ids)],
             "context": {"default_account_fiscal_year_id": self.account_fiscal_year_id.id},
         }
+
+    def get_impact_line_hierarchy(self, impact_type=None):
+        """Build hierarchy tree from impact_line_ids for preview display.
+
+        Args:
+            impact_type: Filter by impact type (education, academic, industrial, social)
+
+        Returns:
+            dict: {
+                'hierarchy': [tree structure],
+                'total_amount': float
+            }
+        """
+        self.ensure_one()
+
+        # Filter lines by impact_type if specified
+        lines = self.impact_line_ids
+        if impact_type:
+            lines = lines.filtered(lambda l: l.impact_type == impact_type)
+
+        if not lines:
+            return {"hierarchy": [], "total_amount": 0}
+
+        # Collect all analytic accounts and their ancestors
+        analytic_accounts = lines.mapped("analytic_account_id")
+        all_account_ids = set()
+
+        for account in analytic_accounts:
+            if account.parent_path:
+                parent_ids = [
+                    int(pid) for pid in account.parent_path.strip("/").split("/") if pid
+                ]
+                all_account_ids.update(parent_ids)
+            all_account_ids.add(account.id)
+
+        # Fetch all accounts with their hierarchy info
+        accounts = self.env["account.analytic.account"].browse(list(all_account_ids))
+        account_map = {acc.id: acc for acc in accounts}
+
+        # Group lines by their analytic account
+        lines_by_account = {}
+        for line in lines:
+            acc_id = line.analytic_account_id.id
+            if acc_id not in lines_by_account:
+                lines_by_account[acc_id] = []
+            lines_by_account[acc_id].append({
+                "id": line.id,
+                "amount": line.amount,
+            })
+
+        # Build tree structure
+        def build_node(account):
+            node = {
+                "id": account.id,
+                "code": account.code or "",
+                "name": account.name,
+                "lines": lines_by_account.get(account.id, []),
+                "children": [],
+                "total_amount": sum(l["amount"] for l in lines_by_account.get(account.id, [])),
+            }
+
+            # Find children
+            child_accounts = [
+                acc for acc in accounts
+                if acc.parent_id and acc.parent_id.id == account.id
+            ]
+            child_accounts = sorted(child_accounts, key=lambda a: a.code or "")
+
+            for child in child_accounts:
+                child_node = build_node(child)
+                node["children"].append(child_node)
+                node["total_amount"] += child_node["total_amount"]
+
+            return node
+
+        # Find root accounts (no parent or parent not in our set)
+        root_accounts = [
+            acc for acc in accounts
+            if not acc.parent_id or acc.parent_id.id not in all_account_ids
+        ]
+        root_accounts = sorted(root_accounts, key=lambda a: a.code or "")
+
+        hierarchy = [build_node(acc) for acc in root_accounts]
+        total_amount = sum(node["total_amount"] for node in hierarchy)
+
+        return {
+            "hierarchy": hierarchy,
+            "total_amount": total_amount,
+        }
+
+    def action_save_impact_lines(self):
+        """Save impact lines and close wizard."""
+        return {"type": "ir.actions.act_window_close"}

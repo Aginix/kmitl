@@ -6,8 +6,12 @@
         <field name="name">view.budget.appropriation.impact.line.tree</field>
         <field name="model">budget.appropriation.impact.line</field>
         <field name="arch" type="xml">
-            <tree>
-                <field name="name"/>
+            <tree editable="bottom">
+                <field name="report_id" invisible="1"/>
+                <field name="impact_type" invisible="1"/>
+                <field name="analytic_account_id"/>
+                <field name="amount" sum="รวม"/>
+                <button name="action_delete" type="object" icon="fa-trash" title="ลบ" class="text-danger"/>
             </tree>
         </field>
     </record>

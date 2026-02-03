@@ -57,3 +57,8 @@ class BudgetAppropriationImpactLine(models.Model):
         for record in self:
             if record.amount <= 0:
                 raise ValidationError(_('จำนวนเงินต้องเป็นค่าบวกเท่านั้น'))
+
+    def action_delete(self):
+        """Delete the record and return action to stay on the same view."""
+        self.unlink()
+        return {"type": "ir.actions.client", "tag": "soft_reload"}

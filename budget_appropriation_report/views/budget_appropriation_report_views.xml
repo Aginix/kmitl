@@ -1,5 +1,67 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <!-- Wizard Form View for Editing Impact Lines (single form with context-based visibility) -->
+    <record id="view_impact_line_wizard_form" model="ir.ui.view">
+        <field name="name">budget.appropriation.report.impact.wizard</field>
+        <field name="model">budget.appropriation.report</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <form string="แก้ไขรายการผลกระทบ">
+                <sheet>
+                    <!-- Helper field to capture context -->
+                    <field name="wizard_impact_type" invisible="1"/>
+
+                    <!-- Education -->
+                    <field name="education_impact_line_ids" nolabel="1"
+                           attrs="{'invisible': [('wizard_impact_type', '!=', 'education')]}"
+                           context="{'default_impact_type': 'education'}">
+                        <tree editable="bottom">
+                            <field name="analytic_account_id"/>
+                            <field name="impact_type" invisible="1"/>
+                            <field name="amount" sum="รวม"/>
+                        </tree>
+                    </field>
+
+                    <!-- Academic -->
+                    <field name="academic_impact_line_ids" nolabel="1"
+                           attrs="{'invisible': [('wizard_impact_type', '!=', 'academic')]}"
+                           context="{'default_impact_type': 'academic'}">
+                        <tree editable="bottom">
+                            <field name="analytic_account_id"/>
+                            <field name="impact_type" invisible="1"/>
+                            <field name="amount" sum="รวม"/>
+                        </tree>
+                    </field>
+
+                    <!-- Industrial -->
+                    <field name="industrial_impact_line_ids" nolabel="1"
+                           attrs="{'invisible': [('wizard_impact_type', '!=', 'industrial')]}"
+                           context="{'default_impact_type': 'industrial'}">
+                        <tree editable="bottom">
+                            <field name="analytic_account_id"/>
+                            <field name="impact_type" invisible="1"/>
+                            <field name="amount" sum="รวม"/>
+                        </tree>
+                    </field>
+
+                    <!-- Social -->
+                    <field name="social_impact_line_ids" nolabel="1"
+                           attrs="{'invisible': [('wizard_impact_type', '!=', 'social')]}"
+                           context="{'default_impact_type': 'social'}">
+                        <tree editable="bottom">
+                            <field name="analytic_account_id"/>
+                            <field name="impact_type" invisible="1"/>
+                            <field name="amount" sum="รวม"/>
+                        </tree>
+                    </field>
+                </sheet>
+                <footer>
+                    <button string="ปิด" class="btn-primary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
     <!-- Form View -->
     <record id="view_budget_appropriation_report_form" model="ir.ui.view">
         <field name="name">budget.appropriation.report.form</field>
@@ -82,28 +144,91 @@
                             </field>
                         </page>
                         <page string="รายงาน F23-W" name="f23w_report" attrs="{'invisible': [('use_f23', '=', False)]}">
-                            <group>
-                                <separator string="Transfer FROM (Source)" />
-                                <field name="impact_line_ids"
-                                        domain="[('impact_type', '=', 'education')]"
-                                        context="{'default_report_id': id, 'default_impact_type': 'education'}"
-                                        nolabel="1"
-                                        colspan="2">
-                                    <tree>
-                                        <field name="analytic_account_id" />
-                                        <field name="impact_type" invisible="1" />
-                                        <field name="amount" sum="รวม"/>
-                                    </tree>
-                                </field>
-                            </group>
-                            <!-- <field name="f23w_revenue_data_ids">
-                                <tree>
-                                    <field name="code"/>
-                                    <field name="name"/>
-                                    <field name="amount_current_year" sum="รวม"/>
-                                    <field name="amount_compare_year" sum="รวม"/>
-                                </tree>
-                            </field> -->
+                            <style>
+                                td.o_data_cell[name='analytic_account_id'] span {
+                                    white-space: normal !important;
+                                }
+                            </style>
+
+                            <!-- Education Section -->
+                            <separator string="ด้านการศึกษา (Education)"/>
+                            <div class="row">
+                                <div class="col-6">
+                                    <field name="education_impact_line_ids" nolabel="1"
+                                           context="{'default_impact_type': 'education'}">
+                                        <tree editable="bottom">
+                                            <field name="analytic_account_id" widget="helper_text" options="{'no_open': True}"/>
+                                            <field name="impact_type" invisible="1"/>
+                                            <field name="amount" sum="รวม"/>
+                                        </tree>
+                                    </field>
+                                </div>
+                                <div class="col-6">
+                                    <widget name="budget_appropriation_impact_hierarchy"
+                                            impact_type="education"
+                                            title="ลำดับชั้นกิจกรรม"/>
+                                </div>
+                            </div>
+
+                            <!-- Academic Section -->
+                            <separator string="ด้านการวิจัย (Academic)"/>
+                            <div class="row">
+                                <div class="col-6">
+                                    <field name="academic_impact_line_ids" nolabel="1"
+                                           context="{'default_impact_type': 'academic'}">
+                                        <tree editable="bottom">
+                                            <field name="analytic_account_id" widget="helper_text" options="{'no_open': True}"/>
+                                            <field name="impact_type" invisible="1"/>
+                                            <field name="amount" sum="รวม"/>
+                                        </tree>
+                                    </field>
+                                </div>
+                                <div class="col-6">
+                                    <widget name="budget_appropriation_impact_hierarchy"
+                                            impact_type="academic"
+                                            title="ลำดับชั้นกิจกรรม"/>
+                                </div>
+                            </div>
+
+                            <!-- Industrial Section -->
+                            <separator string="ด้านอุตสาหกรรม (Industrial)"/>
+                            <div class="row">
+                                <div class="col-6">
+                                    <field name="industrial_impact_line_ids" nolabel="1"
+                                           context="{'default_impact_type': 'industrial'}">
+                                        <tree editable="bottom">
+                                            <field name="analytic_account_id" widget="helper_text" options="{'no_open': True}"/>
+                                            <field name="impact_type" invisible="1"/>
+                                            <field name="amount" sum="รวม"/>
+                                        </tree>
+                                    </field>
+                                </div>
+                                <div class="col-6">
+                                    <widget name="budget_appropriation_impact_hierarchy"
+                                            impact_type="industrial"
+                                            title="ลำดับชั้นกิจกรรม"/>
+                                </div>
+                            </div>
+
+                            <!-- Social Section -->
+                            <separator string="ด้านสังคม (Social)"/>
+                            <div class="row">
+                                <div class="col-6">
+                                    <field name="social_impact_line_ids" nolabel="1"
+                                           context="{'default_impact_type': 'social'}">
+                                        <tree editable="bottom">
+                                            <field name="analytic_account_id" widget="helper_text" options="{'no_open': True}"/>
+                                            <field name="impact_type" invisible="1"/>
+                                            <field name="amount" sum="รวม"/>
+                                        </tree>
+                                    </field>
+                                </div>
+                                <div class="col-6">
+                                    <widget name="budget_appropriation_impact_hierarchy"
+                                            impact_type="social"
+                                            title="ลำดับชั้นกิจกรรม"/>
+                                </div>
+                            </div>
                         </page>
                         <page string="หมายเหตุ" name="note">
                             <field name="note" placeholder="หมายเหตุ..."/>
