@@ -82,12 +82,15 @@ class BudgetAppropriationDashboardController(http.Controller):
         all_departments = revenue_departments | expense_departments
         department_count = len(all_departments)
 
-        # Count distinct activities
-        expense_activities = all_expense_appropriations.mapped("activity_analytic_id")
+        # Collect all expense lines for dimension analysis
+        all_expense_lines = all_expense_appropriations.mapped("line_ids")
+
+        # Count distinct activities (from lines)
+        expense_activities = all_expense_lines.mapped("activity_analytic_id")
         activity_count = len(expense_activities)
 
-        # Count distinct funds
-        expense_funds = all_expense_appropriations.mapped("fund_analytic_id")
+        # Count distinct funds (from lines)
+        expense_funds = all_expense_lines.mapped("fund_analytic_id")
         fund_count = len(expense_funds)
 
         # Group expense by department for treemap
@@ -136,14 +139,14 @@ class BudgetAppropriationDashboardController(http.Controller):
             all_expense_appropriations
         )
 
-        # Build activity hierarchy treemap
-        activity_treemap = self._build_analytic_hierarchy_treemap(
-            all_expense_appropriations, "activity_analytic_id"
+        # Build activity hierarchy treemap (from lines)
+        activity_treemap = self._build_line_analytic_hierarchy_treemap(
+            all_expense_lines, "activity_analytic_id"
         )
 
-        # Build fund hierarchy treemap
-        fund_treemap = self._build_analytic_hierarchy_treemap(
-            all_expense_appropriations, "fund_analytic_id"
+        # Build fund hierarchy treemap (from lines)
+        fund_treemap = self._build_line_analytic_hierarchy_treemap(
+            all_expense_lines, "fund_analytic_id"
         )
 
         return {
@@ -375,12 +378,12 @@ class BudgetAppropriationDashboardController(http.Controller):
 
         return self._build_account_tree(accounts_data)
 
-    def _build_analytic_hierarchy_treemap(self, expense_appropriations, field_name):
-        """Build hierarchy treemap for any analytic field (activity, fund, etc.)."""
+    def _build_line_analytic_hierarchy_treemap(self, expense_lines, field_name):
+        """Build hierarchy treemap for any analytic field from lines (activity, fund, etc.)."""
         analytic_data = {}
 
-        for approp in expense_appropriations:
-            analytic = getattr(approp, field_name, None)
+        for line in expense_lines:
+            analytic = getattr(line, field_name, None)
             if not analytic:
                 continue
 
@@ -390,7 +393,7 @@ class BudgetAppropriationDashboardController(http.Controller):
                     "analytic": analytic,
                     "amount": 0,
                 }
-            analytic_data[key]["amount"] += approp.amount_total
+            analytic_data[key]["amount"] += line.balance or 0
 
         return self._build_analytic_tree(analytic_data)
 
