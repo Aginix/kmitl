@@ -55,20 +55,6 @@
         </field>
     </record>
 
-    <record id="view_purchase_order_form_department" model="ir.ui.view">
-        <field name="name">view.purchase.order.form(Purchase Order UX 3)</field>
-        <field name="model">purchase.order</field>
-        <field
-            name="inherit_id"
-            ref="purchase_order_department.view_purchase_order_form"
-        />
-        <field name="arch" type="xml">
-            <field name="department_id" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </field>
-        </field>
-    </record>
-
     <record id="view_purchase_order_form_payment_type" model="ir.ui.view">
         <field name="name">view.purchase.order.form(Purchase Order UX 4)</field>
         <field name="model">purchase.order</field>
