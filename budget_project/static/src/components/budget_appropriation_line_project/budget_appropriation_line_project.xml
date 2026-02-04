@@ -1,30 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates xml:space="preserve">
     <t t-name="budget_project.BudgetAppropriationLineProjectRenderer" t-inherit="budget_appropriation.ListRenderer.RecordRow" t-inherit-mode="extension" owl="1">
-        <xpath expr="//div[hasclass('o_col_account_id')]" position="inside">
-            <div t-if="record.data.is_project and getProjectRows(record).length" class="o_field_project_ids">
-                <div>
-                    <b>โครงการ/กิจกรรม</b>
-                </div>
-                <ul>
-                    <li t-foreach="getProjectRows(record)" t-as="project" t-key="project.data.id">
-                        <span t-esc="project.data.name" />
-                    </li>
-                </ul>
-            </div>
-        </xpath>
-        <xpath expr="//t[@t-foreach='getColumns(record)']/t/td" position="inside">
-            <div t-if="column.name == 'balance' and record.data.is_project" style="width: 100%;" class="o_col_balance">
-                <div class="text-muted mt-2">
-                    <div>จัดสรรแล้ว</div>
-                    <div style="text-decoration-line: underline;" t-esc="formatCurrency(getAllocationAmount(record))" />
-                </div>
-                <div class="text-muted mt-2">
-                    <div>คงเหลือ</div>
-                    <div>
-                        (<span style="text-decoration-line: underline; text-decoration-style: double;" t-esc="formatCurrency(getAvailableAmount(record))" />)
-                    </div>
-                </div>
+        <xpath expr="//t[@t-if='record.data.note']" position="before">
+            <div t-if="record.data.enable_project" class="o_field_project">
+                <span class="fw-medium fst-italic" t-esc="`${record.data.description}`" />
             </div>
         </xpath>
     </t>

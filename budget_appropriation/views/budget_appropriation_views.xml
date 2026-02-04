@@ -41,6 +41,10 @@
                 <field name="company_id" invisible="1" />
                 <field name="budget_type" invisible="1" />
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="open_record_url"
+                            icon="fa-external-link" string="Preview" />
+                    </div>
                     <div class="oe_title">
                         <span class="o_form_label" attrs="{'invisible': [('budget_type','!=', 'expense')]}">Budget Expense </span>
                         <span class="o_form_label" attrs="{'invisible': [('budget_type','!=', 'revenue')]}">Budget Revenue </span>
@@ -49,15 +53,18 @@
                         </h1>
                     </div>
                     <group>
-                        <group string="ข้อมูลทั่วไป">
-                            <field name="date" invisible="1" />
-                            <field name="user_id" widget="many2one_avatar_user" required="1" />
-                        </group>
                         <group string="มิติบัญชี">
                             <field name="account_fiscal_year_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                             <field name="department_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                             <field name="source_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                             <field name="budget_type" required="1" attrs="{'readonly': [('id', '!=', False)]}" />
+                        </group>
+                        <group string="ข้อมูลทั่วไป">
+                            <field name="date" invisible="1" />
+                            <field name="user_id" widget="many2one_avatar_user" readonly="1" groups="!base.group_erp_manager" />
+                            <field name="user_id" widget="many2one_avatar_user" groups="base.group_erp_manager" />
+                            <field name="ref" />
+                            <field name="note" />
                         </group>
                         <group string="การเชื่อมโยง" attrs="{'invisible': [('state', '!=', 'posted')]}">
                             <field name="budget_move_id" readonly="1" />
@@ -114,7 +121,7 @@
                                 </group>
                             </group>
                         </page>
-                        <page string="Preview" name="preview" attrs="{'invisible': [('id', '=', False)]}">
+                        <page string="Preview" name="preview" invisible="1" attrs="{'invisible': [('id', '=', False)]}">
                             <div class="o_budget_preview_container">
                                 <div class="text-center p-3">
                                     <!-- F5 Preview for Expense -->
@@ -133,11 +140,6 @@
                         </page>
                         <page name="extra" string="Extra Info">
                             <group>
-                                <group>
-
-                                    <field name="ref" />
-                                    <field name="note" />
-                                </group>
                                 <group>
                                     <field name="create_date" />
                                 </group>
