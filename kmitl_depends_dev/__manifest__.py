@@ -10,8 +10,7 @@
                 'account_asset_kmitl', 'account_asset_number_kmitl', 'account_asset_operating_unit_access_all',
                 'account_asset_purchase', 'account_asset_subcomponent_kmitl', 'account_asset_tracking',
                 'account_asset_usability_kmitl', 'account_fiscal_year_all_user', 'account_fiscal_year_enhance',
-                'account_move_request_auto_submit_move', 'account_move_request_budget',
-                'account_move_request_exception', 'account_move_request_fiscal_year', 'account_move_tier_validation_kmitl',
+                'account_move_request', 'account_move_tier_validation_kmitl',
                 'account_payment_budget', 'analytic_operating_unit_tree', 'base_tier_validation_comment', 'budget_account_mass_edit',
                 'budget_analytic_account', 'budget_appropriation_department_operating_unit', 'budget_appropriation_department_require',
                 'budget_appropriation_report', 'budget_appropriation_user_id_security', 'budget_department_operating_unit',
@@ -34,7 +33,7 @@
                 'purchase_guarantee_kmitl', 'purchase_guarantee_lock', 'purchase_guarantee_no_invoice_bill', 'purchase_guarantee_purchase_order_kmitl',
                 'purchase_guarantee_tracking', 'purchase_manual_delivery_security', 'purchase_manual_delivery_work_acceptance',
                 'purchase_operating_unit_access_all', 'purchase_order_account_move_request', 'purchase_order_account_move_request_attach_existing_attachments',
-                'purchase_order_account_move_request_budget', 'purchase_order_department_link_by_purchase_request', 'purchase_order_department_operating_unit'],
+                'purchase_order_department_link_by_purchase_request', 'purchase_order_department_operating_unit'],
     'data': [
 
     ],
