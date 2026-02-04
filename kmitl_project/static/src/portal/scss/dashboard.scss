@@ -1,3 +1,14 @@
+// Override portal container width for dashboard pages
+.o_portal {
+    // Make the main content area wider
+    > .container {
+        max-width: 100%;
+        width: 100%;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+
 #project_dashboard {
     background-color: #f5f6f8;
     min-height: 100vh;
