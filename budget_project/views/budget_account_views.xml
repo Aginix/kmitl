@@ -9,6 +9,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='budgetable']" position="after">
                 <field name="is_project" attrs="{'invisible': [('budget_type', '!=', 'expense')]}" />
+                <field name="project_type" attrs="{'invisible': [('is_project', '!=', True)], 'required': [('is_project', '=', True)]}" />
             </xpath>
         </field>
     </record>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View project.global.index View Tree -->
+    <record id="view_project_global_index_tree" model="ir.ui.view">
+        <field name="name">view.project.global.index.tree</field>
+        <field name="model">project.global.index</field>
+        <field name="arch" type="xml">
+            <tree create="0" edit="0" delete="0">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- View project.global.index search -->
+    <record id="view_project_global_index_search" model="ir.ui.view">
+        <field name="name">view.project.global.index.search</field>
+        <field name="model">project.global.index</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action project.global.index -->
+    <record id="action_project_global_index" model="ir.actions.act_window">
+        <field name="name">Project Global Index</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">project.global.index</field>
+        <field name="view_mode">tree</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new Project Global Index.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="project_global_index_config_menu" name="Global Index" action="action_project_global_index" parent="menu_project_config" sequence="20" />
+</odoo>
