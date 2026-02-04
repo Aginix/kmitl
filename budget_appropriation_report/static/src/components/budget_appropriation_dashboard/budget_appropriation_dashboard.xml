@@ -145,6 +145,13 @@
                                 ตารางข้อมูล
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a t-attf-class="nav-link #{isTabActive('executive') ? 'active' : ''}"
+                               href="#"
+                               t-on-click.prevent="() => this.onTabChange('executive')">
+                                Executive
+                            </a>
+                        </li>
                     </ul>
 
                     <!-- Tab Content -->
@@ -507,6 +514,54 @@
                                                 </t>
                                             </tbody>
                                         </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Executive Dashboard Tab -->
+                        <div t-if="isTabActive('executive')" class="tab-pane active">
+                            <!-- Total Expense Card -->
+                            <div class="row g-4 mb-4">
+                                <div class="col-12">
+                                    <div class="card h-100 border-0 shadow-sm" style="background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);">
+                                        <div class="card-body text-center py-5 text-white">
+                                            <div class="small mb-2 opacity-75">ประมาณการรายจ่ายรวมทั้งหมด</div>
+                                            <div class="display-3 fw-bold mb-2">
+                                                <t t-esc="formatCurrency(state.stats.total_expense)"/>
+                                            </div>
+                                            <div class="opacity-75">บาท</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Charts Row -->
+                            <div class="row g-4">
+                                <!-- Fund Pie Chart -->
+                                <div class="col-lg-5">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-body">
+                                            <h6 class="card-title text-center text-muted mb-3">
+                                                สัดส่วนงบประมาณตามกองทุน
+                                            </h6>
+                                            <div id="fundPieChart" style="height: 450px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Stacked Bar Chart -->
+                                <div class="col-lg-7">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-body">
+                                            <h6 class="card-title text-center text-muted mb-3">
+                                                สัดส่วนการจัดสรรงบประมาณรายหน่วยงาน
+                                                <small class="d-block mt-1 text-secondary" style="font-size: 0.75rem;">
+                                                    (แสดง % การจัดสรรให้ประเภทงบหลัก)
+                                                </small>
+                                            </h6>
+                                            <div id="stackedBarChart" style="height: 450px;"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

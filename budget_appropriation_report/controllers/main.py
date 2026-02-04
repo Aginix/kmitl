@@ -161,6 +161,12 @@ class BudgetAppropriationDashboardController(http.Controller):
         # Build data table: Detailed line items
         table_data = self._build_table_data(all_expense_lines)
 
+        # Build fund pie chart data for executive dashboard
+        fund_pie_data = self._build_fund_pie_data(all_expense_lines)
+
+        # Build stacked bar chart data: Department × Account Root (percentages)
+        stacked_bar_data = self._build_stacked_bar_data(all_expense_lines)
+
         return {
             "report_count": len(reports),
             "department_count": department_count,
@@ -182,6 +188,8 @@ class BudgetAppropriationDashboardController(http.Controller):
             "sankey_data": sankey_data,
             "heatmap_data": heatmap_data,
             "table_data": table_data,
+            "fund_pie_data": fund_pie_data,
+            "stacked_bar_data": stacked_bar_data,
         }
 
     def _build_department_account_treemap(self, expense_appropriations):
@@ -703,6 +711,70 @@ class BudgetAppropriationDashboardController(http.Controller):
         table_rows.sort(key=lambda x: x["amount"], reverse=True)
 
         return table_rows
+
+    def _build_fund_pie_data(self, expense_lines):
+        """Build pie chart data: expenses by fund."""
+        fund_totals = {}
+        for line in expense_lines:
+            fund = line.fund_analytic_id
+            if not fund:
+                continue
+            key = fund.id
+            if key not in fund_totals:
+                fund_totals[key] = {"name": fund.name, "value": 0}
+            fund_totals[key]["value"] += line.balance or 0
+
+        return sorted(fund_totals.values(), key=lambda x: x["value"], reverse=True)
+
+    def _build_stacked_bar_data(self, expense_lines):
+        """Build stacked horizontal bar: Department × Account Root (percentages)."""
+        dept_account = {}  # {dept_id: {root_id: amount}}
+        departments = {}   # {id: name}
+        account_roots = {}  # {id: name}
+
+        for line in expense_lines:
+            dept = line.department_analytic_id
+            account = line.account_id
+            if not dept or not account:
+                continue
+
+            # Get root account
+            root = account
+            while root.parent_id:
+                root = root.parent_id
+
+            dept_id, root_id = dept.id, root.id
+
+            if dept_id not in departments:
+                departments[dept_id] = dept.name
+            if root_id not in account_roots:
+                account_roots[root_id] = root.display_name
+
+            if dept_id not in dept_account:
+                dept_account[dept_id] = {}
+            if root_id not in dept_account[dept_id]:
+                dept_account[dept_id][root_id] = 0
+            dept_account[dept_id][root_id] += line.balance or 0
+
+        # Calculate percentages
+        dept_list = sorted(departments.items(), key=lambda x: x[1])
+        root_list = sorted(account_roots.items(), key=lambda x: x[1])
+
+        series = []
+        for root_id, root_name in root_list:
+            data = []
+            for dept_id, _ in dept_list:
+                total = sum(dept_account.get(dept_id, {}).values()) or 1
+                value = dept_account.get(dept_id, {}).get(root_id, 0)
+                percentage = round(value / total * 100, 1)
+                data.append(percentage)
+            series.append({"name": root_name, "data": data})
+
+        return {
+            "departments": [name for _, name in dept_list],
+            "account_roots": [name for _, name in root_list],
+            "series": series,
+        }
 
 
 class BudgetAppropriationReportController(http.Controller):

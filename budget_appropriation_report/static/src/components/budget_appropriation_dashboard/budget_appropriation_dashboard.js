@@ -47,6 +47,8 @@ export class BudgetAppropriationDashboard extends Component {
         this.sunburstChart = null;
         this.sankeyChart = null;
         this.heatmapChart = null;
+        this.fundPieChart = null;
+        this.stackedBarChart = null;
 
         onWillStart(async () => {
             await this._loadECharts();
@@ -102,6 +104,9 @@ export class BudgetAppropriationDashboard extends Component {
                 this._updateSankeyChart();
             } else if (activeTab === "heatmap") {
                 this._updateHeatmapChart();
+            } else if (activeTab === "executive") {
+                this._updateFundPieChart();
+                this._updateStackedBarChart();
             }
             // "table" tab doesn't need chart initialization
         }, 100);
@@ -959,6 +964,157 @@ export class BudgetAppropriationDashboard extends Component {
         this.heatmapChart.setOption(option, true);
     }
 
+    _updateFundPieChart() {
+        if (typeof echarts === "undefined") {
+            return;
+        }
+
+        const chartDom = document.getElementById("fundPieChart");
+        if (!chartDom) {
+            return;
+        }
+
+        if (!this.fundPieChart) {
+            this.fundPieChart = echarts.init(chartDom);
+            window.addEventListener("resize", () => {
+                if (this.fundPieChart) {
+                    this.fundPieChart.resize();
+                }
+            });
+        }
+
+        const data = this.state.stats.fund_pie_data || [];
+
+        const option = {
+            tooltip: {
+                trigger: "item",
+                formatter: (params) => {
+                    const value = this.formatCurrency(params.value);
+                    return `${params.name}: ${value} บาท (${params.percent.toFixed(1)}%)`;
+                },
+            },
+            legend: {
+                orient: "vertical",
+                left: "left",
+                top: "middle",
+            },
+            series: [
+                {
+                    type: "pie",
+                    radius: ["40%", "70%"],
+                    center: ["60%", "50%"],
+                    avoidLabelOverlap: true,
+                    itemStyle: {
+                        borderRadius: 6,
+                        borderColor: "#fff",
+                        borderWidth: 2,
+                    },
+                    label: {
+                        show: true,
+                        formatter: (params) => {
+                            if (params.percent < 5) return "";
+                            return `${params.percent.toFixed(1)}%`;
+                        },
+                        position: "inside",
+                        fontSize: 12,
+                        fontWeight: "bold",
+                        color: "#fff",
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: "rgba(0, 0, 0, 0.2)",
+                        },
+                    },
+                    data: data,
+                },
+            ],
+        };
+
+        this.fundPieChart.setOption(option, true);
+    }
+
+    _updateStackedBarChart() {
+        if (typeof echarts === "undefined") {
+            return;
+        }
+
+        const chartDom = document.getElementById("stackedBarChart");
+        if (!chartDom) {
+            return;
+        }
+
+        if (!this.stackedBarChart) {
+            this.stackedBarChart = echarts.init(chartDom);
+            window.addEventListener("resize", () => {
+                if (this.stackedBarChart) {
+                    this.stackedBarChart.resize();
+                }
+            });
+        }
+
+        const data = this.state.stats.stacked_bar_data || {departments: [], series: []};
+
+        const option = {
+            tooltip: {
+                trigger: "axis",
+                axisPointer: {type: "shadow"},
+                formatter: (params) => {
+                    let result = `<strong>${params[0].axisValue}</strong><br/>`;
+                    params.forEach((p) => {
+                        if (p.value > 0) {
+                            result += `${p.marker} ${p.seriesName}: ${p.value}%<br/>`;
+                        }
+                    });
+                    return result;
+                },
+            },
+            legend: {
+                top: "top",
+                type: "scroll",
+            },
+            grid: {
+                left: "20%",
+                right: "5%",
+                bottom: "5%",
+                top: "15%",
+            },
+            xAxis: {
+                type: "value",
+                max: 100,
+                axisLabel: {
+                    formatter: "{value}%",
+                },
+            },
+            yAxis: {
+                type: "category",
+                data: data.departments,
+                axisLabel: {
+                    fontSize: 10,
+                    width: 120,
+                    overflow: "truncate",
+                },
+            },
+            series: data.series.map((s) => ({
+                name: s.name,
+                type: "bar",
+                stack: "total",
+                label: {
+                    show: true,
+                    formatter: (p) => (p.value > 8 ? `${p.value}%` : ""),
+                    fontSize: 10,
+                },
+                emphasis: {
+                    focus: "series",
+                },
+                data: s.data,
+            })),
+        };
+
+        this.stackedBarChart.setOption(option, true);
+    }
+
     _disposeCharts() {
         if (this.chart) {
             this.chart.dispose();
@@ -999,6 +1155,14 @@ export class BudgetAppropriationDashboard extends Component {
         if (this.heatmapChart) {
             this.heatmapChart.dispose();
             this.heatmapChart = null;
+        }
+        if (this.fundPieChart) {
+            this.fundPieChart.dispose();
+            this.fundPieChart = null;
+        }
+        if (this.stackedBarChart) {
+            this.stackedBarChart.dispose();
+            this.stackedBarChart = null;
         }
     }
 
@@ -1072,6 +1236,9 @@ export class BudgetAppropriationDashboard extends Component {
                 this._updateSankeyChart();
             } else if (tabId === "heatmap") {
                 this._updateHeatmapChart();
+            } else if (tabId === "executive") {
+                this._updateFundPieChart();
+                this._updateStackedBarChart();
             }
             // "table" tab doesn't need chart initialization
         }, 100);
