@@ -216,15 +216,6 @@ class BudgetAppropriation(models.Model):
         compute="_compute_hide_review_button", readonly=True
     )
 
-    department_id = fields.Many2one(
-        string="Department",
-        comodel_name="hr.department",
-        default=lambda self: self._default_department(),
-        readonly=False,
-        states=READONLY_STATES,
-        tracking=True,
-    )
-
     # Portal: computed account_ids for hierarchy traversal
     account_ids = fields.Many2many(
         "budget.account",
@@ -233,14 +224,6 @@ class BudgetAppropriation(models.Model):
         string="Budget Accounts",
         help="Budget accounts computed from budget account hierarchy.",
     )
-
-    @api.model
-    def _default_department(self):
-        """Get default department from user's employee profile."""
-        employee_id = self.env.user.employee_id
-        if employee_id and employee_id.department_id:
-            return employee_id.department_id.id
-        return False
 
     @api.depends("line_ids.account_id")
     def _compute_account_ids(self):
@@ -348,8 +331,7 @@ class BudgetAppropriation(models.Model):
             "appropriation_id": self.id,
             "line_ids": [Command.create(vals) for vals in self.budget_move_line_vals()],
         }
-        if self.department_id:
-            vals["department_id"] = self.department_id.id
+
         return vals
 
     def budget_move_line_vals(self):
