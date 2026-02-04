@@ -8,3 +8,8 @@ class WorkAcceptance(models.Model):
     evaluation_result_ids = fields.One2many(
         groups="purchase_work_acceptance_evaluation.group_enable_eval_on_wa"
     )
+
+    requested_delivery_date = fields.Date(
+        string="Requested Delivery Date",
+        tracking=True,
+    )
