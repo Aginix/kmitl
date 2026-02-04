@@ -9,7 +9,7 @@ export class ImpactLineHierarchy extends Component {
     setup() {
         this.orm = useService("orm");
         this.state = useState({
-            hierarchy: [],
+            rows: [],
             totalAmount: 0,
             loading: true,
         });
@@ -27,7 +27,7 @@ export class ImpactLineHierarchy extends Component {
         const impactType = this.impactType;
 
         if (!reportId) {
-            this.state.hierarchy = [];
+            this.state.rows = [];
             this.state.totalAmount = 0;
             this.state.loading = false;
             return;
@@ -40,11 +40,11 @@ export class ImpactLineHierarchy extends Component {
                 [reportId, impactType]
             );
 
-            this.state.hierarchy = result.hierarchy || [];
+            this.state.rows = result.rows || [];
             this.state.totalAmount = result.total_amount || 0;
         } catch (error) {
             console.error("Error loading impact line hierarchy:", error);
-            this.state.hierarchy = [];
+            this.state.rows = [];
             this.state.totalAmount = 0;
         } finally {
             this.state.loading = false;

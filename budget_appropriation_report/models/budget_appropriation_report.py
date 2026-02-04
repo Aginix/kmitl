@@ -557,15 +557,16 @@ class BudgetAppropriationReport(models.Model):
             "context": {"default_account_fiscal_year_id": self.account_fiscal_year_id.id},
         }
 
-    def get_impact_line_hierarchy(self, impact_type=None):
-        """Build hierarchy tree from impact_line_ids for preview display.
+    def get_impact_line_hierarchy(self, impact_type=None, min_level=3):
+        """Build flattened hierarchy list from impact_line_ids for table display.
 
         Args:
             impact_type: Filter by impact type (education, academic, industrial, social)
+            min_level: Minimum hierarchy level to display (1-based, default=3)
 
         Returns:
             dict: {
-                'hierarchy': [tree structure],
+                'rows': [flattened list with level info],
                 'total_amount': float
             }
         """
@@ -577,7 +578,7 @@ class BudgetAppropriationReport(models.Model):
             lines = lines.filtered(lambda l: l.impact_type == impact_type)
 
         if not lines:
-            return {"hierarchy": [], "total_amount": 0}
+            return {"rows": [], "total_amount": 0}
 
         # Collect all analytic accounts and their ancestors
         analytic_accounts = lines.mapped("analytic_account_id")
@@ -593,7 +594,15 @@ class BudgetAppropriationReport(models.Model):
 
         # Fetch all accounts with their hierarchy info
         accounts = self.env["account.analytic.account"].browse(list(all_account_ids))
-        account_map = {acc.id: acc for acc in accounts}
+
+        # Calculate hierarchy level for each account (1-based)
+        account_levels = {}
+        for acc in accounts:
+            if acc.parent_path:
+                level = len([p for p in acc.parent_path.strip("/").split("/") if p])
+            else:
+                level = 1
+            account_levels[acc.id] = level
 
         # Group lines by their analytic account
         lines_by_account = {}
@@ -606,43 +615,85 @@ class BudgetAppropriationReport(models.Model):
                 "amount": line.amount,
             })
 
-        # Build tree structure
-        def build_node(account):
-            node = {
-                "id": account.id,
-                "code": account.code or "",
-                "name": account.name,
-                "lines": lines_by_account.get(account.id, []),
-                "children": [],
-                "total_amount": sum(l["amount"] for l in lines_by_account.get(account.id, [])),
-            }
+        # Calculate totals for each account (including children)
+        account_totals = {}
 
-            # Find children
+        def calc_total(account):
+            if account.id in account_totals:
+                return account_totals[account.id]
+            total = sum(l["amount"] for l in lines_by_account.get(account.id, []))
+            child_accounts = [
+                acc for acc in accounts
+                if acc.parent_id and acc.parent_id.id == account.id
+            ]
+            for child in child_accounts:
+                total += calc_total(child)
+            account_totals[account.id] = total
+            return total
+
+        # Calculate all totals first
+        for acc in accounts:
+            calc_total(acc)
+
+        # Build flattened rows (only for accounts at min_level or deeper)
+        rows = []
+
+        def flatten_node(account, display_level):
+            acc_level = account_levels.get(account.id, 1)
+
+            # Only add row if at or above min_level
+            if acc_level >= min_level:
+                rows.append({
+                    "id": f"acc_{account.id}",
+                    "type": "account",
+                    "level": display_level,
+                    "code": account.code or "",
+                    "name": account.name,
+                    "amount": account_totals.get(account.id, 0),
+                })
+
+                # Add line rows under this account
+                for line in lines_by_account.get(account.id, []):
+                    rows.append({
+                        "id": f"line_{line['id']}",
+                        "type": "line",
+                        "level": display_level + 1,
+                        "code": "",
+                        "name": "",
+                        "amount": line["amount"],
+                    })
+
+            # Process children
             child_accounts = [
                 acc for acc in accounts
                 if acc.parent_id and acc.parent_id.id == account.id
             ]
             child_accounts = sorted(child_accounts, key=lambda a: a.code or "")
-
             for child in child_accounts:
-                child_node = build_node(child)
-                node["children"].append(child_node)
-                node["total_amount"] += child_node["total_amount"]
+                if acc_level >= min_level:
+                    flatten_node(child, display_level + 1)
+                else:
+                    flatten_node(child, display_level)
 
-            return node
-
-        # Find root accounts (no parent or parent not in our set)
+        # Find root accounts and flatten
         root_accounts = [
             acc for acc in accounts
             if not acc.parent_id or acc.parent_id.id not in all_account_ids
         ]
         root_accounts = sorted(root_accounts, key=lambda a: a.code or "")
 
-        hierarchy = [build_node(acc) for acc in root_accounts]
-        total_amount = sum(node["total_amount"] for node in hierarchy)
+        for root in root_accounts:
+            flatten_node(root, 0)
+
+        # Total is sum of accounts at min_level (display roots)
+        display_root_ids = [
+            acc.id for acc in accounts
+            if account_levels.get(acc.id, 1) == min_level
+        ]
+        total_amount = sum(account_totals.get(acc_id, 0) for acc_id in display_root_ids)
 
         return {
-            "hierarchy": hierarchy,
+            "rows": rows,
             "total_amount": total_amount,
         }
 

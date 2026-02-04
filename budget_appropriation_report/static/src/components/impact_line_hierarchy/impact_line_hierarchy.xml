@@ -7,62 +7,46 @@
                 <strong t-esc="props.title"/>
             </div>
             <!-- Content area -->
-            <div class="p-2 overflow-auto">
+            <div class="overflow-auto" style="max-height: 400px;">
                 <div t-if="state.loading" class="text-center py-3">
                     <i class="fa fa-spinner fa-spin"/> กำลังโหลด...
                 </div>
-                <div t-elif="state.hierarchy.length === 0" class="text-muted py-2 text-center">
+                <div t-elif="state.rows.length === 0" class="text-muted py-2 text-center">
                     ไม่มีข้อมูล
                 </div>
-                <div t-else="">
-                    <t t-foreach="state.hierarchy" t-as="node" t-key="node.id">
-                        <t t-call="budget_appropriation_report.ImpactLineHierarchyNode">
-                            <t t-set="node" t-value="node"/>
-                            <t t-set="level" t-value="0"/>
+                <table t-else="" class="table table-sm table-hover mb-0">
+                    <thead class="table-light sticky-top">
+                        <tr>
+                            <th>กิจกรรม</th>
+                            <th class="text-end" style="width: 120px;">จำนวนเงิน</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="state.rows" t-as="row" t-key="row.id">
+                            <tr t-att-class="row.type === 'line' ? 'text-muted' : ''">
+                                <td t-att-style="'padding-left: ' + (row.level * 16 + 8) + 'px'">
+                                    <t t-if="row.type === 'account'">
+                                        <span class="fw-semibold" t-esc="row.name"/>
+                                    </t>
+                                    <t t-else="">
+                                        <i class="fa fa-circle-o me-1" style="font-size: 6px;"/>
+                                        <span class="fst-italic">รายการ</span>
+                                    </t>
+                                </td>
+                                <td class="text-end">
+                                    <t t-esc="formatCurrency(row.amount)"/>
+                                </td>
+                            </tr>
                         </t>
-                    </t>
-                    <!-- Total -->
-                    <div class="border-top mt-2 pt-2 fw-bold text-end">
-                        รวมทั้งหมด: <t t-esc="formatCurrency(state.totalAmount)"/> บาท
-                    </div>
-                </div>
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr class="fw-bold">
+                            <td>รวมทั้งหมด</td>
+                            <td class="text-end"><t t-esc="formatCurrency(state.totalAmount)"/></td>
+                        </tr>
+                    </tfoot>
+                </table>
             </div>
-        </div>
-    </t>
-
-    <!-- Recursive node template (always expanded, no toggle) -->
-    <t t-name="budget_appropriation_report.ImpactLineHierarchyNode" owl="1">
-        <div class="hierarchy-node" t-att-style="'padding-left: ' + (level * 16) + 'px'">
-            <!-- Activity/Category header -->
-            <div class="d-flex align-items-center py-1">
-                <span class="fw-semibold">
-                    [<t t-esc="node.code"/>] <t t-esc="node.name"/>
-                </span>
-                <span class="ms-auto text-muted">
-                    <t t-esc="formatCurrency(node.total_amount)"/> บาท
-                </span>
-            </div>
-
-            <!-- Impact lines at this level (always visible) -->
-            <t t-if="node.lines and node.lines.length > 0">
-                <t t-foreach="node.lines" t-as="line" t-key="line.id">
-                    <div class="d-flex align-items-center py-1 text-muted"
-                         t-att-style="'padding-left: ' + ((level + 1) * 16) + 'px'">
-                        <i class="fa fa-circle-o me-2" style="font-size: 6px;"/>
-                        <span><t t-esc="formatCurrency(line.amount)"/> บาท</span>
-                    </div>
-                </t>
-            </t>
-
-            <!-- Child nodes (recursive, always visible) -->
-            <t t-if="node.children and node.children.length > 0">
-                <t t-foreach="node.children" t-as="child" t-key="child.id">
-                    <t t-call="budget_appropriation_report.ImpactLineHierarchyNode">
-                        <t t-set="node" t-value="child"/>
-                        <t t-set="level" t-value="level + 1"/>
-                    </t>
-                </t>
-            </t>
         </div>
     </t>
 </templates>
