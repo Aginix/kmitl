@@ -82,6 +82,14 @@ class BudgetAppropriationDashboardController(http.Controller):
         all_departments = revenue_departments | expense_departments
         department_count = len(all_departments)
 
+        # Count distinct activities
+        expense_activities = all_expense_appropriations.mapped("activity_analytic_id")
+        activity_count = len(expense_activities)
+
+        # Count distinct funds
+        expense_funds = all_expense_appropriations.mapped("fund_analytic_id")
+        fund_count = len(expense_funds)
+
         # Group expense by department for treemap
         department_expenses = {}
         for approp in all_expense_appropriations:
@@ -128,9 +136,21 @@ class BudgetAppropriationDashboardController(http.Controller):
             all_expense_appropriations
         )
 
+        # Build activity hierarchy treemap
+        activity_treemap = self._build_analytic_hierarchy_treemap(
+            all_expense_appropriations, "activity_analytic_id"
+        )
+
+        # Build fund hierarchy treemap
+        fund_treemap = self._build_analytic_hierarchy_treemap(
+            all_expense_appropriations, "fund_analytic_id"
+        )
+
         return {
             "report_count": len(reports),
             "department_count": department_count,
+            "activity_count": activity_count,
+            "fund_count": fund_count,
             "total_revenue": total_revenue,
             "total_expense": total_expense,
             "pie_chart": [
@@ -141,6 +161,8 @@ class BudgetAppropriationDashboardController(http.Controller):
             "revenue_treemap_data": revenue_treemap_data,
             "department_account_treemap": dept_account_treemap,
             "account_only_treemap": account_only_treemap,
+            "activity_treemap": activity_treemap,
+            "fund_treemap": fund_treemap,
         }
 
     def _build_department_account_treemap(self, expense_appropriations):
@@ -352,6 +374,96 @@ class BudgetAppropriationDashboardController(http.Controller):
                 accounts_data[account.id]["amount"] += amount
 
         return self._build_account_tree(accounts_data)
+
+    def _build_analytic_hierarchy_treemap(self, expense_appropriations, field_name):
+        """Build hierarchy treemap for any analytic field (activity, fund, etc.)."""
+        analytic_data = {}
+
+        for approp in expense_appropriations:
+            analytic = getattr(approp, field_name, None)
+            if not analytic:
+                continue
+
+            key = analytic.id
+            if key not in analytic_data:
+                analytic_data[key] = {
+                    "analytic": analytic,
+                    "amount": 0,
+                }
+            analytic_data[key]["amount"] += approp.amount_total
+
+        return self._build_analytic_tree(analytic_data)
+
+    def _build_analytic_tree(self, analytic_data):
+        """Build FULL hierarchical tree from leaf analytics up to roots."""
+        if not analytic_data:
+            return []
+
+        # Step 1: Collect all ancestors for each leaf analytic
+        all_analytics = {}  # id -> analytic record
+        leaf_amounts = {}  # id -> amount (only leaves have amounts)
+
+        for ana_id, data in analytic_data.items():
+            analytic = data["analytic"]
+            leaf_amounts[ana_id] = data["amount"]
+
+            # Trace up to root, collecting all ancestors
+            current = analytic
+            while current:
+                if current.id not in all_analytics:
+                    all_analytics[current.id] = current
+                current = current.parent_id
+
+        # Step 2: Create nodes for ALL analytics (including ancestors)
+        nodes = {}
+        for ana_id, analytic in all_analytics.items():
+            nodes[ana_id] = {
+                "name": analytic.name,
+                "value": leaf_amounts.get(ana_id, 0),
+                "children": {},
+                "parent_id": analytic.parent_id.id if analytic.parent_id else None,
+            }
+
+        # Step 3: Build tree by linking children to parents
+        roots = []
+        for ana_id, node in nodes.items():
+            parent_id = node["parent_id"]
+            if parent_id and parent_id in nodes:
+                nodes[parent_id]["children"][ana_id] = node
+            else:
+                roots.append(node)
+
+        # Step 4: Aggregate values from leaves up to parents (bottom-up)
+        def aggregate_values(node):
+            total = node["value"]
+            for child in node["children"].values():
+                total += aggregate_values(child)
+            node["value"] = total
+            return total
+
+        for root in roots:
+            aggregate_values(root)
+
+        # Step 5: Convert children dicts to sorted lists
+        def convert_children(node):
+            if node["children"]:
+                children_list = sorted(
+                    node["children"].values(),
+                    key=lambda x: x["value"],
+                    reverse=True,
+                )
+                for child in children_list:
+                    convert_children(child)
+                node["children"] = children_list
+            else:
+                del node["children"]
+            if "parent_id" in node:
+                del node["parent_id"]
+
+        for root in roots:
+            convert_children(root)
+
+        return sorted(roots, key=lambda x: x["value"], reverse=True)
 
 
 class BudgetAppropriationReportController(http.Controller):

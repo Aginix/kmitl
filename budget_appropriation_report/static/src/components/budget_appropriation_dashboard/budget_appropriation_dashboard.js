@@ -42,6 +42,8 @@ export class BudgetAppropriationDashboard extends Component {
         this.revenueTreemapChart = null;
         this.deptAccountChart = null;
         this.accountOnlyChart = null;
+        this.activityTreemapChart = null;
+        this.fundTreemapChart = null;
 
         onWillStart(async () => {
             await this._loadECharts();
@@ -83,6 +85,10 @@ export class BudgetAppropriationDashboard extends Component {
                 this._updateRevenueTreeMap();
             } else if (activeTab === "expense") {
                 this._updateTreeMap();
+            } else if (activeTab === "expense-activity") {
+                this._updateActivityTreeMap();
+            } else if (activeTab === "expense-fund") {
+                this._updateFundTreeMap();
             } else if (activeTab === "dept-account") {
                 this._updateDeptAccountTreeMap();
             } else if (activeTab === "account-only") {
@@ -290,6 +296,194 @@ export class BudgetAppropriationDashboard extends Component {
         };
 
         this.revenueTreemapChart.setOption(option, true);
+    }
+
+    _updateActivityTreeMap() {
+        if (typeof echarts === "undefined") {
+            return;
+        }
+
+        const chartDom = document.getElementById("activityTreeMap");
+        if (!chartDom) {
+            return;
+        }
+
+        if (!this.activityTreemapChart) {
+            this.activityTreemapChart = echarts.init(chartDom);
+            window.addEventListener("resize", () => {
+                if (this.activityTreemapChart) {
+                    this.activityTreemapChart.resize();
+                }
+            });
+        }
+
+        const data = this.state.stats.activity_treemap || [];
+
+        const option = {
+            tooltip: {
+                formatter: (params) => {
+                    const value = this.formatCurrency(params.value);
+                    return `${params.name}<br/>งบประมาณ: ${value} บาท`;
+                },
+            },
+            series: [
+                {
+                    type: "treemap",
+                    roam: true,
+                    nodeClick: "zoomToNode",
+                    breadcrumb: {
+                        show: true,
+                        itemStyle: {color: "#6c757d"},
+                        emphasis: {itemStyle: {color: "#495057"}},
+                    },
+                    label: {
+                        show: true,
+                        formatter: (params) => {
+                            const value = this.formatCurrency(params.value);
+                            return `${params.name}\n${value} บาท`;
+                        },
+                        fontSize: 12,
+                    },
+                    upperLabel: {
+                        show: true,
+                        height: 30,
+                        formatter: (params) => {
+                            const value = this.formatCurrency(params.value);
+                            return `${params.name}: ${value} บาท`;
+                        },
+                    },
+                    itemStyle: {
+                        borderColor: "#fff",
+                        borderWidth: 2,
+                        gapWidth: 2,
+                    },
+                    levels: [
+                        {
+                            itemStyle: {
+                                borderColor: "#0d6efd",
+                                borderWidth: 0,
+                                gapWidth: 1,
+                            },
+                            upperLabel: {show: false},
+                        },
+                        {
+                            itemStyle: {
+                                borderColor: "#555",
+                                borderWidth: 5,
+                                gapWidth: 1,
+                            },
+                            emphasis: {itemStyle: {borderColor: "#ddd"}},
+                        },
+                        {
+                            colorSaturation: [0.35, 0.5],
+                            itemStyle: {
+                                borderWidth: 5,
+                                gapWidth: 1,
+                                borderColorSaturation: 0.6,
+                            },
+                        },
+                    ],
+                    color: ["#0d6efd", "#6610f2", "#6f42c1", "#d63384", "#dc3545"],
+                    data: data,
+                },
+            ],
+        };
+
+        this.activityTreemapChart.setOption(option, true);
+    }
+
+    _updateFundTreeMap() {
+        if (typeof echarts === "undefined") {
+            return;
+        }
+
+        const chartDom = document.getElementById("fundTreeMap");
+        if (!chartDom) {
+            return;
+        }
+
+        if (!this.fundTreemapChart) {
+            this.fundTreemapChart = echarts.init(chartDom);
+            window.addEventListener("resize", () => {
+                if (this.fundTreemapChart) {
+                    this.fundTreemapChart.resize();
+                }
+            });
+        }
+
+        const data = this.state.stats.fund_treemap || [];
+
+        const option = {
+            tooltip: {
+                formatter: (params) => {
+                    const value = this.formatCurrency(params.value);
+                    return `${params.name}<br/>งบประมาณ: ${value} บาท`;
+                },
+            },
+            series: [
+                {
+                    type: "treemap",
+                    roam: true,
+                    nodeClick: "zoomToNode",
+                    breadcrumb: {
+                        show: true,
+                        itemStyle: {color: "#6c757d"},
+                        emphasis: {itemStyle: {color: "#495057"}},
+                    },
+                    label: {
+                        show: true,
+                        formatter: (params) => {
+                            const value = this.formatCurrency(params.value);
+                            return `${params.name}\n${value} บาท`;
+                        },
+                        fontSize: 12,
+                    },
+                    upperLabel: {
+                        show: true,
+                        height: 30,
+                        formatter: (params) => {
+                            const value = this.formatCurrency(params.value);
+                            return `${params.name}: ${value} บาท`;
+                        },
+                    },
+                    itemStyle: {
+                        borderColor: "#fff",
+                        borderWidth: 2,
+                        gapWidth: 2,
+                    },
+                    levels: [
+                        {
+                            itemStyle: {
+                                borderColor: "#198754",
+                                borderWidth: 0,
+                                gapWidth: 1,
+                            },
+                            upperLabel: {show: false},
+                        },
+                        {
+                            itemStyle: {
+                                borderColor: "#555",
+                                borderWidth: 5,
+                                gapWidth: 1,
+                            },
+                            emphasis: {itemStyle: {borderColor: "#ddd"}},
+                        },
+                        {
+                            colorSaturation: [0.35, 0.5],
+                            itemStyle: {
+                                borderWidth: 5,
+                                gapWidth: 1,
+                                borderColorSaturation: 0.6,
+                            },
+                        },
+                    ],
+                    color: ["#198754", "#20c997", "#0dcaf0", "#ffc107", "#fd7e14"],
+                    data: data,
+                },
+            ],
+        };
+
+        this.fundTreemapChart.setOption(option, true);
     }
 
     _updateDeptAccountTreeMap() {
@@ -544,6 +738,14 @@ export class BudgetAppropriationDashboard extends Component {
             this.revenueTreemapChart.dispose();
             this.revenueTreemapChart = null;
         }
+        if (this.activityTreemapChart) {
+            this.activityTreemapChart.dispose();
+            this.activityTreemapChart = null;
+        }
+        if (this.fundTreemapChart) {
+            this.fundTreemapChart.dispose();
+            this.fundTreemapChart = null;
+        }
         if (this.deptAccountChart) {
             this.deptAccountChart.dispose();
             this.deptAccountChart = null;
@@ -610,6 +812,10 @@ export class BudgetAppropriationDashboard extends Component {
                 this._updateRevenueTreeMap();
             } else if (tabId === "expense") {
                 this._updateTreeMap();
+            } else if (tabId === "expense-activity") {
+                this._updateActivityTreeMap();
+            } else if (tabId === "expense-fund") {
+                this._updateFundTreeMap();
             } else if (tabId === "dept-account") {
                 this._updateDeptAccountTreeMap();
             } else if (tabId === "account-only") {
