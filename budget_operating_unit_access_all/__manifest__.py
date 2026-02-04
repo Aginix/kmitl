@@ -6,7 +6,7 @@
     'author': 'Aginix Technologies',
     'website': 'https://github.com/Aginix/kmitl',
     'category': 'KMITL/Budgeting',
-    'depends': ['budget_operating_unit'],
+    'depends': ['budget_operating_unit', 'budget_appropriation_operating_unit'],
     'data': [
         "security/budget_security.xml",
     ],
