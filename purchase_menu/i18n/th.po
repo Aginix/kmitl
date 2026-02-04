@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-04 10:18+0000\n"
-"PO-Revision-Date: 2026-02-04 10:18+0000\n"
+"POT-Creation-Date: 2026-02-04 11:05+0000\n"
+"PO-Revision-Date: 2026-02-04 11:05+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,9 +16,39 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: purchase_menu
+#: model:ir.ui.menu,name:purchase_menu.menu_purchase_assets
+msgid "Assets"
+msgstr "ครุภัณฑ์/สินทรัพย์"
+
+#. module: purchase_menu
+#: model:ir.ui.menu,name:purchase_menu.menu_purchase_cotract_expire
+msgid "Contract Nearly Expire"
+msgstr "สัญญาใกล้หมดอายุ"
+
+#. module: purchase_menu
+#: model:ir.ui.menu,name:purchase_menu.menu_purchase_contract_orders
+msgid "Contract Orders"
+msgstr "รายการสัญญา/ใบสั่งซื้อ/จ้าง"
+
+#. module: purchase_menu
+#: model:ir.ui.menu,name:purchase_menu.menu_purchase_tracking
+msgid "Contract Tracking"
+msgstr "ติตดามสัญญา"
+
+#. module: purchase_menu
+#: model:ir.ui.menu,name:purchase_menu.menu_purchase_guarantee_expire
+msgid "Guarantee Expire"
+msgstr "หลักประกันหมดอายุ"
+
+#. module: purchase_menu
 #: model:ir.ui.menu,name:purchase_menu.menu_product_form
 msgid "Products"
 msgstr "สินค้า"
+
+#. module: purchase_menu
+#: model:ir.ui.menu,name:purchase_menu.menu_purchase_contract_root
+msgid "Purchase Contract"
+msgstr "สัญญา/ใบสั่งซื้อ/จ้าง"
 
 #. module: purchase_menu
 #: model:ir.ui.menu,name:purchase_menu.menu_vendor
@@ -31,28 +61,11 @@ msgid "Work Acceptance"
 msgstr "การตรวจรับ"
 
 #. module: purchase_menu
-#: model:ir.ui.menu,name:purchase_menu.menu_purchase_tracking
-msgid "Contract Tracking"
-msgstr "ติตดามสัญญา"
-
-#. module: purchase_menu
-#: model:ir.ui.menu,name:purchase_menu.menu_purchase_contract_orders
-msgid "Contract Orders"
-msgstr "รายการสัญญา/ใบสั่งซื้อ/จ้าง"
-
-#. module: purchase_menu
-#: model:ir.ui.menu,name:purchase_menu.menu_purchase_contract_root
-msgid "Purchase Contract"
-msgstr "สัญญา/ใบสั่งซื้อ/จ้าง"
-
-#. module: purchase_menu
 #: model:ir.actions.act_window,name:purchase_menu.action_contracts_expiring
-#: model:ir.ui.menu,name:purchase_menu.menu_purchase_cotract_expire
 msgid "Contract Nearly Expire"
 msgstr "สัญญาใกล้หมดอายุ"
 
 #. module: purchase_menu
 #: model:ir.actions.act_window,name:purchase_menu.action_guarantees_expiring
-#: model:ir.ui.menu,name:purchase_menu.menu_purchase_guarantee_expire
 msgid "Guarantee Expire"
 msgstr "หลักประกันหมดอายุ"

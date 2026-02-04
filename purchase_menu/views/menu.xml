@@ -3,6 +3,9 @@
 
     <!-- remove orders -->
     <menuitem id="purchase.menu_procurement_management" active="False"/>
+
+    <!-- remove Product -->
+     <menuitem id="purchase.menu_purchase_products" active="False"/>
     
     <!-- add products to config -->
     <menuitem name="Products" id="menu_product_form" action="purchase.product_normal_action_puchased" parent="purchase.menu_product_in_config_purchase" sequence="1"/>

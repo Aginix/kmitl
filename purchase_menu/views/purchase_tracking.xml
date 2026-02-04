@@ -1,6 +1,6 @@
 <odoo>
     <record id="action_contracts_expiring" model="ir.actions.act_window">
-        <field name="name">สัญญาใกล้หมดอายุ</field>
+        <field name="name">Contract Nearly Expire</field>
         <field name="res_model">purchase.order</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('work_end', '&lt;', (context_today() + relativedelta(days=30)))]</field>
@@ -8,7 +8,7 @@
     </record>
 
     <record id="action_guarantees_expiring" model="ir.actions.act_window">
-        <field name="name">หลักประกันหมดอายุ</field>
+        <field name="name">Guarantee Expire</field>
         <field name="res_model">purchase.guarantee</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('date_due_guarantee', '&lt;', (context_today() + relativedelta(days=30)))]</field>
