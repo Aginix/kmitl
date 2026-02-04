@@ -79,7 +79,7 @@
                 <field name="billing_status"/>
             </xpath>
 
-            <xpath expr="//field[@name='department_id']" position="before">
+            <xpath expr="//field[@name='department_id']" position="after">
                 <field name="display_purchase_order"/>
             </xpath>
         </field>

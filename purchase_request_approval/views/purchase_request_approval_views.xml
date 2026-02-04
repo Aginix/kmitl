@@ -15,14 +15,13 @@
                 delete="0"
             >
             <field name="main_sarabun_document_id" optional="show"/>
-            <field name="name" optional="show"/>
             <field name="title" />
             <field name="date_start" widget="date" />
             <field name="approval_date" widget="date" />
             <field name="estimated_cost" />
             <field name="procurement_type_id" />
             <field name="procurement_method_id" />
-            <field name="request_id" optional="show" />
+            <field name="request_id" />
 
             <field name="activity_ids" widget="list_activity" optional="hide" />
             <field
@@ -172,6 +171,9 @@
                     string="Approved"
                     domain="[('state', '=', 'approved')]"
                 />
+                <separator />
+                <filter name="filter_by_fy" string="Fiscal Year" domain="[('fiscal_year_id', '!=', False)]"/>
+                <filter name="filter_by_dept" string="Department" domain="[('department_id', '!=', False)]"/>
                 <separator />
                 <filter
                     name="today"
