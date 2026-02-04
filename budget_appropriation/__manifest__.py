@@ -10,9 +10,13 @@
         "account_analytic_kmitl",
         "account_analytic_public",
         "mail",
+        "hr",
+        "portal",
     ],
     "data": [
         "data/budget.account.xml",
+        "data/budget_appropriation_f4_action.xml",
+        "data/budget_appropriation_f4_pdf_report.xml",
         "data/budget_appropriation_f5_action.xml",
         "data/budget_appropriation_f5_pdf_report.xml",
         "data/budget_appropriation_sequence.xml",
@@ -22,7 +26,9 @@
         "views/budget_account_views.xml",
         "views/budget_appropriation_views.xml",
         "views/budget_move_views.xml",
-        "report/budget_appropriation_f5_report_templates.xml"
+        "views/templates.xml",
+        "report/budget_appropriation_f4_report_templates.xml",
+        "report/budget_appropriation_f5_report_templates.xml",
     ],
     "assets": {
         "web.assets_backend": [

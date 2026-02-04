@@ -288,11 +288,6 @@ msgid "Deduct Line"
 msgstr "รายการหักโอน"
 
 #. module: budget_appropriation
-#: model:ir.model.fields,field_description:budget_appropriation.field_budget_appropriation__department_id
-msgid "Department"
-msgstr "หน่วยงาน"
-
-#. module: budget_appropriation
 #: model:ir.model.fields,field_description:budget_appropriation.field_budget_appropriation__display_name
 #: model:ir.model.fields,field_description:budget_appropriation.field_budget_appropriation_f4_report__display_name
 #: model:ir.model.fields,field_description:budget_appropriation.field_budget_appropriation_f5_report__display_name

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View project.fight View Tree -->
+    <record id="view_project_fight_tree" model="ir.ui.view">
+        <field name="name">view.project.fight.tree</field>
+        <field name="model">project.fight</field>
+        <field name="arch" type="xml">
+            <tree create="0" edit="0" delete="0">
+                <field name="name"/>
+                <field name="description"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- View project.fight search -->
+    <record id="view_project_fight_search" model="ir.ui.view">
+        <field name="name">view.project.fight.search</field>
+        <field name="model">project.fight</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action project.fight -->
+    <record id="action_project_fight" model="ir.actions.act_window">
+        <field name="name">KMITL FIGHT</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">project.fight</field>
+        <field name="view_mode">tree</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There is no examples click here to add new KMITL FIGHT.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="project_fight_config_menu" name="KMITL FIGHT" action="action_project_fight" parent="menu_project_config" sequence="25" />
+</odoo>

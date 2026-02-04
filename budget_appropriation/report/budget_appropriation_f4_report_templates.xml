@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_budget_appropriation_f4_document">
+        <t t-call="web.basic_layout">
+            <style>
+                .page {
+                    padding-top: 0 !important;
+                    margin-top: 0 !important;
+                }
+
+                .budget-appropriation-f4-report {
+                    font-family: "TH SarabunPSK", "Sarabun", Arial, sans-serif;
+                    margin-left: 24pt;
+                    margin-right: 24pt;
+                    margin-top: 0;
+                    padding-top: 0;
+                }
+
+                .budget-appropriation-f4-report h3 {
+                    margin: 0;
+                    font-size: 10pt;
+                    font-weight: 600;
+                    line-height: 1.875;
+                }
+
+                .report-header {
+                    text-align: center;
+                    padding: 5px 0;
+                    margin-bottom: 10px;
+                }
+
+                .document-ref {
+                    float: right;
+                    font-size: 10pt;
+                    text-align: right;
+                    margin-bottom: 10px;
+                }
+
+                .institution-info {
+                    clear: both;
+                }
+
+                .institution-info h4 {
+                    margin: 0;
+                    font-size: 12pt;
+                    font-weight: normal;
+                }
+
+                /* Print styles */
+
+                .budget-appropriation-f4-report {
+                    font-size: 8pt;
+                }
+
+                .document-ref {
+                    font-size: 9pt;
+                }
+
+                .institution-info h4 {
+                    font-size: 11pt;
+                }
+            </style>
+
+            <div class="page budget-appropriation-f4-report">
+                <div class="report-header">
+                    <div class="document-ref">
+                        <div>F4-P-วง-003</div>
+                    </div>
+
+                    <div class="institution-info">
+                        <h3>
+                            <t t-out="o.source_analytic_id.name" />
+                            <br />
+                            ประมาณการรายรับ ประจำปีงบประมาณ พ.ศ.
+                            <t t-out="o.account_fiscal_year_id.name" />
+                            <br />
+                            สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง
+                            <br />
+                            <t t-out="o.department_analytic_id.complete_name" />
+                            <br />
+                            วงเงิน
+                            <t t-out="'{:,}'.format(o.amount_net)" />
+                            บาท
+                        </h3>
+                    </div>
+
+                    <t t-set="report" t-value="o.get_f4_report_data()" />
+
+                    <table
+                        class="table table-sm table-borderless"
+                        style="margin-top: 30px"
+                    >
+                        <thead>
+                            <tr>
+                                <th style="text-align: left;">รายการ</th>
+                                <th style="width: 20%; text-align: right;">
+                                    รหัสงบประมาณ
+                                </th>
+                                <th style="width: 20%; text-align: right;">งบประมาณ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="report['line_ids']" t-as="line">
+                                <tr>
+                                    <td>
+                                        <div
+                                            t-attf-style="margin-left: #{12 * line['hierarchy_level']}px; text-align: left;"
+                                        >
+                                            <span
+                                                t-attf-style="{{'font-weight: 600;' if line['hierarchy_level'] == 0 else ''}}"
+                                            >
+                                                <t t-out="line['name']" />
+                                            </span>
+
+                                            <div
+                                                style="
+                                                    margin-left: 16px;
+                                                    line-height: 1.6;
+                                                "
+                                            >
+                                                <t
+                                                    t-foreach="line['sub_rows']"
+                                                    t-as="row"
+                                                >
+                                                    <div
+                                                        style="white-space: pre-wrap"
+                                                        t-out="row['note']"
+                                                    ></div>
+                                                </t>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: right">
+                                        <t t-out="line['code']" />
+                                    </td>
+                                    <td style="text-align: right">
+                                        <t t-out="'{:,}'.format(line['balance'])" />
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <table
+                        class="table table-sm table-borderless"
+                        style="margin-top: 30px"
+                    >
+                        <tbody>
+                            <t t-foreach="report['deduct_ids']" t-as="line">
+                                <tr>
+                                    <td>
+                                        <div
+                                            t-attf-style="margin-left: #{12 * line['hierarchy_level']}px; text-align: left;"
+                                        >
+                                            <span
+                                                t-attf-style="{{'font-weight: 600;' if line['hierarchy_level'] == 0 else ''}}"
+                                            >
+                                                <t t-out="line['name']" />
+                                            </span>
+
+                                            <div
+                                                style="
+                                                    margin-left: 16px;
+                                                    line-height: 1.6;
+                                                "
+                                            >
+                                                <t
+                                                    t-foreach="line['sub_rows']"
+                                                    t-as="row"
+                                                >
+                                                    <div
+                                                        style="white-space: pre-wrap"
+                                                        t-out="row['note']"
+                                                    ></div>
+                                                </t>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="text-align: right">
+                                        <t t-out="line['code']" />
+                                    </td>
+                                    <td style="text-align: right">
+                                        <t t-out="'{:,}'.format(line['balance'])" />
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <table class="table table-sm table-borderless">
+                        <tbody>
+                            <tr>
+                                <td style="width: 60%"></td>
+                                <th style="text-align: right">รายรับรวม</th>
+                                <td style="text-align: right">
+                                    <t t-out="'{:,}'.format(o.amount_total)" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 60%"></td>
+                                <th style="text-align: right">หัก</th>
+                                <td
+                                    style="
+                                        text-align: right;
+                                        text-decoration-line: underline;
+                                    "
+                                >
+                                    <t t-out="'{:,}'.format(o.amount_deduct)" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 60%"></td>
+                                <th style="text-align: right">รายรับสุทธิ</th>
+                                <td
+                                    style="
+                                        text-align: right;
+                                        text-decoration-line: underline;
+                                        text-decoration-style: double;
+                                    "
+                                >
+                                    <t t-out="'{:,}'.format(o.amount_net)" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Main report template -->
+    <template id="report_budget_appropriation_f4">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t
+                    t-call="budget_appropriation.report_budget_appropriation_f4_document"
+                />
+            </t>
+        </t>
+    </template>
+</odoo>
