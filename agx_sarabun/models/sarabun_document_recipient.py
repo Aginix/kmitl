@@ -402,11 +402,37 @@ class SarabunDocumentRecipient(models.Model):
         self.ensure_one()
         if self.state == "new" and not self.read_date:
             self.read_date = fields.Datetime.now()
+            self._notify_inbox_updated()
 
     def mark_as_unread(self):
         """Mark recipient as unread"""
         self.ensure_one()
         self.read_date = False
+        self._notify_inbox_updated()
+
+    def _notify_inbox_updated(self):
+        """Send bus notification to update systray"""
+        users_to_notify = self.env["res.users"]
+
+        if self.recipient_type == "user":
+            users_to_notify = self.user_id
+        elif self.recipient_type == "department" and self.department_id:
+            if self.department_id.sarabun_officer_ids:
+                users_to_notify = self.department_id.sarabun_officer_ids
+            elif self.department_id.manager_id:
+                users_to_notify = self.department_id.manager_id.user_id
+        elif self.recipient_type == "role" and self.role_id:
+            users_to_notify = self.role_id.get_users_for_document(self.document_id)
+
+        for user in users_to_notify:
+            self.env['bus.bus']._sendone(
+                user.partner_id,
+                'sarabun_inbox/updated',
+                {
+                    'refresh': True,
+                    'document_id': self.document_id.id,
+                }
+            )
 
     def read(self, fields=None, load="_classic_read"):
         """Override to track read_date when recipient form is opened"""
