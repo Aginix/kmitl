@@ -6,7 +6,7 @@
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['budget_appropriation_department'],
+    'depends': ['budget_appropriation'],
     "data": [
         "views/budget_appropriation_views.xml"
     ],

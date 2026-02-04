@@ -10,7 +10,7 @@ class BudgetAppropriation(http.Controller):
     @http.route("/budget_appropriation_portal/objects", type="http", auth="user")
     def list(self, **kw):
         return http.request.render(
-            "budget_appropriation_portal.listing",
+            "budget_appropriation.listing",
             {
                 "root": "/budget_appropriation_portal",
                 "objects": http.request.env["budget.appropriation"].search([]),
@@ -35,7 +35,7 @@ class BudgetAppropriation(http.Controller):
 
         if app_id.budget_type == "revenue":
             return http.request.render(
-                "budget_appropriation_portal.object",
+                "budget_appropriation.object",
                 {
                     "object": app_id,
                     "report": app_id.get_f4_report_data(),
@@ -46,7 +46,7 @@ class BudgetAppropriation(http.Controller):
         report = request.env['budget.appropriation.f5.report'].get_f5_data_flat(budget_appropriation_id)
 
         return http.request.render(
-            "budget_appropriation_portal.expense",
+            "budget_appropriation.expense",
             {
                 "object": app_id,
                 "report": report,

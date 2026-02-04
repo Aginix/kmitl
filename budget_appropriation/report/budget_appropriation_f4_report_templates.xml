@@ -233,7 +233,7 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <t
-                    t-call="budget_appropriation_portal.report_budget_appropriation_f4_document"
+                    t-call="budget_appropriation.report_budget_appropriation_f4_document"
                 />
             </t>
         </t>

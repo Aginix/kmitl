@@ -23,8 +23,8 @@
         <field name="name">Budget Appropriation F4 Report</field>
         <field name="model">budget.appropriation</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">budget_appropriation_portal.report_budget_appropriation_f4</field>
-        <field name="report_file">budget_appropriation_portal.report_budget_appropriation_f4</field>
+        <field name="report_name">budget_appropriation.report_budget_appropriation_f4</field>
+        <field name="report_file">budget_appropriation.report_budget_appropriation_f4</field>
         <field name="binding_model_id" ref="model_budget_appropriation"/>
         <field name="binding_type">report</field>
         <field name="paperformat_id" ref="paperformat_budget_appropriation_f4"/>

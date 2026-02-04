@@ -15,6 +15,7 @@
                 <field name="amount_total" sum="Total Amount" />
                 <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'review'" decoration-success="state == 'posted'" />
                 <field name="user_id" widget="many2one_avatar_user" />
+                <field name="department_id" optional="hide" />
             </tree>
         </field>
     </record>
@@ -41,6 +42,10 @@
                 <field name="company_id" invisible="1" />
                 <field name="budget_type" invisible="1" />
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="open_record_url"
+                            icon="fa-external-link" string="Preview" />
+                    </div>
                     <div class="oe_title">
                         <span class="o_form_label" attrs="{'invisible': [('budget_type','!=', 'expense')]}">Budget Expense </span>
                         <span class="o_form_label" attrs="{'invisible': [('budget_type','!=', 'revenue')]}">Budget Revenue </span>
@@ -117,7 +122,7 @@
                                 </group>
                             </group>
                         </page>
-                        <page string="Preview" name="preview" attrs="{'invisible': [('id', '=', False)]}">
+                        <page string="Preview" name="preview" invisible="1" attrs="{'invisible': [('id', '=', False)]}">
                             <div class="o_budget_preview_container">
                                 <div class="text-center p-3">
                                     <!-- F5 Preview for Expense -->
@@ -136,11 +141,6 @@
                         </page>
                         <page name="extra" string="Extra Info">
                             <group>
-                                <group>
-
-                                    <field name="ref" />
-                                    <field name="note" />
-                                </group>
                                 <group>
                                     <field name="create_date" />
                                 </group>
