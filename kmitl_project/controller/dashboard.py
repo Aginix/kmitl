@@ -69,10 +69,10 @@ class KmitlProjectDashboard(http.Controller):
         if not fiscal_year_id and fiscal_years:
             fiscal_year_id = str(fiscal_years[0].id)
 
-        # Departments - only root level (parent_id is null)
+        # Departments - only root level with code (parent_id is null, code is not null)
         departments = Department.search(
-            [("parent_id", "=", False)],
-            order="name",
+            [("parent_id", "=", False), ("code", "!=", False)],
+            order="code",
         )
 
         # Convert to JSON for OWL component
@@ -97,10 +97,10 @@ class KmitlProjectDashboard(http.Controller):
         Project = request.env["kmitl.project"].sudo()
         Department = request.env["hr.department"].sudo()
 
-        # Departments - only root level (parent_id is null)
+        # Departments - only root level with code (parent_id is null, code is not null)
         departments = Department.search(
-            [("parent_id", "=", False)],
-            order="name",
+            [("parent_id", "=", False), ("code", "!=", False)],
+            order="code",
         )
 
         # Build domain excluding draft and cancel states
@@ -142,7 +142,17 @@ class KmitlProjectDashboard(http.Controller):
             domain.append(("account_fiscal_year_id", "=", int(kw["fiscal_year_id"])))
 
         if kw.get("department_id"):
-            domain.append(("department_id", "=", int(kw["department_id"])))
+            # Use parent_path to include all child departments
+            Department = request.env["hr.department"].sudo()
+            dept = Department.browse(int(kw["department_id"]))
+            if dept.exists() and dept.parent_path:
+                # Find all departments under this one (including itself)
+                child_depts = Department.search([
+                    ("parent_path", "=like", dept.parent_path + "%")
+                ])
+                domain.append(("department_id", "in", child_depts.ids))
+            else:
+                domain.append(("department_id", "=", int(kw["department_id"])))
 
         return domain
 
@@ -214,9 +224,14 @@ class KmitlProjectDashboard(http.Controller):
         table_data = []
 
         for dept in departments:
-            # Get projects for this department (match by department_id)
+            # Get projects for this department and all child departments (using parent_path)
             dept_projects = projects.filtered(
-                lambda p, d=dept: p.department_id.id == d.id
+                lambda p, d=dept: (
+                    p.department_id and
+                    p.department_id.parent_path and
+                    d.parent_path and
+                    p.department_id.parent_path.startswith(d.parent_path)
+                )
             )
 
             # Calculate budget by source
@@ -331,7 +346,7 @@ class KmitlProjectDashboard(http.Controller):
         }
 
     def _build_project_domain_for_hr_department(self, fiscal_year_id=None, department_id=None):
-        """Build search domain for hr.department filtering"""
+        """Build search domain for hr.department filtering using parent_path"""
         domain = [
             ("active", "=", True),
             ("state", "not in", ["draft", "cancel"]),
@@ -341,7 +356,17 @@ class KmitlProjectDashboard(http.Controller):
             domain.append(("account_fiscal_year_id", "=", int(fiscal_year_id)))
 
         if department_id:
-            domain.append(("department_id", "=", int(department_id)))
+            # Use parent_path to include all child departments
+            Department = request.env["hr.department"].sudo()
+            dept = Department.browse(int(department_id))
+            if dept.exists() and dept.parent_path:
+                # Find all departments under this one (including itself)
+                child_depts = Department.search([
+                    ("parent_path", "=like", dept.parent_path + "%")
+                ])
+                domain.append(("department_id", "in", child_depts.ids))
+            else:
+                domain.append(("department_id", "=", int(department_id)))
 
         return domain
 
