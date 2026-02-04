@@ -493,8 +493,8 @@ class BudgetAppropriationDashboardController(http.Controller):
         return sorted(roots, key=lambda x: x["value"], reverse=True)
 
     def _build_sunburst_data(self, expense_lines):
-        """Build sunburst data: Fund → Department → Budget Account (flat, 3 levels)."""
-        # Group by Fund → Department → Account
+        """Build sunburst data: Fund → Department → Budget Account Root (flat, 3 levels)."""
+        # Group by Fund → Department → Account Root (sum up from children)
         fund_data = {}
 
         for line in expense_lines:
@@ -505,6 +505,11 @@ class BudgetAppropriationDashboardController(http.Controller):
 
             if not fund or not dept or not account:
                 continue
+
+            # Get root account (traverse up to top level)
+            root_account = account
+            while root_account.parent_id:
+                root_account = root_account.parent_id
 
             fund_key = fund.id
             if fund_key not in fund_data:
@@ -520,10 +525,11 @@ class BudgetAppropriationDashboardController(http.Controller):
                     "accounts": {},
                 }
 
-            acc_key = account.id
+            # Use root account instead of original account
+            acc_key = root_account.id
             if acc_key not in fund_data[fund_key]["departments"][dept_key]["accounts"]:
                 fund_data[fund_key]["departments"][dept_key]["accounts"][acc_key] = {
-                    "name": account.display_name,
+                    "name": root_account.display_name,
                     "value": 0,
                 }
             fund_data[fund_key]["departments"][dept_key]["accounts"][acc_key]["value"] += amount
