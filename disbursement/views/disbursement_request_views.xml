@@ -37,24 +37,12 @@
 
                 </header>
                 <!-- Exception Alert -->
-                <div
-                    class="alert alert-danger"
-                    role="alert"
-                    style="margin-bottom:0px;"
-                    attrs="{'invisible': [('exceptions_summary','=',False)]}"
-                >
+                <div class="alert alert-danger" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('exceptions_summary','=',False)]}">
                     <p>
                         <strong>There are exceptions blocking this Disbursement Request:</strong>
                     </p>
                     <field name="exceptions_summary" />
-                    <button
-                        name="action_ignore_exceptions"
-                        type="object"
-                        class="btn-danger"
-                        string="Ignore Exceptions"
-                        help="Click here to be able to confirm this Disbursement Request regardless of the exceptions."
-                        groups="base_exception.group_exception_rule_manager"
-                    />
+                    <button name="action_ignore_exceptions" type="object" class="btn-danger" string="Ignore Exceptions" help="Click here to be able to confirm this Disbursement Request regardless of the exceptions." groups="base_exception.group_exception_rule_manager" />
                 </div>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -81,11 +69,7 @@
                             <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}" />
                             <field name="payment_type" required="1" />
                             <field name="ref" />
-                            <field
-                                name="ignore_exception"
-                                states="to_approve"
-                                groups='base_exception.group_exception_rule_manager'
-                            />
+                            <field name="ignore_exception" states="to_approve" groups='base_exception.group_exception_rule_manager' />
                             <field name="exception_ids" widget="many2many_tags" readonly="True" />
                         </group>
                         <group>
@@ -96,6 +80,7 @@
                             <field name="fund_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
                             <field name="activity_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
                             <field name="budget_account_id" readonly="1" required="1" options="{'no_create': True, 'no_open': True}" />
+                            <field name="budget_account_id" readonly="0" invisible="0"/>
                             <field name="analytic_distribution" invisible="1"/>
                         </group>
                     </group>
@@ -152,12 +137,7 @@
                 <filter string="Submitted" name="submitted" domain="[('state', '=', 'submitted')]" />
                 <filter string="Validated" name="validated" domain="[('state', '=', 'validated')]" />
                 <separator />
-                <filter
-                    icon="fa-exclamation-circle"
-                    name="tofix"
-                    string="Blocked in Draft"
-                    domain="[('main_exception_id','!=',False)]"
-                />
+                <filter icon="fa-exclamation-circle" name="tofix" string="Blocked in Draft" domain="[('main_exception_id','!=',False)]" />
                 <separator />
                 <filter name="date" string="Date" date="date" />
                 <group expand="0" string="Group By">
@@ -188,22 +168,11 @@
     </record>
 
     <!-- Root menu for Disbursement app -->
-    <menuitem id="menu_disbursement_root"
-        name="Disbursement"
-        sequence="45"/>
+    <menuitem id="menu_disbursement_root" name="Disbursement" sequence="45"/>
 
     <!-- Disbursement Requests submenu -->
-    <menuitem id="menu_disbursement_request"
-        name="Disbursement Requests"
-        parent="menu_disbursement_root"
-        action="action_disbursement_request"
-        sequence="10"
-        groups="disbursement.group_disbursement_user"/>
+    <menuitem id="menu_disbursement_request" name="Disbursement Requests" parent="menu_disbursement_root" action="action_disbursement_request" sequence="10" groups="disbursement.group_disbursement_user"/>
 
     <!-- Configuration submenu -->
-    <menuitem id="menu_disbursement_config"
-        name="Configuration"
-        parent="menu_disbursement_root"
-        sequence="100"
-        groups="disbursement.group_disbursement_manager"/>
+    <menuitem id="menu_disbursement_config" name="Configuration" parent="menu_disbursement_root" sequence="100" groups="disbursement.group_disbursement_manager"/>
 </odoo>
