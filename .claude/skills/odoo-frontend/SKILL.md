@@ -1,6 +1,10 @@
 ---
 name: odoo-frontend
 description: Guide for Odoo Frontend skill. This skill covers Odoo 16 frontend development including OWL components, portal templates, and JavaScript patterns.
+metadata:
+  author: aginix
+  version: "1.0.0"
+  argument-hint: <file-or-pattern>
 ---
 
 # Odoo Frontend Development Skill
