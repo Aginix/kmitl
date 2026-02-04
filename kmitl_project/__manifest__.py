@@ -1,11 +1,22 @@
 # -*- coding: utf-8 -*-
 {
     "name": "KMITL Project",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "category": "Project",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["web", "hr", "account_fiscal_year", "budget", "project", "base_exception", "l10n_th_fonts", "operating_unit"],
+    "depends": [
+        "web",
+        "hr",
+        "account_fiscal_year",
+        "budget",
+        "project",
+        "base_exception",
+        "l10n_th_fonts",
+        "operating_unit",
+        "portal",
+        "account_analytic_kmitl",
+    ],
     "data": [
         "report/paperformat.xml",
         "report/report_kmitl_project.xml",
@@ -22,16 +33,21 @@
         "views/menu_views.xml",
         "views/kmitl_project_views.xml",
         "views/portal_templates.xml",
+        "views/portal_dashboard_templates.xml",
         "views/project_evaluation_views.xml",
         "views/project_fight_views.xml",
         "views/project_global_index_views.xml",
         "views/project_impact_views.xml",
         "views/project_methodology_views.xml",
         "views/project_strategic_plan_views.xml",
-        "views/kmitl_project_report.xml"
+        "views/kmitl_project_report.xml",
     ],
     "assets": {
-        "web.assets_backend": ["kmitl_project/static/src/**/*"],
+        "web.assets_backend": ["kmitl_project/static/src/components/**/*"],
+        "web.assets_frontend": [
+            "kmitl_project/static/src/portal/scss/dashboard.scss",
+            "kmitl_project/static/src/portal/js/dashboard.js",
+        ],
     },
     "application": True,
     "installable": True,
