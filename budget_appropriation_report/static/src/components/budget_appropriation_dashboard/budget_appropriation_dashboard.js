@@ -46,6 +46,7 @@ export class BudgetAppropriationDashboard extends Component {
         this.fundTreemapChart = null;
         this.sunburstChart = null;
         this.sankeyChart = null;
+        this.heatmapChart = null;
 
         onWillStart(async () => {
             await this._loadECharts();
@@ -99,7 +100,10 @@ export class BudgetAppropriationDashboard extends Component {
                 this._updateSunburstChart();
             } else if (activeTab === "sankey") {
                 this._updateSankeyChart();
+            } else if (activeTab === "heatmap") {
+                this._updateHeatmapChart();
             }
+            // "table" tab doesn't need chart initialization
         }, 100);
     }
 
@@ -863,6 +867,98 @@ export class BudgetAppropriationDashboard extends Component {
         this.sankeyChart.setOption(option, true);
     }
 
+    _updateHeatmapChart() {
+        if (typeof echarts === "undefined") {
+            return;
+        }
+
+        const chartDom = document.getElementById("heatmapChart");
+        if (!chartDom) {
+            return;
+        }
+
+        if (!this.heatmapChart) {
+            this.heatmapChart = echarts.init(chartDom);
+            window.addEventListener("resize", () => {
+                if (this.heatmapChart) {
+                    this.heatmapChart.resize();
+                }
+            });
+        }
+
+        const heatmapData = this.state.stats.heatmap_data || {
+            x_axis: [],
+            y_axis: [],
+            data: [],
+            max_value: 0,
+        };
+
+        const option = {
+            tooltip: {
+                position: "top",
+                formatter: (params) => {
+                    const xLabel = heatmapData.x_axis[params.data[0]];
+                    const yLabel = heatmapData.y_axis[params.data[1]];
+                    const value = this.formatCurrency(params.data[2]);
+                    return `${yLabel}<br/>${xLabel}<br/>งบประมาณ: ${value} บาท`;
+                },
+            },
+            grid: {
+                left: "20%",
+                right: "10%",
+                top: "10%",
+                bottom: "15%",
+            },
+            xAxis: {
+                type: "category",
+                data: heatmapData.x_axis,
+                splitArea: {show: true},
+                axisLabel: {
+                    rotate: 30,
+                    fontSize: 10,
+                },
+            },
+            yAxis: {
+                type: "category",
+                data: heatmapData.y_axis,
+                splitArea: {show: true},
+                axisLabel: {
+                    fontSize: 10,
+                },
+            },
+            visualMap: {
+                min: 0,
+                max: heatmapData.max_value || 1,
+                calculable: true,
+                orient: "horizontal",
+                left: "center",
+                bottom: "0%",
+                inRange: {
+                    color: ["#f0f9e8", "#bae4bc", "#7bccc4", "#43a2ca", "#0868ac"],
+                },
+                formatter: (value) => this.formatCurrency(value),
+            },
+            series: [
+                {
+                    name: "งบประมาณ",
+                    type: "heatmap",
+                    data: heatmapData.data,
+                    label: {
+                        show: false,
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowColor: "rgba(0, 0, 0, 0.5)",
+                        },
+                    },
+                },
+            ],
+        };
+
+        this.heatmapChart.setOption(option, true);
+    }
+
     _disposeCharts() {
         if (this.chart) {
             this.chart.dispose();
@@ -899,6 +995,10 @@ export class BudgetAppropriationDashboard extends Component {
         if (this.sankeyChart) {
             this.sankeyChart.dispose();
             this.sankeyChart = null;
+        }
+        if (this.heatmapChart) {
+            this.heatmapChart.dispose();
+            this.heatmapChart = null;
         }
     }
 
@@ -970,7 +1070,10 @@ export class BudgetAppropriationDashboard extends Component {
                 this._updateSunburstChart();
             } else if (tabId === "sankey") {
                 this._updateSankeyChart();
+            } else if (tabId === "heatmap") {
+                this._updateHeatmapChart();
             }
+            // "table" tab doesn't need chart initialization
         }, 100);
     }
 

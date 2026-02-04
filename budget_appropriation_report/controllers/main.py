@@ -155,6 +155,12 @@ class BudgetAppropriationDashboardController(http.Controller):
         # Build sankey data: Fund → Department → Budget Account
         sankey_data = self._build_sankey_data(all_expense_lines)
 
+        # Build heatmap data: Department vs Budget Account (root level)
+        heatmap_data = self._build_heatmap_data(all_expense_lines)
+
+        # Build data table: Detailed line items
+        table_data = self._build_table_data(all_expense_lines)
+
         return {
             "report_count": len(reports),
             "department_count": department_count,
@@ -174,6 +180,8 @@ class BudgetAppropriationDashboardController(http.Controller):
             "fund_treemap": fund_treemap,
             "sunburst_data": sunburst_data,
             "sankey_data": sankey_data,
+            "heatmap_data": heatmap_data,
+            "table_data": table_data,
         }
 
     def _build_department_account_treemap(self, expense_appropriations):
@@ -602,6 +610,99 @@ class BudgetAppropriationDashboardController(http.Controller):
         nodes = [n for n in nodes if n["name"] in used_nodes]
 
         return {"nodes": nodes, "links": links_list}
+
+    def _build_heatmap_data(self, expense_lines):
+        """Build heatmap data: Department (rows) vs Budget Account root (columns)."""
+        # Collect unique departments and root budget accounts
+        dept_amounts = {}  # {dept_id: {account_root_id: amount}}
+        departments = {}  # {id: name}
+        account_roots = {}  # {id: name}
+
+        for line in expense_lines:
+            dept = line.department_analytic_id
+            account = line.account_id
+            amount = line.balance or 0
+
+            if not dept or not account:
+                continue
+
+            # Get root account (traverse up)
+            root_account = account
+            while root_account.parent_id:
+                root_account = root_account.parent_id
+
+            dept_id = dept.id
+            root_id = root_account.id
+
+            if dept_id not in departments:
+                departments[dept_id] = dept.name
+            if root_id not in account_roots:
+                account_roots[root_id] = root_account.display_name
+
+            if dept_id not in dept_amounts:
+                dept_amounts[dept_id] = {}
+            if root_id not in dept_amounts[dept_id]:
+                dept_amounts[dept_id][root_id] = 0
+            dept_amounts[dept_id][root_id] += amount
+
+        # Convert to heatmap format for ECharts
+        # x_axis: account roots, y_axis: departments, data: [[x, y, value], ...]
+        x_axis = sorted(account_roots.items(), key=lambda x: x[1])
+        y_axis = sorted(departments.items(), key=lambda x: x[1])
+
+        x_labels = [name for _, name in x_axis]
+        y_labels = [name for _, name in y_axis]
+        x_ids = [id for id, _ in x_axis]
+        y_ids = [id for id, _ in y_axis]
+
+        data = []
+        max_value = 0
+        for y_idx, dept_id in enumerate(y_ids):
+            for x_idx, acc_id in enumerate(x_ids):
+                value = dept_amounts.get(dept_id, {}).get(acc_id, 0)
+                if value > 0:
+                    data.append([x_idx, y_idx, value])
+                    if value > max_value:
+                        max_value = value
+
+        return {
+            "x_axis": x_labels,
+            "y_axis": y_labels,
+            "data": data,
+            "max_value": max_value,
+        }
+
+    def _build_table_data(self, expense_lines):
+        """Build detailed table data with all line items."""
+        table_rows = []
+
+        for line in expense_lines:
+            dept = line.department_analytic_id
+            fund = line.fund_analytic_id
+            activity = line.activity_analytic_id
+            account = line.account_id
+            approp = line.appropriation_id
+
+            # Get root account
+            root_account = account
+            while root_account and root_account.parent_id:
+                root_account = root_account.parent_id
+
+            table_rows.append({
+                "id": line.id,
+                "appropriation_name": approp.name if approp else "",
+                "department": dept.name if dept else "",
+                "fund": fund.name if fund else "",
+                "activity": activity.name if activity else "",
+                "account_root": root_account.display_name if root_account else "",
+                "account": account.display_name if account else "",
+                "amount": line.balance or 0,
+            })
+
+        # Sort by amount descending
+        table_rows.sort(key=lambda x: x["amount"], reverse=True)
+
+        return table_rows
 
 
 class BudgetAppropriationReportController(http.Controller):
