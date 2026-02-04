@@ -9,45 +9,51 @@
 
     <!-- Contract -->
     <menuitem id="menu_purchase_contract_root"
-              name="สัญญา/ใบสั่งซื้อ/จ้าง"
+              name="Purchase Contract"
               parent="purchase.menu_purchase_root"
               sequence="1"/>
 
     <menuitem id="menu_purchase_contract_orders"
-              name="รายการสัญญา/ใบสั่งซื้อ/จ้าง"
+              name="Contract Orders"
               parent="menu_purchase_contract_root"
               action="purchase.purchase_form_action"
               sequence="10"/>
 
     <menuitem id="menu_purchase_work_acceptance"
-              name="การตรวจรับ"
+              name="Work Acceptance"
               parent="menu_purchase_contract_root"
               action="purchase_work_acceptance.action_work_acceptance"
               sequence="20"/>
 
     <!-- Tracking -->
     <menuitem id="menu_purchase_tracking"
-              name="ติตดามสัญญา"
+              name="Contract Tracking"
               parent="purchase.menu_purchase_root"
               sequence="2"/>
 
     <menuitem id="menu_purchase_cotract_expire"
-              name="สัญญาใกล้หมดอายุ"
+              name="Contract Nearly Expire"
               parent="menu_purchase_tracking"
               action="purchase_menu.action_contracts_expiring"
               sequence="20"/>
     
     <menuitem id="menu_purchase_guarantee_expire"
-              name="หลักประกันหมดอายุ"
+              name="Guarantee Expire"
               parent="menu_purchase_tracking"
               action="purchase_menu.action_guarantees_expiring"
               sequence="20"/>
 
     <!-- Asset -->
-    <menuitem id="l10n_th_gov_account_asset_management.menu_purchase_assets" action="account_asset_management.account_asset_action"/>
-    
+    <menuitem id="l10n_th_gov_account_asset_management.menu_purchase_assets" active="False"/>
     <menuitem id="l10n_th_gov_account_asset_management.purchase_account_asset_menu" active="False"/>
-
+    <menuitem
+        id="menu_purchase_assets"
+        name="Assets"
+        parent="purchase.menu_purchase_root"
+        sequence="80"
+        groups="l10n_th_gov_account_asset_management.group_enable_asset_purchase"
+        action="account_asset_management.account_asset_action"
+    />
     <!-- Vendor -->
     <menuitem id="menu_vendor" name="Vendors"
             parent="purchase.menu_purchase_root"
