@@ -51,4 +51,3 @@
               action="purchase_menu.action_guarantees_expiring"
               sequence="20"/>
 </odoo>
-9
