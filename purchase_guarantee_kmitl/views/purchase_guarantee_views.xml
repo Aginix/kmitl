@@ -9,13 +9,13 @@
 
     <menuitem id="menu_bid_guarantee"
         name="หลักประกันข้อเสนอ"
-        parent="menu_guarantee_root"
+        parent="kmitl_guarantee_purchase"
         action="purchase_guarantee_kmitl.action_bid_guarantee"
         sequence="10"/>
 
     <menuitem id="menu_contract_guarantee"
         name="หลักประกันสัญญา"
-        parent="menu_guarantee_root"
+        parent="kmitl_guarantee_purchase"
         action="purchase_guarantee_kmitl.action_contract_guarantee"
         sequence="20"/>
   
