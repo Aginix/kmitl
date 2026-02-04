@@ -256,7 +256,7 @@
         id="purchase_request_approval_menu"
         parent="purchase.menu_purchase_root"
         action="action_purchase_request_approval"
-        sequence="2"
+        sequence="4"
     />
     <menuitem
         id="purchase_request_approval_menu_purchase_request"

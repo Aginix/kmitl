@@ -96,7 +96,7 @@
     />
 
     <!-- menu -->
-    <menuitem id="purchase_request_kmitl_root_menu" name="PR1" parent="purchase.menu_purchase_root" action="purchase_request.purchase_request_form_action" sequence="1" />
+    <menuitem id="purchase_request_kmitl_root_menu" name="PR1" parent="purchase.menu_purchase_root" action="purchase_request.purchase_request_form_action" sequence="3" />
 
     <function name="write" model="ir.actions.act_window">
         <value model="ir.actions.act_window" search="[('id', '=', ref('purchase_request.purchase_request_form_action'))]" />

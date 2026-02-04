@@ -12,6 +12,7 @@
         "data/purchase_exception.xml",
         "data/purchase_guarantee_rules.xml",
         "data/purchase_guarantee_type_data.xml",
+        "views/purchase_guarantee_action.xml",
         "views/purchase_guarantee_views.xml"
     ],
     'installable': True,
