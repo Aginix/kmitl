@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="purchase_request.view_purchase_request_tree" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
-                <field name="title" optional="show" />
+                <field name="title" optional="hide" />
             </xpath>
             <xpath expr="//field[@name='requested_by']" position="after">
                 <field name="procurement_type_id" optional="hide" />
