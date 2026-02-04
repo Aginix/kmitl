@@ -117,6 +117,14 @@ class AccountAssetBatch(models.Model):
         if self.purchase_id:
             self.source_of_asset = 'procurement'
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        for record in records:
+            if record.purchase_id and not record.source_of_asset:
+                record.source_of_asset = 'procurement'
+        return records
+
     @api.depends('line_ids.amount_total')
     def _compute_total_amount(self):
         for rec in self:
