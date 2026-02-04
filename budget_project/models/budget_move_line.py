@@ -11,5 +11,5 @@ class BudgetMoveLine(models.Model):
         readonly=True,
     )
 
-    project_id = fields.Many2one(comodel_name="budget.project", string="โครงการ/กิจกรรม")
+    project_id = fields.Many2one(comodel_name="kmitl.project", string="โครงการ/กิจกรรม")
     # project_analytic_id = fields.Many2one("account.analytic.account")
