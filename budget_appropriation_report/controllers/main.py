@@ -82,6 +82,24 @@ class BudgetAppropriationDashboardController(http.Controller):
         all_departments = revenue_departments | expense_departments
         department_count = len(all_departments)
 
+        # Group expense by department for treemap
+        department_expenses = {}
+        for approp in all_expense_appropriations:
+            dept = approp.department_analytic_id
+            if dept:
+                key = dept.id
+                if key not in department_expenses:
+                    department_expenses[key] = {
+                        "name": dept.name,
+                        "value": 0,
+                    }
+                department_expenses[key]["value"] += approp.amount_total
+
+        # Sort by value descending
+        treemap_data = sorted(
+            department_expenses.values(), key=lambda x: x["value"], reverse=True
+        )
+
         return {
             "report_count": len(reports),
             "department_count": department_count,
@@ -91,6 +109,7 @@ class BudgetAppropriationDashboardController(http.Controller):
                 {"name": "รายรับ", "value": total_revenue},
                 {"name": "รายจ่าย", "value": total_expense},
             ],
+            "treemap_data": treemap_data,
         }
 
 

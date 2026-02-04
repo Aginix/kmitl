@@ -91,15 +91,27 @@
                         </div>
                     </div>
 
-                    <!-- Pie Chart -->
-                    <div class="row">
-                        <div class="col-md-6 mx-auto">
-                            <div class="card border-0 shadow-sm">
+                    <!-- Charts Row -->
+                    <div class="row g-4 mb-4">
+                        <!-- Pie Chart -->
+                        <div class="col-md-5">
+                            <div class="card border-0 shadow-sm h-100">
                                 <div class="card-body">
                                     <h6 class="card-title text-center text-muted mb-3">
                                         สัดส่วนรายรับ-รายจ่าย
                                     </h6>
-                                    <div id="budgetPieChart" style="height: 300px;"></div>
+                                    <div id="budgetPieChart" style="height: 280px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- TreeMap -->
+                        <div class="col-md-7">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title text-center text-muted mb-3">
+                                        งบประมาณรายจ่ายตามหน่วยงาน
+                                    </h6>
+                                    <div id="budgetTreeMap" style="height: 280px;"></div>
                                 </div>
                             </div>
                         </div>

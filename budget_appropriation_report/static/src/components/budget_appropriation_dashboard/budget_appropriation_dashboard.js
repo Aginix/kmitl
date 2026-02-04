@@ -37,6 +37,7 @@ export class BudgetAppropriationDashboard extends Component {
         });
 
         this.chart = null;
+        this.treemapChart = null;
 
         onWillStart(async () => {
             await this._loadECharts();
@@ -44,13 +45,17 @@ export class BudgetAppropriationDashboard extends Component {
         });
 
         onMounted(() => {
-            this._initChart();
+            this._initCharts();
         });
 
         onWillUnmount(() => {
             if (this.chart) {
                 this.chart.dispose();
                 this.chart = null;
+            }
+            if (this.treemapChart) {
+                this.treemapChart.dispose();
+                this.treemapChart = null;
             }
         });
     }
@@ -71,8 +76,11 @@ export class BudgetAppropriationDashboard extends Component {
         });
     }
 
-    _initChart() {
-        setTimeout(() => this._updateChart(), 100);
+    _initCharts() {
+        setTimeout(() => {
+            this._updateChart();
+            this._updateTreeMap();
+        }, 100);
     }
 
     _updateChart() {
@@ -148,6 +156,68 @@ export class BudgetAppropriationDashboard extends Component {
         this.chart.setOption(option, true);
     }
 
+    _updateTreeMap() {
+        if (typeof echarts === "undefined") {
+            return;
+        }
+
+        const chartDom = document.getElementById("budgetTreeMap");
+        if (!chartDom) {
+            return;
+        }
+
+        if (!this.treemapChart) {
+            this.treemapChart = echarts.init(chartDom);
+            window.addEventListener("resize", () => {
+                if (this.treemapChart) {
+                    this.treemapChart.resize();
+                }
+            });
+        }
+
+        const treemapData = this.state.stats.treemap_data || [];
+
+        const option = {
+            tooltip: {
+                formatter: (params) => {
+                    const value = this.formatCurrency(params.value);
+                    return `${params.name}<br/>งบประมาณ: ${value} บาท`;
+                },
+            },
+            series: [
+                {
+                    type: "treemap",
+                    roam: false,
+                    nodeClick: false,
+                    breadcrumb: {show: false},
+                    label: {
+                        show: true,
+                        formatter: "{b}",
+                        fontSize: 12,
+                    },
+                    itemStyle: {
+                        borderColor: "#fff",
+                        borderWidth: 2,
+                        gapWidth: 2,
+                    },
+                    levels: [
+                        {
+                            itemStyle: {
+                                borderColor: "#fff",
+                                borderWidth: 2,
+                                gapWidth: 2,
+                            },
+                            colorSaturation: [0.3, 0.6],
+                        },
+                    ],
+                    data: treemapData,
+                },
+            ],
+        };
+
+        this.treemapChart.setOption(option, true);
+    }
+
     async loadData() {
         this.state.loading = true;
         try {
@@ -162,6 +232,7 @@ export class BudgetAppropriationDashboard extends Component {
             this.state.stats = response.stats;
 
             this._updateChart();
+            this._updateTreeMap();
         } catch (error) {
             console.error("Error loading data:", error);
             this.notification.add("เกิดข้อผิดพลาดในการโหลดข้อมูล: " + error.message, {
