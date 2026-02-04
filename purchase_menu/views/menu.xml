@@ -1,25 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <!-- Inherit Purchase menu -->
-    <menuitem id="purchase.menu_purchase_root" name="Purchases" sequence="10" />
 
-    <!-- Remove "Orders" menu -->
-    <record id="purchase.menu_purchase_form_action" model="ir.ui.menu">
-        <field name="active" eval="False"/>
-    </record>
-
-    <!-- Remove "Products" menu -->
-    <record id="purchase.menu_purchase_products" model="ir.ui.menu">
-        <field name="active" eval="False"/>
-    </record>
-
+    <!-- remove orders -->
+    <menuitem id="purchass.menu_procurement_management" active="False"/>
+    
+    <!-- add products to config -->
     <menuitem name="Products" id="menu_product_form" action="purchase.product_normal_action_puchased" parent="purchase.menu_product_in_config_purchase" sequence="1"/>
 
-    <!-- เมนูหลักใหม่ -->
+    <!-- Contract -->
     <menuitem id="menu_purchase_contract_root"
               name="สัญญา/ใบสั่งซื้อ/จ้าง"
               parent="purchase.menu_purchase_root"
-              sequence="10"/>
+              sequence="1"/>
 
     <menuitem id="menu_purchase_contract_orders"
               name="รายการสัญญา/ใบสั่งซื้อ/จ้าง"
@@ -33,21 +25,32 @@
               action="purchase_work_acceptance.action_work_acceptance"
               sequence="20"/>
 
-    <!-- เมนูหลักใหม่ -->
-    <menuitem id="menu_purchase_follow_up"
+    <!-- Tracking -->
+    <menuitem id="menu_purchase_tracking"
               name="ติตดามสัญญา"
               parent="purchase.menu_purchase_root"
-              sequence="11"/>
+              sequence="2"/>
 
     <menuitem id="menu_purchase_cotract_expire"
               name="สัญญาใกล้หมดอายุ"
-              parent="menu_purchase_follow_up"
+              parent="menu_purchase_tracking"
               action="purchase_menu.action_contracts_expiring"
               sequence="20"/>
     
     <menuitem id="menu_purchase_guarantee_expire"
               name="หลักประกันหมดอายุ"
-              parent="menu_purchase_follow_up"
+              parent="menu_purchase_tracking"
               action="purchase_menu.action_guarantees_expiring"
               sequence="20"/>
+
+    <!-- Asset -->
+    <menuitem id="l10n_th_gov_account_asset_management.menu_purchase_assets" action="account_asset_management.account_asset_action"/>
+    
+    <menuitem id="l10n_th_gov_account_asset_management.purchase_account_asset_menu" active="False"/>
+
+    <!-- Vendor -->
+    <menuitem id="menu_vendor" name="Vendors"
+            parent="purchase.purchase_form_action"
+            action="account.res_partner_action_supplier" sequence="5"/>
+
 </odoo>
