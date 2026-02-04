@@ -115,8 +115,8 @@
                                 <field name="kmitl_plan_id" />
                             </group>
                             <group name="budget" string="งบประมาณ">
+                                <field name="budget_amount" required="1"/>
                                 <field name="budget_account_id" required="1"/>
-                                <field name="budget_amount" />
                                 <field name="activity_analytic_id" required="1"/>
                                 <field name="fund_analytic_id" required="1"/>
                                 <field name="department_analytic_id" required="1"/>
