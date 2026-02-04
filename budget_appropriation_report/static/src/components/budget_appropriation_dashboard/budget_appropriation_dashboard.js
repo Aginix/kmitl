@@ -632,6 +632,16 @@ export class BudgetAppropriationDashboard extends Component {
                     return `${params.name}<br/>งบประมาณ: ${value} บาท`;
                 },
             },
+            title: {
+                text: "งบประมาณรายจ่ายตามประเภทงบ",
+                subtext: '(คลิกเพื่อดูรายละเอียดประเภทงบย่อย)',
+                left: "center",
+                top: 10,
+                textStyle: {
+                    fontSize: 14,
+                    fontWeight: "bold",
+                },
+            },
             series: [
                 {
                     type: "treemap",
