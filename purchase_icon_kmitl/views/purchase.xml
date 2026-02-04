@@ -1,8 +1,0 @@
-<odoo>
-    <menuitem
-        name="Purchase"
-        id="purchase.menu_purchase_root"
-        web_icon="purchase_icon_kmitl,static/description/icon.png"
-        sequence="135"
-    />
-</odoo>

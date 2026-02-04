@@ -1,6 +1,6 @@
 import logging
 
-from odoo import _, api, fields, models
+from odoo import Command, _, api, fields, models
 
 _logger = logging.getLogger(__name__)
 
@@ -140,6 +140,28 @@ class BudgetAppropriationLine(models.Model):
         readonly=True,
         auto_join=True,
     )
+
+    # Portal: computed account_ids for hierarchy traversal
+    account_ids = fields.Many2many(
+        "budget.account",
+        compute="_compute_account_ids",
+        context={"active_test": False},
+        string="Budget Accounts",
+        help="Budget accounts computed from budget account hierarchy.",
+    )
+
+    @api.depends("account_id")
+    def _compute_account_ids(self):
+        """Compute all parent budget accounts from hierarchy."""
+        for rec in self:
+            if rec.account_id and rec.account_id.parent_path:
+                account_ids = [
+                    int(account_id)
+                    for account_id in rec.account_id.parent_path.strip("/").split("/")
+                ]
+                rec.account_ids = [Command.set(account_ids)]
+            else:
+                rec.account_ids = [Command.clear()]
 
     @api.depends("account_id")
     def _compute_account_id(self):

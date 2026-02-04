@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+
+    <!-- View kmitl.project form -->
+    <record id="view_kmitl_project_form" model="ir.ui.view">
+        <field name="name">view.kmitl.project.form</field>
+        <field name="model">kmitl.project</field>
+        <field name="inherit_id" ref="kmitl_project.view_kmitl_project_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='national_strategy_id']" position="attributes">
+                <!-- Add your fields or attributes here -->
+                <attribute name="widget">ztree_select</attribute>
+                <attribute name="options">{'ztree_parent_key': 'parent_id','ztree_expend_level': '2', 'order': 'name' }</attribute>
+            </xpath>
+            <xpath expr="//field[@name='master_plan_id']" position="attributes">
+                <!-- Add your fields or attributes here -->
+                <attribute name="widget">ztree_select</attribute>
+                <attribute name="options">{'ztree_parent_key': 'parent_id','ztree_expend_level': '2', 'order': 'name' }</attribute>
+            </xpath>
+            <xpath expr="//field[@name='nesdc_plan_id']" position="attributes">
+                <!-- Add your fields or attributes here -->
+                <attribute name="widget">ztree_select</attribute>
+                <attribute name="options">{'ztree_parent_key': 'parent_id','ztree_expend_level': '2', 'order': 'name' }</attribute>
+            </xpath>
+            <xpath expr="//field[@name='kmitl_plan_id']" position="attributes">
+                <!-- Add your fields or attributes here -->
+                <attribute name="widget">ztree_select</attribute>
+                <attribute name="options">{'ztree_parent_key': 'parent_id','ztree_expend_level': '2', 'order': 'name' }</attribute>
+            </xpath>
+        </field>
+    </record>
+
+  </odoo>
