@@ -1,14 +1,9 @@
 # -*- coding: utf-8 -*-
-import logging
-
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
+from odoo import fields, models
 
 
 class BudgetAppropriationLine(models.Model):
-    _inherit = 'budget.appropriation.line'
+    _inherit = "budget.appropriation.line"
 
     operating_unit_id = fields.Many2one(
         comodel_name="operating.unit",
