@@ -3,6 +3,46 @@ from odoo import http
 from odoo.http import request
 
 
+class BudgetAppropriationDashboardController(http.Controller):
+
+    @http.route(
+        "/budget_appropriation/dashboard/data",
+        type="json",
+        auth="user",
+    )
+    def get_dashboard_data(self, fiscal_year_id=None, **kw):
+        """Get dashboard data for budget appropriation."""
+        # Get fiscal years for filter options
+        fiscal_years = (
+            request.env["account.fiscal.year"]
+            .search([], order="date_from desc")
+        )
+        fiscal_year_options = [
+            {"id": fy.id, "name": fy.name} for fy in fiscal_years
+        ]
+
+        # Determine selected fiscal year
+        if not fiscal_year_id and fiscal_years:
+            fiscal_year_id = fiscal_years[0].id
+
+        fiscal_year = None
+        if fiscal_year_id:
+            fy = request.env["account.fiscal.year"].browse(fiscal_year_id)
+            if fy.exists():
+                fiscal_year = {"id": fy.id, "name": fy.name}
+
+        return {
+            "filter_options": {
+                "fiscal_years": fiscal_year_options,
+            },
+            "filters": {
+                "fiscal_year_id": fiscal_year_id,
+            },
+            "fiscal_year": fiscal_year,
+            "data": {},
+        }
+
+
 class BudgetAppropriationReportController(http.Controller):
 
     @http.route(

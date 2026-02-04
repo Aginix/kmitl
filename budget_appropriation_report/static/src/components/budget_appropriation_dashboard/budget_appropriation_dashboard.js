@@ -13,7 +13,7 @@ export class BudgetAppropriationDashboard extends Component {
             "bottom-right": false
         };
 
-        this.orm = useService("orm");
+        this.rpc = useService("rpc");
         this.notification = useService("notification");
 
         this.state = useState({
@@ -21,32 +21,31 @@ export class BudgetAppropriationDashboard extends Component {
                 fiscal_year_id: null,
             },
             loading: false,
+            data: {},
+            fiscalYear: null,
             filterOptions: {
                 fiscal_years: [],
             },
         });
 
         onWillStart(async () => {
-            await this.loadFilterOptions();
+            await this.loadData();
         });
     }
 
-    async loadFilterOptions() {
+    async loadData() {
         this.state.loading = true;
         try {
-            const fiscalYears = await this.orm.searchRead(
-                "account.fiscal.year",
-                [],
-                ["id", "name"],
-                {order: "date_from desc"}
-            );
-            this.state.filterOptions.fiscal_years = fiscalYears;
+            const response = await this.rpc("/budget_appropriation/dashboard/data", {
+                fiscal_year_id: this.state.filters.fiscal_year_id,
+            });
 
-            if (fiscalYears.length > 0) {
-                this.state.filters.fiscal_year_id = fiscalYears[0].id;
-            }
+            this.state.filterOptions = response.filter_options;
+            this.state.filters = response.filters;
+            this.state.fiscalYear = response.fiscal_year;
+            this.state.data = response.data;
         } catch (error) {
-            console.error("Error loading filter options:", error);
+            console.error("Error loading data:", error);
             this.notification.add("เกิดข้อผิดพลาดในการโหลดข้อมูล: " + error.message, {
                 type: "danger",
             });
@@ -58,6 +57,7 @@ export class BudgetAppropriationDashboard extends Component {
     async onFiscalYearChange(e) {
         const fiscalYearId = e.target.value ? Number(e.target.value) : null;
         this.state.filters.fiscal_year_id = fiscalYearId;
+        await this.loadData();
     }
 
     isFiscalYearSelected(fyId) {
@@ -65,10 +65,7 @@ export class BudgetAppropriationDashboard extends Component {
     }
 
     get selectedFiscalYear() {
-        const fy = this.state.filterOptions.fiscal_years.find(
-            (f) => f.id === this.state.filters.fiscal_year_id
-        );
-        return fy ? fy.name : "";
+        return this.state.fiscalYear ? this.state.fiscalYear.name : "";
     }
 }
 
