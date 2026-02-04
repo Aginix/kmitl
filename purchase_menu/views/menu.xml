@@ -9,9 +9,11 @@
     </record>
 
     <!-- Remove "Products" menu -->
-    <record id="purchase.product_menu" model="ir.ui.menu">
+    <record id="purchase.menu_purchase_products" model="ir.ui.menu">
         <field name="active" eval="False"/>
     </record>
+
+    <menuitem name="Products" id="menu_product_form" action="purchase.product_normal_action_puchased" parent="purchase.menu_product_in_config_purchase" sequence="1"/>
 
     <!-- เมนูหลักใหม่ -->
     <menuitem id="menu_purchase_contract_root"
@@ -19,17 +21,34 @@
               parent="purchase.menu_purchase_root"
               sequence="10"/>
 
-    <!-- เมนูย่อย: รายการสัญญา/ใบสั่งซื้อ/จ้าง (purchase.order) -->
     <menuitem id="menu_purchase_contract_orders"
               name="รายการสัญญา/ใบสั่งซื้อ/จ้าง"
               parent="menu_purchase_contract_root"
               action="purchase.purchase_form_action"
               sequence="10"/>
 
-    <!-- เมนูย่อย: การตรวจรับ (สมมุติว่าเป็นโมเดล work.acceptance) -->
     <menuitem id="menu_purchase_work_acceptance"
               name="การตรวจรับ"
               parent="menu_purchase_contract_root"
               action="purchase_work_acceptance.action_work_acceptance"
               sequence="20"/>
+
+    <!-- เมนูหลักใหม่ -->
+    <menuitem id="menu_purchase_follow_up"
+              name="ติตดามสัญญา"
+              parent="purchase.menu_purchase_root"
+              sequence="11"/>
+
+    <menuitem id="menu_purchase_cotract_expire"
+              name="สัญญาใกล้หมดอายุ"
+              parent="menu_purchase_follow_up"
+              action="purchase_menu.action_contracts_expiring"
+              sequence="20"/>
+    
+    <menuitem id="menu_purchase_guarantee_expire"
+              name="หลักประกันหมดอายุ"
+              parent="menu_purchase_follow_up"
+              action="purchase_menu.action_guarantees_expiring"
+              sequence="20"/>
 </odoo>
+9

@@ -5,7 +5,18 @@
         id="kmitl_guarantee_purchase"
         name="Guarantee"
         parent="purchase.menu_purchase_root"
-        action="l10n_th_gov_purchase_guarantee.purchase_guarantee_action"
         sequence="10"/>
 
+    <menuitem id="menu_bid_guarantee"
+        name="หลักประกันข้อเสนอ"
+        parent="menu_guarantee_root"
+        action="purchase_guarantee_kmitl.action_bid_guarantee"
+        sequence="10"/>
+
+    <menuitem id="menu_contract_guarantee"
+        name="หลักประกันสัญญา"
+        parent="menu_guarantee_root"
+        action="purchase_guarantee_kmitl.action_contract_guarantee"
+        sequence="20"/>
+  
   </odoo>

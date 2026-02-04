@@ -8,6 +8,7 @@
     'category': '',
     'depends': ['purchase_guarantee_kmitl', 'purchase_work_acceptance_kmitl', 'l10n_th_gov_account_asset_management'],
     'data': [
+        'views/purchase_tracking.xml',
         'views/menu.xml'
     ],
     'installable': True,
