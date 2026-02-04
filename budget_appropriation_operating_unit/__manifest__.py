@@ -5,7 +5,7 @@
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["budget_appropriation", "budget_operating_unit", "hr_department_operating_unit"],
+    "depends": ["budget_appropriation", "budget_operating_unit"],
     "data": [
         "views/budget_appropriation_views.xml"
     ],

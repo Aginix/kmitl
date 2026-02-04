@@ -10,22 +10,16 @@ _logger = logging.getLogger(__name__)
 class BudgetAppropriation(models.Model):
     _inherit = "budget.appropriation"
 
-    def _default_operating_unit_id(self):
-        department_id = self.env.user.employee_id.department_id
-        if department_id and department_id.operating_unit_id:
-            return department_id.operating_unit_id.id
-        return self.env["res.users"].operating_unit_default_get()
-
     operating_unit_id = fields.Many2one(
-        compute="_compute_operating_unit_id",
-        default=lambda self: self._default_operating_unit_id(),
-        store=True,
+        comodel_name="operating.unit",
+        string="Operating Unit",
+        states=READONLY_STATES,
+        default=lambda self: (
+            self.env["res.users"].operating_unit_default_get(self.env.uid)
+        ),
     )
 
-    @api.depends("department_id")
-    def _compute_operating_unit_id(self):
-        for rec in self:
-            if rec.department_id and rec.department_id.operating_unit_id:
-                rec.operating_unit_id = rec.department_id.operating_unit_id.id
-            else:
-                rec.operating_unit_id = False
+    def budget_move_vals(self):
+        vals = super().budget_move_vals()
+        vals["operating_unit_id"] = self.operating_unit_id.id
+        return vals
