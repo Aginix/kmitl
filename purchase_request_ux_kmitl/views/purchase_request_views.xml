@@ -183,7 +183,6 @@
                         <field
                             name="operating_unit_id"
                             widget="selection"
-                            attrs="{'readonly': [('is_editable','=', False)]}"
                             groups="operating_unit.group_multi_operating_unit"
                         />
                     </group>

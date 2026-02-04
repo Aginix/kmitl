@@ -8,7 +8,6 @@
     "website": "https://github.com/aginix/kmitl",
     'depends': ['hr', 'operating_unit'],
     "data": [
-        "security/security.xml",
         "views/hr_department_views.xml"
     ],
     'installable': True,
