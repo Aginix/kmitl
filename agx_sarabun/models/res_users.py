@@ -15,9 +15,10 @@ class ResUsers(models.Model):
         user = self.env.user
 
         # Build domain for recipients the current user can access
-        # and that are in 'new' state (unread/unactioned)
+        # that are in 'new' state and not yet read (read_date is null)
         recipients = Recipient.sudo().search([
             ("state", "=", "new"),
+            ("read_date", "=", False),
             ("document_id.state", "=", "sent"),
         ], order="create_date desc")
 
