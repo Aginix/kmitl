@@ -1173,6 +1173,7 @@ export class BudgetAppropriationDashboard extends Component {
             },
             legend: {
                 orient: 'vertical',
+                type: 'scroll',
                 right: 0,
                 top: 'center',
             },
@@ -1180,8 +1181,8 @@ export class BudgetAppropriationDashboard extends Component {
                 {
                     name: "หน่วยงาน",
                     type: "pie",
-                    radius: '60%',
-                    center: ['30%', '50%'],
+                    radius: '70%',
+                    center: ['40%', '50%'],
                     label: {
                         show: true,
                         formatter: (params) => {
