@@ -14,8 +14,7 @@
                 <attribute name="domain">['|', ('operating_unit_id', '=', False), ('operating_unit_id', '=', operating_unit_id)]</attribute>
             </xpath>
             <xpath expr="//page[@name='extra']/group/group" position="inside">
-                <field name="can_edit_operating_unit" invisible="1"/>
-                <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit" readonly="not can_edit_operating_unit" />
+                <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit" />
                 <field name="operating_unit_id" invisible="1" />
             </xpath>
         </field>
