@@ -1,0 +1,54 @@
+<odoo>
+    <record id="purchase_request_tender_followers_rule" model="ir.rule">
+        <field name="name">Follow Purchase Request Tender</field>
+        <field name="model_id" ref="model_purchase_request_tender" />
+        <field name="groups" eval="[(6,0, [ref('purchase_request.group_purchase_request_user')])]" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+        <field name="domain_force">
+            ['|',('request_id.requested_by','=',user.id),
+            ('request_id.message_partner_ids', 'in', [user.partner_id.id])]
+        </field>
+    </record>
+    <record id="purchase_request_tender_rule" model="ir.rule">
+        <field name="name">Purchase Request Tender User</field>
+        <field name="model_id" ref="model_purchase_request_tender" />
+        <field name="groups" eval="[(6,0, [ref('purchase_request.group_purchase_request_user')])]" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_create" eval="True" />
+        <field name="perm_unlink" eval="True" />
+        <field name="domain_force">[('request_id.requested_by','=',user.id)]</field>
+    </record>
+    <record id="purchase_request_tender_manager_rule" model="ir.rule">
+        <field name="name">Purchase Request Tender Manager</field>
+        <field name="model_id" ref="model_purchase_request_tender" />
+        <field name="groups" eval="[(6,0, [ref('purchase_request.group_purchase_request_manager')])]" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_create" eval="True" />
+        <field name="perm_unlink" eval="True" />
+    </record>
+    <record id="purchase_request_all_user_followers_rule" model="ir.rule">
+        <field name="name">Follow Purchase Request All user</field>
+        <field name="model_id" ref="model_purchase_request_tender" />
+        <field name="groups" eval="[(6,0, [ref('purchase_request_security.group_purchase_request_user_all')])]" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_create" eval="True" />
+        <field name="perm_unlink" eval="True" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="purchase_request_all_user_rule" model="ir.rule">
+        <field name="name">Purchase Request All User</field>
+        <field name="model_id" ref="model_purchase_request_tender" />
+        <field name="groups" eval="[(6,0, [ref('purchase_request_security.group_purchase_request_user_all')])]" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_create" eval="True" />
+        <field name="perm_unlink" eval="True" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+</odoo>

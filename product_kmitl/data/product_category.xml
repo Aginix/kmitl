@@ -1,0 +1,842 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="product_category_asset" model="product.category">
+        <field name="name">ครุภัณฑ์</field>
+        <field name="code">asset</field>
+    </record>
+
+    <record id="product_category_building" model="product.category">
+        <field name="name">อาคาร สิ่งก่อสร้าง</field>
+        <field name="code">building</field>
+    </record>
+
+    <record id="product_category_expense" model="product.category">
+        <field name="name">ค่าใช้จ่าย</field>
+        <field name="code">expense</field>
+    </record>
+
+    <record id="product_category_consumable" model="product.category">
+        <field name="name">วัสดุใช้ไป</field>
+        <field name="code">consumable</field>
+    </record>
+
+    <record id="product_category_storable" model="product.category">
+        <field name="name">วัสดุคงคลัง</field>
+        <field name="code">storable</field>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75000000" model="product.category">
+        <field name="name">วัสดุและเครื่องใช้สำนักงาน</field>
+        <field name="code">75000000</field>
+        <field name="parent_id" ref="product_category_storable"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75100000" model="product.category">
+        <field name="name">วัสดุสำนักงาน</field>
+        <field name="code">75100000</field>
+        <field name="parent_id" ref="product_category_75000000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75100100" model="product.category">
+        <field name="name">แถบยาง</field>
+        <field name="code">75100100</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75100200" model="product.category">
+        <field name="name">แฟ้ม ปก  เก็บกระดาษ</field>
+        <field name="code">75100200</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75100300" model="product.category">
+        <field name="name">ปฏิทิน</field>
+        <field name="code">75100300</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75100400" model="product.category">
+        <field name="name">สมุด</field>
+        <field name="code">75100400</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75100500" model="product.category">
+        <field name="name">ดินสอ</field>
+        <field name="code">75100500</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75100600" model="product.category">
+        <field name="name">ดินสอสี</field>
+        <field name="code">75100600</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75100700" model="product.category">
+        <field name="name">สีน้ำ</field>
+        <field name="code">75100700</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75100800" model="product.category">
+        <field name="name">ลวดเสียบกระดาษ</field>
+        <field name="code">75100800</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75100900" model="product.category">
+        <field name="name">ไม้บรรทัด</field>
+        <field name="code">75100900</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75101000" model="product.category">
+        <field name="name">ซอง</field>
+        <field name="code">75101000</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75101100" model="product.category">
+        <field name="name">หมึกเขียน</field>
+        <field name="code">75101100</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75101200" model="product.category">
+        <field name="name">หมึกพิมพ์</field>
+        <field name="code">75101200</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75101300" model="product.category">
+        <field name="name">หัวปากกา</field>
+        <field name="code">75101300</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75101400" model="product.category">
+        <field name="name">ด้ามปากกา</field>
+        <field name="code">75101400</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75101500" model="product.category">
+        <field name="name">เครื่องวาดเขียน</field>
+        <field name="code">75101500</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75101600" model="product.category">
+        <field name="name">ยางลบ</field>
+        <field name="code">75101600</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75101700" model="product.category">
+        <field name="name">น้ำยาลบ</field>
+        <field name="code">75101700</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75101800" model="product.category">
+        <field name="name">ดินสอเขียนผ้า</field>
+        <field name="code">75101800</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75101900" model="product.category">
+        <field name="name">แถบกระดาษ</field>
+        <field name="code">75101900</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75102000" model="product.category">
+        <field name="name">เข็มหมุด</field>
+        <field name="code">75102000</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75102100" model="product.category">
+        <field name="name">ที่ทับกระดาษ</field>
+        <field name="code">75102100</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75102200" model="product.category">
+        <field name="name">ที่วางปากกา</field>
+        <field name="code">75102200</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75102300" model="product.category">
+        <field name="name">กาว</field>
+        <field name="code">75102300</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75102400" model="product.category">
+        <field name="name">ที่กลัดและผูกรัดต่าง ๆ</field>
+        <field name="code">75102400</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75102500" model="product.category">
+        <field name="name">ลวดเย็บกระดาษ</field>
+        <field name="code">75102500</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75102600" model="product.category">
+        <field name="name">หมึกเติม</field>
+        <field name="code">75102600</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75102700" model="product.category">
+        <field name="name">วัสดุประชาสัมพันธ์</field>
+        <field name="code">75102700</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75102800" model="product.category">
+        <field name="name">ขี้ผึ้งนับกระดาษ</field>
+        <field name="code">75102800</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75102900" model="product.category">
+        <field name="name">ชอล์ค</field>
+        <field name="code">75102900</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75103000" model="product.category">
+        <field name="name">ฟิวเจอร์บอร์ด</field>
+        <field name="code">75103000</field>
+        <field name="parent_id" ref="product_category_75100000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75200000" model="product.category">
+        <field name="name">เครื่องใช้และเครื่องประกอบสำนักงาน</field>
+        <field name="code">75200000</field>
+        <field name="parent_id" ref="product_category_75000000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75200100" model="product.category">
+        <field name="name">ที่เก็บต้นฉบับพิมพ์</field>
+        <field name="code">75200100</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75200200" model="product.category">
+        <field name="name">ปากกาหมึกซึม</field>
+        <field name="code">75200200</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75200300" model="product.category">
+        <field name="name">เครื่องเหลาดินสอ</field>
+        <field name="code">75200300</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75200400" model="product.category">
+        <field name="name">เครื่องเย็บกระดาษ</field>
+        <field name="code">75200400</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75200500" model="product.category">
+        <field name="name">ตระกร้าหนังสือบนโต๊ะ</field>
+        <field name="code">75200500</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75200600" model="product.category">
+        <field name="name">ที่เปิดซอง</field>
+        <field name="code">75200600</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75200700" model="product.category">
+        <field name="name">ที่ถอนลวดเย็บกระดาษ</field>
+        <field name="code">75200700</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75200800" model="product.category">
+        <field name="name">ปากกาลูกลื่น</field>
+        <field name="code">75200800</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75200900" model="product.category">
+        <field name="name">ลูกกลิ้งหมึก</field>
+        <field name="code">75200900</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75201000" model="product.category">
+        <field name="name">ที่แขวนและวางต่าง ๆ</field>
+        <field name="code">75201000</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75201100" model="product.category">
+        <field name="name">ตรายาง</field>
+        <field name="code">75201100</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75201200" model="product.category">
+        <field name="name">แท่นหมึกประทับตรายาง</field>
+        <field name="code">75201200</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75201300" model="product.category">
+        <field name="name">ชั้นเก็บของ</field>
+        <field name="code">75201300</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75201400" model="product.category">
+        <field name="name">หิ้ง</field>
+        <field name="code">75201400</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75201500" model="product.category">
+        <field name="name">ตราวันที่</field>
+        <field name="code">75201500</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75201600" model="product.category">
+        <field name="name">ขาตั้ง</field>
+        <field name="code">75201600</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75201700" model="product.category">
+        <field name="name">กะบะหนังสือบนโต๊ะ</field>
+        <field name="code">75201700</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75201800" model="product.category">
+        <field name="name">กะบะใส่ดินสอปากกา</field>
+        <field name="code">75201800</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75201900" model="product.category">
+        <field name="name">กล่องใส่คลิป</field>
+        <field name="code">75201900</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75202000" model="product.category">
+        <field name="name">แท่นใส่สก๊อตเทป</field>
+        <field name="code">75202000</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75202100" model="product.category">
+        <field name="name">ที่เจาะกระดาษ</field>
+        <field name="code">75202100</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75202200" model="product.category">
+        <field name="name">คัทเตอร์</field>
+        <field name="code">75202200</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75202300" model="product.category">
+        <field name="name">กรรไกร</field>
+        <field name="code">75202300</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75202400" model="product.category">
+        <field name="name">เชือก</field>
+        <field name="code">75202400</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75202500" model="product.category">
+        <field name="name">โฟม</field>
+        <field name="code">75202500</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75202600" model="product.category">
+        <field name="name">INDEX TABS</field>
+        <field name="code">75202600</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75202700" model="product.category">
+        <field name="name">แผ่นใส</field>
+        <field name="code">75202700</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75202800" model="product.category">
+        <field name="name">เหล็กแหลม</field>
+        <field name="code">75202800</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75202900" model="product.category">
+        <field name="name">แผ่นดิสเก็ต</field>
+        <field name="code">75202900</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75203000" model="product.category">
+        <field name="name">แปลงลบกระดาน</field>
+        <field name="code">75203000</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75203100" model="product.category">
+        <field name="name">เครื่องตอกตัวเลข</field>
+        <field name="code">75203100</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75203200" model="product.category">
+        <field name="name">แผ่นยางรองตัด</field>
+        <field name="code">75203200</field>
+        <field name="parent_id" ref="product_category_75200000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75300000" model="product.category">
+        <field name="name">แบบพิมพ์สำหรับบันทึก</field>
+        <field name="code">75300000</field>
+        <field name="parent_id" ref="product_category_75000000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75300100" model="product.category">
+        <field name="name">สมุดบันทึกต่าง ๆ</field>
+        <field name="code">75300100</field>
+        <field name="parent_id" ref="product_category_75300000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75300200" model="product.category">
+        <field name="name">บัตรบันทึกต่าง ๆ</field>
+        <field name="code">75300200</field>
+        <field name="parent_id" ref="product_category_75300000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75300300" model="product.category">
+        <field name="name">บัตร อี เอ เอ็ม</field>
+        <field name="code">75300300</field>
+        <field name="parent_id" ref="product_category_75300000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75300400" model="product.category">
+        <field name="name">กระดาษเครื่องคำนวณ</field>
+        <field name="code">75300400</field>
+        <field name="parent_id" ref="product_category_75300000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75300500" model="product.category">
+        <field name="name">กระดาษเขียนแบบ</field>
+        <field name="code">75300500</field>
+        <field name="parent_id" ref="product_category_75300000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75300600" model="product.category">
+        <field name="name">แฟ้มบันทึกต่าง ๆ</field>
+        <field name="code">75300600</field>
+        <field name="parent_id" ref="product_category_75300000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75300700" model="product.category">
+        <field name="name">กระดาษเขียนหนังสือ</field>
+        <field name="code">75300700</field>
+        <field name="parent_id" ref="product_category_75300000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75300800" model="product.category">
+        <field name="name">แถบกระดาษบันทึก</field>
+        <field name="code">75300800</field>
+        <field name="parent_id" ref="product_category_75300000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75300900" model="product.category">
+        <field name="name">บัตรตารางบันทึก</field>
+        <field name="code">75300900</field>
+        <field name="parent_id" ref="product_category_75300000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75301000" model="product.category">
+        <field name="name">แถบสลาก</field>
+        <field name="code">75301000</field>
+        <field name="parent_id" ref="product_category_75300000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75301100" model="product.category">
+        <field name="name">แบบฟอร์มธุรกิจ</field>
+        <field name="code">75301100</field>
+        <field name="parent_id" ref="product_category_75300000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75301200" model="product.category">
+        <field name="name">กระดาษใช้งานอื่น ๆ</field>
+        <field name="code">75301200</field>
+        <field name="parent_id" ref="product_category_75300000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75301300" model="product.category">
+        <field name="name">สมุดบันทึกความจำ</field>
+        <field name="code">75301300</field>
+        <field name="parent_id" ref="product_category_75300000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75301400" model="product.category">
+        <field name="name">ซองจดหมาย</field>
+        <field name="code">75301400</field>
+        <field name="parent_id" ref="product_category_75300000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75301500" model="product.category">
+        <field name="name">กระดาษร่าง</field>
+        <field name="code">75301500</field>
+        <field name="parent_id" ref="product_category_75300000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75301600" model="product.category">
+        <field name="name">แบบพิมพ์บันทึกอื่น ๆ</field>
+        <field name="code">75301600</field>
+        <field name="parent_id" ref="product_category_75300000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75400000" model="product.category">
+        <field name="name">แบบพิมพ์มาตราฐาน</field>
+        <field name="code">75400000</field>
+        <field name="parent_id" ref="product_category_75000000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75400100" model="product.category">
+        <field name="name">แบบพิมพ์ทางราชการต่าง ๆ</field>
+        <field name="code">75400100</field>
+        <field name="parent_id" ref="product_category_75400000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75400200" model="product.category">
+        <field name="name">แบบพิมพ์บัญชีมาตราฐาน</field>
+        <field name="code">75400200</field>
+        <field name="parent_id" ref="product_category_75400000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75400300" model="product.category">
+        <field name="name">แฟ้มเก็บเอกสารมาตราฐาน</field>
+        <field name="code">75400300</field>
+        <field name="parent_id" ref="product_category_75400000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75400400" model="product.category">
+        <field name="name">ซองเก็บเอกสารราชการ</field>
+        <field name="code">75400400</field>
+        <field name="parent_id" ref="product_category_75400000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75400500" model="product.category">
+        <field name="name">แบบพิมพ์มาตรฐานสำนักงบประมาณ</field>
+        <field name="code">75400500</field>
+        <field name="parent_id" ref="product_category_75400000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <record id="product_category_75700000" model="product.category">
+        <field name="name">ฉนวนและวัสดที่เป็นฉนวน</field>
+        <field name="code">75700000</field>
+        <field name="parent_id" ref="product_category_75000000"/>
+        <field name="property_cost_method">fifo</field>
+        <field name="property_valuation">manual_periodic</field>
+    </record>
+
+    <!-- วัสดุและเครื่องใช้สำนักงาน  5104010101, 4121040044 -->
+    <function model="product.category" name="write">
+        <value eval="[
+        ref('product_kmitl.product_category_75000000'),
+        ref('product_kmitl.product_category_75100000'),
+        ref('product_kmitl.product_category_75100100'),
+        ref('product_kmitl.product_category_75100200'),
+        ref('product_kmitl.product_category_75100300'),
+        ref('product_kmitl.product_category_75100400'),
+        ref('product_kmitl.product_category_75100500'),
+        ref('product_kmitl.product_category_75100600'),
+        ref('product_kmitl.product_category_75100700'),
+        ref('product_kmitl.product_category_75100800'),
+        ref('product_kmitl.product_category_75100900'),
+        ref('product_kmitl.product_category_75101000'),
+        ref('product_kmitl.product_category_75101100'),
+        ref('product_kmitl.product_category_75101200'),
+        ref('product_kmitl.product_category_75101300'),
+        ref('product_kmitl.product_category_75101400'),
+        ref('product_kmitl.product_category_75101500'),
+        ref('product_kmitl.product_category_75101600'),
+        ref('product_kmitl.product_category_75101700'),
+        ref('product_kmitl.product_category_75101800'),
+        ref('product_kmitl.product_category_75101900'),
+        ref('product_kmitl.product_category_75102000'),
+        ref('product_kmitl.product_category_75102100'),
+        ref('product_kmitl.product_category_75102200'),
+        ref('product_kmitl.product_category_75102300'),
+        ref('product_kmitl.product_category_75102400'),
+        ref('product_kmitl.product_category_75102500'),
+        ref('product_kmitl.product_category_75102600'),
+        ref('product_kmitl.product_category_75102700'),
+        ref('product_kmitl.product_category_75102800'),
+        ref('product_kmitl.product_category_75102900'),
+        ref('product_kmitl.product_category_75103000'),
+        ref('product_kmitl.product_category_75200000'),
+        ref('product_kmitl.product_category_75200100'),
+        ref('product_kmitl.product_category_75200200'),
+        ref('product_kmitl.product_category_75200300'),
+        ref('product_kmitl.product_category_75200400'),
+        ref('product_kmitl.product_category_75200500'),
+        ref('product_kmitl.product_category_75200600'),
+        ref('product_kmitl.product_category_75200700'),
+        ref('product_kmitl.product_category_75200800'),
+        ref('product_kmitl.product_category_75200900'),
+        ref('product_kmitl.product_category_75201000'),
+        ref('product_kmitl.product_category_75201100'),
+        ref('product_kmitl.product_category_75201200'),
+        ref('product_kmitl.product_category_75201300'),
+        ref('product_kmitl.product_category_75201400'),
+        ref('product_kmitl.product_category_75201500'),
+        ref('product_kmitl.product_category_75201600'),
+        ref('product_kmitl.product_category_75201700'),
+        ref('product_kmitl.product_category_75201800'),
+        ref('product_kmitl.product_category_75201900'),
+        ref('product_kmitl.product_category_75202000'),
+        ref('product_kmitl.product_category_75202100'),
+        ref('product_kmitl.product_category_75202200'),
+        ref('product_kmitl.product_category_75202300'),
+        ref('product_kmitl.product_category_75202400'),
+        ref('product_kmitl.product_category_75202500'),
+        ref('product_kmitl.product_category_75202600'),
+        ref('product_kmitl.product_category_75202700'),
+        ref('product_kmitl.product_category_75202800'),
+        ref('product_kmitl.product_category_75202900'),
+        ref('product_kmitl.product_category_75203000'),
+        ref('product_kmitl.product_category_75203100'),
+        ref('product_kmitl.product_category_75203200'),
+        ref('product_kmitl.product_category_75300000'),
+        ref('product_kmitl.product_category_75300100'),
+        ref('product_kmitl.product_category_75300200'),
+        ref('product_kmitl.product_category_75300300'),
+        ref('product_kmitl.product_category_75300400'),
+        ref('product_kmitl.product_category_75300500'),
+        ref('product_kmitl.product_category_75300600'),
+        ref('product_kmitl.product_category_75300700'),
+        ref('product_kmitl.product_category_75300800'),
+        ref('product_kmitl.product_category_75300900'),
+        ref('product_kmitl.product_category_75301000'),
+        ref('product_kmitl.product_category_75301100'),
+        ref('product_kmitl.product_category_75301200'),
+        ref('product_kmitl.product_category_75301300'),
+        ref('product_kmitl.product_category_75301400'),
+        ref('product_kmitl.product_category_75301500'),
+        ref('product_kmitl.product_category_75301600'),
+        ref('product_kmitl.product_category_75400000'),
+        ref('product_kmitl.product_category_75400100'),
+        ref('product_kmitl.product_category_75400200'),
+        ref('product_kmitl.product_category_75400300'),
+        ref('product_kmitl.product_category_75400400'),
+        ref('product_kmitl.product_category_75400500'),
+        ref('product_kmitl.product_category_75700000'),
+        ]"/>
+        <value model="base" eval="{
+        'property_account_expense_categ_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5104010101').code)]),
+        'property_account_income_categ_id': obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_4121040044').code)])
+        }"/>
+    </function>
+
+</odoo>

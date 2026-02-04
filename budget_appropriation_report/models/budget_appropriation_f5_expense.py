@@ -53,13 +53,9 @@ class BudgetAppropriationF5Expense(models.AbstractModel):
         appropriation_domain = [
             ("appropriation_id.budget_type", "=", "expense"),
             ("appropriation_id.state", "=", "posted"),
-            ("appropriation_id.date_range_fy_id", "=", fiscal_year.id),
+            ("appropriation_id.account_fiscal_year_id", "=", fiscal_year.id),
             ("appropriation_id.source_analytic_id", "=", source_analytic.id),
         ]
-
-        # Add date filters
-        appropriation_domain.append(("appropriation_id.date", ">=", date_from))
-        appropriation_domain.append(("appropriation_id.date", "<=", date_to))
 
         # Add department filter
         if department_id:
@@ -128,6 +124,68 @@ class BudgetAppropriationF5Expense(models.AbstractModel):
                 "name": source.name,
             } for source in sources],
         }
+
+    @api.model
+    def get_appropriations(self, filters=None):
+        """Get appropriations grouped by department hierarchy"""
+        if filters is None:
+            filters = {}
+
+        domain = [
+            ("budget_type", "=", "expense"),
+        ]
+
+        if filters.get("fiscal_year_id"):
+            domain.append(("account_fiscal_year_id", "=", filters["fiscal_year_id"]))
+
+        if filters.get("source_analytic_id"):
+            domain.append(("source_analytic_id", "=", filters["source_analytic_id"]))
+
+        appropriations = self.env["budget.appropriation"].search(domain, order="name")
+
+        # Group by department
+        dept_appropriations = {}
+        for app in appropriations:
+            dept_id = app.department_analytic_id.id if app.department_analytic_id else 0
+            if dept_id not in dept_appropriations:
+                dept_appropriations[dept_id] = []
+            dept_appropriations[dept_id].append({
+                "id": app.id,
+                "name": app.name,
+                "amount_net": app.amount_net,
+            })
+
+        # Build department hierarchy with appropriations
+        return self._build_department_with_appropriations(dept_appropriations)
+
+    def _build_department_with_appropriations(self, dept_appropriations):
+        """Build department hierarchy with nested appropriations"""
+        # Get root departments
+        root_depts = self.env["account.analytic.account"].search([
+            ("root_plan_id.code", "=", "departments"),
+            ("parent_id", "=", False)
+        ], order="code")
+
+        def build_node(dept):
+            children = self.env["account.analytic.account"].search([
+                ("parent_id", "=", dept.id)
+            ], order="code")
+
+            child_nodes = [build_node(child) for child in children]
+            # Filter out empty branches
+            child_nodes = [c for c in child_nodes if c["appropriations"] or c["children"]]
+
+            return {
+                "id": dept.id,
+                "code": dept.code or "",
+                "name": dept.name or "",
+                "appropriations": dept_appropriations.get(dept.id, []),
+                "children": child_nodes,
+            }
+
+        result = [build_node(dept) for dept in root_depts]
+        # Filter out empty branches
+        return [r for r in result if r["appropriations"] or r["children"]]
 
     def _build_hierarchy(self, appropriation_lines):
         """Build complete hierarchical tree from root to leaf including all intermediate nodes"""

@@ -16,9 +16,20 @@ class PurchaseOrder(models.Model):
         'cancel': [('readonly', True)],
     }
 
-    date_range_fy_id = fields.Many2one(
+    account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
-        string="ปีงบประมาณ",
+        string="Fiscal year",
         tracking=True,
         states=READONLY_STATES,
+    )
+
+    date_planned = fields.Datetime(
+        string="Date End"
+    )
+
+    department_id = fields.Many2one(
+        comodel_name="hr.department",
+        string="Department",
+        states=READONLY_STATES,
+        tracking=True
     )

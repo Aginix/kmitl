@@ -1,6 +1,6 @@
 import logging
 
-from odoo import _, api, fields, models
+from odoo import Command, _, api, fields, models
 
 _logger = logging.getLogger(__name__)
 
@@ -54,17 +54,19 @@ class BudgetAppropriationLine(models.Model):
     date = fields.Date(related="appropriation_id.date", store=True)
     code = fields.Char(related="account_id.code", store=True, tracking=True)
     name = fields.Char("ชื่อรายการ", related="account_id.name", store=True, tracking=True)
+    description = fields.Char("รายละเอียด", tracking=True)
+    deduct = fields.Boolean(related="account_id.deduct", store=True)
     account_id = fields.Many2one(
         comodel_name="budget.account",
         string="รหัสงบประมาณ",
         index=True,
         required=True,
-        domain="[('budget_type', '=', budget_type)]",
+        domain="[('budget_type', '=', budget_type), ('deduct', '=', deduct), ('budgetable', '=', True)]",
         tracking=True,
         auto_join=True,
     )
     budget_type = fields.Selection(
-        related="appropriation_id.journal_id.default_budget_type",
+        related="appropriation_id.budget_type",
         store=True,
         readonly=True,
     )
@@ -93,15 +95,20 @@ class BudgetAppropriationLine(models.Model):
         related="appropriation_id.state",
         store=True,
     )
-    date_range_fy_id = fields.Many2one(
-        related="appropriation_id.date_range_fy_id",
-        store=True,
-    )
-    journal_id = fields.Many2one(
-        related="appropriation_id.journal_id",
+    account_fiscal_year_id = fields.Many2one(
+        related="appropriation_id.account_fiscal_year_id",
         store=True,
     )
 
+    deduct_analytic_id = fields.Many2one(
+        "account.analytic.account.public",
+        compute="_compute_account_id",
+        string="หักให้หน่วยงาน",
+        compute_sudo=True,
+        domain=[("root_plan_id.code", "=", "departments")],
+        store=True,
+        readonly=False,
+    )
     # Analytic fields for easier access
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -134,6 +141,34 @@ class BudgetAppropriationLine(models.Model):
         auto_join=True,
     )
 
+    # Portal: computed account_ids for hierarchy traversal
+    account_ids = fields.Many2many(
+        "budget.account",
+        compute="_compute_account_ids",
+        context={"active_test": False},
+        string="Budget Accounts",
+        help="Budget accounts computed from budget account hierarchy.",
+    )
+
+    @api.depends("account_id")
+    def _compute_account_ids(self):
+        """Compute all parent budget accounts from hierarchy."""
+        for rec in self:
+            if rec.account_id and rec.account_id.parent_path:
+                account_ids = [
+                    int(account_id)
+                    for account_id in rec.account_id.parent_path.strip("/").split("/")
+                ]
+                rec.account_ids = [Command.set(account_ids)]
+            else:
+                rec.account_ids = [Command.clear()]
+
+    @api.depends("account_id")
+    def _compute_account_id(self):
+        for rec in self:
+            if rec.account_id.deduct and rec.account_id.default_deduct_analytic_id:
+                rec.deduct_analytic_id = rec.account_id.default_deduct_analytic_id.id
+
     @api.onchange("balance")
     def _onchange_balance(self):
         """Update total when balance changes"""
@@ -151,7 +186,7 @@ class BudgetAppropriationLine(models.Model):
     def budget_move_line_vals(self):
         return {
             "account_id": self.account_id.id,
-            "balance": self.balance,
+            "balance": -self.balance if self.deduct else self.balance,
             "note": self.note,
             "analytic_distribution": self.analytic_distribution,
             "activity_analytic_id": self.activity_analytic_id.id,

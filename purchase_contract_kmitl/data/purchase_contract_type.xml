@@ -1,0 +1,23 @@
+<odoo>
+    <record id="contract_1" model="purchase.contract.type">
+        <field name="name">ใบสั่งซื้อ</field>
+    </record>
+    <record id="contract_2" model="purchase.contract.type">
+        <field name="name">ใบสั่งจ้าง</field>
+    </record>
+    <record id="contract_3" model="purchase.contract.type">
+        <field name="name">สัญญาจ้างก่อสร้าง</field>
+    </record>
+    <record id="contract_4" model="purchase.contract.type">
+        <field name="name">สัญญาซื้อขาย</field>
+    </record>
+    <record id="contract_5" model="purchase.contract.type">
+        <field name="name">สัญญาซื้อขายคอมพิวเตอร์</field>
+    </record>
+    <record id="contract_6" model="purchase.contract.type">
+        <field name="name">สัญญาจ้างที่ปรึกษา</field>
+    </record>
+    <record id="contract_7" model="purchase.contract.type">
+        <field name="name">สัญญาจ้างทำของ</field>
+    </record>
+</odoo>

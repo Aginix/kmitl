@@ -89,14 +89,14 @@ class BudgetAppropriation(models.Model):
         tracking=True,
         default="draft",
     )
-    date_range_fy_id = fields.Many2one(
+    account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="ปีงบประมาณ",
         tracking=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
-    note = fields.Char(
+    note = fields.Text(
         readonly=False,
         tracking=True,
         states=READONLY_STATES,
@@ -139,22 +139,24 @@ class BudgetAppropriation(models.Model):
         tracking=True,
         readonly=False,
         states=READONLY_STATES,
+        domain=[('deduct', '=', False)],
     )
-    journal_id = fields.Many2one(
-        "budget.journal",
-        string="Journal",
-        store=True,
-        readonly=False,
-        required=True,
-        states=READONLY_STATES,
-        check_company=True,
+    deduct_line_ids = fields.One2many(
+        comodel_name="budget.appropriation.line",
+        inverse_name="appropriation_id",
+        copy=True,
         tracking=True,
+        readonly=False,
+        states=READONLY_STATES,
+        domain=[('deduct', '=', True)],
     )
     budget_type = fields.Selection(
-        related="journal_id.default_budget_type",
+        [("revenue", "Revenue"), ("expense", "Expense")],
         string="Budget Type",
-        store=True,
-        readonly=True,
+        required=True,
+        copy=True,
+        default="expense",
+        states=READONLY_STATES,
     )
     company_id = fields.Many2one(
         comodel_name="res.company",
@@ -172,8 +174,22 @@ class BudgetAppropriation(models.Model):
         required=True,
     )
     company_currency_id = fields.Many2one(related="company_id.currency_id")
-    total_amount = fields.Float(
+    amount_total = fields.Float(
         string="งบประมาณทั้งหมด",
+        compute="_compute_amount",
+        readonly=True,
+        store=True,
+        digits="Budget Precision",
+    )
+    amount_deduct = fields.Float(
+        string="Deduct",
+        compute="_compute_amount",
+        readonly=True,
+        store=True,
+        digits="Budget Precision",
+    )
+    amount_net = fields.Float(
+        string="Amount Net",
         compute="_compute_amount",
         readonly=True,
         store=True,
@@ -200,10 +216,34 @@ class BudgetAppropriation(models.Model):
         compute="_compute_hide_review_button", readonly=True
     )
 
-    @api.depends("line_ids.balance")
+    # Portal: computed account_ids for hierarchy traversal
+    account_ids = fields.Many2many(
+        "budget.account",
+        compute="_compute_account_ids",
+        context={"active_test": False},
+        string="Budget Accounts",
+        help="Budget accounts computed from budget account hierarchy.",
+    )
+
+    @api.depends("line_ids.account_id")
+    def _compute_account_ids(self):
+        """Compute all budget accounts from line hierarchy."""
+        for rec in self:
+            all_account_ids = []
+            for account_ids in rec.line_ids.mapped("account_ids"):
+                all_account_ids += account_ids.mapped("id")
+            for account_ids in rec.deduct_line_ids.mapped("account_ids"):
+                all_account_ids += account_ids.mapped("id")
+            rec.account_ids = [Command.set(list(set(all_account_ids)))]
+
+    @api.depends("line_ids.balance", "deduct_line_ids.balance")
     def _compute_amount(self):
         for appropriation in self:
-            appropriation.total_amount = sum(appropriation.line_ids.mapped("balance"))
+            amount_total = sum(appropriation.line_ids.mapped("balance"))
+            amount_deduct = sum(appropriation.deduct_line_ids.mapped("balance"))
+            appropriation.amount_total = amount_total
+            appropriation.amount_deduct = amount_deduct
+            appropriation.amount_net = amount_total - amount_deduct
 
     @api.depends("state", "date")
     def _compute_name(self):
@@ -213,7 +253,7 @@ class BudgetAppropriation(models.Model):
             if appropriation.state == "cancel":
                 continue
 
-            appropriation_has_name = appropriation.name and appropriation.name != "New"
+            appropriation_has_name = appropriation.name and appropriation.name != _("New")
             if appropriation_has_name or (
                 appropriation.state not in ("review", "posted")
             ):
@@ -278,20 +318,21 @@ class BudgetAppropriation(models.Model):
             budget_move.action_post()
 
     def budget_move_vals(self):
-        return {
+        vals = {
             "move_type": "appropriation",
             "date": self.date,
             "ref": self.ref,
-            "journal_id": self.journal_id.id,
             "department_analytic_id": self.department_analytic_id.id,
             "source_analytic_id": self.source_analytic_id.id,
-            "date_range_fy_id": self.date_range_fy_id.id,
+            "account_fiscal_year_id": self.account_fiscal_year_id.id,
             "note": self.note,
             "company_id": self.company_id.id,
             "currency_id": self.currency_id.id,
             "appropriation_id": self.id,
             "line_ids": [Command.create(vals) for vals in self.budget_move_line_vals()],
         }
+
+        return vals
 
     def budget_move_line_vals(self):
         lines = list()
@@ -329,4 +370,85 @@ class BudgetAppropriation(models.Model):
                 "active_id": self.id,
                 "active_model": "budget.appropriation",
             },
+        }
+
+    def print_f5_pdf(self):
+        self.ensure_one()
+
+        data = self.env["budget.appropriation.f5.report"].get_f5_data(self.id)
+
+        return (
+            self.env.ref("budget_appropriation.action_report_budget_appropriation_f5")
+            .sudo()
+            .report_action(self, data=data)  # required to propagate context
+        )
+
+    def open_record_url(self):
+        """Open portal preview URL in new tab."""
+        if self.id:
+            return {
+                'type': 'ir.actions.act_url',
+                'url': '/budget/budget_appropriation/%s' % (self.id),
+                'target': 'new',
+            }
+
+    def get_f4_report_data(self):
+        """Generate F4 report data for portal display (revenue appropriations)."""
+        self.ensure_one()
+        root_account_ids = self.env["budget.account"].search(
+            [
+                ("parent_id", "=", False),
+                ("id", "in", self.account_ids.mapped(lambda x: x.id)),
+            ],
+            order="code",
+        )
+
+        def _process_account(account_id, array, deduct):
+            rows = self.deduct_line_ids if deduct else self.line_ids
+            rows = rows.filtered(
+                lambda x: x.account_id.parent_path.startswith(account_id.parent_path)
+                or ("/" + account_id.parent_path) in x.account_id.parent_path
+            )
+
+            balance = sum(rows.mapped("balance"))
+
+            if rows:
+                array.append(
+                    {
+                        "id": account_id.id,
+                        "code": account_id.code,
+                        "name": account_id.name,
+                        "hierarchy_level": account_id.hierarchy_level,
+                        "balance": balance,
+                        "sub_rows": [
+                            {
+                                "id": line.id,
+                                "description": line.description,
+                                "note": line.note,
+                            }
+                            for line in rows.filtered(
+                                lambda x: x.account_id.id == account_id.id
+                            )
+                        ],
+                    }
+                )
+
+            for child_id in account_id.child_ids:
+                _process_account(child_id, array, deduct)
+
+        line_ids = []
+        for account_id in root_account_ids.filtered(lambda x: not x.deduct):
+            _process_account(account_id, line_ids, False)
+
+        deduct_ids = []
+        for account_id in root_account_ids.filtered(lambda x: x.deduct):
+            _process_account(account_id, deduct_ids, True)
+
+        return {
+            "id": self.id,
+            "name": self.name,
+            "account_fiscal_year": self.account_fiscal_year_id.name,
+            "source_analytic_name": self.source_analytic_id.complete_name,
+            "line_ids": line_ids,
+            "deduct_ids": deduct_ids,
         }

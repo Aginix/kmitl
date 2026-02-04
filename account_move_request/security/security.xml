@@ -1,0 +1,25 @@
+<odoo>
+    <data noupdate="0">
+        <!-- Module Category -->
+        <record id="module_category_account_move_request" model="ir.module.category">
+            <field name="name">Account Move Request</field>
+            <field name="description">User groups for managing account move requests</field>
+            <field name="sequence">15</field>
+        </record>
+
+        <!-- User Group -->
+        <record id="group_account_move_request_user" model="res.groups">
+            <field name="name">Move Request User</field>
+            <field name="category_id" ref="account_move_request.module_category_account_move_request"/>
+            <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]"/>
+        </record>
+
+        <!-- Manager Group (inherits from User) -->
+        <record id="group_account_move_request_manager" model="res.groups">
+            <field name="name">Move Request Manager</field>
+            <field name="category_id" ref="account_move_request.module_category_account_move_request"/>
+            <field name="implied_ids" eval="[(4, ref('group_account_move_request_user'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+    </data>
+</odoo>

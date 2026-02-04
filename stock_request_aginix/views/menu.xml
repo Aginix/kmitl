@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem
+        id="menu_stock_request_root"
+        name="Stock Requests"
+        groups="stock_request_aginix.group_stock_request_user,stock_request_aginix.group_stock_request_approver"
+        web_icon="stock_request_aginix,static/description/logo.png"
+        sequence="100"
+    />
+    <menuitem
+        id="menu_stock_request_root_root"
+        name="Stock Request"
+        parent="menu_stock_request_root"
+    />
+    <menuitem
+        id="menu_stock_request_aginix"
+        name="Requests"
+        parent="menu_stock_request_root_root"
+        action="action_stock_request"
+    />
+</odoo>

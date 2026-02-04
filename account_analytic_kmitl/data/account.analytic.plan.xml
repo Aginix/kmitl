@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="analytic_plan_activities" model="account.analytic.plan">
+            <field name="color">1</field>
+            <field name="default_applicability">optional</field>
+            <field name="name">Activity (ด้าน/แผนงาน/กิจกรรม)</field>
+            <field name="code">activities</field>
+        </record>
+        <record id="analytic_plan_departments" model="account.analytic.plan">
+            <field name="color">11</field>
+            <field name="default_applicability">optional</field>
+            <field name="name">Departments (หน่วยงาน)</field>
+            <field name="code">departments</field>
+        </record>
+        <record id="analytic_plan_funds" model="account.analytic.plan">
+            <field name="color">3</field>
+            <field name="default_applicability">optional</field>
+            <field name="name">Fund (กองทุน)</field>
+            <field name="code">funds</field>
+        </record>
+        <record id="analytic_plan_sources" model="account.analytic.plan">
+            <field name="color">4</field>
+            <field name="default_applicability">optional</field>
+            <field name="name">ประเภทแหล่งเงิน</field>
+            <field name="code">sources</field>
+        </record>
+    </data>
+</odoo>

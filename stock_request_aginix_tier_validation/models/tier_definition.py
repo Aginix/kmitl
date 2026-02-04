@@ -1,0 +1,17 @@
+# -*- coding: utf-8 -*-
+import logging
+
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError, ValidationError
+
+_logger = logging.getLogger(__name__)
+
+
+class TierDefinition(models.Model):
+    _inherit = "tier.definition"
+
+    @api.model
+    def _get_tier_validation_model_names(self):
+        res = super()._get_tier_validation_model_names()
+        res.append("stock.request")
+        return res

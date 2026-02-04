@@ -7,12 +7,11 @@
         <field name="model">procurement.plan</field>
         <field name="arch" type="xml">
             <tree decoration-info="state == 'procurement'" decoration-success="state == 'done'" decoration-warning="state in ('validate', 'pending')">
-                <field name="date_range_fy_id" />
+                <field name="account_fiscal_year_id" />
                 <field name="name" />
                 <field name="description" />
                 <field name="amount" optional="hide" />
                 <field name="unit" optional="hide" />
-                <field name="price_per_unit" optional="hide" />
                 <field name="total_price" sum="รวมทั้งหมด" widget="monetary" />
                 <field name="procurement_method_id" optional="show" />
                 <field name="state" widget="badge" decoration-info="state == 'procurement'" decoration-success="state == 'done'" decoration-warning="state in ('validate', 'pending')" />
@@ -30,6 +29,16 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,validate,pending,procurement,done" />
                 </header>
                 <sheet>
+                    <field name="can_edit" invisible="1"/>
+                    <div class="oe_button_box" name="button_box">
+                        <field name="budget_commitment_count" invisible="1" />
+                        <button name="action_open_budget_commitments" type="object" class="oe_stat_button" icon="fa-money" attrs="{'invisible': [('budget_commitment_count', '=', 0)]}">
+                            <div class="o_field_widget o_stat_info">
+                                <field name="budget_commitment_count" />
+                                <span class="o_stat_text">Budget Commitment</span>
+                            </div>
+                        </button>
+                    </div>
                     <div class="oe_title">
                         <label for="name" />
                         <h1>
@@ -38,21 +47,25 @@
                     </div>
                     <group>
                         <group name="basic">
-                            <field name="description" placeholder="e.g. ครุภัณฑ์วิทยาศาสตร์และการแพทย์, ปรับปรุงห้องปฏิบัติการฟิสิกส์" />
-                            <field name="procurement_method_id" />
-                            <field name="user_id" widget="many2one_avatar_user" required="1" />
-                            <field name="price_per_unit" string="ราคา" />
+                            <field name="description" placeholder="e.g. ครุภัณฑ์วิทยาศาสตร์และการแพทย์, ปรับปรุงห้องปฏิบัติการฟิสิกส์" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                            <field name="procurement_method_id" widget="selection" attrs="{'readonly': [('can_edit', '=', False)]}" />
+
                             <label for="amount" string="จำนวน" />
                             <div class="o_row">
-                                <field name="amount" />
-                                <field name="unit" placeholder="e.g. ชิ้น, รายการ, ตัว, ชุด" />
+                                <field name="amount" attrs="{'readonly': [('can_edit', '=', False)]}"  />
+                                <field name="unit" placeholder="e.g. ชิ้น, รายการ, ตัว, ชุด" attrs="{'readonly': [('can_edit', '=', False)]}"  />
                             </div>
-                            <field name="total_price" string="รวมทั้งสิ้น" />
+                            <field name="total_price" attrs="{'readonly': [('can_edit', '=', False)]}" />
                             <field name="note" placeholder="Notes..." />
-                            <field name="display_name" string="ตัวอย่างการแสดงผลข้อมูล" />
+                            <field name="user_id" widget="many2one_avatar_user" required="1" attrs="{'readonly': [('can_edit', '=', False)]}" />
                         </group>
                         <group>
-                            <field name="date_range_fy_id" required="1" options="{'no_create': True, 'no_open': True}" />
+                            <field name="account_fiscal_year_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('id', '!=', False)]}" />
+                            <field name="activity_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                            <field name="source_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                            <field name="department_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                            <field name="fund_analytic_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                            <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" invisible="context.get('hide_budget', False)" attrs="{'readonly': [('can_edit', '=', False)]}" />
                         </group>
                     </group>
                     <notebook>
@@ -79,8 +92,13 @@
                         </page>
                         <page name="additional_info" string="Additional Info">
                             <group>
-                                <field name="company_id" invisible="1" />
-                                <field name="currency_id" invisible="1" />
+                                <group>
+                                    <field name="analytic_account_id" groups="analytic.group_analytic_accounting" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                                    <field name="analytic_account_id" invisible="1" />
+                                    <field name="company_id" invisible="1" />
+                                    <field name="currency_id" invisible="1" />
+                                </group>
+                                <grou></grou>
                             </group>
                         </page>
                     </notebook>
@@ -100,8 +118,12 @@
         <field name="model">procurement.plan</field>
         <field name="arch" type="xml">
             <search>
+                <field name="name" filter_domain="['|', ('name','ilike',self), ('description','ilike',self)]" />
+                <separator/>
+                <filter name="current_fy" string="ปีงบประมาณปัจจุบัน" domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
+                <separator/>
                 <group expand="1" string="Group By">
-                    <filter string="ปีงบประมาณ" name="group_by_fiscal_year" context="{'group_by': 'date_range_fy_id'}" />
+                    <filter string="ปีงบประมาณ" name="group_by_fiscal_year" context="{'group_by': 'account_fiscal_year_id'}" />
                     <filter string="Procurement Method" name="group_by_procurement_method_id" context="{'group_by': 'procurement_method_id'}" />
                     <filter string="สถานะ" name="group_by_state" context="{'group_by': 'state'}" />
                     <filter string="วิธีการจัดซื้อจัดจ้าง" name="group_by_procurement_method_id" context="{'group_by':'procurement_method_id'}" />
@@ -109,7 +131,6 @@
                 <searchpanel>
                     <field name="state" icon="fa-calendar" enable_counters="1" />
                     <field name="procurement_method_id" icon="fa-calendar" enable_counters="1" />
-                    <field name="date_range_fy_id" icon="fa-calendar" enable_counters="1" />
                 </searchpanel>
             </search>
         </field>

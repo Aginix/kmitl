@@ -1,0 +1,7 @@
+.o_field_budget_appropriation_line .o_list_renderer .o_list_table tbody > tr {
+    & > td[name="account_id"],
+    & > td[name="fund_analytic_id"],
+    & > td[name="activity_analytic_id"] {
+        white-space: pre-wrap !important;
+    }
+}

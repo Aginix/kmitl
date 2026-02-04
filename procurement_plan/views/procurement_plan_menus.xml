@@ -6,7 +6,7 @@
         <field name="tag">procurement_plan_report</field>
     </record>
 
-    <menuitem id="procurement_plan_root_menu" name="Procurement Plan" sequence="10">
+    <menuitem id="procurement_plan_root_menu" name="Procurement Plan" sequence="10" web_icon="procurement_plan,static/description/logo.png">
         <menuitem
             id="action_procurement_plan_menu_action"
             name="Procurement Plan"
@@ -24,4 +24,12 @@
         </menuitem>
 
     </menuitem>
+
+    <menuitem
+        id="budget_procurement_plan_inherit_menu"
+        name="แผนจัดซื้อจัดจ้าง"
+        sequence="88"
+        parent="budget.budget_root_menu"
+        action="procurement_plan.action_procurement_plan"
+    />
 </odoo>

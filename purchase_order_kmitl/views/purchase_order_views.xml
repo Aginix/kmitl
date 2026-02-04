@@ -8,8 +8,11 @@
         <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="arch" type="xml">
             <field name="partner_id" position="before">
-                <field name="date_range_fy_id" widget="selection" required="1" />
+                <field name="account_fiscal_year_id" widget="selection" required="1" />
             </field>
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="department_id" domain="['|', ('operating_unit_id', '=', False), ('operating_unit_id', '=', operating_unit_id)]"/>
+            </xpath>
             <xpath expr="//button[@name='action_rfq_send' and @states='draft']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
@@ -18,6 +21,18 @@
             </xpath>
             <xpath expr="//button[@name='action_rfq_send' and @states='purchase']" position="attributes">
                 <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_approve']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='currency_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='confirm_reminder_mail']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='product_id']" position="attributes">
+                <attribute name="optional">show</attribute>
             </xpath>
         </field>
     </record>
@@ -30,6 +45,10 @@
             <xpath expr="//page[@name='alternative_pos']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+
+            <xpath expr="//field[@name='requisition_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
         </field>
     </record>
 
@@ -40,7 +59,7 @@
         <field name="inherit_id" ref="purchase.purchase_order_tree"/>
         <field name="arch" type="xml">
             <field name="name" position="before">
-                <field name="date_range_fy_id" optional="show" />
+                <field name="account_fiscal_year_id" optional="show" />
             </field>
         </field>
     </record>

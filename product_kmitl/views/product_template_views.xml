@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="product_template_form_view_inherit" model="ir.ui.view">
+        <field name="name">product.template.form.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='options']" position="inside">
+                <span name="purchase_request_option" class="d-inline-flex">
+                    <field name="purchase_request_ok" string="Purchase Request" />
+                </span>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

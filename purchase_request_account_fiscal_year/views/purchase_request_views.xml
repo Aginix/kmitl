@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View purchase.request form -->
+    <record id="view_purchase_request_form" model="ir.ui.view">
+        <field name="name">view.purchase.request.form (account_fiscal_year_id)</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="l10n_th_gov_purchase_request.view_purchase_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='procurement_type_id']" position="before">
+                <field name="account_fiscal_year_id" attrs="{'readonly': [('is_editable','=', False)]}" required="1" widget="selection" />
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- View purchase.request tree -->
+    <record id="view_purchase_request_tree" model="ir.ui.view">
+        <field name="name">view.purchase.request.tree (account_fiscal_year_id)</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="account_fiscal_year_id" optional="hide" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

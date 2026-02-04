@@ -1,6 +1,7 @@
 /** @odoo-module **/
 
 import { Component, onWillStart, useState } from "@odoo/owl";
+
 import { ControlPanel } from "@web/search/control_panel/control_panel";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
@@ -99,7 +100,7 @@ export class BudgetAppropriationF4Preview extends Component {
         }
 
         return this.state.data.hierarchy.reduce((total, node) => {
-            return total + (node.total_amount || 0);
+            return total + (node.amount_total || 0);
         }, 0);
     }
 

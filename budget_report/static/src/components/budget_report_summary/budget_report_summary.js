@@ -3,9 +3,9 @@
 import {Component, onWillStart, useState} from "@odoo/owl";
 
 import { ControlPanel } from "@web/search/control_panel/control_panel";
+import {DepartmentFilter} from "../department_filter/department_filter";
 import {registry} from "@web/core/registry";
 import {useService} from "@web/core/utils/hooks";
-import {DepartmentFilter} from "../department_filter/department_filter";
 
 export class BudgetReportSummary extends Component {
     setup() {
@@ -125,7 +125,7 @@ export class BudgetReportSummary extends Component {
     toggleRow(event) {
         const rowKey = event.currentTarget.getAttribute('data-row-key');
         if (!rowKey) return;
-        
+
         // Create a new Set to ensure OWL detects the state change properly
         const newExpandedRows = new Set(this.state.expandedRows);
         if (newExpandedRows.has(rowKey)) {
@@ -144,17 +144,17 @@ export class BudgetReportSummary extends Component {
         if (!row || !this.state.rows || !row.row_key) {
             return false;
         }
-        
+
         if (!row.parent_row_id) {
             return true; // Root rows are always visible
         }
-        
+
         // Find parent row
         const parentRow = this.state.rows.find(r => r && r.row_key === row.parent_row_id);
         if (!parentRow || !parentRow.row_key) {
             return true; // Show row if parent not found (defensive)
         }
-        
+
         // Row is visible if parent is expanded and parent is visible (recursive)
         return this.isRowExpanded(parentRow.row_key) && this.isRowVisible(parentRow);
     }
@@ -170,7 +170,7 @@ export class BudgetReportSummary extends Component {
         if (!this.state.rows || !Array.isArray(this.state.rows)) {
             return;
         }
-        
+
         // Create a new Set with all rows that have children
         const newExpandedRows = new Set();
         this.state.rows.forEach(row => {
@@ -207,13 +207,13 @@ export class BudgetReportSummary extends Component {
     async onAppropriationClick(event) {
         event.stopPropagation();
         event.preventDefault();
-        
+
         const rowKey = event.currentTarget.getAttribute('data-row-key');
         const row = this._findRowByKey(rowKey);
         if (!row) return;
-        
+
         const domain = await this._buildMoveLineDomain(row, ['appropriation', 'entry']);
-        
+
         await this.actionService.doAction({
             type: 'ir.actions.act_window',
             name: `งบประมาณ - ${row.code} ${row.name}`,
@@ -228,17 +228,17 @@ export class BudgetReportSummary extends Component {
         });
     }
 
-    // Handler for เงินจอง (Commitment) column  
+    // Handler for เงินจอง (Commitment) column
     async onCommitmentClick(event) {
         event.stopPropagation();
         event.preventDefault();
-        
+
         const rowKey = event.currentTarget.getAttribute('data-row-key');
         const row = this._findRowByKey(rowKey);
         if (!row) return;
-        
+
         const domain = await this._buildCommitmentDomain(row, 'reserved');
-        
+
         await this.actionService.doAction({
             type: 'ir.actions.act_window',
             name: `เงินจอง - ${row.code} ${row.name}`,
@@ -256,13 +256,13 @@ export class BudgetReportSummary extends Component {
     async onObligationClick(event) {
         event.stopPropagation();
         event.preventDefault();
-        
+
         const rowKey = event.currentTarget.getAttribute('data-row-key');
         const row = this._findRowByKey(rowKey);
         if (!row) return;
-        
+
         const domain = await this._buildCommitmentDomain(row, 'obligated');
-        
+
         await this.actionService.doAction({
             type: 'ir.actions.act_window',
             name: `ผูกพัน - ${row.code} ${row.name}`,
@@ -280,13 +280,13 @@ export class BudgetReportSummary extends Component {
     async onExpenditureClick(event) {
         event.stopPropagation();
         event.preventDefault();
-        
+
         const rowKey = event.currentTarget.getAttribute('data-row-key');
         const row = this._findRowByKey(rowKey);
         if (!row) return;
-        
+
         const domain = await this._buildMoveLineDomain(row, ['consume']);
-        
+
         await this.actionService.doAction({
             type: 'ir.actions.act_window',
             name: `เบิกจ่ายแล้ว - ${row.code} ${row.name}`,
@@ -304,28 +304,28 @@ export class BudgetReportSummary extends Component {
     async _buildMoveLineDomain(row, moveTypes) {
         const domain = [
             ['parent_state', '=', 'posted'],
-            ['date_range_fy_id', '=', this.state.filters.fiscal_year_id],
+            ['account_fiscal_year_id', '=', this.state.filters.fiscal_year_id],
         ];
-        
+
         // Add source analytic filter
         if (this.state.filters.source_analytic_id) {
             domain.push(['source_analytic_id', '=', this.state.filters.source_analytic_id]);
         }
-        
+
         // Add department filter from report filters
         if (this.state.filters.department_ids && this.state.filters.department_ids.length > 0) {
             const deptIds = await this._getDepartmentWithChildren(this.state.filters.department_ids);
             domain.push(['department_analytic_id', 'in', deptIds]);
         }
-        
+
         // Add move type filter
         if (moveTypes && moveTypes.length > 0) {
             domain.push(['move_type', 'in', moveTypes]);
         }
-        
+
         // Add row-specific analytic filters based on row type
         await this._addRowAnalyticFilters(domain, row);
-        
+
         console.log('Final move line domain:', domain, 'Row:', row);
         return domain;
     }
@@ -334,23 +334,23 @@ export class BudgetReportSummary extends Component {
     async _buildCommitmentDomain(row, state) {
         const domain = [
             ['state', '=', state],
-            ['date_range_fy_id', '=', this.state.filters.fiscal_year_id],
+            ['account_fiscal_year_id', '=', this.state.filters.fiscal_year_id],
         ];
-        
+
         // Add source analytic filter
         if (this.state.filters.source_analytic_id) {
             domain.push(['source_analytic_id', '=', this.state.filters.source_analytic_id]);
         }
-        
+
         // Add department filter from report filters
         if (this.state.filters.department_ids && this.state.filters.department_ids.length > 0) {
             const deptIds = await this._getDepartmentWithChildren(this.state.filters.department_ids);
             domain.push(['department_analytic_id', 'in', deptIds]);
         }
-        
+
         // Add row-specific analytic filters
         await this._addRowAnalyticFilters(domain, row);
-        
+
         console.log('Final commitment domain:', domain, 'Row:', row);
         return domain;
     }
@@ -358,14 +358,14 @@ export class BudgetReportSummary extends Component {
     // Add analytic filters based on row context using code-based filtering
     async _addRowAnalyticFilters(domain, row) {
         console.log('Adding analytic filters for row:', row);
-        
+
         // Use code-based filtering with ilike for simpler and more reliable filtering
         if (row.type === 'activity') {
             // For activity rows, filter by activity code and its children using prefix
             if (row.code) {
                 // Use analytic account code prefix matching
                 await this._addAnalyticCodeFilter(domain, 'activity_analytic_id', row.code);
-                
+
                 // Also get budget accounts that start with this activity code
                 await this._addBudgetAccountCodeFilter(domain, row.code);
             }
@@ -376,7 +376,7 @@ export class BudgetReportSummary extends Component {
             }
             if (row.code) {
                 await this._addAnalyticCodeFilter(domain, 'fund_analytic_id', row.code);
-                
+
                 // Also get budget accounts for this fund
                 await this._addBudgetAccountCodeFilter(domain, row.code, row.parent_activity_code);
             }
@@ -402,8 +402,8 @@ export class BudgetReportSummary extends Component {
     async _getAnalyticWithChildren(analyticId, dimension) {
         try {
             const children = await this.orm.call(
-                "budget.report.summary", 
-                "get_analytic_children", 
+                "budget.report.summary",
+                "get_analytic_children",
                 [analyticId, dimension]
             );
             return children;
@@ -417,8 +417,8 @@ export class BudgetReportSummary extends Component {
     async _getBudgetAccountWithChildren(accountId) {
         try {
             const children = await this.orm.call(
-                "budget.report.summary", 
-                "get_budget_account_children", 
+                "budget.report.summary",
+                "get_budget_account_children",
                 [accountId]
             );
             return children;
@@ -432,8 +432,8 @@ export class BudgetReportSummary extends Component {
     async _getBudgetAccountsForActivity(activityId) {
         try {
             const accountIds = await this.orm.call(
-                "budget.report.summary", 
-                "get_budget_accounts_for_activity", 
+                "budget.report.summary",
+                "get_budget_accounts_for_activity",
                 [activityId]
             );
             return accountIds;
@@ -447,8 +447,8 @@ export class BudgetReportSummary extends Component {
     async _getBudgetAccountsForFund(fundId, parentActivityId = null) {
         try {
             const accountIds = await this.orm.call(
-                "budget.report.summary", 
-                "get_budget_accounts_for_fund", 
+                "budget.report.summary",
+                "get_budget_accounts_for_fund",
                 [fundId, parentActivityId]
             );
             return accountIds;
@@ -462,12 +462,12 @@ export class BudgetReportSummary extends Component {
     async _addAnalyticCodeFilter(domain, field_name, code) {
         try {
             const analyticIds = await this.orm.call(
-                "budget.report.summary", 
-                "get_analytic_ids_by_code_prefix", 
+                "budget.report.summary",
+                "get_analytic_ids_by_code_prefix",
                 [code, field_name]
             );
             console.log(`${field_name} IDs for code ${code}:`, analyticIds);
-            
+
             if (analyticIds && analyticIds.length > 0) {
                 domain.push([field_name, 'in', analyticIds]);
             }
@@ -480,12 +480,12 @@ export class BudgetReportSummary extends Component {
     async _addBudgetAccountCodeFilter(domain, code, parentCode = null) {
         try {
             const accountIds = await this.orm.call(
-                "budget.report.summary", 
-                "get_budget_account_ids_by_code_prefix", 
+                "budget.report.summary",
+                "get_budget_account_ids_by_code_prefix",
                 [code, parentCode]
             );
             console.log(`Account IDs for code ${code}:`, accountIds);
-            
+
             if (accountIds && accountIds.length > 0) {
                 domain.push(['account_id', 'in', accountIds]);
             }
@@ -498,14 +498,14 @@ export class BudgetReportSummary extends Component {
     async _getBudgetAccountsByCode(code) {
         try {
             const accountIds = await this.orm.call(
-                "budget.report.summary", 
-                "get_budget_account_ids_by_code_prefix", 
+                "budget.report.summary",
+                "get_budget_account_ids_by_code_prefix",
                 [code]
             );
             return accountIds;
         } catch (error) {
             console.warn(`Failed to get budget accounts by code ${code}:`, error);
-            return []; 
+            return [];
         }
     }
 

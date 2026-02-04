@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -17,6 +17,9 @@ class PurchaseOrder(models.Model):
         "cancel": [("readonly", True)],
     }
 
+    def _domain_budget_account_id(self):
+        return [("purchase_ok", "=", True), ("product_id", "!=", False)]
+
     budget_commitment_id = fields.Many2one(
         "budget.commitment",
         string="Budget Commitment",
@@ -28,8 +31,25 @@ class PurchaseOrder(models.Model):
     budget_account_id = fields.Many2one(
         "budget.account",
         string="Budget Account",
-        domain=[("budgetable", "=", True), ("budget_type", "=", "expense")],
+        states=READONLY_STATES,
+        domain=lambda self: self._domain_budget_account_id(),
         help="Budget account to be used for commitment",
+    )
+
+    activity_analytic_id = fields.Many2one(
+        states=READONLY_STATES,
+    )
+
+    department_analytic_id = fields.Many2one(
+        states=READONLY_STATES,
+    )
+
+    fund_analytic_id = fields.Many2one(
+        states=READONLY_STATES,
+    )
+
+    source_analytic_id = fields.Many2one(
+        states=READONLY_STATES,
     )
 
     use_procurement_plan = fields.Boolean(
@@ -112,9 +132,33 @@ class PurchaseOrder(models.Model):
 
     def _prepare_invoice(self):
         vals = super()._prepare_invoice()
-        # vals["date_range_fy_id"] = purchase_request.date_range_fy_id.id
         vals["analytic_distribution"] = self.analytic_distribution
         vals["budget_commitment_id"] = self.budget_commitment_id.id
         vals["budget_account_id"] = self.budget_account_id.id
         vals["procurement_plan_analytic_id"] = self.procurement_plan_analytic_id.id
         return vals
+
+    @api.onchange("budget_account_id")
+    def _onchange_budget_account_id(self):
+        default_price = self.env.context.get("default_price_unit", 0)
+        product = self.budget_account_id.product_id
+
+        if not product:
+            return
+
+        self.product_id = product.id
+
+        vals = {
+            "product_id": product.id,
+            "name": product.display_name,
+            "price_unit": self.procurement_plan_id.total_price or default_price,
+            "product_qty": 1.0,
+            "product_uom": product.uom_id.id,
+            "date_planned": fields.Datetime.now(),
+        }
+
+        if self.order_line:
+            for line in self.order_line:
+                line.update(vals)
+        else:
+            self.order_line = [Command.create(vals)]

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates>
+    <t t-name="BudgetAccountListView.open_portal_button" t-inherit="web.ListView.Buttons" t-inherit-mode="primary" owl="1">
+        <xpath expr="//t[@t-if='props.showButtons']" position="inside">
+            <a class="btn btn-secondary" href="/budget/budget_account" target="_blank">
+                <i class="fa fa-external-link"></i> Open Portal
+            </a>
+        </xpath>
+    </t>
+</templates>

@@ -10,53 +10,68 @@ _logger = logging.getLogger(__name__)
 class BudgetAppropriationLine(models.Model):
     _inherit = "budget.appropriation.line"
 
-    procurement_plan_ids = fields.One2many(
-        comodel_name="procurement.plan",
-        inverse_name="budget_appropriation_line_id",
-        string="รายการแผนจัดซื้อจัดจ้าง",
-        help="รายการแผนจัดซื้อจัดจ้างที่ใช้เงินจากรหัสงบประมาณนี้",
-    )
-
     procurement_plan = fields.Boolean(
         related="account_id.procurement_plan",
-        store=True,
+        store=False,
     )
 
-    # TODO: แยกเงินลอยเป็นอีกโมดูลเนื่องจากมีการใช้ร่วมกับ project_budget
-    unallocated_balance = fields.Float(
-        string="ยังไม่ระบุรายการ",
-        help="จำนวนเงินที่ยังไม่มีการวางแผนการใช้งาน แต่ต้องการจองจำนวนเงินไว้ก่อน",
-        store=True,
-        required=False,
-        digits="Budget",
-        compute="_compute_unallocated_balance",
-    )
+    enable_procurement_plan = fields.Boolean("จัดสรรแผนจัดซื้อจัดจ้าง")
+    procurement_plan_amount = fields.Integer(string="จำนวน")
+    procurement_plan_unit = fields.Char("Unit of Measure")
+    procurement_plan_id = fields.Many2one(comodel_name="procurement.plan")
 
-    hide_unallocated_balance = fields.Boolean(
-        compute="_compute_hide_unallocated_balance",
-    )
+    def _prepare_procurement_plan_vals(self):
+        return {
+            "account_fiscal_year_id": self.account_fiscal_year_id.id,
+            "description": self.description,
+            "amount": self.procurement_plan_amount,
+            "unit": self.procurement_plan_unit,
+            "total_price": self.balance,
+            "user_id": self.appropriation_id.user_id.id,
+            "budget_account_id": self.account_id.id,
+            "analytic_distribution": self.analytic_distribution,
+        }
 
-    @api.depends(
-        "procurement_plan_ids.amount",
-        "procurement_plan_ids.price_per_unit",
-        "procurement_plan_ids.total_price",
-        "balance",
-        "account_id.procurement_plan",
-    )
-    def _compute_unallocated_balance(self):
-        for rec in self:
-            if rec.procurement_plan:
-                total_price = sum(rec.procurement_plan_ids.mapped("total_price"))
-                rec.unallocated_balance = rec.balance - total_price
+    def _create_procurement_plan(self):
+        self.ensure_one()
+        vals = self._prepare_procurement_plan_vals()
+        procurement_plan = self.env['procurement.plan'].create(vals)
+        procurement_plan.action_new()
 
-    @api.depends("account_id.procurement_plan")
-    def _compute_hide_unallocated_balance(self):
-        for line in self:
-            if line.account_id.procurement_plan:
-                line.hide_unallocated_balance = False
+        self.procurement_plan_id = procurement_plan.id
+        return procurement_plan
 
     def budget_move_line_vals(self):
         vals = super().budget_move_line_vals()
-        if self.procurement_plan:
-            vals["balance"] = self.unallocated_balance
+
+        if self.enable_procurement_plan:
+            procurement_plan_id = self._create_procurement_plan()
+            account_id = procurement_plan_id.analytic_account_id
+
+            distribution = vals['analytic_distribution']
+            distribution[str(account_id.id)] = 100
+            vals['analytic_distribution'] = distribution
+            vals['procurement_plan_id'] = procurement_plan_id.id
         return vals
+
+    def _message_link_back_from_procurement_plan(self):
+        appropriation_id = self.appropriation_id
+        name = appropriation_id.name
+        link = appropriation_id._get_record_url()
+
+        return _(
+            'This record has been created from: <a href="%(link)s" target="_blank">%(name)s</a>',
+            link=link,
+            name=name,
+        )
+
+    def _message_link_to_procurement_plan(self):
+        procurement_plan_id = self.procurement_plan_id
+        name = f"[{procurement_plan_id.name}] {procurement_plan_id.description}"
+        link = procurement_plan_id._get_record_url()
+
+        return _(
+            'The procurement plan has been created from this budget appropriation: <a href="%(link)s" target="_blank">%(name)s</a>',
+            link=link,
+            name=name,
+        )

@@ -80,7 +80,7 @@ class BudgetMoveLine(models.Model):
         tracking=True,
     )
     budget_type = fields.Selection(
-        related="move_id.journal_id.default_budget_type", store=True, readonly=True
+        related="move_id.budget_type", store=True, readonly=True
     )
     debit = fields.Float(
         string="เดบิต",
@@ -123,16 +123,9 @@ class BudgetMoveLine(models.Model):
     source_analytic_id = fields.Many2one(
         related="move_id.source_analytic_id", store=True
     )
-    date_range_fy_id = fields.Many2one(related="move_id.date_range_fy_id", store=True)
+    account_fiscal_year_id = fields.Many2one(related="move_id.account_fiscal_year_id", store=True)
     parent_state = fields.Selection(related="move_id.state", store=True)
     move_type = fields.Selection(related="move_id.move_type", store=True)
-    journal_id = fields.Many2one(
-        related="move_id.journal_id",
-        store=True,
-        precompute=True,
-        index=True,
-        copy=False,
-    )
     company_id = fields.Many2one(related="move_id.company_id", store=True)
     currency_id = fields.Many2one(
         string="Currency", related="company_id.currency_id", store=True

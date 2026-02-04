@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_account_move_request_user,account.move.request.user,model_account_move_request,group_account_move_request_user,1,1,1,0
+access_account_move_request_manager,account.move.request.manager,model_account_move_request,group_account_move_request_manager,1,1,1,1
+access_account_move_request_line_user,account.move.request.line.user,model_account_move_request_line,group_account_move_request_user,1,1,1,0
+access_account_move_request_line_manager,account.move.request.line.manager,model_account_move_request_line,group_account_move_request_manager,1,1,1,1
+access_account_move_request_exception_confirm,account.move.request.exception.confirm,model_account_move_request_exception_confirm,,1,1,1,1

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- View account.asset form -->
+    <record id="view_account_asset_form" model="ir.ui.view">
+        <field name="name">view.account.asset.form</field>
+        <field name="model">account.asset</field>
+        <field
+            name="inherit_id"
+            ref="account_asset_management.account_asset_view_tree"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//tree/field[last()]" position="after">
+                <field name="batch_id" optional="hide" />
+            </xpath>
+            <xpath expr="//field[@name='depreciation_base']" position="before">
+                <field name="purchase_value" optional="show" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- View account.asset tree -->
+    <record id="view_account_asset_tree" model="ir.ui.view">
+        <field name="name">view.account.asset.tree</field>
+        <field name="model">account.asset</field>
+        <field
+            name="inherit_id"
+            ref="account_asset_management.account_asset_view_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='code']" position="after">
+                <field name="batch_id" />
+            </xpath>
+        </field>
+    </record>
+</odoo>
