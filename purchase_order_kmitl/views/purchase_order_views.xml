@@ -10,6 +10,10 @@
             <field name="partner_id" position="before">
                 <field name="account_fiscal_year_id" widget="selection" required="1" />
             </field>
+            <!-- From purchase_order_department -->
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="department_id" domain="['|', ('operating_unit_id', '=', False), ('operating_unit_id', '=', operating_unit_id)]"/>
+            </xpath>
             <xpath expr="//button[@name='action_rfq_send' and @states='draft']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
@@ -30,6 +34,21 @@
             </xpath>
             <xpath expr="//field[@name='product_id']" position="attributes">
                 <attribute name="optional">show</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- From purchase_order_department_operating_unit: hide original OU field and add custom -->
+    <record id="view_purchase_order_operating_unit_form" model="ir.ui.view">
+        <field name="name">view.purchase.order.operating.unit.form</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase_operating_unit.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='operating_unit_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//group[@name='other_info']" position="inside">
+                <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit"/>
             </xpath>
         </field>
     </record>

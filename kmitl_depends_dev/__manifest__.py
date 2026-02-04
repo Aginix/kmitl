@@ -34,7 +34,7 @@
                 'purchase_guarantee_kmitl', 'purchase_guarantee_lock', 'purchase_guarantee_no_invoice_bill', 'purchase_guarantee_purchase_order_kmitl',
                 'purchase_guarantee_tracking', 'purchase_manual_delivery_security', 'purchase_manual_delivery_work_acceptance',
                 'purchase_operating_unit_access_all', 'purchase_order_account_move_request', 'purchase_order_account_move_request_attach_existing_attachments',
-                'purchase_order_account_move_request_budget', 'purchase_order_department_link_by_purchase_request', 'purchase_order_department_operating_unit'],
+                'purchase_order_account_move_request_budget'],
     'data': [
 
     ],
