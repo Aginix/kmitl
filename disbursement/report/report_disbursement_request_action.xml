@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_disbursement_request" model="ir.actions.report">
+        <field name="name">Disbursement Request</field>
+        <field name="binding_model_id" ref="model_disbursement_request"/>
+        <field name="model">disbursement.request</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">disbursement.report_disbursement_request</field>
+        <field name="paperformat_id" ref="paperformat_disbursement_request_report"/>
+        <field name="report_file">disbursement.report_disbursement_request</field>
+    </record>
+</odoo>

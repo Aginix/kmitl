@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_disbursement_request_user,disbursement.request.user,model_disbursement_request,group_disbursement_user,1,1,1,0
+access_disbursement_request_manager,disbursement.request.manager,model_disbursement_request,group_disbursement_manager,1,1,1,1
+access_disbursement_request_line_user,disbursement.request.line.user,model_disbursement_request_line,group_disbursement_user,1,1,1,0
+access_disbursement_request_line_manager,disbursement.request.line.manager,model_disbursement_request_line,group_disbursement_manager,1,1,1,1
+access_disbursement_exception_confirm,disbursement.exception.confirm,model_disbursement_exception_confirm,,1,1,1,1
