@@ -100,6 +100,34 @@ class BudgetAppropriationDashboardController(http.Controller):
             department_expenses.values(), key=lambda x: x["value"], reverse=True
         )
 
+        # Group revenue by department for treemap
+        department_revenues = {}
+        for approp in all_revenue_appropriations:
+            dept = approp.department_analytic_id
+            if dept:
+                key = dept.id
+                if key not in department_revenues:
+                    department_revenues[key] = {
+                        "name": dept.name,
+                        "value": 0,
+                    }
+                department_revenues[key]["value"] += approp.amount_total
+
+        # Sort by value descending
+        revenue_treemap_data = sorted(
+            department_revenues.values(), key=lambda x: x["value"], reverse=True
+        )
+
+        # Build hierarchical treemap: Department → Budget Account
+        dept_account_treemap = self._build_department_account_treemap(
+            all_expense_appropriations
+        )
+
+        # Build account-only hierarchy treemap
+        account_only_treemap = self._build_account_only_treemap(
+            all_expense_appropriations
+        )
+
         return {
             "report_count": len(reports),
             "department_count": department_count,
@@ -110,7 +138,220 @@ class BudgetAppropriationDashboardController(http.Controller):
                 {"name": "รายจ่าย", "value": total_expense},
             ],
             "treemap_data": treemap_data,
+            "revenue_treemap_data": revenue_treemap_data,
+            "department_account_treemap": dept_account_treemap,
+            "account_only_treemap": account_only_treemap,
         }
+
+    def _build_department_account_treemap(self, expense_appropriations):
+        """Build hierarchical treemap: Department hierarchy → Budget Account hierarchy."""
+        # Step 1: Collect amounts per (department, account) pair
+        dept_data = {}
+
+        for approp in expense_appropriations:
+            dept = approp.department_analytic_id
+            if not dept:
+                continue
+
+            dept_key = dept.id
+            if dept_key not in dept_data:
+                dept_data[dept_key] = {
+                    "department": dept,
+                    "accounts": {},
+                }
+
+            for line in approp.line_ids:
+                account = line.account_id
+                if not account:
+                    continue
+
+                amount = line.balance or 0
+                if account.id not in dept_data[dept_key]["accounts"]:
+                    dept_data[dept_key]["accounts"][account.id] = {
+                        "account": account,
+                        "amount": 0,
+                    }
+                dept_data[dept_key]["accounts"][account.id]["amount"] += amount
+
+        # Step 2: Build department hierarchy with account trees as leaves
+        return self._build_dept_hierarchy(dept_data)
+
+    def _build_dept_hierarchy(self, dept_data):
+        """Build FULL department hierarchy tree with budget accounts as leaf children."""
+        if not dept_data:
+            return []
+
+        # Step 1: Collect all department ancestors
+        all_depts = {}  # id -> department record
+        dept_accounts = {}  # id -> accounts dict (only leaf depts have data)
+
+        for dept_id, data in dept_data.items():
+            dept = data["department"]
+            dept_accounts[dept_id] = data["accounts"]
+
+            # Trace up to root, collecting all ancestors
+            current = dept
+            while current:
+                if current.id not in all_depts:
+                    all_depts[current.id] = current
+                current = current.parent_id
+
+        # Step 2: Create nodes for ALL departments (including ancestors)
+        nodes = {}
+        for dept_id, dept in all_depts.items():
+            accounts = dept_accounts.get(dept_id, {})
+            account_tree = self._build_account_tree(accounts) if accounts else []
+            dept_total = sum(a["amount"] for a in accounts.values()) if accounts else 0
+
+            nodes[dept_id] = {
+                "name": dept.name,
+                "value": dept_total,
+                "children": {},
+                "account_children": account_tree,
+                "parent_id": dept.parent_id.id if dept.parent_id else None,
+            }
+
+        # Step 3: Build tree by linking children to parents
+        roots = []
+        for dept_id, node in nodes.items():
+            parent_id = node["parent_id"]
+            if parent_id and parent_id in nodes:
+                nodes[parent_id]["children"][dept_id] = node
+            else:
+                roots.append(node)
+
+        # Step 4: Aggregate values from leaves up to parents (bottom-up)
+        def aggregate_values(node):
+            total = node["value"]
+            for child in node["children"].values():
+                total += aggregate_values(child)
+            node["value"] = total
+            return total
+
+        for root in roots:
+            aggregate_values(root)
+
+        # Step 5: Convert children dicts to sorted lists and merge account_children
+        def convert_node(node):
+            dept_children = list(node["children"].values())
+            account_children = node.get("account_children", [])
+
+            for child in dept_children:
+                convert_node(child)
+
+            all_children = sorted(
+                dept_children + account_children,
+                key=lambda x: x["value"],
+                reverse=True,
+            )
+
+            if all_children:
+                node["children"] = all_children
+            else:
+                del node["children"]
+
+            if "account_children" in node:
+                del node["account_children"]
+            if "parent_id" in node:
+                del node["parent_id"]
+
+        for root in roots:
+            convert_node(root)
+
+        return sorted(roots, key=lambda x: x["value"], reverse=True)
+
+    def _build_account_tree(self, accounts_data):
+        """Build FULL hierarchical tree from leaf accounts up to roots."""
+        if not accounts_data:
+            return []
+
+        # Step 1: Collect all ancestors for each leaf account
+        all_accounts = {}  # id -> account record
+        leaf_amounts = {}  # id -> amount (only leaves have amounts)
+
+        for acc_id, data in accounts_data.items():
+            account = data["account"]
+            leaf_amounts[acc_id] = data["amount"]
+
+            # Trace up to root, collecting all ancestors
+            current = account
+            while current:
+                if current.id not in all_accounts:
+                    all_accounts[current.id] = current
+                current = current.parent_id
+
+        # Step 2: Create nodes for ALL accounts (including ancestors)
+        nodes = {}
+        for acc_id, account in all_accounts.items():
+            nodes[acc_id] = {
+                "name": account.display_name,
+                "value": leaf_amounts.get(acc_id, 0),  # Only leaves have direct values
+                "children": {},
+                "parent_id": account.parent_id.id if account.parent_id else None,
+            }
+
+        # Step 3: Build tree by linking children to parents
+        roots = []
+        for acc_id, node in nodes.items():
+            parent_id = node["parent_id"]
+            if parent_id and parent_id in nodes:
+                # Parent exists, add as child
+                nodes[parent_id]["children"][acc_id] = node
+            else:
+                # No parent, this is a root
+                roots.append(node)
+
+        # Step 4: Aggregate values from leaves up to parents (bottom-up)
+        def aggregate_values(node):
+            total = node["value"]  # Start with own value (if leaf)
+            for child in node["children"].values():
+                total += aggregate_values(child)
+            node["value"] = total
+            return total
+
+        for root in roots:
+            aggregate_values(root)
+
+        # Step 5: Convert children dicts to sorted lists
+        def convert_children(node):
+            if node["children"]:
+                children_list = sorted(
+                    node["children"].values(),
+                    key=lambda x: x["value"],
+                    reverse=True,
+                )
+                for child in children_list:
+                    convert_children(child)
+                node["children"] = children_list
+            else:
+                del node["children"]
+            if "parent_id" in node:
+                del node["parent_id"]
+
+        for root in roots:
+            convert_children(root)
+
+        return sorted(roots, key=lambda x: x["value"], reverse=True)
+
+    def _build_account_only_treemap(self, expense_appropriations):
+        """Build budget account hierarchy treemap (without departments)."""
+        accounts_data = {}
+
+        for approp in expense_appropriations:
+            for line in approp.line_ids:
+                account = line.account_id
+                if not account:
+                    continue
+
+                amount = line.balance or 0
+                if account.id not in accounts_data:
+                    accounts_data[account.id] = {
+                        "account": account,
+                        "amount": 0,
+                    }
+                accounts_data[account.id]["amount"] += amount
+
+        return self._build_account_tree(accounts_data)
 
 
 class BudgetAppropriationReportController(http.Controller):
