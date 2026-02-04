@@ -12,5 +12,6 @@ class WorkAcceptance(models.Model):
     requested_delivery_date = fields.Date(
         string="Requested Delivery Date",
         tracking=True,
+        readonly=True,
         states={"draft": [("readonly", False)]},
     )
