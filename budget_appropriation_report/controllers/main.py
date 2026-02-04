@@ -173,6 +173,12 @@ class BudgetAppropriationDashboardController(http.Controller):
         # Build activity sankey data: Activity hierarchy (ด้าน → แผนงาน → กิจกรรม)
         activity_sankey_data = self._build_activity_sankey_data(all_expense_lines)
 
+        # Build activity × account type table (2 levels: ด้าน/แผนงาน)
+        activity_account_table = self._build_activity_account_table(all_expense_lines)
+
+        # Build activity × fund table (2 levels: ด้าน/แผนงาน)
+        activity_fund_table = self._build_activity_fund_table(all_expense_lines)
+
         return {
             "report_count": len(reports),
             "department_count": department_count,
@@ -198,6 +204,8 @@ class BudgetAppropriationDashboardController(http.Controller):
             "account_type_pie_data": account_type_pie_data,
             "stacked_bar_data": stacked_bar_data,
             "activity_sankey_data": activity_sankey_data,
+            "activity_account_table": activity_account_table,
+            "activity_fund_table": activity_fund_table,
         }
 
     def _build_department_account_treemap(self, expense_appropriations):
@@ -911,6 +919,201 @@ class BudgetAppropriationDashboardController(http.Controller):
         nodes = [n for n in nodes if n["name"] in used_nodes]
 
         return {"nodes": nodes, "links": links_list}
+
+    def _build_activity_account_table(self, expense_lines):
+        """Build table: Activity (ด้าน/แผนงาน, 2 levels) × Account Type (root)."""
+        # Collect data: {activity_id: {account_root_id: amount}}
+        activity_account = {}
+        activities = {}  # {id: {name, level, parent_id}}
+        account_roots = {}  # {id: name}
+
+        for line in expense_lines:
+            activity = line.activity_analytic_id
+            account = line.account_id
+            if not activity or not account:
+                continue
+
+            amount = line.balance or 0
+
+            # Get root account
+            root_acc = account
+            while root_acc.parent_id:
+                root_acc = root_acc.parent_id
+
+            # Get activity level and collect ancestors up to level 1
+            level = 0
+            current = activity
+            while current.parent_id:
+                level += 1
+                current = current.parent_id
+
+            # Only process if activity is level 0, 1, or deeper (we'll aggregate to level 1)
+            # Find the level 1 ancestor (or level 0 if no parent)
+            target_activity = activity
+            target_level = level
+            if level > 1:
+                # Go up to level 1
+                current = activity
+                current_level = level
+                while current_level > 1:
+                    current = current.parent_id
+                    current_level -= 1
+                target_activity = current
+                target_level = 1
+
+            act_id = target_activity.id
+            acc_id = root_acc.id
+
+            if act_id not in activities:
+                activities[act_id] = {
+                    "name": target_activity.name,
+                    "level": target_level,
+                    "parent_id": target_activity.parent_id.id if target_activity.parent_id else None,
+                }
+            if acc_id not in account_roots:
+                account_roots[acc_id] = root_acc.display_name
+
+            if act_id not in activity_account:
+                activity_account[act_id] = {}
+            if acc_id not in activity_account[act_id]:
+                activity_account[act_id][acc_id] = 0
+            activity_account[act_id][acc_id] += amount
+
+        # Build hierarchical rows (ด้าน with children แผนงาน)
+        rows = []
+        level0_acts = {k: v for k, v in activities.items() if v["level"] == 0}
+        level1_acts = {k: v for k, v in activities.items() if v["level"] == 1}
+
+        # Sort columns
+        col_list = sorted(account_roots.items(), key=lambda x: x[1])
+        columns = [{"id": id, "name": name} for id, name in col_list]
+
+        for act_id, act_info in sorted(level0_acts.items(), key=lambda x: x[1]["name"]):
+            # Level 0 row (ด้าน) - aggregate from children
+            row_data = {}
+            for acc_id, _ in col_list:
+                total = activity_account.get(act_id, {}).get(acc_id, 0)
+                # Add children amounts
+                for child_id, child_info in level1_acts.items():
+                    if child_info["parent_id"] == act_id:
+                        total += activity_account.get(child_id, {}).get(acc_id, 0)
+                row_data[acc_id] = total
+
+            if sum(row_data.values()) > 0:
+                rows.append({
+                    "id": act_id,
+                    "name": act_info["name"],
+                    "level": 0,
+                    "data": row_data,
+                    "total": sum(row_data.values()),
+                })
+
+                # Level 1 children (แผนงาน)
+                for child_id, child_info in sorted(level1_acts.items(), key=lambda x: x[1]["name"]):
+                    if child_info["parent_id"] == act_id:
+                        child_data = activity_account.get(child_id, {})
+                        if sum(child_data.values()) > 0:
+                            rows.append({
+                                "id": child_id,
+                                "name": child_info["name"],
+                                "level": 1,
+                                "data": {acc_id: child_data.get(acc_id, 0) for acc_id, _ in col_list},
+                                "total": sum(child_data.values()),
+                            })
+
+        return {"columns": columns, "rows": rows}
+
+    def _build_activity_fund_table(self, expense_lines):
+        """Build table: Activity (ด้าน/แผนงาน, 2 levels) × Fund."""
+        # Collect data: {activity_id: {fund_id: amount}}
+        activity_fund = {}
+        activities = {}  # {id: {name, level, parent_id}}
+        funds = {}  # {id: name}
+
+        for line in expense_lines:
+            activity = line.activity_analytic_id
+            fund = line.fund_analytic_id
+            if not activity or not fund:
+                continue
+
+            amount = line.balance or 0
+
+            # Get activity level
+            level = 0
+            current = activity
+            while current.parent_id:
+                level += 1
+                current = current.parent_id
+
+            # Aggregate to level 1 max
+            target_activity = activity
+            target_level = level
+            if level > 1:
+                current = activity
+                current_level = level
+                while current_level > 1:
+                    current = current.parent_id
+                    current_level -= 1
+                target_activity = current
+                target_level = 1
+
+            act_id = target_activity.id
+            fund_id = fund.id
+
+            if act_id not in activities:
+                activities[act_id] = {
+                    "name": target_activity.name,
+                    "level": target_level,
+                    "parent_id": target_activity.parent_id.id if target_activity.parent_id else None,
+                }
+            if fund_id not in funds:
+                funds[fund_id] = fund.name
+
+            if act_id not in activity_fund:
+                activity_fund[act_id] = {}
+            if fund_id not in activity_fund[act_id]:
+                activity_fund[act_id][fund_id] = 0
+            activity_fund[act_id][fund_id] += amount
+
+        # Build hierarchical rows
+        rows = []
+        level0_acts = {k: v for k, v in activities.items() if v["level"] == 0}
+        level1_acts = {k: v for k, v in activities.items() if v["level"] == 1}
+
+        col_list = sorted(funds.items(), key=lambda x: x[1])
+        columns = [{"id": id, "name": name} for id, name in col_list]
+
+        for act_id, act_info in sorted(level0_acts.items(), key=lambda x: x[1]["name"]):
+            row_data = {}
+            for fund_id, _ in col_list:
+                total = activity_fund.get(act_id, {}).get(fund_id, 0)
+                for child_id, child_info in level1_acts.items():
+                    if child_info["parent_id"] == act_id:
+                        total += activity_fund.get(child_id, {}).get(fund_id, 0)
+                row_data[fund_id] = total
+
+            if sum(row_data.values()) > 0:
+                rows.append({
+                    "id": act_id,
+                    "name": act_info["name"],
+                    "level": 0,
+                    "data": row_data,
+                    "total": sum(row_data.values()),
+                })
+
+                for child_id, child_info in sorted(level1_acts.items(), key=lambda x: x[1]["name"]):
+                    if child_info["parent_id"] == act_id:
+                        child_data = activity_fund.get(child_id, {})
+                        if sum(child_data.values()) > 0:
+                            rows.append({
+                                "id": child_id,
+                                "name": child_info["name"],
+                                "level": 1,
+                                "data": {fund_id: child_data.get(fund_id, 0) for fund_id, _ in col_list},
+                                "total": sum(child_data.values()),
+                            })
+
+        return {"columns": columns, "rows": rows}
 
 
 class BudgetAppropriationReportController(http.Controller):
