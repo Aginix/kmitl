@@ -48,6 +48,7 @@ export class BudgetAppropriationDashboard extends Component {
         this.sankeyChart = null;
         this.heatmapChart = null;
         this.fundPieChart = null;
+        this.accountTypePieChart = null;
         this.stackedBarChart = null;
 
         onWillStart(async () => {
@@ -106,6 +107,7 @@ export class BudgetAppropriationDashboard extends Component {
                 this._updateHeatmapChart();
             } else if (activeTab === "executive") {
                 this._updateFundPieChart();
+                this._updateAccountTypePieChart();
                 this._updateStackedBarChart();
             }
             // "table" tab doesn't need chart initialization
@@ -993,22 +995,27 @@ export class BudgetAppropriationDashboard extends Component {
                     return `${params.name}: ${value} บาท (${params.percent.toFixed(1)}%)`;
                 },
             },
+            title: {
+                text: "งบประมาณตามกองทุน",
+                left: "center",
+                top: 0,
+                textStyle: {
+                    fontSize: 18,
+                    fontWeight: "bold",
+                    color: "#3c3c41",
+                },
+            },
             legend: {
-                orient: "vertical",
-                left: "left",
-                top: "middle",
+                orient: 'vertical',
+                right: 0,
+                top: 'center',
             },
             series: [
                 {
+                    name: "กองทุน",
                     type: "pie",
-                    radius: ["40%", "70%"],
-                    center: ["60%", "50%"],
-                    avoidLabelOverlap: true,
-                    itemStyle: {
-                        borderRadius: 6,
-                        borderColor: "#fff",
-                        borderWidth: 2,
-                    },
+                    radius: '60%',
+                    center: ['30%', '50%'],
                     label: {
                         show: true,
                         formatter: (params) => {
@@ -1033,6 +1040,82 @@ export class BudgetAppropriationDashboard extends Component {
         };
 
         this.fundPieChart.setOption(option, true);
+    }
+
+    _updateAccountTypePieChart() {
+        if (typeof echarts === "undefined") {
+            return;
+        }
+
+        const chartDom = document.getElementById("accountTypePieChart");
+        if (!chartDom) {
+            return;
+        }
+
+        if (!this.accountTypePieChart) {
+            this.accountTypePieChart = echarts.init(chartDom);
+            window.addEventListener("resize", () => {
+                if (this.accountTypePieChart) {
+                    this.accountTypePieChart.resize();
+                }
+            });
+        }
+
+        const data = this.state.stats.account_type_pie_data || [];
+
+        const option = {
+            tooltip: {
+                trigger: "item",
+                formatter: (params) => {
+                    const value = this.formatCurrency(params.value);
+                    return `${params.name}: ${value} บาท (${params.percent.toFixed(1)}%)`;
+                },
+            },
+            title: {
+                text: "งบประมาณตามประเภทงบ",
+                left: "center",
+                top: 0,
+                textStyle: {
+                    fontSize: 18,
+                    fontWeight: "bold",
+                    color: "#3c3c41",
+                },
+            },
+            legend: {
+                orient: 'vertical',
+                right: 0,
+                top: 'center',
+            },
+            series: [
+                {
+                    name: "ประเภทงบ",
+                    type: "pie",
+                    radius: '60%',
+                    center: ['30%', '50%'],
+                    label: {
+                        show: true,
+                        formatter: (params) => {
+                            if (params.percent < 5) return "";
+                            return `${params.percent.toFixed(0)}%`;
+                        },
+                        position: "inside",
+                        fontSize: 10,
+                        fontWeight: "bold",
+                        color: "#fff",
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: "rgba(0, 0, 0, 0.2)",
+                        },
+                    },
+                    data: data,
+                },
+            ],
+        };
+
+        this.accountTypePieChart.setOption(option, true);
     }
 
     _updateStackedBarChart() {
@@ -1160,6 +1243,10 @@ export class BudgetAppropriationDashboard extends Component {
             this.fundPieChart.dispose();
             this.fundPieChart = null;
         }
+        if (this.accountTypePieChart) {
+            this.accountTypePieChart.dispose();
+            this.accountTypePieChart = null;
+        }
         if (this.stackedBarChart) {
             this.stackedBarChart.dispose();
             this.stackedBarChart = null;
@@ -1238,6 +1325,7 @@ export class BudgetAppropriationDashboard extends Component {
                 this._updateHeatmapChart();
             } else if (tabId === "executive") {
                 this._updateFundPieChart();
+                this._updateAccountTypePieChart();
                 this._updateStackedBarChart();
             }
             // "table" tab doesn't need chart initialization

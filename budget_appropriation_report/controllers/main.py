@@ -164,6 +164,9 @@ class BudgetAppropriationDashboardController(http.Controller):
         # Build fund pie chart data for executive dashboard
         fund_pie_data = self._build_fund_pie_data(all_expense_lines)
 
+        # Build account type pie chart data for executive dashboard
+        account_type_pie_data = self._build_account_type_pie_data(all_expense_lines)
+
         # Build stacked bar chart data: Department × Account Root (percentages)
         stacked_bar_data = self._build_stacked_bar_data(all_expense_lines)
 
@@ -189,6 +192,7 @@ class BudgetAppropriationDashboardController(http.Controller):
             "heatmap_data": heatmap_data,
             "table_data": table_data,
             "fund_pie_data": fund_pie_data,
+            "account_type_pie_data": account_type_pie_data,
             "stacked_bar_data": stacked_bar_data,
         }
 
@@ -732,9 +736,27 @@ class BudgetAppropriationDashboardController(http.Controller):
 
         return sorted(fund_totals.values(), key=lambda x: x["value"], reverse=True)
 
+    def _build_account_type_pie_data(self, expense_lines):
+        """Build pie chart data: expenses by root account type."""
+        account_totals = {}
+        for line in expense_lines:
+            account = line.account_id
+            if not account:
+                continue
+            # Get root account
+            root = account
+            while root.parent_id:
+                root = root.parent_id
+            key = root.id
+            if key not in account_totals:
+                account_totals[key] = {"name": root.display_name, "value": 0}
+            account_totals[key]["value"] += line.balance or 0
+
+        return sorted(account_totals.values(), key=lambda x: x["value"], reverse=True)
+
     def _build_stacked_bar_data(self, expense_lines):
-        """Build stacked horizontal bar: Department × Account Root (percentages)."""
-        dept_account = {}  # {dept_id: {root_id: amount}}
+        """Build stacked horizontal bar: Root Department × Account Root (percentages)."""
+        dept_account = {}  # {root_dept_id: {root_acc_id: amount}}
         departments = {}   # {id: name}
         account_roots = {}  # {id: name}
 
@@ -744,37 +766,42 @@ class BudgetAppropriationDashboardController(http.Controller):
             if not dept or not account:
                 continue
 
-            # Get root account
-            root = account
-            while root.parent_id:
-                root = root.parent_id
+            # Get root department (traverse up)
+            root_dept = dept
+            while root_dept.parent_id:
+                root_dept = root_dept.parent_id
 
-            dept_id, root_id = dept.id, root.id
+            # Get root account (traverse up)
+            root_acc = account
+            while root_acc.parent_id:
+                root_acc = root_acc.parent_id
+
+            dept_id, acc_id = root_dept.id, root_acc.id
 
             if dept_id not in departments:
-                departments[dept_id] = dept.name
-            if root_id not in account_roots:
-                account_roots[root_id] = root.display_name
+                departments[dept_id] = root_dept.name
+            if acc_id not in account_roots:
+                account_roots[acc_id] = root_acc.display_name
 
             if dept_id not in dept_account:
                 dept_account[dept_id] = {}
-            if root_id not in dept_account[dept_id]:
-                dept_account[dept_id][root_id] = 0
-            dept_account[dept_id][root_id] += line.balance or 0
+            if acc_id not in dept_account[dept_id]:
+                dept_account[dept_id][acc_id] = 0
+            dept_account[dept_id][acc_id] += line.balance or 0
 
         # Calculate percentages
         dept_list = sorted(departments.items(), key=lambda x: x[1])
         root_list = sorted(account_roots.items(), key=lambda x: x[1])
 
         series = []
-        for root_id, root_name in root_list:
+        for acc_id, acc_name in root_list:
             data = []
             for dept_id, _ in dept_list:
                 total = sum(dept_account.get(dept_id, {}).values()) or 1
-                value = dept_account.get(dept_id, {}).get(root_id, 0)
+                value = dept_account.get(dept_id, {}).get(acc_id, 0)
                 percentage = round(value / total * 100, 1)
                 data.append(percentage)
-            series.append({"name": root_name, "data": data})
+            series.append({"name": acc_name, "data": data})
 
         return {
             "departments": [name for _, name in dept_list],
