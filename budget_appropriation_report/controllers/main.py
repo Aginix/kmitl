@@ -167,6 +167,9 @@ class BudgetAppropriationDashboardController(http.Controller):
         # Build account type pie chart data for executive dashboard
         account_type_pie_data = self._build_account_type_pie_data(all_expense_lines)
 
+        # Build department pie chart data for executive dashboard
+        department_pie_data = self._build_department_pie_data(all_expense_lines)
+
         # Build stacked bar chart data: Department × Account Root (percentages)
         stacked_bar_data = self._build_stacked_bar_data(all_expense_lines)
 
@@ -202,6 +205,7 @@ class BudgetAppropriationDashboardController(http.Controller):
             "table_data": table_data,
             "fund_pie_data": fund_pie_data,
             "account_type_pie_data": account_type_pie_data,
+            "department_pie_data": department_pie_data,
             "stacked_bar_data": stacked_bar_data,
             "activity_sankey_data": activity_sankey_data,
             "activity_account_table": activity_account_table,
@@ -765,6 +769,24 @@ class BudgetAppropriationDashboardController(http.Controller):
             account_totals[key]["value"] += line.balance or 0
 
         return sorted(account_totals.values(), key=lambda x: x["value"], reverse=True)
+
+    def _build_department_pie_data(self, expense_lines):
+        """Build pie chart data: expenses by root department."""
+        dept_totals = {}
+        for line in expense_lines:
+            dept = line.department_analytic_id
+            if not dept:
+                continue
+            # Get root department
+            root = dept
+            while root.parent_id:
+                root = root.parent_id
+            key = root.id
+            if key not in dept_totals:
+                dept_totals[key] = {"name": root.name, "value": 0}
+            dept_totals[key]["value"] += line.balance or 0
+
+        return sorted(dept_totals.values(), key=lambda x: x["value"], reverse=True)
 
     def _build_stacked_bar_data(self, expense_lines):
         """Build stacked horizontal bar: Root Department × Account Root (percentages)."""

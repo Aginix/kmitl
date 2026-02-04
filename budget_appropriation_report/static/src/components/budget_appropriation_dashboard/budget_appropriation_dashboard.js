@@ -49,6 +49,7 @@ export class BudgetAppropriationDashboard extends Component {
         this.heatmapChart = null;
         this.fundPieChart = null;
         this.accountTypePieChart = null;
+        this.departmentPieChart = null;
         this.stackedBarChart = null;
         this.activitySankeyChart = null;
 
@@ -109,6 +110,7 @@ export class BudgetAppropriationDashboard extends Component {
             } else if (activeTab === "executive") {
                 this._updateFundPieChart();
                 this._updateAccountTypePieChart();
+                this._updateDepartmentPieChart();
                 this._updateStackedBarChart();
                 this._updateActivitySankeyChart();
             }
@@ -1130,6 +1132,82 @@ export class BudgetAppropriationDashboard extends Component {
         this.accountTypePieChart.setOption(option, true);
     }
 
+    _updateDepartmentPieChart() {
+        if (typeof echarts === "undefined") {
+            return;
+        }
+
+        const chartDom = document.getElementById("departmentPieChart");
+        if (!chartDom) {
+            return;
+        }
+
+        if (!this.departmentPieChart) {
+            this.departmentPieChart = echarts.init(chartDom);
+            window.addEventListener("resize", () => {
+                if (this.departmentPieChart) {
+                    this.departmentPieChart.resize();
+                }
+            });
+        }
+
+        const data = this.state.stats.department_pie_data || [];
+
+        const option = {
+            tooltip: {
+                trigger: "item",
+                formatter: (params) => {
+                    const value = this.formatCurrency(params.value);
+                    return `${params.name}: ${value} บาท (${params.percent.toFixed(1)}%)`;
+                },
+            },
+            title: {
+                text: "งบประมาณตามหน่วยงาน",
+                left: "center",
+                top: 0,
+                textStyle: {
+                    fontSize: 18,
+                    fontWeight: "bold",
+                    color: "#3c3c41",
+                },
+            },
+            legend: {
+                orient: 'vertical',
+                right: 0,
+                top: 'center',
+            },
+            series: [
+                {
+                    name: "หน่วยงาน",
+                    type: "pie",
+                    radius: '60%',
+                    center: ['30%', '50%'],
+                    label: {
+                        show: true,
+                        formatter: (params) => {
+                            if (params.percent < 5) return "";
+                            return `${params.percent.toFixed(0)}%`;
+                        },
+                        position: "inside",
+                        fontSize: 10,
+                        fontWeight: "bold",
+                        color: "#fff",
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: "rgba(0, 0, 0, 0.2)",
+                        },
+                    },
+                    data: data,
+                },
+            ],
+        };
+
+        this.departmentPieChart.setOption(option, true);
+    }
+
     _updateStackedBarChart() {
         if (typeof echarts === "undefined") {
             return;
@@ -1342,6 +1420,10 @@ export class BudgetAppropriationDashboard extends Component {
             this.accountTypePieChart.dispose();
             this.accountTypePieChart = null;
         }
+        if (this.departmentPieChart) {
+            this.departmentPieChart.dispose();
+            this.departmentPieChart = null;
+        }
         if (this.stackedBarChart) {
             this.stackedBarChart.dispose();
             this.stackedBarChart = null;
@@ -1425,6 +1507,7 @@ export class BudgetAppropriationDashboard extends Component {
             } else if (tabId === "executive") {
                 this._updateFundPieChart();
                 this._updateAccountTypePieChart();
+                this._updateDepartmentPieChart();
                 this._updateStackedBarChart();
                 this._updateActivitySankeyChart();
             }
