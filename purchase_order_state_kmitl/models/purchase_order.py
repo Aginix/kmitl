@@ -13,6 +13,6 @@ class PurchaseOrder(models.Model):
     state = fields.Selection([
         ('draft', 'draft'),
         ('open', 'Open'),
-        ('done', 'Locked'),
+        ('done', 'done'),
         ('cancel', 'Cancel')
     ],default='draft')
