@@ -170,6 +170,9 @@ class BudgetAppropriationDashboardController(http.Controller):
         # Build stacked bar chart data: Department × Account Root (percentages)
         stacked_bar_data = self._build_stacked_bar_data(all_expense_lines)
 
+        # Build activity sankey data: Activity hierarchy (ด้าน → แผนงาน → กิจกรรม)
+        activity_sankey_data = self._build_activity_sankey_data(all_expense_lines)
+
         return {
             "report_count": len(reports),
             "department_count": department_count,
@@ -194,6 +197,7 @@ class BudgetAppropriationDashboardController(http.Controller):
             "fund_pie_data": fund_pie_data,
             "account_type_pie_data": account_type_pie_data,
             "stacked_bar_data": stacked_bar_data,
+            "activity_sankey_data": activity_sankey_data,
         }
 
     def _build_department_account_treemap(self, expense_appropriations):
@@ -808,6 +812,105 @@ class BudgetAppropriationDashboardController(http.Controller):
             "account_roots": [name for _, name in root_list],
             "series": series,
         }
+
+    def _build_activity_sankey_data(self, expense_lines):
+        """Build sankey data for activity hierarchy: ด้าน → แผนงาน → กิจกรรม."""
+        # Step 1: Collect amounts per leaf activity
+        leaf_amounts = {}  # {activity_id: amount}
+        all_activities = {}  # {id: activity record}
+
+        for line in expense_lines:
+            activity = line.activity_analytic_id
+            if not activity:
+                continue
+
+            amount = line.balance or 0
+            if activity.id not in leaf_amounts:
+                leaf_amounts[activity.id] = 0
+            leaf_amounts[activity.id] += amount
+
+            # Collect all ancestors
+            current = activity
+            while current:
+                if current.id not in all_activities:
+                    all_activities[current.id] = current
+                current = current.parent_id
+
+        if not leaf_amounts:
+            return {"nodes": [], "links": []}
+
+        # Step 2: Build aggregated amounts (from leaves up)
+        aggregated = {}  # {id: total_amount}
+        for act_id, amount in leaf_amounts.items():
+            current = all_activities[act_id]
+            while current:
+                if current.id not in aggregated:
+                    aggregated[current.id] = 0
+                aggregated[current.id] += amount
+                current = current.parent_id
+
+        # Step 3: Create sankey nodes and links
+        nodes_set = set()
+        links = {}  # {(parent_name, child_name): amount}
+
+        for act_id, activity in all_activities.items():
+            if act_id not in aggregated or aggregated[act_id] == 0:
+                continue
+
+            # Determine level for prefix
+            level = 0
+            current = activity
+            while current.parent_id:
+                level += 1
+                current = current.parent_id
+
+            # Use level prefix for unique names
+            if level == 0:
+                prefix = "ด้าน: "
+            elif level == 1:
+                prefix = "แผนงาน: "
+            else:
+                prefix = "กิจกรรม: "
+
+            node_name = f"{prefix}{activity.name}"
+            nodes_set.add(node_name)
+
+            # Create link from parent to this node
+            if activity.parent_id and activity.parent_id.id in all_activities:
+                parent = activity.parent_id
+                parent_level = level - 1
+                if parent_level == 0:
+                    parent_prefix = "ด้าน: "
+                elif parent_level == 1:
+                    parent_prefix = "แผนงาน: "
+                else:
+                    parent_prefix = "กิจกรรม: "
+
+                parent_name = f"{parent_prefix}{parent.name}"
+                link_key = (parent_name, node_name)
+                # Use the child's aggregated amount for the link
+                links[link_key] = aggregated[act_id]
+
+        # Convert to sankey format
+        nodes = [{"name": name} for name in sorted(nodes_set)]
+        links_list = [
+            {"source": src, "target": tgt, "value": val}
+            for (src, tgt), val in links.items()
+            if val > 0
+        ]
+
+        # Sort by value and limit for performance
+        links_list.sort(key=lambda x: x["value"], reverse=True)
+        links_list = links_list[:150]
+
+        # Filter nodes to only include those in links
+        used_nodes = set()
+        for link in links_list:
+            used_nodes.add(link["source"])
+            used_nodes.add(link["target"])
+        nodes = [n for n in nodes if n["name"] in used_nodes]
+
+        return {"nodes": nodes, "links": links_list}
 
 
 class BudgetAppropriationReportController(http.Controller):

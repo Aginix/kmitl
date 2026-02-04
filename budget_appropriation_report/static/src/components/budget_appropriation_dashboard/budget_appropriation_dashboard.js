@@ -50,6 +50,7 @@ export class BudgetAppropriationDashboard extends Component {
         this.fundPieChart = null;
         this.accountTypePieChart = null;
         this.stackedBarChart = null;
+        this.activitySankeyChart = null;
 
         onWillStart(async () => {
             await this._loadECharts();
@@ -109,6 +110,7 @@ export class BudgetAppropriationDashboard extends Component {
                 this._updateFundPieChart();
                 this._updateAccountTypePieChart();
                 this._updateStackedBarChart();
+                this._updateActivitySankeyChart();
             }
             // "table" tab doesn't need chart initialization
         }, 100);
@@ -1209,6 +1211,78 @@ export class BudgetAppropriationDashboard extends Component {
         this.stackedBarChart.setOption(option, true);
     }
 
+    _updateActivitySankeyChart() {
+        if (typeof echarts === "undefined") {
+            return;
+        }
+
+        const chartDom = document.getElementById("activitySankeyChart");
+        if (!chartDom) {
+            return;
+        }
+
+        if (!this.activitySankeyChart) {
+            this.activitySankeyChart = echarts.init(chartDom);
+            window.addEventListener("resize", () => {
+                if (this.activitySankeyChart) {
+                    this.activitySankeyChart.resize();
+                }
+            });
+        }
+
+        const sankeyData = this.state.stats.activity_sankey_data || {nodes: [], links: []};
+
+        const option = {
+            title: {
+                text: "การไหลของงบประมาณตามกิจกรรม (ด้าน → แผนงาน → กิจกรรม)",
+                left: "center",
+                top: 0,
+                textStyle: {
+                    fontSize: 18,
+                    fontWeight: "bold",
+                    color: "#3c3c41",
+                },
+            },
+            tooltip: {
+                trigger: "item",
+                triggerOn: "mousemove",
+                formatter: (params) => {
+                    if (params.dataType === "edge") {
+                        const value = this.formatCurrency(params.value);
+                        return `${params.data.source}<br/>→ ${params.data.target}<br/>งบประมาณ: ${value} บาท`;
+                    }
+                    return params.name;
+                },
+            },
+            series: [
+                {
+                    type: "sankey",
+                    data: sankeyData.nodes,
+                    links: sankeyData.links,
+                    emphasis: {focus: "adjacency"},
+                    lineStyle: {
+                        color: "gradient",
+                        curveness: 0.5,
+                    },
+                    label: {
+                        fontSize: 10,
+                        formatter: (params) => {
+                            // Remove prefix for cleaner display
+                            return params.name.replace(/^(ด้าน|แผนงาน|กิจกรรม): /, "");
+                        },
+                    },
+                    nodeWidth: 20,
+                    nodeGap: 10,
+                    layoutIterations: 32,
+                    top: 50,
+                    bottom: 20,
+                },
+            ],
+        };
+
+        this.activitySankeyChart.setOption(option, true);
+    }
+
     _disposeCharts() {
         if (this.chart) {
             this.chart.dispose();
@@ -1261,6 +1335,10 @@ export class BudgetAppropriationDashboard extends Component {
         if (this.stackedBarChart) {
             this.stackedBarChart.dispose();
             this.stackedBarChart = null;
+        }
+        if (this.activitySankeyChart) {
+            this.activitySankeyChart.dispose();
+            this.activitySankeyChart = null;
         }
     }
 
@@ -1338,6 +1416,7 @@ export class BudgetAppropriationDashboard extends Component {
                 this._updateFundPieChart();
                 this._updateAccountTypePieChart();
                 this._updateStackedBarChart();
+                this._updateActivitySankeyChart();
             }
             // "table" tab doesn't need chart initialization
         }, 100);
