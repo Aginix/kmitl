@@ -36,7 +36,7 @@
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_tree" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='department_id']" position="after">
+            <xpath expr="//field[@name='name']" position="before">
                 <field name="main_sarabun_document_id" optional="show" />
             </xpath>
         </field>
