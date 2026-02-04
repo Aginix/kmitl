@@ -121,7 +121,7 @@ class AccountAssetBatch(models.Model):
     def create(self, vals_list):
         records = super().create(vals_list)
         for record in records:
-            if record.purchase_id and not record.source_of_asset:
+            if record.purchase_id:
                 record.source_of_asset = 'procurement'
         return records
 
