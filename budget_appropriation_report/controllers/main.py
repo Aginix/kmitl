@@ -921,9 +921,9 @@ class BudgetAppropriationDashboardController(http.Controller):
         return {"nodes": nodes, "links": links_list}
 
     def _build_activity_account_table(self, expense_lines):
-        """Build table: Activity (ด้าน/แผนงาน, 2 levels) × Account Type (root).
+        """Build table: Activity (up to 4 levels) × Account Type (root).
 
-        Data is collected from deepest level and summed up, but only 2 levels displayed.
+        Data is collected from deepest level and summed up, displaying up to 4 levels.
         """
         # Step 1: Collect leaf data and all ancestors
         leaf_data = {}  # {(activity_id, account_root_id): amount}
@@ -981,16 +981,39 @@ class BudgetAppropriationDashboardController(http.Controller):
                 current = current.parent_id
             activity_levels[act_id] = level
 
-        # Step 4: Build rows - only level 0 and level 1
+        # Step 4: Build rows - up to 4 levels (0, 1, 2, 3)
         rows = []
         col_list = sorted(account_roots.items(), key=lambda x: x[1])
         columns = [{"id": id, "name": name} for id, name in col_list]
 
-        # Get level 0 and level 1 activities
-        level0_acts = {k: v for k, v in all_activities.items() if activity_levels[k] == 0}
-        level1_acts = {k: v for k, v in all_activities.items() if activity_levels[k] == 1}
+        # Group activities by level
+        activities_by_level = {i: {} for i in range(4)}
+        for act_id, activity in all_activities.items():
+            lvl = activity_levels[act_id]
+            if lvl < 4:
+                activities_by_level[lvl][act_id] = activity
 
-        for act_id, activity in sorted(level0_acts.items(), key=lambda x: x[1].name):
+        def add_children(parent_id, current_level):
+            """Recursively add children up to level 3."""
+            if current_level > 3:
+                return
+            children = activities_by_level.get(current_level, {})
+            for child_id, child_act in sorted(children.items(), key=lambda x: x[1].name):
+                if child_act.parent_id and child_act.parent_id.id == parent_id:
+                    child_data = {acc_id: aggregated.get((child_id, acc_id), 0) for acc_id, _ in col_list}
+                    child_total = sum(child_data.values())
+                    if child_total > 0:
+                        rows.append({
+                            "id": child_id,
+                            "name": child_act.name,
+                            "level": current_level,
+                            "data": child_data,
+                            "total": child_total,
+                        })
+                        add_children(child_id, current_level + 1)
+
+        # Start with level 0
+        for act_id, activity in sorted(activities_by_level[0].items(), key=lambda x: x[1].name):
             row_data = {acc_id: aggregated.get((act_id, acc_id), 0) for acc_id, _ in col_list}
             row_total = sum(row_data.values())
 
@@ -1002,27 +1025,14 @@ class BudgetAppropriationDashboardController(http.Controller):
                     "data": row_data,
                     "total": row_total,
                 })
-
-                # Level 1 children
-                for child_id, child_act in sorted(level1_acts.items(), key=lambda x: x[1].name):
-                    if child_act.parent_id and child_act.parent_id.id == act_id:
-                        child_data = {acc_id: aggregated.get((child_id, acc_id), 0) for acc_id, _ in col_list}
-                        child_total = sum(child_data.values())
-                        if child_total > 0:
-                            rows.append({
-                                "id": child_id,
-                                "name": child_act.name,
-                                "level": 1,
-                                "data": child_data,
-                                "total": child_total,
-                            })
+                add_children(act_id, 1)
 
         return {"columns": columns, "rows": rows}
 
     def _build_activity_fund_table(self, expense_lines):
-        """Build table: Activity (ด้าน/แผนงาน, 2 levels) × Fund.
+        """Build table: Activity (up to 4 levels) × Fund.
 
-        Data is collected from deepest level and summed up, but only 2 levels displayed.
+        Data is collected from deepest level and summed up, displaying up to 4 levels.
         """
         # Step 1: Collect leaf data and all ancestors
         leaf_data = {}  # {(activity_id, fund_id): amount}
@@ -1075,17 +1085,40 @@ class BudgetAppropriationDashboardController(http.Controller):
                 current = current.parent_id
             activity_levels[act_id] = level
 
-        # Step 4: Build rows - only level 0 and level 1
+        # Step 4: Build rows - up to 4 levels (0, 1, 2, 3)
         rows = []
         col_list = sorted(funds.items(), key=lambda x: x[1])
         columns = [{"id": id, "name": name} for id, name in col_list]
 
-        # Get level 0 and level 1 activities
-        level0_acts = {k: v for k, v in all_activities.items() if activity_levels[k] == 0}
-        level1_acts = {k: v for k, v in all_activities.items() if activity_levels[k] == 1}
+        # Group activities by level
+        activities_by_level = {i: {} for i in range(4)}
+        for act_id, activity in all_activities.items():
+            lvl = activity_levels[act_id]
+            if lvl < 4:
+                activities_by_level[lvl][act_id] = activity
 
-        for act_id, activity in sorted(level0_acts.items(), key=lambda x: x[1].name):
-            row_data = {fund_id: aggregated.get((act_id, fund_id), 0) for fund_id, _ in col_list}
+        def add_children(parent_id, current_level):
+            """Recursively add children up to level 3."""
+            if current_level > 3:
+                return
+            children = activities_by_level.get(current_level, {})
+            for child_id, child_act in sorted(children.items(), key=lambda x: x[1].name):
+                if child_act.parent_id and child_act.parent_id.id == parent_id:
+                    child_data = {fid: aggregated.get((child_id, fid), 0) for fid, _ in col_list}
+                    child_total = sum(child_data.values())
+                    if child_total > 0:
+                        rows.append({
+                            "id": child_id,
+                            "name": child_act.name,
+                            "level": current_level,
+                            "data": child_data,
+                            "total": child_total,
+                        })
+                        add_children(child_id, current_level + 1)
+
+        # Start with level 0
+        for act_id, activity in sorted(activities_by_level[0].items(), key=lambda x: x[1].name):
+            row_data = {fid: aggregated.get((act_id, fid), 0) for fid, _ in col_list}
             row_total = sum(row_data.values())
 
             if row_total > 0:
@@ -1096,20 +1129,7 @@ class BudgetAppropriationDashboardController(http.Controller):
                     "data": row_data,
                     "total": row_total,
                 })
-
-                # Level 1 children
-                for child_id, child_act in sorted(level1_acts.items(), key=lambda x: x[1].name):
-                    if child_act.parent_id and child_act.parent_id.id == act_id:
-                        child_data = {fund_id: aggregated.get((child_id, fund_id), 0) for fund_id, _ in col_list}
-                        child_total = sum(child_data.values())
-                        if child_total > 0:
-                            rows.append({
-                                "id": child_id,
-                                "name": child_act.name,
-                                "level": 1,
-                                "data": child_data,
-                                "total": child_total,
-                            })
+                add_children(act_id, 1)
 
         return {"columns": columns, "rows": rows}
 
