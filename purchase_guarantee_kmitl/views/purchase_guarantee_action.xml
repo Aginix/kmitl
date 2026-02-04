@@ -3,7 +3,7 @@
         <field name="name">หลักประกันข้อเสนอ</field>
         <field name="res_model">purchase.guarantee</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('guarantee_method_id', '=', ref('l10n_th_gov_purchase_guarantee.bid_guarantee'))]</field>
+        <field name="domain" eval="[('guarantee_method_id', '=', ref('l10n_th_gov_purchase_guarantee.bid_guarantee'))]"/>
         <field name="context">{}</field>
     </record>
 
@@ -11,7 +11,7 @@
         <field name="name">หลักประกันสัญญา</field>
         <field name="res_model">purchase.guarantee</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('guarantee_method_id', '=', ref('l10n_th_gov_purchase_guarantee.advance_payment_guarantee'))]</field>
+        <field name="domain" eval="[('guarantee_method_id', '=', ref('l10n_th_gov_purchase_guarantee.advance_payment_guarantee'))]"/>
         <field name="context">{}</field>
     </record>
 </odoo>
