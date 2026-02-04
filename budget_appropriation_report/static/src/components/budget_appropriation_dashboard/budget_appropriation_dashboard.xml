@@ -7,24 +7,42 @@
                     <div class="d-flex flex-wrap gap-3 align-items-center">
                         <div>
                             <label class="form-label-sm mb-1">ปีงบประมาณ:</label>
-                            <div class="o_mobile_search_filter o_search_options">
-                                <select
-                                    class="form-select form-select-sm"
-                                    t-on-change="onFiscalYearChange"
+                            <select
+                                class="form-select form-select-sm"
+                                t-on-change="onFiscalYearChange"
+                            >
+                                <t
+                                    t-foreach="state.filterOptions.fiscal_years"
+                                    t-as="fy"
+                                    t-key="fy.id"
                                 >
-                                    <t
-                                        t-foreach="state.filterOptions.fiscal_years"
-                                        t-as="fy"
-                                        t-key="fy.id"
-                                    >
-                                        <option
-                                            t-att-value="fy.id"
-                                            t-att-selected="isFiscalYearSelected(fy.id)"
-                                            t-esc="fy.name"
-                                        />
-                                    </t>
-                                </select>
-                            </div>
+                                    <option
+                                        t-att-value="fy.id"
+                                        t-att-selected="isFiscalYearSelected(fy.id)"
+                                        t-esc="fy.name"
+                                    />
+                                </t>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label-sm mb-1">แหล่งเงิน:</label>
+                            <select
+                                class="form-select form-select-sm"
+                                t-on-change="onSourceChange"
+                            >
+                                <option value="">ทั้งหมด</option>
+                                <t
+                                    t-foreach="state.filterOptions.sources"
+                                    t-as="src"
+                                    t-key="src.id"
+                                >
+                                    <option
+                                        t-att-value="src.id"
+                                        t-att-selected="isSourceSelected(src.id)"
+                                        t-esc="src.name"
+                                    />
+                                </t>
+                            </select>
                         </div>
                     </div>
                 </t>
@@ -35,10 +53,56 @@
                         <span class="visually-hidden">Loading...</span>
                     </div>
                 </div>
-                <div t-else="" class="budget_appropriation_dashboard_content p-3">
-                    <div class="text-center text-muted p-5">
-                        <h4>Dashboard การจัดสรรงบประมาณ</h4>
-                        <p>ปีงบประมาณ: <t t-esc="selectedFiscalYear"/></p>
+                <div t-else="" class="budget_appropriation_dashboard_content p-4">
+                    <!-- Statistics Cards -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body text-center py-4">
+                                    <div class="text-muted small mb-2">จำนวนหน่วยงาน</div>
+                                    <div class="display-5 fw-semibold text-primary">
+                                        <t t-esc="state.stats.department_count"/>
+                                    </div>
+                                    <div class="text-muted small mt-1">หน่วยงาน</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body text-center py-4">
+                                    <div class="text-muted small mb-2">ประมาณการรายรับ</div>
+                                    <div class="h3 fw-semibold text-success mb-0">
+                                        <t t-esc="formatCurrency(state.stats.total_revenue)"/>
+                                    </div>
+                                    <div class="text-muted small mt-1">บาท</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body text-center py-4">
+                                    <div class="text-muted small mb-2">ประมาณการรายจ่าย</div>
+                                    <div class="h3 fw-semibold text-danger mb-0">
+                                        <t t-esc="formatCurrency(state.stats.total_expense)"/>
+                                    </div>
+                                    <div class="text-muted small mt-1">บาท</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pie Chart -->
+                    <div class="row">
+                        <div class="col-md-6 mx-auto">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="card-title text-center text-muted mb-3">
+                                        สัดส่วนรายรับ-รายจ่าย
+                                    </h6>
+                                    <div id="budgetPieChart" style="height: 300px;"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

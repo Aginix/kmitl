@@ -10,15 +10,22 @@ class BudgetAppropriationDashboardController(http.Controller):
         type="json",
         auth="user",
     )
-    def get_dashboard_data(self, fiscal_year_id=None, **kw):
+    def get_dashboard_data(self, fiscal_year_id=None, source_id=None, **kw):
         """Get dashboard data for budget appropriation."""
         # Get fiscal years for filter options
-        fiscal_years = (
-            request.env["account.fiscal.year"]
-            .search([], order="date_from desc")
+        fiscal_years = request.env["account.fiscal.year"].search(
+            [], order="date_from desc"
         )
         fiscal_year_options = [
             {"id": fy.id, "name": fy.name} for fy in fiscal_years
+        ]
+
+        # Get sources for filter options
+        sources = request.env["account.analytic.account"].search(
+            [("root_plan_id.code", "=", "sources")], order="code"
+        )
+        source_options = [
+            {"id": src.id, "name": src.name, "code": src.code} for src in sources
         ]
 
         # Determine selected fiscal year
@@ -31,15 +38,59 @@ class BudgetAppropriationDashboardController(http.Controller):
             if fy.exists():
                 fiscal_year = {"id": fy.id, "name": fy.name}
 
+        # Get dashboard statistics from budget.appropriation.report
+        stats = self._get_dashboard_stats(fiscal_year_id, source_id)
+
         return {
             "filter_options": {
                 "fiscal_years": fiscal_year_options,
+                "sources": source_options,
             },
             "filters": {
                 "fiscal_year_id": fiscal_year_id,
+                "source_id": source_id,
             },
             "fiscal_year": fiscal_year,
-            "data": {},
+            "stats": stats,
+        }
+
+    def _get_dashboard_stats(self, fiscal_year_id, source_id):
+        """Calculate dashboard statistics from budget.appropriation.report."""
+        domain = []
+        if fiscal_year_id:
+            domain.append(("account_fiscal_year_id", "=", fiscal_year_id))
+        if source_id:
+            domain.append(("source_analytic_id", "=", source_id))
+
+        reports = request.env["budget.appropriation.report"].search(domain)
+
+        # Collect all appropriations from reports
+        all_revenue_appropriations = reports.mapped("revenue_appropriation_ids")
+        all_expense_appropriations = reports.mapped("expense_appropriation_ids")
+
+        # Calculate totals
+        total_revenue = sum(all_revenue_appropriations.mapped("amount_total"))
+        total_expense = sum(all_expense_appropriations.mapped("amount_total"))
+
+        # Count distinct departments
+        revenue_departments = all_revenue_appropriations.mapped(
+            "department_analytic_id"
+        )
+        expense_departments = all_expense_appropriations.mapped(
+            "department_analytic_id"
+        )
+        all_departments = revenue_departments | expense_departments
+        department_count = len(all_departments)
+
+        return {
+            "report_count": len(reports),
+            "department_count": department_count,
+            "total_revenue": total_revenue,
+            "total_expense": total_expense,
+            "pie_chart": [
+                {"name": "รายรับ", "value": total_revenue},
+                {"name": "รายจ่าย", "value": total_expense},
+            ],
         }
 
 

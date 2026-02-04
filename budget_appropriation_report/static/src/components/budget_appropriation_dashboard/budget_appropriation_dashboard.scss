@@ -1,5 +1,21 @@
 .budget_appropriation_dashboard {
+    background-color: #f8f9fa;
+
     .budget_appropriation_dashboard_content {
         min-height: 400px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .card {
+        transition: box-shadow 0.2s ease;
+
+        &:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+        }
+    }
+
+    .display-5 {
+        font-size: 2.5rem;
     }
 }
