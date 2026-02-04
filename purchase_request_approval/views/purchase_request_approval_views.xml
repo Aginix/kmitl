@@ -14,14 +14,14 @@
                 edit="0"
                 delete="0"
             >
-            <field name="main_sarabun_document_id" optional="show"/>
+            <field name="name" optional="show"/>
             <field name="title" optional="show"/>
             <field name="date_start" widget="date" optional="show"/>
             <field name="approval_date" widget="date" optional="show"/>
             <field name="estimated_cost" optional="show"/>
             <field name="procurement_type_id" optional="show"/>
             <field name="procurement_method_id" optional="show"/>
-            <field name="request_id" optional="show"/>
+            <field name="main_sarabun_document_id" optional="show"/>
 
             <field name="activity_ids" widget="list_activity" optional="hide" />
             <field
