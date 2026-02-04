@@ -1153,9 +1153,20 @@ export class BudgetAppropriationDashboard extends Component {
                     return result;
                 },
             },
+            title: {
+                text: "สัดส่วนการจัดสรรงบประมาณรายหน่วยงาน x ประเภทงบ",
+                left: "center",
+                top: 0,
+                textStyle: {
+                    fontSize: 18,
+                    fontWeight: "bold",
+                    color: "#3c3c41",
+                },
+            },
             legend: {
-                top: "top",
-                type: "scroll",
+                orient: 'horizontal',
+                top: 40,
+                left: 'center',
             },
             grid: {
                 left: "20%",

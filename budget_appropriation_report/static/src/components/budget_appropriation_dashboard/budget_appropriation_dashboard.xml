@@ -525,7 +525,7 @@
                             <div class="row g-3 mb-3">
                                 <!-- Total Expense -->
                                 <div class="col-lg-3">
-                                    <div class="card h-100 border-0 shadow-sm" style="background: #1a237e;">
+                                    <!-- <div class="card h-100 border-0 shadow-sm" style="background: #1a237e;">
                                         <div class="card-body text-center py-4 text-white d-flex flex-column justify-content-center">
                                             <div class="small mb-1" style="color: rgba(255,255,255,0.8);">งบประมาณรายจ่ายรวม</div>
                                             <div class="h3 fw-bold mb-1">
@@ -533,13 +533,22 @@
                                             </div>
                                             <div class="small" style="color: rgba(255,255,255,0.7);">บาท</div>
                                         </div>
+                                    </div> -->
+                                    <div class="card h-100 border-0 shadow-sm border-start border-danger border-4">
+                                        <div class="card-body text-center py-5">
+                                            <div class="text-muted mb-2">ประมาณการรายจ่ายรวม</div>
+                                            <div class="display-4 fw-semibold text-danger mb-2">
+                                                <t t-esc="formatCurrency(state.stats.total_expense)"/>
+                                            </div>
+                                            <div class="text-muted">บาท</div>
+                                        </div>
                                     </div>
                                 </div>
                                 <!-- Fund Pie Chart -->
                                 <div class="col-lg-3">
                                     <div class="card border-0 shadow-sm h-100">
                                         <div class="card-body py-2">
-                                            <div id="fundPieChart" style="height: 360px;"></div>
+                                            <div id="fundPieChart" style="height: 312px;"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -547,7 +556,7 @@
                                 <div class="col-lg-3">
                                     <div class="card border-0 shadow-sm h-100">
                                         <div class="card-body py-2">
-                                            <div id="accountTypePieChart" style="height: 360px;"></div>
+                                            <div id="accountTypePieChart" style="height: 312px;"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -555,13 +564,10 @@
 
                             <!-- Row 2: Stacked Bar - Department × Account Type -->
                             <div class="row g-3">
-                                <div class="col-12">
+                                <div class="col-lg-5">
                                     <div class="card border-0 shadow-sm">
                                         <div class="card-body py-2">
-                                            <div class="small text-center text-muted mb-2">
-                                                สัดส่วนการจัดสรรงบประมาณรายหน่วยงาน × ประเภทงบ
-                                            </div>
-                                            <div id="stackedBarChart" style="height: calc(100vh - 380px); min-height: 350px;"></div>
+                                            <div id="stackedBarChart" style="height: 412px;"></div>
                                         </div>
                                     </div>
                                 </div>
