@@ -29,3 +29,12 @@ class BudgetTransfer(models.Model):
                 rec.operating_unit_id = rec.department_id.operating_unit_id.id
             else:
                 rec.operating_unit_id = False
+
+    can_edit_operating_unit = fields.Boolean(
+        compute="_compute_can_edit_operating_unit",
+    )
+
+    def _compute_can_edit_operating_unit(self):
+        user_ou_count = len(self.env.user.operating_unit_ids)
+        for rec in self:
+            rec.can_edit_operating_unit = user_ou_count > 1

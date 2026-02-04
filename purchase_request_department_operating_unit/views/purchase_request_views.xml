@@ -19,10 +19,23 @@
         <field name="inherit_id" ref="purchase_request_kmitl.view_purchase_request_form"/>
         <field name="arch" type="xml">
             <xpath expr="//page[@name='logs']/group" position="inside">
-              <field name="operating_unit_id" widget="selection" groups="operating_unit.group_multi_operating_unit" attrs="{'readonly': [('is_editable','=', False)]}"/>
+              <field name="can_edit_operating_unit" invisible="1"/>
+              <field name="operating_unit_id" widget="selection" groups="operating_unit.group_multi_operating_unit"
+                     attrs="{'readonly': ['|', ('is_editable','=', False), ('can_edit_operating_unit', '=', False)]}"/>
             </xpath>
         </field>
     </record>
 
+    <!-- Add domain filter to department_id field -->
+    <record id="view_purchase_request_department_ou_form" model="ir.ui.view">
+        <field name="name">view.purchase.request.department.ou.form</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request_ux_kmitl.view_purchase_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='department_id']" position="attributes">
+                <attribute name="domain">['|', ('operating_unit_id', '=', False), ('operating_unit_id', '=', operating_unit_id)]</attribute>
+            </xpath>
+        </field>
+    </record>
 
   </odoo>
