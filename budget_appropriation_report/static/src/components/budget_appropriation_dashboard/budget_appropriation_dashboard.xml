@@ -117,6 +117,20 @@
                                 ประเภทงบ
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a t-attf-class="nav-link #{isTabActive('sunburst') ? 'active' : ''}"
+                               href="#"
+                               t-on-click.prevent="() => this.onTabChange('sunburst')">
+                                Sunburst
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a t-attf-class="nav-link #{isTabActive('sankey') ? 'active' : ''}"
+                               href="#"
+                               t-on-click.prevent="() => this.onTabChange('sankey')">
+                                Sankey
+                            </a>
+                        </li>
                     </ul>
 
                     <!-- Tab Content -->
@@ -391,6 +405,36 @@
                                         </small>
                                     </h6>
                                     <div id="budgetAccountOnlyTreeMap" style="height: 75vh;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sunburst Tab -->
+                        <div t-if="isTabActive('sunburst')" class="tab-pane active">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="card-title text-center text-muted mb-3">
+                                        งบประมาณรายจ่าย: กองทุน → หน่วยงาน → ประเภทงบ
+                                        <small class="d-block mt-1 text-secondary" style="font-size: 0.75rem;">
+                                            (แสดงลำดับชั้นแบบ Sunburst)
+                                        </small>
+                                    </h6>
+                                    <div id="sunburstChart" style="height: 75vh;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sankey Tab -->
+                        <div t-if="isTabActive('sankey')" class="tab-pane active">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="card-title text-center text-muted mb-3">
+                                        การไหลของงบประมาณ: กองทุน → หน่วยงาน → ประเภทงบ
+                                        <small class="d-block mt-1 text-secondary" style="font-size: 0.75rem;">
+                                            (แสดง Top 100 รายการที่มีมูลค่าสูงสุด)
+                                        </small>
+                                    </h6>
+                                    <div id="sankeyChart" style="height: 75vh;"></div>
                                 </div>
                             </div>
                         </div>

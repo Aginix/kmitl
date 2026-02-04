@@ -149,6 +149,12 @@ class BudgetAppropriationDashboardController(http.Controller):
             all_expense_lines, "fund_analytic_id"
         )
 
+        # Build sunburst data: Fund → Department → Budget Account
+        sunburst_data = self._build_sunburst_data(all_expense_lines)
+
+        # Build sankey data: Fund → Department → Budget Account
+        sankey_data = self._build_sankey_data(all_expense_lines)
+
         return {
             "report_count": len(reports),
             "department_count": department_count,
@@ -166,6 +172,8 @@ class BudgetAppropriationDashboardController(http.Controller):
             "account_only_treemap": account_only_treemap,
             "activity_treemap": activity_treemap,
             "fund_treemap": fund_treemap,
+            "sunburst_data": sunburst_data,
+            "sankey_data": sankey_data,
         }
 
     def _build_department_account_treemap(self, expense_appropriations):
@@ -467,6 +475,133 @@ class BudgetAppropriationDashboardController(http.Controller):
             convert_children(root)
 
         return sorted(roots, key=lambda x: x["value"], reverse=True)
+
+    def _build_sunburst_data(self, expense_lines):
+        """Build sunburst data: Fund → Department → Budget Account (flat, 3 levels)."""
+        # Group by Fund → Department → Account
+        fund_data = {}
+
+        for line in expense_lines:
+            fund = line.fund_analytic_id
+            dept = line.department_analytic_id
+            account = line.account_id
+            amount = line.balance or 0
+
+            if not fund or not dept or not account:
+                continue
+
+            fund_key = fund.id
+            if fund_key not in fund_data:
+                fund_data[fund_key] = {
+                    "name": fund.name,
+                    "departments": {},
+                }
+
+            dept_key = dept.id
+            if dept_key not in fund_data[fund_key]["departments"]:
+                fund_data[fund_key]["departments"][dept_key] = {
+                    "name": dept.name,
+                    "accounts": {},
+                }
+
+            acc_key = account.id
+            if acc_key not in fund_data[fund_key]["departments"][dept_key]["accounts"]:
+                fund_data[fund_key]["departments"][dept_key]["accounts"][acc_key] = {
+                    "name": account.display_name,
+                    "value": 0,
+                }
+            fund_data[fund_key]["departments"][dept_key]["accounts"][acc_key]["value"] += amount
+
+        # Convert to sunburst format
+        result = []
+        for fund_id, fund_info in fund_data.items():
+            fund_node = {
+                "name": fund_info["name"],
+                "children": [],
+            }
+            for dept_id, dept_info in fund_info["departments"].items():
+                dept_node = {
+                    "name": dept_info["name"],
+                    "children": [],
+                }
+                for acc_id, acc_info in dept_info["accounts"].items():
+                    dept_node["children"].append({
+                        "name": acc_info["name"],
+                        "value": acc_info["value"],
+                    })
+                # Sort accounts by value
+                dept_node["children"].sort(key=lambda x: x["value"], reverse=True)
+                fund_node["children"].append(dept_node)
+            # Sort departments by total value
+            fund_node["children"].sort(
+                key=lambda x: sum(c["value"] for c in x["children"]), reverse=True
+            )
+            result.append(fund_node)
+
+        # Sort funds by total value
+        result.sort(
+            key=lambda x: sum(
+                sum(c["value"] for c in d["children"]) for d in x["children"]
+            ),
+            reverse=True,
+        )
+        return result
+
+    def _build_sankey_data(self, expense_lines):
+        """Build sankey data: Fund → Department → Budget Account."""
+        nodes_set = set()
+        links = {}
+
+        for line in expense_lines:
+            fund = line.fund_analytic_id
+            dept = line.department_analytic_id
+            account = line.account_id
+            amount = line.balance or 0
+
+            if not fund or not dept or not account:
+                continue
+
+            # Use prefixes to ensure unique node names
+            fund_name = f"กองทุน: {fund.name}"
+            dept_name = f"หน่วยงาน: {dept.name}"
+            acc_name = account.display_name
+
+            nodes_set.add(fund_name)
+            nodes_set.add(dept_name)
+            nodes_set.add(acc_name)
+
+            # Fund → Department link
+            link_key_1 = (fund_name, dept_name)
+            if link_key_1 not in links:
+                links[link_key_1] = 0
+            links[link_key_1] += amount
+
+            # Department → Account link
+            link_key_2 = (dept_name, acc_name)
+            if link_key_2 not in links:
+                links[link_key_2] = 0
+            links[link_key_2] += amount
+
+        # Convert to sankey format
+        nodes = [{"name": name} for name in sorted(nodes_set)]
+        links_list = [
+            {"source": src, "target": tgt, "value": val}
+            for (src, tgt), val in links.items()
+            if val > 0
+        ]
+
+        # Sort links by value descending and limit to top 50 for performance
+        links_list.sort(key=lambda x: x["value"], reverse=True)
+        links_list = links_list[:100]
+
+        # Filter nodes to only include those in links
+        used_nodes = set()
+        for link in links_list:
+            used_nodes.add(link["source"])
+            used_nodes.add(link["target"])
+        nodes = [n for n in nodes if n["name"] in used_nodes]
+
+        return {"nodes": nodes, "links": links_list}
 
 
 class BudgetAppropriationReportController(http.Controller):

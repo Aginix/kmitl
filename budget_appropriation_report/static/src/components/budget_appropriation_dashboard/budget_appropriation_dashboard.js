@@ -44,6 +44,8 @@ export class BudgetAppropriationDashboard extends Component {
         this.accountOnlyChart = null;
         this.activityTreemapChart = null;
         this.fundTreemapChart = null;
+        this.sunburstChart = null;
+        this.sankeyChart = null;
 
         onWillStart(async () => {
             await this._loadECharts();
@@ -93,6 +95,10 @@ export class BudgetAppropriationDashboard extends Component {
                 this._updateDeptAccountTreeMap();
             } else if (activeTab === "account-only") {
                 this._updateAccountOnlyTreeMap();
+            } else if (activeTab === "sunburst") {
+                this._updateSunburstChart();
+            } else if (activeTab === "sankey") {
+                this._updateSankeyChart();
             }
         }, 100);
     }
@@ -725,6 +731,138 @@ export class BudgetAppropriationDashboard extends Component {
         this.accountOnlyChart.setOption(option, true);
     }
 
+    _updateSunburstChart() {
+        if (typeof echarts === "undefined") {
+            return;
+        }
+
+        const chartDom = document.getElementById("sunburstChart");
+        if (!chartDom) {
+            return;
+        }
+
+        if (!this.sunburstChart) {
+            this.sunburstChart = echarts.init(chartDom);
+            window.addEventListener("resize", () => {
+                if (this.sunburstChart) {
+                    this.sunburstChart.resize();
+                }
+            });
+        }
+
+        const data = this.state.stats.sunburst_data || [];
+
+        const option = {
+            tooltip: {
+                formatter: (params) => {
+                    if (params.value) {
+                        const value = this.formatCurrency(params.value);
+                        return `${params.name}<br/>งบประมาณ: ${value} บาท`;
+                    }
+                    return params.name;
+                },
+            },
+            series: [
+                {
+                    type: "sunburst",
+                    data: data,
+                    radius: [60, "90%"],
+                    itemStyle: {
+                        borderRadius: 4,
+                        borderWidth: 2,
+                    },
+                    label: {
+                        rotate: "radial",
+                        fontSize: 10,
+                    },
+                    levels: [
+                        {},
+                        {
+                            r0: "15%",
+                            r: "45%",
+                            itemStyle: {borderWidth: 2},
+                            label: {rotate: "tangential", fontSize: 11},
+                        },
+                        {
+                            r0: "45%",
+                            r: "70%",
+                            label: {align: "right", fontSize: 9},
+                        },
+                        {
+                            r0: "70%",
+                            r: "90%",
+                            label: {
+                                position: "outside",
+                                padding: 3,
+                                silent: false,
+                                fontSize: 8,
+                            },
+                            itemStyle: {borderWidth: 1},
+                        },
+                    ],
+                },
+            ],
+        };
+
+        this.sunburstChart.setOption(option, true);
+    }
+
+    _updateSankeyChart() {
+        if (typeof echarts === "undefined") {
+            return;
+        }
+
+        const chartDom = document.getElementById("sankeyChart");
+        if (!chartDom) {
+            return;
+        }
+
+        if (!this.sankeyChart) {
+            this.sankeyChart = echarts.init(chartDom);
+            window.addEventListener("resize", () => {
+                if (this.sankeyChart) {
+                    this.sankeyChart.resize();
+                }
+            });
+        }
+
+        const sankeyData = this.state.stats.sankey_data || {nodes: [], links: []};
+
+        const option = {
+            tooltip: {
+                trigger: "item",
+                triggerOn: "mousemove",
+                formatter: (params) => {
+                    if (params.dataType === "edge") {
+                        const value = this.formatCurrency(params.value);
+                        return `${params.data.source} → ${params.data.target}<br/>งบประมาณ: ${value} บาท`;
+                    }
+                    return params.name;
+                },
+            },
+            series: [
+                {
+                    type: "sankey",
+                    data: sankeyData.nodes,
+                    links: sankeyData.links,
+                    emphasis: {focus: "adjacency"},
+                    lineStyle: {
+                        color: "gradient",
+                        curveness: 0.5,
+                    },
+                    label: {
+                        fontSize: 10,
+                    },
+                    nodeWidth: 20,
+                    nodeGap: 12,
+                    layoutIterations: 32,
+                },
+            ],
+        };
+
+        this.sankeyChart.setOption(option, true);
+    }
+
     _disposeCharts() {
         if (this.chart) {
             this.chart.dispose();
@@ -753,6 +891,14 @@ export class BudgetAppropriationDashboard extends Component {
         if (this.accountOnlyChart) {
             this.accountOnlyChart.dispose();
             this.accountOnlyChart = null;
+        }
+        if (this.sunburstChart) {
+            this.sunburstChart.dispose();
+            this.sunburstChart = null;
+        }
+        if (this.sankeyChart) {
+            this.sankeyChart.dispose();
+            this.sankeyChart = null;
         }
     }
 
@@ -820,6 +966,10 @@ export class BudgetAppropriationDashboard extends Component {
                 this._updateDeptAccountTreeMap();
             } else if (tabId === "account-only") {
                 this._updateAccountOnlyTreeMap();
+            } else if (tabId === "sunburst") {
+                this._updateSunburstChart();
+            } else if (tabId === "sankey") {
+                this._updateSankeyChart();
             }
         }, 100);
     }
