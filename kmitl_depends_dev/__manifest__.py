@@ -12,7 +12,7 @@
                 'account_asset_usability_kmitl', 'account_fiscal_year_all_user', 'account_fiscal_year_enhance',
                 'account_move_request', 'account_move_tier_validation_kmitl',
                 'account_payment_budget', 'analytic_operating_unit_tree', 'base_tier_validation_comment', 'budget_account_mass_edit',
-                'budget_analytic_account', 'budget_appropriation_department_operating_unit', 'budget_appropriation_department_require',
+                'budget_analytic_account', 'budget_appropriation_department_operating_unit',
                 'budget_appropriation_report', 'budget_appropriation_user_id_security', 'budget_department_operating_unit',
                 'budget_department_require', 'budget_operating_unit_access_all', 'budget_report', 'budget_user_id_security',
                 'hr_department_code_tracking', 'stock_picking_kmitl', 'stock_request_aginix_tier_validation', 'i18n_th_stock_inventory',
