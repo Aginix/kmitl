@@ -4,7 +4,7 @@
     <menuitem id="purchase.menu_purchase_root" name="Purchases" sequence="10" />
 
     <!-- Remove "Orders" menu -->
-    <record id="purchase.menu_purchase_order" model="ir.ui.menu">
+    <record id="purchase.menu_purchase_form_action" model="ir.ui.menu">
         <field name="active" eval="False"/>
     </record>
 
@@ -23,7 +23,7 @@
     <menuitem id="menu_purchase_contract_orders"
               name="รายการสัญญา/ใบสั่งซื้อ/จ้าง"
               parent="menu_purchase_contract_root"
-              action="purchase.purchase_order_action"
+              action="purchase.purchase_form_action"
               sequence="10"/>
 
     <!-- เมนูย่อย: การตรวจรับ (สมมุติว่าเป็นโมเดล work.acceptance) -->
