@@ -1391,7 +1391,7 @@ msgstr ""
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__main_sarabun_document_id
-msgid "Main Sarabun Document"
+msgid "Sarabun Document"
 msgstr "เลขที่บันทึกขอซื้อ/จ้าง"
 
 #. module: purchase_request_approval
