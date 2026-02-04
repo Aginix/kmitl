@@ -19,7 +19,6 @@
         "purchase_request_line_name_text",
         "purchase_request_payment_type",
         "purchase_request_responsible_user",
-        "purchase_request_title",
     ],
     "data": [
         "data/purchase_exception.xml",
