@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-04 05:00+0000\n"
-"PO-Revision-Date: 2026-02-04 05:00+0000\n"
+"POT-Creation-Date: 2026-02-04 05:53+0000\n"
+"PO-Revision-Date: 2026-02-04 05:53+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -19,11 +19,6 @@ msgstr ""
 #: model:ir.model.fields.selection,name:purchase_order_state_kmitl.selection__purchase_order__state__cancel
 msgid "Cancel"
 msgstr "ยกเลิกสัญญา"
-
-#. module: purchase_order_state_kmitl
-#: model:ir.model.fields.selection,name:purchase_order_state_kmitl.selection__purchase_order__state__done
-msgid "Locked"
-msgstr "ล็อก"
 
 #. module: purchase_order_state_kmitl
 #: model:ir.model.fields.selection,name:purchase_order_state_kmitl.selection__purchase_order__state__open
@@ -39,6 +34,11 @@ msgstr "คำสั่งซื้อ"
 #: model:ir.model.fields,field_description:purchase_order_state_kmitl.field_purchase_order__state
 msgid "Status"
 msgstr "สถานะ"
+
+#. module: purchase_order_state_kmitl
+#: model:ir.model.fields.selection,name:purchase_order_state_kmitl.selection__purchase_order__state__done
+msgid "done"
+msgstr "ปิดสัญญา"
 
 #. module: purchase_order_state_kmitl
 #: model:ir.model.fields.selection,name:purchase_order_state_kmitl.selection__purchase_order__state__draft
