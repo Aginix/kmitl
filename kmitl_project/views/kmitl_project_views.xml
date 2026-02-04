@@ -118,9 +118,9 @@
                             <group name="budget" string="งบประมาณ">
                                 <field name="budget_account_id" required="1"/>
                                 <field name="activity_analytic_id" required="1"/>
-                                <field name="fund_analytic_id" required="1"/>
+                                <field name="fund_analytic_id" required="1" widget="selection" />
                                 <field name="department_analytic_id" required="1"/>
-                                <field name="source_analytic_id" required="1"/>
+                                <field name="source_analytic_id" required="1" widget="selection" />
                                 <field name="analytic_account_id" invisible="1" />
                                 <field name="analytic_distribution" invisible="1" />
                             </group>
