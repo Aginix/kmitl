@@ -132,20 +132,6 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a t-attf-class="nav-link #{isTabActive('heatmap') ? 'active' : ''}"
-                               href="#"
-                               t-on-click.prevent="() => this.onTabChange('heatmap')">
-                                Heatmap
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a t-attf-class="nav-link #{isTabActive('table') ? 'active' : ''}"
-                               href="#"
-                               t-on-click.prevent="() => this.onTabChange('table')">
-                                ตารางข้อมูล
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a t-attf-class="nav-link #{isTabActive('executive') ? 'active' : ''}"
                                href="#"
                                t-on-click.prevent="() => this.onTabChange('executive')">
@@ -450,65 +436,6 @@
                                         </small>
                                     </h6>
                                     <div id="sankeyChart" style="height: 75vh;"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Heatmap Tab -->
-                        <div t-if="isTabActive('heatmap')" class="tab-pane active">
-                            <div class="card border-0 shadow-sm">
-                                <div class="card-body">
-                                    <h6 class="card-title text-center text-muted mb-3">
-                                        งบประมาณรายจ่าย: หน่วยงาน × ประเภทงบ (หมวดหลัก)
-                                        <small class="d-block mt-1 text-secondary" style="font-size: 0.75rem;">
-                                            (เปรียบเทียบมิติข้ามกัน)
-                                        </small>
-                                    </h6>
-                                    <div id="heatmapChart" style="height: 75vh;"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Table Tab -->
-                        <div t-if="isTabActive('table')" class="tab-pane active">
-                            <div class="card border-0 shadow-sm">
-                                <div class="card-body">
-                                    <h6 class="card-title text-center text-muted mb-3">
-                                        รายละเอียดงบประมาณรายจ่าย
-                                        <small class="d-block mt-1 text-secondary" style="font-size: 0.75rem;">
-                                            (เรียงตามจำนวนเงินจากมากไปน้อย)
-                                        </small>
-                                    </h6>
-                                    <div class="table-responsive" style="max-height: 70vh; overflow-y: auto;">
-                                        <table class="table table-sm table-striped table-hover">
-                                            <thead class="table-light sticky-top">
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>เลขที่รายการ</th>
-                                                    <th>หน่วยงาน</th>
-                                                    <th>กองทุน</th>
-                                                    <th>กิจกรรม</th>
-                                                    <th>หมวดงบ</th>
-                                                    <th>ประเภทงบ</th>
-                                                    <th class="text-end">จำนวนเงิน (บาท)</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <t t-foreach="state.stats.table_data || []" t-as="row" t-key="row.id">
-                                                    <tr>
-                                                        <td t-esc="row_index + 1"/>
-                                                        <td t-esc="row.appropriation_name"/>
-                                                        <td t-esc="row.department"/>
-                                                        <td t-esc="row.fund"/>
-                                                        <td t-esc="row.activity"/>
-                                                        <td t-esc="row.account_root"/>
-                                                        <td t-esc="row.account"/>
-                                                        <td class="text-end" t-esc="formatCurrency(row.amount)"/>
-                                                    </tr>
-                                                </t>
-                                            </tbody>
-                                        </table>
-                                    </div>
                                 </div>
                             </div>
                         </div>
