@@ -7,8 +7,8 @@
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
     'depends': ['purchase'],
-    'data': [
-
+    "data": [
+        "views/purchase_order_views.xml"
     ],
     'application': True,
     'installable': True,
