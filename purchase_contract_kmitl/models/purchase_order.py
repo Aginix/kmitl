@@ -168,6 +168,6 @@ class PurchaseOrder(models.Model):
         for rec in self:
             if rec.work_end:
                 days = (rec.work_end - today).days
-                rec.work_end_display = rec.work_end.strftime('%d-%m-%Y') + f"({days})"
+                rec.work_end_display = rec.work_end.strftime('%d/%m/%Y') + f"({days})"
             else:
                 rec.work_end_display = ''

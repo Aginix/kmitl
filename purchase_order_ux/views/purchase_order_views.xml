@@ -98,7 +98,7 @@
             </xpath>
 
             <xpath expr="//field[@name='amount_total']" position="before">
-                <field name="work_start" />
+                <field name="work_start" optional="show"/>
             </xpath>
 
             <xpath expr="//field[@name='name']" position="attributes">
