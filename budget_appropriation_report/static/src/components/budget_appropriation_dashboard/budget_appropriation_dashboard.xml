@@ -442,22 +442,22 @@
 
                         <!-- Executive Dashboard Tab -->
                         <div t-if="isTabActive('executive')" class="tab-pane active">
-                            <!-- Row 1: Total + Fund Pie (compact) -->
-                            <div class="row g-3 mb-3">
-                                <!-- Total Expense -->
-                                <div class="col-lg-3">
-                                    <div class="card h-100 border-0 shadow-sm border-start border-danger border-4">
-                                        <div class="card-body text-center py-5">
-                                            <div class="text-muted mb-2">ประมาณการรายจ่ายรวม</div>
-                                            <div class="display-4 fw-semibold text-danger mb-2">
+                            <!-- Row 1: Total + Fund Pie + Account Type Pie -->
+                            <div class="row g-3 mb-3 align-items-center">
+                                <!-- Total Expense - compact -->
+                                <div class="col-auto">
+                                    <div class="card border-0 shadow-sm border-start border-danger border-4">
+                                        <div class="card-body text-center py-3 px-4">
+                                            <div class="text-muted small mb-1">ประมาณการรายจ่ายรวม</div>
+                                            <div class="h4 fw-semibold text-danger mb-0">
                                                 <t t-esc="formatCurrency(state.stats.total_expense)"/>
                                             </div>
-                                            <div class="text-muted">บาท</div>
+                                            <div class="text-muted small">บาท</div>
                                         </div>
                                     </div>
                                 </div>
                                 <!-- Fund Pie Chart -->
-                                <div class="col-lg-3">
+                                <div class="col-lg-4">
                                     <div class="card border-0 shadow-sm h-100">
                                         <div class="card-body py-2">
                                             <div id="fundPieChart" style="height: 300px;"></div>
@@ -465,7 +465,7 @@
                                     </div>
                                 </div>
                                 <!-- Account Type Pie Chart -->
-                                <div class="col-lg-3">
+                                <div class="col-lg-4">
                                     <div class="card border-0 shadow-sm h-100">
                                         <div class="card-body py-2">
                                             <div id="accountTypePieChart" style="height: 300px;"></div>
