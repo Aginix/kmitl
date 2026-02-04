@@ -172,7 +172,7 @@
                     domain="[('state', '=', 'approved')]"
                 />
                 <separator />
-                <filter name="filter_by_fy" string="Fiscal Year" domain="[('fiscal_year_id', '!=', False)]"/>
+                <filter name="filter_by_fy" string="Fiscal Year" domain="[('account_fiscal_year_id', '!=', False)]"/>
                 <filter name="filter_by_dept" string="Department" domain="[('department_id', '!=', False)]"/>
                 <separator />
                 <filter
