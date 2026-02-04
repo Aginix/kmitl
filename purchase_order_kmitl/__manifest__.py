@@ -12,7 +12,6 @@
         "account_fiscal_year",
         "hr",
         "purchase_operating_unit",
-        "hr_department_operating_unit",
         "purchase_request_department",
     ],
     "data": ["views/purchase_order_views.xml"],
