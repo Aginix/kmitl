@@ -13,6 +13,7 @@
         "account_fiscal_year",
         "account_analytic_kmitl",
         "hr_department_short_name",
+        "hr_department_operating_unit",
         "purchase_request_kmitl",
         "purchase_request_exception",
         "purchase_request_vendor_kmitl",
@@ -23,6 +24,9 @@
         "purchase_request_price_tax_included",
         "purchase_request_approval_kmitl",
         "purchase_request_payment_type",
+        "operating_unit_kmitl",
+        "analytic_operating_unit",
+        "account_analytic_kmitl",
 
     ],
     "data": [
@@ -36,6 +40,7 @@
         "data/account.fiscal.year.csv",
         "data/ir_config_parameter.xml",
         "data/purchase.request.xml",
+        "data/account.analytic.account.xml"
     ],
     "post_init_hook": "post_init",
     "uninstall_hook": "uninstall_hook",

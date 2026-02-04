@@ -8,10 +8,11 @@
     "website": "https://github.com/aginix/kmitl",
     "depends": ["account", "l10n_th"],
     "data": [
-        "data/account_kmitl_chart_data.xml",
+        "data/account_chart.xml",
         "data/account.account.template.csv",
-        "data/account_kmitl_chart_post_data.xml",
-        # "data/account_tax_template_data.xml",
+        "data/account_chart_post.xml",
+        "data/account_tax_group.xml",
+        "data/account_tax_template.xml",
     ],
     "demo": [
         "demo/demo_company.xml",

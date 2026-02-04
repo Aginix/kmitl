@@ -6,7 +6,7 @@
     "category": "KMITL/Correspondence",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["mail", "hr", 'portal', 'thai_date_utils', 'l10n_th_fonts', 'l10n_th_amount_to_text', 'iframe_viewer_widget'],
+    "depends": ["mail", "hr", 'portal', 'thai_date_utils', 'l10n_th_fonts', 'l10n_th_amount_to_text', 'iframe_viewer_widget', 'bus'],
     "data": [
         # Security
         "security/security.xml",
@@ -14,6 +14,7 @@
         # Data
         "data/sarabun_sequence.xml",
         "data/sarabun_document_type.xml",
+        "data/sarabun_role.xml",
         "report/paperformat.xml",
         "report/report_sarabun.xml",
         # Wizard
@@ -33,6 +34,12 @@
     "assets": {
         'web.assets_frontend': [
             'agx_sarabun/static/src/js/sarabun_document_portal_sidebar.js',
+        ],
+        'web.assets_backend': [
+            'agx_sarabun/static/src/js/sarabun_notification_handler.esm.js',
+            'agx_sarabun/static/src/js/sarabun_systray.esm.js',
+            'agx_sarabun/static/src/scss/sarabun_systray.scss',
+            'agx_sarabun/static/src/xml/sarabun_systray.xml',
         ],
     },
     "application": True,
