@@ -389,6 +389,14 @@ class KmitlProject(models.Model):
             if self.department_id.operating_unit_id != self.operating_unit_id:
                 self.department_id = False
 
+    @api.onchange("department_id")
+    def _onchange_department_id(self):
+        """Clear user if they don't belong to the selected department"""
+        if self.user_id and self.department_id:
+            user_departments = self.user_id.employee_ids.mapped("department_id")
+            if user_departments and self.department_id not in user_departments:
+                self.user_id = False
+
     def button_cancel(self):
         self.write({"state": "cancel"})
 
