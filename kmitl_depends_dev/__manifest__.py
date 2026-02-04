@@ -10,7 +10,7 @@
                 'account_asset_kmitl', 'account_asset_number_kmitl', 'account_asset_operating_unit_access_all',
                 'account_asset_purchase', 'account_asset_subcomponent_kmitl', 'account_asset_tracking',
                 'account_asset_usability_kmitl', 'account_fiscal_year_all_user', 'account_fiscal_year_enhance',
-                'account_move_budget', 'account_move_request_auto_submit_move', 'account_move_request_budget',
+                'account_move_request_auto_submit_move', 'account_move_request_budget',
                 'account_move_request_exception', 'account_move_request_fiscal_year', 'account_move_tier_validation_kmitl',
                 'account_payment_budget', 'analytic_operating_unit_tree', 'base_tier_validation_comment', 'budget_account_mass_edit',
                 'budget_analytic_account', 'budget_appropriation_department_operating_unit', 'budget_appropriation_department_require',
