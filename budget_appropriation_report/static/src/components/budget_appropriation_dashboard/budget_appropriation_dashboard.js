@@ -49,14 +49,7 @@ export class BudgetAppropriationDashboard extends Component {
         });
 
         onWillUnmount(() => {
-            if (this.chart) {
-                this.chart.dispose();
-                this.chart = null;
-            }
-            if (this.treemapChart) {
-                this.treemapChart.dispose();
-                this.treemapChart = null;
-            }
+            this._disposeCharts();
         });
     }
 
@@ -218,7 +211,19 @@ export class BudgetAppropriationDashboard extends Component {
         this.treemapChart.setOption(option, true);
     }
 
+    _disposeCharts() {
+        if (this.chart) {
+            this.chart.dispose();
+            this.chart = null;
+        }
+        if (this.treemapChart) {
+            this.treemapChart.dispose();
+            this.treemapChart = null;
+        }
+    }
+
     async loadData() {
+        this._disposeCharts();
         this.state.loading = true;
         try {
             const response = await this.rpc("/budget_appropriation/dashboard/data", {
@@ -230,9 +235,6 @@ export class BudgetAppropriationDashboard extends Component {
             this.state.filters = response.filters;
             this.state.fiscalYear = response.fiscal_year;
             this.state.stats = response.stats;
-
-            this._updateChart();
-            this._updateTreeMap();
         } catch (error) {
             console.error("Error loading data:", error);
             this.notification.add("เกิดข้อผิดพลาดในการโหลดข้อมูล: " + error.message, {
@@ -240,6 +242,7 @@ export class BudgetAppropriationDashboard extends Component {
             });
         } finally {
             this.state.loading = false;
+            this._initCharts();
         }
     }
 
