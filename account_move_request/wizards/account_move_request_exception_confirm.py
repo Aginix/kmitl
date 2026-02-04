@@ -1,14 +1,17 @@
-# -*- coding: utf-8 -*-
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+# License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
+
+from odoo import fields, models
 
 
 class AccountMoveRequestExceptionConfirm(models.TransientModel):
-    _name = 'account.move.request.exception.confirm'
-    _description = "Account Move request exception wizard"
+    _name = "account.move.request.exception.confirm"
+    _description = "Account Move Request Exception Wizard"
     _inherit = ["exception.rule.confirm"]
 
-    related_model_id = fields.Many2one("account.move.request", "Account Move request")
+    related_model_id = fields.Many2one(
+        "account.move.request",
+        "Account Move Request",
+    )
 
     def action_confirm(self):
         self.ensure_one()
