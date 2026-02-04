@@ -382,6 +382,13 @@ class KmitlProject(models.Model):
         for line in self:
             line._update_analytic_distribution("project")
 
+    @api.onchange("operating_unit_id")
+    def _onchange_operating_unit_id(self):
+        """Clear department if it doesn't belong to the selected operating unit"""
+        if self.department_id and self.department_id.operating_unit_id:
+            if self.department_id.operating_unit_id != self.operating_unit_id:
+                self.department_id = False
+
     def button_cancel(self):
         self.write({"state": "cancel"})
 
