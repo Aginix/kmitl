@@ -921,10 +921,13 @@ class BudgetAppropriationDashboardController(http.Controller):
         return {"nodes": nodes, "links": links_list}
 
     def _build_activity_account_table(self, expense_lines):
-        """Build table: Activity (ด้าน/แผนงาน, 2 levels) × Account Type (root)."""
-        # Collect data: {activity_id: {account_root_id: amount}}
-        activity_account = {}
-        activities = {}  # {id: {name, level, parent_id}}
+        """Build table: Activity (ด้าน/แผนงาน, 2 levels) × Account Type (root).
+
+        Data is collected from deepest level and summed up, but only 2 levels displayed.
+        """
+        # Step 1: Collect leaf data and all ancestors
+        leaf_data = {}  # {(activity_id, account_root_id): amount}
+        all_activities = {}  # {id: activity record}
         account_roots = {}  # {id: name}
 
         for line in expense_lines:
@@ -940,94 +943,90 @@ class BudgetAppropriationDashboardController(http.Controller):
             while root_acc.parent_id:
                 root_acc = root_acc.parent_id
 
-            # Get activity level and collect ancestors up to level 1
+            acc_id = root_acc.id
+            if acc_id not in account_roots:
+                account_roots[acc_id] = root_acc.display_name
+
+            # Collect activity and all ancestors
+            current = activity
+            while current:
+                if current.id not in all_activities:
+                    all_activities[current.id] = current
+                current = current.parent_id
+
+            # Store leaf amount
+            key = (activity.id, acc_id)
+            if key not in leaf_data:
+                leaf_data[key] = 0
+            leaf_data[key] += amount
+
+        # Step 2: Aggregate from leaves up to all ancestors
+        aggregated = {}  # {(activity_id, account_id): amount}
+        for (act_id, acc_id), amount in leaf_data.items():
+            current = all_activities[act_id]
+            while current:
+                key = (current.id, acc_id)
+                if key not in aggregated:
+                    aggregated[key] = 0
+                aggregated[key] += amount
+                current = current.parent_id
+
+        # Step 3: Determine level for each activity
+        activity_levels = {}  # {id: level}
+        for act_id, activity in all_activities.items():
             level = 0
             current = activity
             while current.parent_id:
                 level += 1
                 current = current.parent_id
+            activity_levels[act_id] = level
 
-            # Only process if activity is level 0, 1, or deeper (we'll aggregate to level 1)
-            # Find the level 1 ancestor (or level 0 if no parent)
-            target_activity = activity
-            target_level = level
-            if level > 1:
-                # Go up to level 1
-                current = activity
-                current_level = level
-                while current_level > 1:
-                    current = current.parent_id
-                    current_level -= 1
-                target_activity = current
-                target_level = 1
-
-            act_id = target_activity.id
-            acc_id = root_acc.id
-
-            if act_id not in activities:
-                activities[act_id] = {
-                    "name": target_activity.name,
-                    "level": target_level,
-                    "parent_id": target_activity.parent_id.id if target_activity.parent_id else None,
-                }
-            if acc_id not in account_roots:
-                account_roots[acc_id] = root_acc.display_name
-
-            if act_id not in activity_account:
-                activity_account[act_id] = {}
-            if acc_id not in activity_account[act_id]:
-                activity_account[act_id][acc_id] = 0
-            activity_account[act_id][acc_id] += amount
-
-        # Build hierarchical rows (ด้าน with children แผนงาน)
+        # Step 4: Build rows - only level 0 and level 1
         rows = []
-        level0_acts = {k: v for k, v in activities.items() if v["level"] == 0}
-        level1_acts = {k: v for k, v in activities.items() if v["level"] == 1}
-
-        # Sort columns
         col_list = sorted(account_roots.items(), key=lambda x: x[1])
         columns = [{"id": id, "name": name} for id, name in col_list]
 
-        for act_id, act_info in sorted(level0_acts.items(), key=lambda x: x[1]["name"]):
-            # Level 0 row (ด้าน) - aggregate from children
-            row_data = {}
-            for acc_id, _ in col_list:
-                total = activity_account.get(act_id, {}).get(acc_id, 0)
-                # Add children amounts
-                for child_id, child_info in level1_acts.items():
-                    if child_info["parent_id"] == act_id:
-                        total += activity_account.get(child_id, {}).get(acc_id, 0)
-                row_data[acc_id] = total
+        # Get level 0 and level 1 activities
+        level0_acts = {k: v for k, v in all_activities.items() if activity_levels[k] == 0}
+        level1_acts = {k: v for k, v in all_activities.items() if activity_levels[k] == 1}
 
-            if sum(row_data.values()) > 0:
+        for act_id, activity in sorted(level0_acts.items(), key=lambda x: x[1].name):
+            row_data = {acc_id: aggregated.get((act_id, acc_id), 0) for acc_id, _ in col_list}
+            row_total = sum(row_data.values())
+
+            if row_total > 0:
                 rows.append({
                     "id": act_id,
-                    "name": act_info["name"],
+                    "name": activity.name,
                     "level": 0,
                     "data": row_data,
-                    "total": sum(row_data.values()),
+                    "total": row_total,
                 })
 
-                # Level 1 children (แผนงาน)
-                for child_id, child_info in sorted(level1_acts.items(), key=lambda x: x[1]["name"]):
-                    if child_info["parent_id"] == act_id:
-                        child_data = activity_account.get(child_id, {})
-                        if sum(child_data.values()) > 0:
+                # Level 1 children
+                for child_id, child_act in sorted(level1_acts.items(), key=lambda x: x[1].name):
+                    if child_act.parent_id and child_act.parent_id.id == act_id:
+                        child_data = {acc_id: aggregated.get((child_id, acc_id), 0) for acc_id, _ in col_list}
+                        child_total = sum(child_data.values())
+                        if child_total > 0:
                             rows.append({
                                 "id": child_id,
-                                "name": child_info["name"],
+                                "name": child_act.name,
                                 "level": 1,
-                                "data": {acc_id: child_data.get(acc_id, 0) for acc_id, _ in col_list},
-                                "total": sum(child_data.values()),
+                                "data": child_data,
+                                "total": child_total,
                             })
 
         return {"columns": columns, "rows": rows}
 
     def _build_activity_fund_table(self, expense_lines):
-        """Build table: Activity (ด้าน/แผนงาน, 2 levels) × Fund."""
-        # Collect data: {activity_id: {fund_id: amount}}
-        activity_fund = {}
-        activities = {}  # {id: {name, level, parent_id}}
+        """Build table: Activity (ด้าน/แผนงาน, 2 levels) × Fund.
+
+        Data is collected from deepest level and summed up, but only 2 levels displayed.
+        """
+        # Step 1: Collect leaf data and all ancestors
+        leaf_data = {}  # {(activity_id, fund_id): amount}
+        all_activities = {}  # {id: activity record}
         funds = {}  # {id: name}
 
         for line in expense_lines:
@@ -1037,80 +1036,79 @@ class BudgetAppropriationDashboardController(http.Controller):
                 continue
 
             amount = line.balance or 0
+            fund_id = fund.id
 
-            # Get activity level
+            if fund_id not in funds:
+                funds[fund_id] = fund.name
+
+            # Collect activity and all ancestors
+            current = activity
+            while current:
+                if current.id not in all_activities:
+                    all_activities[current.id] = current
+                current = current.parent_id
+
+            # Store leaf amount
+            key = (activity.id, fund_id)
+            if key not in leaf_data:
+                leaf_data[key] = 0
+            leaf_data[key] += amount
+
+        # Step 2: Aggregate from leaves up to all ancestors
+        aggregated = {}  # {(activity_id, fund_id): amount}
+        for (act_id, fund_id), amount in leaf_data.items():
+            current = all_activities[act_id]
+            while current:
+                key = (current.id, fund_id)
+                if key not in aggregated:
+                    aggregated[key] = 0
+                aggregated[key] += amount
+                current = current.parent_id
+
+        # Step 3: Determine level for each activity
+        activity_levels = {}  # {id: level}
+        for act_id, activity in all_activities.items():
             level = 0
             current = activity
             while current.parent_id:
                 level += 1
                 current = current.parent_id
+            activity_levels[act_id] = level
 
-            # Aggregate to level 1 max
-            target_activity = activity
-            target_level = level
-            if level > 1:
-                current = activity
-                current_level = level
-                while current_level > 1:
-                    current = current.parent_id
-                    current_level -= 1
-                target_activity = current
-                target_level = 1
-
-            act_id = target_activity.id
-            fund_id = fund.id
-
-            if act_id not in activities:
-                activities[act_id] = {
-                    "name": target_activity.name,
-                    "level": target_level,
-                    "parent_id": target_activity.parent_id.id if target_activity.parent_id else None,
-                }
-            if fund_id not in funds:
-                funds[fund_id] = fund.name
-
-            if act_id not in activity_fund:
-                activity_fund[act_id] = {}
-            if fund_id not in activity_fund[act_id]:
-                activity_fund[act_id][fund_id] = 0
-            activity_fund[act_id][fund_id] += amount
-
-        # Build hierarchical rows
+        # Step 4: Build rows - only level 0 and level 1
         rows = []
-        level0_acts = {k: v for k, v in activities.items() if v["level"] == 0}
-        level1_acts = {k: v for k, v in activities.items() if v["level"] == 1}
-
         col_list = sorted(funds.items(), key=lambda x: x[1])
         columns = [{"id": id, "name": name} for id, name in col_list]
 
-        for act_id, act_info in sorted(level0_acts.items(), key=lambda x: x[1]["name"]):
-            row_data = {}
-            for fund_id, _ in col_list:
-                total = activity_fund.get(act_id, {}).get(fund_id, 0)
-                for child_id, child_info in level1_acts.items():
-                    if child_info["parent_id"] == act_id:
-                        total += activity_fund.get(child_id, {}).get(fund_id, 0)
-                row_data[fund_id] = total
+        # Get level 0 and level 1 activities
+        level0_acts = {k: v for k, v in all_activities.items() if activity_levels[k] == 0}
+        level1_acts = {k: v for k, v in all_activities.items() if activity_levels[k] == 1}
 
-            if sum(row_data.values()) > 0:
+        for act_id, activity in sorted(level0_acts.items(), key=lambda x: x[1].name):
+            row_data = {fund_id: aggregated.get((act_id, fund_id), 0) for fund_id, _ in col_list}
+            row_total = sum(row_data.values())
+
+            if row_total > 0:
                 rows.append({
                     "id": act_id,
-                    "name": act_info["name"],
+                    "name": activity.name,
                     "level": 0,
                     "data": row_data,
-                    "total": sum(row_data.values()),
+                    "total": row_total,
                 })
 
-                for child_id, child_info in sorted(level1_acts.items(), key=lambda x: x[1]["name"]):
-                    if child_info["parent_id"] == act_id:
-                        child_data = activity_fund.get(child_id, {})
-                        if sum(child_data.values()) > 0:
+                # Level 1 children
+                for child_id, child_act in sorted(level1_acts.items(), key=lambda x: x[1].name):
+                    if child_act.parent_id and child_act.parent_id.id == act_id:
+                        child_data = {fund_id: aggregated.get((child_id, fund_id), 0) for fund_id, _ in col_list}
+                        child_total = sum(child_data.values())
+                        if child_total > 0:
                             rows.append({
                                 "id": child_id,
-                                "name": child_info["name"],
+                                "name": child_act.name,
                                 "level": 1,
-                                "data": {fund_id: child_data.get(fund_id, 0) for fund_id, _ in col_list},
-                                "total": sum(child_data.values()),
+                                "data": child_data,
+                                "total": child_total,
                             })
 
         return {"columns": columns, "rows": rows}
