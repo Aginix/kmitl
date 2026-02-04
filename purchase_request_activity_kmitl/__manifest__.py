@@ -8,7 +8,10 @@
     "depends": [
         "purchase_request_kmitl",
     ],
-    "data": ["data/activity.xml"],
+    "data": [
+        "data/activity.xml",
+        "views/purchase_request_views.xml"
+    ],
     "installable": True,
     "auto_install": False,
     "license": "LGPL-3",

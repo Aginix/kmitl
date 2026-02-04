@@ -70,3 +70,45 @@ class KmitlProjectPortal(portal.CustomerPortal):
         values = self._get_page_view_values(project_sudo, access_token, {'kmitl_project': project_sudo}, False, False, **kw)
 
         return request.render("kmitl_project.portal_my_kmitl_project", values)
+
+    @http.route(['/projects', '/projects/page/<int:page>'], type='http', auth="public", website=True)
+    def portal_public_projects(self, page=1, **kw):
+        """Public list of KMITL Projects (excludes draft)"""
+        KmitlProject = request.env['kmitl.project'].sudo()
+
+        # Exclude draft state
+        domain = [("state", "!=", "draft")]
+        projects_count = KmitlProject.search_count(domain)
+
+        pager = portal_pager(
+            url="/projects",
+            total=projects_count,
+            page=page,
+            step=self._items_per_page
+        )
+
+        projects = KmitlProject.search(
+            domain, order='id desc',
+            limit=self._items_per_page,
+            offset=pager['offset']
+        )
+
+        values = {
+            'projects': projects,
+            'page_name': 'public_projects',
+            'pager': pager,
+            'default_url': '/projects',
+        }
+        return request.render("kmitl_project.portal_public_projects", values)
+
+    @http.route(['/project/<int:project_id>'], type='http', auth="public", website=True)
+    def portal_public_project(self, project_id=None, **kw):
+        """Public detail view (excludes draft)"""
+        project_sudo = request.env['kmitl.project'].sudo().browse(project_id)
+
+        # Block access to non-existent or draft projects
+        if not project_sudo.exists() or project_sudo.state == 'draft':
+            return request.redirect('/projects')
+
+        values = {'kmitl_project': project_sudo, 'page_name': 'public_project'}
+        return request.render("kmitl_project.portal_my_kmitl_project", values)

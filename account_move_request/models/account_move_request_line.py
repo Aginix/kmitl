@@ -6,7 +6,7 @@ from odoo import api, fields, models
 class AccountMoveRequestLine(models.Model):
     _name = "account.move.request.line"
     _description = "Account Move Request Line"
-    _inherit = ["analytic.mixin"]
+    _inherit = ["analytic.mixin", "base.exception.method"]
     _order = "request_id, sequence, id"
 
     request_id = fields.Many2one(
@@ -101,6 +101,23 @@ class AccountMoveRequestLine(models.Model):
         copy=False,
     )
 
+    # WHT field
+    wht_tax_id = fields.Many2one(
+        comodel_name="account.withholding.tax",
+        string="WHT",
+        compute="_compute_wht_tax_id",
+        store=True,
+        readonly=False,
+        check_company=True,
+    )
+
+    # Exception field
+    ignore_exception = fields.Boolean(
+        related="request_id.ignore_exception",
+        store=True,
+        string="Ignore Exceptions",
+    )
+
     @api.depends("quantity", "price_unit", "tax_ids")
     def _compute_amount(self):
         """Compute line amounts with tax calculation (mirrors PO logic)"""
@@ -151,3 +168,32 @@ class AccountMoveRequestLine(models.Model):
             # Set taxes from product
             if self.product_id.supplier_taxes_id:
                 self.tax_ids = self.product_id.supplier_taxes_id
+
+    # -------------------------------------------------------------------------
+    # WHT methods
+    # -------------------------------------------------------------------------
+    @api.depends("product_id", "request_id.partner_id")
+    def _compute_wht_tax_id(self):
+        for line in self:
+            if line.product_id:
+                partner = line.request_id.partner_id
+                if partner and partner.company_type == "company":
+                    line.wht_tax_id = line.product_id.supplier_company_wht_tax_id
+                else:
+                    line.wht_tax_id = line.product_id.supplier_wht_tax_id
+            else:
+                line.wht_tax_id = False
+
+    # -------------------------------------------------------------------------
+    # Exception methods
+    # -------------------------------------------------------------------------
+    def _get_main_records(self):
+        return self.mapped("request_id")
+
+    @api.model
+    def _reverse_field(self):
+        return "move_request_ids"
+
+    def _detect_exceptions(self, rule):
+        records = super()._detect_exceptions(rule)
+        return records.mapped("request_id")
