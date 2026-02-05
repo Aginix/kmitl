@@ -1891,7 +1891,7 @@ msgstr "จัดให้มีกลไกการตรวจสอบซ้
 #: model:ir.model.fields,field_description:purchase.field_product_packaging__purchase model:ir.ui.menu,name:purchase.menu_purchase_root
 #: model:ir.ui.menu,name:purchase.purchase_report model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid "Purchase"
-msgstr "สั่งซื้อ"
+msgstr "งานพัสดุ"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_res_config_settings__module_purchase_requisition
