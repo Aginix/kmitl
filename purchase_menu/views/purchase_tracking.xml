@@ -4,6 +4,7 @@
         <field name="res_model">purchase.order</field>
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="purchase_menu.view_purchase_order_tree_expiring"/>
+        <field name="search_view_id" ref="purchase_menu.view_purchase_order_search_expiring"/>
         <field name="domain">[('days_to_expire', '&lt;', 60)]</field>
         <field name="context">{'search_default_group_by_days_to_expire': 1}</field>
     </record>

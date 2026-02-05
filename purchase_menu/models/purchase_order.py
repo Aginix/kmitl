@@ -12,7 +12,8 @@ class PurchaseOrder(models.Model):
 
     days_to_expire = fields.Integer(
         string="Days to Expire",
-        compute="_compute_days_to_expire"
+        compute="_compute_days_to_expire",
+        store=True
     )
 
     @api.depends('work_end')

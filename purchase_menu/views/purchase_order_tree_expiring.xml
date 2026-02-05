@@ -4,17 +4,29 @@
         <field name="model">purchase.order</field>
         <field name="arch" type="xml">
             <tree string="Contracts Nearly Expiring" 
-                  default_group_by="days_to_expire" 
                   decoration-muted="days_to_expire &lt; 0"
                   decoration-danger="days_to_expire &lt; 15"
-                  decoration-warning="days_to_expire &lt; 30"
-                  collapse="1">
+                  decoration-warning="days_to_expire &lt; 30">
                 <field name="contract_name"/>
                 <field name="contract_number"/>
                 <field name="partner_id"/>
                 <field name="work_end"/>
                 <field name="days_to_expire"/>
             </tree>
+        </field>
+    </record>
+
+    <!-- เพิ่ม search view สำหรับ group by -->
+    <record id="view_purchase_order_search_expiring" model="ir.ui.view">
+        <field name="name">purchase.order.search.expiring</field>
+        <field name="model">purchase.order</field>
+        <field name="arch" type="xml">
+            <search>
+                <group expand="1" string="Group By">
+                    <filter name="group_by_days_to_expire" string="Days to Expire" 
+                            context="{'group_by':'days_to_expire'}"/>
+                </group>
+            </search>
         </field>
     </record>
 </odoo>
