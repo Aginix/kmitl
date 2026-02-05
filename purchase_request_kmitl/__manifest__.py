@@ -9,16 +9,12 @@
     "depends": [
         "l10n_th_gov_purchase_request",
         "purchase_request_operating_unit",
+        "purchase_request_exception",
         "account_fiscal_year",
         "purchase_order_kmitl",
         "purchase_operating_unit",
-        "purchase_request_account_fiscal_year",
         "purchase_contract_kmitl",
-        "purchase_request_description_required",
-        "purchase_request_line_mandatory_exception",
-        "purchase_request_line_name_text",
         "purchase_request_payment_type",
-        "purchase_request_responsible_user",
     ],
     "data": [
         "data/purchase_exception.xml",
