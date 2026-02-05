@@ -14,29 +14,32 @@
                 edit="0"
                 delete="0"
             >
-                <field name="account_fiscal_year_id" optional="hide" />
-                <field name="request_id" />
-                <field name="title" />
-                <field name="date_start" widget="date" />
-                <field name="name" />
-                <field name="activity_ids" widget="list_activity" optional="show" />
-                <field name="department_id" optional="hide" />
-                <field name="estimated_cost" optional="hide" />
-                <field name="procurement_type_id" optional="show" />
-                <field name="procurement_method_id" optional="show" />
-                <field
-                    name="state"
-                    widget="badge"
-                    decoration-success="state in ('approved')"
-                    decoration-muted="state == 'draft'"
-                    decoration-warning="state == 'to_approve'"
-                    decoration-danger="state == 'rejected'"
-                />
-                <field
-                    name="requested_by"
-                    widget="many2one_avatar_user"
-                    optional="show"
-                />
+            <field name="name" optional="show"/>
+            <field name="title" optional="show"/>
+            <field name="date_start" widget="date" optional="show"/>
+            <field name="approval_date" widget="date" optional="show"/>
+            <field name="estimated_cost" optional="show"/>
+            <field name="procurement_type_id" optional="show"/>
+            <field name="procurement_method_id" optional="show"/>
+            <field name="main_sarabun_document_id" optional="show"/>
+
+            <field name="activity_ids" widget="list_activity" optional="hide" />
+            <field
+                name="state"
+                widget="badge"
+                decoration-success="state in ('approved')"
+                decoration-muted="state == 'draft'"
+                decoration-warning="state == 'to_approve'"
+                decoration-danger="state == 'rejected'"
+                optional="show"
+            />
+            <field name="account_fiscal_year_id" optional="show"/>
+            <field name="department_id" optional="show"/>
+            <field
+                name="requested_by"
+                widget="many2one_avatar_user"
+                optional="show"
+            />
             </tree>
         </field>
     </record>
@@ -171,6 +174,9 @@
                     domain="[('state', '=', 'approved')]"
                 />
                 <separator />
+                <filter name="filter_by_fy" string="Fiscal Year" domain="[('account_fiscal_year_id', '!=', False)]"/>
+                <filter name="filter_by_dept" string="Department" domain="[('department_id', '!=', False)]"/>
+                <separator />
                 <filter
                     name="today"
                     string="Today"
@@ -206,22 +212,22 @@
                 />
                 <group expand="1" string="Group By">
                     <filter
+                        name="group_by_account_fiscal_year_id"
+                        string="Fiscal Year"
+                        domain="[]"
+                        context="{'group_by':'account_fiscal_year_id'}"
+                    />
+                    <filter
+                        name="group_by_department_id"
+                        string="Department"
+                        domain="[]"
+                        context="{'group_by':'department_id'}"
+                    />
+                    <filter
                         name="group_by_state"
                         string="Status"
                         domain="[]"
                         context="{'group_by':'state'}"
-                    />
-                    <filter
-                        name="group_by_procurement_method_id"
-                        string="Productment Method"
-                        domain="[]"
-                        context="{'group_by':'procurement_method_id'}"
-                    />
-                    <filter
-                        name="group_by_procurement_type_id"
-                        string="Productment Type"
-                        domain="[]"
-                        context="{'group_by':'procurement_type_id'}"
                     />
                 </group>
                 <searchpanel>
@@ -250,7 +256,7 @@
         id="purchase_request_approval_menu"
         parent="purchase.menu_purchase_root"
         action="action_purchase_request_approval"
-        sequence="2"
+        sequence="4"
     />
     <menuitem
         id="purchase_request_approval_menu_purchase_request"

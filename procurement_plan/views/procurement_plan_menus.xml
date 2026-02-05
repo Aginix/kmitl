@@ -6,7 +6,13 @@
         <field name="tag">procurement_plan_report</field>
     </record>
 
-    <menuitem id="procurement_plan_root_menu" name="Procurement Plan" sequence="10" web_icon="procurement_plan,static/description/logo.png">
+    <record id="action_procurement_plan_dashboard" model="ir.actions.client">
+        <field name="name">Dashboard แผนจัดซื้อจัดจ้าง</field>
+        <field name="tag">procurement_plan_dashboard</field>
+        <field name="target">main</field>
+    </record>
+
+    <menuitem id="procurement_plan_root_menu" name="Procurement Plan" sequence="10" web_icon="procurement_plan,static/description/logo.png" groups="procurement_plan.group_procurement_plan_user">
         <menuitem
             id="action_procurement_plan_menu_action"
             name="Procurement Plan"
@@ -16,6 +22,11 @@
             id="action_procurement_plan_report_menu"
             name="รายงาน"
         >
+        <menuitem
+            id="action_procurement_plan_dashboard_menu_action"
+            name="Dashboard"
+            action="action_procurement_plan_dashboard"
+            sequence="1"/>
         <menuitem
             id="action_procurement_plan_report_menu_action"
             name="ภาพรวมแผนจัดซื้อจัดจ้าง"

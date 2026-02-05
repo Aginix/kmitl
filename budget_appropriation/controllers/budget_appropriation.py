@@ -102,7 +102,7 @@ class BudgetAppropriation(http.Controller):
             return request.not_found()
 
         return http.request.render(
-            "budget_appropriation_portal.expense",
+            "budget_appropriation.expense",
             {
                 "object": first,
                 "objects": appropriations,
@@ -134,7 +134,7 @@ class BudgetAppropriation(http.Controller):
         report = request.env['budget.appropriation.f5.report'].get_f5_data_flat(budget_appropriation_id)
 
         return http.request.render(
-            "budget_appropriation_portal.expense_content",
+            "budget_appropriation.expense",
             {
                 "object": app_id,
                 "report": report,
@@ -182,7 +182,7 @@ class BudgetAppropriation(http.Controller):
             return request.not_found()
 
         return http.request.render(
-            "budget_appropriation_portal.expense_content",
+            "budget_appropriation.expense",
             {
                 "object": first,
                 "objects": appropriations,
