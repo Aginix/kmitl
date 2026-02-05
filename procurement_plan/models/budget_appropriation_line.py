@@ -47,7 +47,7 @@ class BudgetAppropriationLine(models.Model):
             procurement_plan_id = self._create_procurement_plan()
             account_id = procurement_plan_id.analytic_account_id
 
-            distribution = vals["analytic_distribution"]
+            distribution = vals.get("analytic_distribution") or {}
             distribution[str(account_id.id)] = 100
             vals["analytic_distribution"] = distribution
             vals["procurement_plan_id"] = procurement_plan_id.id
