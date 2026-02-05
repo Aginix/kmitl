@@ -1951,7 +1951,7 @@ msgstr "ระยะเวลาในการจัดซื้อ"
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_activity model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_tree
 #, python-format
 msgid "Purchase Order"
-msgstr "คำสั่งซื้อ"
+msgstr "สัญญา/ใบสั่งซื้อ/จ้าง"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
