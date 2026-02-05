@@ -15,6 +15,13 @@ class PurchaseOrder(models.Model):
         compute="_compute_days_to_expire",
         store=True
     )
+    
+    expire_range = fields.Selection([
+        ('0-15', '0-15 Days'),
+        ('16-30', '16-30 Days'),
+        ('31-60', '31-60 Days'),
+        ('60+', 'Morethan 60 Days'),
+    ], string="Expire Range", compute="_compute_expire_range", store=True)
 
     @api.depends('work_end')
     def _compute_days_to_expire(self):
@@ -24,3 +31,16 @@ class PurchaseOrder(models.Model):
                 record.days_to_expire = (record.work_end - today).days
             else:
                 record.days_to_expire = 9999
+    
+    @api.depends('days_to_expire')
+    def _compute_expire_range(self):
+        for record in self:
+            days = record.days_to_expire
+            if days <= 15:
+                record.expire_range = '0-15'
+            elif days <= 30:
+                record.expire_range = '16-30'
+            elif days <= 60:
+                record.expire_range = '31-60'
+            else:
+                record.expire_range = '60+'
