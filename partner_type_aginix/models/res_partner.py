@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -15,6 +15,10 @@ class ResPartner(models.Model):
         string='Partner Type',
         tracking=True,
     )
+
+    @api.onchange('company_type')
+    def onchange_company_type(self):
+        self.is_company = True
 
     @api.model
     def _default_partner_type_id(self, company_type):
