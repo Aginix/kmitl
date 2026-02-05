@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View procurement.plan form -->
+    <record id="view_procurement_plan_form" model="ir.ui.view">
+        <field name="name">view.procurement.plan.form.operating_unit</field>
+        <field name="model">procurement.plan</field>
+        <field name="inherit_id" ref="procurement_plan.view_procurement_plan_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="operating_unit_id" widget="selection" groups="operating_unit.group_multi_operating_unit"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- View procurement.plan tree -->
+    <record id="view_procurement_plan_tree" model="ir.ui.view">
+        <field name="name">view.procurement.plan.tree.operating_unit</field>
+        <field name="model">procurement.plan</field>
+        <field name="inherit_id" ref="procurement_plan.view_procurement_plan_tree"/>
+        <field name="arch" type="xml">
+            <field name="state" position="before">
+                <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit" optional="hide" />
+            </field>
+        </field>
+    </record>
+
+    <record id="procurement_plan_group_by_ou" model="ir.ui.view">
+        <field name="name">procurement.plan.group.by.ou</field>
+        <field name="model">procurement.plan</field>
+        <field name="inherit_id" ref="procurement_plan.view_procurement_plan_search" />
+        <field name="arch" type="xml">
+            <filter name="group_by_state" position="after">
+                <filter string="Operating Unit" name="operating_unit_grouped" domain="[]" context="{'group_by':'operating_unit_id'}" groups="operating_unit.group_multi_operating_unit" />
+            </filter>
+        </field>
+    </record>
+
+</odoo>
