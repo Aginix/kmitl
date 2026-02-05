@@ -7,7 +7,7 @@ class PurchaseRequestApproval(models.Model):
     _inherit = 'purchase.request.approval'
 
     def _prepare_disbursement_request_vals(self):
-        vals = super()._prepare_move_request_vals()
+        vals = super()._prepare_disbursement_request_vals()
         vals.update({
             "analytic_distribution": self.analytic_distribution,
             "budget_account_id": self.budget_account_id.id,

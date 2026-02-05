@@ -25,7 +25,7 @@
         <field name="inherit_id" ref="purchase_order_payment_type.view_purchase_order_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='payment_type']" position="before">
-                <field name="move_request_ids" optional="show"/>
+                <field name="disbursement_request_ids" optional="show"/>
             </xpath>
         </field>
     </record>
