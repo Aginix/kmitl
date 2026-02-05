@@ -1124,7 +1124,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
 msgid "Purchase Request"
-msgstr "คำขอซื้อขอจ้าง"
+msgstr "คำขอซื้อขอจ้าง (พ.1)"
 
 #. module: purchase_request
 #. odoo-python
@@ -1242,7 +1242,7 @@ msgstr ""
 #: model:ir.ui.menu,name:purchase_request.menu_purchase_request_pro_mgt
 #: model:ir.ui.menu,name:purchase_request.parent_menu_purchase_request
 msgid "Purchase Requests"
-msgstr "คำขอซื้อขอจ้าง"
+msgstr "คำขอซื้อขอจ้าง (พ.1)"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__purchase_state

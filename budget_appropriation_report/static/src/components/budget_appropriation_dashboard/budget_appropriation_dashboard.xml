@@ -1,0 +1,593 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="budget_appropriation_report.BudgetAppropriationDashboard" owl="1">
+        <div class="o_action budget_appropriation_dashboard">
+            <ControlPanel display="controlPanelDisplay">
+                <t t-set-slot="control-panel-top-right">
+                    <div class="d-flex flex-wrap gap-3 align-items-center">
+                        <div>
+                            <label class="form-label-sm mb-1">ปีงบประมาณ:</label>
+                            <select
+                                class="form-select form-select-sm"
+                                t-on-change="onFiscalYearChange"
+                            >
+                                <t
+                                    t-foreach="state.filterOptions.fiscal_years"
+                                    t-as="fy"
+                                    t-key="fy.id"
+                                >
+                                    <option
+                                        t-att-value="fy.id"
+                                        t-att-selected="isFiscalYearSelected(fy.id)"
+                                        t-esc="fy.name"
+                                    />
+                                </t>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label-sm mb-1">แหล่งเงิน:</label>
+                            <select
+                                class="form-select form-select-sm"
+                                t-on-change="onSourceChange"
+                            >
+                                <option value="">ทั้งหมด</option>
+                                <t
+                                    t-foreach="state.filterOptions.sources"
+                                    t-as="src"
+                                    t-key="src.id"
+                                >
+                                    <option
+                                        t-att-value="src.id"
+                                        t-att-selected="isSourceSelected(src.id)"
+                                        t-esc="src.name"
+                                    />
+                                </t>
+                            </select>
+                        </div>
+                    </div>
+                </t>
+            </ControlPanel>
+            <div class="o_content">
+                <div t-if="state.loading" class="text-center p-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div t-else="" class="budget_appropriation_dashboard_content container-fluid p-4">
+                    <!-- Tab Navigation -->
+                    <ul class="nav nav-tabs mb-4">
+                        <li class="nav-item">
+                            <a t-attf-class="nav-link #{isTabActive('overview') ? 'active' : ''}"
+                               href="#"
+                               t-on-click.prevent="() => this.onTabChange('overview')">
+                                ภาพรวม
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a t-attf-class="nav-link #{isTabActive('revenue') ? 'active' : ''}"
+                               href="#"
+                               t-on-click.prevent="() => this.onTabChange('revenue')">
+                                <span class="text-success">รายรับ</span>
+                            </a>
+                        </li>
+                        <!-- Expense Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a t-attf-class="nav-link dropdown-toggle #{state.activeTab.startsWith('expense') ? 'active' : ''}"
+                               href="#"
+                               data-bs-toggle="dropdown"
+                               role="button"
+                               aria-expanded="false">
+                                <span class="text-danger">รายจ่าย</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a t-attf-class="dropdown-item #{isTabActive('expense') ? 'active' : ''}"
+                                       href="#"
+                                       t-on-click.prevent="() => this.onTabChange('expense')">
+                                        ตามหน่วยงาน
+                                    </a>
+                                </li>
+                                <li>
+                                    <a t-attf-class="dropdown-item #{isTabActive('expense-activity') ? 'active' : ''}"
+                                       href="#"
+                                       t-on-click.prevent="() => this.onTabChange('expense-activity')">
+                                        ตามกิจกรรม
+                                    </a>
+                                </li>
+                                <li>
+                                    <a t-attf-class="dropdown-item #{isTabActive('expense-fund') ? 'active' : ''}"
+                                       href="#"
+                                       t-on-click.prevent="() => this.onTabChange('expense-fund')">
+                                        ตามกองทุน
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a t-attf-class="nav-link #{isTabActive('dept-account') ? 'active' : ''}"
+                               href="#"
+                               t-on-click.prevent="() => this.onTabChange('dept-account')">
+                                หน่วยงาน-ประเภทงบ
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a t-attf-class="nav-link #{isTabActive('account-only') ? 'active' : ''}"
+                               href="#"
+                               t-on-click.prevent="() => this.onTabChange('account-only')">
+                                ประเภทงบ
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a t-attf-class="nav-link #{isTabActive('sunburst') ? 'active' : ''}"
+                               href="#"
+                               t-on-click.prevent="() => this.onTabChange('sunburst')">
+                                Sunburst
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a t-attf-class="nav-link #{isTabActive('sankey') ? 'active' : ''}"
+                               href="#"
+                               t-on-click.prevent="() => this.onTabChange('sankey')">
+                                Sankey
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a t-attf-class="nav-link #{isTabActive('executive') ? 'active' : ''}"
+                               href="#"
+                               t-on-click.prevent="() => this.onTabChange('executive')">
+                                Executive
+                            </a>
+                        </li>
+                    </ul>
+
+                    <!-- Tab Content -->
+                    <div class="tab-content">
+                        <!-- Overview Tab -->
+                        <div t-if="isTabActive('overview')" class="tab-pane active">
+                            <!-- Statistics Cards - Row 1 -->
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-4">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body text-center py-4">
+                                            <div class="text-muted small mb-2">ประมาณการรายรับ</div>
+                                            <div class="h3 fw-semibold text-success mb-0">
+                                                <t t-esc="formatCurrency(state.stats.total_revenue)"/>
+                                            </div>
+                                            <div class="text-muted small mt-1">บาท</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body text-center py-4">
+                                            <div class="text-muted small mb-2">ประมาณการรายจ่าย</div>
+                                            <div class="h3 fw-semibold text-danger mb-0">
+                                                <t t-esc="formatCurrency(state.stats.total_expense)"/>
+                                            </div>
+                                            <div class="text-muted small mt-1">บาท</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body text-center py-4">
+                                            <div class="text-muted small mb-2">ส่วนต่าง</div>
+                                            <div t-attf-class="h3 fw-semibold mb-0 #{(state.stats.total_revenue - state.stats.total_expense) >= 0 ? 'text-success' : 'text-danger'}">
+                                                <t t-esc="formatCurrency(state.stats.total_revenue - state.stats.total_expense)"/>
+                                            </div>
+                                            <div class="text-muted small mt-1">บาท</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Statistics Cards - Row 2 -->
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-4">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body text-center py-3">
+                                            <div class="text-muted small mb-1">จำนวนหน่วยงาน</div>
+                                            <div class="h4 fw-semibold text-primary mb-0">
+                                                <t t-esc="state.stats.department_count"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body text-center py-3">
+                                            <div class="text-muted small mb-1">จำนวนกิจกรรม</div>
+                                            <div class="h4 fw-semibold text-info mb-0">
+                                                <t t-esc="state.stats.activity_count"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body text-center py-3">
+                                            <div class="text-muted small mb-1">จำนวนกองทุน</div>
+                                            <div class="h4 fw-semibold text-warning mb-0">
+                                                <t t-esc="state.stats.fund_count"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Pie Chart -->
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-body">
+                                            <h6 class="card-title text-center text-muted mb-3">
+                                                สัดส่วนรายรับ-รายจ่าย
+                                            </h6>
+                                            <div id="budgetPieChart" style="height: 350px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Revenue Tab -->
+                        <div t-if="isTabActive('revenue')" class="tab-pane active">
+                            <!-- Revenue Statistics -->
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-0 shadow-sm border-start border-success border-4">
+                                        <div class="card-body text-center py-5">
+                                            <div class="text-muted small mb-2">ประมาณการรายรับรวม</div>
+                                            <div class="display-4 fw-semibold text-success mb-2">
+                                                <t t-esc="formatCurrency(state.stats.total_revenue)"/>
+                                            </div>
+                                            <div class="text-muted">บาท</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body text-center py-5">
+                                            <div class="text-muted small mb-2">จำนวนหน่วยงาน</div>
+                                            <div class="display-4 fw-semibold text-primary mb-2">
+                                                <t t-esc="state.stats.department_count"/>
+                                            </div>
+                                            <div class="text-muted">หน่วยงาน</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Revenue TreeMap -->
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="card-title text-center text-muted mb-3">
+                                        ประมาณการรายรับตามหน่วยงาน
+                                    </h6>
+                                    <div id="revenueTreeMap" style="height: 60vh;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Expense Tab (by Department) -->
+                        <div t-if="isTabActive('expense')" class="tab-pane active">
+                            <!-- Expense Statistics -->
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-0 shadow-sm border-start border-danger border-4">
+                                        <div class="card-body text-center py-5">
+                                            <div class="text-muted small mb-2">ประมาณการรายจ่ายรวม</div>
+                                            <div class="display-4 fw-semibold text-danger mb-2">
+                                                <t t-esc="formatCurrency(state.stats.total_expense)"/>
+                                            </div>
+                                            <div class="text-muted">บาท</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body text-center py-5">
+                                            <div class="text-muted small mb-2">จำนวนหน่วยงาน</div>
+                                            <div class="display-4 fw-semibold text-primary mb-2">
+                                                <t t-esc="state.stats.department_count"/>
+                                            </div>
+                                            <div class="text-muted">หน่วยงาน</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Expense TreeMap -->
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="card-title text-center text-muted mb-3">
+                                        ประมาณการรายจ่ายตามหน่วยงาน
+                                    </h6>
+                                    <div id="budgetTreeMap" style="height: 60vh;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Expense by Activity Tab -->
+                        <div t-if="isTabActive('expense-activity')" class="tab-pane active">
+                            <!-- Activity Statistics -->
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-0 shadow-sm border-start border-danger border-4">
+                                        <div class="card-body text-center py-5">
+                                            <div class="text-muted small mb-2">ประมาณการรายจ่ายรวม</div>
+                                            <div class="display-4 fw-semibold text-danger mb-2">
+                                                <t t-esc="formatCurrency(state.stats.total_expense)"/>
+                                            </div>
+                                            <div class="text-muted">บาท</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body text-center py-5">
+                                            <div class="text-muted small mb-2">จำนวนกิจกรรม</div>
+                                            <div class="display-4 fw-semibold text-info mb-2">
+                                                <t t-esc="state.stats.activity_count"/>
+                                            </div>
+                                            <div class="text-muted">กิจกรรม</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Activity TreeMap -->
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="card-title text-center text-muted mb-3">
+                                        ประมาณการรายจ่ายตามกิจกรรม
+                                        <small class="d-block mt-1 text-secondary" style="font-size: 0.75rem;">
+                                            (คลิกเพื่อดูรายละเอียดกิจกรรมย่อย)
+                                        </small>
+                                    </h6>
+                                    <div id="activityTreeMap" style="height: 65vh;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Expense by Fund Tab -->
+                        <div t-if="isTabActive('expense-fund')" class="tab-pane active">
+                            <!-- Fund Statistics -->
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-0 shadow-sm border-start border-danger border-4">
+                                        <div class="card-body text-center py-5">
+                                            <div class="text-muted small mb-2">ประมาณการรายจ่ายรวม</div>
+                                            <div class="display-4 fw-semibold text-danger mb-2">
+                                                <t t-esc="formatCurrency(state.stats.total_expense)"/>
+                                            </div>
+                                            <div class="text-muted">บาท</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body text-center py-5">
+                                            <div class="text-muted small mb-2">จำนวนกองทุน</div>
+                                            <div class="display-4 fw-semibold text-warning mb-2">
+                                                <t t-esc="state.stats.fund_count"/>
+                                            </div>
+                                            <div class="text-muted">กองทุน</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Fund TreeMap -->
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="card-title text-center text-muted mb-3">
+                                        ประมาณการรายจ่ายตามกองทุน
+                                        <small class="d-block mt-1 text-secondary" style="font-size: 0.75rem;">
+                                            (คลิกเพื่อดูรายละเอียดกองทุนย่อย)
+                                        </small>
+                                    </h6>
+                                    <div id="fundTreeMap" style="height: 65vh;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Department-Account Tab -->
+                        <div t-if="isTabActive('dept-account')" class="tab-pane active">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="card-title text-center text-muted mb-3">
+                                        งบประมาณรายจ่ายตามหน่วยงานและประเภทงบ
+                                        <small class="d-block mt-1 text-secondary" style="font-size: 0.75rem;">
+                                            (คลิกที่หน่วยงานเพื่อดูรายละเอียดประเภทงบ)
+                                        </small>
+                                    </h6>
+                                    <div id="budgetDeptAccountTreeMap" style="height: 75vh;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Account Only Tab -->
+                        <div t-if="isTabActive('account-only')" class="tab-pane active">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div id="budgetAccountOnlyTreeMap" style="height: 75vh;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sunburst Tab -->
+                        <div t-if="isTabActive('sunburst')" class="tab-pane active">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="card-title text-center text-muted mb-3">
+                                        งบประมาณรายจ่าย: กองทุน → หน่วยงาน → ประเภทงบ
+                                        <small class="d-block mt-1 text-secondary" style="font-size: 0.75rem;">
+                                            (แสดงลำดับชั้นแบบ Sunburst)
+                                        </small>
+                                    </h6>
+                                    <div id="sunburstChart" style="height: 75vh;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sankey Tab -->
+                        <div t-if="isTabActive('sankey')" class="tab-pane active">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="card-title text-center text-muted mb-3">
+                                        การไหลของงบประมาณ: กองทุน → หน่วยงาน → ประเภทงบ
+                                        <small class="d-block mt-1 text-secondary" style="font-size: 0.75rem;">
+                                            (แสดง Top 100 รายการที่มีมูลค่าสูงสุด)
+                                        </small>
+                                    </h6>
+                                    <div id="sankeyChart" style="height: 75vh;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Executive Dashboard Tab -->
+                        <div t-if="isTabActive('executive')" class="tab-pane active">
+                            <!-- Row 1: Total + Fund Pie + Account Type Pie -->
+                            <div class="row g-3 mb-3 align-items-center">
+                                <div class="col-auto">
+                                    <div class="card border-0 shadow-sm border-start border-danger border-4">
+                                        <div class="card-body text-center py-3 px-4">
+                                            <div class="text-muted mb-1">ประมาณการรายจ่ายรวม</div>
+                                            <div class="h2 fw-semibold text-danger mb-0">
+                                                <t t-esc="formatCurrency(state.stats.total_expense)"/>
+                                            </div>
+                                            <div class="text-muted small">บาท</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Fund Pie Chart -->
+                                <div class="col-lg-4">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-body py-2">
+                                            <div id="fundPieChart" style="height: 300px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Account Type Pie Chart -->
+                                <div class="col-lg-4">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-body py-2">
+                                            <div id="accountTypePieChart" style="height: 300px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-3 align-items-center">
+                                <!-- Department Pie Chart -->
+                                <div class="col-lg-6">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-body py-2">
+                                            <div id="departmentPieChart" style="height: 412px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-body py-2">
+                                            <div id="stackedBarChart" style="height: 412px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 3: Activity Sankey -->
+                            <div class="row g-3 mt-0">
+                                <div class="col-lg">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-body py-2">
+                                            <div id="activitySankeyChart" style="height: 65vh;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 4: Activity × Account Type Table + Activity × Fund Table -->
+                            <div class="row g-3 mt-3">
+                                <!-- Activity × Account Type Table -->
+                                <div class="col-lg-12">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-body py-2">
+                                            <h6 class="text-center text-muted mb-2" style="font-size: 14px;">
+                                                กิจกรรม × ประเภทงบ
+                                            </h6>
+                                            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                                                <table class="table table-sm table-bordered table-hover mb-0" style="font-size: 11px;">
+                                                    <thead class="table-light sticky-top">
+                                                        <tr>
+                                                            <th class="text-nowrap">กิจกรรม</th>
+                                                            <t t-foreach="state.stats.activity_account_table?.columns || []" t-as="col" t-key="col.id">
+                                                                <th class="text-end text-nowrap" t-esc="col.name"/>
+                                                            </t>
+                                                            <th class="text-end text-nowrap">รวม</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <t t-foreach="state.stats.activity_account_table?.rows || []" t-as="row" t-key="row.id">
+                                                            <tr t-attf-class="#{row.level === 0 ? 'fw-bold table-secondary' : ''}">
+                                                                <td t-attf-style="padding-left: #{row.level * 16 + 4}px;">
+                                                                    <t t-esc="row.name"/>
+                                                                </td>
+                                                                <t t-foreach="state.stats.activity_account_table?.columns || []" t-as="col" t-key="col.id">
+                                                                    <td class="text-end">
+                                                                        <t t-if="row.data[col.id]" t-esc="formatCurrency(row.data[col.id])"/>
+                                                                        <t t-else="">-</t>
+                                                                    </td>
+                                                                </t>
+                                                                <td class="text-end fw-bold" t-esc="formatCurrency(row.total)"/>
+                                                            </tr>
+                                                        </t>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Activity × Fund Table -->
+                                <div class="col-lg-12">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-body py-2">
+                                            <h6 class="text-center text-muted mb-2" style="font-size: 14px;">
+                                                กิจกรรม × กองทุน
+                                            </h6>
+                                            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                                                <table class="table table-sm table-bordered table-hover mb-0" style="font-size: 11px;">
+                                                    <thead class="table-light sticky-top">
+                                                        <tr>
+                                                            <th class="text-nowrap">กิจกรรม</th>
+                                                            <t t-foreach="state.stats.activity_fund_table?.columns || []" t-as="col" t-key="col.id">
+                                                                <th class="text-end text-nowrap" t-esc="col.name"/>
+                                                            </t>
+                                                            <th class="text-end text-nowrap">รวม</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <t t-foreach="state.stats.activity_fund_table?.rows || []" t-as="row" t-key="row.id">
+                                                            <tr t-attf-class="#{row.level === 0 ? 'fw-bold table-secondary' : ''}">
+                                                                <td t-attf-style="padding-left: #{row.level * 16 + 4}px;">
+                                                                    <t t-esc="row.name"/>
+                                                                </td>
+                                                                <t t-foreach="state.stats.activity_fund_table?.columns || []" t-as="col" t-key="col.id">
+                                                                    <td class="text-end">
+                                                                        <t t-if="row.data[col.id]" t-esc="formatCurrency(row.data[col.id])"/>
+                                                                        <t t-else="">-</t>
+                                                                    </td>
+                                                                </t>
+                                                                <td class="text-end fw-bold" t-esc="formatCurrency(row.total)"/>
+                                                            </tr>
+                                                        </t>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
