@@ -29,8 +29,13 @@ class ProcurementPlanDashboardController(http.Controller):
         )
         fiscal_year_options = [{"id": fy.id, "name": fy.name} for fy in fiscal_years]
 
+        # Get only root-level departments (no parent)
         departments = request.env["account.analytic.account"].search(
-            [("root_plan_id.code", "=", "departments")], order="code"
+            [
+                ("root_plan_id.code", "=", "departments"),
+                ("parent_id", "=", False),
+            ],
+            order="code",
         )
         department_options = [
             {"id": dept.id, "name": dept.name, "code": dept.code}
@@ -73,11 +78,22 @@ class ProcurementPlanDashboardController(http.Controller):
 
         plans = request.env["procurement.plan"].search(domain)
 
+        # Get all child department IDs if department filter is set
+        department_ids = set()
+        if department_id:
+            root_dept = request.env["account.analytic.account"].browse(department_id)
+            if root_dept.exists():
+                # Get all descendants using parent_path
+                child_depts = request.env["account.analytic.account"].search(
+                    [("parent_path", "like", root_dept.parent_path + "%")]
+                )
+                department_ids = set(child_depts.ids)
+
         # Filter by department and source (computed fields, filter in Python)
-        if department_id or source_id:
+        if department_ids or source_id:
             filtered_plans = request.env["procurement.plan"]
             for plan in plans:
-                if department_id and plan.department_analytic_id.id != department_id:
+                if department_ids and plan.department_analytic_id.id not in department_ids:
                     continue
                 if source_id and plan.source_analytic_id.id != source_id:
                     continue
