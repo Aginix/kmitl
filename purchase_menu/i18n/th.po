@@ -105,3 +105,9 @@ msgstr ""
 #: model:ir.model.fields.selection,name:purchase_menu.selection__purchase_order__expire_range__60+
 msgid "Morethan 60 Days"
 msgstr "มากกว่า 60 วัน"
+
+#. module: purchase_menu
+#: model:ir.model.fields,field_description:purchase_menu.field_purchase_order__expire_group_ids
+#: model_terms:ir.ui.view,arch_db:purchase_menu.view_purchase_order_search_expiring
+msgid "Expire Groups"
+msgstr "วันที่คงเหลือของสัญญา"

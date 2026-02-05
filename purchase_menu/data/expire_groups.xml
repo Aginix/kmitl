@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="expire_group_0_15" model="expire.group">
+        <field name="name">อายุสัญญา 0-15</field>
+        <field name="min_days">0</field>
+        <field name="max_days">15</field>
+    </record>
+    <record id="expire_group_0_30" model="expire.group">
+        <field name="name">อายุสัญญา 0-30</field>
+        <field name="min_days">0</field>
+        <field name="max_days">30</field>
+    </record>
+    <record id="expire_group_0_60" model="expire.group">
+        <field name="name">อายุสัญญา 0-60</field>
+        <field name="min_days">0</field>
+        <field name="max_days">60</field>
+    </record>
+    <record id="expire_group_60_plus" model="expire.group">
+        <field name="name">อายุสัญญา 60+</field>
+        <field name="min_days">61</field>
+        <field name="max_days">9999</field>
+    </record>
+</odoo>
