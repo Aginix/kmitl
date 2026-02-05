@@ -80,7 +80,7 @@
                             <field name="fund_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
                             <field name="activity_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
                             <field name="budget_account_id" readonly="1" required="1" options="{'no_create': True, 'no_open': True}" />
-                            <field name="budget_account_id" readonly="0" invisible="0"/>
+                            <field name="budget_account_id" readonly="0" invisible="1"/>
                             <field name="analytic_distribution" invisible="1"/>
                         </group>
                     </group>
@@ -168,7 +168,7 @@
     </record>
 
     <!-- Root menu for Disbursement app -->
-    <menuitem id="menu_disbursement_root" name="Disbursement" sequence="45"/>
+    <menuitem id="menu_disbursement_root" name="Disbursement" sequence="45" web_icon="disbursement,static/description/icon.png"/>
 
     <!-- Disbursement Requests submenu -->
     <menuitem id="menu_disbursement_request" name="Disbursement Requests" parent="menu_disbursement_root" action="action_disbursement_request" sequence="10" groups="disbursement.group_disbursement_user"/>
