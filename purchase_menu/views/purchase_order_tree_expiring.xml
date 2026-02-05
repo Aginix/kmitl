@@ -1,0 +1,20 @@
+<odoo>
+    <record id="view_purchase_order_tree_expiring" model="ir.ui.view">
+        <field name="name">purchase.order.tree.expiring</field>
+        <field name="model">purchase.order</field>
+        <field name="arch" type="xml">
+            <tree string="Contracts Nearly Expiring" 
+                  default_group_by="days_to_expire" 
+                  decoration-muted="days_to_expire &lt; 0"
+                  decoration-danger="days_to_expire &lt; 15"
+                  decoration-warning="days_to_expire &lt; 30"
+                  collapse="1">
+                <field name="contract_name"/>
+                <field name="contract_number"/>
+                <field name="partner_id"/>
+                <field name="work_end"/>
+                <field name="days_to_expire"/>
+            </tree>
+        </field>
+    </record>
+</odoo>
