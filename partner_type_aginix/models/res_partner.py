@@ -16,10 +16,6 @@ class ResPartner(models.Model):
         tracking=True,
     )
 
-    @api.onchange('company_type')
-    def onchange_company_type(self):
-        self.is_company = True
-
     @api.model
     def _default_partner_type_id(self, company_type):
         if company_type == 'person':
