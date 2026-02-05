@@ -114,6 +114,15 @@ export class ProcurementPlanDashboard extends Component {
             return;
         }
 
+        // Check if existing chart instance is attached to a different/stale DOM element
+        if (this.statePieChart) {
+            const existingDom = this.statePieChart.getDom();
+            if (!existingDom || !document.body.contains(existingDom) || existingDom !== chartDom) {
+                this.statePieChart.dispose();
+                this.statePieChart = null;
+            }
+        }
+
         if (!this.statePieChart) {
             this.statePieChart = echarts.init(chartDom);
             window.addEventListener("resize", () => {
