@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import Command, models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
+from odoo import models, _
 
 _logger = logging.getLogger(__name__)
 
 
 class BudgetAppropriation(models.Model):
     _inherit = "budget.appropriation"
-
-    def action_review(self):
-        super().action_review()
 
     def action_post(self):
         super().action_post()
@@ -31,6 +27,4 @@ class BudgetAppropriation(models.Model):
                 )
 
     def _get_record_url(self):
-        return "/web#id={}&model={}&view_type=form".format(
-            self.id, self._name
-        )
+        return "/web#id={}&model={}&view_type=form".format(self.id, self._name)

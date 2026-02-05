@@ -243,6 +243,15 @@ class ProcurementPlan(models.Model):
                 rec.can_edit = True
             else:
                 rec.can_edit = False
+            # Prevent editing if linked to budget appropriation
+            result = self.env["budget.appropriation.line"].search(
+                [("procurement_plan_id", "=", rec.id)], limit=1
+            )
+            if result:
+                rec.can_edit = False
+
+    def _get_record_url(self):
+        return "/web#id={}&model={}&view_type=form".format(self.id, self._name)
 
     def name_get(self):
         res = []
@@ -352,16 +361,14 @@ class ProcurementPlan(models.Model):
 
     def action_view_budget_commitment(self):
         self.ensure_one()
-        action = (
-            self.env.ref(
-                "procurement_plan_budget.action_budget_commitment_procurement_plan"
-            )
-            .sudo()
-            .read()[0]
-        )
-        action["domain"] = [("procurement_plan_id", "=", self.id)]
-        action["context"] = {"default_procurement_plan_id": self.id}
-        return action
+        return {
+            "name": _("Budget Commitments"),
+            "type": "ir.actions.act_window",
+            "res_model": "budget.commitment",
+            "view_mode": "tree,form",
+            "domain": [("procurement_plan_id", "=", self.id)],
+            "context": {"default_procurement_plan_id": self.id},
+        }
 
     def action_open_budget_commitments(self):
         self.ensure_one()

@@ -7,6 +7,7 @@
     "depends": [
         "web",
         "budget",
+        "budget_appropriation",
         "l10n_th_gov_purchase_request",
     ],
     "data": [
@@ -21,9 +22,14 @@
         "views/analytic_views.xml",
         "views/procurement_plan_views.xml",
         "views/procurement_plan_menus.xml",
+        "views/budget_appropriation_views.xml",
         "views/res_config_settings_views.xml",
     ],
-    "assets": {},
+    "assets": {
+        "web.assets_backend": [
+            "procurement_plan/static/src/**/*",
+        ],
+    },
     "application": True,
     "installable": True,
     "auto_install": False,

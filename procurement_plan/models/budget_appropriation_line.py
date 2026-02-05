@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
+from odoo import models, fields, _
 
 _logger = logging.getLogger(__name__)
 
@@ -35,7 +34,7 @@ class BudgetAppropriationLine(models.Model):
     def _create_procurement_plan(self):
         self.ensure_one()
         vals = self._prepare_procurement_plan_vals()
-        procurement_plan = self.env['procurement.plan'].create(vals)
+        procurement_plan = self.env["procurement.plan"].create(vals)
         procurement_plan.action_new()
 
         self.procurement_plan_id = procurement_plan.id
@@ -48,10 +47,10 @@ class BudgetAppropriationLine(models.Model):
             procurement_plan_id = self._create_procurement_plan()
             account_id = procurement_plan_id.analytic_account_id
 
-            distribution = vals['analytic_distribution']
+            distribution = vals["analytic_distribution"]
             distribution[str(account_id.id)] = 100
-            vals['analytic_distribution'] = distribution
-            vals['procurement_plan_id'] = procurement_plan_id.id
+            vals["analytic_distribution"] = distribution
+            vals["procurement_plan_id"] = procurement_plan_id.id
         return vals
 
     def _message_link_back_from_procurement_plan(self):
