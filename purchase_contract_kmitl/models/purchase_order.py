@@ -35,6 +35,12 @@ class PurchaseOrder(models.Model):
         store=True,
     )
 
+    work_end_display = fields.Char(
+        string="Work End",
+        compute='_compute_work_end_display',
+        store=False,
+    )
+
     fines_rate = fields.Monetary(string="Fines Rate",
         states=READONLY_STATES,
         tracking=True
@@ -155,3 +161,13 @@ class PurchaseOrder(models.Model):
                 continue
             rec.late_days = max((today - rec.work_end).days, 0)
             rec.fines_late = rec.fines_rate * rec.late_days if rec.fines_rate else 0
+
+    @api.depends('work_end')
+    def _compute_work_end_display(self):
+        today = fields.Date.today()
+        for rec in self:
+            if rec.work_end:
+                days = (rec.work_end - rec.work_start).days
+                rec.work_end_display = rec.work_end.strftime('%d/%m/%Y') + f"({days})"
+            else:
+                rec.work_end_display = ''

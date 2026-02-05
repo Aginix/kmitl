@@ -12,6 +12,19 @@ class PurchaseRequestApproval(models.Model):
         tracking=True
     )
 
+    purchase_order_id = fields.Many2one(
+        comodel_name='purchase.order',
+        compute='_compute_purchase_order_id',
+        string='Purchase Order',
+        store=False,
+    )
+
+    display_purchase_order = fields.Char(
+        string="Purchase Order",
+        compute="_compute_display_purchase_order",
+        store=False
+    )
+
     disbursement_request_ids = fields.One2many(
         comodel_name="disbursement.request",
         inverse_name="purchase_request_approval_id",
@@ -60,7 +73,8 @@ class PurchaseRequestApproval(models.Model):
     @api.depends("disbursement_request_ids", "disbursement_request_ids.amount_total")
     def _compute_disbursement_request(self):
         for approval in self:
-            approval.disbursement_request_total = sum(approval.disbursement_request_ids.mapped("amount_total"))
+            approval.disbursement_request_total = sum(
+                approval.disbursement_request_ids.mapped("amount_total"))
             approval.disbursement_request_count = len(approval.disbursement_request_ids)
 
     @api.depends("disbursement_request_ids", "disbursement_request_ids.state")
@@ -106,8 +120,10 @@ class PurchaseRequestApproval(models.Model):
             self._prepare_disbursement_request_vals()
         )
         link_back_message = disbursement_request._message_link_back_to_request()
-        disbursement_request.message_post(body=link_back_message, message_type="comment")
-        message = self._purchase_request_approval_create_bill_message_content(disbursement_request)
+        disbursement_request.message_post(
+            body=link_back_message, message_type="comment")
+        message = self._purchase_request_approval_create_bill_message_content(
+            disbursement_request)
         self.message_post(body=message, message_type="comment")
         return disbursement_request
 
@@ -120,3 +136,19 @@ class PurchaseRequestApproval(models.Model):
         }
 
         return message
+
+    @api.depends("request_id.line_ids.purchase_lines.order_id")
+    def _compute_purchase_order_id(self):
+        for rec in self:
+            orders = rec.request_id.mapped("line_ids.purchase_lines.order_id")
+            rec.purchase_order_id = orders[0] if orders else False
+
+    @api.depends("use_purchase_order", "purchase_order_id.name")
+    def _compute_display_purchase_order(self):
+        for rec in self:
+            if rec.use_purchase_order and rec.purchase_order_id:
+                rec.display_purchase_order = rec.purchase_order_id.name
+            elif not rec.use_purchase_order:
+                rec.display_purchase_order = "ไม่ทำสัญญา"
+            else:
+                rec.display_purchase_order = ""

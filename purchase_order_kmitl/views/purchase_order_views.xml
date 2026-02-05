@@ -10,6 +10,9 @@
             <field name="partner_id" position="before">
                 <field name="account_fiscal_year_id" widget="selection" required="1" />
             </field>
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="department_id" domain="['|', ('operating_unit_id', '=', False), ('operating_unit_id', '=', operating_unit_id)]"/>
+            </xpath>
             <xpath expr="//button[@name='action_rfq_send' and @states='draft']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>

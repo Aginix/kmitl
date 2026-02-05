@@ -868,6 +868,11 @@ msgstr "เริ่มการขออนุมัติใหม่"
 msgid "Role"
 msgstr "บทบาท"
 
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__requested_delivery_date
+msgid "Requested Delivery Date"
+msgstr "วันที่ขอส่งมอบ"
+
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__message_has_sms_error
 msgid "SMS Delivery error"
