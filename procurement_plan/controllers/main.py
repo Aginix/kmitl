@@ -131,7 +131,7 @@ class ProcurementPlanDashboardController(http.Controller):
                 "total_price": plan.total_price,
                 "state": plan.state,
                 "state_display": self.STATE_LABELS.get(plan.state, plan.state),
-                "department": plan.department_analytic_id.name or "-",
+                "department": plan.department_analytic_id.complete_name or "-",
                 "source": plan.source_analytic_id.name or "-",
                 "method": plan.procurement_method_id.name
                 if plan.procurement_method_id
