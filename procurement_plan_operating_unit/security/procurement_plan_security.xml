@@ -1,0 +1,26 @@
+<odoo>
+    <record id="ir_rule_procurement_plan_operating_units" model="ir.rule">
+        <field name="model_id" ref="procurement_plan.model_procurement_plan" />
+        <field
+            name="domain_force"
+        >['|', ('operating_unit_id','=',False), ('operating_unit_id','in',user.operating_unit_ids.ids)]
+        </field>
+        <field name="name">Procurement Plan Operating Unit</field>
+        <field name="global" eval="True" />
+        <field name="perm_unlink" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="0" />
+    </record>
+
+    <record id="ir_rule_procurement_plan_payment_allowed_operating_units" model="ir.rule">
+        <field name="model_id" ref="procurement_plan.model_procurement_plan_payment" />
+        <field name="domain_force">['|',('operating_unit_id','=',False),('operating_unit_id','in', user.operating_unit_ids.ids)]</field>
+        <field name="name">Procurement Plan Payment from allowed operating units</field>
+        <field name="global" eval="True" />
+        <field eval="0" name="perm_unlink" />
+        <field eval="0" name="perm_write" />
+        <field eval="1" name="perm_read" />
+        <field eval="0" name="perm_create" />
+    </record>
+</odoo>
