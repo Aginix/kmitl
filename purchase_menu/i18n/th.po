@@ -15,6 +15,14 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
+#. module: account
+#: model:ir.actions.act_window,name:account.res_partner_action_supplier
+#: model:ir.ui.menu,name:account.menu_account_supplier
+#: model:ir.ui.menu,name:account.menu_finance_payables
+#: model_terms:ir.ui.view,arch_db:account.view_account_invoice_report_search
+msgid "Vendors"
+msgstr "คู่ค้า"
+
 #. module: purchase_menu
 #: model:ir.ui.menu,name:purchase_menu.menu_purchase_assets
 msgid "Assets"
