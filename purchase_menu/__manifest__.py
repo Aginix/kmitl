@@ -8,7 +8,7 @@
     "category": "Purchase",
     'depends': ['purchase_guarantee_kmitl', 'purchase_work_acceptance_kmitl', 'l10n_th_gov_account_asset_management', 'purchase_contract_kmitl'],
     'data': [
-        'views/purchase_order_tree_expiring.xml,'
+        'views/purchase_order_tree_expiring.xml',
         'views/purchase_tracking.xml',
         'views/menu.xml',
     ],
