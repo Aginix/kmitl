@@ -41,7 +41,7 @@ msgstr "ยืนยันข้อมูล"
 #. module: purchase_manual_delivery_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_manual_delivery_kmitl.view_purchase_order_form
 msgid "Confirm PO"
-msgstr "ยินยันข้อมูล"
+msgstr "ยืนยันข้อมูล"
 
 #. module: purchase_manual_delivery
 #: model_terms:ir.ui.view,arch_db:purchase_manual_delivery.purchase_order_view_form_inherit
