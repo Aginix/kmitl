@@ -17,7 +17,10 @@ class PurchaseRequest(models.Model):
 
     @api.onchange("department_id")
     def _onchange_department_id(self):
-        self.requested_by = False
+        if self.requested_by and \
+        self.requested_by.employee_ids.department_id != self.department_id:
+            self.requested_by = False
+
         return {
             "domain": {
                 "requested_by": [
