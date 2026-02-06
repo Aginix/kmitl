@@ -12,14 +12,11 @@ class PurchaseRequest(models.Model):
 
     requested_by = fields.Many2one(
         comodel_name="res.users",
-        default=False,
+        required=True,
     )
 
     @api.onchange("department_id")
     def _onchange_department_id(self):
-        if self.requested_by and self.requested_by.employee_ids.department_id != self.department_id:
-            self.requested_by = False
-
         return {
             "domain": {
                 "requested_by": [
