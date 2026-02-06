@@ -12,11 +12,17 @@ class PurchaseRequest(models.Model):
 
     requested_by = fields.Many2one(
         comodel_name="res.users",
-        domain="[('employee_ids.department_id', '=', department_id)]",
         default=False,
     )
 
     @api.onchange("department_id")
     def _onchange_department_id(self):
         self.requested_by = False
+        return {
+            "domain": {
+                "requested_by": [
+                    ("employee_ids.department_id", "=", self.department_id.id)
+                ]
+            }
+        }
 
