@@ -5,7 +5,7 @@
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["budget", "budget_account_root", "product_category_code"],
+    "depends": ["budget", "product_category_code"],
     "data": ["data/budget_account.xml", "views/budget_account_views.xml"],
     "installable": True,
     "auto_install": False,

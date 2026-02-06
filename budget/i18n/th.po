@@ -3376,3 +3376,19 @@ msgstr ""
 msgid ""
 "ไม่สามารถมีค่าเดบิตและเครดิตพร้อมกันได้ ต้องเลือกใดเลือกหนึ่ง (รายการ: %s)"
 msgstr ""
+
+#. module: budget
+#: model:ir.model.fields,field_description:budget.field_account_analytic_account__budgetable
+#: model_terms:ir.ui.view,arch_db:budget.view_account_analytic_account_search
+msgid "Budgetable"
+msgstr "ระบุงบประมาณได้"
+
+#. module: budget
+#: model_terms:ir.ui.view,arch_db:budget.view_account_analytic_account_form
+msgid "Budgeting"
+msgstr "งบประมาณ"
+
+#. module: budget
+#: model:ir.model.fields,help:budget.field_account_analytic_account__budgetable
+msgid "ติ๊กถูกเพื่อระบุว่ารหัสค่าใช้จ่ายสามารถจัดสรรงบประมาณได้"
+msgstr ""
