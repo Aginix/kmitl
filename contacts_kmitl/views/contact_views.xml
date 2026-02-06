@@ -57,7 +57,7 @@
         parent="contacts.menu_contacts"
         sequence="2"/>
 
-    <record id="contacts.action_contacts" model="ir.actions.act_window">
+    <record id="contacts.action_contacts" model="ir.actions.act_window" web_icon="contacts_kmitl,static/description/icon.png"/>
         <field name="name">Vendor</field>
     </record>
 
