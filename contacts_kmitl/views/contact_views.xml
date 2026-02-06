@@ -50,14 +50,14 @@
     </record>
 
     <!-- inherit change name -->
-    <menuitem id="contacts.menu_contacts" name="Vendor"/>
+    <menuitem id="contacts.menu_contacts" name="Vendor" web_icon="contacts_kmitl,static/description/icon.png"/>
     <menuitem id="contacts.res_partner_menu_contacts"
         name="Vendor"
         action="contacts.action_contacts"
         parent="contacts.menu_contacts"
         sequence="2"/>
 
-    <record id="contacts.action_contacts" model="ir.actions.act_window" web_icon="contacts_kmitl,static/description/icon.png">
+    <record id="contacts.action_contacts" model="ir.actions.act_window">
         <field name="name">Vendor</field>
     </record>
 
