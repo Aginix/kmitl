@@ -40,6 +40,14 @@ class DisbursementRequest(models.Model):
         tracking=True,
     )
 
+    user_id = fields.Many2one(
+        comodel_name="res.users",
+        string="Responsible",
+        default=lambda self: self.env.user,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
     partner_id = fields.Many2one(
         comodel_name="res.partner",
         string="Partner",

@@ -8,6 +8,7 @@
             <tree string="Disbursement Requests">
                 <field name="name" />
                 <field name="partner_id" />
+                <field name="user_id" optional="show" />
                 <field name="date" />
                 <field name="account_fiscal_year_id" options="{'no_open': True}" />
                 <field name="payment_type" />
@@ -28,11 +29,11 @@
         <field name="arch" type="xml">
             <form string="Disbursement Request">
                 <header>
-                    <button name="action_create_bill" string="Create Bill" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'validated'), ('bill_count', '>', 0)]}" groups="disbursement.group_disbursement_manager" />
+                    <button name="action_create_bill" string="Create Bill" type="object" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'validated'), ('bill_count', '>', 0)]}" groups="disbursement.group_disbursement_officer" />
                     <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" />
-                    <button name="action_validate" string="Validate" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted')]}" confirm="Are you sure you want to validate this request?" />
+                    <button name="action_validate" string="Validate" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted')]}" confirm="Are you sure you want to validate this request?" groups="disbursement.group_disbursement_officer" />
                     <button name="action_draft" string="Reset to draft" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', '!=', 'submitted')]}" groups="disbursement.group_disbursement_manager" />
-                    <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', '!=', 'validated')]}" />
+                    <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', '!=', 'validated')]}" groups="disbursement.group_disbursement_officer" />
                     <field name="state" widget="statusbar" statusbar_visible="draft,submitted,validated" />
 
                 </header>
@@ -63,6 +64,8 @@
                     <group>
                         <group>
                             <field name="partner_id" />
+                            <field name="user_id" groups="disbursement.group_disbursement_manager" />
+                            <field name="user_id" readonly="1" groups="!disbursement.group_disbursement_manager" />
                             <field name="is_company" readonly="1" />
                             <field name="partner_bank_id" context="{'default_partner_id': partner_id}" />
                             <field name="date" />
