@@ -98,6 +98,14 @@ class BudgetAccount(models.Model):
         tracking=True,
     )
 
+    root_id = fields.Many2one(
+        "budget.account",
+        compute="_compute_root_id",
+        string="Top Parent Analytic Account",
+        store=True,
+        recursive=True,
+    )
+
     children_count = fields.Integer(
         "Children Accounts Count",
         compute="_compute_children_count",
@@ -138,6 +146,20 @@ class BudgetAccount(models.Model):
             _("Budget Account must be unique"),
         )
     ]
+
+    def _get_root_id(self):
+        """Recursively traverse parent hierarchy to find root account."""
+        self.ensure_one()
+        if self.parent_id:
+            return self.parent_id._get_root_id()
+        else:
+            return self
+
+    @api.depends("parent_id", "parent_id.root_id")
+    def _compute_root_id(self):
+        """Compute root account for all records."""
+        for account in self:
+            account.root_id = account._get_root_id()
 
     def copy_data(self, default=None):
         default = dict(default or {})
