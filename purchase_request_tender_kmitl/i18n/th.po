@@ -81,11 +81,14 @@ msgid "Purchase Request"
 msgstr "คำขอซื้อขอจ้าง"
 
 #. module: purchase_request_tender_kmitl
+#. odoo-python
+#: code:addons/purchase_request_tender_kmitl/models/purchase_request.py:0
 #: model:ir.actions.act_window,name:purchase_request_tender_kmitl.action_purchase_request_tender
 #: model:ir.model,name:purchase_request_tender_kmitl.model_purchase_request_tender
 #: model_terms:ir.ui.view,arch_db:purchase_request_tender_kmitl.view_purchase_request_tender_form
+#, python-format
 msgid "Purchase Request Tender"
-msgstr "คำขอซื้อขอจ้าง ผู้เสนอราคา"
+msgstr "รายชื่อผู้เสนอราคา"
 
 #. module: purchase_request_tender_kmitl
 #: model:ir.model.fields,field_description:purchase_request_tender_kmitl.field_purchase_request_tender__request_id

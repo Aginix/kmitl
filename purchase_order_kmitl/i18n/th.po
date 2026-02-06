@@ -813,10 +813,10 @@ msgid ""
 "offers."
 msgstr "การเรียกประกวดราคา คือ เมื่อคุณต้องการสร้างคำขอใบเสนอราคากับผู้จำหน่ายหลายรายสำหรับชุดสินค้าที่กำหนดเพื่อเปรียบเทียบข้อเสนอ"
 
-#. module: purchase
+#. module: purchase, purchase_order_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
-msgid "Cancel"
-msgstr "ยกเลิก"
+msgid "Cancel PO"
+msgstr "ยกเลิกสัญญา"
 
 #. module: purchase
 #. odoo-python
@@ -824,7 +824,7 @@ msgstr "ยกเลิก"
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_report__state__cancel
 #, python-format
 msgid "Cancelled"
-msgstr "ยกเลิก"
+msgstr "ยกเลิกสัญญา"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
@@ -1102,7 +1102,7 @@ msgstr "โดเมน"
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_report__state__done
 msgid "Done"
-msgstr "เสร็จสิ้น"
+msgstr "ปิดสัญญา"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_res_company__po_double_validation_amount
@@ -1117,7 +1117,7 @@ msgstr "ดาวน์โหลด"
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order__state__draft
 msgid "Draft"
-msgstr "ใบแจ้งขอใบเสนอราคา"
+msgstr "ร่าง"
 
 #. module: purchase
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_report__state__draft
@@ -1419,12 +1419,22 @@ msgstr "ล็อก"
 msgid "Lock Confirmed Orders"
 msgstr "ล็อคคำสั่งซื้อที่ยืนยันแล้ว"
 
+#. module: purchase_order_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form
+msgid "Done"
+msgstr "ปิดสัญญา"
+
+#. module: purchase_order_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form
+msgid "Cancel PO"
+msgstr "ยกเลิกสัญญา"
+
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/controllers/portal.py:0 model:ir.model.fields.selection,name:purchase.selection__purchase_order__state__done
 #, python-format
-msgid "Locked"
-msgstr "ล็อก"
+msgid "Done"
+msgstr "ปิดสัญญา"
 
 #. module: purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__message_main_attachment_id
@@ -1943,8 +1953,6 @@ msgstr "ระยะเวลาในการจัดซื้อ"
 #: model:ir.model.fields,field_description:purchase.field_account_payment__purchase_id
 #: model:ir.model.fields,field_description:purchase.field_purchase_bill_union__purchase_order_id
 #: model:ir.model.fields.selection,name:purchase.selection__account_analytic_applicability__business_domain__purchase_order
-#: model:ir.model.fields.selection,name:purchase.selection__purchase_order__state__purchase
-#: model:ir.model.fields.selection,name:purchase.selection__purchase_report__state__purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form model_terms:ir.ui.view,arch_db:purchase.purchase_order_graph
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_kpis_tree model_terms:ir.ui.view,arch_db:purchase.purchase_order_pivot
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content model_terms:ir.ui.view,arch_db:purchase.purchase_order_tree
@@ -1952,6 +1960,13 @@ msgstr "ระยะเวลาในการจัดซื้อ"
 #, python-format
 msgid "Purchase Order"
 msgstr "สัญญา/ใบสั่งซื้อ/จ้าง"
+
+#. modules: purchase, purchase_order_kmitl
+#: model:ir.model.fields.selection,name:purchase.selection__purchase_order__state__purchase
+#: model:ir.model.fields.selection,name:purchase.selection__purchase_report__state__purchase
+#, python-format
+msgid "Open"
+msgstr "ใช้งานอยู่"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
