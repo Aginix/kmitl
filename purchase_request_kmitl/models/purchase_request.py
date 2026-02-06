@@ -35,3 +35,4 @@ class PurchaseRequest(models.Model):
         domain=[("committee_type", "=", "evaluation")],
         copy=True,
     )
+
