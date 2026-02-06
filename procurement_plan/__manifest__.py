@@ -23,7 +23,11 @@
         "views/procurement_plan_menus.xml",
         "views/res_config_settings_views.xml",
     ],
-    "assets": {},
+    "assets": {
+        "web.assets_backend": [
+            "procurement_plan/static/src/components/**/*",
+        ],
+    },
     "application": True,
     "installable": True,
     "auto_install": False,

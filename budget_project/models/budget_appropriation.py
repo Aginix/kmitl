@@ -21,7 +21,6 @@ class BudgetAppropriation(models.Model):
                 "account_fiscal_year_id": line.appropriation_id.date_range_fy_id.id,
                 "name": line.description,
                 "project_type": line.project_type,
-                # "department_id": line.department_id.id,
                 "user_id": line.appropriation_id.user_id.id,
                 "creating_user_id": line.appropriation_id.user_id.id,
                 "analytic_distribution": line.analytic_distribution,

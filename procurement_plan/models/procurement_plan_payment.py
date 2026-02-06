@@ -25,7 +25,7 @@ class ProcurementPlanPayment(models.Model):
     _description = "Procurement Plan Payment"
 
     procurement_plan_id = fields.Many2one(
-        comodel_name="procurement.plan", readonly=True
+        comodel_name="procurement.plan", readonly=True, ondelete="cascade"
     )
     number = fields.Integer("Installment Number", default=1)
     number_of_days = fields.Integer("Number of Days")

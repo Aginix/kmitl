@@ -11,4 +11,10 @@
         <field name="tag">budget_appropriation_revenue_overview_report</field>
         <field name="target">main</field>
     </record>
+
+    <record id="action_budget_appropriation_dashboard" model="ir.actions.client">
+        <field name="name">Dashboard การจัดสรรงบประมาณ</field>
+        <field name="tag">budget_appropriation_dashboard</field>
+        <field name="target">main</field>
+    </record>
 </odoo>
