@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- หัก ณ ที่จ่ายบุคคลธรรมดา -->
+        <function model="account.account" name="write">
+            <value model="account.account" search="[('code', '=', '2120000010')]"/>
+            <value eval="{'wht_account': True}"/>
+        </function>
+
+        <record id="wht_person" model="account.withholding.tax">
+            <field name="name">ภาษี หัก ณ ที่จ่ายบุคคลธรรมดา</field>
+            <field name="amount">1.0</field>
+            <field name="account_id" search="[('code', '=', '2120000010')]"/>
+            <field name="income_tax_form">pnd1</field>
+            <field name="wht_cert_income_type">1</field>
+        </record>
+
+        <!-- หัก ณ ที่จ่ายนิติบุคคล -->
+        <function model="account.account" name="write">
+            <value model="account.account" search="[('code', '=', '2120000099')]"/>
+            <value eval="{'wht_account': True}"/>
+        </function>
+
+        <record id="wht_company" model="account.withholding.tax">
+            <field name="name">ภาษี หัก ณ ที่จ่ายนิติบุคคลจากหน่วยงานเอกชน</field>
+            <field name="amount">1.0</field>
+            <field name="account_id" search="[('code', '=', '2120000099')]"/>
+            <field name="income_tax_form">pnd53</field>
+            <field name="wht_cert_income_type">5</field>
+        </record>
+
+    </data>
+</odoo>
