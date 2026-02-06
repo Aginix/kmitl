@@ -1,6 +1,6 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* purchase_order_account_move_request
+# 	* purchase_order_disbursement
 #
 msgid ""
 msgstr ""
@@ -15,30 +15,30 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
-#. module: purchase_order_account_move_request
-#: model:ir.model,name:purchase_order_account_move_request.model_account_move_request
-msgid "Account Move Request"
-msgstr ""
-
-#. module: purchase_order_account_move_request
-#: model_terms:ir.ui.view,arch_db:purchase_order_account_move_request.view_purchase_order_form
-msgid "Create bill"
-msgstr "สร้างใบขอเบิก"
-
-#. module: purchase_order_account_move_request
-#: model:ir.model.fields,field_description:purchase_order_account_move_request.field_purchase_order__move_request_count
-msgid "Move Request Count"
-msgstr ""
-
-#. module: purchase_order_account_move_request
-#: model:ir.model.fields,field_description:purchase_order_account_move_request.field_purchase_order__move_request_ids
-#: model_terms:ir.ui.view,arch_db:purchase_order_account_move_request.view_purchase_order_form
-msgid "Move Requests"
+#. module: purchase_order_disbursement
+#: model:ir.model,name:purchase_order_disbursement.model_disbursement_request
+msgid "Disbursement Request"
 msgstr "ใบขอเบิก"
 
-#. module: purchase_order_account_move_request
-#: model:ir.model,name:purchase_order_account_move_request.model_purchase_order
-#: model:ir.model.fields,field_description:purchase_order_account_move_request.field_account_move_request__purchase_id
-#: model_terms:ir.ui.view,arch_db:purchase_order_account_move_request.view_account_move_request_form
+#. module: purchase_order_disbursement
+#: model_terms:ir.ui.view,arch_db:purchase_order_disbursement.view_purchase_order_form
+msgid "Create Disburse Request"
+msgstr "สร้างใบขอเบิก"
+
+#. module: purchase_order_disbursement
+#: model:ir.model.fields,field_description:purchase_order_disbursement.field_purchase_order__disbursement_request_count
+msgid "Disburse Request Count"
+msgstr "จำนวนใบขอเบิก"
+
+#. module: purchase_order_disbursement
+#: model:ir.model.fields,field_description:purchase_order_disbursement.field_purchase_order__disbursement_request_ids
+#: model_terms:ir.ui.view,arch_db:purchase_order_disbursement.view_purchase_order_form
+msgid "Disburse Requests"
+msgstr "ใบขอเบิก"
+
+#. module: purchase_order_disbursement
+#: model:ir.model,name:purchase_order_disbursement.model_purchase_order
+#: model:ir.model.fields,field_description:purchase_order_disbursement.field_disbursement_request__purchase_id
+#: model_terms:ir.ui.view,arch_db:purchase_order_disbursement.view_disbursement_request_form
 msgid "Purchase Order"
 msgstr "คำสั่งซื้อ"

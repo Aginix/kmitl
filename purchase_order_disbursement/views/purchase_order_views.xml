@@ -20,7 +20,7 @@
 
     <!-- Tree -->
     <record id="view_purchase_order_tree" model="ir.ui.view">
-        <field name="name">view.purchase.order.tree(Move Request)</field>
+        <field name="name">view.purchase.order.tree</field>
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase_order_payment_type.view_purchase_order_tree"/>
         <field name="arch" type="xml">
