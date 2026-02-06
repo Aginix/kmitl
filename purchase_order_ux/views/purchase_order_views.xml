@@ -72,19 +72,16 @@
     <record id="view_purchase_order_tree" model="ir.ui.view">
         <field name="name">view.purchase.order.tree(Purchase Order UX 5)</field>
         <field name="model">purchase.order</field>
-        <field
-            name="inherit_id"
-            ref="purchase.purchase_order_view_tree"
-        />
+        <field name="inherit_id" ref="purchase.purchase_order_view_tree" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='priority']" position="after">
-                <field name="contract_number" optional="show"/>
+                <field name="contract_number" optional="show" />
                 <field name="contract_name" />
                 <field name="contract_type_id" />
             </xpath>
 
             <xpath expr="//field[@name='amount_total']" position="before">
-                <field name="work_start" optional="show"/>
+                <field name="work_start" optional="show" />
             </xpath>
 
             <xpath expr="//field[@name='name']" position="attributes">
@@ -94,7 +91,7 @@
             <xpath expr="//field[@name='date_approve']" position="attributes">
                 <attribute name="optional">hide</attribute>
             </xpath>
-            
+
             <xpath expr="//field[@name='user_id']" position="attributes">
                 <attribute name="optional">hide</attribute>
             </xpath>
@@ -109,6 +106,17 @@
 
             <xpath expr="//field[@name='invoice_status']" position="attributes">
                 <attribute name="optional">hide</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_order_form_invisible_exception" model="ir.ui.view">
+        <field name="name">view.purchase.order.form(UX Exception Hide)</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase_exception.view_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='exception_ids']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
         </field>
     </record>
