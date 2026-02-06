@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -72,7 +72,7 @@ class AccountAssetBatch(models.Model):
     )
 
     department_id = fields.Many2one(
-        "hr.department", 
+        "hr.department",
         string="Department",
         related="purchase_id.department_id"
     )
@@ -107,8 +107,14 @@ class AccountAssetBatch(models.Model):
         [
             ("procurement", "Procurement"),
             ("donation", "Donation"),
+            ("transfer", "Transfer"),
+
         ],
         string="Source of asset",
+        tracking=True,
+    )
+    received_from_agency = fields.Char(
+        string="received from agency",
         tracking=True,
     )
 
@@ -149,7 +155,7 @@ class AccountAssetBatch(models.Model):
             purchase = self.env["purchase.order"].browse(purchase_id)
             if purchase.department_id and purchase.department_id.operating_unit_id:
                 res["operating_unit_id"] = purchase.department_id.operating_unit_id.id
-        return res    
+        return res
 
     def action_register_assets(self):
         for batch in self:
