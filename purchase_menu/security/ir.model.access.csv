@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_expire_group_all,expire.group.all,model_expire_group,base.group_user,1,0,0,0
+access_expire_group_manager,expire.group.manager,model_expire_group,purchase.group_purchase_manager,1,1,1,1
