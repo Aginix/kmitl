@@ -147,72 +147,68 @@
                         bg_color="bg-danger"
                         attrs="{'invisible': [('state', '!=', 'rejected')]}"
                     />
-                    <div class="oe_title">
-                        <label for="name" string="Approval Reference"/>
-                        <h1>
-                            <field name="name" placeholder="Approval Reference..." readonly="1"/>
-                        </h1>
-                    </div>
                     <group>
                         <group name="main_info" string="Main Information">
-                            <field name="title" required="1" attrs="{'readonly': [('is_editable', '=', False)]}"/>
-                            <field name="date_start" attrs="{'readonly': [('is_editable', '=', False)]}"/>
-                            <field name="requested_by" widget="many2one_avatar_user" attrs="{'readonly': [('is_editable', '=', False)]}"/>
-                            <field name="department_id" attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                            <field name="name" placeholder="Approval Reference..." readonly="1"/>
+                            <field name="title" readonly="1" />
+                            <field name="date_start" readonly="1" />
+                            <field name="requested_by" widget="many2one_avatar_user" readonly="1" />
+                            <field name="department_id" readonly="1" />
                         </group>
                         <group name="procurement_info" string="Procurement Information">
-                            <field name="procurement_type_id" attrs="{'readonly': [('is_editable', '=', False)]}"/>
-                            <field name="procurement_method_id" attrs="{'readonly': [('is_editable', '=', False)]}"/>
-                            <field name="account_fiscal_year_id" attrs="{'readonly': [('is_editable', '=', False)]}"/>
-                            <field name="estimated_cost" attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                            <field name="procurement_type_id" readonly="1" />
+                            <field name="procurement_method_id" readonly="1" />
+                            <field name="account_fiscal_year_id" readonly="1" />
+                            <field name="estimated_cost" readonly="1" />
+                            <field name="payment_type" readonly="1"/>
                         </group>
                     </group>
                     <group name="description_group" string="Description">
-                        <field name="description" nolabel="1" attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                        <field name="description" nolabel="1" readonly="1"/>
                     </group>
                     <notebook>
                         <page name="lines" string="Products">
-                            <field name="line_ids" attrs="{'readonly': [('is_editable', '=', False)]}">
-                                <tree editable="bottom" create="1" delete="1">
-                                    <field name="product_id" required="1"/>
+                            <field name="line_ids" readonly="1">
+                                <tree editable="bottom">
+                                    <field name="product_id" />
                                     <field name="name"/>
                                     <field name="product_qty"/>
-                                    <field name="product_uom_id" groups="uom.group_uom"/>
                                     <field name="estimated_cost" optional="show"/>
-                                    <field name="date_required"/>
                                 </tree>
                             </field>
                         </page>
                         <page name="budget" string="Budget Information" attrs="{'invisible': [('estimated_cost', '=', 0)]}">
                             <group>
                                 <group>
-                                    <field name="budget_account_id" attrs="{'readonly': [('is_editable', '=', False)]}"/>
-                                    <field name="budget_commitment_id" readonly="1"/>
+                                    <field name="budget_account_id" readonly="1" options="{'no_open': True}"/>
+                                    <field name="activity_analytic_id" readonly="1" options="{'no_open': True}"/>
+                                    <field name="fund_analytic_id" readonly="1" options="{'no_open': True}"/>
+                                    <field name="source_analytic_id" readonly="1" options="{'no_open': True}"/>
+                                    <field name="department_analytic_id" readonly="1" options="{'no_open': True}"/>
                                 </group>
                                 <group>
-                                    <field name="payment_type" attrs="{'readonly': [('is_editable', '=', False)]}"/>
                                 </group>
                             </group>
                         </page>
                         <page name="committee" string="Committee" attrs="{'invisible': [('estimated_cost', '&lt;', 100000)]}">
                             <separator string="Work Acceptance Committee"/>
-                            <field name="work_acceptance_committee_ids" nolabel="1" attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                            <field name="work_acceptance_committee_ids" nolabel="1" readonly="1"/>
                             <separator string="TOR Committee"/>
-                            <field name="tor_committee_ids" nolabel="1" attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                            <field name="tor_committee_ids" nolabel="1" readonly="1"/>
                             <separator string="Price Determine Committee"/>
-                            <field name="price_determine_committee_ids" nolabel="1" attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                            <field name="price_determine_committee_ids" nolabel="1" readonly="1" />
                             <separator string="Evaluation Committee"/>
-                            <field name="evaluation_committee_ids" nolabel="1" attrs="{'readonly': [('is_editable', '=', False)]}"/>
+                            <field name="evaluation_committee_ids" nolabel="1" readonly="1" />
                         </page>
                         <page name="other_info" string="Other Information">
                             <group>
                                 <group>
-                                    <field name="origin"/>
-                                    <field name="assigned_to"/>
+                                    <field name="origin" readonly="1" />
+                                    <field name="assigned_to" readonly="1" />
                                 </group>
                                 <group>
-                                    <field name="approval_date" readonly="1"/>
-                                    <field name="requesting_department_id"/>
+                                    <field name="approval_date" readonly="1" />
+                                    <field name="requesting_department_id" readonly="1" />
                                 </group>
                             </group>
                         </page>
