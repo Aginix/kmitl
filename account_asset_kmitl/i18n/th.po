@@ -215,7 +215,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_asset_management.field_account_move_line__asset_id
 #: model:ir.model.fields,field_description:l10n_th_gov_account_asset_management.field_account_asset_maintenance__asset_id model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 msgid "Asset"
-msgstr "สินทรัพย์"
+msgstr "ครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_management
 #. odoo-python
@@ -389,7 +389,7 @@ msgstr ""
 #: model:ir.ui.menu,name:l10n_th_gov_account_asset_management.menu_purchase_assets model:ir.ui.menu,name:l10n_th_gov_account_asset_management.purchase_account_asset_menu
 #: model_terms:ir.ui.view,arch_db:l10n_th_account_asset_management.account_asset_parent_view_form
 msgid "Assets"
-msgstr "สินทรัพย์"
+msgstr "ครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_management
 #. odoo-python
