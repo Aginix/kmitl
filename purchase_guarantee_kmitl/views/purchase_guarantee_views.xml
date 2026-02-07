@@ -1,22 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <odoo>
-
+<odoo>
     <menuitem
         id="kmitl_guarantee_purchase"
         name="Guarantee"
         parent="purchase.menu_purchase_root"
-        sequence="10"/>
+        sequence="10"
+    />
 
-    <menuitem id="menu_bid_guarantee"
+    <menuitem
+        id="menu_bid_guarantee"
         name="หลักประกันข้อเสนอ"
         parent="kmitl_guarantee_purchase"
         action="purchase_guarantee_kmitl.action_bid_guarantee"
-        sequence="10"/>
+        sequence="10"
+    />
 
-    <menuitem id="menu_contract_guarantee"
+    <menuitem
+        id="menu_contract_guarantee"
         name="หลักประกันสัญญา"
         parent="kmitl_guarantee_purchase"
         action="purchase_guarantee_kmitl.action_contract_guarantee"
-        sequence="20"/>
-  
-  </odoo>
+        sequence="20"
+    />
+
+    <record id="view_purchase_guarantee_form" model="ir.ui.view">
+        <field name="name">view.purchase.guarantee.form</field>
+        <field name="model">purchase.guarantee</field>
+        <field
+            name="inherit_id"
+            ref="l10n_th_gov_purchase_guarantee.view_purchase_guarantee_form"
+        />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//field[@name='domain_analytic_account_ids']"
+                position="attributes"
+            >
+                <attribute name="groups">base.group_no_one</attribute>
+            </xpath>
+            <xpath expr="//field[@name='analytic_account_id']" position="attributes">
+                <attribute name="groups">base.group_no_one</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
