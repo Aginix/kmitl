@@ -50,8 +50,11 @@
             <xpath expr="//field[@name='title']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-            <xpath expr="//field[@name='requested_by']" position="attributes">
-                <attribute name="invisible">1</attribute>
+            <xpath expr="//field[@name='requested_by']" position="replace">
+                <field
+                    name="requested_by"
+                    attrs="{'readonly': [('is_editable','=', False)]}"
+                />
             </xpath>
             <xpath expr="//field[@name='account_fiscal_year_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
@@ -136,10 +139,6 @@
                         />
                         <field
                             name="description"
-                            attrs="{'readonly': [('is_editable','=', False)]}"
-                        />
-                        <field
-                            name="requested_by"
                             attrs="{'readonly': [('is_editable','=', False)]}"
                         />
                         <field
