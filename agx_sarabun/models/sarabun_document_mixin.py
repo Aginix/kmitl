@@ -127,6 +127,23 @@ class SarabunDocumentMixin(models.AbstractModel):
         """
         pass
 
+    def _on_sarabun_recalled(self, document):
+        """
+        Callback when sarabun document is recalled by sender.
+        Override this to handle recall in your model.
+
+        Args:
+            document: The recalled sarabun.document record
+
+        Example:
+            def _on_sarabun_recalled(self, document):
+                self.message_post(
+                    body=_("Sarabun document %s was recalled. Reason: %s")
+                    % (document.name, document.recall_reason)
+                )
+        """
+        pass
+
     def _on_sarabun_action(self, document, recipient, action):
         """
         Callback for every action on sarabun document.

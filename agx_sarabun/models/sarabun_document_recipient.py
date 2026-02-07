@@ -81,6 +81,7 @@ class SarabunDocumentRecipient(models.Model):
             ("acknowledged", "Acknowledged"),
             ("approved", "Approved"),
             ("rejected", "Rejected"),
+            ("cancelled_by_recall", "Cancelled (Recalled)"),
         ],
         string="Status",
         default="new",
@@ -396,6 +397,40 @@ class SarabunDocumentRecipient(models.Model):
             lambda a: a.user_id == self.env.user
         )
         activities.action_feedback(feedback=_("Action completed"))
+
+    def _send_recall_notification(self):
+        """Send bus notification that document was recalled"""
+        self.ensure_one()
+        users = self._get_notification_users()
+
+        for user in users:
+            self.env["bus.bus"]._sendone(
+                user.partner_id,
+                "sarabun_inbox/updated",
+                {
+                    "refresh": True,
+                    "recalled": True,
+                    "subject": self.document_id.subject or self.document_id.name,
+                    "document_id": self.document_id.id,
+                },
+            )
+
+    def _get_notification_users(self):
+        """Get users to notify based on recipient type"""
+        self.ensure_one()
+        users = self.env["res.users"]
+
+        if self.recipient_type == "user":
+            users = self.user_id
+        elif self.recipient_type == "department" and self.department_id:
+            if self.department_id.sarabun_officer_ids:
+                users = self.department_id.sarabun_officer_ids
+            elif self.department_id.manager_id:
+                users = self.department_id.manager_id.user_id
+        elif self.recipient_type == "role" and self.role_id:
+            users = self.role_id.get_users_for_document(self.document_id)
+
+        return users
 
     def mark_as_read(self):
         """Mark recipient as read (first time opening)"""

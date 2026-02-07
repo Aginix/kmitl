@@ -303,6 +303,11 @@ msgid "Cancelled"
 msgstr "ยกเลิกแล้ว"
 
 #. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document_recipient__state__cancelled_by_recall
+msgid "Cancelled (Recalled)"
+msgstr "ยกเลิก (เรียกคืน)"
+
+#. module: agx_sarabun
 #. odoo-python
 #: code:addons/agx_sarabun/models/sarabun_document_sequence.py:0
 #, python-format
@@ -1846,6 +1851,51 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:agx_sarabun.sarabun_document_recipient_view_search
 msgid "Rejected"
 msgstr ""
+
+#. module: agx_sarabun
+#: model:ir.model.fields.selection,name:agx_sarabun.selection__sarabun_document__state__recalled
+msgid "Recalled"
+msgstr "เรียกคืนแล้ว"
+
+#. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+msgid "Recall Document"
+msgstr "เรียกคืนเอกสาร"
+
+#. module: agx_sarabun
+#: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_document_recall_wizard__reason
+msgid "Reason for Recall"
+msgstr "เหตุผลในการเรียกคืน"
+
+#. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#, python-format
+msgid "Only sent documents can be recalled."
+msgstr "สามารถเรียกคืนได้เฉพาะเอกสารที่ส่งแล้วเท่านั้น"
+
+#. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#, python-format
+msgid "Only the sender can recall this document."
+msgstr "เฉพาะผู้ส่งเท่านั้นที่สามารถเรียกคืนเอกสาร"
+
+#. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#: code:addons/agx_sarabun/wizard/sarabun_document_recall_wizard.py:0
+#, python-format
+msgid "Please provide a reason for recalling this document."
+msgstr "กรุณาระบุเหตุผลในการเรียกคืนเอกสาร"
+
+#. module: agx_sarabun
+#. odoo-python
+#: code:addons/agx_sarabun/models/sarabun_document.py:0
+#, python-format
+msgid "Document recalled.\\nReason: %s"
+msgstr "เรียกคืนเอกสารแล้ว\\nเหตุผล: %s"
 
 #. module: agx_sarabun
 #: model:ir.model.fields,field_description:agx_sarabun.field_sarabun_recipient_reject_wizard__comment

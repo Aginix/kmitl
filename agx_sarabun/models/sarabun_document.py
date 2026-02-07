@@ -10,6 +10,7 @@ READONLY_STATES = {
     "sent": [("readonly", True)],
     "completed": [("readonly", True)],
     "cancelled": [("readonly", True)],
+    "recalled": [("readonly", True)],
 }
 
 
@@ -191,6 +192,7 @@ class SarabunDocument(models.Model):
             ("sent", "Sent"),
             ("completed", "Completed"),
             ("cancelled", "Cancelled"),
+            ("recalled", "Recalled"),
         ],
         string="Status",
         required=True,
@@ -198,6 +200,30 @@ class SarabunDocument(models.Model):
         copy=False,
         tracking=True,
         default="draft",
+    )
+
+    # === Recall Tracking ===
+    recalled_by_user_id = fields.Many2one(
+        comodel_name="res.users",
+        string="Recalled By",
+        readonly=True,
+        tracking=True,
+    )
+    recalled_date = fields.Datetime(
+        string="Recall Date",
+        readonly=True,
+    )
+    recall_reason = fields.Text(
+        string="Recall Reason",
+        readonly=True,
+    )
+    can_recall = fields.Boolean(
+        compute="_compute_can_recall",
+        string="Can Recall",
+    )
+    has_actioned_recipients = fields.Boolean(
+        compute="_compute_has_actioned_recipients",
+        string="Has Actioned Recipients",
     )
 
     # === Routing ===
@@ -394,6 +420,23 @@ class SarabunDocument(models.Model):
         for record in self:
             record.attachment_count = len(record.attachment_ids)
 
+    @api.depends("state", "sender_user_id")
+    def _compute_can_recall(self):
+        """Check if current user can recall this document (only sender)"""
+        for record in self:
+            record.can_recall = (
+                record.state == "sent" and record.sender_user_id == self.env.user
+            )
+
+    @api.depends("recipient_ids.state")
+    def _compute_has_actioned_recipients(self):
+        """Check if any recipients have acted on the document"""
+        for record in self:
+            actioned = record.recipient_ids.filtered(
+                lambda r: r.state in ("acknowledged", "approved", "rejected")
+            )
+            record.has_actioned_recipients = bool(actioned)
+
     # === Onchange ===
     @api.onchange("route_template_id")
     def _onchange_route_template_id(self):
@@ -486,6 +529,92 @@ class SarabunDocument(models.Model):
                 body=_("Document cancelled."),
                 message_type="notification",
             )
+
+    def action_recall(self):
+        """Open recall wizard to collect reason"""
+        self.ensure_one()
+
+        if self.state != "sent":
+            raise UserError(_("Only sent documents can be recalled."))
+
+        if self.sender_user_id != self.env.user:
+            raise UserError(_("Only the sender can recall this document."))
+
+        return {
+            "name": _("Recall Document"),
+            "type": "ir.actions.act_window",
+            "res_model": "sarabun.document.recall.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "default_document_id": self.id,
+                "default_has_actioned_recipients": self.has_actioned_recipients,
+            },
+        }
+
+    def action_do_recall(self, reason):
+        """Execute recall operation"""
+        self.ensure_one()
+
+        # Validate permissions and state
+        if self.state != "sent":
+            raise UserError(_("Only sent documents can be recalled."))
+        if self.sender_user_id != self.env.user:
+            raise UserError(_("Only the sender can recall this document."))
+        if not reason or not reason.strip():
+            raise UserError(_("Please provide a reason for recall."))
+
+        # Cancel active recipients
+        active_recipients = self.recipient_ids.filtered(lambda r: r.state == "new")
+        for recipient in active_recipients:
+            recipient._send_recall_notification()
+        active_recipients.write({"state": "cancelled_by_recall"})
+
+        # Cancel activities
+        activities = self.activity_ids.filtered(lambda a: a.user_id)
+        if activities:
+            activities.action_feedback(
+                feedback=_("Document recalled by %s") % self.env.user.name
+            )
+
+        # Update document state
+        self.write({
+            "state": "recalled",
+            "recalled_by_user_id": self.env.user.id,
+            "recalled_date": fields.Datetime.now(),
+            "recall_reason": reason,
+        })
+
+        # Post message
+        self.message_post(
+            body=_("Document recalled.\nReason: %s") % reason,
+            message_type="notification",
+        )
+
+        # Callback to origin model
+        self._on_document_recalled()
+
+        return True
+
+    def _on_document_recalled(self):
+        """Trigger callback to origin model"""
+        if self.origin_model and self.origin_res_id:
+            try:
+                origin = self.env[self.origin_model].sudo().browse(self.origin_res_id)
+                if origin.exists() and hasattr(origin, "_on_sarabun_recalled"):
+                    _logger.info(
+                        "Calling _on_sarabun_recalled on %s (id=%s)",
+                        self.origin_model,
+                        self.origin_res_id,
+                    )
+                    origin._on_sarabun_recalled(self)
+            except Exception as e:
+                _logger.exception(
+                    "Error calling _on_sarabun_recalled for %s (id=%s): %s",
+                    self.origin_model,
+                    self.origin_res_id,
+                    e,
+                )
 
     def action_acknowledge(self):
         """Acknowledge - delegate to current recipient"""

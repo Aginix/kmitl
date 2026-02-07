@@ -19,6 +19,7 @@
         "report/report_sarabun.xml",
         # Wizard
         "wizard/sarabun_routing_wizard_views.xml",
+        "views/sarabun_document_recall_wizard_views.xml",
         # Views
         "views/portal_template.xml",
         "views/sarabun_document_type_views.xml",

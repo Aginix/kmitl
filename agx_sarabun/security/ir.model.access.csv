@@ -26,3 +26,4 @@ access_sarabun_document_recipient_user,sarabun.document.recipient.user,model_sar
 access_sarabun_document_recipient_manager,sarabun.document.recipient.manager,model_sarabun_document_recipient,group_sarabun_manager,1,1,1,1
 access_sarabun_recipient_reject_wizard,sarabun.recipient.reject.wizard,model_sarabun_recipient_reject_wizard,group_sarabun_user,1,1,1,1
 access_sarabun_route_selection_wizard,sarabun.route.selection.wizard,model_sarabun_route_selection_wizard,group_sarabun_user,1,1,1,1
+access_sarabun_document_recall_wizard,sarabun.document.recall.wizard,model_sarabun_document_recall_wizard,group_sarabun_user,1,1,1,1
