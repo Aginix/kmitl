@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 
 class PurchaseRequestApproval(models.Model):
     _name = "purchase.request.approval"
-    _inherit = ["mail.thread", "mail.activity.mixin", "portal.mixin", "thai.date.mixin", "tier.validation"]
+    _inherit = ["mail.thread", "mail.activity.mixin", "portal.mixin", "thai.date.mixin", "sarabun.document.mixin"]
     _inherits = {"purchase.request": "request_id"}
 
     _description = "Purchase Request Approval"
@@ -101,6 +101,12 @@ class PurchaseRequestApproval(models.Model):
     )
 
     requesting_department_id = fields.Many2one('hr.department', string='Department', tracking=True)
+
+    main_sarabun_document_id = fields.Many2one(
+        comodel_name="sarabun.document",
+        string="Main Sarabun Document",
+        copy=False,
+    )
 
     report_html_url = fields.Char(compute="_compute_report_html_url")
 
@@ -250,3 +256,53 @@ class PurchaseRequestApproval(models.Model):
         action["views"] = [(form.id, "form")]
         action["res_id"] = self.request_id.id
         return action
+
+    def _prepare_sarabun_document_vals(self):
+        """Prepare values for creating a sarabun document."""
+        self.ensure_one()
+        vals = super()._prepare_sarabun_document_vals()
+        vals["subject"] = f"Purchase Request Approval: {self.name}"
+        return vals
+
+    def _on_sarabun_completed(self, document):
+        """Called when sarabun document routing is completed."""
+        _logger.info(
+            "Sarabun completed for PA %s from document %s",
+            self.name, document.name
+        )
+        self.button_approved()
+        self.message_post(
+            body=_("Approved via Sarabun document: %s") % document.name,
+        )
+
+    def _on_sarabun_rejected(self, document, recipient):
+        """Called when sarabun document is rejected."""
+        self.button_rejected()
+        reason = recipient.comment if recipient else _("No reason provided")
+        self.message_post(
+            body=_("Rejected via Sarabun. Reason: %s") % reason,
+        )
+
+    def action_submit_to_sarabun(self):
+        """Submit PA to Sarabun for approval routing."""
+        self.ensure_one()
+        if self.state != 'to_approve':
+            raise UserError(_("Only approvals in 'to_approve' state can be submitted to Sarabun."))
+
+        result = self.action_create_sarabun_document()
+        document = self.env["sarabun.document"].browse(result.get("res_id"))
+        self.main_sarabun_document_id = document
+        self.message_post(
+            body=_("Submitted to Sarabun: %s") % document.name,
+        )
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": 'sarabun.document',
+            "res_id": document.id,
+            "view_mode": "form",
+            "target": "current",
+        }
+
+    def _get_sarabun_report_action(self):
+        """Delegate Sarabun report to PA report."""
+        return self.env.ref("purchase_request_approval.action_report_purchase_request_approval")

@@ -11,7 +11,7 @@
         "data/tier_validation.xml",
         "views/purchase_request_approval_views.xml"
     ],
-    'installable': True,
+    'installable': False,  # Deprecated - replaced by purchase_request_approval_sarabun
     'auto_install': False,
     'license': 'LGPL-3',
 }

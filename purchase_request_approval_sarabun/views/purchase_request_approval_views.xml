@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Hide direct approve/reject when using Sarabun -->
+    <record id="view_purchase_request_approval_form_sarabun" model="ir.ui.view">
+        <field name="name">purchase.request.approval.form.sarabun</field>
+        <field name="model">purchase.request.approval</field>
+        <field name="inherit_id" ref="purchase_request_approval.view_purchase_request_approval_form"/>
+        <field name="arch" type="xml">
+            <button name="button_approved" position="attributes">
+                <attribute name="attrs">{'invisible': [('sarabun_document_count', '>', 0)]}</attribute>
+            </button>
+            <button name="button_rejected" position="attributes">
+                <attribute name="attrs">{'invisible': [('sarabun_document_count', '>', 0)]}</attribute>
+            </button>
+        </field>
+    </record>
+
+    <!-- Add Sarabun review filter -->
+    <record id="view_purchase_request_approval_filter_sarabun" model="ir.ui.view">
+        <field name="name">purchase.request.approval.search.sarabun</field>
+        <field name="model">purchase.request.approval</field>
+        <field name="inherit_id" ref="purchase_request_approval.view_purchase_request_approval_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <filter name="needs_sarabun_review"
+                    string="Needs my Sarabun Review"
+                    domain="[('main_sarabun_document_id.current_user_recipient_id', '!=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

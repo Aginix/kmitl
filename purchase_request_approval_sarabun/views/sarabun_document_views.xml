@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add PA smart button to Sarabun document -->
+    <record id="view_sarabun_document_form_pa" model="ir.ui.view">
+        <field name="name">sarabun.document.form.pa</field>
+        <field name="model">sarabun.document</field>
+        <field name="inherit_id" ref="agx_sarabun.view_sarabun_document_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_view_origin']" position="after">
+                <button type="object"
+                    name="action_view_origin"
+                    class="oe_stat_button"
+                    icon="fa-shopping-cart"
+                    attrs="{'invisible': [('origin_model', '!=', 'purchase.request.approval')]}"
+                    string="Purchase Approval"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

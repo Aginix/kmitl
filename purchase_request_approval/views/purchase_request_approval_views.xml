@@ -73,6 +73,13 @@
                         class="oe_highlight"
                     />
                     <button
+                        name="action_submit_to_sarabun"
+                        string="ส่งอนุมัติผ่าน Sarabun"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|', ('state', '!=', 'to_approve'), ('sarabun_document_count', '>', 0)]}"
+                    />
+                    <button
                         name="button_approved"
                         states="to_approve"
                         string="Approve"
@@ -97,6 +104,16 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
+                        <field name="sarabun_document_count" invisible="1" />
+                        <button
+                            type="object"
+                            name="action_view_sarabun_documents"
+                            class="oe_stat_button"
+                            icon="fa-file-text-o"
+                            attrs="{'invisible': [('sarabun_document_count', '=', 0)]}"
+                        >
+                            <field name="sarabun_document_count" widget="statinfo" string="Sarabun"/>
+                        </button>
                         <button
                             class="oe_stat_button"
                             type="object"

@@ -16,6 +16,7 @@
         "thai_date_utils",
         "portal",
         "purchase_request_egp",
+        "agx_sarabun",
     ],
     "data": [
         "data/purchase_request_approval_sequence.xml",

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Document Type -->
+        <record id="document_type_purchase_approval" model="sarabun.document.type">
+            <field name="name">Purchase Request Approval</field>
+            <field name="code">purchase_approval</field>
+            <field name="description">Purchase request approval routing</field>
+        </record>
+
+        <!-- Default Route Template -->
+        <record id="route_template_purchase_approval" model="sarabun.route.template">
+            <field name="name">Purchase Approval Route</field>
+            <field name="description">Standard approval route for purchase requests</field>
+            <field name="origin_model">purchase.request.approval</field>
+            <field name="document_type_id" ref="document_type_purchase_approval"/>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Route Line: Manager Approval -->
+        <record id="route_line_manager_approve" model="sarabun.route.template.line">
+            <field name="template_id" ref="route_template_purchase_approval"/>
+            <field name="sequence">10</field>
+            <field name="routing_type">approve</field>
+            <field name="recipient_type">user</field>
+            <field name="user_id" ref="base.user_admin"/>
+        </record>
+    </data>
+</odoo>
