@@ -20,6 +20,7 @@
     "data": [
         "data/purchase_request_approval_sequence.xml",
         "data/activity.xml",
+        "data/sarabun_route_template_data.xml",
         "security/ir.model.access.csv",
         "security/purchase_request_approval.xml",
         "report/paperformat.xml",
