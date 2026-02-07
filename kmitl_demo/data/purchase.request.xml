@@ -85,9 +85,10 @@
     <function model="purchase.request" name="action_ignore_exceptions">
         <value eval="[ref('kmitl_demo.purchase_request_1')]" />
     </function>
-    <function model="purchase.request" name="button_to_verify">
+    <!-- Method button_to_verify removed with purchase_request_approval_kmitl module -->
+    <!-- <function model="purchase.request" name="button_to_verify">
         <value eval="[ref('kmitl_demo.purchase_request_1')]" />
-    </function>
+    </function> -->
 
     <!-- Purchase Request 1 EGP -->
     <record id="purchase_request_1_egp" model="purchase.request">
