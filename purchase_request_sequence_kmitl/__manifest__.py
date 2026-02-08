@@ -6,7 +6,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    'depends': ['hr_department_short_name', 'purchase_request_department'],
+    'depends': ['hr_department_short_name', 'purchase_request_kmitl'],
     'data': [],
     'installable': True,
     'auto_install': False,
