@@ -47,7 +47,6 @@
             <xpath expr="//page[@name='committee']" position="after">
                 <page name="logs" string="Operation">
                     <group>
-                        <field name="requested_by" widget="many2one_avatar_user" readonly="1" />
                         <field name="date_start" readonly="1" />
                     </group>
                 </page>
@@ -95,8 +94,12 @@
         web_icon="purchase_request_kmitl,static/description/icon.png"
     />
 
+    <!-- hide menu -->
+    <menuitem id="purchase_request.menu_purchase_request_line_act" active="False"/>
+    <menuitem id="purchase_request.menu_purchase_request_act" active="False"/>
     <!-- menu -->
-    <menuitem id="purchase_request_kmitl_root_menu" name="PR1" parent="purchase.menu_purchase_root" action="purchase_request.purchase_request_form_action" sequence="1" />
+    <menuitem id="purchase_request.menu_purchase_request" action="purchase_request.purchase_request_form_action" parent="purchase_request.parent_menu_purchase_request"/>
+    <menuitem id="purchase_request_kmitl_root_menu" name="PR1" parent="purchase.menu_purchase_root" action="purchase_request.purchase_request_form_action" sequence="3" />
 
     <function name="write" model="ir.actions.act_window">
         <value model="ir.actions.act_window" search="[('id', '=', ref('purchase_request.purchase_request_form_action'))]" />

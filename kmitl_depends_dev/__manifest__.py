@@ -10,7 +10,7 @@
                 'account_asset_kmitl', 'account_asset_number_kmitl', 'account_asset_operating_unit_access_all',
                 'account_asset_purchase', 'account_asset_subcomponent_kmitl', 'account_asset_tracking',
                 'account_asset_usability_kmitl', 'account_fiscal_year_all_user', 'account_fiscal_year_enhance',
-                'account_move_request', 'account_move_tier_validation_kmitl',
+                'disbursement', 'account_move_tier_validation_kmitl',
                 'account_payment_budget', 'analytic_operating_unit_tree', 'base_tier_validation_comment', 'budget_account_mass_edit',
                 'budget_analytic_account', 'budget_appropriation_operating_unit',
                 'budget_appropriation_report',
@@ -20,7 +20,7 @@
                 'partner_vat_required', 'stock_scrap_attachment', 'stock_scrap_hide_location_id', 'stock_scrap_origin_readonly_done',
                 'procurement_method_no_security', 'purchase_order_hide_create_bill_button', 'purchase_order_procurement_committee',
                 'purchase_order_received_qty_percent', 'purchase_order_report_kmitl', 'purchase_request_activity_kmitl',
-                'purchase_request_approval_account', 'purchase_request_approval_attach_existing_attachments', 'purchase_request_approval_tier_validation',
+                'purchase_request_approval_disbursement', 'purchase_request_approval_attach_existing_attachments', 'purchase_request_approval_tier_validation',
                 'purchase_request_attachment', 'purchase_request_hide_create_po_button', 'purchase_request_operating_unit_access_all',
                 'purchase_sequence_kmitl', 'purchase_request_sarabun', 'purchase_request_sequence_kmitl',
                 'purchase_request_ux_kmitl', 'purchase_work_acceptance_invoice_plan_deliverables', 'purchase_work_acceptance_invoice_plan_usability',
@@ -31,8 +31,8 @@
                 'purchase_guarantee_account_payment', 'purchase_guarantee_attachment', 'purchase_guarantee_bid_guarantee_kmitl',
                 'purchase_guarantee_kmitl', 'purchase_guarantee_lock', 'purchase_guarantee_no_invoice_bill', 'purchase_guarantee_purchase_order_kmitl',
                 'purchase_guarantee_tracking', 'purchase_manual_delivery_security', 'purchase_manual_delivery_work_acceptance',
-                'purchase_operating_unit_access_all', 'purchase_order_account_move_request', 'purchase_order_account_move_request_attach_existing_attachments',
-                'purchase_order_account_move_request_budget'],
+                'purchase_operating_unit_access_all', 'purchase_order_disbursement', 'purchase_order_disbursement_attach_existing_attachments',
+                'purchase_order_disbursement_budget'],
     'data': [
 
     ],

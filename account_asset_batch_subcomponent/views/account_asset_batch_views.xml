@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+      
+    <!-- View account.asset.batch form -->
+    <record id="view_account_asset_batch_form" model="ir.ui.view">
+        <field name="name">view.account.asset.batch.form</field>
+        <field name="model">account.asset.batch</field>
+        <field name="inherit_id" ref="account_asset_purchase.view_account_asset_batch_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='price_per_unit']" position="after">
+                <field name="is_editable" invisible="1"/>
+                <button name="action_open_subcomponent_wizard"
+                        type="object"
+                        icon="fa-cubes"
+                        string="Subcomponent"
+                        attrs="{'invisible': [('is_editable', '=', False)]}"/>
+            </xpath>
+        </field>
+    </record>
+
+  </odoo>

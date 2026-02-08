@@ -126,7 +126,7 @@ msgstr "วันที่อนุมัติ"
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__name
 msgid "Approval Reference"
-msgstr "รายงานขอซื้อ/จ้าง (พจ.1)"
+msgstr "เลขที่"
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
@@ -256,14 +256,15 @@ msgstr "วันที่เอกสาร"
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__date_start
 msgid "Date Start"
-msgstr ""
+msgstr "วันที่สร้างเอกสาร"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__department_id
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__requesting_department_id
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.portal_my_purchase_request_approvals
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
 msgid "Department"
-msgstr ""
+msgstr "หน่วยงาน"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__description
@@ -640,7 +641,7 @@ msgstr ""
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__procurement_method_id
 msgid "Procurement Method"
-msgstr ""
+msgstr "วิธีการจัดหา"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__procurement_plan_analytic_id
@@ -650,7 +651,7 @@ msgstr ""
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__procurement_type_id
 msgid "Procurement Type"
-msgstr ""
+msgstr "ประเภทการซื้อ"
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__product_id
@@ -682,7 +683,7 @@ msgstr "คำสั่งซื้อ"
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__request_id
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_form
 msgid "Purchase Request"
-msgstr "คำขอซื้อขอจ้าง"
+msgstr "เลขที่รายงานขอให้จัดหา"
 
 #. module: purchase_request_approval
 #. odoo-python
@@ -1223,8 +1224,8 @@ msgstr ""
 
 #. module: purchase_request_approval
 #: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__account_fiscal_year_id
-msgid "ปีงบประมาณ"
-msgstr ""
+msgid "Fiscal Year"
+msgstr "ปีงบประมาณ"
 
 #. module: purchase_request_approval
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_sign
@@ -1387,3 +1388,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval.report_purchase_request_approval
 msgid "ใบเสนอราคาพัสดุ"
 msgstr ""
+
+#. module: purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval.field_purchase_request_approval__main_sarabun_document_id
+msgid "Main Sarabun Document"
+msgstr "เลขที่บันทึกขอซื้อ/จ้าง"
+
+#. module: purchase_request_approval
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval.view_purchase_request_approval_search
+msgid "Fiscal Year"
+msgstr "ปีงบประมาณ"

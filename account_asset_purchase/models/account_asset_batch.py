@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -41,6 +41,11 @@ class AccountAssetBatch(models.Model):
         "purchase.order"
     )
 
+    contract_number = fields.Char(
+        related='purchase_id.contract_number',
+        string="Contract Number"
+    )
+
     company_id = fields.Many2one(
         "res.company",
         string="Company",
@@ -67,7 +72,7 @@ class AccountAssetBatch(models.Model):
     )
 
     department_id = fields.Many2one(
-        "hr.department", 
+        "hr.department",
         string="Department",
         related="purchase_id.department_id"
     )
@@ -102,10 +107,29 @@ class AccountAssetBatch(models.Model):
         [
             ("procurement", "Procurement"),
             ("donation", "Donation"),
+            ("transfer", "Transfer"),
+
         ],
         string="Source of asset",
         tracking=True,
     )
+    received_from_agency = fields.Char(
+        string="received from agency",
+        tracking=True,
+    )
+
+    @api.onchange('purchase_id')
+    def _onchange_purchase_id_set_source(self):
+        if self.purchase_id:
+            self.source_of_asset = 'procurement'
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        for record in records:
+            if record.purchase_id:
+                record.source_of_asset = 'procurement'
+        return records
 
     @api.depends('line_ids.amount_total')
     def _compute_total_amount(self):
@@ -131,7 +155,7 @@ class AccountAssetBatch(models.Model):
             purchase = self.env["purchase.order"].browse(purchase_id)
             if purchase.department_id and purchase.department_id.operating_unit_id:
                 res["operating_unit_id"] = purchase.department_id.operating_unit_id.id
-        return res    
+        return res
 
     def action_register_assets(self):
         for batch in self:
