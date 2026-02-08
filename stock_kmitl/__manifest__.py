@@ -10,11 +10,6 @@
     'data': [
         "views/stock.xml"
     ],
-    'assets': {
-              'web.assets_backend': [
-                  'stock_kmitl/static/src/**/*'
-              ],
-          },
     'installable': True,
     'auto_install': False,
     'license': 'LGPL-3',
