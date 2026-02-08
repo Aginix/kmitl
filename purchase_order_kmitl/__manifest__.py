@@ -12,7 +12,6 @@
         "account_fiscal_year",
         "hr",
         "purchase_operating_unit",
-        "purchase_request_kmitl",
     ],
     "data": ["views/purchase_order_views.xml"],
     "application": False,
