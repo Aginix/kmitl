@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import _, api, fields, models
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -14,7 +14,6 @@ class PurchaseOrder(models.Model):
         "purchase.request",
         compute="_compute_request_id",
         string="Purchase Request",
-        store=True,
     )
 
     @api.depends("order_line.purchase_request_lines")
