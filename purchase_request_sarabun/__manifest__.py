@@ -10,7 +10,6 @@
     "depends": [
         "purchase_request_kmitl",
         "purchase_request_budget",
-        "purchase_request_department",
         "purchase_request_attachment",
         "l10n_th_amount_to_text",
         "l10n_th_fonts",
