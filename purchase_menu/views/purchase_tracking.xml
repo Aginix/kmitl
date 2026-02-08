@@ -3,8 +3,10 @@
         <field name="name">Contract Nearly Expire</field>
         <field name="res_model">purchase.order</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('work_end', '&lt;', (context_today() + relativedelta(days=30)))]</field>
-        <field name="context">{}</field>
+        <field name="view_id" ref="purchase_menu.view_purchase_order_tree_expiring"/>
+        <field name="search_view_id" ref="purchase_menu.view_purchase_order_search_expiring"/>
+        <field name="domain">[('days_to_expire', '&lt;', 90)]</field>
+        <field name="context">{'search_default_group_by_expire_groups': 1}</field>
     </record>
 
     <record id="action_guarantees_expiring" model="ir.actions.act_window">

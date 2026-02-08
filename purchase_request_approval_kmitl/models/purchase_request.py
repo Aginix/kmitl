@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from lxml import etree
-
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
@@ -24,67 +22,10 @@ class PurchaseRequest(models.Model):
         },
     )
     can_request = fields.Boolean(compute="_compute_can_request")
-    hide_request_validation_button = fields.Boolean(
-        compute="_compute_hide_request_validation_button",
-        string="Hide Request Validation Button",
-        store=False,
-    )
-    hide_restart_validation_button = fields.Boolean(
-        compute="_compute_hide_restart_validation_button",
-        string="Hide Restart Validation Button",
-        store=False,
-    )
-
-    @api.depends("need_validation", "validation_status", "can_request")
-    def _compute_hide_restart_validation_button(self):
-        for record in self:
-            record.hide_restart_validation_button = (
-                record.need_validation != True
-                or record.validation_status != "pending"
-                or record.can_request is False
-            )
-
-    @api.depends('need_validation', 'validation_status', 'rejected', 'state', 'can_request')
-    def _compute_hide_request_validation_button(self):
-        current_user = self.env.user
-        for record in self:
-            record.hide_request_validation_button = (
-                record.need_validation != True
-                or record.validation_status == 'pending'
-                or record.rejected
-                or record.state != 'to_approve'
-                or record.can_request is False
-                or record.requested_by != current_user
-            )
 
     def _compute_is_purchase_request(self):
         for rec in self:
             rec.is_purchase_request = rec._name == "purchase.request"
-
-    def _add_tier_validation_buttons(self, node, params):
-        """ "close btn"""
-        if self.is_purchase_request:
-            str_element = self.env["ir.qweb"]._render(
-                "base_tier_validation.tier_validation_buttons", params
-            )
-            new_node = etree.fromstring(str_element)
-            return new_node
-        return etree.Element("div")
-
-    def _validate_tier(self, tiers=False):
-        super()._validate_tier(tiers)
-        reviews = self.review_ids.filtered(
-            lambda r: r.status == "pending" and (self.env.user in r.reviewer_ids)
-        )
-        if not reviews:
-            return self.button_approved()
-
-    @api.model
-    def _get_after_validation_exceptions(self):
-        res = super()._get_after_validation_exceptions()
-        res.append("state")
-        res.append("substate_id")
-        return res
 
     def button_to_verify(self):
         self.ensure_one()
@@ -98,27 +39,6 @@ class PurchaseRequest(models.Model):
         for record in self:
             if record.state in ("to_verify"):
                 record.is_editable = False
-
-    def request_validation(self):
-        self.ensure_one()
-        res = super().request_validation()
-        return res
-
-    def restart_validation(self):
-        self.ensure_one()
-        res = super().restart_validation()
-        self.write({"state": "to_verify"})
-        return res
-
-    @api.model
-    def _get_under_validation_exceptions(self):
-        res = super()._get_under_validation_exceptions()
-        res.append("state")
-        res.append("substate_id")
-        res.append("approved_by")
-        res.append("date_verified")
-        res.append("date_approved")
-        return res
 
     @api.depends("requested_by")
     def _compute_can_request(self):

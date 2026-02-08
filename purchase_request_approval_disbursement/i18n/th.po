@@ -1,0 +1,149 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_request_approval_disbursement
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-08 08:57+0000\n"
+"PO-Revision-Date: 2026-02-08 16:04+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.8\n"
+
+#. module: purchase_request_approval_disbursement
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
+msgid ""
+"<strong>Note:</strong>\n"
+"                            If you select \"Use Purchase Order\", you must create a Purchase Order."
+msgstr ""
+"<strong>หมายเหตุ:</strong>\n"
+"                            ถ้าหากเลือก “สร้างใบจัดซื้อ/จ้าง”, ระบบจะบังคับให้สร้างใบจัดซื้อ/จ้าง เท่านั้น"
+
+#. module: purchase_request_approval_disbursement
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_search
+msgid "Bill Status"
+msgstr ""
+
+#. module: purchase_request_approval_disbursement
+#. odoo-python
+#: code:addons/purchase_request_approval_disbursement/models/purchase_request_approval.py:0
+#, python-format
+msgid "Billing %(dr_name)s for %(pa_name)s created successfully, waiting for operation."
+msgstr "ตามรายงานขอซื้อ/จ้าง (พจ.1) เลขที่ %(pa_name)s ได้จัดทำใบขอเบิกเลขที่ %(dr_name)s แล้ว อยู่ระหว่างดำเนินการ"
+
+#. module: purchase_request_approval_disbursement
+#: model:ir.model.fields,field_description:purchase_request_approval_disbursement.field_purchase_request_approval__billing_status
+msgid "Billing Status"
+msgstr "สถานะการเบิก"
+
+#. module: purchase_request_approval_disbursement
+#: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__billing_status__cancel
+msgid "Cancelled"
+msgstr "ยกเลิกแล้ว"
+
+#. module: purchase_request_approval_disbursement
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
+msgid "Create Bill"
+msgstr "สร้างใบขอเบิก"
+
+#. module: purchase_request_approval_disbursement
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
+msgid "Create Purchase Order"
+msgstr "สร้างใบจัดซื้อ/จ้าง"
+
+#. module: purchase_request_approval_disbursement
+#: model:ir.model,name:purchase_request_approval_disbursement.model_disbursement_request
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
+msgid "Disbursement Request"
+msgstr "ใบขอเบิก"
+
+#. module: purchase_request_approval_disbursement
+#: model:ir.model.fields,field_description:purchase_request_approval_disbursement.field_purchase_request_approval__disbursement_request_count
+msgid "Disbursement Request Count"
+msgstr "จำนวนใบขอเบิก"
+
+#. module: purchase_request_approval_disbursement
+#: model:ir.model.fields,field_description:purchase_request_approval_disbursement.field_purchase_request_approval__disbursement_request_ids
+msgid "Disbursement Requests"
+msgstr "ใบขอเบิก"
+
+#. module: purchase_request_approval_disbursement
+#: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__billing_status__draft
+msgid "Draft"
+msgstr "แบบร่าง"
+
+#. module: purchase_request_approval_disbursement
+#. odoo-python
+#: code:addons/purchase_request_approval_disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "No Purchase Request Approval linked to this request."
+msgstr ""
+
+#. module: purchase_request_approval_disbursement
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_disbursement_request_form
+msgid "PA"
+msgstr "พจ.1"
+
+#. module: purchase_request_approval_disbursement
+#: model:ir.model.fields,field_description:purchase_request_approval_disbursement.field_purchase_request_approval__display_purchase_order
+#: model:ir.model.fields,field_description:purchase_request_approval_disbursement.field_purchase_request_approval__purchase_order_id
+msgid "Purchase Order"
+msgstr "ใบจัดซื้อ/จ้าง"
+
+#. module: purchase_request_approval_disbursement
+#: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
+msgid "Purchase Orders"
+msgstr "ใบจัดซื้อ/จ้าง"
+
+#. module: purchase_request_approval_disbursement
+#. odoo-python
+#: code:addons/purchase_request_approval_disbursement/models/disbursement_request.py:0
+#: model:ir.model,name:purchase_request_approval_disbursement.model_purchase_request_approval
+#: model:ir.model.fields,field_description:purchase_request_approval_disbursement.field_disbursement_request__purchase_request_approval_id
+#, python-format
+msgid "Purchase Request Approval"
+msgstr "รายงานขอซื้อ/จ้าง (พจ.1)"
+
+#. module: purchase_request_approval_disbursement
+#: model:ir.model,name:purchase_request_approval_disbursement.model_purchase_request_line
+msgid "Purchase Request Line"
+msgstr "คำขอซื้อขอจ้างไลน์"
+
+#. module: purchase_request_approval_disbursement
+#: model:ir.model.fields,field_description:purchase_request_approval_disbursement.field_purchase_request_approval__purchase_count
+msgid "Purchases count"
+msgstr ""
+
+#. module: purchase_request_approval_disbursement
+#: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__billing_status__submitted
+msgid "Submitted"
+msgstr "ส่งข้อมูลแล้ว"
+
+#. module: purchase_request_approval_disbursement
+#. odoo-python
+#: code:addons/purchase_request_approval_disbursement/models/disbursement_request.py:0
+#, python-format
+msgid "This record has been created from: <a href=\"%(link)s\" target=\"_blank\">%(name)s</a>"
+msgstr "เอกสารนี้ถูกสร้างจาก : <a href=\"%(link)s\" target=\"_blank\">%(name)s</a>"
+
+#. module: purchase_request_approval_disbursement
+#: model:ir.model.fields,field_description:purchase_request_approval_disbursement.field_purchase_request_approval__disbursement_request_total
+msgid "Total Disbursement Request"
+msgstr "จำนวนใบขอเบิก"
+
+#. module: purchase_request_approval_disbursement
+#: model:ir.model.fields,field_description:purchase_request_approval_disbursement.field_purchase_request_approval__use_purchase_order
+msgid "Use Purchase Order"
+msgstr "สร้างใบจัดซื้อ/จ้าง"
+
+#. module: purchase_request_approval_disbursement
+#: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__billing_status__validated
+msgid "Validated"
+msgstr "ตรวจสอบแล้ว"
