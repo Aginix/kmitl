@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 
 class PurchaseRequestApproval(models.Model):
     _name = "purchase.request.approval"
-    _inherit = ["mail.thread", "mail.activity.mixin", "portal.mixin", "thai.date.mixin", "tier.validation"]
+    _inherit = ["mail.thread", "mail.activity.mixin", "portal.mixin", "thai.date.mixin", "tier.validation", "sarabun.document.mixin"]
     _inherits = {"purchase.request": "request_id"}
 
     _description = "Purchase Request Approval"
@@ -46,6 +46,7 @@ class PurchaseRequestApproval(models.Model):
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
+            ("validate", "Validate"),
             ("to_approve", "To be approved"),
             ("approved", "Approved"),
             ("rejected", "Rejected"),
@@ -103,6 +104,12 @@ class PurchaseRequestApproval(models.Model):
     requesting_department_id = fields.Many2one('hr.department', string='Department', tracking=True)
 
     report_html_url = fields.Char(compute="_compute_report_html_url")
+
+    main_sarabun_document_id = fields.Many2one(
+        comodel_name="sarabun.document",
+        string="Main Sarabun Document",
+        copy=False,
+    )
 
     # _sql_constraints = [
     #     (
@@ -168,6 +175,13 @@ class PurchaseRequestApproval(models.Model):
         )
 
     def button_approved(self):
+        # Check if sarabun routing is pending
+        for rec in self:
+            if rec.main_sarabun_document_id and rec.main_sarabun_document_id.state == "sent":
+                raise UserError(
+                    _("Cannot manually approve while Sarabun routing is pending. "
+                      "Please wait for the routing to complete or cancel the Sarabun document.")
+                )
         for rec in self:
             message = (
                 rec.request_id._purchase_request_approval_approved_message_content(rec)
@@ -250,3 +264,100 @@ class PurchaseRequestApproval(models.Model):
         action["views"] = [(form.id, "form")]
         action["res_id"] = self.request_id.id
         return action
+
+    @api.depends("state")
+    def _compute_is_editable(self):
+        """Override to make validate state non-editable."""
+        super()._compute_is_editable()
+        for record in self:
+            if record.state in ("validate", "to_approve", "approved", "rejected"):
+                record.is_editable = False
+
+    # === Sarabun Document Integration ===
+
+    def button_validate(self):
+        """Move to validate state for data confirmation before routing."""
+        self.ensure_one()
+        self.write({"state": "validate"})
+        self.message_post(body=_("Document validated and ready for routing."))
+
+    def _prepare_sarabun_document_vals(self):
+        """Prepare values for creating a sarabun document."""
+        self.ensure_one()
+        vals = super()._prepare_sarabun_document_vals()
+        vals["subject"] = self.title or self.name
+        return vals
+
+    def action_submit_to_sarabun(self):
+        """Submit PA to Sarabun for approval routing."""
+        self.ensure_one()
+
+        # Create sarabun document
+        result = self.action_create_sarabun_document()
+        document = self.env["sarabun.document"].browse(result.get("res_id"))
+
+        # Link to PA
+        self.main_sarabun_document_id = document
+
+        # Log to chatter
+        self.message_post(
+            body=_("Submitted to Sarabun for approval: %s") % document.name,
+        )
+
+        # Open sarabun document form for routing selection
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "sarabun.document",
+            "res_id": document.id,
+            "view_mode": "form",
+            "target": "current",
+        }
+
+    def _on_sarabun_sent(self, document):
+        """
+        Called when sarabun document is sent (routing started).
+        Changes PA state to 'to_approve'.
+        """
+        _logger.info(
+            "Sarabun sent callback for PA %s (id=%s) from document %s",
+            self.name, self.id, document.name
+        )
+        self.write({"state": "to_approve"})
+        self.message_post(
+            body=_("Sent for approval via Sarabun document: %s") % document.name,
+        )
+
+    def _on_sarabun_completed(self, document):
+        """
+        Called when sarabun document routing is completed.
+        Auto-approves the PA.
+        """
+        _logger.info(
+            "Sarabun completed callback for PA %s (id=%s) from document %s",
+            self.name, self.id, document.name
+        )
+        self.button_approved()
+        self.message_post(
+            body=_("Approved via Sarabun document: %s") % document.name,
+        )
+
+    def _on_sarabun_rejected(self, document, recipient):
+        """
+        Called when sarabun document is rejected.
+        Changes PA state to rejected.
+        """
+        _logger.info(
+            "Sarabun rejected callback for PA %s (id=%s) from document %s",
+            self.name, self.id, document.name
+        )
+        self.button_rejected()
+        reason = recipient.comment if recipient else _("No reason provided")
+        self.message_post(
+            body=_("Rejected via Sarabun. Reason: %s") % reason,
+        )
+
+    def _get_sarabun_report_action(self):
+        """Delegate Sarabun report to Purchase Request Approval report."""
+        return self.env.ref(
+            "purchase_request_approval.action_report_purchase_request_approvals"
+        )

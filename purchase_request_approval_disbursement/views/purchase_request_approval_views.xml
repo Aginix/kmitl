@@ -54,13 +54,18 @@
                     />
                 </button>
             </xpath>
-            <xpath expr="//div" position="after">
+            <xpath expr="//group[1]" position="before">
                 <group>
                     <group>
                         <field
                             name="use_purchase_order"
                             attrs="{'readonly': [('state', 'not in', ['draft'])]}"
                         />
+                        <div class="alert alert-info mt16" role="alert" colspan="2"
+                            attrs="{'invisible': [('use_purchase_order', '=', False)]}">
+                            <strong>Note:</strong>
+                            If you select "Use Purchase Order", you must create a Purchase Order.
+                        </div>
                     </group>
                 </group>
             </xpath>
