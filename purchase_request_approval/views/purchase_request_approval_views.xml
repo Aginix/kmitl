@@ -151,6 +151,7 @@
                         <group name="main_info" string="Main Information">
                             <field name="name" placeholder="Approval Reference..." readonly="1"/>
                             <field name="title" readonly="1" />
+                            <field name="description" readonly="1"/>
                             <field name="date_start" readonly="1" />
                             <field name="requested_by" widget="many2one_avatar_user" readonly="1" />
                             <field name="department_id" readonly="1" />
@@ -162,9 +163,6 @@
                             <field name="estimated_cost" readonly="1" />
                             <field name="payment_type" readonly="1"/>
                         </group>
-                    </group>
-                    <group name="description_group" string="Description">
-                        <field name="description" nolabel="1" readonly="1"/>
                     </group>
                     <notebook>
                         <page name="lines" string="Products">
