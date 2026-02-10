@@ -4,7 +4,7 @@
     "category": "Accounting",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["account", "hr", "budget_product"],
+    "depends": ["account", "hr", "budget_product", "budget"],
     "data": [
         "views/approval_category_views.xml",
         "views/approval_category_group_views.xml",

@@ -41,6 +41,15 @@
                             <field name="city" attrs="{'invisible': [('has_city', '!=', True)], 'required': [('has_city', '=', True)]}"/>
                             <field name="country_id" attrs="{'invisible': [('has_country_id', '!=', True)], 'required': [('has_country_id', '=', True)]}"/>
                         </group>
+                        <group>
+                            <field name="budget_commitment_id" required="1" />
+                            <field name="source_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
+                            <field name="department_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
+                            <field name="fund_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
+                            <field name="activity_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
+                            <field name="budget_account_id" readonly="1" required="1" options="{'no_create': True, 'no_open': True}" />
+                            <field name="analytic_distribution" invisible="1"/>
+                        </group>
                     </group>
                     <notebook>
                         <page name="request_lines" string="Request Lines">
