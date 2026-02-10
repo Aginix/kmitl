@@ -1,0 +1,187 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* account_asset_batch_subcomponent
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-22 09:22+0000\n"
+"PO-Revision-Date: 2026-01-22 16:22+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.6\n"
+
+#. module: account_asset_batch_subcomponent
+#: model:ir.actions.act_window,name:account_asset_batch_subcomponent.action_account_asset_batch_subcomponent
+#: model_terms:ir.ui.view,arch_db:account_asset_batch_subcomponent.view_account_asset_batch_subcomponent_form
+msgid "Account Asset Batch Subcomponent"
+msgstr ""
+
+#. module: account_asset_batch_subcomponent
+#: model:ir.model,name:account_asset_batch_subcomponent.model_account_asset_batch
+msgid "AccountAssetBatch"
+msgstr ""
+
+#. module: account_asset_batch_subcomponent
+#: model:ir.model,name:account_asset_batch_subcomponent.model_account_asset_batch_line
+msgid "AccountAssetBatchLine"
+msgstr ""
+
+#. module: account_asset_batch_subcomponent
+#: model:ir.model,name:account_asset_batch_subcomponent.model_account_asset_batch_subcomponent
+msgid "AccountAssetBatchSubcomponent"
+msgstr ""
+
+#. module: account_asset_batch_subcomponent
+#: model_terms:ir.ui.view,arch_db:account_asset_batch_subcomponent.view_batch_subcomponent_wizard_form
+msgid "Add"
+msgstr "เพิ่ม"
+
+#. module: account_asset_batch_subcomponent
+#: model:ir.actions.act_window,name:account_asset_batch_subcomponent.action_batch_subcomponent_wizard
+#: model_terms:ir.ui.view,arch_db:account_asset_batch_subcomponent.view_batch_subcomponent_wizard_form
+msgid "Add Subcomponents"
+msgstr "เพิ่มส่วนประกอบครุภัณฑ์"
+
+#. module: account_asset_batch_subcomponent
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_account_asset_batch_subcomponent__batch_line_id
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard__batch_line_id
+msgid "Batch Line"
+msgstr "ชุดทะเบียนครุภัณฑ์"
+
+#. module: account_asset_batch_subcomponent
+#. odoo-python
+#: code:addons/account_asset_batch_subcomponent/wizards/batch_subcomponent_wizard.py:0
+#: model:ir.model,name:account_asset_batch_subcomponent.model_batch_subcomponent_wizard
+#, python-format
+msgid "BatchSubcomponentWizard"
+msgstr ""
+
+#. module: account_asset_batch_subcomponent
+#: model_terms:ir.ui.view,arch_db:account_asset_batch_subcomponent.view_batch_subcomponent_wizard_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: account_asset_batch_subcomponent
+#. odoo-python
+#: code:addons/account_asset_batch_subcomponent/models/account_asset_batch.py:0
+#, python-format
+msgid "Cannot register assets without any lines."
+msgstr ""
+
+#. module: account_asset_batch_subcomponent
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_account_asset_batch_subcomponent__create_uid
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard__create_uid
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard_line__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: account_asset_batch_subcomponent
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_account_asset_batch_subcomponent__create_date
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard__create_date
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard_line__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: account_asset_batch_subcomponent
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_account_asset_batch_subcomponent__display_name
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard__display_name
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard_line__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: account_asset_batch_subcomponent
+#: model_terms:ir.ui.view,arch_db:account_asset_batch_subcomponent.view_account_asset_batch_subcomponent_search
+msgid "Group By"
+msgstr ""
+
+#. module: account_asset_batch_subcomponent
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_account_asset_batch_subcomponent__id
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard__id
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard_line__id
+msgid "ID"
+msgstr ""
+
+#. module: account_asset_batch_subcomponent
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_account_asset_batch_subcomponent____last_update
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard____last_update
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard_line____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: account_asset_batch_subcomponent
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_account_asset_batch_subcomponent__write_uid
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard__write_uid
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard_line__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: account_asset_batch_subcomponent
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_account_asset_batch_subcomponent__write_date
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard__write_date
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard_line__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: account_asset_batch_subcomponent
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_account_asset_batch_subcomponent__name
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard_line__name
+#: model_terms:ir.ui.view,arch_db:account_asset_batch_subcomponent.view_account_asset_batch_subcomponent_search
+msgid "Name"
+msgstr "ชื่อรายการ"
+
+#. module: account_asset_batch_subcomponent
+#: model_terms:ir.ui.view,arch_db:account_asset_batch_subcomponent.view_account_asset_batch_subcomponent_form
+msgid "Name..."
+msgstr ""
+
+#. module: account_asset_batch_subcomponent
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard_line__number
+msgid "Number"
+msgstr "รหัสส่วนประกอบครุภัณฑ์"
+
+#. module: account_asset_batch_subcomponent
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_account_asset_batch_subcomponent__sequence
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard_line__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: account_asset_batch_subcomponent
+#. odoo-python
+#: code:addons/account_asset_batch_subcomponent/models/account_asset_batch.py:0
+#, python-format
+msgid "Some lines have zero amount. Please correct them before proceeding."
+msgstr ""
+
+#. module: account_asset_batch_subcomponent
+#: model_terms:ir.ui.view,arch_db:account_asset_batch_subcomponent.view_account_asset_batch_form
+msgid "Subcomponent"
+msgstr "ส่วนประกอบครุภัณฑ์"
+
+#. module: account_asset_batch_subcomponent
+#: model:ir.model,name:account_asset_batch_subcomponent.model_batch_subcomponent_wizard_line
+msgid "Subcomponent Line (Wizard)"
+msgstr ""
+
+#. module: account_asset_batch_subcomponent
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_account_asset_batch_line__subcomponent_ids
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard__line_ids
+#: model_terms:ir.ui.view,arch_db:account_asset_batch_subcomponent.view_batch_subcomponent_wizard_form
+msgid "Subcomponents"
+msgstr "ส่วนประกอบครุภัณฑ์"
+
+#. module: account_asset_batch_subcomponent
+#: model_terms:ir.actions.act_window,help:account_asset_batch_subcomponent.action_account_asset_batch_subcomponent
+msgid "There is no examples click here to add new Account Asset Batch Subcomponent."
+msgstr ""
+
+#. module: account_asset_batch_subcomponent
+#: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard_line__wizard_id
+msgid "Wizard"
+msgstr ""

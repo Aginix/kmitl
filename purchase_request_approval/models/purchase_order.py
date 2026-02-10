@@ -20,14 +20,4 @@ class PurchaseOrder(models.Model):
 
     def action_view_purchase_request_approval(self):
         self.ensure_one()
-
-        return {
-            "type": "ir.actions.act_window",
-            "name": "Purchase Request Approvals",
-            "res_model": "purchase.request.approval",
-            "view_mode": "form",
-            "domain": [("request_id", "=", self.request_id.id)],
-            "context": {
-                "default_request_id": self.request_id.id,
-            },
-        }
+        return self.request_id.action_view_request_approval()

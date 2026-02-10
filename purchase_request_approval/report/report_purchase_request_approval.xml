@@ -44,23 +44,25 @@
                             </h3>
                         </div>
                         <div class="row">
-                            <div class="col-8"> เลขที่ <span class="ms-2 fw-normal" t-out="o.name" />
+                            <div class="col-8"> เลขที่ <span class="ms-2 fw-normal" t-out="o.main_sarabun_document_id.name" />
                             </div>
                             <div class="col"> วันที่ <span
                                     class="ms-2 fw-normal"
-                                    t-esc="o.format_date_thai(o.date_start)"
+                                    t-esc="o.format_date_thai(o.main_sarabun_document_id.date)"
                                 />
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col"> หน่วยงาน <span
-                                    class="ms-2"
-                                    t-out="o.department_id.complete_name"
-                                />
+                            <div class="col"> หน่วยงาน <span class="ms-2" t-out="o.main_sarabun_document_id.sender_display" />
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col"> เรื่อง <span class="ms-2" t-out="o.title" />
+                            <div class="col"> เรื่อง <span class="ms-2" t-out="o.main_sarabun_document_id.subject" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                เรียน <span class="ms-2" t-out="o.main_sarabun_document_id.recipient" />
                             </div>
                         </div>
 
@@ -180,9 +182,6 @@
 
                         <div class="my-4" />
                         <p>รายละเอียดงบประมาณ</p>
-                        <!-- <t
-                            t-call="purchase_request_report_kmitl.report_purchase_request_budget"
-                        /> -->
 
                         <div class="my-4"></div>
                         <div class="mb-2">
@@ -196,10 +195,16 @@
                                     class="fw-bolder text-decoration-underline"
                                     t-out="len(o.attachment_ids.filtered(lambda x: x.attachment_type == 'rfq'))"
                                 />
-                                ชุด </li>
-                            <!-- <t
-                                t-call="purchase_request_report_kmitl.report_purchase_request_committee"
-                            /> -->
+                                ชุด
+                            </li>
+                            <li>
+                                เอกสารคุณสมบัติ จำนวน
+                                <span
+                                    class="fw-bolder text-decoration-underline"
+                                    t-out="len(o.attachment_ids.filtered(lambda x: x.attachment_type == 'tor'))"
+                                />
+                                ชุด
+                            </li> -->
                         </ol>
                         <div class="my-4" />
                         <p style="text-indent: 6em"> 1.1 ตาม อนุมัติให้จัดซื้อ <span
@@ -235,10 +240,6 @@
                         </ol>
 
                         <div class="my-5" style="height: 10px" />
-
-                        <t
-                            t-call="purchase_request_report_kmitl.report_purchase_request_sign"
-                        />
                     </div>
                 </t>
             </t>

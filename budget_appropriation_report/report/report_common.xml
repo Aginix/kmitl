@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Common styles template shared across all reports -->
+    <template id="report_common_styles">
+        <style>
+            * {
+                font-family: "THSarabunNew", Arial, sans-serif;
+                --bs-body-font-size: 15pt;
+            }
+            p,
+            span,
+            div {
+                font-size: 15pt;
+                line-height: 1.2;
+            }
+            .header-box {
+                border: 1px solid #000;
+                padding: 15px 30px;
+                text-align: center;
+                display: inline-block;
+            }
+            .header-text {
+                font-size: 18pt;
+                font-weight: normal;
+            }
+            .table-sm > :not(caption) > * > * {
+                padding: 0.065rem 0.15rem;
+            }
+        </style>
+    </template>
+
+    <!-- Council meeting header template (reusable) -->
+    <template id="report_council_header">
+        <t t-set="show_council_header" t-value="o.env.context.get('show_council_header', False)" />
+        <t t-if="show_council_header">
+            <div class="text-center mt-5 mb-5">
+                <div class="header-box">
+                    <div class="header-text">
+                        มติที่ประชุมสภาสถาบัน ครั้งที่
+                        <t t-out="o.council_meeting_no or '-'" />
+                    </div>
+                    <div class="header-text">
+                        วันที่
+                        <t t-if="o.council_meeting_date">
+                            <t t-out="o.council_meeting_date.strftime('%d')" />
+                            <t t-out="dict([('01','มกราคม'),('02','กุมภาพันธ์'),('03','มีนาคม'),('04','เมษายน'),('05','พฤษภาคม'),('06','มิถุนายน'),('07','กรกฎาคม'),('08','สิงหาคม'),('09','กันยายน'),('10','ตุลาคม'),('11','พฤศจิกายน'),('12','ธันวาคม')]).get(o.council_meeting_date.strftime('%m'), '')" />
+                            พ.ศ.
+                            <t t-out="o.council_meeting_date.year + 543" />
+                        </t>
+                        <t t-else="">-</t>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

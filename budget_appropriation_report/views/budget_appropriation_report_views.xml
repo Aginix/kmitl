@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_budget_appropriation_report_form" model="ir.ui.view">
+        <field name="name">budget.appropriation.report.form</field>
+        <field name="model">budget.appropriation.report</field>
+        <field name="arch" type="xml">
+            <form string="Budget Appropriation Report">
+                <header>
+                    <button name="action_confirm" string="ยืนยัน" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_done" string="เสร็จสิ้น" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'confirmed')]}"/>
+                    <button name="action_draft" string="กลับไปร่าง" type="object" attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                    <button name="action_open_report" string="ดูรายงาน" type="object" class="btn-secondary"/>
+                    <button name="action_print_all_with_header" string="พิมพ์เล่มประมาณการ (มีมติ)" type="object" class="btn-secondary"/>
+                    <button name="action_print_all_without_header" string="พิมพ์เล่มประมาณการ (ไม่มีมติ)" type="object" class="btn-secondary"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_appropriations" type="object" class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="appropriation_count" widget="statinfo" string="รายการ"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="ชื่อรายงาน"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="account_fiscal_year_id"/>
+                            <field name="compare_report_id"/>
+                            <field name="source_analytic_id"/>
+                        </group>
+                        <group>
+                            <field name="council_meeting_no"/>
+                            <field name="council_meeting_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="ประมาณการรายรับ" name="revenue_appropriations">
+                            <field name="revenue_appropriation_ids" domain="[('account_fiscal_year_id', '=', account_fiscal_year_id), ('budget_type', '=', 'revenue'), '|', ('source_analytic_id', '=', source_analytic_id), ('source_analytic_id', '=', False)]">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="department_analytic_id"/>
+                                    <field name="source_analytic_id"/>
+                                    <field name="amount_net" sum="รวม"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="ประมาณการรายจ่าย" name="expense_appropriations">
+                            <field name="expense_appropriation_ids" domain="[('account_fiscal_year_id', '=', account_fiscal_year_id), ('budget_type', '=', 'expense'), '|', ('source_analytic_id', '=', source_analytic_id), ('source_analytic_id', '=', False)]">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="department_analytic_id"/>
+                                    <field name="source_analytic_id"/>
+                                    <field name="amount_net" sum="รวม"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="หมายเหตุ" name="note">
+                            <field name="note" placeholder="หมายเหตุ..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_budget_appropriation_report_tree" model="ir.ui.view">
+        <field name="name">budget.appropriation.report.tree</field>
+        <field name="model">budget.appropriation.report</field>
+        <field name="arch" type="xml">
+            <tree string="Budget Appropriation Reports">
+                <field name="name"/>
+                <field name="account_fiscal_year_id"/>
+                <field name="council_meeting_no"/>
+                <field name="council_meeting_date"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_budget_appropriation_report_search" model="ir.ui.view">
+        <field name="name">budget.appropriation.report.search</field>
+        <field name="model">budget.appropriation.report</field>
+        <field name="arch" type="xml">
+            <search string="Search Budget Appropriation Reports">
+                <field name="name"/>
+                <field name="account_fiscal_year_id"/>
+                <field name="council_meeting_no"/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Confirmed" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Fiscal Year" name="group_by_fiscal_year" context="{'group_by': 'account_fiscal_year_id'}"/>
+                    <filter string="State" name="group_by_state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_budget_appropriation_report" model="ir.actions.act_window">
+        <field name="name">สรุปประมาณการรายรับและรายจ่าย</field>
+        <field name="res_model">budget.appropriation.report</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_budget_appropriation_report_search"/>
+    </record>
+</odoo>

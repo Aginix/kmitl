@@ -10,6 +10,8 @@ _logger = logging.getLogger(__name__)
 class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
+    title = fields.Char(string="title", tracking=True)
+
     tor_committee_ids = fields.One2many(
         comodel_name="procurement.committee",
         inverse_name="request_id",

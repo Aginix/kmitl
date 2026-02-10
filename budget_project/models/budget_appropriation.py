@@ -10,33 +10,18 @@ _logger = logging.getLogger(__name__)
 class BudgetAppropriation(models.Model):
     _inherit = 'budget.appropriation'
 
-    project_ids = fields.Many2many(
-        comodel_name='budget.project',
-        compute='_compute_project_ids',
-        string='รายการแผนจัดซื้อจัดจ้าง',
-        store=False,
-    )
+    def action_post(self):
+        super().action_post()
+        self._create_budget_project()
 
-    def _compute_project_ids(self):
-        for record in self:
-            record.project_ids = record.line_ids.mapped('project_ids')
-
-    def action_review(self):
-        super().action_review()
-        for line in self.line_ids:
-            if line.is_project:
-                for project in line.project_ids:
-                    project.action_validate()
-
-    def budget_move_line_vals(self):
-        lines = super().budget_move_line_vals()
-        for line in self.line_ids:
-            if line.is_project:
-                for project in line.project_ids:
-                    project.action_pending()
-                    vals = line.budget_move_line_vals()
-                    vals['balance'] = project.amount
-                    # vals['project_analytic_id'] = project.analytic_account_id.id
-                    vals['project_id'] = project.id
-                    lines.append(vals)
-        return lines
+    def _create_budget_project(self):
+        for line in self.line_ids.filtered('enable_project'):
+            self.env['kmitl.project'].create({
+                # TODO: change date_range_fy_id to account_fiscal_year_id
+                "account_fiscal_year_id": line.appropriation_id.date_range_fy_id.id,
+                "name": line.description,
+                "project_type": line.project_type,
+                "user_id": line.appropriation_id.user_id.id,
+                "creating_user_id": line.appropriation_id.user_id.id,
+                "analytic_distribution": line.analytic_distribution,
+            })

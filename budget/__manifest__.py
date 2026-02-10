@@ -1,6 +1,6 @@
 {
     "name": "KMITL Budgeting",
-    "version": "16.0.1.0.1",
+    "version": "16.0.1.1.0",
     "summary": """ KMITL Budgeting""",
     "category": "KMITL/Budgeting",
     "author": "Aginix Technologies",
@@ -27,11 +27,8 @@
         "views/budget_transfer_views.xml",
         "views/budget_menus.xml",
         "views/res_config_settings_views.xml",
-        "views/budget_appropriation_overview_views.xml",
+        "views/account_move_views.xml",
     ],
-    "assets": {
-        "web.assets_backend": ["budget/static/src/**/*"],
-    },
     "auto_install": False,
     "application": True,
     "license": "AGPL-3",

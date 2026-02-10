@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -69,13 +69,13 @@ class StockRequest(models.Model):
         copy=False
     )
     requested_by = fields.Many2one(
-        'res.users',
-        default=lambda self: self.env.user,
+        'res.partner',
+        default=lambda self: self.env.user.partner_id,
         tracking=True
     )
     request_line_ids = fields.One2many(
         'stock.request.line',
-        'request_id', 
+        'request_id',
         string='Lines'
     )
     picking_id = fields.Many2one(
@@ -88,11 +88,12 @@ class StockRequest(models.Model):
         store=False
     )
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name') in [False, _('New')]:
-            vals['name'] = _('New')
-        return super().create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name') in (False, _('New')):
+                vals['name'] = _('New')
+        return super().create(vals_list)
 
     def action_submitted(self):
         for rec in self:
@@ -116,11 +117,12 @@ class StockRequest(models.Model):
         self.ensure_one()
         return {
             'picking_type_id': self.picking_type_id.id,
+            'partner_id': self.requested_by.id,
             'location_id': self.location_id.id,
             'location_dest_id': self.location_dest_id.id,
             'origin': self.name,
         }
-    
+
     def _prepare_move_vals(self, line, picking):
         return {
             'name': line.product_id.display_name or line.name or '/',
@@ -132,20 +134,20 @@ class StockRequest(models.Model):
             'picking_id': picking.id,
             'origin': self.name,
         }
-    
+
     def action_create_picking(self):
         self.ensure_one()
         stock_picking = self.env['stock.picking']
         stock_move = self.env['stock.move']
         picking_vals = self._prepare_picking_vals()
         picking = stock_picking.create(picking_vals)
-        
+
         for line in self.request_line_ids:
             move_vals = self._prepare_move_vals(line, picking)
             stock_move.create(move_vals)
-            
+
         self.picking_id = picking.id
-        
+
         return {
             'type': 'ir.actions.act_window',
             'name': _('Picking'),
@@ -154,7 +156,7 @@ class StockRequest(models.Model):
             'res_id': picking.id,
             'target': 'current',
         }
-    
+
     def action_view_picking(self):
         self.ensure_one()
         if not self.picking_id:
@@ -168,14 +170,14 @@ class StockRequest(models.Model):
             'res_id': self.picking_id.id,
             'target': 'current',
         }
-    
+
     def copy(self, default=None):
         default = dict(default or {})
         default['name'] = _('New')
         default['state'] = 'draft'
         default['picking_id'] = False
         return super().copy(default)
-    
+
     @api.depends('state')
     def _compute_is_editable(self):
         for rec in self:
@@ -223,7 +225,7 @@ class StockRequestLine(models.Model):
         compute='_compute_price_from_valuation',
         store=False
     )
-    
+
     total_price = fields.Float(
         string='Total Price',
         compute='_compute_total_price_from_valuation',
@@ -252,7 +254,7 @@ class StockRequestLine(models.Model):
             moves = line.request_id.picking_id.move_ids_without_package.filtered(
                 lambda m: m.product_id == line.product_id
             )
-            
+
             if not moves:
                 line.valuation_layer_id = False
                 continue
@@ -260,7 +262,7 @@ class StockRequestLine(models.Model):
             valuation_layer = self.env['stock.valuation.layer'].search([
                 ('stock_move_id', 'in', moves.ids)
             ], order='create_date asc', limit=1)
-            
+
             line.valuation_layer_id = valuation_layer if valuation_layer else False
 
     @api.depends('valuation_layer_id', 'qty_done')

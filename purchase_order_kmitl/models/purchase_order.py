@@ -26,3 +26,15 @@ class PurchaseOrder(models.Model):
     date_planned = fields.Datetime(
         string="Date End"
     )
+
+    department_id = fields.Many2one(
+        comodel_name="hr.department",
+        string="Department",
+        states=READONLY_STATES,
+        tracking=True
+    )
+
+    state = fields.Selection(selection_add=[
+        ("purchase", "Open"),
+        ("done", "Done")
+    ])

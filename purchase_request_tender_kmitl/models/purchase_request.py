@@ -17,7 +17,7 @@ class PurchaseRequest(models.Model):
         self.ensure_one()
 
         return {
-            'name': 'Purchase Request Tender',
+            'name': _('Purchase Request Tender'),
             'type': 'ir.actions.act_window',
             'res_model': 'purchase.request.tender',
             'view_mode': 'tree',

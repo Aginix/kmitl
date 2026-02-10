@@ -158,6 +158,19 @@ class BudgetAppropriation(models.Model):
         default="expense",
         states=READONLY_STATES,
     )
+    appropriation_type = fields.Selection(
+        selection=[
+            ("initial", "งบประมาณต้นปี"),
+            ("supplementary", "งบประมาณเพิ่มเติม"),
+        ],
+        string="ประเภทการจัดสรร",
+        tracking=True,
+        copy=True,
+        default="initial",
+        readonly=False,
+        states=READONLY_STATES,
+        help="ใช้แยกประเภทการจัดสรรงบประมาณ ต้นปี vs ระหว่างปี",
+    )
     company_id = fields.Many2one(
         comodel_name="res.company",
         string="Company",
@@ -216,7 +229,25 @@ class BudgetAppropriation(models.Model):
         compute="_compute_hide_review_button", readonly=True
     )
 
-    department_id = fields.Many2one('hr.department', tracking=True, default=lambda self: self.env.user.employee_id.department_id.id)
+    # Portal: computed account_ids for hierarchy traversal
+    account_ids = fields.Many2many(
+        "budget.account",
+        compute="_compute_account_ids",
+        context={"active_test": False},
+        string="Budget Accounts",
+        help="Budget accounts computed from budget account hierarchy.",
+    )
+
+    @api.depends("line_ids.account_id")
+    def _compute_account_ids(self):
+        """Compute all budget accounts from line hierarchy."""
+        for rec in self:
+            all_account_ids = []
+            for account_ids in rec.line_ids.mapped("account_ids"):
+                all_account_ids += account_ids.mapped("id")
+            for account_ids in rec.deduct_line_ids.mapped("account_ids"):
+                all_account_ids += account_ids.mapped("id")
+            rec.account_ids = [Command.set(list(set(all_account_ids)))]
 
     @api.depends("line_ids.balance", "deduct_line_ids.balance")
     def _compute_amount(self):
@@ -300,8 +331,9 @@ class BudgetAppropriation(models.Model):
             budget_move.action_post()
 
     def budget_move_vals(self):
-        return {
+        vals = {
             "move_type": "appropriation",
+            "appropriation_type": self.appropriation_type,
             "date": self.date,
             "ref": self.ref,
             "department_analytic_id": self.department_analytic_id.id,
@@ -313,6 +345,8 @@ class BudgetAppropriation(models.Model):
             "appropriation_id": self.id,
             "line_ids": [Command.create(vals) for vals in self.budget_move_line_vals()],
         }
+
+        return vals
 
     def budget_move_line_vals(self):
         lines = list()
@@ -362,3 +396,73 @@ class BudgetAppropriation(models.Model):
             .sudo()
             .report_action(self, data=data)  # required to propagate context
         )
+
+    def open_record_url(self):
+        """Open portal preview URL in new tab."""
+        if self.id:
+            return {
+                'type': 'ir.actions.act_url',
+                'url': '/budget/budget_appropriation/%s' % (self.id),
+                'target': 'new',
+            }
+
+    def get_f4_report_data(self):
+        """Generate F4 report data for portal display (revenue appropriations)."""
+        self.ensure_one()
+        root_account_ids = self.env["budget.account"].search(
+            [
+                ("parent_id", "=", False),
+                ("id", "in", self.account_ids.mapped(lambda x: x.id)),
+            ],
+            order="code",
+        )
+
+        def _process_account(account_id, array, deduct):
+            rows = self.deduct_line_ids if deduct else self.line_ids
+            rows = rows.filtered(
+                lambda x: x.account_id.parent_path.startswith(account_id.parent_path)
+                or ("/" + account_id.parent_path) in x.account_id.parent_path
+            )
+
+            balance = sum(rows.mapped("balance"))
+
+            if rows:
+                array.append(
+                    {
+                        "id": account_id.id,
+                        "code": account_id.code,
+                        "name": account_id.name,
+                        "hierarchy_level": account_id.hierarchy_level,
+                        "balance": balance,
+                        "sub_rows": [
+                            {
+                                "id": line.id,
+                                "description": line.description,
+                                "note": line.note,
+                            }
+                            for line in rows.filtered(
+                                lambda x: x.account_id.id == account_id.id
+                            )
+                        ],
+                    }
+                )
+
+            for child_id in account_id.child_ids:
+                _process_account(child_id, array, deduct)
+
+        line_ids = []
+        for account_id in root_account_ids.filtered(lambda x: not x.deduct):
+            _process_account(account_id, line_ids, False)
+
+        deduct_ids = []
+        for account_id in root_account_ids.filtered(lambda x: x.deduct):
+            _process_account(account_id, deduct_ids, True)
+
+        return {
+            "id": self.id,
+            "name": self.name,
+            "account_fiscal_year": self.account_fiscal_year_id.name,
+            "source_analytic_name": self.source_analytic_id.complete_name,
+            "line_ids": line_ids,
+            "deduct_ids": deduct_ids,
+        }

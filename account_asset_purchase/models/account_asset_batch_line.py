@@ -75,6 +75,12 @@ class AccountAssetBatchLine(models.Model):
 
     notes = fields.Text()
 
+    is_editable = fields.Boolean(
+        related='batch_id.is_editable',
+        string="Is Editable",
+        store=False
+    )
+
     @api.depends("amount", "price_per_unit")
     def _compute_amount_total(self):
         for rec in self:

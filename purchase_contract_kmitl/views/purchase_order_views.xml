@@ -5,39 +5,53 @@
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_form" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='date_order']" position="after">
-                <field
-                    name="contract_type_id"
-                    required="1"
-                    options="{'no_open': True}"
-                />
-                <field name="contract_name" />
-                <field name="contract_number" />
-                <field name="fines_rate" widget="float" />
-                <field name="fines_late" widget="float" readonly="1" />
-                <field name="late_days" readonly="1" />
-                <field name="supervision_cost" widget="float" />
-                <field name="fines_late" invisible="1" />
-                <field name="late_days" invisible="1" />
+            <xpath expr="//field[@name='date_order']/../.." position="after">
+                <group
+                    string="รายละเอียดสัญญา/ใบสั่งซื้อ/จ้าง"
+                    name="contract_info_section"
+                >
+                    <group>
+                        <field name="contract_name" />
+                        <field
+                            name="contract_type_id"
+                            required="1"
+                            options="{'no_open': True}"
+                        />
+                        <field name="contract_number" />
+                        <field name="date_order_date" required="1" />
+                        <label for="contract_period_days" />
+                        <div name="contract_period_days_div" class="o_row">
+                            <field name="contract_period_days" required="1" />
+                            <span>วัน</span>
+                        </div>
+                        <label for="work_start" string="Date Work" />
+                        <div name="work_start_div" class="o_row">
+                            <field name="work_start" required="1" />
+                            <i
+                                class="fa fa-long-arrow-right mx-2 oe_edit_only"
+                                aria-label="Arrow icon"
+                                title="Arrow"
+                            />
+                            <field name="work_end" readonly="1" />
+                        </div>
+                    </group>
+                </group>
+                <group string="ค่าปรับและค่าควบคุมงาน" name="fines_supervision_section">
+                    <group>
+                        <field name="fines_late" invisible="1" />
+                        <field name="late_days" invisible="1" />
+                        <field name="fines_rate" widget="float" />
+                        <field name="supervision_cost" widget="float" />
+                    </group>
+                </group>
             </xpath>
-
-            <xpath expr="//field[@name='date_order']" position="after">
-                <field name="date_order_date" required="1" />
-                <label for="contract_period_days" />
-                <div name="contract_period_days_div" class="o_row">
-                    <field name="contract_period_days" required="1" />
-                    <span>วัน</span>
-                </div>
-                <label for="work_start" string="Date Work" />
-                <div name="work_start_div" class="o_row">
-                    <field name="work_start" required="1" />
-                    <i
-                        class="fa fa-long-arrow-right mx-2 oe_edit_only"
-                        aria-label="Arrow icon"
-                        title="Arrow"
-                    />
-                    <field name="work_end" readonly="1" />
-                </div>
+            <xpath expr="//sheet/notebook" position="inside">
+                <page string="ค่าปรับล่าช้า" name="late_fines_page">
+                    <group>
+                        <field name="fines_late" widget="float" readonly="1" />
+                        <field name="late_days" readonly="1" />
+                    </group>
+                </page>
             </xpath>
 
             <!-- invisible -->
@@ -126,8 +140,8 @@
             <xpath expr="//field[@name='date_planned']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-            <xpath expr="//field[@name='date_planned']" position="before">
-                <field name="work_end" widget="remaining_days" />
+            <xpath expr="//field[@name='amount_total']" position="after">
+                <field name="work_end_display"/>
             </xpath>
         </field>
     </record>
