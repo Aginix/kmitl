@@ -34,6 +34,8 @@
                 <header>
                     <button name="action_check_budget_availability" string="Check Budget" type="object" class="btn-info" attrs="{'invisible': [('state', '!=', 'draft')]}" help="Check budget availability for this commitment"/>
                     <button name="action_start" string="Confirm &amp; Start" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_open_obligate_wizard" string="ผูกพัน" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'in_progress')]}"/>
+                    <button name="action_open_consume_wizard" string="ตัดงบ" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'in_progress')]}"/>
                     <button name="action_done" string="Mark as Done" type="object" attrs="{'invisible': [('state', '!=', 'in_progress')]}" help="Close this commitment and release any remaining budget"/>
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"/>
                     <button name="action_reset_to_draft" string="Reset to Draft" type="object" attrs="{'invisible': [('state', '!=', 'cancel')]}"/>

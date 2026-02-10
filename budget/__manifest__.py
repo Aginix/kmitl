@@ -21,6 +21,7 @@
         "security/security.xml",
         "security/ir.model.access.csv",
         "views/budget_account_views.xml",
+        "views/budget_commitment_wizard_views.xml",
         "views/budget_commitment_views.xml",
         "views/budget_journal_views.xml",
         "views/budget_move_views.xml",

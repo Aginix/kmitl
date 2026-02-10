@@ -742,6 +742,38 @@ class BudgetCommitment(models.Model):
             "context": {"default_commitment_id": self.id},
         }
 
+    # === Wizard Actions === #
+
+    def action_open_obligate_wizard(self):
+        """Open wizard to add obligation lines."""
+        self.ensure_one()
+        return {
+            "name": _("ผูกพัน (Obligate)"),
+            "type": "ir.actions.act_window",
+            "res_model": "budget.commitment.amount.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "default_commitment_id": self.id,
+                "default_wizard_type": "obligate",
+            },
+        }
+
+    def action_open_consume_wizard(self):
+        """Open wizard to consume budget."""
+        self.ensure_one()
+        return {
+            "name": _("ตัดงบ (Consume)"),
+            "type": "ir.actions.act_window",
+            "res_model": "budget.commitment.amount.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "default_commitment_id": self.id,
+                "default_wizard_type": "consume",
+            },
+        }
+
     # === Obligate Line Helpers === #
 
     def add_obligate_lines(self, lines_data):
