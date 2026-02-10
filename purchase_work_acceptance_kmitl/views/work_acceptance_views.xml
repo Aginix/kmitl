@@ -39,6 +39,12 @@
             >
                 <attribute name="optional">hide</attribute>
             </xpath>
+
+            <xpath expr="//button[@name='button_cancel']" position="attributes">
+                <attribute name="confirm">
+                    Are you sure you want to Cancel?
+                </attribute>
+            </xpath>
         </field>
     </record>
 
