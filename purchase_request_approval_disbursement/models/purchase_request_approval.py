@@ -16,7 +16,7 @@ class PurchaseRequestApproval(models.Model):
         comodel_name='purchase.order',
         compute='_compute_purchase_order_id',
         string='Purchase Order',
-        store=False,
+        store=True,
     )
 
     display_purchase_order = fields.Char(
