@@ -9,9 +9,7 @@ _LINE_FIELDS = [
     "account_id",
     "amount",
     "activity_analytic_id",
-    "department_analytic_id",
     "fund_analytic_id",
-    "source_analytic_id",
     "analytic_distribution",
 ]
 
@@ -21,13 +19,12 @@ class BudgetCommitment(models.Model):
     Budget Commitment - Reserve budget amounts before consumption.
 
     Implements a ledger-based architecture where each commitment can have
-    one or more lines of type 'reserve' or 'obligate', each targeting a
+    lines of type 'reserve', 'obligate', or 'consume', each targeting a
     specific budget account and analytic combination.
 
     State Lifecycle:
-        draft → reserved → obligated → done
-                                      ↗
-        cancel ← (any non-done state)
+        draft → in_progress → done
+        cancel ← (draft or in_progress)
     """
 
     _name = "budget.commitment"
@@ -37,8 +34,7 @@ class BudgetCommitment(models.Model):
     _rec_names_search = ["name", "ref"]
 
     READONLY_STATES = {
-        "reserved": [("readonly", True)],
-        "obligated": [("readonly", True)],
+        "in_progress": [("readonly", True)],
         "done": [("readonly", True)],
         "cancel": [("readonly", True)],
     }
@@ -75,8 +71,7 @@ class BudgetCommitment(models.Model):
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
-            ("reserved", "Reserved"),
-            ("obligated", "Obligated"),
+            ("in_progress", "In Progress"),
             ("done", "Done"),
             ("cancel", "Cancelled"),
         ],
@@ -95,7 +90,7 @@ class BudgetCommitment(models.Model):
     is_approved = fields.Boolean(
         default=False,
         copy=False,
-        help="Set when budget reservation is approved via action_reserve()",
+        help="Set when commitment is started via action_start()",
     )
 
     is_cancelled = fields.Boolean(
@@ -215,11 +210,10 @@ class BudgetCommitment(models.Model):
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="ส่วนงาน",
-        compute="_compute_analytic_id",
-        inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
-        store=False,
+        store=True,
         tracking=True,
+        readonly=False,
         states=READONLY_STATES,
     )
 
@@ -237,36 +231,46 @@ class BudgetCommitment(models.Model):
     source_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="แหล่งเงิน",
-        compute="_compute_analytic_id",
-        inverse="_inverse_source_analytic",
         domain=[("root_plan_id.code", "=", "sources")],
-        store=False,
+        store=True,
         tracking=True,
+        readonly=False,
         states=READONLY_STATES,
     )
 
     _analytic_keys = {
         "activities": "activity_analytic_id",
-        "departments": "department_analytic_id",
         "funds": "fund_analytic_id",
-        "sources": "source_analytic_id",
     }
+
+    @api.depends("analytic_distribution")
+    def _compute_analytic_id(self):
+        """Override to only compute activity and fund from analytic_distribution.
+
+        Department and source are stored directly on the header.
+        """
+        for rec in self:
+            rec.activity_analytic_id = False
+            rec.fund_analytic_id = False
+            for aid_str in rec.analytic_distribution or {}:
+                if str(aid_str).isdigit():
+                    account = self.env["account.analytic.account"].browse(
+                        int(aid_str)
+                    )
+                    if account.exists():
+                        field_name = self._analytic_keys.get(
+                            account.plan_id.code
+                        )
+                        if field_name:
+                            rec[field_name] = account.id
 
     def _inverse_activity_analytic(self):
         for rec in self:
             rec._update_analytic_distribution("activities")
 
-    def _inverse_department_analytic(self):
-        for rec in self:
-            rec._update_analytic_distribution("departments")
-
     def _inverse_fund_analytic(self):
         for rec in self:
             rec._update_analytic_distribution("funds")
-
-    def _inverse_source_analytic(self):
-        for rec in self:
-            rec._update_analytic_distribution("sources")
 
     # Budget account related fields
     budget_account_code = fields.Char(
@@ -372,39 +376,30 @@ class BudgetCommitment(models.Model):
     # === Compute: State === #
 
     @api.depends(
-        "line_ids.line_type",
-        "line_ids.amount",
         "is_approved",
         "is_cancelled",
         "is_closed",
     )
     def _compute_state(self):
-        """Compute header state from control flags and ledger content."""
+        """Compute header state from control flags."""
         for rec in self:
             if rec.is_cancelled:
                 rec.state = "cancel"
             elif rec.is_closed:
                 rec.state = "done"
-            elif not rec.is_approved:
-                rec.state = "draft"
+            elif rec.is_approved:
+                rec.state = "in_progress"
             else:
-                net_obligate = sum(
-                    l.amount for l in rec.line_ids if l.line_type == "obligate"
-                )
-                if net_obligate > 0:
-                    rec.state = "obligated"
-                else:
-                    rec.state = "reserved"
+                rec.state = "draft"
 
     # === Compute: Ledger Balances === #
 
     @api.depends(
         "line_ids.line_type",
         "line_ids.amount",
-        "consumed_amount",
     )
     def _compute_ledger_balances(self):
-        """Compute reserve/obligate balances from ledger lines."""
+        """Compute reserve/obligate/consume balances from ledger lines."""
         for rec in self:
             reserve = sum(
                 l.amount for l in rec.line_ids if l.line_type == "reserve"
@@ -412,10 +407,13 @@ class BudgetCommitment(models.Model):
             obligate = sum(
                 l.amount for l in rec.line_ids if l.line_type == "obligate"
             )
+            consumed = sum(
+                abs(l.amount) for l in rec.line_ids if l.line_type == "consume"
+            )
             rec.total_reserve = reserve
             rec.total_obligated = obligate
-            rec.reserved_balance = reserve - obligate - rec.consumed_amount
-            rec.obligated_balance = max(0.0, obligate - rec.consumed_amount)
+            rec.reserved_balance = reserve - obligate - consumed
+            rec.obligated_balance = max(0.0, obligate - consumed)
 
     # === Compute: Header from Lines === #
 
@@ -466,18 +464,17 @@ class BudgetCommitment(models.Model):
     # === Compute: Consumed / Remaining === #
 
     @api.depends(
-        "budget_move_ids.state",
-        "budget_move_ids.line_ids.balance",
+        "line_ids.line_type",
+        "line_ids.amount",
     )
     def _compute_consumed_amount(self):
-        """Calculate consumed amount from linked budget moves."""
+        """Calculate consumed amount from consume lines."""
         for record in self:
-            consumed = 0.0
-            for move in record.budget_move_ids.filtered(
-                lambda m: m.state == "posted"
-            ):
-                consumed += sum(abs(ml.balance) for ml in move.line_ids)
-            record.consumed_amount = consumed
+            record.consumed_amount = sum(
+                abs(l.amount)
+                for l in record.line_ids
+                if l.line_type == "consume"
+            )
 
     @api.depends("amount", "consumed_amount")
     def _compute_remaining_amount(self):
@@ -608,11 +605,9 @@ class BudgetCommitment(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         """Auto-create a commitment line from old-style header vals."""
-        analytic_id_fields = [
+        line_analytic_fields = [
             "activity_analytic_id",
-            "department_analytic_id",
             "fund_analytic_id",
-            "source_analytic_id",
         ]
         for vals in vals_list:
             if "line_ids" not in vals and vals.get("account_id"):
@@ -621,17 +616,16 @@ class BudgetCommitment(models.Model):
                     if field in vals:
                         line_vals[field] = vals.pop(field)
 
-                # Build analytic_distribution from 4D IDs if not already present
+                # Build analytic_distribution from activity/fund IDs if not present
                 if "analytic_distribution" not in line_vals:
                     distribution = {}
-                    for field in analytic_id_fields:
+                    for field in line_analytic_fields:
                         aid = line_vals.pop(field, False)
                         if aid:
                             distribution[str(aid)] = 100.0
                     line_vals["analytic_distribution"] = distribution or False
                 else:
-                    # Remove 4D fields from line_vals (they're non-stored computed)
-                    for field in analytic_id_fields:
+                    for field in line_analytic_fields:
                         line_vals.pop(field, None)
 
                 vals["line_ids"] = [Command.create(line_vals)]
@@ -673,11 +667,11 @@ class BudgetCommitment(models.Model):
             },
         }
 
-    def action_reserve(self):
-        """Approve reservation: check budget, assign sequence, set is_approved."""
+    def action_start(self):
+        """Confirm and start: check budget, assign sequence, set is_approved."""
         for record in self:
             if record.is_approved:
-                raise UserError(_("Commitment is already approved."))
+                raise UserError(_("Commitment is already in progress."))
 
             reserve_lines = record.line_ids.filtered(
                 lambda l: l.line_type == "reserve" and l.amount > 0
@@ -694,17 +688,9 @@ class BudgetCommitment(models.Model):
 
             record.is_approved = True
 
-    def action_obligate(self):
-        """No-op convenience method. State auto-derives from obligate lines."""
-        for record in self:
-            if not record.is_approved:
-                raise UserError(
-                    _("Commitment must be approved (reserved) before obligating.")
-                )
-            if record.total_obligated <= 0:
-                raise UserError(
-                    _("Add obligate lines to obligate this commitment.")
-                )
+    def action_reserve(self):
+        """Backward compat alias for action_start()."""
+        return self.action_start()
 
     def action_done(self):
         """Close the commitment."""
@@ -721,6 +707,15 @@ class BudgetCommitment(models.Model):
                 )
             if record.is_cancelled:
                 continue
+            posted_consumes = record.line_ids.filtered(
+                lambda l: l.line_type == "consume" and l.is_posted
+            )
+            if posted_consumes:
+                raise UserError(
+                    _("Cannot cancel commitment %s - it has posted "
+                      "consume lines. Reverse them first.")
+                    % record.name
+                )
             record.is_cancelled = True
             _logger.info("Cancelled budget commitment %s", record.name)
 
@@ -761,7 +756,7 @@ class BudgetCommitment(models.Model):
         """
         self.ensure_one()
         if not self.is_approved:
-            raise UserError(_("Commitment must be reserved before adding obligations."))
+            raise UserError(_("Commitment must be in progress before adding obligations."))
         if self.is_cancelled or self.is_closed:
             raise UserError(_("Cannot add obligations to a cancelled or closed commitment."))
 
@@ -803,12 +798,16 @@ class BudgetCommitment(models.Model):
     # === Consume (proportional distribution across reserve lines) === #
 
     def consume(self, amount):
-        """Consume budget proportionally across reserve lines."""
+        """Create consume line(s) proportionally across reserve lines.
+
+        Returns commitment.line recordset (does NOT auto-post).
+        Use line.post_line() to post individual consume lines to budget.move.
+        """
         self.ensure_one()
 
-        if self.state not in ("reserved", "obligated"):
+        if self.state != "in_progress":
             raise UserError(
-                _("Can only consume from reserved or obligated commitments")
+                _("Can only consume from in-progress commitments")
             )
 
         if amount > self.remaining_amount:
@@ -817,111 +816,57 @@ class BudgetCommitment(models.Model):
                 % (amount, self.remaining_amount)
             )
 
-        budget_move = self._create_consume_budget_move(amount)
+        consume_lines = self._create_consume_lines(amount)
 
         _logger.info(
-            "Consumed %.2f from commitment %s (%.2f remaining)",
+            "Created consume lines for %.2f on commitment %s",
             amount,
             self.name,
-            self.remaining_amount,
         )
 
-        return budget_move
+        return consume_lines
 
-    def _prepare_consume_budget_move_vals(self, amount):
-        """Prepare budget.move vals with proportional distribution across reserve lines."""
+    def _create_consume_lines(self, amount):
+        """Create consume line(s) proportionally across reserve lines."""
         reserve_lines = self.line_ids.filtered(
             lambda l: l.line_type == "reserve" and l.amount > 0
         )
-
         if not reserve_lines:
             raise UserError(_("No reserve lines to consume from."))
 
         total_reserve = sum(reserve_lines.mapped("amount"))
-        move_line_vals = []
+        lines = self.env["budget.commitment.line"]
         distributed = 0.0
 
-        for i, line in enumerate(reserve_lines):
+        for i, rline in enumerate(reserve_lines):
             if i == len(reserve_lines) - 1:
                 line_amount = amount - distributed
             else:
                 line_amount = round(
-                    amount * (line.amount / total_reserve), 2
+                    amount * (rline.amount / total_reserve), 2
                 )
                 distributed += line_amount
 
             if line_amount > 0:
-                move_line_vals.append(
-                    Command.create({
-                        "account_id": line.account_id.id,
-                        "balance": -line_amount,
-                        "commitment_line_id": line.id,
-                        "activity_analytic_id": line.activity_analytic_id.id,
-                        "department_analytic_id": (
-                            line.department_analytic_id.id
-                            if line.department_analytic_id
-                            else False
-                        ),
-                        "fund_analytic_id": line.fund_analytic_id.id,
-                        "source_analytic_id": (
-                            line.source_analytic_id.id
-                            if line.source_analytic_id
-                            else False
-                        ),
-                    })
-                )
+                vals = {
+                    "commitment_id": self.id,
+                    "line_type": "consume",
+                    "account_id": rline.account_id.id,
+                    "amount": line_amount,
+                    "analytic_distribution": rline.analytic_distribution,
+                    "description": _("Consumption"),
+                    "date": fields.Date.today(),
+                }
+                lines |= self.env["budget.commitment.line"].create(vals)
 
-        return {
-            "name": _("Consumption of %s") % self.name,
-            "date": fields.Date.today(),
-            "account_fiscal_year_id": self.account_fiscal_year_id.id,
-            "commitment_id": self.id,
-            "move_type": "consume",
-            "line_ids": move_line_vals,
-        }
-
-    def _prepare_consume_line_vals(self, amount):
-        """Backward compat: prepare consume line vals from header (single-line)."""
-        reserve_lines = self.line_ids.filtered(
-            lambda l: l.line_type == "reserve"
-        )
-        if reserve_lines:
-            first = reserve_lines[0]
-            return {
-                "account_id": first.account_id.id,
-                "balance": -amount,
-                "commitment_line_id": first.id,
-                "activity_analytic_id": first.activity_analytic_id.id,
-                "department_analytic_id": (
-                    first.department_analytic_id.id
-                    if first.department_analytic_id
-                    else False
-                ),
-                "fund_analytic_id": first.fund_analytic_id.id,
-                "source_analytic_id": (
-                    first.source_analytic_id.id
-                    if first.source_analytic_id
-                    else False
-                ),
-            }
-        return {
-            "account_id": self.account_id.id,
-            "balance": -amount,
-            "activity_analytic_id": self.activity_analytic_id.id,
-            "department_analytic_id": (
-                self.department_analytic_id.id if self.department_analytic_id else False
-            ),
-            "fund_analytic_id": self.fund_analytic_id.id,
-            "source_analytic_id": (
-                self.source_analytic_id.id if self.source_analytic_id else False
-            ),
-        }
+        return lines
 
     def _create_consume_budget_move(self, amount):
-        move_vals = self._prepare_consume_budget_move_vals(amount)
-        budget_move = self.env["budget.move"].create(move_vals)
-        budget_move.action_post()
-        return budget_move
+        """Backward compat: create consume lines and post them immediately."""
+        consume_lines = self._create_consume_lines(amount)
+        for line in consume_lines:
+            line.post_line()
+        return consume_lines.mapped("budget_move_id")
 
     def close_commitment(self):
         """Close the commitment (mark as done)."""

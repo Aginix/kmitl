@@ -225,7 +225,7 @@ class BudgetMixin(models.AbstractModel):
             if record.budget_move_id:
                 record.budget_state = 'consumed'
             elif record.budget_commitment_id:
-                if record.budget_commitment_id.state == 'reserved':
+                if record.budget_commitment_id.state == 'in_progress':
                     record.budget_state = 'reserved'
                 elif record.budget_commitment_id.state == 'cancel':
                     record.budget_state = 'cancelled'
@@ -293,17 +293,23 @@ class BudgetMixin(models.AbstractModel):
         if not self.budget_commitment_id:
             raise UserError(_('No budget commitment found to consume from.'))
 
-        if self.budget_commitment_id.state not in ['reserved', 'obligated']:
-            raise UserError(_('Budget commitment must be in reserved or obligated state to consume.'))
+        if self.budget_commitment_id.state != 'in_progress':
+            raise UserError(_('Budget commitment must be in progress to consume.'))
 
-        consumption_move = self.budget_commitment_id.create_consumption_move(amount)
-        self.budget_move_id = consumption_move.id
+        consume_amount = amount or self.budget_commitment_id.remaining_amount
+        consume_lines = self.budget_commitment_id.consume(consume_amount)
+        for line in consume_lines:
+            line.post_line()
 
-        _logger.info('Consumed budget %s from commitment %s for %s %s',
-                    consumption_move.total_amount, self.budget_commitment_id.name,
+        # Store first budget move for backward compat
+        if consume_lines:
+            self.budget_move_id = consume_lines[0].budget_move_id
+
+        _logger.info('Consumed budget from commitment %s for %s %s',
+                    self.budget_commitment_id.name,
                     self._name, self.id)
 
-        return consumption_move
+        return consume_lines
 
     def cancel_budget_integration(self):
         """Cancel budget integration - sets commitment to cancelled state"""
@@ -325,7 +331,7 @@ class BudgetMixin(models.AbstractModel):
             raise UserError(_('No budget commitment to reserve.'))
 
         if self.budget_commitment_id.state == 'draft':
-            self.budget_commitment_id.action_reserve()
+            self.budget_commitment_id.action_start()
 
         return self.budget_commitment_id
 
@@ -415,7 +421,7 @@ class BudgetMixin(models.AbstractModel):
         Call this from appropriate state transitions in inheriting models.
         """
         if self.budget_commitment_id and self.budget_commitment_id.state == 'draft':
-            self.budget_commitment_id.action_reserve()
+            self.budget_commitment_id.action_start()
             return True
         return False
 
@@ -424,7 +430,7 @@ class BudgetMixin(models.AbstractModel):
         Automatically consume budget commitment.
         Call this from appropriate state transitions in inheriting models.
         """
-        if self.budget_commitment_id and self.budget_commitment_id.state in ['reserved', 'obligated']:
+        if self.budget_commitment_id and self.budget_commitment_id.state == 'in_progress':
             return self.consume_budget_commitment()
         return False
 

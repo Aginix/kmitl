@@ -19,7 +19,7 @@
                 <field name="total_obligated" sum="Obligated" optional="show" />
                 <field name="consumed_amount" sum="Consumed Amount" optional="show" />
                 <field name="remaining_amount" sum="Remaining Amount" optional="show" />
-                <field name="state" widget="badge" decoration-success="state == 'done'" decoration-info="state == 'reserved'" decoration-muted="state == 'obligated'" decoration-warning="state == 'draft'" decoration-danger="state == 'cancel'"/>
+                <field name="state" widget="badge" decoration-success="state == 'done'" decoration-info="state == 'in_progress'" decoration-warning="state == 'draft'" decoration-danger="state == 'cancel'"/>
                 <field name="user_id" widget="many2one_avatar_user" optional="show" />
             </tree>
         </field>
@@ -33,11 +33,11 @@
             <form string="Budget Commitment">
                 <header>
                     <button name="action_check_budget_availability" string="Check Budget" type="object" class="btn-info" attrs="{'invisible': [('state', '!=', 'draft')]}" help="Check budget availability for this commitment"/>
-                    <button name="action_reserve" string="Reserve Budget" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                    <button name="action_done" string="Mark as Done" type="object" attrs="{'invisible': [('state', 'not in', ['reserved', 'obligated'])]}" help="Close this commitment and release any remaining budget"/>
+                    <button name="action_start" string="Confirm &amp; Start" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_done" string="Mark as Done" type="object" attrs="{'invisible': [('state', '!=', 'in_progress')]}" help="Close this commitment and release any remaining budget"/>
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"/>
                     <button name="action_reset_to_draft" string="Reset to Draft" type="object" attrs="{'invisible': [('state', '!=', 'cancel')]}"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,reserved,obligated,done"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,done"/>
                 </header>
 
                 <sheet>
@@ -57,6 +57,8 @@
                         <group string="Basic Information">
                             <field name="date" invisible="1" />
                             <field name="user_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                         <group string="Budget Details">
                             <field name="account_fiscal_year_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('id', '!=', False)]}" />
@@ -66,18 +68,18 @@
 
                     <notebook>
                         <page name="commitment_lines" string="Commitment Lines">
-                            <field name="line_ids" attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}">
+                            <field name="line_ids" attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}">
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle"/>
                                     <field name="line_type"/>
-                                    <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
-                                    <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
                                     <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
                                     <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
                                     <field name="account_id" required="1" options="{'no_create': True, 'no_open': True}"/>
                                     <field name="amount" sum="Net Amount"/>
                                     <field name="date"/>
                                     <field name="description" optional="hide"/>
+                                    <field name="is_posted" readonly="1" attrs="{'invisible': [('line_type', '!=', 'consume')]}"/>
+                                    <button name="post_line" string="Post" type="object" class="btn-sm btn-primary" attrs="{'invisible': ['|', ('line_type', '!=', 'consume'), ('is_posted', '=', True)]}"/>
                                     <field name="currency_id" invisible="1"/>
                                     <field name="analytic_distribution" invisible="1"/>
                                 </tree>
@@ -148,8 +150,7 @@
                 <field name="account_fiscal_year_id"/>
 
                 <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
-                <filter string="Reserved" name="reserved" domain="[('state', '=', 'reserved')]"/>
-                <filter string="Obligated" name="obligated" domain="[('state', '=', 'obligated')]"/>
+                <filter string="In Progress" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
                 <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
 
                 <separator/>

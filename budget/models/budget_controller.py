@@ -203,9 +203,8 @@ class BudgetController(models.AbstractModel):
 
         commitment = self.env['budget.commitment'].create(commitment_data)
 
-        # Confirm and reserve
-        commitment.action_confirm()
-        commitment.action_reserve()
+        # Start (confirm + reserve)
+        commitment.action_start()
 
         _logger.info('Reserved budget amount %s via service for %s',
                     amount, source_record._name if source_record else 'service')
@@ -306,7 +305,7 @@ class BudgetController(models.AbstractModel):
         # Get reserve and obligate commitment lines
         commitment_lines = self.env['budget.commitment.line'].search([
             ('line_type', 'in', ['reserve', 'obligate']),
-            ('commitment_id.state', 'in', ['reserved', 'obligated']),
+            ('commitment_id.state', '=', 'in_progress'),
             ('account_fiscal_year_id', '=', fiscal_year_id),
             ('company_id', '=', company_id),
         ], order='commitment_id desc', limit=50)
@@ -344,10 +343,13 @@ class BudgetController(models.AbstractModel):
         if not commitment.exists():
             raise UserError(_('Budget commitment not found.'))
 
-        if commitment.state not in ['reserved', 'obligated']:
-            raise UserError(_('Budget commitment must be in reserved or obligated state to consume.'))
+        if commitment.state != 'in_progress':
+            raise UserError(_('Budget commitment must be in progress to consume.'))
 
-        consumption_move = commitment.create_consumption_move(amount)
+        consume_lines = commitment.consume(amount)
+        for line in consume_lines:
+            line.post_line()
+        consumption_move = consume_lines.mapped('budget_move_id')
 
         _logger.info('Consumed budget amount %s from commitment %s via service for %s',
                     consumption_move.total_amount, commitment.name,
@@ -420,7 +422,7 @@ class BudgetController(models.AbstractModel):
         """
         reserve_lines = self.env['budget.commitment.line'].search([
             ('line_type', '=', 'reserve'),
-            ('commitment_id.state', 'in', ['reserved', 'obligated']),
+            ('commitment_id.state', '=', 'in_progress'),
             ('account_fiscal_year_id', '=', fiscal_year_id),
             ('company_id', '=', company_id),
         ])

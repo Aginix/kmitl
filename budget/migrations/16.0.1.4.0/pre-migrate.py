@@ -105,6 +105,111 @@ def migrate(cr, version):
         "DROP COLUMN IF EXISTS state"
     )
 
+    # 8. Add department/source columns on header (moved from line analytics)
+    cr.execute(
+        "ALTER TABLE budget_commitment "
+        "ADD COLUMN IF NOT EXISTS department_analytic_id INTEGER"
+    )
+    cr.execute(
+        "ALTER TABLE budget_commitment "
+        "ADD COLUMN IF NOT EXISTS source_analytic_id INTEGER"
+    )
+
+    # 9. Populate header department/source from first reserve line's analytics
+    cr.execute("""
+        UPDATE budget_commitment bc
+        SET department_analytic_id = subq.analytic_id
+        FROM (
+            SELECT DISTINCT ON (bcl.commitment_id)
+                bcl.commitment_id, aaa.id as analytic_id
+            FROM budget_commitment_line bcl,
+                 jsonb_each_text(
+                     COALESCE(bcl.analytic_distribution, '{}')::jsonb
+                 ) AS kv(key, value),
+                 account_analytic_account aaa,
+                 account_analytic_plan aap
+            WHERE bcl.line_type = 'reserve'
+              AND kv.key ~ '^\d+$'
+              AND aaa.id = kv.key::int
+              AND aap.id = aaa.root_plan_id
+              AND aap.code = 'departments'
+            ORDER BY bcl.commitment_id, bcl.sequence, bcl.id
+        ) subq
+        WHERE bc.id = subq.commitment_id
+          AND bc.department_analytic_id IS NULL
+    """)
+
+    cr.execute("""
+        UPDATE budget_commitment bc
+        SET source_analytic_id = subq.analytic_id
+        FROM (
+            SELECT DISTINCT ON (bcl.commitment_id)
+                bcl.commitment_id, aaa.id as analytic_id
+            FROM budget_commitment_line bcl,
+                 jsonb_each_text(
+                     COALESCE(bcl.analytic_distribution, '{}')::jsonb
+                 ) AS kv(key, value),
+                 account_analytic_account aaa,
+                 account_analytic_plan aap
+            WHERE bcl.line_type = 'reserve'
+              AND kv.key ~ '^\d+$'
+              AND aaa.id = kv.key::int
+              AND aap.id = aaa.root_plan_id
+              AND aap.code = 'sources'
+            ORDER BY bcl.commitment_id, bcl.sequence, bcl.id
+        ) subq
+        WHERE bc.id = subq.commitment_id
+          AND bc.source_analytic_id IS NULL
+    """)
+
+    # 10. Remove department/source keys from line analytic_distribution
+    cr.execute("""
+        UPDATE budget_commitment_line bcl
+        SET analytic_distribution = subq.new_dist
+        FROM (
+            SELECT bcl2.id,
+                (SELECT jsonb_object_agg(kv.key, kv.value)
+                 FROM jsonb_each(bcl2.analytic_distribution::jsonb) kv
+                 WHERE NOT EXISTS (
+                     SELECT 1
+                     FROM account_analytic_account aaa
+                     JOIN account_analytic_plan aap ON aap.id = aaa.root_plan_id
+                     WHERE aaa.id = kv.key::int
+                       AND aap.code IN ('departments', 'sources')
+                 )
+                ) as new_dist
+            FROM budget_commitment_line bcl2
+            WHERE bcl2.analytic_distribution IS NOT NULL
+        ) subq
+        WHERE bcl.id = subq.id
+    """)
+
+    # 11. Add is_posted and budget_move_id columns to commitment lines
+    cr.execute(
+        "ALTER TABLE budget_commitment_line "
+        "ADD COLUMN IF NOT EXISTS is_posted BOOLEAN DEFAULT FALSE"
+    )
+    cr.execute(
+        "ALTER TABLE budget_commitment_line "
+        "ADD COLUMN IF NOT EXISTS budget_move_id INTEGER"
+    )
+
+    # 12. Update stored state: reserved/obligated → in_progress
+    cr.execute("""
+        UPDATE budget_commitment
+        SET state = 'in_progress'
+        WHERE state IN ('reserved', 'obligated')
+    """)
+
+    # 13. Update parent_state on commitment lines
+    cr.execute("""
+        UPDATE budget_commitment_line bcl
+        SET parent_state = 'in_progress'
+        FROM budget_commitment bc
+        WHERE bcl.commitment_id = bc.id
+          AND bcl.parent_state IN ('reserved', 'obligated')
+    """)
+
     _logger.info(
         "Migrated commitment lines from state-based to ledger-based model"
     )

@@ -181,13 +181,10 @@ class BudgetCommitmentMixin(models.AbstractModel):
         """
         from odoo import Command
 
-        # Build analytic_distribution JSON from 4D IDs
-        # (commitment line's 4D fields are non-stored computed from this JSON)
+        # Build analytic_distribution JSON from activity and fund only
+        # (department/source are stored on the header, not in line JSON)
         analytic_distribution = {}
-        for analytic in [
-            activity_analytic_id, fund_analytic_id,
-            department_analytic_id, source_analytic_id,
-        ]:
+        for analytic in [activity_analytic_id, fund_analytic_id]:
             aid = analytic.id if hasattr(analytic, 'id') else analytic
             if aid:
                 analytic_distribution[str(aid)] = 100.0
@@ -200,10 +197,16 @@ class BudgetCommitmentMixin(models.AbstractModel):
             'analytic_distribution': analytic_distribution or False,
         }
 
+        # Department and source go on the header
+        dept_id = department_analytic_id.id if hasattr(department_analytic_id, 'id') else department_analytic_id
+        src_id = source_analytic_id.id if hasattr(source_analytic_id, 'id') else source_analytic_id
+
         commitment_vals = {
             'ref': ref,
             'description': description or '',
             'user_id': self.env.user.id,
+            'department_analytic_id': dept_id or False,
+            'source_analytic_id': src_id or False,
             'line_ids': [Command.create(line_vals)],
         }
 
@@ -466,7 +469,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
             return True
 
         if not commitment.is_approved:
-            raise UserError(_("Commitment must be reserved before obligating."))
+            raise UserError(_("Commitment must be in progress before obligating."))
 
         if amount is not None:
             # Obligate a specific amount using first reserve line's analytics
@@ -539,9 +542,9 @@ class BudgetCommitmentMixin(models.AbstractModel):
         if not commitment:
             raise ValidationError(_("No commitment to update"))
 
-        if commitment.state not in ['reserved', 'obligated']:
+        if commitment.state != 'in_progress':
             raise UserError(_(
-                "Can only update amount for reserved or obligated commitments"
+                "Can only update amount for in-progress commitments"
             ))
 
         if new_amount <= 0:
@@ -592,13 +595,13 @@ class BudgetCommitmentMixin(models.AbstractModel):
     def _consume_commitment(self, amount):
         """
         Record consumption against a commitment.
-        Creates a budget move to consume the committed amount.
+        Creates consume line(s) and posts them to budget.move.
 
         Args:
             amount (float): Amount to consume
 
         Returns:
-            budget.move: Created budget move for consumption
+            budget.commitment.line: Created consume line(s)
 
         Raises:
             ValidationError: If amount exceeds remaining commitment
@@ -610,10 +613,14 @@ class BudgetCommitmentMixin(models.AbstractModel):
         if not commitment:
             raise ValidationError(_("No commitment to consume"))
 
-        budget_move = commitment.consume(amount)
+        consume_lines = commitment.consume(amount)
+
+        # Auto-post consume lines immediately
+        for line in consume_lines:
+            line.post_line()
 
         # Auto-close commitment if fully consumed
         if commitment.remaining_amount <= 0.01:  # Small tolerance for rounding
             commitment.close_commitment()
 
-        return budget_move
+        return consume_lines
