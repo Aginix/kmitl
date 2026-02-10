@@ -20,7 +20,7 @@ class BudgetAppropriation(http.Controller):
     @http.route(
         ["/budget/budget_appropriation/<int:budget_appropriation_id>"],
         type="http",
-        auth="public",
+        auth="user",
         website=True,
     )
     def object(self, budget_appropriation_id=None, access_token=None, **kw):
@@ -57,7 +57,7 @@ class BudgetAppropriation(http.Controller):
     @http.route(
         ["/budget/budget_appropriation/multi/<string:budget_appropriation_ids>"],
         type="http",
-        auth="public",
+        auth="user",
         website=True,
     )
     def object_multi(self, budget_appropriation_ids=None, access_token=None, **kw):
@@ -114,7 +114,7 @@ class BudgetAppropriation(http.Controller):
     @http.route(
         ["/budget/budget_appropriation/<int:budget_appropriation_id>/content"],
         type="http",
-        auth="public",
+        auth="user",
         website=True,
     )
     def object_content(self, budget_appropriation_id=None, **kw):
@@ -145,7 +145,7 @@ class BudgetAppropriation(http.Controller):
     @http.route(
         ["/budget/budget_appropriation/multi/<string:budget_appropriation_ids>/content"],
         type="http",
-        auth="public",
+        auth="user",
         website=True,
     )
     def object_multi_content(self, budget_appropriation_ids=None, **kw):

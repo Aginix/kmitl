@@ -9,6 +9,7 @@ _logger = logging.getLogger(__name__)
 
 class KmitlProject(models.Model):
     _name = "kmitl.project"
+    _description = "KMITL Project"
     _order = "id desc"
     _rec_names_search = ["name", "key"]
     _inherit = ["mail.thread", "mail.activity.mixin", "analytic.mixin", "portal.mixin"]

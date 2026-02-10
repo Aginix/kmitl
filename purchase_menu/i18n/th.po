@@ -16,6 +16,21 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: purchase_menu
+#: model:ir.model.fields.selection,name:purchase_menu.selection__purchase_order__expire_range__0-15
+msgid "0-15 Days"
+msgstr "อายุสัญญา 0-15"
+
+#. module: purchase_menu
+#: model:ir.model.fields.selection,name:purchase_menu.selection__purchase_order__expire_range__16-30
+msgid "16-30 Days"
+msgstr "อายุสัญญา 16-30"
+
+#. module: purchase_menu
+#: model:ir.model.fields.selection,name:purchase_menu.selection__purchase_order__expire_range__31-60
+msgid "31-60 Days"
+msgstr "อายุสัญญา 31-60"
+
+#. module: purchase_menu
 #: model:ir.ui.menu,name:purchase_menu.menu_purchase_assets
 msgid "Assets"
 msgstr "ครุภัณฑ์/สินทรัพย์"
@@ -69,3 +84,30 @@ msgstr "สัญญาใกล้หมดอายุ"
 #: model:ir.actions.act_window,name:purchase_menu.action_guarantees_expiring
 msgid "Guarantee Expire"
 msgstr "หลักประกันหมดอายุ"
+
+#. module: purchase_menu
+#: model_terms:ir.ui.view,arch_db:purchase_menu.view_purchase_order_tree_expiring
+msgid "Contracts Nearly Expiring"
+msgstr ""
+
+#. module: purchase_menu
+#: model:ir.model.fields,field_description:purchase_menu.field_purchase_order__days_to_expire
+msgid "Days to Expire"
+msgstr "วันที่คงเหลือของสัญญา"
+
+#. module: purchase_menu
+#: model:ir.model.fields,field_description:purchase_menu.field_purchase_order__expire_range
+#: model_terms:ir.ui.view,arch_db:purchase_menu.view_purchase_order_search_expiring
+msgid "Expire Range"
+msgstr ""
+
+#. module: purchase_menu
+#: model:ir.model.fields.selection,name:purchase_menu.selection__purchase_order__expire_range__60+
+msgid "Morethan 60 Days"
+msgstr "มากกว่า 60 วัน"
+
+#. module: purchase_menu
+#: model:ir.model.fields,field_description:purchase_menu.field_purchase_order__expire_group_ids
+#: model_terms:ir.ui.view,arch_db:purchase_menu.view_purchase_order_search_expiring
+msgid "Expire Groups"
+msgstr "วันที่คงเหลือของสัญญา"

@@ -50,7 +50,7 @@
     </record>
 
     <!-- inherit change name -->
-    <menuitem id="contacts.menu_contacts" name="Vendor"/>
+    <menuitem id="contacts.menu_contacts" name="Vendor" web_icon="contacts_kmitl,static/description/icon.png"/>
     <menuitem id="contacts.res_partner_menu_contacts"
         name="Vendor"
         action="contacts.action_contacts"
