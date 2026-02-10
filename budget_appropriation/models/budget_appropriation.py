@@ -158,6 +158,18 @@ class BudgetAppropriation(models.Model):
         default="expense",
         states=READONLY_STATES,
     )
+    appropriation_type = fields.Selection(
+        selection=[
+            ("initial", "งบประมาณต้นปี"),
+            ("supplementary", "งบประมาณเพิ่มเติม"),
+        ],
+        string="ประเภทการจัดสรร",
+        tracking=True,
+        copy=True,
+        default="initial",
+        states=READONLY_STATES,
+        help="ใช้แยกประเภทการจัดสรรงบประมาณ ต้นปี vs ระหว่างปี",
+    )
     company_id = fields.Many2one(
         comodel_name="res.company",
         string="Company",
@@ -320,6 +332,7 @@ class BudgetAppropriation(models.Model):
     def budget_move_vals(self):
         vals = {
             "move_type": "appropriation",
+            "appropriation_type": self.appropriation_type,
             "date": self.date,
             "ref": self.ref,
             "department_analytic_id": self.department_analytic_id.id,
