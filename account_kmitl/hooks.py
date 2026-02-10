@@ -59,8 +59,50 @@ def _create_journals(env, company):
             Journal.create(data)
 
 
+def _create_withholding_taxes(env, company):
+    """Create KMITL withholding tax records after chart of accounts is loaded."""
+    Account = env["account.account"]
+
+    def get_account(code):
+        return Account.search(
+            [("code", "=", code), ("company_id", "=", company.id)], limit=1
+        )
+
+    # Mark WHT accounts
+    for code in ("2120000010", "2120000099"):
+        account = get_account(code)
+        if account and not account.wht_account:
+            account.wht_account = True
+
+    wht_data = [
+        {
+            "name": "ภาษี หัก ณ ที่จ่ายบุคคลธรรมดา",
+            "amount": 1.0,
+            "account_id": get_account("2120000010").id,
+            "income_tax_form": "pnd1",
+            "wht_cert_income_type": "1",
+        },
+        {
+            "name": "ภาษี หัก ณ ที่จ่ายนิติบุคคลจากหน่วยงานเอกชน",
+            "amount": 1.0,
+            "account_id": get_account("2120000099").id,
+            "income_tax_form": "pnd53",
+            "wht_cert_income_type": "5",
+        },
+    ]
+
+    WHT = env["account.withholding.tax"]
+    for data in wht_data:
+        existing = WHT.search(
+            [("name", "=", data["name"]), ("company_id", "=", company.id)], limit=1
+        )
+        if not existing:
+            WHT.create({**data, "company_id": company.id})
+
+
 def post_init_hook(cr, registry):
     env = api.Environment(cr, SUPERUSER_ID, {})
     company = env.ref("base.main_company")
     env.ref("account_kmitl.chart")._load(company)
     _create_journals(env, company)
+    _create_withholding_taxes(env, company)
