@@ -38,6 +38,8 @@ export class BudgetReportSummary extends Component {
             },
         });
 
+        this._filterOptionsLoaded = false;
+
         onWillStart(async () => {
             await this.loadData();
         });
@@ -58,11 +60,14 @@ export class BudgetReportSummary extends Component {
             this.state.filters = response.filters;
             this.state.departments = response.departments || null;
 
-            this.state.filterOptions = await this.orm.call(
-                "budget.report.summary",
-                "get_filter_options",
-                []
-            );
+            if (!this._filterOptionsLoaded) {
+                this.state.filterOptions = await this.orm.call(
+                    "budget.report.summary",
+                    "get_filter_options",
+                    []
+                );
+                this._filterOptionsLoaded = true;
+            }
         } catch (error) {
             console.error("Error loading data:", error);
             this.notification.add("เกิดข้อผิดพลาดในการโหลดข้อมูล: " + error.message, {
@@ -140,30 +145,41 @@ export class BudgetReportSummary extends Component {
         return this.state.expandedRows.has(rowKey);
     }
 
-    isRowVisible(row) {
-        if (!row || !this.state.rows || !row.row_key) {
-            return false;
-        }
-
-        if (!row.parent_row_id) {
-            return true; // Root rows are always visible
-        }
-
-        // Find parent row
-        const parentRow = this.state.rows.find(r => r && r.row_key === row.parent_row_id);
-        if (!parentRow || !parentRow.row_key) {
-            return true; // Show row if parent not found (defensive)
-        }
-
-        // Row is visible if parent is expanded and parent is visible (recursive)
-        return this.isRowExpanded(parentRow.row_key) && this.isRowVisible(parentRow);
-    }
-
     get visibleRows() {
         if (!this.state.rows || !Array.isArray(this.state.rows)) {
             return [];
         }
-        return this.state.rows.filter(row => row && row.row_key && this.isRowVisible(row));
+
+        // Build O(1) lookup map
+        const rowMap = new Map();
+        for (const row of this.state.rows) {
+            if (row && row.row_key) {
+                rowMap.set(row.row_key, row);
+            }
+        }
+
+        // Cache visibility results
+        const cache = new Map();
+        const isVisible = (row) => {
+            if (!row || !row.row_key) return false;
+            if (cache.has(row.row_key)) return cache.get(row.row_key);
+
+            let result;
+            if (!row.parent_row_id) {
+                result = true;
+            } else {
+                const parentRow = rowMap.get(row.parent_row_id);
+                if (!parentRow || !parentRow.row_key) {
+                    result = true;
+                } else {
+                    result = this.isRowExpanded(parentRow.row_key) && isVisible(parentRow);
+                }
+            }
+            cache.set(row.row_key, result);
+            return result;
+        };
+
+        return this.state.rows.filter(row => row && row.row_key && isVisible(row));
     }
 
     expandAll() {
@@ -326,7 +342,6 @@ export class BudgetReportSummary extends Component {
         // Add row-specific analytic filters based on row type
         await this._addRowAnalyticFilters(domain, row);
 
-        console.log('Final move line domain:', domain, 'Row:', row);
         return domain;
     }
 
@@ -351,14 +366,11 @@ export class BudgetReportSummary extends Component {
         // Add row-specific analytic filters
         await this._addRowAnalyticFilters(domain, row);
 
-        console.log('Final commitment domain:', domain, 'Row:', row);
         return domain;
     }
 
     // Add analytic filters based on row context using code-based filtering
     async _addRowAnalyticFilters(domain, row) {
-        console.log('Adding analytic filters for row:', row);
-
         // Use code-based filtering with ilike for simpler and more reliable filtering
         if (row.type === 'activity') {
             // For activity rows, filter by activity code and its children using prefix
@@ -466,8 +478,6 @@ export class BudgetReportSummary extends Component {
                 "get_analytic_ids_by_code_prefix",
                 [code, field_name]
             );
-            console.log(`${field_name} IDs for code ${code}:`, analyticIds);
-
             if (analyticIds && analyticIds.length > 0) {
                 domain.push([field_name, 'in', analyticIds]);
             }
@@ -484,8 +494,6 @@ export class BudgetReportSummary extends Component {
                 "get_budget_account_ids_by_code_prefix",
                 [code, parentCode]
             );
-            console.log(`Account IDs for code ${code}:`, accountIds);
-
             if (accountIds && accountIds.length > 0) {
                 domain.push(['account_id', 'in', accountIds]);
             }
@@ -512,14 +520,11 @@ export class BudgetReportSummary extends Component {
     // Get department IDs including children
     async _getDepartmentWithChildren(departmentIds) {
         try {
-            const allDeptIds = [];
-            for (const deptId of departmentIds) {
-                const children = await this._getAnalyticWithChildren(deptId, 'departments');
-                allDeptIds.push(...children);
-            }
-            return [...new Set(allDeptIds)]; // Remove duplicates
+            const results = await Promise.all(
+                departmentIds.map(deptId => this._getAnalyticWithChildren(deptId, 'departments'))
+            );
+            return [...new Set(results.flat())];
         } catch (error) {
-            console.warn("Failed to get department children, using original IDs:", error);
             return departmentIds;
         }
     }

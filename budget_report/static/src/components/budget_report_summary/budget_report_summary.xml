@@ -104,6 +104,14 @@
                     
                     <!-- Report Content -->
                     <div class="report-content">
+                        <div t-if="state.loading" class="d-flex justify-content-center align-items-center p-5">
+                            <div class="text-center">
+                                <div class="spinner-border text-primary mb-3" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="text-muted">กำลังโหลดข้อมูล...</div>
+                            </div>
+                        </div>
                         <div t-if="!state.loading" class="budget_report_summary_content">
                             <div class="row justify-content-center">
                                 <div class="col-12">
@@ -239,6 +247,12 @@
                                             </t>
                                         </tbody>
                                     </table>
+                                    <div t-if="!visibleRows.length" class="d-flex justify-content-center align-items-center p-5">
+                                        <div class="text-center text-muted">
+                                            <i class="fa fa-inbox fa-3x mb-3 d-block"/>
+                                            <p>ไม่พบข้อมูล</p>
+                                        </div>
+                                    </div>
                                     </div>
                                 </div>
                             </div>

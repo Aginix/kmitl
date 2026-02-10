@@ -8,9 +8,6 @@ from .budget_tree import BudgetTree
 
 _logger = logging.getLogger(__name__)
 
-BUDGET_TYPE = "revenue"
-
-
 class BudgetReportSummary(models.AbstractModel):
     _name = _description = "budget.report.summary"
 
@@ -269,6 +266,27 @@ class BudgetReportSummary(models.AbstractModel):
             ("root_plan_id.code", "=", "departments"),
         ], order="code,name")
 
+        # Batch query: get all department IDs that have data (2 queries total)
+        move_dept_ids = set(
+            r["department_analytic_id"][0]
+            for r in self.env["budget.move.line"].read_group(
+                [("parent_state", "=", "posted")],
+                ["department_analytic_id"],
+                ["department_analytic_id"],
+            )
+            if r["department_analytic_id"]
+        )
+        commitment_dept_ids = set(
+            r["department_analytic_id"][0]
+            for r in self.env["budget.commitment"].read_group(
+                [("state", "in", ["reserved", "obligated"])],
+                ["department_analytic_id"],
+                ["department_analytic_id"],
+            )
+            if r["department_analytic_id"]
+        )
+        depts_with_data = move_dept_ids | commitment_dept_ids
+
         # Build hierarchy structure
         dept_dict = {}
         roots = []
@@ -280,7 +298,7 @@ class BudgetReportSummary(models.AbstractModel):
                 "code": dept.code,
                 "complete_name": dept.complete_name,
                 "children": [],
-                "has_data": self._department_has_data(dept),
+                "has_data": dept.id in depts_with_data,
             }
             dept_dict[dept.id] = dept_data
 
@@ -292,20 +310,6 @@ class BudgetReportSummary(models.AbstractModel):
                 roots.append(dept_data)
 
         return roots
-
-    def _department_has_data(self, department):
-        """Check if department has budget data"""
-        has_moves = self.env["budget.move.line"].search_count([
-            ("department_analytic_id", "=", department.id),
-            ("parent_state", "=", "posted"),
-        ], limit=1)
-
-        has_commitments = self.env["budget.commitment"].search_count([
-            ("department_analytic_id", "=", department.id),
-            ("state", "in", ["reserved", "obligated"]),
-        ], limit=1)
-
-        return bool(has_moves or has_commitments)
 
     @api.model
     def get_filter_options(self):

@@ -29,8 +29,6 @@ class BudgetNode:
             "parent_id": self.value["parent_id"],
             "parent_path": self.value["parent_path"],
             "node_level": self.value["node_level"],
-            "children": list(map(lambda child: child.to_dict(), self.children)),
-            "lines": self.lines,
         }
 
     def appropriation(self):
@@ -82,15 +80,6 @@ class BudgetNode:
     def return_unspend(self):
         return 0
 
-    def has_descendant(self):
-        if self.children:
-            return True
-
-        for child in self.children:
-            if child.has_descendant():
-                return True
-
-        return False
 
 
 class BudgetTree:
