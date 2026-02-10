@@ -1311,3 +1311,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_late_fines.view_work_acceptance_fines_late_tab_form
 msgid "per day"
 msgstr "ต่อวัน"
+
+#. module: purchase_work_acceptance_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form
+msgid "Are you sure you want to Cancel?"
+msgstr "คุณแน่ใจหรือไม่ว่าต้องการยกเลิก?"
