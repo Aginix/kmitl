@@ -66,17 +66,18 @@
 
                     <notebook>
                         <page name="commitment_lines" string="Commitment Lines">
-                            <field name="line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}">
+                            <field name="line_ids" attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}">
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle"/>
-                                    <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
-                                    <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
-                                    <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
-                                    <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
-                                    <field name="account_id" required="1" options="{'no_create': True, 'no_open': True}"/>
-                                    <field name="amount" sum="Total"/>
+                                    <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                    <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                    <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                    <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                    <field name="account_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                    <field name="amount" sum="Total" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                                     <field name="consumed_amount" sum="Consumed" optional="show"/>
                                     <field name="remaining_amount" sum="Remaining" optional="show"/>
+                                    <field name="state" widget="badge" decoration-success="state == 'done'" decoration-info="state == 'reserved'" decoration-muted="state == 'obligated'" decoration-warning="state == 'draft'" decoration-danger="state == 'cancel'" optional="show"/>
                                     <field name="budget_availability_status" widget="badge" decoration-danger="budget_availability_status == 'insufficient'" decoration-warning="budget_availability_status == 'warning'" decoration-success="budget_availability_status == 'sufficient'" optional="show"/>
                                     <field name="currency_id" invisible="1"/>
                                     <field name="analytic_distribution" invisible="1"/>

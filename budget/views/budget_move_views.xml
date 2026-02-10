@@ -111,7 +111,7 @@
                                 <group>
                                     <field name="ref" />
                                     <field name="note" />
-                                    <field name="commitment_id" options='{"no_create": True, "no_create_edit": True}' domain="[('state', '=', 'reserved'), ('account_fiscal_year_id', '=', account_fiscal_year_id)]" />
+                                    <field name="commitment_id" options='{"no_create": True, "no_create_edit": True}' domain="[('state', 'in', ['reserved', 'obligated']), ('account_fiscal_year_id', '=', account_fiscal_year_id)]" />
                                 </group>
                                 <group>
                                     <field name="date" invisible="1" />

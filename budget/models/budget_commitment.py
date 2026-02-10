@@ -72,6 +72,13 @@ class BudgetCommitment(models.Model):
         states=READONLY_STATES,
     )
 
+    _STATE_PRIORITY = {
+        "draft": 0,
+        "reserved": 1,
+        "obligated": 2,
+        "done": 3,
+    }
+
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
@@ -86,6 +93,8 @@ class BudgetCommitment(models.Model):
         copy=False,
         tracking=True,
         default="draft",
+        compute="_compute_state",
+        store=True,
     )
 
     account_fiscal_year_id = fields.Many2one(
@@ -315,6 +324,27 @@ class BudgetCommitment(models.Model):
         string="Related Budget Moves",
         readonly=True,
     )
+
+    # === Compute: State from Lines === #
+
+    @api.depends("line_ids.state")
+    def _compute_state(self):
+        """Compute header state from line states (least advanced non-cancelled)."""
+        for rec in self:
+            lines = rec.line_ids
+            if not lines:
+                rec.state = "draft"
+                continue
+
+            active_lines = lines.filtered(lambda l: l.state != "cancel")
+            if not active_lines:
+                rec.state = "cancel"
+                continue
+
+            rec.state = min(
+                active_lines.mapped("state"),
+                key=lambda s: self._STATE_PRIORITY.get(s, 0),
+            )
 
     # === Compute: Header from Lines === #
 
@@ -577,9 +607,11 @@ class BudgetCommitment(models.Model):
         }
 
     def action_reserve(self):
+        """Reserve all draft lines."""
         for record in self:
-            if record.state != "draft":
-                raise UserError(_("Only draft commitments can be reserved."))
+            draft_lines = record.line_ids.filtered(lambda l: l.state == "draft")
+            if not draft_lines:
+                raise UserError(_("No draft lines to reserve."))
 
             record.action_check_budget_availability()
 
@@ -588,40 +620,60 @@ class BudgetCommitment(models.Model):
                     "budget.commitment"
                 ) or _("New")
 
-            record.state = "reserved"
+            draft_lines.action_reserve()
 
     def action_obligate(self):
+        """Obligate all reserved lines."""
         for record in self:
-            if record.state == "obligated":
-                continue
-            if record.state != "reserved":
+            reserved_lines = record.line_ids.filtered(lambda l: l.state == "reserved")
+            if not reserved_lines:
+                if all(l.state in ("obligated", "done") for l in record.line_ids):
+                    continue
                 raise UserError(
-                    _("Cannot obligate commitment %s - it must be in reserved state")
+                    _("Cannot obligate commitment %s - no reserved lines found")
                     % record.name
                 )
-            record.state = "obligated"
+            reserved_lines.action_obligate()
             _logger.info("Obligated budget commitment %s", record.name)
 
+    def action_obligate_lines(self, line_ids=None):
+        """Obligate specific lines by ID."""
+        self.ensure_one()
+        if line_ids:
+            lines = self.line_ids.filtered(lambda l: l.id in line_ids)
+        else:
+            lines = self.line_ids.filtered(lambda l: l.state == "reserved")
+        if not lines:
+            raise UserError(_("No lines found to obligate."))
+        lines.action_obligate()
+
     def action_done(self):
+        """Mark all obligated lines as done."""
         for record in self:
             record.close_commitment()
 
     def action_cancel(self):
+        """Cancel all non-done lines."""
         for record in self:
-            if record.state == "cancel":
-                continue
-            if record.state in ["done"]:
+            cancellable = record.line_ids.filtered(
+                lambda l: l.state not in ("done", "cancel")
+            )
+            if not cancellable:
+                if all(l.state == "cancel" for l in record.line_ids):
+                    continue
                 raise UserError(
                     _("Cannot cancel commitment %s - it is already done") % record.name
                 )
-            record.state = "cancel"
+            cancellable.action_cancel()
             _logger.info("Cancelled budget commitment %s", record.name)
 
     def action_reset_to_draft(self):
+        """Reset all cancelled lines to draft."""
         for record in self:
-            if record.state not in ["cancel"]:
-                raise UserError(_("Only cancelled commitments can be reset to draft."))
-            record.state = "draft"
+            non_cancelled = record.line_ids.filtered(lambda l: l.state != "cancel")
+            if non_cancelled:
+                raise UserError(_("Only fully cancelled commitments can be reset to draft."))
+            record.line_ids.action_reset_to_draft()
 
     def action_view_budget_moves(self):
         self.ensure_one()
@@ -640,7 +692,10 @@ class BudgetCommitment(models.Model):
         """Consume budget proportionally across all lines with remaining balance."""
         self.ensure_one()
 
-        if self.state not in ["reserved", "obligated"]:
+        active_lines = self.line_ids.filtered(
+            lambda l: l.state in ("reserved", "obligated")
+        )
+        if not active_lines:
             raise UserError(
                 _("Can only consume from reserved or obligated commitments")
             )
@@ -665,7 +720,7 @@ class BudgetCommitment(models.Model):
     def _prepare_consume_budget_move_vals(self, amount):
         """Prepare budget.move vals with proportional distribution across lines."""
         lines_with_remaining = self.line_ids.filtered(
-            lambda l: l.remaining_amount > 0
+            lambda l: l.remaining_amount > 0 and l.state in ("reserved", "obligated")
         )
 
         if not lines_with_remaining:
@@ -723,17 +778,19 @@ class BudgetCommitment(models.Model):
         return budget_move
 
     def close_commitment(self):
+        """Close commitment: mark all obligated lines as done."""
         self.ensure_one()
 
         if self.state == "done":
             return
 
-        if self.state not in ["obligated"]:
+        obligated_lines = self.line_ids.filtered(lambda l: l.state == "obligated")
+        if not obligated_lines:
             raise UserError(
-                _("Cannot close commitment %s - it must be in obligated state")
+                _("Cannot close commitment %s - no obligated lines found")
                 % self.name
             )
-        self.state = "done"
+        obligated_lines.action_done()
 
         _logger.info(
             "Closed budget commitment %s - Released %.2f",

@@ -303,25 +303,22 @@ class BudgetController(models.AbstractModel):
                         'amount': -abs(line.balance),
                     })
 
-        # Get reserved and obligated commitments
-        BudgetCommitment = self.env['budget.commitment']
-        domain = [
+        # Get reserved and obligated commitment lines
+        commitment_lines = self.env['budget.commitment.line'].search([
             ('state', 'in', ['reserved', 'obligated']),
             ('account_fiscal_year_id', '=', fiscal_year_id),
             ('company_id', '=', company_id),
-        ]
+        ], order='commitment_id desc', limit=50)
 
-        commitments = BudgetCommitment.search(domain, order='date desc', limit=50)
-        for commitment in commitments:
-            for line in commitment.line_ids:
-                if self._commitment_line_matches_analytic_data(line, analytic_data):
-                    details.append({
-                        'id': line.id,
-                        'date': commitment.date,
-                        'type': 'reserved',
-                        'reference': commitment.name,
-                        'amount': -line.remaining_amount,
-                    })
+        for line in commitment_lines:
+            if self._commitment_line_matches_analytic_data(line, analytic_data):
+                details.append({
+                    'id': line.id,
+                    'date': line.commitment_id.date,
+                    'type': 'reserved',
+                    'reference': line.commitment_id.name,
+                    'amount': -line.remaining_amount,
+                })
 
         # Sort by date descending
         details.sort(key=lambda x: x['date'], reverse=True)
@@ -414,20 +411,17 @@ class BudgetController(models.AbstractModel):
 
     @api.model
     def _calculate_reserved_amount(self, analytic_data, fiscal_year_id, company_id):
-        """Calculate total reserved amount from commitments (reserved + obligated)"""
-        domain = [
+        """Calculate total reserved amount from commitment lines by line state."""
+        lines = self.env['budget.commitment.line'].search([
             ('state', 'in', ['reserved', 'obligated']),
             ('account_fiscal_year_id', '=', fiscal_year_id),
             ('company_id', '=', company_id),
-        ]
-
-        commitments = self.env['budget.commitment'].search(domain)
+        ])
         total = 0.0
 
-        for commitment in commitments:
-            for line in commitment.line_ids:
-                if self._commitment_line_matches_analytic_data(line, analytic_data):
-                    total += line.remaining_amount
+        for line in lines:
+            if self._commitment_line_matches_analytic_data(line, analytic_data):
+                total += line.remaining_amount
 
         return total
 
@@ -564,7 +558,6 @@ class BudgetController(models.AbstractModel):
             'account_fiscal_year_id': fiscal_year_id,
             'company_id': company_id,
             'currency_id': self.env.company.currency_id.id,
-            'state': 'draft',
             'line_ids': [(0, 0, line_data)],
         }
 

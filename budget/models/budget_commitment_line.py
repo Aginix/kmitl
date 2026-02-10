@@ -21,6 +21,21 @@ class BudgetCommitmentLine(models.Model):
         index=True,
     )
 
+    state = fields.Selection(
+        selection=[
+            ("draft", "Draft"),
+            ("reserved", "Reserved"),
+            ("obligated", "Obligated"),
+            ("done", "Done"),
+            ("cancel", "Cancelled"),
+        ],
+        string="Line Status",
+        required=True,
+        readonly=True,
+        copy=False,
+        default="draft",
+    )
+
     sequence = fields.Integer(
         string="Sequence",
         default=10,
@@ -260,7 +275,7 @@ class BudgetCommitmentLine(models.Model):
         "analytic_distribution",
         "account_fiscal_year_id",
         "amount",
-        "parent_state",
+        "state",
     )
     def _compute_available_budget(self):
         """Calculate real-time budget availability for this line."""
@@ -302,7 +317,7 @@ class BudgetCommitmentLine(models.Model):
                 )
 
                 # If already reserved/obligated, add back own remaining amount
-                if line.parent_state in ["reserved", "obligated"] and line.remaining_amount:
+                if line.state in ["reserved", "obligated"] and line.remaining_amount:
                     available += line.remaining_amount
 
                 line.available_budget_amount = available
@@ -348,9 +363,9 @@ class BudgetCommitmentLine(models.Model):
         """Consume budget from this specific line."""
         self.ensure_one()
 
-        if self.parent_state not in ["reserved", "obligated"]:
+        if self.state not in ["reserved", "obligated"]:
             raise UserError(
-                _("Can only consume from reserved or obligated commitments")
+                _("Can only consume from reserved or obligated lines")
             )
 
         if amount > self.remaining_amount:
@@ -393,6 +408,44 @@ class BudgetCommitmentLine(models.Model):
         budget_move = self.env["budget.move"].create(move_vals)
         budget_move.action_post()
         return budget_move
+
+    # === Line-Level Workflow === #
+
+    def action_reserve(self):
+        for line in self:
+            if line.state != "draft":
+                raise UserError(_("Only draft lines can be reserved."))
+            line.state = "reserved"
+
+    def action_obligate(self):
+        for line in self:
+            if line.state == "obligated":
+                continue
+            if line.state != "reserved":
+                raise UserError(_("Line must be in reserved state to obligate."))
+            line.state = "obligated"
+
+    def action_done(self):
+        for line in self:
+            if line.state == "done":
+                continue
+            if line.state != "obligated":
+                raise UserError(_("Line must be in obligated state to mark as done."))
+            line.state = "done"
+
+    def action_cancel(self):
+        for line in self:
+            if line.state == "cancel":
+                continue
+            if line.state == "done":
+                raise UserError(_("Cannot cancel a done line."))
+            line.state = "cancel"
+
+    def action_reset_to_draft(self):
+        for line in self:
+            if line.state != "cancel":
+                raise UserError(_("Only cancelled lines can be reset to draft."))
+            line.state = "draft"
 
     # === Constraints === #
 

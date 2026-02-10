@@ -293,8 +293,8 @@ class BudgetMixin(models.AbstractModel):
         if not self.budget_commitment_id:
             raise UserError(_('No budget commitment found to consume from.'))
 
-        if self.budget_commitment_id.state != 'reserved':
-            raise UserError(_('Budget commitment must be in reserved state to consume.'))
+        if self.budget_commitment_id.state not in ['reserved', 'obligated']:
+            raise UserError(_('Budget commitment must be in reserved or obligated state to consume.'))
 
         consumption_move = self.budget_commitment_id.create_consumption_move(amount)
         self.budget_move_id = consumption_move.id
@@ -309,8 +309,8 @@ class BudgetMixin(models.AbstractModel):
         """Cancel budget integration - sets commitment to cancelled state"""
         self.ensure_one()
 
-        if self.budget_commitment_id and self.budget_commitment_id.state not in ['cancel', 'consumed']:
-            self.budget_commitment_id.write({'state': 'cancel'})
+        if self.budget_commitment_id and self.budget_commitment_id.state not in ['cancel', 'done']:
+            self.budget_commitment_id.action_cancel()
             self.budget_commitment_id.message_post(
                 body=_('Cancelled due to source record cancellation.')
             )
@@ -345,7 +345,6 @@ class BudgetMixin(models.AbstractModel):
             'account_fiscal_year_id': self._get_fiscal_year_id(),
             'company_id': self.company_id.id,
             'currency_id': self.currency_id.id,
-            'state': 'draft',
         }
 
     def _prepare_default_budget_lines(self):
@@ -427,7 +426,7 @@ class BudgetMixin(models.AbstractModel):
         Automatically consume budget commitment.
         Call this from appropriate state transitions in inheriting models.
         """
-        if self.budget_commitment_id and self.budget_commitment_id.state == 'reserved':
+        if self.budget_commitment_id and self.budget_commitment_id.state in ['reserved', 'obligated']:
             return self.consume_budget_commitment()
         return False
 
