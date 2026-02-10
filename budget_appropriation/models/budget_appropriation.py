@@ -167,6 +167,7 @@ class BudgetAppropriation(models.Model):
         tracking=True,
         copy=True,
         default="initial",
+        readonly=False,
         states=READONLY_STATES,
         help="ใช้แยกประเภทการจัดสรรงบประมาณ ต้นปี vs ระหว่างปี",
     )
