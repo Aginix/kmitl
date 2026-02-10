@@ -95,12 +95,13 @@ class SarabunRoutingLine(models.Model):
         store=False,
     )
 
-    @api.model
-    def create(self, vals):
-        if not vals.get('sequence'):
-            routing_type = vals.get('routing_type')
-            vals['sequence'] = ROUTING_TYPE_SEQUENCE.get(routing_type, 10)
-        return super().create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if not vals.get('sequence'):
+                routing_type = vals.get('routing_type')
+                vals['sequence'] = ROUTING_TYPE_SEQUENCE.get(routing_type, 10)
+        return super().create(vals_list)
     
     def write(self, vals):
         if 'routing_type' in vals and not vals.get('sequence'):
