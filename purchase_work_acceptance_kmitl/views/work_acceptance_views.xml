@@ -24,6 +24,21 @@
             <xpath expr="//field[@name='date_receive']" position="after">
                 <field name="requested_delivery_date" required="1" />
             </xpath>
+
+            <xpath expr="//field[@name='date_due']" position="attributes">
+                <attribute name="widget">date</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='date_receive']" position="attributes">
+                <attribute name="widget">date</attribute>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='wa_line_ids']/tree/field[@name='product_id']"
+                position="attributes"
+            >
+                <attribute name="optional">hide</attribute>
+            </xpath>
         </field>
     </record>
 
@@ -82,7 +97,10 @@
             ref="l10n_th_gov_work_acceptance.view_work_acceptance_form"
         />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='work_acceptance_committee_ids']" position="attributes">
+            <xpath
+                expr="//field[@name='work_acceptance_committee_ids']"
+                position="attributes"
+            >
                 <attribute name="readonly">1</attribute>
             </xpath>
         </field>
@@ -91,18 +109,25 @@
     <record id="view_work_acceptance_form_tier_validation_custom" model="ir.ui.view">
         <field name="name">view.work.acceptance.form.tier_validation.custom</field>
         <field name="model">work.acceptance</field>
-        <field name="inherit_id" ref="l10n_th_gov_work_acceptance.view_work_acceptance_form_tier_validation"/>
+        <field
+            name="inherit_id"
+            ref="l10n_th_gov_work_acceptance.view_work_acceptance_form_tier_validation"
+        />
         <field name="arch" type="xml">
-
-            <xpath expr="//div[@class='alert alert-warning']//button[contains(@class, 'btn-danger') and @icon='fa-thumbs-down']" position="attributes">
+            <xpath
+                expr="//div[@class='alert alert-warning']//button[contains(@class, 'btn-danger') and @icon='fa-thumbs-down']"
+                position="attributes"
+            >
                 <attribute name="name">reject_tier</attribute>
-                <attribute name="context"/>
+                <attribute name="context" />
             </xpath>
 
-            <xpath expr="//div[@class='alert alert-warning']//button[contains(@class, 'btn-warning') and @icon='fa-arrow-circle-right']" position="attributes">
+            <xpath
+                expr="//div[@class='alert alert-warning']//button[contains(@class, 'btn-warning') and @icon='fa-arrow-circle-right']"
+                position="attributes"
+            >
                 <attribute name="attrs">{'invisible': True}</attribute>
             </xpath>
-
         </field>
     </record>
 </odoo>

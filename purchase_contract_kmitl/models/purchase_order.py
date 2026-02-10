@@ -171,3 +171,10 @@ class PurchaseOrder(models.Model):
                 rec.work_end_display = rec.work_end.strftime('%d/%m/%Y') + f"({days})"
             else:
                 rec.work_end_display = ''
+
+    def action_view_wa(self):
+        result = super().action_view_wa()
+        purchase_requests = self.order_line.mapped("purchase_request_lines.request_id")
+        lines = self._get_committee_line(purchase_requests)
+        result["context"]["default_date_due"] = self.work_end
+        return result

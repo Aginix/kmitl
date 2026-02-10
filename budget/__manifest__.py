@@ -29,9 +29,6 @@
         "views/res_config_settings_views.xml",
         "views/account_move_views.xml",
     ],
-    "assets": {
-        "web.assets_backend": ["budget/static/src/**/*"],
-    },
     "auto_install": False,
     "application": True,
     "license": "AGPL-3",

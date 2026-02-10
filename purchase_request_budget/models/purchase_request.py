@@ -26,6 +26,7 @@ class PurchaseRequest(models.Model):
         help="Budget account to be used for commitment",
         store=True,
         tracking=True,
+        copy=True,
         readonly=False,
     )
 
@@ -40,6 +41,7 @@ class PurchaseRequest(models.Model):
         domain=[("root_plan_id.code", "=", "activities")],
         store=False,
         tracking=True,
+        copy=True,
         readonly=False,
     )
 
@@ -51,6 +53,7 @@ class PurchaseRequest(models.Model):
         domain=[("root_plan_id.code", "=", "departments")],
         store=False,
         tracking=True,
+        copy=True,
         readonly=False,
     )
 
@@ -62,6 +65,7 @@ class PurchaseRequest(models.Model):
         domain=[("root_plan_id.code", "=", "funds")],
         store=False,
         tracking=True,
+        copy=True,
         readonly=False,
     )
 
@@ -73,6 +77,7 @@ class PurchaseRequest(models.Model):
         domain=[("root_plan_id.code", "=", "sources")],
         store=False,
         tracking=True,
+        copy=True,
         readonly=False,
     )
 
