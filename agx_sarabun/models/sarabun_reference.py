@@ -22,7 +22,7 @@ class SarabunReference(models.Model):
             ("purchase.order", "Purchase Order"),
             ("budget.commitment", "Budget Commitment"),
             ("budget.move", "Budget Move"),
-            ("account.move.request", "Account Move Request"),
+            ("disbursement.request", "Disbursement Request"),
             ("account.move", "Account Move"),
         ],
         string="Reference Type",
