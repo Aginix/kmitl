@@ -22,6 +22,8 @@
             <value eval="{'wht_account': True}"/>
         </function>
 
+
+
         <record id="wht_company" model="account.withholding.tax">
             <field name="name">ภาษี หัก ณ ที่จ่ายนิติบุคคลจากหน่วยงานเอกชน</field>
             <field name="amount">1.0</field>
