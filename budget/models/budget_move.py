@@ -254,6 +254,16 @@ class BudgetMove(models.Model):
         states=READONLY_STATES,
     )
 
+    appropriation_type = fields.Selection(
+        selection=[
+            ("initial", "งบประมาณต้นปี"),
+            ("supplementary", "งบประมาณเพิ่มเติม"),
+        ],
+        string="ประเภทการจัดสรร",
+        tracking=True,
+        help="ใช้แยกประเภทการจัดสรรงบประมาณ ต้นปี vs ระหว่างปี",
+    )
+
     total_amount = fields.Float(
         string="Total Amount",
         compute="_compute_amount",
@@ -278,6 +288,11 @@ class BudgetMove(models.Model):
         compute='_compute_first_account_id',
         store=False
     )
+
+    @api.depends('line_ids.account_id')
+    def _compute_first_account_id(self):
+        for move in self:
+            move.first_account_id = move.line_ids[:1].account_id
 
     @api.depends(
         "line_ids.balance",
