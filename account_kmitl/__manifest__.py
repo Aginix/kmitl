@@ -13,7 +13,6 @@
         "data/account_chart_post.xml",
         "data/account_tax_group.xml",
         "data/account_tax_template.xml",
-        "data/account_withholding_tax.xml",
     ],
     "demo": [
         "demo/demo_company.xml",
