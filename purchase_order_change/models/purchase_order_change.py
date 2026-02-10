@@ -30,7 +30,6 @@ class PurchaseOrderChange(models.Model):
         'ir.attachment',
         'res_id',
         string='Document Attachments',
-        tracking=True,
     )
     has_sections = fields.Boolean(
     compute="_compute_has_sections",
@@ -91,13 +90,14 @@ class PurchaseOrderChange(models.Model):
         for rec in self:
             rec.has_change_fields = bool(rec.change_field_ids)
 
-    @api.model
-    def create(self, vals):
-        if vals.get("number", "New") in (False, "New"):
-            purchase_id = (vals.get("purchase_id") or self.env.context.get("default_purchase_id"))
-            sequence = self._get_or_create_po_sequence(purchase_id)
-            vals["number"] = sequence.next_by_code(f"purchase.order.change.po_{purchase_id}")
-        return super().create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get("number", "New") in (False, "New"):
+                purchase_id = (vals.get("purchase_id") or self.env.context.get("default_purchase_id"))
+                sequence = self._get_or_create_po_sequence(purchase_id)
+                vals["number"] = sequence.next_by_code(f"purchase.order.change.po_{purchase_id}")
+        return super().create(vals_list)
 
     def _get_or_create_po_sequence(self, purchase_id):
 
