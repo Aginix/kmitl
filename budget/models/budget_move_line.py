@@ -138,6 +138,12 @@ class BudgetMoveLine(models.Model):
         string="กองทุน",
         domain=[("root_plan_id.code", "=", "funds")],
     )
+    commitment_line_id = fields.Many2one(
+        comodel_name="budget.commitment.line",
+        string="Commitment Line",
+        index=True,
+        ondelete="set null",
+    )
     hide_unallocated_balance = fields.Boolean(
         compute="_compute_hide_unallocated_balance", readonly=True
     )

@@ -174,33 +174,36 @@ class BudgetCommitmentMixin(models.AbstractModel):
                                 department_analytic_id, source_analytic_id, ref, description,
                                 budget_account_id, include_company=True, **kwargs):
         """
-        Prepare commitment values dictionary.
+        Prepare commitment values dictionary with line_ids.
 
-        Args:
-            amount (float): Commitment amount
-            activity_analytic_id: Activity dimension
-            fund_analytic_id: Fund dimension
-            department_analytic_id: Department dimension
-            source_analytic_id: Source dimension
-            ref (str): Reference
-            description (str): Description
-            budget_account_id: Budget account
-            include_company (bool): Whether to include company_id
-            **kwargs: Additional fields
-
-        Returns:
-            dict: Commitment values dictionary
+        Creates a commitment header with one line containing the budget account,
+        amount, and analytic dimensions.
         """
-        commitment_vals = {
-            'amount': amount,
+        from odoo import Command
+
+        # Build analytic_distribution JSON from 4D IDs
+        # (commitment line's 4D fields are non-stored computed from this JSON)
+        analytic_distribution = {}
+        for analytic in [
+            activity_analytic_id, fund_analytic_id,
+            department_analytic_id, source_analytic_id,
+        ]:
+            aid = analytic.id if hasattr(analytic, 'id') else analytic
+            if aid:
+                analytic_distribution[str(aid)] = 100.0
+
+        # Prepare line vals
+        line_vals = {
             'account_id': budget_account_id.id if hasattr(budget_account_id, 'id') else budget_account_id,
-            'activity_analytic_id': activity_analytic_id.id if hasattr(activity_analytic_id, 'id') else activity_analytic_id,
-            'fund_analytic_id': fund_analytic_id.id if hasattr(fund_analytic_id, 'id') else fund_analytic_id,
-            'department_analytic_id': department_analytic_id.id if hasattr(department_analytic_id, 'id') else department_analytic_id,
-            'source_analytic_id': source_analytic_id.id if hasattr(source_analytic_id, 'id') else source_analytic_id,
+            'amount': amount,
+            'analytic_distribution': analytic_distribution or False,
+        }
+
+        commitment_vals = {
             'ref': ref,
             'description': description or '',
             'user_id': self.env.user.id,
+            'line_ids': [Command.create(line_vals)],
         }
 
         if include_company:
@@ -257,6 +260,9 @@ class BudgetCommitmentMixin(models.AbstractModel):
 
         # Reset the cancelled commitment to draft
         existing_commitment.action_reset_to_draft()
+
+        # Clear existing lines before adding new ones
+        existing_commitment.line_ids.unlink()
 
         # Prepare and apply update values
         commitment_vals = self._prepare_commitment_vals(

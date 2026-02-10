@@ -60,29 +60,29 @@
                         </group>
                         <group string="Budget Details">
                             <field name="account_fiscal_year_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('id', '!=', False)]}" />
-                            <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
-                            <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
-                            <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
-                            <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
-                            <field name="account_id" options="{'no_create': True, 'no_open': True}"/>
-                            <field name="amount" widget="monetary"/>
                             <field name="currency_id" invisible="1"/>
                         </group>
                     </group>
 
-                    <group string="Budget Analysis" name="budget_analysis">
-                        <group>
-                            <field name="consumed_amount" widget="monetary" readonly="1"/>
-                            <field name="remaining_amount" widget="monetary" readonly="1"/>
-                        </group>
-                        <group attrs="{'invisible': [('state', '!=', 'draft')]}">
-                            <field name="available_budget_amount" widget="monetary" decoration-danger="budget_availability_status == 'insufficient'" decoration-warning="budget_availability_status == 'warning'" decoration-success="budget_availability_status == 'sufficient'"/>
-                            <field name="budget_availability_status" widget="badge" decoration-danger="budget_availability_status == 'insufficient'" decoration-warning="budget_availability_status == 'warning'" decoration-success="budget_availability_status == 'sufficient'"/>
-                            <field name="budget_availability_percentage" widget="percentage"/>
-                        </group>
-                    </group>
-
                     <notebook>
+                        <page name="commitment_lines" string="Commitment Lines">
+                            <field name="line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
+                                    <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
+                                    <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
+                                    <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" />
+                                    <field name="account_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="amount" sum="Total"/>
+                                    <field name="consumed_amount" sum="Consumed" optional="show"/>
+                                    <field name="remaining_amount" sum="Remaining" optional="show"/>
+                                    <field name="budget_availability_status" widget="badge" decoration-danger="budget_availability_status == 'insufficient'" decoration-warning="budget_availability_status == 'warning'" decoration-success="budget_availability_status == 'sufficient'" optional="show"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="analytic_distribution" invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
                         <page name="description" string="Description">
                             <group>
                                 <group>
@@ -104,6 +104,19 @@
                             </group>
                         </page>
                     </notebook>
+
+                    <group string="Budget Summary" name="budget_summary">
+                        <group>
+                            <field name="amount" widget="monetary" readonly="1"/>
+                            <field name="consumed_amount" widget="monetary" readonly="1"/>
+                            <field name="remaining_amount" widget="monetary" readonly="1"/>
+                        </group>
+                        <group attrs="{'invisible': [('state', '!=', 'draft')]}">
+                            <field name="available_budget_amount" widget="monetary" decoration-danger="budget_availability_status == 'insufficient'" decoration-warning="budget_availability_status == 'warning'" decoration-success="budget_availability_status == 'sufficient'"/>
+                            <field name="budget_availability_status" widget="badge" decoration-danger="budget_availability_status == 'insufficient'" decoration-warning="budget_availability_status == 'warning'" decoration-success="budget_availability_status == 'sufficient'"/>
+                            <field name="budget_availability_percentage" widget="percentage"/>
+                        </group>
+                    </group>
                 </sheet>
 
                 <div class="oe_chatter">

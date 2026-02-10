@@ -425,8 +425,9 @@ class BudgetController(models.AbstractModel):
         total = 0.0
 
         for commitment in commitments:
-            if self._commitment_line_matches_analytic_data(commitment, analytic_data):
-                total += commitment.remaining_amount
+            for line in commitment.line_ids:
+                if self._commitment_line_matches_analytic_data(line, analytic_data):
+                    total += line.remaining_amount
 
         return total
 
@@ -518,16 +519,9 @@ class BudgetController(models.AbstractModel):
         return [int(id_str) for id_str in path_parts if id_str.isdigit()]
 
     @api.model
-    def _commitment_line_matches_analytic_data(self, commitment, analytic_data):
-        """Check if commitment matches analytic data (exact match for commitments)"""
-        # For commitments, we use exact matching since they represent specific allocations
-        return (
-            commitment.account_id.id == analytic_data.get('account_id') and
-            (commitment.activity_analytic_id.id if commitment.activity_analytic_id else False) == analytic_data.get('activity_analytic_id') and
-            (commitment.department_analytic_id.id if commitment.department_analytic_id else False) == analytic_data.get('department_analytic_id') and
-            (commitment.fund_analytic_id.id if commitment.fund_analytic_id else False) == analytic_data.get('fund_analytic_id') and
-            (commitment.source_analytic_id.id if commitment.source_analytic_id else False) == analytic_data.get('source_analytic_id')
-        )
+    def _commitment_line_matches_analytic_data(self, line, analytic_data):
+        """Check if commitment line matches the given analytic data (hierarchical)"""
+        return self._line_matches_analytic_data(line, analytic_data)
 
     @api.model
     def _line_matches_analytic_data(self, line, analytic_data):
@@ -558,11 +552,6 @@ class BudgetController(models.AbstractModel):
             return False
 
         return True
-
-    def _commitment_line_matches_analytic_data(self, line, analytic_data):
-        """Check if commitment line matches the given analytic data"""
-        # Same logic as budget move lines
-        return self._line_matches_analytic_data(line, analytic_data)
 
     def _analytic_matches_hierarchical(self, parent_id, child_id):
         """Check if analytic accounts match hierarchically"""

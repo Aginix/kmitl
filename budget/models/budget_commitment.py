@@ -4,80 +4,30 @@ from odoo.exceptions import ValidationError, UserError
 
 _logger = logging.getLogger(__name__)
 
+# Fields that should be extracted from header vals into a commitment line
+_LINE_FIELDS = [
+    "account_id",
+    "amount",
+    "activity_analytic_id",
+    "department_analytic_id",
+    "fund_analytic_id",
+    "source_analytic_id",
+    "analytic_distribution",
+]
+
 
 class BudgetCommitment(models.Model):
     """
     Budget Commitment - Reserve budget amounts before consumption.
 
-    Business Purpose:
-        Budget commitments prevent over-allocation by reserving budget amounts before actual
-        spending occurs. This provides financial control and ensures budget availability
-        before making purchasing or spending commitments.
-
-    4D Analytic Distribution System:
-        Each commitment implements the complete 4-dimensional analytic structure used
-        throughout the KMITL budget system:
-
-        1. Activities (กิจกรรม) - activity_analytic_id
-           • แผนงาน/โครงการ/กิจกรรม hierarchy
-           • Examples: งานบริหารทั่วไป > งานสำนักงาน > งานธุรการ
-
-        2. Departments (ส่วนงาน) - department_analytic_id
-           • Organizational structure hierarchy
-           • Examples: สำนักงานอธิการบดี > งานบุคคล > งานสรรหา
-
-        3. Funds (กองทุน) - fund_analytic_id
-           • Funding source hierarchy
-           • Examples: เงินรายได้ > เงินค่าบำรุง > เงินค่าสาธารณูปโภค
-
-        4. Sources (แหล่งเงิน) - source_analytic_id
-           • Money source classification
-           • Examples: เงินแผ่นดิน, เงินนอกงบประมาณ, เงินบริจาค
-
-    Real-time Budget Availability:
-        Each commitment continuously calculates and displays:
-        • Available budget amount (available_budget_amount)
-        • Budget availability status (sufficient/warning/insufficient)
-        • Percentage of available budget being requested
-        • Color-coded visual feedback in the user interface
+    Implements a header-line architecture where each commitment can have
+    one or more lines, each targeting a specific budget account and
+    analytic combination.
 
     State Lifecycle:
         draft → reserved → obligated → done
-        │       │         │           │
-        │       │         │           └── Fully processed, budget released or consumed
-        │       │         └──────────── Budget obligated, firm commitment
-        │       └─────────────────────── Budget reserved, prevents over-commitment
-        └────────────────────────────── Editable, no budget impact
-
-    Key Features:
-        • Real-time budget availability checking with hierarchical matching
-        • Automatic analytic validation and fund restrictions
-        • Consumption tracking through linked budget moves
-        • Multi-currency support with proper currency handling
-        • OnChange validations with user-friendly warnings
-        • Integration with budget.controller for optimized calculations
-
-    Data Relationships:
-        • References: budget.account (specific account being used)
-        • Analytics: account.analytic.account (4D analytic dimensions)
-        • Consumption: budget.move.line (via analytic matching)
-
-    Calculation Logic:
-        • Available Budget = Appropriated - Reserved - Consumed
-        • Uses hierarchical matching for appropriation coverage
-        • Real-time updates when analytic dimensions change
-
-    Thai Localization:
-        • Supports Thai government chart of accounts structure
-        • Multi-level analytic hierarchies for Thai institutions
-        • Currency handling for Thai Baht and foreign currencies
-        • Validation rules aligned with Thai accounting practices
-
-    Performance Features:
-        • Computed fields with smart dependencies
-        • Efficient parent_path hierarchy traversal
-        • Optimized budget controller service integration
-        • Minimal database queries through strategic caching
+                                      ↗
+        cancel ← (any non-done state)
     """
 
     _name = "budget.commitment"
@@ -165,10 +115,45 @@ class BudgetCommitment(models.Model):
         states=READONLY_STATES,
     )
 
+    company_id = fields.Many2one(
+        comodel_name="res.company",
+        string="Company",
+        required=True,
+        default=lambda self: self.env.company,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
+    currency_id = fields.Many2one(
+        "res.currency",
+        string="Currency",
+        default=lambda self: self.env.company.currency_id,
+        required=True,
+        store=True,
+    )
+
+    notes = fields.Text(
+        string="Notes",
+    )
+
+    # === Commitment Lines === #
+
+    line_ids = fields.One2many(
+        comodel_name="budget.commitment.line",
+        inverse_name="commitment_id",
+        string="Commitment Lines",
+        copy=True,
+        states=READONLY_STATES,
+    )
+
+    # === Computed Header Fields (from lines, backward compat) === #
+
     account_id = fields.Many2one(
         comodel_name="budget.account",
         string="รหัสงบประมาณ",
-        required=True,
+        compute="_compute_header_from_lines",
+        inverse="_inverse_account_id",
+        store=True,
         index=True,
         tracking=True,
         domain="[('budgetable', '=', True), ('budget_type', '=', 'expense')]",
@@ -177,11 +162,22 @@ class BudgetCommitment(models.Model):
 
     amount = fields.Monetary(
         string="จำนวนเงินจอง",
-        required=True,
+        compute="_compute_header_from_lines",
+        inverse="_inverse_amount",
+        store=True,
         currency_field="currency_id",
         tracking=True,
-        help="Amount to be committed for this budget line",
         states=READONLY_STATES,
+    )
+
+    # Override analytic_distribution from analytic.mixin to compute from lines
+    analytic_distribution = fields.Json(
+        "Analytic",
+        compute="_compute_header_from_lines",
+        inverse="_inverse_analytic_distribution",
+        store=True,
+        copy=True,
+        readonly=False,
     )
 
     activity_analytic_id = fields.Many2one(
@@ -236,41 +232,20 @@ class BudgetCommitment(models.Model):
     }
 
     def _inverse_activity_analytic(self):
-        """Update distribution when activity changes"""
-        for line in self:
-            line._update_analytic_distribution("activities")
+        for rec in self:
+            rec._update_analytic_distribution("activities")
 
     def _inverse_department_analytic(self):
-        """Update distribution when department changes"""
-        for line in self:
-            line._update_analytic_distribution("departments")
+        for rec in self:
+            rec._update_analytic_distribution("departments")
 
     def _inverse_fund_analytic(self):
-        """Update distribution when fund changes"""
-        for line in self:
-            line._update_analytic_distribution("funds")
+        for rec in self:
+            rec._update_analytic_distribution("funds")
 
     def _inverse_source_analytic(self):
-        """Update distribution when source changes"""
-        for line in self:
-            line._update_analytic_distribution("sources")
-
-    company_id = fields.Many2one(
-        comodel_name="res.company",
-        string="Company",
-        required=True,
-        default=lambda self: self.env.company,
-        tracking=True,
-        states=READONLY_STATES,
-    )
-
-    currency_id = fields.Many2one(
-        "res.currency",
-        string="Currency",
-        default=lambda self: self.env.company.currency_id,
-        required=True,
-        store=True,
-    )
+        for rec in self:
+            rec._update_analytic_distribution("sources")
 
     # Budget account related fields
     budget_account_code = fields.Char(
@@ -291,13 +266,13 @@ class BudgetCommitment(models.Model):
         string="Budget Type",
     )
 
-    # Consumption tracking
+    # === Consumption Tracking === #
+
     consumed_amount = fields.Monetary(
         string="Consumed Amount",
         compute="_compute_consumed_amount",
         store=True,
         currency_field="currency_id",
-        help="Amount already consumed from budget moves",
     )
 
     remaining_amount = fields.Monetary(
@@ -305,21 +280,15 @@ class BudgetCommitment(models.Model):
         compute="_compute_remaining_amount",
         store=True,
         currency_field="currency_id",
-        help="Amount still available for consumption",
     )
 
-    notes = fields.Text(
-        string="Notes",
-        help="Additional notes for this commitment",
-    )
+    # === Budget Availability (aggregated from lines) === #
 
-    # Budget availability fields
     available_budget_amount = fields.Monetary(
         string="Available Budget",
         compute="_compute_available_budget",
         store=True,
         currency_field="currency_id",
-        help="Available budget amount for this analytic combination",
     )
 
     budget_availability_status = fields.Selection(
@@ -331,14 +300,12 @@ class BudgetCommitment(models.Model):
         string="Budget Status",
         compute="_compute_available_budget",
         store=True,
-        help="Budget availability status for this commitment",
     )
 
     budget_availability_percentage = fields.Float(
         string="% of Available",
         compute="_compute_available_budget",
         store=True,
-        help="Percentage of available budget this commitment represents",
     )
 
     # Related budget moves for consumption tracking
@@ -349,126 +316,92 @@ class BudgetCommitment(models.Model):
         readonly=True,
     )
 
-    @api.depends("amount", "budget_move_ids.line_ids")
+    # === Compute: Header from Lines === #
+
+    @api.depends(
+        "line_ids.account_id",
+        "line_ids.amount",
+        "line_ids.analytic_distribution",
+    )
+    def _compute_header_from_lines(self):
+        """Compute header fields from first/all lines for backward compat."""
+        for rec in self:
+            first_line = rec.line_ids[:1]
+            rec.account_id = first_line.account_id
+            rec.amount = sum(rec.line_ids.mapped("amount"))
+            rec.analytic_distribution = first_line.analytic_distribution or False
+
+    def _inverse_account_id(self):
+        """When header account_id is set, apply to first line."""
+        for rec in self:
+            if len(rec.line_ids) == 1:
+                rec.line_ids.account_id = rec.account_id
+
+    def _inverse_amount(self):
+        """When header amount is set, apply to first line."""
+        for rec in self:
+            if len(rec.line_ids) == 1:
+                rec.line_ids.amount = rec.amount
+
+    def _inverse_analytic_distribution(self):
+        """When header analytic_distribution is set, apply to first line."""
+        for rec in self:
+            if len(rec.line_ids) == 1:
+                rec.line_ids.analytic_distribution = rec.analytic_distribution
+
+    # === Compute: Consumed / Remaining === #
+
+    @api.depends("line_ids.consumed_amount")
     def _compute_consumed_amount(self):
-        """Calculate how much of this commitment has been consumed by budget moves"""
         for record in self:
-            consumed = 0.0
-
-            # Find budget move lines that match this commitment's analytics
-            related_moves = record.budget_move_ids.filtered(
-                lambda m: m.state == "posted"
-            )
-
-            for move in related_moves:
-                consumed += sum(move.line_ids.mapped(lambda l: abs(l.balance)))
-
-            record.consumed_amount = min(consumed, record.amount)
+            record.consumed_amount = sum(record.line_ids.mapped("consumed_amount"))
 
     @api.depends("amount", "consumed_amount")
     def _compute_remaining_amount(self):
-        """Calculate remaining amount available"""
         for record in self:
             record.remaining_amount = record.amount - record.consumed_amount
 
+    # === Compute: Budget Availability (aggregated from lines) === #
+
     @api.depends(
-        "account_id",
-        "analytic_distribution",
-        "account_fiscal_year_id",
-        "amount",
-        "state",
+        "line_ids.available_budget_amount",
+        "line_ids.budget_availability_status",
+        "line_ids.budget_availability_percentage",
     )
     def _compute_available_budget(self):
-        """Calculate real-time budget availability for this commitment"""
-        budget_controller = self.env["budget.controller"]
+        """Aggregate budget availability from lines."""
+        status_priority = {"insufficient": 0, "warning": 1, "sufficient": 2}
 
         for record in self:
-            if not all(
-                [
-                    record.account_id,
-                    record.activity_analytic_id,
-                    record.fund_analytic_id,
-                    record.account_fiscal_year_id,
-                ]
-            ):
+            lines = record.line_ids
+            if not lines:
                 record.available_budget_amount = 0.0
                 record.budget_availability_status = "insufficient"
                 record.budget_availability_percentage = 0.0
                 continue
 
-            # Prepare analytic data for budget controller
-            analytic_data = {
-                "account_id": record.account_id.id,
-                "activity_analytic_id": record.activity_analytic_id.id,
-                "department_analytic_id": (
-                    record.department_analytic_id.id
-                    if record.department_analytic_id
-                    else False
-                ),
-                "fund_analytic_id": record.fund_analytic_id.id,
-                "source_analytic_id": (
-                    record.source_analytic_id.id if record.source_analytic_id else False
-                ),
-            }
+            record.available_budget_amount = sum(
+                lines.mapped("available_budget_amount")
+            )
 
-            try:
-                # Get available budget amount
-                available = budget_controller.get_available_budget(
-                    analytic_data,
-                    record.account_fiscal_year_id.id,
-                    record.company_id.id,
-                )
+            # Worst status across lines
+            statuses = lines.mapped("budget_availability_status")
+            worst = min(
+                (s for s in statuses if s),
+                key=lambda s: status_priority.get(s, 2),
+                default="insufficient",
+            )
+            record.budget_availability_status = worst
 
-                # If commitment is already reserved or obligated, add back its own amount to available
-                if record.state in ["reserved", "obligated"] and record.amount:
-                    available += record.amount
+            # Max percentage across lines
+            percentages = lines.mapped("budget_availability_percentage")
+            record.budget_availability_percentage = max(percentages) if percentages else 0.0
 
-                record.available_budget_amount = available
-
-                # Calculate status and percentage
-                if record.amount:
-                    # Check if negative budget is allowed
-                    allow_negative = (
-                        record.env["ir.config_parameter"]
-                        .sudo()
-                        .get_param("budget.allow_negative", False)
-                    )
-
-                    if available >= record.amount:
-                        record.budget_availability_status = "sufficient"
-                    elif available >= record.amount * 0.5 or (
-                        allow_negative and available >= 0
-                    ):  # 50% threshold or allow negative
-                        record.budget_availability_status = "warning"
-                    elif allow_negative:
-                        record.budget_availability_status = (
-                            "warning"  # Allow negative but show warning
-                        )
-                    else:
-                        record.budget_availability_status = "insufficient"
-
-                    record.budget_availability_percentage = (
-                        (record.amount / available * 100) if available > 0 else 999.99
-                    )
-                else:
-                    record.budget_availability_status = "sufficient"
-                    record.budget_availability_percentage = 0.0
-
-            except Exception as e:
-                _logger.warning(
-                    "Error calculating budget availability for commitment %s: %s",
-                    record.id,
-                    str(e),
-                )
-                record.available_budget_amount = 0.0
-                record.budget_availability_status = "insufficient"
-                record.budget_availability_percentage = 0.0
+    # === OnChange Validations === #
 
     @api.onchange("fund_analytic_id", "account_id")
     def _onchange_fund_account_validation(self):
-        """Validate that budget account is allowed for selected fund"""
         if self.fund_analytic_id and self.account_id:
-            # Check if budget account has fund restrictions
             if self.account_id.fund_analytic_ids:
                 if self.fund_analytic_id not in self.account_id.fund_analytic_ids:
                     return {
@@ -481,9 +414,7 @@ class BudgetCommitment(models.Model):
 
     @api.onchange("amount", "account_id", "activity_analytic_id", "fund_analytic_id")
     def _onchange_check_budget_availability(self):
-        """Check budget availability and show warning if insufficient"""
         if self.amount and self.available_budget_amount >= 0:
-            # Check if negative budget is allowed
             allow_negative = (
                 self.env["ir.config_parameter"]
                 .sudo()
@@ -568,37 +499,69 @@ class BudgetCommitment(models.Model):
                         }
                     }
 
-    @api.constrains("amount")
-    def _check_positive_amount(self):
-        """Ensure commitment amount is positive"""
-        for record in self:
-            if record.amount <= 0:
-                raise ValidationError(_("Commitment amount must be positive."))
+    # === Create Override (old API compat) === #
 
-    # Workflow Methods
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Auto-create a commitment line from old-style header vals."""
+        analytic_id_fields = [
+            "activity_analytic_id",
+            "department_analytic_id",
+            "fund_analytic_id",
+            "source_analytic_id",
+        ]
+        for vals in vals_list:
+            if "line_ids" not in vals and vals.get("account_id"):
+                line_vals = {}
+                for field in _LINE_FIELDS:
+                    if field in vals:
+                        line_vals[field] = vals.pop(field)
+
+                # Build analytic_distribution from 4D IDs if not already present
+                if "analytic_distribution" not in line_vals:
+                    distribution = {}
+                    for field in analytic_id_fields:
+                        aid = line_vals.pop(field, False)
+                        if aid:
+                            distribution[str(aid)] = 100.0
+                    line_vals["analytic_distribution"] = distribution or False
+                else:
+                    # Remove 4D fields from line_vals (they're non-stored computed)
+                    for field in analytic_id_fields:
+                        line_vals.pop(field, None)
+
+                vals["line_ids"] = [Command.create(line_vals)]
+        return super().create(vals_list)
+
+    # === Workflow Methods === #
+
     def action_check_budget_availability(self):
-        """Check budget availability for this commitment"""
+        """Check budget availability for all lines."""
         self.ensure_one()
-        # Trigger recomputation of budget availability
-        self._compute_available_budget()
 
-        if self.budget_availability_status == "insufficient":
+        if not self.line_ids:
+            raise UserError(_("Commitment must have at least one line."))
+
+        # Trigger recomputation
+        self.line_ids._compute_available_budget()
+
+        insufficient_lines = self.line_ids.filtered(
+            lambda l: l.budget_availability_status == "insufficient"
+        )
+        if insufficient_lines:
+            messages = []
+            for line in insufficient_lines:
+                messages.append(
+                    _("• %s: Requested %s, Available %s")
+                    % (
+                        line.account_id.display_name,
+                        "{:,.2f}".format(line.amount),
+                        "{:,.2f}".format(line.available_budget_amount),
+                    )
+                )
             raise UserError(
-                _(
-                    "Insufficient budget for this commitment.\n\n"
-                    "Requested: %s\n"
-                    "Available: %s\n"
-                    "Budget Account: %s\n"
-                    "Activity: %s\n"
-                    "Fund: %s"
-                )
-                % (
-                    "{:,.2f}".format(self.amount),
-                    "{:,.2f}".format(self.available_budget_amount),
-                    self.account_id.display_name,
-                    self.activity_analytic_id.display_name,
-                    self.fund_analytic_id.display_name,
-                )
+                _("Insufficient budget for the following lines:\n\n%s")
+                % "\n".join(messages)
             )
 
         return {
@@ -606,30 +569,20 @@ class BudgetCommitment(models.Model):
             "tag": "display_notification",
             "params": {
                 "title": _("Budget Check Complete"),
-                "message": _("Budget availability: %s - Available: %s")
-                % (
-                    self.budget_availability_status.title(),
-                    "{:,.2f}".format(self.available_budget_amount),
-                ),
-                "type": (
-                    "success"
-                    if self.budget_availability_status == "sufficient"
-                    else "warning"
-                ),
+                "message": _("Budget availability: Sufficient - Available: %s")
+                % "{:,.2f}".format(self.available_budget_amount),
+                "type": "success",
                 "sticky": False,
             },
         }
 
     def action_reserve(self):
-        """Reserve budget for this commitment"""
         for record in self:
             if record.state != "draft":
                 raise UserError(_("Only draft commitments can be reserved."))
 
-            # Check budget availability before reserving
             record.action_check_budget_availability()
 
-            # Generate sequence number upon successful reservation
             if record.name == _("New"):
                 record.name = self.env["ir.sequence"].next_by_code(
                     "budget.commitment"
@@ -638,7 +591,6 @@ class BudgetCommitment(models.Model):
             record.state = "reserved"
 
     def action_obligate(self):
-        """Obligate budget for this commitment - mark as firm commitment"""
         for record in self:
             if record.state == "obligated":
                 continue
@@ -648,16 +600,13 @@ class BudgetCommitment(models.Model):
                     % record.name
                 )
             record.state = "obligated"
-
             _logger.info("Obligated budget commitment %s", record.name)
 
     def action_done(self):
-        """Mark commitment as done - closes the commitment and releases any remaining budget"""
         for record in self:
             record.close_commitment()
 
     def action_cancel(self):
-        """Cancel the commitment"""
         for record in self:
             if record.state == "cancel":
                 continue
@@ -666,18 +615,15 @@ class BudgetCommitment(models.Model):
                     _("Cannot cancel commitment %s - it is already done") % record.name
                 )
             record.state = "cancel"
-
             _logger.info("Cancelled budget commitment %s", record.name)
 
     def action_reset_to_draft(self):
-        """Reset commitment to draft state"""
         for record in self:
             if record.state not in ["cancel"]:
                 raise UserError(_("Only cancelled commitments can be reset to draft."))
             record.state = "draft"
 
     def action_view_budget_moves(self):
-        """View related budget moves"""
         self.ensure_one()
         return {
             "type": "ir.actions.act_window",
@@ -688,37 +634,10 @@ class BudgetCommitment(models.Model):
             "context": {"default_commitment_id": self.id},
         }
 
-    def _prepare_consume_budget_move_vals(self, amount):
-        return {
-            "name": _("Consumption of %s") % self.name,
-            "date": fields.Date.today(),
-            "account_fiscal_year_id": self.account_fiscal_year_id.id,
-            "commitment_id": self.id,
-            "move_type": "consume",
-            "line_ids": [Command.create(self._prepare_consume_line_vals(amount))],
-        }
-
-    def _prepare_consume_line_vals(self, amount):
-        return {
-            "account_id": self.account_id.id,
-            "balance": -amount,  # Negative for consumption
-            "activity_analytic_id": self.activity_analytic_id.id,
-            "department_analytic_id": (
-                self.department_analytic_id.id if self.department_analytic_id else False
-            ),
-            "fund_analytic_id": self.fund_analytic_id.id,
-            "source_analytic_id": (
-                self.source_analytic_id.id if self.source_analytic_id else False
-            ),
-        }
-
-    def _create_consume_budget_move(self, amount):
-        move_vals = self._prepare_consume_budget_move_vals(amount)
-        budget_move = self.env["budget.move"].create(move_vals)
-        budget_move.action_post()
-        return budget_move
+    # === Consume (proportional distribution) === #
 
     def consume(self, amount):
+        """Consume budget proportionally across all lines with remaining balance."""
         self.ensure_one()
 
         if self.state not in ["reserved", "obligated"]:
@@ -741,6 +660,66 @@ class BudgetCommitment(models.Model):
             self.remaining_amount,
         )
 
+        return budget_move
+
+    def _prepare_consume_budget_move_vals(self, amount):
+        """Prepare budget.move vals with proportional distribution across lines."""
+        lines_with_remaining = self.line_ids.filtered(
+            lambda l: l.remaining_amount > 0
+        )
+
+        if not lines_with_remaining:
+            raise UserError(_("No remaining budget to consume in any line."))
+
+        total_remaining = sum(lines_with_remaining.mapped("remaining_amount"))
+        move_line_vals = []
+        distributed = 0.0
+
+        for i, line in enumerate(lines_with_remaining):
+            if i == len(lines_with_remaining) - 1:
+                # Last line gets the remainder to avoid rounding issues
+                line_amount = amount - distributed
+            else:
+                line_amount = round(
+                    amount * (line.remaining_amount / total_remaining), 2
+                )
+                distributed += line_amount
+
+            if line_amount > 0:
+                move_line_vals.append(
+                    Command.create(line._prepare_consume_line_vals(line_amount))
+                )
+
+        return {
+            "name": _("Consumption of %s") % self.name,
+            "date": fields.Date.today(),
+            "account_fiscal_year_id": self.account_fiscal_year_id.id,
+            "commitment_id": self.id,
+            "move_type": "consume",
+            "line_ids": move_line_vals,
+        }
+
+    def _prepare_consume_line_vals(self, amount):
+        """Backward compat: prepare consume line vals from header (single-line)."""
+        if self.line_ids:
+            return self.line_ids[0]._prepare_consume_line_vals(amount)
+        return {
+            "account_id": self.account_id.id,
+            "balance": -amount,
+            "activity_analytic_id": self.activity_analytic_id.id,
+            "department_analytic_id": (
+                self.department_analytic_id.id if self.department_analytic_id else False
+            ),
+            "fund_analytic_id": self.fund_analytic_id.id,
+            "source_analytic_id": (
+                self.source_analytic_id.id if self.source_analytic_id else False
+            ),
+        }
+
+    def _create_consume_budget_move(self, amount):
+        move_vals = self._prepare_consume_budget_move_vals(amount)
+        budget_move = self.env["budget.move"].create(move_vals)
+        budget_move.action_post()
         return budget_move
 
     def close_commitment(self):
