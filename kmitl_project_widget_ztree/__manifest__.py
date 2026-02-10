@@ -9,9 +9,6 @@
     "data": [
         "views/kmitl_project_views.xml"
     ],
-    "assets": {
-        "web.assets_backend": ["kmitl_project_widget_ztree/static/src/**/*"],
-    },
     "application": False,
     "installable": True,
     "auto_install": False,
