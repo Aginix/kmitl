@@ -500,6 +500,12 @@ class BudgetTransfer(models.Model):
 
     def action_approve(self):
         """Approve the transfer"""
+        # Check permission - only Budget Manager can approve
+        if not self.env.user.has_group("budget.group_budget_manager"):
+            raise UserError(
+                _("Only Budget Managers can approve transfers")
+            )
+
         # Final validation before approval
         self._validate_budget_availability()
 
@@ -518,11 +524,23 @@ class BudgetTransfer(models.Model):
 
     def action_reject(self):
         """Reject the transfer with reason"""
+        # Check permission - only Budget Manager can reject
+        if not self.env.user.has_group("budget.group_budget_manager"):
+            raise UserError(
+                _("Only Budget Managers can reject transfers")
+            )
+
         # Open wizard for rejection reason
         return self._open_rejection_wizard()
 
     def action_post(self):
         """Post the transfer and create budget moves"""
+        # Check permission - only Budget Manager can post
+        if not self.env.user.has_group("budget.group_budget_manager"):
+            raise UserError(
+                _("Only Budget Managers can post transfers")
+            )
+
         # Final validation before posting
         self._validate_budget_availability()
 
