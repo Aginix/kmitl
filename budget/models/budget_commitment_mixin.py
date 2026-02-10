@@ -194,6 +194,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
 
         # Prepare line vals
         line_vals = {
+            'line_type': 'reserve',
             'account_id': budget_account_id.id if hasattr(budget_account_id, 'id') else budget_account_id,
             'amount': amount,
             'analytic_distribution': analytic_distribution or False,
@@ -442,16 +443,20 @@ class BudgetCommitmentMixin(models.AbstractModel):
 
         return True
 
-    def _obligate_budget_commitment(self):
+    def _obligate_budget_commitment(self, amount=None):
         """
-        Obligate a budget commitment (mark as obligated).
-        This transitions from reserved to obligated state for firm commitments.
+        Obligate a budget commitment by creating obligate lines.
+
+        Creates obligate ledger entries matching the reserve lines.
+        If amount is specified, creates a single obligate line for that amount
+        using the first reserve line's analytics. If amount is None, creates
+        obligate lines matching all reserve lines (full obligation).
+
+        Args:
+            amount (float, optional): Specific amount to obligate.
 
         Returns:
             bool: True if successful
-
-        Raises:
-            UserError: If commitment cannot be obligated
         """
         self.ensure_one()
 
@@ -460,7 +465,34 @@ class BudgetCommitmentMixin(models.AbstractModel):
         if not commitment:
             return True
 
-        commitment.action_obligate()
+        if not commitment.is_approved:
+            raise UserError(_("Commitment must be reserved before obligating."))
+
+        if amount is not None:
+            # Obligate a specific amount using first reserve line's analytics
+            first_reserve = commitment.line_ids.filtered(
+                lambda l: l.line_type == 'reserve' and l.amount > 0
+            )[:1]
+            if not first_reserve:
+                raise UserError(_("No reserve lines found to obligate against."))
+            commitment.add_obligate_lines([{
+                'account_id': first_reserve.account_id.id,
+                'amount': amount,
+                'analytic_distribution': first_reserve.analytic_distribution,
+            }])
+        else:
+            # Full obligation: create obligate lines matching all reserve lines
+            lines_data = []
+            for line in commitment.line_ids.filtered(
+                lambda l: l.line_type == 'reserve' and l.amount > 0
+            ):
+                lines_data.append({
+                    'account_id': line.account_id.id,
+                    'amount': line.amount,
+                    'analytic_distribution': line.analytic_distribution,
+                })
+            if lines_data:
+                commitment.add_obligate_lines(lines_data)
 
         return True
 

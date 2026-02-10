@@ -234,12 +234,12 @@ class BudgetMixin(models.AbstractModel):
             else:
                 record.budget_state = 'none'
 
-    @api.depends('budget_commitment_id.total_amount')
+    @api.depends('budget_commitment_id.amount')
     def _compute_budget_amount(self):
         """Compute budget amount from commitment"""
         for record in self:
             if record.budget_commitment_id:
-                record.budget_amount = record.budget_commitment_id.total_amount
+                record.budget_amount = record.budget_commitment_id.amount
             else:
                 record.budget_amount = 0.0
 
@@ -324,7 +324,7 @@ class BudgetMixin(models.AbstractModel):
         if not self.budget_commitment_id:
             raise UserError(_('No budget commitment to reserve.'))
 
-        if self.budget_commitment_id.state == 'confirmed':
+        if self.budget_commitment_id.state == 'draft':
             self.budget_commitment_id.action_reserve()
 
         return self.budget_commitment_id
@@ -406,9 +406,7 @@ class BudgetMixin(models.AbstractModel):
         Call this from appropriate state transitions in inheriting models.
         """
         if self.has_budget_integration and not self.budget_commitment_id:
-            commitment = self.create_budget_commitment()
-            commitment.action_confirm()
-            return commitment
+            return self.create_budget_commitment()
         return False
 
     def _auto_reserve_budget_commitment(self):
@@ -416,7 +414,7 @@ class BudgetMixin(models.AbstractModel):
         Automatically reserve budget commitment.
         Call this from appropriate state transitions in inheriting models.
         """
-        if self.budget_commitment_id and self.budget_commitment_id.state == 'confirmed':
+        if self.budget_commitment_id and self.budget_commitment_id.state == 'draft':
             self.budget_commitment_id.action_reserve()
             return True
         return False

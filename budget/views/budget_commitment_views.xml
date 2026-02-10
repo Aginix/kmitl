@@ -16,6 +16,7 @@
                 <field name="fund_analytic_id" optional="hide" />
                 <field name="account_id" optional="hide"  />
                 <field name="amount" sum="Total Amount"/>
+                <field name="total_obligated" sum="Obligated" optional="show" />
                 <field name="consumed_amount" sum="Consumed Amount" optional="show" />
                 <field name="remaining_amount" sum="Remaining Amount" optional="show" />
                 <field name="state" widget="badge" decoration-success="state == 'done'" decoration-info="state == 'reserved'" decoration-muted="state == 'obligated'" decoration-warning="state == 'draft'" decoration-danger="state == 'cancel'"/>
@@ -33,10 +34,9 @@
                 <header>
                     <button name="action_check_budget_availability" string="Check Budget" type="object" class="btn-info" attrs="{'invisible': [('state', '!=', 'draft')]}" help="Check budget availability for this commitment"/>
                     <button name="action_reserve" string="Reserve Budget" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                    <button name="action_obligate" string="Obligate Budget" type="object" class="btn-primary" attrs="{'invisible': [('state', '!=', 'reserved')]}" help="Mark this commitment as obligated - firm commitment"/>
-                    <button name="action_done" string="Mark as Done" type="object" attrs="{'invisible': [('state', '!=', 'obligated')]}" help="Close this commitment and release any remaining budget"/>
+                    <button name="action_done" string="Mark as Done" type="object" attrs="{'invisible': [('state', 'not in', ['reserved', 'obligated'])]}" help="Close this commitment and release any remaining budget"/>
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"/>
-                    <button name="action_reset_to_draft" string="Reset to Draft" type="object" attrs="{'invisible': [('state', 'not in', ['cancel'])]}"/>
+                    <button name="action_reset_to_draft" string="Reset to Draft" type="object" attrs="{'invisible': [('state', '!=', 'cancel')]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,reserved,obligated,done"/>
                 </header>
 
@@ -69,16 +69,15 @@
                             <field name="line_ids" attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}">
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle"/>
-                                    <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                                    <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                                    <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                                    <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                                    <field name="account_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                                    <field name="amount" sum="Total" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                                    <field name="consumed_amount" sum="Consumed" optional="show"/>
-                                    <field name="remaining_amount" sum="Remaining" optional="show"/>
-                                    <field name="state" widget="badge" decoration-success="state == 'done'" decoration-info="state == 'reserved'" decoration-muted="state == 'obligated'" decoration-warning="state == 'draft'" decoration-danger="state == 'cancel'" optional="show"/>
-                                    <field name="budget_availability_status" widget="badge" decoration-danger="budget_availability_status == 'insufficient'" decoration-warning="budget_availability_status == 'warning'" decoration-success="budget_availability_status == 'sufficient'" optional="show"/>
+                                    <field name="line_type"/>
+                                    <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="account_id" required="1" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="amount" sum="Net Amount"/>
+                                    <field name="date"/>
+                                    <field name="description" optional="hide"/>
                                     <field name="currency_id" invisible="1"/>
                                     <field name="analytic_distribution" invisible="1"/>
                                 </tree>
@@ -108,11 +107,19 @@
 
                     <group string="Budget Summary" name="budget_summary">
                         <group>
-                            <field name="amount" widget="monetary" readonly="1"/>
+                            <field name="total_reserve" widget="monetary" readonly="1"/>
+                            <field name="total_obligated" widget="monetary" readonly="1"/>
+                            <field name="reserved_balance" widget="monetary" readonly="1"/>
+                            <field name="obligated_balance" widget="monetary" readonly="1"/>
+                        </group>
+                        <group>
                             <field name="consumed_amount" widget="monetary" readonly="1"/>
                             <field name="remaining_amount" widget="monetary" readonly="1"/>
                         </group>
-                        <group attrs="{'invisible': [('state', '!=', 'draft')]}">
+                    </group>
+
+                    <group string="Budget Availability" name="budget_availability" attrs="{'invisible': [('state', '!=', 'draft')]}">
+                        <group>
                             <field name="available_budget_amount" widget="monetary" decoration-danger="budget_availability_status == 'insufficient'" decoration-warning="budget_availability_status == 'warning'" decoration-success="budget_availability_status == 'sufficient'"/>
                             <field name="budget_availability_status" widget="badge" decoration-danger="budget_availability_status == 'insufficient'" decoration-warning="budget_availability_status == 'warning'" decoration-success="budget_availability_status == 'sufficient'"/>
                             <field name="budget_availability_percentage" widget="percentage"/>
@@ -142,6 +149,7 @@
 
                 <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
                 <filter string="Reserved" name="reserved" domain="[('state', '=', 'reserved')]"/>
+                <filter string="Obligated" name="obligated" domain="[('state', '=', 'obligated')]"/>
                 <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
 
                 <separator/>

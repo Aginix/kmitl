@@ -303,9 +303,10 @@ class BudgetController(models.AbstractModel):
                         'amount': -abs(line.balance),
                     })
 
-        # Get reserved and obligated commitment lines
+        # Get reserve and obligate commitment lines
         commitment_lines = self.env['budget.commitment.line'].search([
-            ('state', 'in', ['reserved', 'obligated']),
+            ('line_type', 'in', ['reserve', 'obligate']),
+            ('commitment_id.state', 'in', ['reserved', 'obligated']),
             ('account_fiscal_year_id', '=', fiscal_year_id),
             ('company_id', '=', company_id),
         ], order='commitment_id desc', limit=50)
@@ -314,10 +315,10 @@ class BudgetController(models.AbstractModel):
             if self._commitment_line_matches_analytic_data(line, analytic_data):
                 details.append({
                     'id': line.id,
-                    'date': line.commitment_id.date,
-                    'type': 'reserved',
+                    'date': line.date or line.commitment_id.date,
+                    'type': line.line_type,
                     'reference': line.commitment_id.name,
-                    'amount': -line.remaining_amount,
+                    'amount': -line.amount,
                 })
 
         # Sort by date descending
@@ -411,19 +412,42 @@ class BudgetController(models.AbstractModel):
 
     @api.model
     def _calculate_reserved_amount(self, analytic_data, fiscal_year_id, company_id):
-        """Calculate total reserved amount from commitment lines by line state."""
-        lines = self.env['budget.commitment.line'].search([
-            ('state', 'in', ['reserved', 'obligated']),
+        """Calculate total reserved amount from commitment reserve lines.
+
+        Returns SUM(reserve.amount) - consumed for matching active commitments.
+        Since consumed is calculated separately by _calculate_consumed_amount,
+        the net deduction from available = reserved + consumed = total_reserve.
+        """
+        reserve_lines = self.env['budget.commitment.line'].search([
+            ('line_type', '=', 'reserve'),
+            ('commitment_id.state', 'in', ['reserved', 'obligated']),
             ('account_fiscal_year_id', '=', fiscal_year_id),
             ('company_id', '=', company_id),
         ])
-        total = 0.0
 
-        for line in lines:
+        # Sum reserve amounts for matching lines
+        total_reserve = 0.0
+        commitment_ids = set()
+        for line in reserve_lines:
             if self._commitment_line_matches_analytic_data(line, analytic_data):
-                total += line.remaining_amount
+                total_reserve += line.amount
+                commitment_ids.add(line.commitment_id.id)
 
-        return total
+        # Subtract consumed from those commitments (to avoid double counting
+        # with _calculate_consumed_amount)
+        consumed = 0.0
+        if commitment_ids:
+            consume_moves = self.env['budget.move'].search([
+                ('state', '=', 'posted'),
+                ('move_type', '=', 'consume'),
+                ('commitment_id', 'in', list(commitment_ids)),
+            ])
+            for move in consume_moves:
+                for ml in move.line_ids:
+                    if self._line_matches_analytic_data(ml, analytic_data):
+                        consumed += abs(ml.balance)
+
+        return max(0.0, total_reserve - consumed)
 
     @api.model
     def _calculate_consumed_amount(self, analytic_data, fiscal_year_id, company_id):
