@@ -33,3 +33,8 @@ class PurchaseOrder(models.Model):
         states=READONLY_STATES,
         tracking=True
     )
+
+    state = fields.Selection(selection_add=[
+        ("purchase", "Open"),
+        ("done", "Done")
+    ])

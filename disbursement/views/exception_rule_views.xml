@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_disbursement_exception_rule" model="ir.actions.act_window">
+        <field name="name">Disbursement Exception Rules</field>
+        <field name="res_model">exception.rule</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="base_exception.view_exception_rule_tree" />
+        <field
+            name="domain"
+        >[('model', 'in', ['disbursement.request', 'disbursement.request.line'])]</field>
+        <field
+            name="context"
+        >{'active_test': False, 'default_model' : 'disbursement.request'}</field>
+    </record>
+
+    <!-- Exception Rules under Configuration -->
+    <menuitem
+        action="action_disbursement_exception_rule"
+        id="menu_disbursement_exception_rules"
+        name="Exception Rules"
+        parent="disbursement.menu_disbursement_config"
+        sequence="10"
+    />
+</odoo>

@@ -10,11 +10,6 @@
     'data': [
         "views/purchase.xml"
     ],
-    'assets': {
-              'web.assets_backend': [
-                  'purchase_kmitl/static/src/**/*'
-              ],
-          },
     'installable': True,
     'auto_install': False,
     'license': 'LGPL-3',

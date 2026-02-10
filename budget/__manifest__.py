@@ -30,9 +30,6 @@
         "views/account_move_views.xml",
         "views/account_analytic_account_views.xml",
     ],
-    "assets": {
-        "web.assets_backend": ["budget/static/src/**/*"],
-    },
     "auto_install": False,
     "application": True,
     "license": "AGPL-3",

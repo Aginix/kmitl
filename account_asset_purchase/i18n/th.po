@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-17 08:36+0000\n"
-"PO-Revision-Date: 2025-12-17 08:36+0000\n"
+"POT-Creation-Date: 2026-02-05 10:06+0000\n"
+"PO-Revision-Date: 2026-02-05 10:06+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -153,6 +153,11 @@ msgid "Company"
 msgstr "บริษัท"
 
 #. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__contract_number
+msgid "Contract Number"
+msgstr ""
+
+#. module: account_asset_purchase
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__create_uid
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch_line__create_uid
 msgid "Created by"
@@ -286,6 +291,7 @@ msgstr ""
 
 #. module: account_asset_purchase
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__is_editable
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch_line__is_editable
 msgid "Is Editable"
 msgstr ""
 
@@ -445,11 +451,6 @@ msgid "Purchase Order"
 msgstr "คำสั่งซื้อ"
 
 #. module: account_asset_purchase
-#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset__purchase_value
-msgid "Purchase Value"
-msgstr "ราคาครุภัณฑ์"
-
-#. module: account_asset_purchase
 #: model_terms:ir.ui.view,arch_db:account_asset_purchase.view_account_asset_batch_form
 msgid "Register Asset"
 msgstr "สร้างรายการครุภัณฑ์"
@@ -515,6 +516,11 @@ msgid "Total"
 msgstr "รวม"
 
 #. module: account_asset_purchase
+#: model:ir.model.fields.selection,name:account_asset_purchase.selection__account_asset_batch__source_of_asset__transfer
+msgid "Transfer"
+msgstr "รับโอน"
+
+#. module: account_asset_purchase
 #: model:ir.model.fields,help:account_asset_purchase.field_account_asset_batch__activity_exception_decoration
 #: model:ir.model.fields,help:account_asset_purchase.field_account_asset_batch_line__activity_exception_decoration
 msgid "Type of the exception activity on record."
@@ -531,3 +537,8 @@ msgstr ""
 #: model:ir.model.fields,help:account_asset_purchase.field_account_asset_batch_line__website_message_ids
 msgid "Website communication history"
 msgstr ""
+
+#. module: account_asset_purchase
+#: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__received_from_agency
+msgid "received from agency"
+msgstr "รับจากหน่วยงาน"
