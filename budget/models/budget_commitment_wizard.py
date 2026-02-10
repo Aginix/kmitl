@@ -40,22 +40,37 @@ class BudgetCommitmentAmountWizard(models.TransientModel):
         string="Remaining Amount",
     )
 
+    obligated_amount = fields.Monetary(
+        related="commitment_id.obligated_amount",
+        string="Obligated Amount",
+    )
+
     def action_confirm(self):
         """Execute the obligate or consume action."""
         self.ensure_one()
         if self.amount <= 0:
             raise ValidationError(_("Amount must be greater than zero."))
-        if self.amount > self.remaining_amount:
-            raise ValidationError(
-                _("Amount (%.2f) exceeds remaining amount (%.2f).")
-                % (self.amount, self.remaining_amount)
-            )
         commitment = self.commitment_id
         if self.wizard_type == "obligate":
+            if self.amount > self.remaining_amount:
+                raise ValidationError(
+                    _("Amount (%.2f) exceeds remaining amount (%.2f).")
+                    % (self.amount, self.remaining_amount)
+                )
             commitment.add_obligate_lines(
                 self._prepare_obligate_lines_data()
             )
         else:
+            # Consume: must equal obligated_amount exactly
+            if abs(self.amount - self.obligated_amount) > 0.01:
+                raise ValidationError(
+                    _("Consume amount (%.2f) must equal obligated amount (%.2f).")
+                    % (self.amount, self.obligated_amount)
+                )
+            # Release obligation first, then consume
+            commitment.release_obligation(
+                self._prepare_release_lines_data()
+            )
             consume_lines = commitment.consume(self.amount)
             for line in consume_lines:
                 line.post_line()
@@ -86,3 +101,14 @@ class BudgetCommitmentAmountWizard(models.TransientModel):
                     "analytic_distribution": rline.analytic_distribution,
                 })
         return result
+
+    def _prepare_release_lines_data(self):
+        """Build release data from existing obligate lines."""
+        obligate_lines = self.commitment_id.line_ids.filtered(
+            lambda l: l.line_type == "obligate" and l.amount > 0
+        )
+        return [{
+            "account_id": line.account_id.id,
+            "amount": line.amount,
+            "analytic_distribution": line.analytic_distribution,
+        } for line in obligate_lines]

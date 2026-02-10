@@ -9,7 +9,8 @@
                     <field name="commitment_id" invisible="1"/>
                     <field name="wizard_type" invisible="1"/>
                     <field name="currency_id" invisible="1"/>
-                    <field name="remaining_amount" readonly="1"/>
+                    <field name="remaining_amount" readonly="1" attrs="{'invisible': [('wizard_type', '!=', 'obligate')]}"/>
+                    <field name="obligated_amount" readonly="1" attrs="{'invisible': [('wizard_type', '!=', 'consume')]}"/>
                     <field name="amount"/>
                 </group>
                 <footer>

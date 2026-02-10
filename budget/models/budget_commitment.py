@@ -293,34 +293,20 @@ class BudgetCommitment(models.Model):
 
     # === Ledger Balance Fields === #
 
-    total_reserve = fields.Monetary(
-        string="Total Reserved",
+    reserved_amount = fields.Monetary(
+        string="Reserved Amount",
         compute="_compute_ledger_balances",
         store=True,
         currency_field="currency_id",
+        help="Total of reserve lines",
     )
 
-    total_obligated = fields.Monetary(
-        string="Total Obligated",
+    obligated_amount = fields.Monetary(
+        string="Obligated Amount",
         compute="_compute_ledger_balances",
         store=True,
         currency_field="currency_id",
-    )
-
-    reserved_balance = fields.Monetary(
-        string="Reserved Balance",
-        compute="_compute_ledger_balances",
-        store=True,
-        currency_field="currency_id",
-        help="Reserve - Obligate - Consumed (free reserve)",
-    )
-
-    obligated_balance = fields.Monetary(
-        string="Obligated Balance",
-        compute="_compute_ledger_balances",
-        store=True,
-        currency_field="currency_id",
-        help="Net obligation - Consumed (outstanding obligation)",
+        help="Total of obligate lines",
     )
 
     # === Consumption Tracking === #
@@ -399,21 +385,14 @@ class BudgetCommitment(models.Model):
         "line_ids.amount",
     )
     def _compute_ledger_balances(self):
-        """Compute reserve/obligate/consume balances from ledger lines."""
+        """Compute reserve/obligate balances from ledger lines."""
         for rec in self:
-            reserve = sum(
+            rec.reserved_amount = sum(
                 l.amount for l in rec.line_ids if l.line_type == "reserve"
             )
-            obligate = sum(
+            rec.obligated_amount = sum(
                 l.amount for l in rec.line_ids if l.line_type == "obligate"
             )
-            consumed = sum(
-                abs(l.amount) for l in rec.line_ids if l.line_type == "consume"
-            )
-            rec.total_reserve = reserve
-            rec.total_obligated = obligate
-            rec.reserved_balance = reserve - obligate - consumed
-            rec.obligated_balance = max(0.0, obligate - consumed)
 
     # === Compute: Header from Lines === #
 
@@ -476,10 +455,12 @@ class BudgetCommitment(models.Model):
                 if l.line_type == "consume"
             )
 
-    @api.depends("amount", "consumed_amount")
+    @api.depends("amount", "obligated_amount", "consumed_amount")
     def _compute_remaining_amount(self):
         for record in self:
-            record.remaining_amount = record.amount - record.consumed_amount
+            record.remaining_amount = (
+                record.amount - record.obligated_amount - record.consumed_amount
+            )
 
     # === Compute: Budget Availability === #
 
@@ -791,6 +772,13 @@ class BudgetCommitment(models.Model):
             raise UserError(_("Commitment must be in progress before adding obligations."))
         if self.is_cancelled or self.is_closed:
             raise UserError(_("Cannot add obligations to a cancelled or closed commitment."))
+
+        total_new = sum(d["amount"] for d in lines_data)
+        if total_new > self.remaining_amount + 0.01:
+            raise ValidationError(
+                _("Cannot obligate %.2f - only %.2f remaining.")
+                % (total_new, self.remaining_amount)
+            )
 
         for data in lines_data:
             vals = {

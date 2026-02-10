@@ -16,7 +16,7 @@
                 <field name="fund_analytic_id" optional="hide" />
                 <field name="account_id" optional="hide"  />
                 <field name="amount" sum="Total Amount"/>
-                <field name="total_obligated" sum="Obligated" optional="show" />
+                <field name="obligated_amount" sum="Obligated" optional="show" />
                 <field name="consumed_amount" sum="Consumed Amount" optional="show" />
                 <field name="remaining_amount" sum="Remaining Amount" optional="show" />
                 <field name="state" widget="badge" decoration-success="state == 'done'" decoration-info="state == 'in_progress'" decoration-warning="state == 'draft'" decoration-danger="state == 'cancel'"/>
@@ -111,10 +111,8 @@
 
                     <group string="Budget Summary" name="budget_summary">
                         <group>
-                            <field name="total_reserve" widget="monetary" readonly="1"/>
-                            <field name="total_obligated" widget="monetary" readonly="1"/>
-                            <field name="reserved_balance" widget="monetary" readonly="1"/>
-                            <field name="obligated_balance" widget="monetary" readonly="1"/>
+                            <field name="reserved_amount" widget="monetary" readonly="1"/>
+                            <field name="obligated_amount" widget="monetary" readonly="1"/>
                         </group>
                         <group>
                             <field name="consumed_amount" widget="monetary" readonly="1"/>

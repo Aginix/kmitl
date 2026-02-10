@@ -210,6 +210,28 @@ def migrate(cr, version):
           AND bcl.parent_state IN ('reserved', 'obligated')
     """)
 
+    # 14. Rename ledger balance fields
+    for old, new in [
+        ("total_reserve", "reserved_amount"),
+        ("total_obligated", "obligated_amount"),
+        ("reserved_balance", None),
+        ("obligated_balance", None),
+    ]:
+        if cr.execute(
+            "SELECT 1 FROM information_schema.columns "
+            "WHERE table_name = 'budget_commitment' AND column_name = %s",
+            (old,),
+        ):
+            if new:
+                cr.execute(
+                    "ALTER TABLE budget_commitment "
+                    "RENAME COLUMN %s TO %s" % (old, new)
+                )
+            else:
+                cr.execute(
+                    "ALTER TABLE budget_commitment DROP COLUMN %s" % old
+                )
+
     _logger.info(
         "Migrated commitment lines from state-based to ledger-based model"
     )
