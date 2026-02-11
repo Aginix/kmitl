@@ -56,7 +56,7 @@ class ApprovalRequest(models.Model):
     request_owner_id = fields.Many2one(
         string="Request Owner",
         comodel_name="res.partner",
-        default=lambda self: self.env.user,
+        default=lambda self: self.env.uid,
         required=True,
         tracking=True,
         states=READONLY_STATES,
@@ -98,6 +98,14 @@ class ApprovalRequest(models.Model):
         string="Country",
         comodel_name="res.country",
         tracking=True,
+        states=READONLY_STATES,
+    )
+
+    company_id = fields.Many2one(
+        string="Company",
+        comodel_name="res.company",
+        default=lambda self: self.env.company,
+        required=True,
         states=READONLY_STATES,
     )
 
@@ -205,6 +213,7 @@ class ApprovalRequest(models.Model):
     @api.onchange("category_id")
     def _onchange_category_id(self):
         self.line_ids = False
+        self.description = self.category_id.default_description
 
     @api.onchange("budget_commitment_id")
     def _onchange_budget_commitment_id(self):

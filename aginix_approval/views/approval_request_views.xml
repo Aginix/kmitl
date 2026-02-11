@@ -48,6 +48,7 @@
                             <field name="fund_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
                             <field name="activity_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
                             <field name="budget_account_id" readonly="1" required="1" options="{'no_create': True, 'no_open': True}" />
+                            <field name="budget_account_id" readonly="0" invisible="1"/>
                             <field name="analytic_distribution" invisible="1"/>
                         </group>
                     </group>

@@ -37,8 +37,7 @@ class ApprovalRequestLine(models.Model):
     company_id = fields.Many2one(
         string="Company",
         comodel_name="res.company",
-        default=lambda self: self.env.company,
-        required=True,
+        related="request_id.company_id",
     )
 
     currency_id = fields.Many2one(

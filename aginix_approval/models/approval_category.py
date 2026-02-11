@@ -30,8 +30,9 @@ class ApprovalCategory(models.Model):
         string="Sequence"
     )
 
-    description = fields.Text(
-        string="Description"
+    default_description = fields.Text(
+        string="Default Description",
+        default=False,
     )
 
     has_period = fields.Boolean(
@@ -69,5 +70,6 @@ class ApprovalCategory(models.Model):
                 'form_view_initial_mode': 'edit',
                 'default_name': "/",
                 'default_category_id': self.id,
+                'default_request_owner_id': self.env.uid
             },
         }

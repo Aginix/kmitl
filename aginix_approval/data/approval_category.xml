@@ -2,6 +2,7 @@
 <odoo noupdate="1">
     <record id="approval_category_01" model="approval.category">
         <field name="name">ขออนุมัติปฏิบัติงานนอกสถานที่</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติปฏิบัติงานนอกสถานที่ </field>
         <field name="group_id" ref="approve_category_group_outside" />
         <field name="has_period">True</field>
         <field name="has_city">True</field>
@@ -11,6 +12,7 @@
 
     <record id="approval_category_02" model="approval.category">
         <field name="name">ใบขออนุมัติเดินทางไปต่างประเทศ</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเดินทางไปต่างประเทศ </field>
         <field name="group_id" ref="approve_category_group_abroad" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -20,6 +22,7 @@
 
     <record id="approval_category_03" model="approval.category">
         <field name="name">ใบขออนุมัติค่าใช้จ่ายในการประชุม</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายในการประชุม </field>
         <field name="group_id" ref="approve_category_group_meeting" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -29,6 +32,7 @@
 
     <record id="approval_category_04" model="approval.category">
         <field name="name">ค่าใช้จ่ายสนับสนุนการดำเนินงาน</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายสนับสนุนการดำเนินงาน </field>
         <field name="group_id" ref="approve_category_group_other" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -38,6 +42,7 @@
 
     <record id="approval_category_05" model="approval.category">
         <field name="name">ค่าใช้จ่ายสนับสนุนพิธีกรรม/พิธีกร</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายสนับสนุนพิธีกรรม/พิธีกร </field>
         <field name="group_id" ref="approve_category_group_other" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -47,6 +52,7 @@
 
     <record id="approval_category_06" model="approval.category">
         <field name="name">ค่าใช้จ่ายเกี่ยวกับนักศึกษา</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายเกี่ยวกับนักศึกษา </field>
         <field name="group_id" ref="approve_category_group_other" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -56,6 +62,7 @@
 
     <record id="approval_category_07" model="approval.category">
         <field name="name">ค่าใช้จ่ายในการรับสมัครสอบคัดเลือกนักศึกษา</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายในการรับสมัครสอบคัดเลือกนักศึกษา </field>
         <field name="group_id" ref="approve_category_group_other" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -65,6 +72,7 @@
 
     <record id="approval_category_08" model="approval.category">
         <field name="name">ค่าใช้จ่ายในการจัดทำระบบการประกันคุณภาพ</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายในการจัดทำระบบการประกันคุณภาพ </field>
         <field name="group_id" ref="approve_category_group_other" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -74,6 +82,7 @@
 
     <record id="approval_category_09" model="approval.category">
         <field name="name">ค่าใช้จ่ายในการบริหารจัดการกลาง</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายในการบริหารจัดการกลาง </field>
         <field name="group_id" ref="approve_category_group_other" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -83,6 +92,7 @@
 
     <record id="approval_category_10" model="approval.category">
         <field name="name">ค่าใช้จ่ายการจัดสอบมาตราฐานความรู้ภาษาอังกฤษก่อนจบการศึกษา (Exit-Exam)</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายการจัดสอบมาตราฐานความรู้ภาษาอังกฤษก่อนจบการศึกษา (Exit-Exam) </field>
         <field name="group_id" ref="approve_category_group_other" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -92,6 +102,7 @@
 
     <record id="approval_category_11" model="approval.category">
         <field name="name">โครงการพิเศษรายจ่ายอื่น</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายโครงการพิเศษรายจ่ายอื่น </field>
         <field name="group_id" ref="approve_category_group_other" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -101,6 +112,7 @@
 
     <record id="approval_category_12" model="approval.category">
         <field name="name">ค่าใช้จ่ายในการจัดทำรายงานประจำปี</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายในการจัดทำรายงานประจำปี </field>
         <field name="group_id" ref="approve_category_group_other" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -110,6 +122,7 @@
 
     <record id="approval_category_13" model="approval.category">
         <field name="name">ค่าใช้จ่ายโครงงานนักศึกษา</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายโครงงานนักศึกษา </field>
         <field name="group_id" ref="approve_category_group_other" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -119,6 +132,7 @@
 
     <record id="approval_category_14" model="approval.category">
         <field name="name">ค่าใช้จ่ายในการตรวจสอบบัญชี</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายในการตรวจสอบบัญชี </field>
         <field name="group_id" ref="approve_category_group_other" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -128,6 +142,7 @@
 
     <record id="approval_category_15" model="approval.category">
         <field name="name">ค่าใช้จ่ายโครงการอื่นๆ</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายโครงการอื่นๆ </field>
         <field name="group_id" ref="approve_category_group_other" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -137,6 +152,7 @@
 
     <record id="approval_category_16" model="approval.category">
         <field name="name">ค่าใช้จ่ายอื่นๆที่เกี่ยวกับบุคลากร</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายอื่นๆที่เกี่ยวกับบุคลากร </field>
         <field name="group_id" ref="approve_category_group_other" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -146,6 +162,7 @@
 
     <record id="approval_category_17" model="approval.category">
         <field name="name">ค่าใช้จ่ายการเรียนและการสอบภาษาอังกฤษ (พิเศษ)</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายการเรียนและการสอบภาษาอังกฤษ (พิเศษ) </field>
         <field name="group_id" ref="approve_category_group_other" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -155,6 +172,7 @@
 
     <record id="approval_category_18" model="approval.category">
         <field name="name">ค่าใช้จ่ายจากเงิน ทอท.</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายจากเงิน ทอท. </field>
         <field name="group_id" ref="approve_category_group_other" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -164,6 +182,7 @@
 
     <record id="approval_category_19" model="approval.category">
         <field name="name">ค่าใช้จ่ายอื่น</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายอื่น </field>
         <field name="group_id" ref="approve_category_group_other" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -173,6 +192,7 @@
 
     <record id="approval_category_20" model="approval.category">
         <field name="name">ค่าใช้จ่ายอัตราผลตอบแทนชดใช้เงินสถาบัน</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายอัตราผลตอบแทนชดใช้เงินสถาบัน </field>
         <field name="group_id" ref="approve_category_group_other" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -182,6 +202,7 @@
 
     <record id="approval_category_21" model="approval.category">
         <field name="name">ค่าสมาชิก/ค่าสมาคม</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าสมาชิก/ค่าสมาคม </field>
         <field name="group_id" ref="approve_category_group_support" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -191,6 +212,7 @@
 
     <record id="approval_category_22" model="approval.category">
         <field name="name">เงินอุดหนุนเพื่อสนับสนุนนโยบายด้านการศึกษา</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกเงินอุดหนุนเพื่อสนับสนุนนโยบายด้านการศึกษา </field>
         <field name="group_id" ref="approve_category_group_support" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -200,6 +222,7 @@
 
     <record id="approval_category_23" model="approval.category">
         <field name="name">เงินอุดหนุนทุนการศึกษา (นักศึกษา)</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกเงินอุดหนุนทุนการศึกษา (นักศึกษา) </field>
         <field name="group_id" ref="approve_category_group_support" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -209,6 +232,7 @@
 
     <record id="approval_category_24" model="approval.category">
         <field name="name">เงินอุดหนุนทุนการศึกษา (บุคลากร)</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกเงินอุดหนุนทุนการศึกษา (บุคลากร) </field>
         <field name="group_id" ref="approve_category_group_support" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -218,6 +242,7 @@
 
     <record id="approval_category_25" model="approval.category">
         <field name="name">เงินอุดหนุนเพื่อสนับสนุนนโยบายด้านพัฒนาศักยภาพทุนมนุษย์</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกเงินอุดหนุนเพื่อสนับสนุนนโยบายด้านพัฒนาศักยภาพทุนมนุษย์ </field>
         <field name="group_id" ref="approve_category_group_support" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -227,6 +252,7 @@
 
     <record id="approval_category_26" model="approval.category">
         <field name="name">ทุนอุดหนุนการเดินทางไปเสนอบทความทางวิชาการ</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกทุนอุดหนุนการเดินทางไปเสนอบทความทางวิชาการ </field>
         <field name="group_id" ref="approve_category_group_support" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -236,6 +262,7 @@
 
     <record id="approval_category_27" model="approval.category">
         <field name="name">เงินอุดหนุนเพื่อการวิจัย</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกเงินอุดหนุนเพื่อการวิจัย </field>
         <field name="group_id" ref="approve_category_group_support" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -245,6 +272,7 @@
 
     <record id="approval_category_28" model="approval.category">
         <field name="name">รายละเอียดค่าใช้จ่ายโครงการวิจัย</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายโครงการวิจัย </field>
         <field name="group_id" ref="approve_category_group_support" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -254,6 +282,7 @@
 
     <record id="approval_category_29" model="approval.category">
         <field name="name">ค่าใช้จ่ายโครงการวิจัย (ตามชื่อโครงการ)</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายโครงการวิจัย (ตามชื่อโครงการ) </field>
         <field name="group_id" ref="approve_category_group_support" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -263,6 +292,7 @@
 
     <record id="approval_category_30" model="approval.category">
         <field name="name">ค่าใช้จ่ายเงินอุดหนุนโครงการยุทธศาสตร์</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายเงินอุดหนุนโครงการยุทธศาสตร์ </field>
         <field name="group_id" ref="approve_category_group_support" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -272,6 +302,7 @@
 
     <record id="approval_category_31" model="approval.category">
         <field name="name">ค่าใช้จ่ายในการดำเนินกิจการของสถาบัน</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายในการดำเนินกิจการของสถาบัน </field>
         <field name="group_id" ref="approve_category_group_support" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -281,6 +312,7 @@
 
     <record id="approval_category_32" model="approval.category">
         <field name="name">ค่าใช้จ่ายโอนเข้ากองทุน</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายโอนเข้ากองทุน </field>
         <field name="group_id" ref="approve_category_group_support" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -290,6 +322,7 @@
 
     <record id="approval_category_33" model="approval.category">
         <field name="name">เงินอุดหนุนโครงการ</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกเงินอุดหนุนโครงการ </field>
         <field name="group_id" ref="approve_category_group_support" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -299,6 +332,7 @@
 
     <record id="approval_category_34" model="approval.category">
         <field name="name">ค่าใช้จ่ายดำเนินงานโครงการบูรณาการ</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายดำเนินงานโครงการบูรณาการ </field>
         <field name="group_id" ref="approve_category_group_support" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -308,6 +342,7 @@
 
     <record id="approval_category_35" model="approval.category">
         <field name="name">ค่าใช้จ่ายช่วยเหลือทางมาตราการของรัฐ</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายช่วยเหลือทางมาตราการของรัฐ </field>
         <field name="group_id" ref="approve_category_group_support" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -317,6 +352,7 @@
 
     <record id="approval_category_36" model="approval.category">
         <field name="name">ค่าใช้จ่ายด้านทุนการศึกษาเสนอบทความทางวิชาการ</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายด้านทุนการศึกษาเสนอบทความทางวิชาการ </field>
         <field name="group_id" ref="approve_category_group_support" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -326,6 +362,7 @@
 
     <record id="approval_category_37" model="approval.category">
         <field name="name">ค่าใช้จ่ายเงินอุดหนุนอื่น</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายเงินอุดหนุนอื่น </field>
         <field name="group_id" ref="approve_category_group_support" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -335,6 +372,7 @@
 
     <record id="approval_category_38" model="approval.category">
         <field name="name">ใบขออนุมัติฝึกอบรม/สัมมนา (ในประเทศ)</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติฝึกอบรม/สัมมนา (ในประเทศ) </field>
         <field name="group_id" ref="approve_category_group_conference" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -344,6 +382,7 @@
 
     <record id="approval_category_39" model="approval.category">
         <field name="name">ใบขออนุมัติฝึกอบรม/สัมมนา (ต่างประเทศ)</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติฝึกอบรม/สัมมนา (ต่างประเทศ) </field>
         <field name="group_id" ref="approve_category_group_conference" />
         <field name="has_period">True</field>
         <field name="has_city">False</field>
@@ -353,6 +392,7 @@
 
     <record id="approval_category_40" model="approval.category">
         <field name="name">ขออนุมัติค่าใช้จ่ายจากงานบริการ</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายจากงานบริการ </field>
         <field name="group_id" ref="approve_category_group_service" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -362,6 +402,7 @@
 
     <record id="approval_category_41" model="approval.category">
         <field name="name">ขออนุมัติค่าใช้จ่ายสาธารณูปโภค</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายสาธารณูปโภค </field>
         <field name="group_id" ref="approve_category_group_utility" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -371,6 +412,7 @@
 
     <record id="approval_category_42" model="approval.category">
         <field name="name">ค่าตอบแทนบุคลากร</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าตอบแทนบุคลากร </field>
         <field name="group_id" ref="approve_category_group_compensation" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -380,6 +422,7 @@
 
     <record id="approval_category_43" model="approval.category">
         <field name="name">ค่าสอนพิเศษ (ภายใน/ภายนอก)</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าสอนพิเศษ (ภายใน/ภายนอก) </field>
         <field name="group_id" ref="approve_category_group_compensation" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -389,6 +432,7 @@
 
     <record id="approval_category_44" model="approval.category">
         <field name="name">ค่าคุมสอบ</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าคุมสอบ </field>
         <field name="group_id" ref="approve_category_group_compensation" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -398,6 +442,7 @@
 
     <record id="approval_category_45" model="approval.category">
         <field name="name">ค่ากรรมการสอบต่างๆ</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่ากรรมการสอบต่างๆ </field>
         <field name="group_id" ref="approve_category_group_compensation" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -407,6 +452,7 @@
 
     <record id="approval_category_46" model="approval.category">
         <field name="name">ค่าตอบแทนอาจารย์ (ภายใน)</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าตอบแทนอาจารย์ (ภายใน) </field>
         <field name="group_id" ref="approve_category_group_compensation" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -416,6 +462,7 @@
 
     <record id="approval_category_47" model="approval.category">
         <field name="name">ค่าตอบแทนผู้ช่วยสอน (ภายใน/ภายนอก)</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าตอบแทนผู้ช่วยสอน (ภายใน/ภายนอก) </field>
         <field name="group_id" ref="approve_category_group_compensation" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -425,6 +472,7 @@
 
     <record id="approval_category_48" model="approval.category">
         <field name="name">ค่าตอบแทนวิทยากร (เกี่ยวกับการจัดการสอน)</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าตอบแทนวิทยากร (เกี่ยวกับการจัดการสอน) </field>
         <field name="group_id" ref="approve_category_group_compensation" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -434,6 +482,7 @@
 
     <record id="approval_category_49" model="approval.category">
         <field name="name">ค่าตอบแทนตำรา</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าตอบแทนตำรา </field>
         <field name="group_id" ref="approve_category_group_compensation" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -443,6 +492,7 @@
 
     <record id="approval_category_50" model="approval.category">
         <field name="name">ค่าตอบแทนเสนอบทความทางวิชาการ</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าตอบแทนเสนอบทความทางวิชาการ </field>
         <field name="group_id" ref="approve_category_group_compensation" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -452,6 +502,7 @@
 
     <record id="approval_category_51" model="approval.category">
         <field name="name">ค่าตอบแทนผู้ทรงคุณวุฒิอ่านบทความวิชาการ</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าตอบแทนผู้ทรงคุณวุฒิอ่านบทความวิชาการ </field>
         <field name="group_id" ref="approve_category_group_compensation" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -461,6 +512,7 @@
 
     <record id="approval_category_52" model="approval.category">
         <field name="name">ค่าสอนบริการ</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าสอนบริการ </field>
         <field name="group_id" ref="approve_category_group_compensation" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -470,6 +522,7 @@
 
     <record id="approval_category_53" model="approval.category">
         <field name="name">ค่าเบี้ยประชุม</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าเบี้ยประชุม </field>
         <field name="group_id" ref="approve_category_group_compensation" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -479,6 +532,7 @@
 
     <record id="approval_category_54" model="approval.category">
         <field name="name">ค่าตอบแทนนักศึกษาช่วยปฏิบัติงาน</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าตอบแทนนักศึกษาช่วยปฏิบัติงาน </field>
         <field name="group_id" ref="approve_category_group_compensation" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -488,6 +542,7 @@
 
     <record id="approval_category_55" model="approval.category">
         <field name="name">ค่าตอบแทนนายแพทย์</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าตอบแทนนายแพทย์ </field>
         <field name="group_id" ref="approve_category_group_compensation" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -497,6 +552,7 @@
 
     <record id="approval_category_56" model="approval.category">
         <field name="name">ค่าสอนว่ายน้ำ</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าสอนว่ายน้ำ </field>
         <field name="group_id" ref="approve_category_group_compensation" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -506,6 +562,7 @@
 
     <record id="approval_category_57" model="approval.category">
         <field name="name">ค่าเงินรางวัล</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าเงินรางวัล </field>
         <field name="group_id" ref="approve_category_group_compensation" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -515,6 +572,7 @@
 
     <record id="approval_category_58" model="approval.category">
         <field name="name">ค่าตรวจและประเมินผลงานทางวิชาการ</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าตรวจและประเมินผลงานทางวิชาการ </field>
         <field name="group_id" ref="approve_category_group_compensation" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -524,6 +582,7 @@
 
     <record id="approval_category_59" model="approval.category">
         <field name="name">ค่าตอบแทนอื่นๆ</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าตอบแทนอื่นๆ </field>
         <field name="group_id" ref="approve_category_group_compensation" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -533,6 +592,7 @@
 
     <record id="approval_category_60" model="approval.category">
         <field name="name">ค่าธรรมเนียม</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าธรรมเนียม </field>
         <field name="group_id" ref="approve_category_group_expense" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -542,6 +602,7 @@
 
     <record id="approval_category_61" model="approval.category">
         <field name="name">ค่ารับรองและพิธีการ</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่ารับรองและพิธีการ </field>
         <field name="group_id" ref="approve_category_group_expense" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -551,6 +612,7 @@
 
     <record id="approval_category_62" model="approval.category">
         <field name="name">ค่าสมาชิกและแข่งขัน</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าสมาชิกและแข่งขัน </field>
         <field name="group_id" ref="approve_category_group_expense" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -560,6 +622,7 @@
 
     <record id="approval_category_63" model="approval.category">
         <field name="name">ค่าเดินทาง/ค่าที่พัก (บุคคลภายนอก)</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าเดินทาง/ค่าที่พัก (บุคคลภายนอก) </field>
         <field name="group_id" ref="approve_category_group_expense" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -569,6 +632,7 @@
 
     <record id="approval_category_64" model="approval.category">
         <field name="name">ค่าใช้จ่ายในการตีพิมพ์บทความในวารสารวิชาการระดับนานาชาติ (Page charge)</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายในการตีพิมพ์บทความในวารสารวิชาการระดับนานาชาติ (Page charge) </field>
         <field name="group_id" ref="approve_category_group_expense" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -578,6 +642,7 @@
 
     <record id="approval_category_65" model="approval.category">
         <field name="name">ค่าใช้จ่ายในการศึกษาดูงานในหลักสูตรบัณฑิตศึกษา</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายในการศึกษาดูงานในหลักสูตรบัณฑิตศึกษา </field>
         <field name="group_id" ref="approve_category_group_expense" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -587,6 +652,7 @@
 
     <record id="approval_category_66" model="approval.category">
         <field name="name">ค่าใช้จ่ายที่ปรึกษา ค่าผู้เชี่ยวชาญ ค่าปรึกษากฎหมาย</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายที่ปรึกษา ค่าผู้เชี่ยวชาญ ค่าปรึกษากฎหมาย </field>
         <field name="group_id" ref="approve_category_group_expense" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -596,6 +662,7 @@
 
     <record id="approval_category_67" model="approval.category">
         <field name="name">ค่าใช้สอยอื่นๆ</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้สอยอื่นๆ </field>
         <field name="group_id" ref="approve_category_group_expense" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -605,6 +672,7 @@
 
     <record id="approval_category_68" model="approval.category">
         <field name="name">ค่าใช้จ่ายในการจัดอบรมของหน่วยงาน</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าใช้จ่ายในการจัดอบรมของหน่วยงาน </field>
         <field name="group_id" ref="approve_category_group_expense" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
@@ -614,6 +682,7 @@
 
     <record id="approval_category_69" model="approval.category">
         <field name="name">ค่าเบี้ยประกันภัย</field>
+        <field name="default_description">ด้วย ........................ มีความประสงค์ขออนุมัติเบิกค่าเบี้ยประกันภัย </field>
         <field name="group_id" ref="approve_category_group_expense" />
         <field name="has_period">False</field>
         <field name="has_city">False</field>
