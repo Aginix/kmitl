@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- View work.acceptance form - Ribbon and Purchase Order Button -->
-    <record id="view_work_acceptance_form_ribbon" model="ir.ui.view">
-        <field name="name">view.work.acceptance.form (Ribbon and Purchase Order)</field>
+    <!-- Add ribbon widget and purchase order button to work acceptance form -->
+    <record id="view_work_acceptance_form_kmitl" model="ir.ui.view">
+        <field name="name">view.work.acceptance.form.kmitl</field>
         <field name="model">work.acceptance</field>
         <field name="inherit_id" ref="purchase_work_acceptance.view_work_acceptance_form"/>
         <field name="arch" type="xml">
