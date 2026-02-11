@@ -805,6 +805,11 @@ msgstr "ความคืบหน้า"
 msgid "Purchase Order"
 msgstr "คำสั่งซื้อ"
 
+#. module: purchase_work_acceptance_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_purchase_order_button
+msgid "<span class=\"o_stat_text\">Purchase Order</span>"
+msgstr "สัญญา/ใบสั่งซื้อ/จ้าง"
+
 #. module: purchase_work_acceptance
 #: model:ir.model,name:purchase_work_acceptance.model_purchase_order_line
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__purchase_line_id

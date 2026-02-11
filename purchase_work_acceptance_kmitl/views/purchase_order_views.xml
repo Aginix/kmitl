@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <odoo>
-      
+<odoo>
+
     <!-- View purchase.order form -->
     <record id="view_purchase_order_form" model="ir.ui.view">
         <field name="name">view.purchase.order.form</field>
@@ -13,4 +13,4 @@
         </field>
     </record>
 
-  </odoo>
+</odoo>
