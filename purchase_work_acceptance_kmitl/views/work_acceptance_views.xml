@@ -4,7 +4,7 @@
     <record id="view_work_acceptance_form_ribbon" model="ir.ui.view">
         <field name="name">view.work.acceptance.form (Ribbon and Purchase Order)</field>
         <field name="model">work.acceptance</field>
-        <field name="inherit_id" ref="purchase_work_acceptance_late_fines.view_work_acceptance_fines_late_tab_form"/>
+        <field name="inherit_id" ref="purchase_work_acceptance.view_work_acceptance_form"/>
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('oe_title')]" position="before">
                 <widget
