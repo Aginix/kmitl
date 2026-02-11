@@ -370,15 +370,20 @@ class SarabunDocumentRecipient(models.Model):
         elif self.recipient_type == "role" and self.role_id:
             users_to_notify = self.role_id.get_users_for_document(self.document_id)
 
-        # Create per-user inbox records
+        # Create per-user inbox records (one per document per user)
         Inbox = self.env["sarabun.inbox"].sudo()
         for user in users_to_notify:
-            Inbox.create({
-                "user_id": user.id,
-                "document_id": self.document_id.id,
-                "recipient_id": self.id,
-                "is_read": False,
-            })
+            # Check if inbox already exists for this user-document combination
+            existing = Inbox.search([
+                ("user_id", "=", user.id),
+                ("document_id", "=", self.document_id.id),
+            ], limit=1)
+            if not existing:
+                Inbox.create({
+                    "user_id": user.id,
+                    "document_id": self.document_id.id,
+                    "is_read": False,
+                })
 
         # Send bus notification for real-time systray update
         for user in users_to_notify:
@@ -401,7 +406,7 @@ class SarabunDocumentRecipient(models.Model):
         """Mark inbox entries as read for a specific user"""
         inbox = self.env["sarabun.inbox"].sudo().search([
             ("user_id", "=", user.id),
-            ("recipient_id", "=", self.id),
+            ("document_id", "=", self.document_id.id),
             ("is_read", "=", False),
         ])
         if inbox:

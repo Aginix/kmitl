@@ -23,12 +23,6 @@ class SarabunInbox(models.Model):
         index=True,
         ondelete="cascade",
     )
-    recipient_id = fields.Many2one(
-        comodel_name="sarabun.document.recipient",
-        string="Recipient",
-        required=True,
-        ondelete="cascade",
-    )
     is_read = fields.Boolean(
         string="Read",
         default=False,
@@ -37,9 +31,9 @@ class SarabunInbox(models.Model):
 
     _sql_constraints = [
         (
-            "unique_user_recipient",
-            "unique(user_id, recipient_id)",
-            "Duplicate inbox entry for user and recipient",
+            "unique_user_document",
+            "unique(user_id, document_id)",
+            "Duplicate inbox entry for user and document",
         ),
     ]
 
