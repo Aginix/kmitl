@@ -1,5 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- View work.acceptance form - Ribbon -->
+    <record id="view_work_acceptance_form_ribbon" model="ir.ui.view">
+        <field name="name">view.work.acceptance.form (Ribbon)</field>
+        <field name="model">work.acceptance</field>
+        <field name="inherit_id" ref="purchase_work_acceptance.view_work_acceptance_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <widget
+                    name="web_ribbon"
+                    title="Accepted"
+                    bg_color="bg-success"
+                    attrs="{'invisible': [('state', '!=', 'accept')]}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- View work.acceptance form - Purchase Order Button -->
+    <record id="view_work_acceptance_form_purchase_order_button" model="ir.ui.view">
+        <field name="name">view.work.acceptance.form (Purchase Order Button)</field>
+        <field name="model">work.acceptance</field>
+        <field name="inherit_id" ref="purchase_work_acceptance_late_fines.view_work_acceptance_fines_late_tab_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+              <button name="action_view_purchase_order"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-file-text-o"
+                        attrs="{'invisible': [('purchase_id', '=', False)]}">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Purchase Order</span>
+                    </div>
+              </button>
+            </xpath>
+        </field>
+    </record>
+
     <!-- View work.acceptance form -->
     <record id="view_work_acceptance_form" model="ir.ui.view">
         <field name="name">view.work.acceptance.form</field>

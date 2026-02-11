@@ -4,6 +4,8 @@
 # 	* purchase_work_acceptance_kmitl
 # 	* purchase_work_acceptance
 # 	* purchase_work_acceptance_late_fines
+# 	* purchase_work_acceptance_purchase_order
+# 	* purchase_work_acceptance_ribbon
 # 	* l10n_th_gov_work_acceptance
 #
 msgid ""
@@ -804,6 +806,11 @@ msgstr "ความคืบหน้า"
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
 msgid "Purchase Order"
 msgstr "คำสั่งซื้อ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_purchase_order_button
+msgid "<span class=\"o_stat_text\">Purchase Order</span>"
+msgstr "สัญญา/ใบสั่งซื้อ/จ้าง"
 
 #. module: purchase_work_acceptance
 #: model:ir.model,name:purchase_work_acceptance.model_purchase_order_line
