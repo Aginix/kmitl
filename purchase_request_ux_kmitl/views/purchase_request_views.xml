@@ -143,7 +143,7 @@
                         <field
                             name="department_id"
                             string="Department"
-                            options="{'search_more': false, 'create': false, 'create_edit': false}"
+                            options="{'limit': 50, 'search_more': false, 'create': false, 'create_edit': false}"
                             attrs="{'readonly': [('state', '!=', 'draft')]}"
                         />
                         <field name="user_id" readonly="1" />
