@@ -133,5 +133,13 @@
             <field name="groups" eval="[(4, ref('group_sarabun_manager'))]"/>
             <field name="domain_force">[(1, '=', 1)]</field>
         </record>
+
+        <!-- Inbox Rules -->
+        <record id="sarabun_inbox_user_rule" model="ir.rule">
+            <field name="name">Sarabun Inbox: Own Records Only</field>
+            <field name="model_id" ref="model_sarabun_inbox"/>
+            <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+        </record>
     </data>
 </odoo>
