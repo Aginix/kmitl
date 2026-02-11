@@ -38,6 +38,10 @@
         <field name="model">work.acceptance</field>
         <field name="inherit_id" ref="l10n_th_gov_work_acceptance.view_work_acceptance_form_tier_validation"/>
         <field name="arch" type="xml">
+            <xpath expr="//button[@name='request_validation']" position="attributes">
+                <attribute name="states">draft</attribute>
+            </xpath>
+            
             <!-- Warning -->
             <xpath expr="//div[contains(@class, 'alert-warning')]" position="attributes">
                 <attribute name="attrs">
