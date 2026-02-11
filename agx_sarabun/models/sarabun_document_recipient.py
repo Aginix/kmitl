@@ -225,6 +225,9 @@ class SarabunDocumentRecipient(models.Model):
         # Mark activities as done
         self._mark_activities_done()
 
+        # Mark inbox as read
+        self._mark_inbox_read_for_user(self.env.user)
+
         # Trigger callback on origin
         self.document_id._trigger_origin_action_callback(self, "acknowledge")
 
@@ -257,6 +260,9 @@ class SarabunDocumentRecipient(models.Model):
 
         # Mark activities as done
         self._mark_activities_done()
+
+        # Mark inbox as read
+        self._mark_inbox_read_for_user(self.env.user)
 
         # Trigger callback on origin
         self.document_id._trigger_origin_action_callback(self, "approve")
@@ -303,6 +309,9 @@ class SarabunDocumentRecipient(models.Model):
 
         # Mark activities as done
         self._mark_activities_done()
+
+        # Mark inbox as read
+        self._mark_inbox_read_for_user(self.env.user)
 
         # Trigger callback on origin
         self.document_id._trigger_origin_action_callback(self, "reject")
@@ -361,17 +370,15 @@ class SarabunDocumentRecipient(models.Model):
         elif self.recipient_type == "role" and self.role_id:
             users_to_notify = self.role_id.get_users_for_document(self.document_id)
 
-        routing_type_labels = dict(self._fields["routing_type"].selection)
-        action_label = routing_type_labels.get(self.routing_type, self.routing_type)
-
-        # for user in users_to_notify:
-        #     self.document_id.activity_schedule(
-        #         "mail.mail_activity_data_todo",
-        #         user_id=user.id,
-        #         summary=_("Document requires your action: %s") % action_label,
-        #         note=_("Document: %s\nSubject: %s")
-        #         % (self.document_id.name, self.document_id.subject),
-        #     )
+        # Create per-user inbox records
+        Inbox = self.env["sarabun.inbox"].sudo()
+        for user in users_to_notify:
+            Inbox.create({
+                "user_id": user.id,
+                "document_id": self.document_id.id,
+                "recipient_id": self.id,
+                "is_read": False,
+            })
 
         # Send bus notification for real-time systray update
         for user in users_to_notify:
@@ -389,6 +396,16 @@ class SarabunDocumentRecipient(models.Model):
             "is_notified": True,
             "notification_date": fields.Datetime.now(),
         })
+
+    def _mark_inbox_read_for_user(self, user):
+        """Mark inbox entries as read for a specific user"""
+        inbox = self.env["sarabun.inbox"].sudo().search([
+            ("user_id", "=", user.id),
+            ("recipient_id", "=", self.id),
+            ("is_read", "=", False),
+        ])
+        if inbox:
+            inbox.write({"is_read": True})
 
     def _mark_activities_done(self):
         """Mark related activities as done"""

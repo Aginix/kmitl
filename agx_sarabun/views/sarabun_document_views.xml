@@ -69,6 +69,7 @@
                     <button name="action_approve" string="Approve" type="object" class="btn-success" attrs="{'invisible': [('current_user_can_approve', '=', False)]}"/>
                     <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': ['|', ('current_user_recipient_id', '=', False), ('state', '!=', 'sent')]}"/>
                     <button name="action_print_report" string="Print" type="object" icon="fa-print" attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                    <button name="action_mark_inbox_unread" string="Mark as Unread" type="object" class="btn-secondary" icon="fa-envelope" attrs="{'invisible': ['|', ('current_user_inbox_is_read', '=', False), ('state', '!=', 'sent')]}"/>
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,sent,completed"/>
                 </header>
@@ -212,6 +213,7 @@
                     <field name="current_user_can_acknowledge" invisible="1"/>
                     <field name="current_user_can_approve" invisible="1"/>
                     <field name="has_delegated_report" invisible="1"/>
+                    <field name="current_user_inbox_is_read" invisible="1"/>
                 </sheet>
                 <!-- Attachment preview -->
                 <div class="o_attachment_preview"

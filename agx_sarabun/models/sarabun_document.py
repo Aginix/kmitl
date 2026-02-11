@@ -235,6 +235,11 @@ class SarabunDocument(models.Model):
         compute="_compute_routing_counts",
     )
 
+    # === Current User Inbox ===
+    current_user_inbox_is_read = fields.Boolean(
+        compute="_compute_current_user_inbox_is_read",
+    )
+
     # === Current User Action ===
     current_user_recipient_id = fields.Many2one(
         comodel_name="sarabun.document.recipient",
@@ -388,6 +393,36 @@ class SarabunDocument(models.Model):
             record.current_user_can_approve = (
                 bool(recipient) and recipient.routing_type == "approve"
             )
+
+    def _compute_current_user_inbox_is_read(self):
+        for record in self:
+            inbox = self.env["sarabun.inbox"].search([
+                ("user_id", "=", self.env.user.id),
+                ("document_id", "=", record.id),
+            ], limit=1)
+            record.current_user_inbox_is_read = inbox.is_read if inbox else True
+
+    def action_mark_inbox_read(self):
+        """Mark inbox as read for current user"""
+        self.ensure_one()
+        inbox_entries = self.env["sarabun.inbox"].search([
+            ("user_id", "=", self.env.user.id),
+            ("document_id", "=", self.id),
+            ("is_read", "=", False),
+        ])
+        if inbox_entries:
+            inbox_entries.action_mark_read()
+
+    def action_mark_inbox_unread(self):
+        """Mark inbox as unread for current user"""
+        self.ensure_one()
+        inbox_entries = self.env["sarabun.inbox"].search([
+            ("user_id", "=", self.env.user.id),
+            ("document_id", "=", self.id),
+            ("is_read", "=", True),
+        ])
+        if inbox_entries:
+            inbox_entries.action_mark_unread()
 
     @api.depends("attachment_ids")
     def _compute_attachment_count(self):
@@ -739,6 +774,22 @@ class SarabunDocument(models.Model):
             if recipient._can_user_access(user):
                 recipient.mark_as_read()
 
+    def _mark_inbox_read(self):
+        """Mark inbox entries as read for current user"""
+        self.ensure_one()
+        inbox_entries = self.env["sarabun.inbox"].sudo().search([
+            ("user_id", "=", self.env.user.id),
+            ("document_id", "=", self.id),
+            ("is_read", "=", False),
+        ])
+        if inbox_entries:
+            inbox_entries.write({"is_read": True})
+            self.env["bus.bus"]._sendone(
+                self.env.user.partner_id,
+                "sarabun_inbox/updated",
+                {"refresh": True},
+            )
+
     def read(self, fields=None, load="_classic_read"):
         """Override to track read_date when document form is opened"""
         result = super().read(fields=fields, load=load)
@@ -749,6 +800,7 @@ class SarabunDocument(models.Model):
             for record in self:
                 if record.state == "sent":
                     record.sudo()._mark_recipient_read()
+                    record.sudo()._mark_inbox_read()
 
         return result
 
