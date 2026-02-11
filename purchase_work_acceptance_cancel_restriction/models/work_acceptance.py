@@ -9,6 +9,8 @@ _logger = logging.getLogger(__name__)
 
 class WorkAcceptance(models.Model):
     _inherit = 'work.acceptance'
+    _state_from = ["in_review"]
+    _state_to = ["accept"]
 
     state = fields.Selection(
         selection_add = [('in_review', 'In Review'), ('accept',)]
