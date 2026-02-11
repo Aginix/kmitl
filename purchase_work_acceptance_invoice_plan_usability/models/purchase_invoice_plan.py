@@ -19,7 +19,7 @@ class PurchaseInvoicePlan(models.Model):
     )
 
     wa_state = fields.Selection(
-        [("draft", "Draft"), ("accept", "Accepted"), ("cancel", "Cancelled")],
+        [("draft", "Draft"), ("in_review", "In Review"), ("accept", "Accepted"), ("cancel", "Cancelled")],
         string="WA Status",
         store=False,
         readonly=True,

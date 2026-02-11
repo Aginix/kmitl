@@ -13,3 +13,11 @@ class WorkAcceptance(models.Model):
     state = fields.Selection(
         selection_add = [('in_review', 'In Review'), ('accept',)]
     )
+
+    def _get_under_validation_allowed_fields(self):
+        fields = super()._get_under_validation_allowed_fields()
+        return fields + ["state"]
+
+    def request_validation(self):
+        self.write({"state": "in_review"})
+        return super().request_validation()
