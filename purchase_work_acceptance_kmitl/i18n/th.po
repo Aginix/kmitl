@@ -4,8 +4,6 @@
 # 	* purchase_work_acceptance_kmitl
 # 	* purchase_work_acceptance
 # 	* purchase_work_acceptance_late_fines
-# 	* purchase_work_acceptance_purchase_order
-# 	* purchase_work_acceptance_ribbon
 # 	* l10n_th_gov_work_acceptance
 #
 msgid ""

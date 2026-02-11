@@ -9,7 +9,6 @@
     'depends': [
         'l10n_th_gov_work_acceptance',
         'base_tier_validation_comment',
-        'purchase_work_acceptance',
         'purchase_work_acceptance_late_fines',
     ],
     "data": [
