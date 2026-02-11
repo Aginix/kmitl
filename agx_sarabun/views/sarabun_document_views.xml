@@ -24,11 +24,12 @@
         <field name="name">sarabun.document.view.tree.incoming</field>
         <field name="model">sarabun.document</field>
         <field name="arch" type="xml">
-            <tree string="Incoming Documents" decoration-info="state == 'draft'" decoration-warning="state == 'sent'" decoration-success="state == 'completed'" decoration-muted="state == 'cancelled'">
-                <field name="name"/>
+            <tree string="Incoming Documents" decoration-info="state == 'draft'" decoration-warning="state == 'sent'" decoration-success="state == 'completed'" decoration-muted="state == 'cancelled'" decoration-bf="current_user_inbox_is_read == False">
+                <field name="current_user_inbox_is_read" invisible="1"/>
+                <field name="name" decoration-bf="current_user_inbox_is_read == False"/>
                 <field name="date"/>
                 <field name="document_type_id"/>
-                <field name="subject"/>
+                <field name="subject" decoration-bf="current_user_inbox_is_read == False"/>
                 <field name="sender_display" string="From"/>
                 <field name="activity_ids" widget="list_activity" optional="show"/>
                 <field name="urgency" optional="hide"/>
