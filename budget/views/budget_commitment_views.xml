@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
     <!-- Budget Commitment Tree View -->
@@ -6,21 +6,30 @@
         <field name="name">budget.commitment.tree</field>
         <field name="model">budget.commitment</field>
         <field name="arch" type="xml">
-            <tree string="Budget Commitments">
+            <tree
+                string="Budget Commitments"
+                decoration-muted="state == 'cancel'"
+                decoration-success="state == 'done'"
+                decoration-info="state == 'in_progress'"
+            >
                 <field name="name" optional="show" />
                 <field name="date" optional="hide" />
                 <field name="account_fiscal_year_id" optional="show" />
                 <field name="source_analytic_id" optional="show" />
                 <field name="department_analytic_id" optional="hide" />
-                <field name="activity_analytic_id" optional="hide" />
-                <field name="fund_analytic_id" optional="hide" />
-                <field name="account_id" optional="hide"  />
-                <field name="amount" sum="Total Amount"/>
+                <field name="amount" sum="Total Amount" />
                 <field name="obligated_amount" sum="Obligated" optional="show" />
                 <field name="consumed_amount" sum="Consumed Amount" optional="show" />
                 <field name="remaining_amount" sum="Remaining Amount" optional="show" />
-                <field name="state" widget="badge" decoration-success="state == 'done'" decoration-info="state == 'in_progress'" decoration-warning="state == 'draft'" decoration-danger="state == 'cancel'"/>
-                <field name="user_id" widget="many2one_avatar_user" optional="show" />
+                <field
+                    name="state"
+                    widget="badge"
+                    decoration-success="state == 'done'"
+                    decoration-info="state == 'in_progress'"
+                    decoration-warning="state == 'draft'"
+                    decoration-danger="state == 'cancel'"
+                />
+                <field name="user_id" widget="many2one_avatar_user" optional="hide" />
             </tree>
         </field>
     </record>
@@ -32,20 +41,74 @@
         <field name="arch" type="xml">
             <form string="Budget Commitment">
                 <header>
-                    <button name="action_check_budget_availability" string="Check Budget" type="object" class="btn-info" attrs="{'invisible': [('state', '!=', 'draft')]}" help="Check budget availability for this commitment"/>
-                    <button name="action_start" string="Confirm &amp; Start" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                    <button name="action_open_obligate_wizard" string="ผูกพัน" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'in_progress')]}"/>
-                    <button name="action_open_consume_wizard" string="ตัดงบ" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'in_progress')]}"/>
-                    <button name="action_done" string="Mark as Done" type="object" attrs="{'invisible': [('state', '!=', 'in_progress')]}" help="Close this commitment and release any remaining budget"/>
-                    <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"/>
-                    <button name="action_reset_to_draft" string="Reset to Draft" type="object" attrs="{'invisible': [('state', '!=', 'cancel')]}"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,done"/>
+                    <button
+                        name="action_check_budget_availability"
+                        string="Check Budget"
+                        type="object"
+                        class="btn-info"
+                        attrs="{'invisible': [('state', '!=', 'draft')]}"
+                        help="Check budget availability for this commitment"
+                    />
+                    <button
+                        name="action_start"
+                        string="Confirm &amp; Start"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', '!=', 'draft')]}"
+                    />
+                    <button
+                        name="action_open_obligate_wizard"
+                        string="ผูกพัน"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', '!=', 'in_progress')]}"
+                    />
+                    <button
+                        name="action_open_consume_wizard"
+                        string="ตัดงบ"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', '!=', 'in_progress')]}"
+                    />
+                    <button
+                        name="action_done"
+                        string="Mark as Done"
+                        type="object"
+                        attrs="{'invisible': [('state', '!=', 'in_progress')]}"
+                        help="Close this commitment and release any remaining budget"
+                    />
+                    <button
+                        name="action_cancel"
+                        string="Cancel"
+                        type="object"
+                        attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
+                    />
+                    <button
+                        name="action_reset_to_draft"
+                        string="Reset to Draft"
+                        type="object"
+                        attrs="{'invisible': [('state', '!=', 'cancel')]}"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,in_progress,done"
+                    />
                 </header>
 
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button class="oe_stat_button" type="object" name="action_view_budget_moves" icon="fa-money">
-                            <field string="Budget Moves" name="budget_move_ids" widget="statinfo"/>
+                        <button
+                            class="oe_stat_button"
+                            type="object"
+                            name="action_view_budget_moves"
+                            icon="fa-money"
+                        >
+                            <field
+                                string="Budget Moves"
+                                name="budget_move_ids"
+                                widget="statinfo"
+                            />
                         </button>
                     </div>
 
@@ -58,52 +121,100 @@
                     <group>
                         <group string="Basic Information">
                             <field name="date" invisible="1" />
-                            <field name="user_id" options="{'no_create': True, 'no_open': True}"/>
-                            <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field
+                                name="user_id"
+                                options="{'no_create': True, 'no_open': True}"
+                            />
+                            <field
+                                name="department_analytic_id"
+                                required="1"
+                                options="{'no_create': True, 'no_open': True}"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                            <field
+                                name="source_analytic_id"
+                                required="1"
+                                options="{'no_create': True, 'no_open': True}"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
                         </group>
                         <group string="Budget Details">
-                            <field name="account_fiscal_year_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('id', '!=', False)]}" />
-                            <field name="currency_id" invisible="1"/>
+                            <field
+                                name="account_fiscal_year_id"
+                                options="{'no_create': True, 'no_open': True}"
+                                attrs="{'readonly': [('id', '!=', False)]}"
+                            />
+                            <field name="currency_id" invisible="1" />
                         </group>
                     </group>
 
                     <notebook>
                         <page name="commitment_lines" string="Commitment Lines">
-                            <field name="line_ids" attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}">
+                            <field
+                                name="line_ids"
+                                attrs="{'readonly': [('state', 'in', ['in_progress', 'done', 'cancel'])]}"
+                            >
                                 <tree editable="bottom">
-                                    <field name="sequence" widget="handle"/>
-                                    <field name="line_type"/>
-                                    <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
-                                    <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}"/>
-                                    <field name="account_id" required="1" options="{'no_create': True, 'no_open': True}"/>
-                                    <field name="amount" sum="Net Amount"/>
-                                    <field name="date"/>
-                                    <field name="description" optional="hide"/>
-                                    <field name="is_posted" readonly="1" attrs="{'invisible': [('line_type', '!=', 'consume')]}"/>
-                                    <button name="post_line" string="Post" type="object" class="btn-sm btn-primary" attrs="{'invisible': ['|', ('line_type', '!=', 'consume'), ('is_posted', '=', True)]}"/>
-                                    <field name="currency_id" invisible="1"/>
-                                    <field name="analytic_distribution" invisible="1"/>
+                                    <field name="sequence" widget="handle" />
+                                    <field name="line_type" />
+                                    <field
+                                        name="activity_analytic_id"
+                                        required="1"
+                                        options="{'no_create': True, 'no_open': True}"
+                                    />
+                                    <field
+                                        name="fund_analytic_id"
+                                        required="1"
+                                        options="{'no_create': True, 'no_open': True}"
+                                    />
+                                    <field
+                                        name="account_id"
+                                        required="1"
+                                        options="{'no_create': True, 'no_open': True}"
+                                    />
+                                    <field name="amount" />
+                                    <field name="date" invisible="1" />
+                                    <field name="description" optional="hide" />
+                                    <field
+                                        name="is_posted"
+                                        readonly="1"
+                                        attrs="{'invisible': [('line_type', '!=', 'consume')]}"
+                                    />
+                                    <button
+                                        name="post_line"
+                                        string="Post"
+                                        type="object"
+                                        class="btn-sm btn-primary"
+                                        attrs="{'invisible': ['|', ('line_type', '!=', 'consume'), ('is_posted', '=', True)]}"
+                                    />
+                                    <field name="currency_id" invisible="1" />
+                                    <field name="analytic_distribution" invisible="1" />
                                 </tree>
                             </field>
                         </page>
                         <page name="description" string="Description">
                             <group>
                                 <group>
-                                    <field name="description" placeholder="Commitment description..."/>
+                                    <field
+                                        name="description"
+                                        placeholder="Commitment description..."
+                                    />
                                 </group>
                                 <group>
-                                    <field name="notes" placeholder="Additional notes..."/>
+                                    <field
+                                        name="notes"
+                                        placeholder="Additional notes..."
+                                    />
                                 </group>
                             </group>
                         </page>
                         <page name="extra" string="Extra Info">
                             <group>
                                 <group>
-                                    <field name="ref"/>
+                                    <field name="ref" />
                                 </group>
                                 <group>
-                                    <field name="create_date"/>
+                                    <field name="create_date" />
                                 </group>
                             </group>
                         </page>
@@ -111,28 +222,63 @@
 
                     <group string="Budget Summary" name="budget_summary">
                         <group>
-                            <field name="reserved_amount" widget="monetary" readonly="1"/>
-                            <field name="obligated_amount" widget="monetary" readonly="1"/>
+                            <field
+                                name="reserved_amount"
+                                widget="monetary"
+                                readonly="1"
+                            />
+                            <field
+                                name="obligated_amount"
+                                widget="monetary"
+                                readonly="1"
+                            />
                         </group>
                         <group>
-                            <field name="consumed_amount" widget="monetary" readonly="1"/>
-                            <field name="remaining_amount" widget="monetary" readonly="1"/>
+                            <field
+                                name="consumed_amount"
+                                widget="monetary"
+                                readonly="1"
+                            />
+                            <field
+                                name="remaining_amount"
+                                widget="monetary"
+                                readonly="1"
+                            />
                         </group>
                     </group>
 
-                    <group string="Budget Availability" name="budget_availability" attrs="{'invisible': [('state', '!=', 'draft')]}">
+                    <group
+                        string="Budget Availability"
+                        name="budget_availability"
+                        attrs="{'invisible': [('state', '!=', 'draft')]}"
+                    >
                         <group>
-                            <field name="available_budget_amount" widget="monetary" decoration-danger="budget_availability_status == 'insufficient'" decoration-warning="budget_availability_status == 'warning'" decoration-success="budget_availability_status == 'sufficient'"/>
-                            <field name="budget_availability_status" widget="badge" decoration-danger="budget_availability_status == 'insufficient'" decoration-warning="budget_availability_status == 'warning'" decoration-success="budget_availability_status == 'sufficient'"/>
-                            <field name="budget_availability_percentage" widget="percentage"/>
+                            <field
+                                name="available_budget_amount"
+                                widget="monetary"
+                                decoration-danger="budget_availability_status == 'insufficient'"
+                                decoration-warning="budget_availability_status == 'warning'"
+                                decoration-success="budget_availability_status == 'sufficient'"
+                            />
+                            <field
+                                name="budget_availability_status"
+                                widget="badge"
+                                decoration-danger="budget_availability_status == 'insufficient'"
+                                decoration-warning="budget_availability_status == 'warning'"
+                                decoration-success="budget_availability_status == 'sufficient'"
+                            />
+                            <field
+                                name="budget_availability_percentage"
+                                widget="percentage"
+                            />
                         </group>
                     </group>
                 </sheet>
 
                 <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
                 </div>
             </form>
         </field>
@@ -144,26 +290,58 @@
         <field name="model">budget.commitment</field>
         <field name="arch" type="xml">
             <search string="Budget Commitments">
-                <field name="name"/>
-                <field name="account_id"/>
-                <field name="user_id"/>
-                <field name="account_fiscal_year_id"/>
+                <field name="name" />
+                <field name="account_id" />
+                <field name="user_id" />
+                <field name="account_fiscal_year_id" />
 
-                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
-                <filter string="In Progress" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
-                <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
+                <filter
+                    string="Draft"
+                    name="draft"
+                    domain="[('state', '=', 'draft')]"
+                />
+                <filter
+                    string="In Progress"
+                    name="in_progress"
+                    domain="[('state', '=', 'in_progress')]"
+                />
+                <filter string="Done" name="done" domain="[('state', '=', 'done')]" />
 
-                <separator/>
-                <filter name="current_fy" string="ปีงบประมาณปัจจุบัน" domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]" />
-                <separator/>
-                <filter string="My Commitments" name="my_commitments" domain="[('user_id', '=', uid)]"/>
-                <separator/>
+                <separator />
+                <filter
+                    name="current_fy"
+                    string="ปีงบประมาณปัจจุบัน"
+                    domain="[('account_fiscal_year_id.date_from', '&lt;=', context_today()), ('account_fiscal_year_id.date_to', '&gt;=', context_today())]"
+                />
+                <separator />
+                <filter
+                    string="My Commitments"
+                    name="my_commitments"
+                    domain="[('user_id', '=', uid)]"
+                />
+                <separator />
 
                 <group expand="0" string="Group By">
-                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
-                    <filter string="Budget Account" name="group_account" context="{'group_by': 'account_id'}"/>
-                    <filter string="Fiscal Year" name="group_fy" context="{'group_by': 'account_fiscal_year_id'}"/>
-                    <filter string="Responsible User" name="group_user" context="{'group_by': 'user_id'}"/>
+                    <filter
+                        string="Status"
+                        name="group_state"
+                        context="{'group_by': 'state'}"
+                    />
+                    <filter
+                        string="Budget Account"
+                        name="group_account"
+                        context="{'group_by': 'account_id'}"
+                    />
+                    <filter
+                        string="Fiscal Year"
+                        name="group_fy"
+                        context="{'group_by': 'account_fiscal_year_id'}"
+                    />
+                    <filter
+                        string="Responsible User"
+                        name="group_user"
+                        context="{'group_by': 'user_id'}"
+                    />
                 </group>
                 <searchpanel>
                     <field name="account_id" icon="fa-book" enable_counters="1" />
@@ -177,7 +355,7 @@
         <field name="name">Budget Commitments</field>
         <field name="res_model">budget.commitment</field>
         <field name="view_mode">tree,form,pivot</field>
-        <field name="search_view_id" ref="budget_commitment_search_view"/>
+        <field name="search_view_id" ref="budget_commitment_search_view" />
         <field name="context">{'search_default_current_fy': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
