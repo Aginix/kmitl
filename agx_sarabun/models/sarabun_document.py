@@ -774,22 +774,6 @@ class SarabunDocument(models.Model):
             if recipient._can_user_access(user):
                 recipient.mark_as_read()
 
-    def _mark_inbox_read(self):
-        """Mark inbox entries as read for current user"""
-        self.ensure_one()
-        inbox_entries = self.env["sarabun.inbox"].sudo().search([
-            ("user_id", "=", self.env.user.id),
-            ("document_id", "=", self.id),
-            ("is_read", "=", False),
-        ])
-        if inbox_entries:
-            inbox_entries.write({"is_read": True})
-            self.env["bus.bus"]._sendone(
-                self.env.user.partner_id,
-                "sarabun_inbox/updated",
-                {"refresh": True},
-            )
-
     def read(self, fields=None, load="_classic_read"):
         """Override to track read_date when document form is opened"""
         result = super().read(fields=fields, load=load)
@@ -800,7 +784,6 @@ class SarabunDocument(models.Model):
             for record in self:
                 if record.state == "sent":
                     record.sudo()._mark_recipient_read()
-                    record.sudo()._mark_inbox_read()
 
         return result
 
