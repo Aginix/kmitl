@@ -35,7 +35,7 @@
                         </div>
                         <div class="oe_structure" />
                         <div style="height: 1px" />
-                        <div class="page-header mt-3 mb-5">
+                        <div class="page-header mt-3 mb-3">
                             <h3
                                 class="text-center fw-bolder"
                                 style="line-height: 1.575"
@@ -45,6 +45,51 @@
                             <p class="text-center">
                                 สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง
                             </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-8" />
+                            <div class="col">
+                                <p>เลขที่ อว.123</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8">
+                                ได้รับของจาก
+                                <span
+                                    class="ms-2 fw-bolder text-decoration-underline"
+                                    t-out="o.purchase_id.partner_id.name"
+                                />
+                            </div>
+                            <div class="col">
+                                วันที่
+                                <span
+                                    class="ms-2 fw-bolder text-decoration-underline"
+                                    t-esc="o.format_date_thai(o.date_receive)"
+                                />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                ตามใบสั่งซื้อเลขที่ เลขที่
+                                <span
+                                    class="ms-2 fw-bolder text-decoration-underline"
+                                    t-out="o.purchase_id.name"
+                                />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                ตามสัญญาซื้อขาย เลขที่
+                                <span
+                                    class="ms-2 fw-bolder text-decoration-underline"
+                                    t-out="o.purchase_id.contract_number"
+                                />
+                                ลงวันที่
+                                <span
+                                    class="ms-2 fw-bolder text-decoration-underline"
+                                    t-esc="o.format_date_thai(o.purchase_id.date_order_date)"
+                                />
+                            </div>
                         </div>
                         <div class="my-5" style="height: 10px" />
                     </div>
