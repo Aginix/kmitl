@@ -6,7 +6,7 @@
         <field name="name">view.procurement.plan.tree</field>
         <field name="model">procurement.plan</field>
         <field name="arch" type="xml">
-            <tree decoration-info="state == 'procurement'" decoration-success="state == 'done'" decoration-warning="state in ('validate', 'pending')">
+            <tree decoration-info="state == 'in_progress'" decoration-success="state == 'done'" decoration-warning="state in ('new', 'on_hold')" decoration-muted="state == 'draft'">
                 <field name="account_fiscal_year_id" />
                 <field name="name" />
                 <field name="description" />
@@ -14,7 +14,7 @@
                 <field name="unit" optional="hide" />
                 <field name="total_price" sum="รวมทั้งหมด" widget="monetary" />
                 <field name="procurement_method_id" optional="show" />
-                <field name="state" widget="badge" decoration-info="state == 'procurement'" decoration-success="state == 'done'" decoration-warning="state in ('validate', 'pending')" />
+                <field name="state" widget="badge" decoration-info="state == 'in_progress'" decoration-success="state == 'done'" decoration-warning="state in ('new', 'on_hold')" decoration-muted="state == 'draft'" />
             </tree>
         </field>
     </record>
@@ -26,7 +26,7 @@
         <field name="arch" type="xml">
             <form string="Procurement Plan">
                 <header>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,validate,pending,procurement,done" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,new,in_progress,done" />
                 </header>
                 <sheet>
                     <field name="can_edit" invisible="1"/>
@@ -98,7 +98,7 @@
                                     <field name="company_id" invisible="1" />
                                     <field name="currency_id" invisible="1" />
                                 </group>
-                                <grou></grou>
+                                <group></group>
                             </group>
                         </page>
                     </notebook>
@@ -124,9 +124,8 @@
                 <separator/>
                 <group expand="1" string="Group By">
                     <filter string="ปีงบประมาณ" name="group_by_fiscal_year" context="{'group_by': 'account_fiscal_year_id'}" />
-                    <filter string="Procurement Method" name="group_by_procurement_method_id" context="{'group_by': 'procurement_method_id'}" />
+                    <filter string="วิธีการจัดซื้อจัดจ้าง" name="group_by_procurement_method" context="{'group_by': 'procurement_method_id'}" />
                     <filter string="สถานะ" name="group_by_state" context="{'group_by': 'state'}" />
-                    <filter string="วิธีการจัดซื้อจัดจ้าง" name="group_by_procurement_method_id" context="{'group_by':'procurement_method_id'}" />
                 </group>
                 <searchpanel>
                     <field name="state" icon="fa-calendar" enable_counters="1" />

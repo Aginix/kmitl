@@ -6,14 +6,14 @@
         <field name="model">sarabun.document</field>
         <field name="arch" type="xml">
             <tree string="Documents" decoration-info="state == 'draft'" decoration-warning="state == 'sent'" decoration-success="state == 'completed'" decoration-muted="state == 'cancelled'">
+                <field name="urgency" optional="hide"/>
+                <field name="recipient" string="To"/>
                 <field name="name"/>
-                <field name="date"/>
-                <field name="document_type_id"/>
                 <field name="subject"/>
                 <field name="sender_display" string="From"/>
-                <field name="recipient" string="To"/>
-                <field name="urgency" optional="hide"/>
-                <field name="routing_progress" widget="progressbar"/>
+                <field name="date"/>
+                <field name="document_type_id"/>
+                <field name="routing_progress" widget="progressbar" optional="hide" />
                 <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'sent'" decoration-success="state == 'completed'" decoration-danger="state == 'cancelled'"/>
             </tree>
         </field>
@@ -24,16 +24,19 @@
         <field name="name">sarabun.document.view.tree.incoming</field>
         <field name="model">sarabun.document</field>
         <field name="arch" type="xml">
-            <tree string="Incoming Documents" decoration-info="state == 'draft'" decoration-warning="state == 'sent'" decoration-success="state == 'completed'" decoration-muted="state == 'cancelled'">
-                <field name="name"/>
-                <field name="date"/>
-                <field name="document_type_id"/>
-                <field name="subject"/>
-                <field name="sender_display" string="From"/>
-                <field name="activity_ids" widget="list_activity" optional="show"/>
+            <tree string="Incoming Documents" decoration-success="state == 'completed'" decoration-primary="not current_user_inbox_is_read" decoration-muted="current_user_inbox_is_read == True or state == 'cancelled'">
+                <field name="current_user_inbox_is_read" invisible="1"/>
                 <field name="urgency" optional="hide"/>
-                <field name="routing_progress" widget="progressbar"/>
+                <field name="sender_display" string="From"/>
+                <field name="name" decoration-bf="current_user_inbox_is_read == False"/>
+                <field name="subject" decoration-bf="current_user_inbox_is_read == False"/>
+                <field name="document_type_id"/>
+                <field name="activity_ids" widget="list_activity" optional="hide"/>
+                <field name="routing_progress" widget="progressbar" optional="hide" />
+                <field name="date"/>
                 <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'sent'" decoration-success="state == 'completed'" decoration-danger="state == 'cancelled'"/>
+                <button name="action_mark_inbox_read" type="object" icon="fa-envelope-open" attrs="{'invisible': [('current_user_inbox_is_read', '=', True)]}"/>
+                <button name="action_mark_inbox_unread" type="object" icon="fa-envelope" attrs="{'invisible': [('current_user_inbox_is_read', '=', False)]}"/>
             </tree>
         </field>
     </record>
@@ -44,13 +47,13 @@
         <field name="model">sarabun.document</field>
         <field name="arch" type="xml">
             <tree string="Outgoing Documents" decoration-info="state == 'draft'" decoration-warning="state == 'sent'" decoration-success="state == 'completed'" decoration-muted="state == 'cancelled'">
-                <field name="name"/>
-                <field name="date"/>
-                <field name="document_type_id"/>
-                <field name="subject"/>
-                <field name="recipient" string="To"/>
                 <field name="urgency" optional="hide"/>
-                <field name="routing_progress" widget="progressbar"/>
+                <field name="recipient" string="To"/>
+                <field name="subject"/>
+                <field name="name"/>
+                <field name="document_type_id"/>
+                <field name="routing_progress" widget="progressbar" optional="hide" />
+                <field name="date"/>
                 <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'sent'" decoration-success="state == 'completed'" decoration-danger="state == 'cancelled'"/>
             </tree>
         </field>
@@ -69,6 +72,8 @@
                     <button name="action_approve" string="Approve" type="object" class="btn-success" attrs="{'invisible': [('current_user_can_approve', '=', False)]}"/>
                     <button name="action_reject" string="Reject" type="object" class="btn-danger" attrs="{'invisible': ['|', ('current_user_recipient_id', '=', False), ('state', '!=', 'sent')]}"/>
                     <button name="action_print_report" string="Print" type="object" icon="fa-print" attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                    <button name="action_mark_inbox_read" string="Mark as Read" type="object" class="btn-secondary" icon="fa-envelope-open" attrs="{'invisible': ['|', ('current_user_inbox_is_read', '=', True), ('state', '!=', 'sent')]}"/>
+                    <button name="action_mark_inbox_unread" string="Mark as Unread" type="object" class="btn-secondary" icon="fa-envelope" attrs="{'invisible': ['|', ('current_user_inbox_is_read', '=', False), ('state', '!=', 'sent')]}"/>
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,sent,completed"/>
                 </header>
@@ -212,6 +217,7 @@
                     <field name="current_user_can_acknowledge" invisible="1"/>
                     <field name="current_user_can_approve" invisible="1"/>
                     <field name="has_delegated_report" invisible="1"/>
+                    <field name="current_user_inbox_is_read" invisible="1"/>
                 </sheet>
                 <!-- Attachment preview -->
                 <div class="o_attachment_preview"

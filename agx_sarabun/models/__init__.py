@@ -8,5 +8,6 @@ from . import sarabun_routing_line
 from . import sarabun_document_recipient
 from . import sarabun_reference
 from . import sarabun_document_mixin
+from . import sarabun_inbox
 from . import hr_department
 from . import res_users
