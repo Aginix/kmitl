@@ -91,6 +91,96 @@
                                 />
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col">
+                                ตามใบส่งมอบงาน เลขที่
+                                <span class="ms-2 fw-bolder text-decoration-underline">
+                                    31231s213
+                                </span>
+                                ลงวันที่
+                                <span
+                                    class="ms-2 fw-bolder text-decoration-underline"
+                                    t-esc="o.format_date_thai(o.requested_delivery_date)"
+                                />
+                                ดังรายการต่อไปนี้
+                            </div>
+                        </div>
+                        <table class="table table-bordered table-sm mb-4">
+                            <thead>
+                                <tr>
+                                    <th
+                                        rowspan="2"
+                                        style="width: 5%; text-align: center"
+                                    >
+                                        ลำดับที่
+                                    </th>
+                                    <th
+                                        rowspan="2"
+                                        style="width: 35%; text-align: center"
+                                    >
+                                        รายการ
+                                    </th>
+                                    <th
+                                        rowspan="2"
+                                        style="width: 10%; text-align: center"
+                                    >
+                                        หน่วยนับ
+                                    </th>
+                                    <th
+                                        colspan="3"
+                                        style="width: 25%; text-align: center"
+                                    >
+                                        จำนวนหน่วย
+                                    </th>
+                                    <th
+                                        rowspan="2"
+                                        style="width: 15%; text-align: center"
+                                    >
+                                        เป็นเงิน
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="text-align: center">
+                                        ตามใบสั่งซื้อ/จ้าง
+                                    </th>
+                                    <th style="text-align: center">ตามใบส่งของ</th>
+                                    <th style="text-align: center">ตามที่รับจริง</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="row_no" t-value="1" />
+                                <t t-foreach="o.wa_line_ids" t-as="line">
+                                    <tr>
+                                        <td
+                                            class="text-center"
+                                            style="width: 8%"
+                                            t-out="row_no"
+                                        />
+                                        <td t-out="line.name" />
+                                        <td class="text-center">
+                                            <span t-field="line.product_uom" />
+                                        </td>
+                                        <td
+                                            class="text-end"
+                                            t-out="'{0:,.2f}'.format(line.purchase_line_id.product_qty)"
+                                        />
+                                        <td
+                                            class="text-end"
+                                            t-out="'{0:,.2f}'.format(line.product_qty)"
+                                        />
+                                        <td
+                                            class="text-end"
+                                            t-out="'{0:,.2f}'.format(line.product_qty)"
+                                        />
+                                        <td
+                                            class="text-end"
+                                            t-out="'{0:,.2f}'.format(line.price_subtotal)"
+                                        />
+                                    </tr>
+                                    <t t-set="row_no" t-value="row_no + 1" />
+                                </t>
+                            </tbody>
+                        </table>
                         <div class="my-5" style="height: 10px" />
                     </div>
                 </t>
