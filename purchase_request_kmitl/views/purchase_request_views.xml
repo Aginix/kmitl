@@ -42,7 +42,7 @@
                 <attribute name="groups">purchase_request.group_purchase_request_manager</attribute>
             </xpath>
             <xpath expr="//button[@name='button_draft']" position="attributes">
-                <attribute name="states">to_verify,rejected</attribute>
+                <attribute name="states">to_verify</attribute>
                 <attribute name="groups"></attribute>
             </xpath>
             <xpath expr="//page[@name='committee']" position="after">
