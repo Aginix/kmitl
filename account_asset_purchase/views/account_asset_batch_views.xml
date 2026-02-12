@@ -66,10 +66,6 @@
                     />
                     <group>
                         <field name="is_editable" invisible="1" />
-                        <field
-                            name="name"
-                            attrs="{'readonly': [('is_editable', '=', False)]}"
-                        />
                         <field name="date" invisible="1" />
                         <field name="account_fiscal_year_id" />
                         <field name="operating_unit_id" />
@@ -88,14 +84,7 @@
                         />
                         <field
                             name="received_from_agency"
-                            attrs="{
-                                        'invisible': [
-                                            ('source_of_asset', 'not in', ('donation', 'transfer'))
-                                        ],
-                                        'required': [
-                                            ('source_of_asset', 'in', ('donation', 'transfer'))
-                                        ]
-                                    }"
+                            attrs="{'invisible': [('source_of_asset', 'not in', ('donation', 'transfer'))], 'required': [('source_of_asset', 'in', ('donation', 'transfer'))]}"
                         />
                         <field name="company_id" groups="base.group_multi_company" />
                         <field name="notes" />
