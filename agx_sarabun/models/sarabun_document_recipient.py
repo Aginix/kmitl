@@ -5,12 +5,13 @@ from odoo.exceptions import UserError
 
 class SarabunDocumentRecipient(models.Model):
     """
-    Tracks document delivery and actions.
-    Created from routing_line when document is sent.
+    Tracks document delivery and actions per user.
+    Created from routing when document reaches that step.
+    One record per user (flattened).
     """
 
     _name = "sarabun.document.recipient"
-    _description = "Sarabun Document Recipient"
+    _description = "Document Recipient"
     _order = "sequence, id"
     _inherit = ["mail.thread"]
 
@@ -22,14 +23,21 @@ class SarabunDocumentRecipient(models.Model):
         ondelete="cascade",
         index=True,
     )
-    routing_line_id = fields.Many2one(
-        comodel_name="sarabun.routing.line",
-        string="Routing Line",
-        ondelete="set null",
-        help="Original routing line this recipient was created from",
+    routing_id = fields.Many2one(
+        comodel_name="sarabun.document.routing",
+        string="Routing",
+        required=True,
+        ondelete="cascade",
+        index=True,
+    )
+    user_id = fields.Many2one(
+        comodel_name="res.users",
+        string="User",
+        required=True,
+        index=True,
     )
 
-    # === Copied from Routing Line (Snapshot) ===
+    # === Snapshot from Routing (for audit trail) ===
     sequence = fields.Integer(
         string="Sequence",
         default=10,
@@ -53,73 +61,27 @@ class SarabunDocumentRecipient(models.Model):
         required=True,
         default="user",
     )
-    user_id = fields.Many2one(
-        comodel_name="res.users",
-        string="User",
-    )
-    department_id = fields.Many2one(
-        comodel_name="hr.department",
-        string="Department",
-    )
-    department_text = fields.Char(
-        string="Department Text",
-    )
-    role_id = fields.Many2one(
-        comodel_name="sarabun.role",
-        string="Role/Position",
-    )
     recipient_name = fields.Char(
         string="Recipient",
         compute="_compute_recipient_name",
         store=True,
     )
 
-    # === Individual User Tracking ===
-    recipient_user_ids = fields.One2many(
-        comodel_name="sarabun.recipient.user",
-        inverse_name="recipient_id",
-        string="Individual Recipients",
-    )
-    action_policy = fields.Selection(
-        selection=[
-            ("first", "First to Act"),
-            ("all", "All Must Act"),
-            ("majority", "Majority Must Act"),
-        ],
-        string="Action Policy",
-        default="first",
-    )
-    user_count = fields.Integer(
-        string="User Count",
-        compute="_compute_user_counts",
-        store=True,
-    )
-    actioned_user_count = fields.Integer(
-        string="Actioned User Count",
-        compute="_compute_user_counts",
-        store=True,
-    )
-    action_policy_met = fields.Boolean(
-        string="Policy Met",
-        compute="_compute_action_policy_met",
-        store=True,
-    )
-
     # === State ===
     state = fields.Selection(
         selection=[
-            ("new", "New"),
+            ("pending", "Pending"),
             ("acknowledged", "Acknowledged"),
             ("approved", "Approved"),
             ("rejected", "Rejected"),
         ],
         string="Status",
-        default="new",
+        default="pending",
+        required=True,
         tracking=True,
     )
 
     # === Timestamps ===
-    # Note: use create_date as sent_date (recipient created = sent to recipient)
     read_date = fields.Datetime(
         string="Read Date",
         readonly=True,
@@ -176,121 +138,39 @@ class SarabunDocumentRecipient(models.Model):
     )
 
     # === Computed Fields ===
-    @api.depends("recipient_type", "user_id", "department_id", "department_text", "role_id")
+    @api.depends("recipient_type", "user_id", "routing_id")
     def _compute_recipient_name(self):
         for record in self:
-            if record.recipient_type == "user" and record.user_id:
+            if record.routing_id:
+                record.recipient_name = record.routing_id.recipient_name
+            elif record.user_id:
                 record.recipient_name = record.user_id.name
-            elif record.recipient_type == "department":
-                # Prefer department_id, fall back to department_text for legacy data
-                record.recipient_name = (
-                    record.department_id.name if record.department_id
-                    else record.department_text or False
-                )
-            elif record.recipient_type == "role" and record.role_id:
-                record.recipient_name = record.role_id.name
             else:
                 record.recipient_name = False
-
-    @api.depends("recipient_user_ids", "recipient_user_ids.state")
-    def _compute_user_counts(self):
-        for record in self:
-            users = record.recipient_user_ids
-            record.user_count = len(users)
-            record.actioned_user_count = len(
-                users.filtered(lambda u: u.state == "actioned")
-            )
-
-    @api.depends("action_policy", "user_count", "actioned_user_count")
-    def _compute_action_policy_met(self):
-        for record in self:
-            if not record.user_count:
-                # No snapshot (legacy recipient or user-type) - policy always met
-                record.action_policy_met = True
-            elif record.action_policy == "first":
-                record.action_policy_met = record.actioned_user_count >= 1
-            elif record.action_policy == "all":
-                record.action_policy_met = (
-                    record.actioned_user_count >= record.user_count
-                )
-            elif record.action_policy == "majority":
-                record.action_policy_met = (
-                    record.actioned_user_count > (record.user_count / 2)
-                )
-            else:
-                record.action_policy_met = True
-
-    def _create_user_snapshot(self):
-        """Adopt pre-resolved users from routing line, or create fresh.
-
-        When a routing line already has resolved users (preview_user_ids),
-        adopt them by setting their recipient_id. Otherwise, fall back
-        to creating records fresh (backward compatibility).
-        """
-        self.ensure_one()
-        if self.routing_line_id and self.routing_line_id.preview_user_ids:
-            # Adopt existing records from routing line
-            self.routing_line_id.preview_user_ids.sudo().write({
-                "recipient_id": self.id,
-            })
-            # Invalidate cache so recipient_user_ids reflects the adoption immediately
-            self.invalidate_recordset(['recipient_user_ids'])
-        else:
-            # Fallback: resolve and create fresh
-            self.routing_line_id._resolve_users() if self.routing_line_id else None
-            if self.routing_line_id and self.routing_line_id.preview_user_ids:
-                self.routing_line_id.preview_user_ids.sudo().write({
-                    "recipient_id": self.id,
-                })
-            elif not self.recipient_user_ids:
-                # No routing line or no users resolved - post warning
-                if self.recipient_type == "department" and self.department_id:
-                    self.document_id.message_post(
-                        body=_(
-                            "Warning: Department '%s' has no Sarabun Officers "
-                            "or Manager assigned. No users will be notified."
-                        ) % self.department_id.name,
-                        message_type="notification",
-                    )
-                elif self.recipient_type == "role" and self.role_id:
-                    self.document_id.message_post(
-                        body=_(
-                            "Warning: Role '%s' has no users assigned. "
-                            "No users will be notified."
-                        ) % self.role_id.name,
-                        message_type="notification",
-                    )
 
     # === Actions ===
     def action_acknowledge(self):
         """Acknowledge document receipt - opens signing wizard"""
         self.ensure_one()
         self._check_can_action()
-
         return self._open_signing_wizard("acknowledge")
 
     def action_approve(self):
         """Approve document - opens signing wizard"""
         self.ensure_one()
         self._check_can_action()
-
         if self.routing_type != "approve":
             raise UserError(_("This recipient is not for approval."))
-
         return self._open_signing_wizard("approve")
 
     def _open_signing_wizard(self, action_type):
         """Open the signing wizard for user to select signing position"""
         self.ensure_one()
-
-        # Get available roles for current user
         available_roles = self.env["sarabun.role"].get_user_roles()
-
         if not available_roles:
             raise UserError(
                 _("You don't have any roles assigned. Please contact administrator.")
             )
-
         return {
             "name": _("Select Signing Position"),
             "type": "ir.actions.act_window",
@@ -310,12 +190,13 @@ class SarabunDocumentRecipient(models.Model):
 
         role = self.env["sarabun.role"].browse(signed_as_role_id)
 
-        # Mark individual user tracking record
-        user_record = self.recipient_user_ids.filtered(
-            lambda u: u.user_id == self.env.user
-        )[:1]
-        if user_record:
-            user_record.mark_as_actioned()
+        self.write({
+            "state": "acknowledged",
+            "actioned_by": self.env.user.id,
+            "actioned_date": fields.Datetime.now(),
+            "signed_as_role_id": signed_as_role_id,
+            "signed_as_text": role.name if role else False,
+        })
 
         self.document_id.message_post(
             body=_("Document acknowledged by %s as %s")
@@ -323,30 +204,10 @@ class SarabunDocumentRecipient(models.Model):
             message_type="notification",
         )
 
-        # Mark inbox as read
         self._mark_inbox_read_for_user(self.env.user)
-
-        # Check if action policy is met
-        self.invalidate_recordset(["actioned_user_count", "action_policy_met"])
-        if self.action_policy_met:
-            # Complete the recipient
-            self.write({
-                "state": "acknowledged",
-                "actioned_by": self.env.user.id,
-                "actioned_date": fields.Datetime.now(),
-                "signed_as_role_id": signed_as_role_id,
-                "signed_as_text": role.name if role else False,
-            })
-            self._mark_activities_done()
-            self.document_id._trigger_origin_action_callback(self, "acknowledge")
-            self.document_id._activate_next_recipient()
-        else:
-            # Policy not yet met - post progress message
-            self.document_id.message_post(
-                body=_("Waiting for more users to act (%s/%s).")
-                % (self.actioned_user_count, self.user_count),
-                message_type="notification",
-            )
+        self._mark_activities_done()
+        self.document_id._trigger_origin_action_callback(self, "acknowledge")
+        self.document_id._check_routing_completion(self.routing_id)
 
     def action_do_approve(self, signed_as_role_id):
         """Actually approve with signing position"""
@@ -358,12 +219,13 @@ class SarabunDocumentRecipient(models.Model):
 
         role = self.env["sarabun.role"].browse(signed_as_role_id)
 
-        # Mark individual user tracking record
-        user_record = self.recipient_user_ids.filtered(
-            lambda u: u.user_id == self.env.user
-        )[:1]
-        if user_record:
-            user_record.mark_as_actioned()
+        self.write({
+            "state": "approved",
+            "actioned_by": self.env.user.id,
+            "actioned_date": fields.Datetime.now(),
+            "signed_as_role_id": signed_as_role_id,
+            "signed_as_text": role.name if role else False,
+        })
 
         self.document_id.message_post(
             body=_("Document approved by %s as %s")
@@ -371,36 +233,15 @@ class SarabunDocumentRecipient(models.Model):
             message_type="notification",
         )
 
-        # Mark inbox as read
         self._mark_inbox_read_for_user(self.env.user)
-
-        # Check if action policy is met
-        self.invalidate_recordset(["actioned_user_count", "action_policy_met"])
-        if self.action_policy_met:
-            # Complete the recipient
-            self.write({
-                "state": "approved",
-                "actioned_by": self.env.user.id,
-                "actioned_date": fields.Datetime.now(),
-                "signed_as_role_id": signed_as_role_id,
-                "signed_as_text": role.name if role else False,
-            })
-            self._mark_activities_done()
-            self.document_id._trigger_origin_action_callback(self, "approve")
-            self.document_id._activate_next_recipient()
-        else:
-            # Policy not yet met - post progress message
-            self.document_id.message_post(
-                body=_("Waiting for more users to act (%s/%s).")
-                % (self.actioned_user_count, self.user_count),
-                message_type="notification",
-            )
+        self._mark_activities_done()
+        self.document_id._trigger_origin_action_callback(self, "approve")
+        self.document_id._check_routing_completion(self.routing_id)
 
     def action_reject(self):
         """Reject document - opens wizard for comment"""
         self.ensure_one()
         self._check_can_action()
-
         return {
             "name": _("Reject Document"),
             "type": "ir.actions.act_window",
@@ -420,13 +261,6 @@ class SarabunDocumentRecipient(models.Model):
         if not comment:
             raise UserError(_("Please provide a rejection reason."))
 
-        # Mark individual user tracking record
-        user_record = self.recipient_user_ids.filtered(
-            lambda u: u.user_id == self.env.user
-        )[:1]
-        if user_record:
-            user_record.mark_as_actioned()
-
         self.write({
             "state": "rejected",
             "comment": comment,
@@ -440,111 +274,56 @@ class SarabunDocumentRecipient(models.Model):
             message_type="notification",
         )
 
-        # Mark activities as done
         self._mark_activities_done()
-
-        # Mark inbox as read
         self._mark_inbox_read_for_user(self.env.user)
-
-        # Trigger callback on origin
         self.document_id._trigger_origin_action_callback(self, "reject")
-
-        # Notify origin about rejection
         self.document_id._on_routing_rejected(self)
 
     def _check_can_action(self):
         """Check if current user can perform action on this recipient"""
         self.ensure_one()
 
-        if self.state != "new":
+        if self.state != "pending":
             raise UserError(_("This recipient has already been actioned."))
 
         if self.document_id.state != "sent":
             raise UserError(_("Document is not in sent state."))
 
-        can_action = False
-
-        if self.recipient_user_ids:
-            # Use snapshot to determine authorization
-            user_record = self.recipient_user_ids.filtered(
-                lambda u: u.user_id == self.env.user
-            )[:1]
-            if user_record:
-                if user_record.state == "actioned":
-                    raise UserError(_("You have already performed your action."))
-                can_action = True
-        else:
-            # Fallback to dynamic resolution (backward compatibility)
-            if self.recipient_type == "user":
-                can_action = self.user_id == self.env.user
-            elif self.recipient_type == "department":
-                if self.department_id:
-                    if self.env.user in self.department_id.sarabun_officer_ids:
-                        can_action = True
-                    elif self.department_id.manager_id:
-                        can_action = (
-                            self.department_id.manager_id.user_id == self.env.user
-                        )
-            elif self.recipient_type == "role":
-                if self.role_id:
-                    role_users = self.role_id.get_users_for_document(
-                        self.document_id
-                    )
-                    can_action = self.env.user in role_users
-
-        if not can_action:
+        if self.user_id != self.env.user:
             raise UserError(_("You are not authorized to perform this action."))
 
     def _send_notification(self):
-        """Send activity notification to recipient"""
+        """Send notification to recipient user"""
         self.ensure_one()
 
         if self.is_notified:
             return
 
-        users_to_notify = self.env["res.users"]
+        user = self.user_id
 
-        if self.recipient_user_ids:
-            # Use snapshot
-            users_to_notify = self.recipient_user_ids.mapped("user_id")
-        elif self.recipient_type == "user":
-            users_to_notify = self.user_id
-        elif self.recipient_type == "department" and self.department_id:
-            # Send to all sarabun officers
-            if self.department_id.sarabun_officer_ids:
-                users_to_notify = self.department_id.sarabun_officer_ids
-            # Fallback to department manager
-            elif self.department_id.manager_id:
-                users_to_notify = self.department_id.manager_id.user_id
-        elif self.recipient_type == "role" and self.role_id:
-            users_to_notify = self.role_id.get_users_for_document(self.document_id)
-
-        # Create per-user inbox records (one per document per user)
+        # Create inbox record (one per document per user)
         Inbox = self.env["sarabun.inbox"].sudo()
-        for user in users_to_notify:
-            # Check if inbox already exists for this user-document combination
-            existing = Inbox.search([
-                ("user_id", "=", user.id),
-                ("document_id", "=", self.document_id.id),
-            ], limit=1)
-            if not existing:
-                Inbox.create({
-                    "user_id": user.id,
-                    "document_id": self.document_id.id,
-                    "is_read": False,
-                })
+        existing = Inbox.search([
+            ("user_id", "=", user.id),
+            ("document_id", "=", self.document_id.id),
+        ], limit=1)
+        if not existing:
+            Inbox.create({
+                "user_id": user.id,
+                "document_id": self.document_id.id,
+                "is_read": False,
+            })
 
         # Send bus notification for real-time systray update
-        for user in users_to_notify:
-            self.env['bus.bus']._sendone(
-                user.partner_id,
-                'sarabun_inbox/updated',
-                {
-                    'refresh': True,
-                    'subject': self.document_id.subject or self.document_id.name,
-                    'document_id': self.document_id.id,
-                }
-            )
+        self.env['bus.bus']._sendone(
+            user.partner_id,
+            'sarabun_inbox/updated',
+            {
+                'refresh': True,
+                'subject': self.document_id.subject or self.document_id.name,
+                'document_id': self.document_id.id,
+            }
+        )
 
         self.write({
             "is_notified": True,
@@ -571,41 +350,12 @@ class SarabunDocumentRecipient(models.Model):
     def mark_as_read(self):
         """Mark recipient as read (first time opening)"""
         self.ensure_one()
-        if self.state == "new" and not self.read_date:
+        if self.state == "pending" and not self.read_date:
             self.read_date = fields.Datetime.now()
 
-    def read(self, fields=None, load="_classic_read"):
-        """Override to track read_date when recipient form is opened"""
-        result = super().read(fields=fields, load=load)
-
-        # Only track when opening form (reading with key fields)
-        if fields is None or "document_id" in fields:
-            for record in self:
-                if record._can_user_access():
-                    record.sudo().mark_as_read()
-
-        return result
-
     def _can_user_access(self, user=None):
-        """Check if user can access this recipient (for Inbox display)"""
+        """Check if user can access this recipient"""
         self.ensure_one()
         if user is None:
             user = self.env.user
-
-        if self.recipient_user_ids:
-            return user in self.recipient_user_ids.mapped("user_id")
-
-        # Fallback to dynamic resolution (backward compatibility)
-        if self.recipient_type == "user":
-            return self.user_id == user
-        elif self.recipient_type == "department" and self.department_id:
-            # Sarabun officers or manager
-            if user in self.department_id.sarabun_officer_ids:
-                return True
-            if self.department_id.manager_id:
-                return self.department_id.manager_id.user_id == user
-        elif self.recipient_type == "role" and self.role_id:
-            role_users = self.role_id.get_users_for_document(self.document_id)
-            return user in role_users
-
-        return False
+        return self.user_id == user

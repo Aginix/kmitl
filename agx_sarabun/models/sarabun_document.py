@@ -206,8 +206,8 @@ class SarabunDocument(models.Model):
         string="Route Template",
         states=READONLY_STATES,
     )
-    routing_line_ids = fields.One2many(
-        comodel_name="sarabun.routing.line",
+    routing_ids = fields.One2many(
+        comodel_name="sarabun.document.routing",
         inverse_name="document_id",
         string="Routing",
         copy=True,
@@ -352,17 +352,15 @@ class SarabunDocument(models.Model):
             else:
                 record.delegated_report_url = False
 
-    @api.depends("recipient_ids", "recipient_ids.state", "routing_line_ids")
+    @api.depends("recipient_ids", "recipient_ids.state", "routing_ids")
     def _compute_routing_progress(self):
         for record in self:
-            total = len(record.routing_line_ids)
+            total = len(record.routing_ids)
             if total:
-                done = len(
-                    record.recipient_ids.filtered(
-                        lambda r: r.state in ("acknowledged", "approved")
-                    )
-                )
-                record.routing_progress = (done / total) * 100
+                completed_routings = len(record.routing_ids.filtered(
+                    lambda r: r.state == "completed"
+                ))
+                record.routing_progress = (completed_routings / total) * 100
             else:
                 record.routing_progress = 0
 
@@ -370,7 +368,7 @@ class SarabunDocument(models.Model):
     def _compute_routing_counts(self):
         for record in self:
             record.pending_routing_count = len(
-                record.recipient_ids.filtered(lambda r: r.state == "new")
+                record.recipient_ids.filtered(lambda r: r.state == "pending")
             )
             record.completed_routing_count = len(
                 record.recipient_ids.filtered(
@@ -382,7 +380,7 @@ class SarabunDocument(models.Model):
     def _compute_current_user_recipient(self):
         for record in self:
             recipient = False
-            for r in record.recipient_ids.filtered(lambda x: x.state == "new"):
+            for r in record.recipient_ids.filtered(lambda x: x.state == "pending"):
                 if r._can_user_access():
                     recipient = r
                     break
@@ -446,14 +444,14 @@ class SarabunDocument(models.Model):
                     "role_id": tmpl_line.role_id.id if tmpl_line.role_id else False,
                 }
                 lines.append((0, 0, line_vals))
-            self.routing_line_ids = lines
+            self.routing_ids = lines
 
     @api.onchange("document_type_id")
     def _onchange_document_type_id(self):
         if (
             self.document_type_id
             and self.document_type_id.default_route_template_id
-            and not self.routing_line_ids
+            and not self.routing_ids
         ):
             self.route_template_id = self.document_type_id.default_route_template_id
 
@@ -474,27 +472,27 @@ class SarabunDocument(models.Model):
 
     # === Actions ===
     def action_send(self):
-        """Send document and create recipients from routing lines"""
+        """Send document and create recipients from routing"""
         for document in self:
             if document.state != "draft":
                 raise UserError(_("Only draft documents can be sent."))
 
-            if not document.routing_line_ids:
-                raise UserError(_("Please add at least one routing line."))
-            
-            # # === VALIDATE ROUTING ORDER BEFORE SENDING ===
-            lines = document.routing_line_ids.sorted("sequence")
-            approve_lines = lines.filtered(lambda l: l.routing_type == "approve")
+            if not document.routing_ids:
+                raise UserError(_("Please add at least one routing."))
 
-            if approve_lines:
-                max_seq = max(lines.mapped("sequence"))
-                for approve_line in approve_lines:
-                    if approve_line.sequence < max_seq:
+            # === VALIDATE ROUTING ORDER BEFORE SENDING ===
+            routings = document.routing_ids.sorted("sequence")
+            approve_routings = routings.filtered(lambda l: l.routing_type == "approve")
+
+            if approve_routings:
+                max_seq = max(routings.mapped("sequence"))
+                for approve_routing in approve_routings:
+                    if approve_routing.sequence < max_seq:
                         raise ValidationError(
                             _("Cannot send document: All approval steps must be at the end of routing. "
-                            "Please reorder your routing lines.")
+                            "Please reorder your routing.")
                         )
-            # # === END VALIDATION ===
+            # === END VALIDATION ===
 
             # Generate document number
             if document.name == "/":
@@ -502,8 +500,8 @@ class SarabunDocument(models.Model):
 
             document.state = "sent"
 
-            # Create only the first recipient (not all at once)
-            document._activate_next_recipient()
+            # Activate first routing (sequential)
+            document._activate_next_routing()
 
             document.message_post(
                 body=_("Document sent for routing by %s") % document.sender_user_id.name,
@@ -589,13 +587,13 @@ class SarabunDocument(models.Model):
             },
         }
 
-    def action_add_routing_line(self):
-        """Open wizard to add new routing line"""
+    def action_add_routing(self):
+        """Open wizard to add new routing"""
         self.ensure_one()
         return {
             "name": _("Add Routing"),
             "type": "ir.actions.act_window",
-            "res_model": "sarabun.routing.line.wizard",
+            "res_model": "sarabun.routing.wizard",
             "view_mode": "form",
             "target": "new",
             "context": {
@@ -652,7 +650,7 @@ class SarabunDocument(models.Model):
         """Apply route template to this document"""
         self.ensure_one()
         self.route_template_id = template
-        # Create routing lines from template
+        # Create routing from template
         lines = []
         for tmpl_line in template.line_ids:
             line_vals = {
@@ -665,7 +663,7 @@ class SarabunDocument(models.Model):
             }
             lines.append((0, 0, line_vals))
         # Clear existing and set new
-        self.routing_line_ids = [(5, 0, 0)] + lines
+        self.routing_ids = [(5, 0, 0)] + lines
 
     # === Helper Methods ===
     def _generate_document_number(self):
@@ -719,73 +717,98 @@ class SarabunDocument(models.Model):
 
         return f"สจล./{seq}"
 
-    def _activate_next_recipient(self):
-        """Create the next recipient from routing lines (sequential delivery)"""
+    def _activate_next_routing(self):
+        """Activate the next routing step (sequential delivery).
+        Creates recipients for all users in the next routing.
+        """
         self.ensure_one()
 
         if self.state != "sent":
             return
 
-        # Find which routing lines already have recipients
-        existing_line_ids = self.recipient_ids.mapped("routing_line_id").ids
-
-        # Find next routing line that doesn't have a recipient yet
-        next_line = self.routing_line_ids.filtered(
-            lambda l: l.id not in existing_line_ids
+        # Find next routing in draft state
+        next_routing = self.routing_ids.filtered(
+            lambda r: r.state == "draft"
         ).sorted("sequence")[:1]
 
-        if next_line:
-            # Create new recipient (state=new)
+        if next_routing:
+            # Create one recipient per resolved user (flatten)
             Recipient = self.env["sarabun.document.recipient"].sudo()
-            new_recipient = Recipient.create({
-                "document_id": self.id,
-                "routing_line_id": next_line.id,
-                "sequence": next_line.sequence,
-                "routing_type": next_line.routing_type,
-                "recipient_type": next_line.recipient_type,
-                "user_id": next_line.user_id.id if next_line.user_id else False,
-                "department_id": next_line.department_id.id if next_line.department_id else False,
-                "role_id": next_line.role_id.id if next_line.role_id else False,
-                "action_policy": next_line.action_policy or "first",
-                "state": "new",
-            })
-            new_recipient._create_user_snapshot()
-            new_recipient._send_notification()
+            for routing_user in next_routing.routing_user_ids:
+                recipient = Recipient.create({
+                    "document_id": self.id,
+                    "routing_id": next_routing.id,
+                    "user_id": routing_user.user_id.id,
+                    "sequence": next_routing.sequence,
+                    "routing_type": next_routing.routing_type,
+                    "recipient_type": next_routing.recipient_type,
+                    "state": "pending",
+                })
+                recipient._send_notification()
+
+            if not next_routing.routing_user_ids:
+                # No users resolved - post warning and skip to next
+                if next_routing.recipient_type == "department" and next_routing.department_id:
+                    self.message_post(
+                        body=_(
+                            "Warning: Department '%s' has no Sarabun Officers "
+                            "or Manager assigned. Skipping."
+                        ) % next_routing.department_id.name,
+                        message_type="notification",
+                    )
+                elif next_routing.recipient_type == "role" and next_routing.role_id:
+                    self.message_post(
+                        body=_(
+                            "Warning: Role '%s' has no users assigned. Skipping."
+                        ) % next_routing.role_id.name,
+                        message_type="notification",
+                    )
+                # Skip to next routing
+                self._activate_next_routing()
         else:
-            # No more routing lines - check if completed
+            # No more routings - check if completed
             self._check_completion()
 
-    def _check_completion(self):
-        """Check if all routing lines are done and update document state"""
+    def _check_routing_completion(self, routing):
+        """Check if all recipients in a routing are done, then activate next."""
         self.ensure_one()
 
         if self.state != "sent":
             return
 
-        # Check for rejected recipients
-        rejected = self.recipient_ids.filtered(lambda r: r.state == "rejected")
-        if rejected:
-            # Document stays in sent state, origin notified
+        # Invalidate to get fresh state
+        routing.invalidate_recordset(["state"])
+
+        if routing.state == "completed":
+            self._activate_next_routing()
+
+    def _check_completion(self):
+        """Check if all routings are done and update document state"""
+        self.ensure_one()
+
+        if self.state != "sent":
             return
 
-        # Check if all routing lines have been processed
-        # (recipient exists and state is not 'new')
-        all_lines_count = len(self.routing_line_ids)
-        completed_count = len(self.recipient_ids.filtered(
-            lambda r: r.state in ("acknowledged", "approved")
-        ))
+        # Check for rejected
+        rejected = self.recipient_ids.filtered(lambda r: r.state == "rejected")
+        if rejected:
+            return
 
-        if completed_count >= all_lines_count:
+        # Check if all routings completed
+        all_completed = all(
+            r.state == "completed" for r in self.routing_ids
+        )
+        if all_completed and self.routing_ids:
             self.state = "completed"
             self._on_routing_completed()
 
     def _mark_recipient_read(self):
-        """Mark the current user's new recipient as read"""
+        """Mark the current user's pending recipient as read"""
         self.ensure_one()
         user = self.env.user
 
-        # Find new recipients for current user
-        for recipient in self.recipient_ids.filtered(lambda r: r.state == "new"):
+        # Find pending recipients for current user
+        for recipient in self.recipient_ids.filtered(lambda r: r.state == "pending"):
             if recipient._can_user_access(user):
                 recipient.mark_as_read()
 
@@ -870,13 +893,13 @@ class SarabunDocument(models.Model):
                 )
 
     # === Constraints ===
-    @api.constrains("routing_line_ids")
-    def _check_routing_lines(self):
+    @api.constrains("routing_ids")
+    def _check_routing(self):
         for record in self:
-            approve_lines = record.routing_line_ids.filtered(
+            approve_routings = record.routing_ids.filtered(
                 lambda l: l.routing_type == "approve"
             )
-            if len(approve_lines) > 1:
+            if len(approve_routings) > 1:
                 # Allow multiple approvers but warn via tracking
                 pass
 

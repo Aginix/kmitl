@@ -80,11 +80,11 @@
             ]</field>
         </record>
 
-        <!-- Routing Line Rules -->
-        <!-- Users can see all routing lines of documents they are involved in -->
-        <record id="sarabun_routing_line_user_rule" model="ir.rule">
-            <field name="name">Sarabun Routing Line: User Access</field>
-            <field name="model_id" ref="model_sarabun_routing_line"/>
+        <!-- Routing Rules -->
+        <!-- Users can see all routings of documents they are involved in -->
+        <record id="sarabun_document_routing_user_rule" model="ir.rule">
+            <field name="name">Sarabun Document Routing: User Access</field>
+            <field name="model_id" ref="model_sarabun_document_routing"/>
             <field name="groups" eval="[(4, ref('group_sarabun_user'))]"/>
             <field name="domain_force">[
                 '|',

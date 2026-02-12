@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- Tree View (Route Definition) -->
-    <record id="sarabun_routing_line_view_tree" model="ir.ui.view">
-        <field name="name">sarabun.routing.line.view.tree</field>
-        <field name="model">sarabun.routing.line</field>
+    <record id="sarabun_document_routing_view_tree" model="ir.ui.view">
+        <field name="name">sarabun.document.routing.view.tree</field>
+        <field name="model">sarabun.document.routing</field>
         <field name="arch" type="xml">
-            <tree string="Routing Lines">
+            <tree string="Routing">
                 <field name="sequence" widget="handle"/>
                 <field name="document_id"/>
                 <field name="routing_type"/>
@@ -16,11 +16,11 @@
     </record>
 
     <!-- Form View (Route Definition) -->
-    <record id="sarabun_routing_line_view_form" model="ir.ui.view">
-        <field name="name">sarabun.routing.line.view.form</field>
-        <field name="model">sarabun.routing.line</field>
+    <record id="sarabun_document_routing_view_form" model="ir.ui.view">
+        <field name="name">sarabun.document.routing.view.form</field>
+        <field name="model">sarabun.document.routing</field>
         <field name="arch" type="xml">
-            <form string="Routing Line">
+            <form string="Routing">
                 <sheet>
                     <group>
                         <group>
@@ -41,11 +41,11 @@
     </record>
 
     <!-- Search View -->
-    <record id="sarabun_routing_line_view_search" model="ir.ui.view">
-        <field name="name">sarabun.routing.line.view.search</field>
-        <field name="model">sarabun.routing.line</field>
+    <record id="sarabun_document_routing_view_search" model="ir.ui.view">
+        <field name="name">sarabun.document.routing.view.search</field>
+        <field name="model">sarabun.document.routing</field>
         <field name="arch" type="xml">
-            <search string="Routing Lines">
+            <search string="Routing">
                 <field name="document_id"/>
                 <field name="user_id"/>
                 <field name="department_id"/>

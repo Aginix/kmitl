@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError
 
 ROUTING_TYPE_SEQUENCE = {
     "acknowledge": 10,
@@ -8,14 +8,14 @@ ROUTING_TYPE_SEQUENCE = {
 }
 
 
-class SarabunRoutingLine(models.Model):
+class SarabunDocumentRouting(models.Model):
     """
     Routing step definition - defines the type and recipient for each step.
-    Resolved users are stored in sarabun.recipient.user immediately.
+    Resolved users are stored in sarabun.document.routing.user immediately.
     """
 
-    _name = "sarabun.routing.line"
-    _description = "Sarabun Routing Line"
+    _name = "sarabun.document.routing"
+    _description = "Document Routing"
     _order = "sequence, id"
 
     document_id = fields.Many2one(
@@ -70,55 +70,40 @@ class SarabunRoutingLine(models.Model):
         compute="_compute_recipient_name",
         store=True,
     )
-    action_policy = fields.Selection(
-        selection=[
-            ("first", "First to Act"),
-            ("all", "All Must Act"),
-            ("majority", "Majority Must Act"),
-        ],
-        string="Action Policy",
-        default="first",
-    )
 
     # === Resolved Users ===
-    preview_user_ids = fields.One2many(
-        comodel_name="sarabun.recipient.user",
-        inverse_name="routing_line_id",
+    routing_user_ids = fields.One2many(
+        comodel_name="sarabun.document.routing.user",
+        inverse_name="routing_id",
         string="Resolved Users",
     )
-    preview_user_count = fields.Integer(
+    routing_user_count = fields.Integer(
         string="User Count",
-        compute="_compute_preview_user_info",
+        compute="_compute_routing_user_info",
         store=True,
     )
-    preview_user_names = fields.Char(
+    routing_user_names = fields.Char(
         string="Resolved Users",
-        compute="_compute_preview_user_info",
+        compute="_compute_routing_user_info",
         store=True,
     )
 
-    # === Status from Recipient (for display) ===
+    # === Status ===
     document_state = fields.Selection(
         related="document_id.state",
         string="Document State",
     )
-    recipient_id = fields.Many2one(
-        comodel_name="sarabun.document.recipient",
-        string="Recipient Record",
-        compute="_compute_recipient_status",
-        store=False,
-    )
-    recipient_state = fields.Selection(
+    state = fields.Selection(
         selection=[
-            ("waiting", "Waiting"),
-            ("new", "New"),
-            ("acknowledged", "Acknowledged"),
-            ("approved", "Approved"),
+            ("draft", "Draft"),
+            ("active", "Active"),
+            ("completed", "Completed"),
             ("rejected", "Rejected"),
         ],
         string="Status",
-        compute="_compute_recipient_status",
-        store=False,
+        compute="_compute_state",
+        store=True,
+        default="draft",
     )
 
     @api.model_create_multi
@@ -133,11 +118,10 @@ class SarabunRoutingLine(models.Model):
         return records
 
     def write(self, vals):
-        # Check if document has been sent
         for record in self:
             if record.document_id.state != 'draft':
                 raise UserError(
-                    _("Cannot modify routing line after document has been sent.")
+                    _("Cannot modify routing after document has been sent.")
                 )
 
         if 'routing_type' in vals and not vals.get('sequence'):
@@ -148,36 +132,28 @@ class SarabunRoutingLine(models.Model):
         if recipient_fields & set(vals.keys()):
             for record in self:
                 if record.document_id.state == 'draft':
-                    record.preview_user_ids.filtered(
-                        lambda u: not u.recipient_id
-                    ).sudo().unlink()
+                    record.routing_user_ids.sudo().unlink()
                     record._resolve_users()
         return result
 
     def unlink(self):
-        # Check if document has been sent
         for record in self:
             if record.document_id.state != 'draft':
                 raise UserError(
-                    _("Cannot delete routing line after document has been sent.")
+                    _("Cannot delete routing after document has been sent.")
                 )
-        # Delete unadopted user records (not yet linked to a recipient)
-        unadopted = self.mapped("preview_user_ids").filtered(
-            lambda u: not u.recipient_id
-        )
-        unadopted.sudo().unlink()
         return super().unlink()
 
     # === User Resolution ===
     def _resolve_users(self):
-        """Resolve users from recipient type and create recipient.user records."""
+        """Resolve users from recipient type and create routing.user records."""
         self.ensure_one()
-        RecipientUser = self.env["sarabun.recipient.user"].sudo()
+        RoutingUser = self.env["sarabun.document.routing.user"].sudo()
         vals_list = []
 
         if self.recipient_type == "user" and self.user_id:
             vals_list.append({
-                "routing_line_id": self.id,
+                "routing_id": self.id,
                 "user_id": self.user_id.id,
                 "sequence": 10,
                 "resolution_reason": "direct",
@@ -187,7 +163,7 @@ class SarabunRoutingLine(models.Model):
             if self.department_id.sarabun_officer_ids:
                 for user in self.department_id.sarabun_officer_ids:
                     vals_list.append({
-                        "routing_line_id": self.id,
+                        "routing_id": self.id,
                         "user_id": user.id,
                         "sequence": seq,
                         "resolution_reason": "dept_officer",
@@ -198,7 +174,7 @@ class SarabunRoutingLine(models.Model):
                 and self.department_id.manager_id.user_id
             ):
                 vals_list.append({
-                    "routing_line_id": self.id,
+                    "routing_id": self.id,
                     "user_id": self.department_id.manager_id.user_id.id,
                     "sequence": seq,
                     "resolution_reason": "dept_manager",
@@ -212,7 +188,7 @@ class SarabunRoutingLine(models.Model):
             seq = 10
             for user in role_users:
                 vals_list.append({
-                    "routing_line_id": self.id,
+                    "routing_id": self.id,
                     "user_id": user.id,
                     "sequence": seq,
                     "resolution_reason": reason,
@@ -220,46 +196,50 @@ class SarabunRoutingLine(models.Model):
                 seq += 10
 
         if vals_list:
-            RecipientUser.create(vals_list)
+            RoutingUser.create(vals_list)
 
     def action_refresh_users(self):
-        """Refresh resolved users for this routing line (draft only)."""
+        """Refresh resolved users for this routing (draft only)."""
         self.ensure_one()
         if self.document_id.state != "draft":
             raise UserError(_("Cannot refresh users after document has been sent."))
-        self.preview_user_ids.filtered(
-            lambda u: not u.recipient_id
-        ).sudo().unlink()
+        self.routing_user_ids.sudo().unlink()
         self._resolve_users()
 
     # === Computed Fields ===
-    @api.depends("preview_user_ids", "preview_user_ids.user_id")
-    def _compute_preview_user_info(self):
+    @api.depends("routing_user_ids", "routing_user_ids.user_id")
+    def _compute_routing_user_info(self):
         for record in self:
-            users = record.preview_user_ids.mapped("user_id")
-            record.preview_user_count = len(users)
+            users = record.routing_user_ids.mapped("user_id")
+            record.routing_user_count = len(users)
             if users:
                 names = users[:3].mapped("name")
                 extra = len(users) - 3
                 text = ", ".join(names)
                 if extra > 0:
                     text += _(" (+%d)") % extra
-                record.preview_user_names = text
+                record.routing_user_names = text
             else:
-                record.preview_user_names = False
+                record.routing_user_names = False
 
     @api.depends(
         "document_id.recipient_ids",
         "document_id.recipient_ids.state",
-        "document_id.recipient_ids.routing_line_id",
+        "document_id.recipient_ids.routing_id",
     )
-    def _compute_recipient_status(self):
-        for line in self:
-            recipient = line.document_id.recipient_ids.filtered(
-                lambda r: r.routing_line_id.id == line.id
-            )[:1]
-            line.recipient_id = recipient
-            line.recipient_state = recipient.state if recipient else "waiting"
+    def _compute_state(self):
+        for routing in self:
+            recipients = routing.document_id.recipient_ids.filtered(
+                lambda r: r.routing_id.id == routing.id
+            )
+            if not recipients:
+                routing.state = "draft"
+            elif any(r.state == "rejected" for r in recipients):
+                routing.state = "rejected"
+            elif all(r.state in ("acknowledged", "approved") for r in recipients):
+                routing.state = "completed"
+            else:
+                routing.state = "active"
 
     @api.depends("recipient_type", "user_id", "department_id", "role_id")
     def _compute_recipient_name(self):
@@ -275,17 +255,17 @@ class SarabunRoutingLine(models.Model):
 
     # === Actions ===
     def action_open_edit_wizard(self):
-        """Open wizard to edit this routing line"""
+        """Open wizard to edit this routing"""
         self.ensure_one()
         return {
             "name": _("Edit Routing"),
             "type": "ir.actions.act_window",
-            "res_model": "sarabun.routing.line.wizard",
+            "res_model": "sarabun.routing.wizard",
             "view_mode": "form",
             "target": "new",
             "context": {
                 "default_document_id": self.document_id.id,
-                "default_routing_line_id": self.id,
+                "default_routing_id": self.id,
             },
         }
 

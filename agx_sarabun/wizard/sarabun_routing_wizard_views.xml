@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Routing Line Wizard Form -->
-    <record id="sarabun_routing_line_wizard_view_form" model="ir.ui.view">
-        <field name="name">sarabun.routing.line.wizard.form</field>
-        <field name="model">sarabun.routing.line.wizard</field>
+    <!-- Routing Wizard Form -->
+    <record id="sarabun_routing_wizard_view_form" model="ir.ui.view">
+        <field name="name">sarabun.routing.wizard.form</field>
+        <field name="model">sarabun.routing.wizard</field>
         <field name="arch" type="xml">
             <form string="Add/Edit Routing">
                 <group>
                     <field name="document_id" invisible="1"/>
-                    <field name="routing_line_id" invisible="1"/>
+                    <field name="routing_id" invisible="1"/>
                 </group>
                 <group>
                     <group>
@@ -28,14 +28,6 @@
                     <field name="preview_user_ids" widget="many2many_tags" readonly="1" nolabel="1" colspan="2"/>
                     <field name="preview_warning" class="text-danger" attrs="{'invisible': [('preview_warning', '=', False)]}" nolabel="1" colspan="2"/>
                 </group>
-                <group string="Action Policy" attrs="{'invisible': [('recipient_type', '=', 'user')]}">
-                    <field name="action_policy" widget="radio"/>
-                    <p class="text-muted" colspan="2">
-                        First to Act: Any one user can complete (default, fastest).
-                        All Must Act: All users must act before proceeding.
-                        Majority Must Act: More than 50%% must act.
-                    </p>
-                </group>
                 <footer>
                     <button name="action_confirm" string="Confirm" type="object" class="btn-primary"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
@@ -44,10 +36,10 @@
         </field>
     </record>
 
-    <!-- Action for Routing Line Wizard -->
-    <record id="action_sarabun_routing_line_wizard" model="ir.actions.act_window">
+    <!-- Action for Routing Wizard -->
+    <record id="action_sarabun_routing_wizard" model="ir.actions.act_window">
         <field name="name">Add Routing</field>
-        <field name="res_model">sarabun.routing.line.wizard</field>
+        <field name="res_model">sarabun.routing.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
@@ -59,7 +51,7 @@
         <field name="arch" type="xml">
             <form string="Reject Document">
                 <group>
-                    <field name="routing_line_id" invisible="1"/>
+                    <field name="routing_id" invisible="1"/>
                     <field name="comment" placeholder="Please provide the reason for rejection..." required="1"/>
                 </group>
                 <footer>
@@ -77,7 +69,7 @@
         <field name="arch" type="xml">
             <form string="Forward Document">
                 <group>
-                    <field name="routing_line_id" invisible="1"/>
+                    <field name="routing_id" invisible="1"/>
                     <field name="forward_type" widget="radio"/>
                 </group>
                 <group>
@@ -195,7 +187,6 @@
         <field name="arch" type="xml">
             <form string="Select Signing Position">
                 <group>
-                    <field name="routing_line_id" invisible="1"/>
                     <field name="recipient_id" invisible="1"/>
                     <field name="action_type" invisible="1"/>
                     <field name="available_role_ids" invisible="1"/>

@@ -3,21 +3,21 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
-class SarabunRoutingLineWizard(models.TransientModel):
-    """Wizard for adding/editing routing lines"""
+class SarabunRoutingWizard(models.TransientModel):
+    """Wizard for adding/editing routing"""
 
-    _name = "sarabun.routing.line.wizard"
-    _description = "Routing Line Wizard"
+    _name = "sarabun.routing.wizard"
+    _description = "Routing Wizard"
 
     document_id = fields.Many2one(
         comodel_name="sarabun.document",
         string="Document",
         required=True,
     )
-    routing_line_id = fields.Many2one(
-        comodel_name="sarabun.routing.line",
-        string="Routing Line",
-        help="If set, we're editing an existing line",
+    routing_id = fields.Many2one(
+        comodel_name="sarabun.document.routing",
+        string="Routing",
+        help="If set, we're editing an existing routing",
     )
     routing_type = fields.Selection(
         selection=[
@@ -49,15 +49,6 @@ class SarabunRoutingLineWizard(models.TransientModel):
     role_id = fields.Many2one(
         comodel_name="sarabun.role",
         string="Role/Position",
-    )
-    action_policy = fields.Selection(
-        selection=[
-            ("first", "First to Act"),
-            ("all", "All Must Act"),
-            ("majority", "Majority Must Act"),
-        ],
-        string="Action Policy",
-        default="first",
     )
     preview_user_ids = fields.Many2many(
         comodel_name="res.users",
@@ -103,19 +94,18 @@ class SarabunRoutingLineWizard(models.TransientModel):
             record.preview_user_count = len(users)
             record.preview_warning = warning
 
-    @api.onchange("routing_line_id")
-    def _onchange_routing_line_id(self):
-        """Load values from existing routing line"""
-        if self.routing_line_id:
-            self.routing_type = self.routing_line_id.routing_type
-            self.recipient_type = self.routing_line_id.recipient_type
-            self.user_id = self.routing_line_id.user_id
-            self.department_id = self.routing_line_id.department_id
-            self.role_id = self.routing_line_id.role_id
-            self.action_policy = self.routing_line_id.action_policy or "first"
+    @api.onchange("routing_id")
+    def _onchange_routing_id(self):
+        """Load values from existing routing"""
+        if self.routing_id:
+            self.routing_type = self.routing_id.routing_type
+            self.recipient_type = self.routing_id.recipient_type
+            self.user_id = self.routing_id.user_id
+            self.department_id = self.routing_id.department_id
+            self.role_id = self.routing_id.role_id
 
     def action_confirm(self):
-        """Create or update routing line"""
+        """Create or update routing"""
         self.ensure_one()
 
         # Validate recipient based on type
@@ -132,16 +122,13 @@ class SarabunRoutingLineWizard(models.TransientModel):
             "user_id": self.user_id.id if self.user_id else False,
             "department_id": self.department_id.id if self.department_id else False,
             "role_id": self.role_id.id if self.role_id else False,
-            "action_policy": self.action_policy,
         }
 
-        if self.routing_line_id:
-            # Update existing line
-            self.routing_line_id.write(vals)
+        if self.routing_id:
+            self.routing_id.write(vals)
         else:
-            # Create new line
             vals["document_id"] = self.document_id.id
-            self.env["sarabun.routing.line"].create(vals)
+            self.env["sarabun.document.routing"].create(vals)
 
         return {"type": "ir.actions.act_window_close"}
 
@@ -150,9 +137,9 @@ class SarabunRoutingRejectWizard(models.TransientModel):
     _name = "sarabun.routing.reject.wizard"
     _description = "Reject Document Wizard"
 
-    routing_line_id = fields.Many2one(
-        comodel_name="sarabun.routing.line",
-        string="Routing Line",
+    routing_id = fields.Many2one(
+        comodel_name="sarabun.document.routing",
+        string="Routing",
         required=True,
     )
     comment = fields.Text(
@@ -165,8 +152,7 @@ class SarabunRoutingRejectWizard(models.TransientModel):
         self.ensure_one()
         if not self.comment:
             raise UserError(_("Please provide a rejection reason."))
-
-        self.routing_line_id.action_do_reject(self.comment)
+        self.routing_id.action_do_reject(self.comment)
         return {"type": "ir.actions.act_window_close"}
 
 
@@ -174,9 +160,9 @@ class SarabunRoutingForwardWizard(models.TransientModel):
     _name = "sarabun.routing.forward.wizard"
     _description = "Forward Document Wizard"
 
-    routing_line_id = fields.Many2one(
-        comodel_name="sarabun.routing.line",
-        string="Routing Line",
+    routing_id = fields.Many2one(
+        comodel_name="sarabun.document.routing",
+        string="Routing",
         required=True,
     )
     forward_type = fields.Selection(
@@ -207,8 +193,7 @@ class SarabunRoutingForwardWizard(models.TransientModel):
             raise UserError(_("Please select a user to forward to."))
         if self.forward_type == "department" and not self.forward_to_department_id:
             raise UserError(_("Please select a department to forward to."))
-
-        self.routing_line_id.action_do_forward(
+        self.routing_id.action_do_forward(
             forward_to_user_id=self.forward_to_user_id.id if self.forward_to_user_id else False,
             forward_to_department_id=self.forward_to_department_id.id if self.forward_to_department_id else False,
             comment=self.comment,
@@ -262,7 +247,6 @@ class SarabunRecipientRejectWizard(models.TransientModel):
         self.ensure_one()
         if not self.comment:
             raise UserError(_("Please provide a rejection reason."))
-
         self.recipient_id.action_do_reject(self.comment)
         return {"type": "ir.actions.act_window_close"}
 
@@ -293,15 +277,11 @@ class SarabunNumberSelectionWizard(models.TransientModel):
         default="reserved",
         required=True,
     )
-
-    # Reserved number selection
     reserved_number_id = fields.Many2one(
         comodel_name="sarabun.document.number",
         string="Reserved Number",
         domain="[('sequence_id', '=', sequence_id), ('state', '=', 'reserved')]",
     )
-
-    # Available numbers display
     available_number_ids = fields.Many2many(
         comodel_name="sarabun.document.number",
         string="Available Numbers",
@@ -310,13 +290,9 @@ class SarabunNumberSelectionWizard(models.TransientModel):
     selected_available_number = fields.Integer(
         string="Selected Available Number",
     )
-
-    # Manual entry
     manual_number = fields.Integer(
         string="Manual Number",
     )
-
-    # Display info
     next_auto_number = fields.Integer(
         string="Next Auto Number",
         compute="_compute_next_auto_number",
@@ -336,11 +312,9 @@ class SarabunNumberSelectionWizard(models.TransientModel):
 
     @api.depends("sequence_id")
     def _compute_available_numbers(self):
-        """Get available (gap) numbers as virtual records"""
         for record in self:
             if record.sequence_id:
-                available = record.sequence_id.get_available_numbers(limit=20)
-                # Create temporary records for display
+                record.sequence_id.get_available_numbers(limit=20)
                 Number = self.env["sarabun.document.number"]
                 record.available_number_ids = Number
             else:
@@ -356,16 +330,13 @@ class SarabunNumberSelectionWizard(models.TransientModel):
                 number = record.selected_available_number
             elif record.selection_mode == "manual" and record.manual_number:
                 number = record.manual_number
-
             if number and record.sequence_id:
                 record.formatted_preview = record.sequence_id.format_number(number)
             else:
                 record.formatted_preview = ""
 
     def action_confirm(self):
-        """Confirm number selection and update document"""
         self.ensure_one()
-
         if self.selection_mode == "reserved":
             if not self.reserved_number_id:
                 raise UserError(_("Please select a reserved number."))
@@ -373,11 +344,9 @@ class SarabunNumberSelectionWizard(models.TransientModel):
                 "numbering_mode": "reserved",
                 "document_number_id": self.reserved_number_id.id,
             })
-
         elif self.selection_mode == "available":
             if not self.selected_available_number:
                 raise UserError(_("Please select an available number."))
-            # Create a temporary reserved number for the available slot
             number_record = self.sequence_id.reserve_number(
                 self.selected_available_number,
                 user_id=self.env.user.id,
@@ -387,11 +356,9 @@ class SarabunNumberSelectionWizard(models.TransientModel):
                 "numbering_mode": "available",
                 "document_number_id": number_record.id,
             })
-
         elif self.selection_mode == "manual":
             if not self.manual_number:
                 raise UserError(_("Please enter a number."))
-            # Validate the number is available
             existing = self.sequence_id.number_ids.filtered(
                 lambda n: n.number == self.manual_number
                 and n.year == self.sequence_id.current_year
@@ -406,21 +373,17 @@ class SarabunNumberSelectionWizard(models.TransientModel):
                 "numbering_mode": "manual",
                 "manual_number": self.manual_number,
             })
-
         return {"type": "ir.actions.act_window_close"}
 
     def action_reserve_number(self):
-        """Reserve a new number for later use"""
         self.ensure_one()
         if not self.manual_number:
             raise UserError(_("Please enter a number to reserve."))
-
-        number_record = self.sequence_id.reserve_number(
+        self.sequence_id.reserve_number(
             self.manual_number,
             user_id=self.env.user.id,
             note=_("Reserved via wizard")
         )
-
         return {
             "type": "ir.actions.client",
             "tag": "display_notification",
