@@ -135,6 +135,22 @@ class SarabunRoutingLine(models.Model):
             else:
                 record.recipient_name = False
 
+    # === Actions ===
+    def action_open_edit_wizard(self):
+        """Open wizard to edit this routing line"""
+        self.ensure_one()
+        return {
+            "name": _("Edit Routing"),
+            "type": "ir.actions.act_window",
+            "res_model": "sarabun.routing.line.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "default_document_id": self.document_id.id,
+                "default_routing_line_id": self.id,
+            },
+        }
+
     # === Constraints ===
     @api.constrains("recipient_type", "user_id", "department_id", "role_id")
     def _check_recipient(self):

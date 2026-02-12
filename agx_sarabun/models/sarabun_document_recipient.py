@@ -255,6 +255,15 @@ class SarabunDocumentRecipient(models.Model):
                     "sequence": seq,
                     "resolution_reason": "dept_manager",
                 })
+            else:
+                # No officers or manager - post warning
+                self.document_id.message_post(
+                    body=_(
+                        "Warning: Department '%s' has no Sarabun Officers or Manager assigned. "
+                        "No users will be notified."
+                    ) % self.department_id.name,
+                    message_type="notification",
+                )
         elif self.recipient_type == "role" and self.role_id:
             role_users = self.role_id.get_users_for_document(self.document_id)
             reason = (
@@ -270,6 +279,15 @@ class SarabunDocumentRecipient(models.Model):
                     "resolution_reason": reason,
                 })
                 seq += 10
+            if not vals_list:
+                # No users resolved from role
+                self.document_id.message_post(
+                    body=_(
+                        "Warning: Role '%s' has no users assigned. "
+                        "No users will be notified."
+                    ) % self.role_id.name,
+                    message_type="notification",
+                )
 
         if vals_list:
             RecipientUser.create(vals_list)
