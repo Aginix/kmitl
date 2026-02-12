@@ -5,19 +5,24 @@ from odoo import _, api, fields, models
 class SarabunRecipientUser(models.Model):
     """Per-user tracking for document recipients.
 
-    Created as a snapshot when a recipient is activated, recording which
-    users were resolved at that point in time and tracking individual
-    read/action states.
+    Created when a routing line is added, recording which users are
+    resolved for each routing step. Adopted by document.recipient
+    when the document is sent.
     """
 
     _name = "sarabun.recipient.user"
     _description = "Sarabun Recipient User Tracking"
     _order = "sequence, id"
 
+    routing_line_id = fields.Many2one(
+        comodel_name="sarabun.routing.line",
+        string="Routing Line",
+        ondelete="set null",
+        index=True,
+    )
     recipient_id = fields.Many2one(
         comodel_name="sarabun.document.recipient",
         string="Recipient",
-        required=True,
         ondelete="cascade",
         index=True,
     )
@@ -60,24 +65,51 @@ class SarabunRecipientUser(models.Model):
         readonly=True,
     )
 
-    # === Related Fields (stored for performance) ===
+    # === Computed Fields ===
     document_id = fields.Many2one(
-        related="recipient_id.document_id",
+        comodel_name="sarabun.document",
+        string="Document",
+        compute="_compute_document_id",
         store=True,
         index=True,
     )
     recipient_type = fields.Selection(
-        related="recipient_id.recipient_type",
+        selection=[
+            ("user", "User"),
+            ("department", "Department"),
+            ("role", "Role/Position"),
+        ],
+        string="Recipient Type",
+        compute="_compute_recipient_type",
         store=True,
     )
 
     _sql_constraints = [
         (
-            "unique_recipient_user",
-            "UNIQUE(recipient_id, user_id)",
-            "Each user can only appear once per recipient.",
+            "unique_routing_line_user",
+            "UNIQUE(routing_line_id, user_id)",
+            "Each user can only appear once per routing line.",
         ),
     ]
+
+    @api.depends("recipient_id.document_id", "routing_line_id.document_id")
+    def _compute_document_id(self):
+        for record in self:
+            record.document_id = (
+                record.recipient_id.document_id
+                or record.routing_line_id.document_id
+            )
+
+    @api.depends("recipient_id.recipient_type", "routing_line_id.recipient_type")
+    def _compute_recipient_type(self):
+        for record in self:
+            record.recipient_type = (
+                record.recipient_id.recipient_type
+                if record.recipient_id
+                else record.routing_line_id.recipient_type
+                if record.routing_line_id
+                else False
+            )
 
     def mark_as_read(self):
         """Mark this user's tracking record as read."""

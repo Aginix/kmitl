@@ -221,76 +221,43 @@ class SarabunDocumentRecipient(models.Model):
                 record.action_policy_met = True
 
     def _create_user_snapshot(self):
-        """Create per-user tracking records based on recipient type.
+        """Adopt pre-resolved users from routing line, or create fresh.
 
-        Called once when recipient is activated. The snapshot preserves
-        which users were resolved at that point in time.
+        When a routing line already has resolved users (preview_user_ids),
+        adopt them by setting their recipient_id. Otherwise, fall back
+        to creating records fresh (backward compatibility).
         """
         self.ensure_one()
-        RecipientUser = self.env["sarabun.recipient.user"].sudo()
-        vals_list = []
-
-        if self.recipient_type == "user" and self.user_id:
-            vals_list.append({
+        if self.routing_line_id and self.routing_line_id.preview_user_ids:
+            # Adopt existing records from routing line
+            self.routing_line_id.preview_user_ids.sudo().write({
                 "recipient_id": self.id,
-                "user_id": self.user_id.id,
-                "sequence": 10,
-                "resolution_reason": "direct",
             })
-        elif self.recipient_type == "department" and self.department_id:
-            seq = 10
-            if self.department_id.sarabun_officer_ids:
-                for user in self.department_id.sarabun_officer_ids:
-                    vals_list.append({
-                        "recipient_id": self.id,
-                        "user_id": user.id,
-                        "sequence": seq,
-                        "resolution_reason": "dept_officer",
-                    })
-                    seq += 10
-            elif self.department_id.manager_id and self.department_id.manager_id.user_id:
-                vals_list.append({
+        else:
+            # Fallback: resolve and create fresh
+            self.routing_line_id._resolve_users() if self.routing_line_id else None
+            if self.routing_line_id and self.routing_line_id.preview_user_ids:
+                self.routing_line_id.preview_user_ids.sudo().write({
                     "recipient_id": self.id,
-                    "user_id": self.department_id.manager_id.user_id.id,
-                    "sequence": seq,
-                    "resolution_reason": "dept_manager",
                 })
-            else:
-                # No officers or manager - post warning
-                self.document_id.message_post(
-                    body=_(
-                        "Warning: Department '%s' has no Sarabun Officers or Manager assigned. "
-                        "No users will be notified."
-                    ) % self.department_id.name,
-                    message_type="notification",
-                )
-        elif self.recipient_type == "role" and self.role_id:
-            role_users = self.role_id.get_users_for_document(self.document_id)
-            reason = (
-                "role_static" if self.role_id.role_type == "static"
-                else "role_dynamic"
-            )
-            seq = 10
-            for user in role_users:
-                vals_list.append({
-                    "recipient_id": self.id,
-                    "user_id": user.id,
-                    "sequence": seq,
-                    "resolution_reason": reason,
-                })
-                seq += 10
-            if not vals_list:
-                # No users resolved from role
-                self.document_id.message_post(
-                    body=_(
-                        "Warning: Role '%s' has no users assigned. "
-                        "No users will be notified."
-                    ) % self.role_id.name,
-                    message_type="notification",
-                )
-
-        if vals_list:
-            RecipientUser.create(vals_list)
+            elif not self.recipient_user_ids:
+                # No routing line or no users resolved - post warning
+                if self.recipient_type == "department" and self.department_id:
+                    self.document_id.message_post(
+                        body=_(
+                            "Warning: Department '%s' has no Sarabun Officers "
+                            "or Manager assigned. No users will be notified."
+                        ) % self.department_id.name,
+                        message_type="notification",
+                    )
+                elif self.recipient_type == "role" and self.role_id:
+                    self.document_id.message_post(
+                        body=_(
+                            "Warning: Role '%s' has no users assigned. "
+                            "No users will be notified."
+                        ) % self.role_id.name,
+                        message_type="notification",
+                    )
 
     # === Actions ===
     def action_acknowledge(self):

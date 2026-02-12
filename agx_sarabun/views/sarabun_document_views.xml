@@ -160,7 +160,11 @@
                                     <field name="routing_type"/>
                                     <field name="recipient_type"/>
                                     <field name="recipient_name"/>
+                                    <field name="preview_user_names" string="Users"/>
+                                    <field name="preview_user_count" string="#" optional="hide"/>
                                     <field name="recipient_state" widget="badge" optional="show" decoration-muted="recipient_state == 'waiting'" decoration-info="recipient_state == 'new'" decoration-success="recipient_state in ('acknowledged', 'approved')" decoration-danger="recipient_state == 'rejected'"/>
+                                    <field name="document_state" invisible="1"/>
+                                    <button name="action_refresh_users" type="object" string="Refresh" icon="fa-refresh" class="btn-link" attrs="{'invisible': ['|', ('recipient_type', '=', 'user'), ('document_state', '!=', 'draft')]}"/>
                                     <button name="action_open_edit_wizard" type="object" string="Edit" icon="fa-pencil" class="btn-link"/>
                                 </tree>
                             </field>
