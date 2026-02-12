@@ -133,6 +133,13 @@ class SarabunRoutingLine(models.Model):
         return records
 
     def write(self, vals):
+        # Check if document has been sent
+        for record in self:
+            if record.document_id.state != 'draft':
+                raise UserError(
+                    _("Cannot modify routing line after document has been sent.")
+                )
+
         if 'routing_type' in vals and not vals.get('sequence'):
             vals['sequence'] = ROUTING_TYPE_SEQUENCE.get(vals['routing_type'], 10)
         result = super().write(vals)
@@ -148,6 +155,12 @@ class SarabunRoutingLine(models.Model):
         return result
 
     def unlink(self):
+        # Check if document has been sent
+        for record in self:
+            if record.document_id.state != 'draft':
+                raise UserError(
+                    _("Cannot delete routing line after document has been sent.")
+                )
         # Delete unadopted user records (not yet linked to a recipient)
         unadopted = self.mapped("preview_user_ids").filtered(
             lambda u: not u.recipient_id
