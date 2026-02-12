@@ -74,6 +74,37 @@ class SarabunDocumentRecipient(models.Model):
         store=True,
     )
 
+    # === Individual User Tracking ===
+    recipient_user_ids = fields.One2many(
+        comodel_name="sarabun.recipient.user",
+        inverse_name="recipient_id",
+        string="Individual Recipients",
+    )
+    action_policy = fields.Selection(
+        selection=[
+            ("first", "First to Act"),
+            ("all", "All Must Act"),
+            ("majority", "Majority Must Act"),
+        ],
+        string="Action Policy",
+        default="first",
+    )
+    user_count = fields.Integer(
+        string="User Count",
+        compute="_compute_user_counts",
+        store=True,
+    )
+    actioned_user_count = fields.Integer(
+        string="Actioned User Count",
+        compute="_compute_user_counts",
+        store=True,
+    )
+    action_policy_met = fields.Boolean(
+        string="Policy Met",
+        compute="_compute_action_policy_met",
+        store=True,
+    )
+
     # === State ===
     state = fields.Selection(
         selection=[
@@ -161,6 +192,88 @@ class SarabunDocumentRecipient(models.Model):
             else:
                 record.recipient_name = False
 
+    @api.depends("recipient_user_ids", "recipient_user_ids.state")
+    def _compute_user_counts(self):
+        for record in self:
+            users = record.recipient_user_ids
+            record.user_count = len(users)
+            record.actioned_user_count = len(
+                users.filtered(lambda u: u.state == "actioned")
+            )
+
+    @api.depends("action_policy", "user_count", "actioned_user_count")
+    def _compute_action_policy_met(self):
+        for record in self:
+            if not record.user_count:
+                # No snapshot (legacy recipient or user-type) - policy always met
+                record.action_policy_met = True
+            elif record.action_policy == "first":
+                record.action_policy_met = record.actioned_user_count >= 1
+            elif record.action_policy == "all":
+                record.action_policy_met = (
+                    record.actioned_user_count >= record.user_count
+                )
+            elif record.action_policy == "majority":
+                record.action_policy_met = (
+                    record.actioned_user_count > (record.user_count / 2)
+                )
+            else:
+                record.action_policy_met = True
+
+    def _create_user_snapshot(self):
+        """Create per-user tracking records based on recipient type.
+
+        Called once when recipient is activated. The snapshot preserves
+        which users were resolved at that point in time.
+        """
+        self.ensure_one()
+        RecipientUser = self.env["sarabun.recipient.user"].sudo()
+        vals_list = []
+
+        if self.recipient_type == "user" and self.user_id:
+            vals_list.append({
+                "recipient_id": self.id,
+                "user_id": self.user_id.id,
+                "sequence": 10,
+                "resolution_reason": "direct",
+            })
+        elif self.recipient_type == "department" and self.department_id:
+            seq = 10
+            if self.department_id.sarabun_officer_ids:
+                for user in self.department_id.sarabun_officer_ids:
+                    vals_list.append({
+                        "recipient_id": self.id,
+                        "user_id": user.id,
+                        "sequence": seq,
+                        "resolution_reason": "dept_officer",
+                    })
+                    seq += 10
+            elif self.department_id.manager_id and self.department_id.manager_id.user_id:
+                vals_list.append({
+                    "recipient_id": self.id,
+                    "user_id": self.department_id.manager_id.user_id.id,
+                    "sequence": seq,
+                    "resolution_reason": "dept_manager",
+                })
+        elif self.recipient_type == "role" and self.role_id:
+            role_users = self.role_id.get_users_for_document(self.document_id)
+            reason = (
+                "role_static" if self.role_id.role_type == "static"
+                else "role_dynamic"
+            )
+            seq = 10
+            for user in role_users:
+                vals_list.append({
+                    "recipient_id": self.id,
+                    "user_id": user.id,
+                    "sequence": seq,
+                    "resolution_reason": reason,
+                })
+                seq += 10
+
+        if vals_list:
+            RecipientUser.create(vals_list)
+
     # === Actions ===
     def action_acknowledge(self):
         """Acknowledge document receipt - opens signing wizard"""
@@ -210,13 +323,12 @@ class SarabunDocumentRecipient(models.Model):
 
         role = self.env["sarabun.role"].browse(signed_as_role_id)
 
-        self.write({
-            "state": "acknowledged",
-            "actioned_by": self.env.user.id,
-            "actioned_date": fields.Datetime.now(),
-            "signed_as_role_id": signed_as_role_id,
-            "signed_as_text": role.name if role else False,
-        })
+        # Mark individual user tracking record
+        user_record = self.recipient_user_ids.filtered(
+            lambda u: u.user_id == self.env.user
+        )[:1]
+        if user_record:
+            user_record.mark_as_actioned()
 
         self.document_id.message_post(
             body=_("Document acknowledged by %s as %s")
@@ -224,17 +336,30 @@ class SarabunDocumentRecipient(models.Model):
             message_type="notification",
         )
 
-        # Mark activities as done
-        self._mark_activities_done()
-
         # Mark inbox as read
         self._mark_inbox_read_for_user(self.env.user)
 
-        # Trigger callback on origin
-        self.document_id._trigger_origin_action_callback(self, "acknowledge")
-
-        # Activate next recipient
-        self.document_id._activate_next_recipient()
+        # Check if action policy is met
+        self.invalidate_recordset(["actioned_user_count", "action_policy_met"])
+        if self.action_policy_met:
+            # Complete the recipient
+            self.write({
+                "state": "acknowledged",
+                "actioned_by": self.env.user.id,
+                "actioned_date": fields.Datetime.now(),
+                "signed_as_role_id": signed_as_role_id,
+                "signed_as_text": role.name if role else False,
+            })
+            self._mark_activities_done()
+            self.document_id._trigger_origin_action_callback(self, "acknowledge")
+            self.document_id._activate_next_recipient()
+        else:
+            # Policy not yet met - post progress message
+            self.document_id.message_post(
+                body=_("Waiting for more users to act (%s/%s).")
+                % (self.actioned_user_count, self.user_count),
+                message_type="notification",
+            )
 
     def action_do_approve(self, signed_as_role_id):
         """Actually approve with signing position"""
@@ -246,13 +371,12 @@ class SarabunDocumentRecipient(models.Model):
 
         role = self.env["sarabun.role"].browse(signed_as_role_id)
 
-        self.write({
-            "state": "approved",
-            "actioned_by": self.env.user.id,
-            "actioned_date": fields.Datetime.now(),
-            "signed_as_role_id": signed_as_role_id,
-            "signed_as_text": role.name if role else False,
-        })
+        # Mark individual user tracking record
+        user_record = self.recipient_user_ids.filtered(
+            lambda u: u.user_id == self.env.user
+        )[:1]
+        if user_record:
+            user_record.mark_as_actioned()
 
         self.document_id.message_post(
             body=_("Document approved by %s as %s")
@@ -260,17 +384,30 @@ class SarabunDocumentRecipient(models.Model):
             message_type="notification",
         )
 
-        # Mark activities as done
-        self._mark_activities_done()
-
         # Mark inbox as read
         self._mark_inbox_read_for_user(self.env.user)
 
-        # Trigger callback on origin
-        self.document_id._trigger_origin_action_callback(self, "approve")
-
-        # Activate next recipient
-        self.document_id._activate_next_recipient()
+        # Check if action policy is met
+        self.invalidate_recordset(["actioned_user_count", "action_policy_met"])
+        if self.action_policy_met:
+            # Complete the recipient
+            self.write({
+                "state": "approved",
+                "actioned_by": self.env.user.id,
+                "actioned_date": fields.Datetime.now(),
+                "signed_as_role_id": signed_as_role_id,
+                "signed_as_text": role.name if role else False,
+            })
+            self._mark_activities_done()
+            self.document_id._trigger_origin_action_callback(self, "approve")
+            self.document_id._activate_next_recipient()
+        else:
+            # Policy not yet met - post progress message
+            self.document_id.message_post(
+                body=_("Waiting for more users to act (%s/%s).")
+                % (self.actioned_user_count, self.user_count),
+                message_type="notification",
+            )
 
     def action_reject(self):
         """Reject document - opens wizard for comment"""
@@ -295,6 +432,13 @@ class SarabunDocumentRecipient(models.Model):
 
         if not comment:
             raise UserError(_("Please provide a rejection reason."))
+
+        # Mark individual user tracking record
+        user_record = self.recipient_user_ids.filtered(
+            lambda u: u.user_id == self.env.user
+        )[:1]
+        if user_record:
+            user_record.mark_as_actioned()
 
         self.write({
             "state": "rejected",
@@ -333,20 +477,33 @@ class SarabunDocumentRecipient(models.Model):
 
         can_action = False
 
-        if self.recipient_type == "user":
-            can_action = self.user_id == self.env.user
-        elif self.recipient_type == "department":
-            if self.department_id:
-                # Check if user is a sarabun officer
-                if self.env.user in self.department_id.sarabun_officer_ids:
-                    can_action = True
-                # Or if user is manager of department
-                elif self.department_id.manager_id:
-                    can_action = self.department_id.manager_id.user_id == self.env.user
-        elif self.recipient_type == "role":
-            if self.role_id:
-                role_users = self.role_id.get_users_for_document(self.document_id)
-                can_action = self.env.user in role_users
+        if self.recipient_user_ids:
+            # Use snapshot to determine authorization
+            user_record = self.recipient_user_ids.filtered(
+                lambda u: u.user_id == self.env.user
+            )[:1]
+            if user_record:
+                if user_record.state == "actioned":
+                    raise UserError(_("You have already performed your action."))
+                can_action = True
+        else:
+            # Fallback to dynamic resolution (backward compatibility)
+            if self.recipient_type == "user":
+                can_action = self.user_id == self.env.user
+            elif self.recipient_type == "department":
+                if self.department_id:
+                    if self.env.user in self.department_id.sarabun_officer_ids:
+                        can_action = True
+                    elif self.department_id.manager_id:
+                        can_action = (
+                            self.department_id.manager_id.user_id == self.env.user
+                        )
+            elif self.recipient_type == "role":
+                if self.role_id:
+                    role_users = self.role_id.get_users_for_document(
+                        self.document_id
+                    )
+                    can_action = self.env.user in role_users
 
         if not can_action:
             raise UserError(_("You are not authorized to perform this action."))
@@ -360,7 +517,10 @@ class SarabunDocumentRecipient(models.Model):
 
         users_to_notify = self.env["res.users"]
 
-        if self.recipient_type == "user":
+        if self.recipient_user_ids:
+            # Use snapshot
+            users_to_notify = self.recipient_user_ids.mapped("user_id")
+        elif self.recipient_type == "user":
             users_to_notify = self.user_id
         elif self.recipient_type == "department" and self.department_id:
             # Send to all sarabun officers
@@ -445,6 +605,10 @@ class SarabunDocumentRecipient(models.Model):
         if user is None:
             user = self.env.user
 
+        if self.recipient_user_ids:
+            return user in self.recipient_user_ids.mapped("user_id")
+
+        # Fallback to dynamic resolution (backward compatibility)
         if self.recipient_type == "user":
             return self.user_id == user
         elif self.recipient_type == "department" and self.department_id:

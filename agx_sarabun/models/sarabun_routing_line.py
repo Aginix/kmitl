@@ -70,6 +70,15 @@ class SarabunRoutingLine(models.Model):
         compute="_compute_recipient_name",
         store=True,
     )
+    action_policy = fields.Selection(
+        selection=[
+            ("first", "First to Act"),
+            ("all", "All Must Act"),
+            ("majority", "Majority Must Act"),
+        ],
+        string="Action Policy",
+        default="first",
+    )
 
     # === Status from Recipient (for display) ===
     recipient_id = fields.Many2one(

@@ -50,6 +50,58 @@ class SarabunRoutingLineWizard(models.TransientModel):
         comodel_name="sarabun.role",
         string="Role/Position",
     )
+    action_policy = fields.Selection(
+        selection=[
+            ("first", "First to Act"),
+            ("all", "All Must Act"),
+            ("majority", "Majority Must Act"),
+        ],
+        string="Action Policy",
+        default="first",
+    )
+    preview_user_ids = fields.Many2many(
+        comodel_name="res.users",
+        string="Will Notify",
+        compute="_compute_preview_users",
+    )
+    preview_user_count = fields.Integer(
+        string="User Count",
+        compute="_compute_preview_users",
+    )
+    preview_warning = fields.Char(
+        string="Warning",
+        compute="_compute_preview_users",
+    )
+
+    @api.depends("recipient_type", "user_id", "department_id", "role_id", "document_id")
+    def _compute_preview_users(self):
+        for record in self:
+            users = self.env["res.users"]
+            warning = False
+
+            if record.recipient_type == "user" and record.user_id:
+                users = record.user_id
+            elif record.recipient_type == "department" and record.department_id:
+                if record.department_id.sarabun_officer_ids:
+                    users = record.department_id.sarabun_officer_ids
+                elif (
+                    record.department_id.manager_id
+                    and record.department_id.manager_id.user_id
+                ):
+                    users = record.department_id.manager_id.user_id
+                else:
+                    warning = _("No officers or manager assigned to this department")
+            elif record.recipient_type == "role" and record.role_id:
+                if record.document_id:
+                    users = record.role_id.get_users_for_document(record.document_id)
+                else:
+                    users = record.role_id.user_ids or self.env["res.users"]
+                if not users:
+                    warning = _("No users resolved for this role")
+
+            record.preview_user_ids = users
+            record.preview_user_count = len(users)
+            record.preview_warning = warning
 
     @api.onchange("routing_line_id")
     def _onchange_routing_line_id(self):
@@ -60,6 +112,7 @@ class SarabunRoutingLineWizard(models.TransientModel):
             self.user_id = self.routing_line_id.user_id
             self.department_id = self.routing_line_id.department_id
             self.role_id = self.routing_line_id.role_id
+            self.action_policy = self.routing_line_id.action_policy or "first"
 
     def action_confirm(self):
         """Create or update routing line"""
@@ -79,6 +132,7 @@ class SarabunRoutingLineWizard(models.TransientModel):
             "user_id": self.user_id.id if self.user_id else False,
             "department_id": self.department_id.id if self.department_id else False,
             "role_id": self.role_id.id if self.role_id else False,
+            "action_policy": self.action_policy,
         }
 
         if self.routing_line_id:

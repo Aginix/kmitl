@@ -23,6 +23,19 @@
                     <field name="department_id" attrs="{'invisible': [('recipient_type', '!=', 'department')], 'required': [('recipient_type', '=', 'department')]}" options="{'no_create': True, 'no_open': True}"/>
                     <field name="role_id" attrs="{'invisible': [('recipient_type', '!=', 'role')], 'required': [('recipient_type', '=', 'role')]}" options="{'no_create': True}"/>
                 </group>
+                <group string="Will notify these users" attrs="{'invisible': [('recipient_type', '=', 'user')]}">
+                    <field name="preview_user_count" readonly="1" string="User Count"/>
+                    <field name="preview_user_ids" widget="many2many_tags" readonly="1" nolabel="1" colspan="2"/>
+                    <field name="preview_warning" class="text-danger" attrs="{'invisible': [('preview_warning', '=', False)]}" nolabel="1" colspan="2"/>
+                </group>
+                <group string="Action Policy" attrs="{'invisible': [('recipient_type', '=', 'user')]}">
+                    <field name="action_policy" widget="radio"/>
+                    <p class="text-muted" colspan="2">
+                        First to Act: Any one user can complete (default, fastest).
+                        All Must Act: All users must act before proceeding.
+                        Majority Must Act: More than 50%% must act.
+                    </p>
+                </group>
                 <footer>
                     <button name="action_confirm" string="Confirm" type="object" class="btn-primary"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>

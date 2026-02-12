@@ -746,8 +746,10 @@ class SarabunDocument(models.Model):
                 "user_id": next_line.user_id.id if next_line.user_id else False,
                 "department_id": next_line.department_id.id if next_line.department_id else False,
                 "role_id": next_line.role_id.id if next_line.role_id else False,
+                "action_policy": next_line.action_policy or "first",
                 "state": "new",
             })
+            new_recipient._create_user_snapshot()
             new_recipient._send_notification()
         else:
             # No more routing lines - check if completed
