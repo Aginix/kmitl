@@ -153,18 +153,30 @@
                             <group>
                                 <field name="route_template_id" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             </group>
-                            <!-- Route Definition (editable in draft, readonly with status after sent) -->
-                            <field name="routing_line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}">
-                                <tree string="Routing" editable="bottom" decoration-muted="recipient_state == 'waiting'" decoration-info="recipient_state == 'new'" decoration-success="recipient_state in ('acknowledged', 'approved')" decoration-danger="recipient_state == 'rejected'">
+                            <!-- Route Definition -->
+                            <field name="routing_line_ids" mode="tree" context="{'default_document_id': active_id}">
+                                <tree string="Routing" decoration-muted="recipient_state == 'waiting'" decoration-info="recipient_state == 'new'" decoration-success="recipient_state in ('acknowledged', 'approved')" decoration-danger="recipient_state == 'rejected'">
                                     <field name="sequence" widget="handle"/>
                                     <field name="routing_type"/>
                                     <field name="recipient_type"/>
-                                    <field name="user_id" attrs="{'invisible': [('recipient_type', '!=', 'user')], 'required': [('recipient_type', '=', 'user')]}"/>
-                                    <field name="department_id" attrs="{'invisible': [('recipient_type', '!=', 'department')], 'required': [('recipient_type', '=', 'department')]}" options="{'no_create': True, 'no_open': True}"/>
-                                    <field name="role_id" attrs="{'invisible': [('recipient_type', '!=', 'role')], 'required': [('recipient_type', '=', 'role')]}"/>
-                                    <field name="recipient_state" widget="badge" attrs="{'invisible': [('parent.state', '=', 'draft')]}" decoration-muted="recipient_state == 'waiting'" decoration-info="recipient_state == 'new'" decoration-success="recipient_state in ('acknowledged', 'approved')" decoration-danger="recipient_state == 'rejected'"/>
+                                    <field name="recipient_name"/>
+                                    <field name="recipient_state" widget="badge" optional="show" decoration-muted="recipient_state == 'waiting'" decoration-info="recipient_state == 'new'" decoration-success="recipient_state in ('acknowledged', 'approved')" decoration-danger="recipient_state == 'rejected'"/>
+                                    <button name="action_open_routing_wizard" type="object" icon="fa-pencil" title="Edit" attrs="{'invisible': [('parent.state', '!=', 'draft')]}"/>
+                                    <button name="unlink" type="object" icon="fa-trash" title="Delete" attrs="{'invisible': [('parent.state', '!=', 'draft')]}"/>
                                 </tree>
+                                <form>
+                                    <group>
+                                        <field name="routing_type"/>
+                                        <field name="recipient_type"/>
+                                        <field name="user_id" attrs="{'invisible': [('recipient_type', '!=', 'user')], 'required': [('recipient_type', '=', 'user')]}"/>
+                                        <field name="department_id" attrs="{'invisible': [('recipient_type', '!=', 'department')], 'required': [('recipient_type', '=', 'department')]}" options="{'no_create': True, 'no_open': True}"/>
+                                        <field name="role_id" attrs="{'invisible': [('recipient_type', '!=', 'role')], 'required': [('recipient_type', '=', 'role')]}"/>
+                                    </group>
+                                </form>
                             </field>
+                            <div attrs="{'invisible': [('state', '!=', 'draft')]}">
+                                <button name="action_add_routing_line" type="object" string="Add Routing" class="btn-primary" icon="fa-plus"/>
+                            </div>
                             <group attrs="{'invisible': [('state', 'not in', ['sent', 'completed'])]}">
                                 <field name="routing_progress" widget="progressbar"/>
                             </group>

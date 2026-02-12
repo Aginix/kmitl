@@ -589,6 +589,20 @@ class SarabunDocument(models.Model):
             },
         }
 
+    def action_add_routing_line(self):
+        """Open wizard to add new routing line"""
+        self.ensure_one()
+        return {
+            "name": _("Add Routing"),
+            "type": "ir.actions.act_window",
+            "res_model": "sarabun.routing.line.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "default_document_id": self.id,
+            },
+        }
+
     def action_select_route(self):
         """Open wizard to select route template when multiple match"""
         self.ensure_one()

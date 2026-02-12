@@ -3,6 +3,95 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
+class SarabunRoutingLineWizard(models.TransientModel):
+    """Wizard for adding/editing routing lines"""
+
+    _name = "sarabun.routing.line.wizard"
+    _description = "Routing Line Wizard"
+
+    document_id = fields.Many2one(
+        comodel_name="sarabun.document",
+        string="Document",
+        required=True,
+    )
+    routing_line_id = fields.Many2one(
+        comodel_name="sarabun.routing.line",
+        string="Routing Line",
+        help="If set, we're editing an existing line",
+    )
+    routing_type = fields.Selection(
+        selection=[
+            ("acknowledge", "For Acknowledgement"),
+            ("approve", "For Approval"),
+        ],
+        string="Routing Type",
+        required=True,
+        default="acknowledge",
+    )
+    recipient_type = fields.Selection(
+        selection=[
+            ("user", "User"),
+            ("department", "Department"),
+            ("role", "Role/Position"),
+        ],
+        string="Recipient Type",
+        required=True,
+        default="user",
+    )
+    user_id = fields.Many2one(
+        comodel_name="res.users",
+        string="User",
+    )
+    department_id = fields.Many2one(
+        comodel_name="hr.department",
+        string="Department",
+    )
+    role_id = fields.Many2one(
+        comodel_name="sarabun.role",
+        string="Role/Position",
+    )
+
+    @api.onchange("routing_line_id")
+    def _onchange_routing_line_id(self):
+        """Load values from existing routing line"""
+        if self.routing_line_id:
+            self.routing_type = self.routing_line_id.routing_type
+            self.recipient_type = self.routing_line_id.recipient_type
+            self.user_id = self.routing_line_id.user_id
+            self.department_id = self.routing_line_id.department_id
+            self.role_id = self.routing_line_id.role_id
+
+    def action_confirm(self):
+        """Create or update routing line"""
+        self.ensure_one()
+
+        # Validate recipient based on type
+        if self.recipient_type == "user" and not self.user_id:
+            raise UserError(_("Please select a user."))
+        if self.recipient_type == "department" and not self.department_id:
+            raise UserError(_("Please select a department."))
+        if self.recipient_type == "role" and not self.role_id:
+            raise UserError(_("Please select a role/position."))
+
+        vals = {
+            "routing_type": self.routing_type,
+            "recipient_type": self.recipient_type,
+            "user_id": self.user_id.id if self.user_id else False,
+            "department_id": self.department_id.id if self.department_id else False,
+            "role_id": self.role_id.id if self.role_id else False,
+        }
+
+        if self.routing_line_id:
+            # Update existing line
+            self.routing_line_id.write(vals)
+        else:
+            # Create new line
+            vals["document_id"] = self.document_id.id
+            self.env["sarabun.routing.line"].create(vals)
+
+        return {"type": "ir.actions.act_window_close"}
+
+
 class SarabunRoutingRejectWizard(models.TransientModel):
     _name = "sarabun.routing.reject.wizard"
     _description = "Reject Document Wizard"

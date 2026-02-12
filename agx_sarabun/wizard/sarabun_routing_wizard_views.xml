@@ -1,5 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Routing Line Wizard Form -->
+    <record id="sarabun_routing_line_wizard_view_form" model="ir.ui.view">
+        <field name="name">sarabun.routing.line.wizard.form</field>
+        <field name="model">sarabun.routing.line.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Add/Edit Routing">
+                <group>
+                    <field name="document_id" invisible="1"/>
+                    <field name="routing_line_id" invisible="1"/>
+                </group>
+                <group>
+                    <group>
+                        <field name="routing_type" widget="radio" options="{'horizontal': true}"/>
+                    </group>
+                    <group>
+                        <field name="recipient_type" widget="radio"/>
+                    </group>
+                </group>
+                <group>
+                    <field name="user_id" attrs="{'invisible': [('recipient_type', '!=', 'user')], 'required': [('recipient_type', '=', 'user')]}" options="{'no_create': True}"/>
+                    <field name="department_id" attrs="{'invisible': [('recipient_type', '!=', 'department')], 'required': [('recipient_type', '=', 'department')]}" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="role_id" attrs="{'invisible': [('recipient_type', '!=', 'role')], 'required': [('recipient_type', '=', 'role')]}" options="{'no_create': True}"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" string="Confirm" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action for Routing Line Wizard -->
+    <record id="action_sarabun_routing_line_wizard" model="ir.actions.act_window">
+        <field name="name">Add Routing</field>
+        <field name="res_model">sarabun.routing.line.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
     <!-- Reject Wizard Form -->
     <record id="sarabun_routing_reject_wizard_view_form" model="ir.ui.view">
         <field name="name">sarabun.routing.reject.wizard.form</field>
