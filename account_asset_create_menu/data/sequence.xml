@@ -1,6 +1,0 @@
-<record id="seq_asset_batch" model="ir.sequence">
-    <field name="name">Asset Registration</field>
-    <field name="code">account.asset.batch</field>
-    <field name="prefix">AR</field>
-    <field name="padding">4</field>
-</record>

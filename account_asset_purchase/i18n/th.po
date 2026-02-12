@@ -197,8 +197,8 @@ msgstr ""
 
 #. module: account_asset_purchase
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__name
-msgid "Document name"
-msgstr "ชื่อเอกสาร"
+msgid "Document no"
+msgstr "เลขที่"
 
 #. module: account_asset_purchase
 #: model:ir.model.fields.selection,name:account_asset_purchase.selection__account_asset_batch__source_of_asset__donation

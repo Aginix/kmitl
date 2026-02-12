@@ -13,9 +13,8 @@ class AccountAssetBatch(models.Model):
     _description = 'AccountAssetBatch'
 
     name = fields.Char(
-        string="Document name",
+        string="Document No.",
         tracking=True,
-        required=True
     )
 
     date = fields.Date(
@@ -26,7 +25,9 @@ class AccountAssetBatch(models.Model):
 
     account_fiscal_year_id = fields.Many2one(
         "account.fiscal.year",
-        related='purchase_id.account_fiscal_year_id',
+        compute='_compute_account_fiscal_year_id',
+        store=True,
+        readonly=False,
         required=True,
         tracking=True,
         string="Fiscal year",
@@ -74,7 +75,9 @@ class AccountAssetBatch(models.Model):
     department_id = fields.Many2one(
         "hr.department",
         string="Department",
-        related="purchase_id.department_id"
+        compute='_compute_department_id',
+        store=True,
+        readonly=False,
     )
 
     asset_count = fields.Integer(
@@ -125,11 +128,21 @@ class AccountAssetBatch(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        records = super().create(vals_list)
-        for record in records:
-            if record.purchase_id:
-                record.source_of_asset = 'procurement'
-        return records
+        for vals in vals_list:
+            source = vals.get('source_of_asset', self.env.context.get('default_source_of_asset'))
+            
+            if vals.get('name', 'New') == 'New':
+                if source == 'procurement':
+                    vals['name'] = self.env['ir.sequence'].next_by_code('asset.batch.procurement') or 'New'
+                elif source == 'donation':
+                    vals['name'] = self.env['ir.sequence'].next_by_code('asset.batch.donation') or 'New'
+                elif source == 'transfer':
+                    vals['name'] = self.env['ir.sequence'].next_by_code('asset.batch.transfer') or 'New'
+            
+            if vals.get('purchase_id'):
+                vals['source_of_asset'] = 'procurement'
+                
+        return super().create(vals_list)
 
     @api.depends('line_ids.amount_total')
     def _compute_total_amount(self):
@@ -146,6 +159,22 @@ class AccountAssetBatch(models.Model):
             batch.asset_count = self.env["account.asset"].search_count([
                 ("batch_id", "=", batch.id)
             ])
+
+    @api.depends('purchase_id', 'purchase_id.account_fiscal_year_id')
+    def _compute_account_fiscal_year_id(self):
+        for rec in self:
+            if rec.purchase_id and rec.purchase_id.account_fiscal_year_id:
+                rec.account_fiscal_year_id = rec.purchase_id.account_fiscal_year_id
+            elif not rec.account_fiscal_year_id:
+                rec.account_fiscal_year_id = False
+
+    @api.depends('purchase_id', 'purchase_id.department_id')
+    def _compute_department_id(self):
+        for rec in self:
+            if rec.purchase_id and rec.purchase_id.department_id:
+                rec.department_id = rec.purchase_id.department_id
+            elif not rec.department_id:
+                rec.department_id = False
 
     @api.model
     def default_get(self, fields_list):
@@ -176,7 +205,7 @@ class AccountAssetBatch(models.Model):
                             "account_fiscal_year_id": batch.account_fiscal_year_id.id,
                             "operating_unit_id": batch.operating_unit_id.id,
                             "department_id": batch.department_id.id,
-                            "purchase_id": batch.purchase_id.id,
+                            "purchase_id": batch.purchase_id.id if batch.purchase_id else False,
                             "gpsc_id": line.gpsc_id.id,
                             "profile_id": line.profile_id.id,
                             "purchase_value": line.price_per_unit,

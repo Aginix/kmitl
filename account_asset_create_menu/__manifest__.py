@@ -8,8 +8,10 @@
     "category": "KMITL",
     'depends': ['account_asset_purchase', 'account_asset_usability_kmitl'],
     "data": [
-        "data/sequence.xml",
-        "views/account_asset_batch_views.xml"
+        "views/account_asset_donation.xml",
+        "views/account_asset_procurement.xml",
+        "views/account_asset_transfer.xml",
+        "views/menu.xml",
     ],
     'installable': True,
     'auto_install': False,

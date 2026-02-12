@@ -64,11 +64,17 @@
                         bg_color="bg-success"
                         attrs="{'invisible': [('state', '!=', 'done')]}"
                     />
+                    <div class="oe_edit_only">
+                        <label for="name" class="oe_inline"/>
+                    </div>
+                    <h1>
+                        <field name="name" class="oe_inline" readonly="1"/>
+                    </h1>
                     <group>
                         <field name="is_editable" invisible="1" />
                         <field name="date" invisible="1" />
-                        <field name="account_fiscal_year_id" />
-                        <field name="operating_unit_id" />
+                        <field name="account_fiscal_year_id" readonly="1" force_save="1"/>
+                        <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit" attrs="{'readonly': [('is_editable','=', False)]}"/>
                         <field
                             name="department_id"
                             attrs="{'readonly': [('is_editable','=', False)]}"
@@ -78,9 +84,10 @@
                         <field
                             name="source_of_asset"
                             required="1"
-                            attrs="{'readonly': [('is_editable','=', False)]}"
+                            readonly="1"
                             widget="radio"
                             options="{'horizontal': true}"
+                            force_save="1"
                         />
                         <field
                             name="received_from_agency"
