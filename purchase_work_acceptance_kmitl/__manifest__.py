@@ -13,8 +13,11 @@
     "data": [
         "data/server_action.xml",
         "data/tier.definition.csv",
+        "report/paperformat.xml",
+        "report_purchase_work_acceptance.xml",
         "views/purchase_order_views.xml",
         "views/work_acceptance_views.xml",
+        "views/purchase_work_acceptance_report.xml",
     ],
     'installable': True,
     'auto_install': False,
