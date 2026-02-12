@@ -161,8 +161,6 @@
                                     <field name="recipient_type"/>
                                     <field name="recipient_name"/>
                                     <field name="recipient_state" widget="badge" optional="show" decoration-muted="recipient_state == 'waiting'" decoration-info="recipient_state == 'new'" decoration-success="recipient_state in ('acknowledged', 'approved')" decoration-danger="recipient_state == 'rejected'"/>
-                                    <button name="action_open_routing_wizard" type="object" icon="fa-pencil" title="Edit" attrs="{'invisible': [('parent.state', '!=', 'draft')]}"/>
-                                    <button name="unlink" type="object" icon="fa-trash" title="Delete" attrs="{'invisible': [('parent.state', '!=', 'draft')]}"/>
                                 </tree>
                                 <form>
                                     <group>

@@ -136,19 +136,3 @@ class SarabunRoutingLine(models.Model):
                 raise UserError(_("Please select a department for routing."))
             if record.recipient_type == "role" and not record.role_id:
                 raise UserError(_("Please select a role/position for role-type recipient."))
-
-    # === Actions ===
-    def action_open_routing_wizard(self):
-        """Open wizard to edit this routing line"""
-        self.ensure_one()
-        return {
-            "name": _("Edit Routing"),
-            "type": "ir.actions.act_window",
-            "res_model": "sarabun.routing.line.wizard",
-            "view_mode": "form",
-            "target": "new",
-            "context": {
-                "default_document_id": self.document_id.id,
-                "default_routing_line_id": self.id,
-            },
-        }
