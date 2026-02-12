@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="buget_role" model="res.users.role">
+            <field name="name">เจ้าหน้าที่งานบริหารยุทธศาสตร์</field>
+            <field
+                name="implied_ids"
+                eval="[(6, 0, [
+                ref('budget.group_budget_user'),
+                ref('disbursement.group_disbursement_user'),
+                ref('procurement_plan.group_procurement_plan_user'),
+                ref('agx_sarabun.group_sarabun_user'),
+                ref('account.group_account_readonly'),
+            ])]"
+            />
+        </record>
+        <record id="purchase_role" model="res.users.role">
+            <field name="name">เจ้าหน้าที่งานพัสดุ</field>
+            <field
+                name="implied_ids"
+                eval="[(6, 0, [
+                ref('budget.group_budget_user'),
+                ref('budget.group_budget_commitment'),
+                ref('l10n_th_gov_purchase_request.group_purchase_request_verify'),
+                ref('disbursement.group_disbursement_user'),
+                ref('procurement_plan.group_procurement_plan_user'),
+                ref('agx_sarabun.group_sarabun_user'),
+                ref('account.group_account_readonly'),
+                ref('stock_request_aginix.group_stock_request_approver'),
+                ref('stock_request_aginix.group_stock_request_user'),
+                ref('account.group_account_invoice'),
+                ref('stock_request_aginix.group_stock_request_user'),
+                ref('stock.group_stock_user'),
+                ref('purchase.group_purchase_user'),
+                ref('purchase_request_security.group_purchase_request_user_all'),
+            ])]"
+            />
+        </record>
+    </data>
+</odoo>
