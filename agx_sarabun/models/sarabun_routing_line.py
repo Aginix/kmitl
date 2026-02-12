@@ -57,12 +57,8 @@ class SarabunRoutingLine(models.Model):
     )
     department_id = fields.Many2one(
         comodel_name="hr.department",
-        string="Department (System)",
-        help="Link to department in system for notification routing",
-    )
-    department_text = fields.Char(
         string="Department",
-        help="Free text for recipient department. Use lookup button to search from system.",
+        help="Select department for routing and notifications",
     )
     role_id = fields.Many2one(
         comodel_name="sarabun.role",
@@ -118,38 +114,25 @@ class SarabunRoutingLine(models.Model):
             line.recipient_id = recipient
             line.recipient_state = recipient.state if recipient else "waiting"
 
-    @api.depends("recipient_type", "user_id", "department_id", "department_text", "role_id")
+    @api.depends("recipient_type", "user_id", "department_id", "role_id")
     def _compute_recipient_name(self):
         for record in self:
             if record.recipient_type == "user" and record.user_id:
                 record.recipient_name = record.user_id.name
-            elif record.recipient_type == "department":
-                # Prefer department_text for display, fall back to department_id.name
-                record.recipient_name = record.department_text or (
-                    record.department_id.name if record.department_id else False
-                )
+            elif record.recipient_type == "department" and record.department_id:
+                record.recipient_name = record.department_id.name
             elif record.recipient_type == "role" and record.role_id:
                 record.recipient_name = record.role_id.name
             else:
                 record.recipient_name = False
 
-    @api.onchange("department_id")
-    def _onchange_department_id(self):
-        """When department is selected, populate department_text"""
-        if self.department_id and not self.department_text:
-            self.department_text = self.department_id.name
-
     # === Constraints ===
-    @api.constrains("recipient_type", "user_id", "department_id", "department_text", "role_id")
+    @api.constrains("recipient_type", "user_id", "department_id", "role_id")
     def _check_recipient(self):
         for record in self:
             if record.recipient_type == "user" and not record.user_id:
                 raise UserError(_("Please select a user for user-type recipient."))
-            if record.recipient_type == "department":
-                # Must have either department_id (for routing) or department_text (for display)
-                if not record.department_id and not record.department_text:
-                    raise UserError(
-                        _("Please enter department text or select a department for routing.")
-                    )
+            if record.recipient_type == "department" and not record.department_id:
+                raise UserError(_("Please select a department for routing."))
             if record.recipient_type == "role" and not record.role_id:
                 raise UserError(_("Please select a role/position for role-type recipient."))

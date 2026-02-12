@@ -731,7 +731,6 @@ class SarabunDocument(models.Model):
                 "recipient_type": next_line.recipient_type,
                 "user_id": next_line.user_id.id if next_line.user_id else False,
                 "department_id": next_line.department_id.id if next_line.department_id else False,
-                "department_text": next_line.department_text,
                 "role_id": next_line.role_id.id if next_line.role_id else False,
                 "state": "new",
             })

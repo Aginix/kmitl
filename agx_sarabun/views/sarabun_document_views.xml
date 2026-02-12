@@ -160,8 +160,7 @@
                                     <field name="routing_type"/>
                                     <field name="recipient_type"/>
                                     <field name="user_id" attrs="{'invisible': [('recipient_type', '!=', 'user')], 'required': [('recipient_type', '=', 'user')]}"/>
-                                    <field name="department_text" attrs="{'invisible': [('recipient_type', '!=', 'department')]}"/>
-                                    <field name="department_id" attrs="{'invisible': [('recipient_type', '!=', 'department')]}" optional="hide" string="Route To (System)"/>
+                                    <field name="department_id" attrs="{'invisible': [('recipient_type', '!=', 'department')], 'required': [('recipient_type', '=', 'department')]}" options="{'no_create': True, 'no_open': True}"/>
                                     <field name="role_id" attrs="{'invisible': [('recipient_type', '!=', 'role')], 'required': [('recipient_type', '=', 'role')]}"/>
                                     <field name="recipient_state" widget="badge" attrs="{'invisible': [('parent.state', '=', 'draft')]}" decoration-muted="recipient_state == 'waiting'" decoration-info="recipient_state == 'new'" decoration-success="recipient_state in ('acknowledged', 'approved')" decoration-danger="recipient_state == 'rejected'"/>
                                 </tree>

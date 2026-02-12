@@ -151,8 +151,10 @@ class SarabunDocumentRecipient(models.Model):
             if record.recipient_type == "user" and record.user_id:
                 record.recipient_name = record.user_id.name
             elif record.recipient_type == "department":
-                record.recipient_name = record.department_text or (
-                    record.department_id.name if record.department_id else False
+                # Prefer department_id, fall back to department_text for legacy data
+                record.recipient_name = (
+                    record.department_id.name if record.department_id
+                    else record.department_text or False
                 )
             elif record.recipient_type == "role" and record.role_id:
                 record.recipient_name = record.role_id.name
