@@ -20,15 +20,12 @@
                     </div>
                     <group>
                         <group>
+                            <field name="date" />
                             <field name="id" invisible="1" />
                             <field name="category_id" attrs="{'readonly': [('id', '!=', False)]}" />
-                            <field name="department_id" />
-                            <field name="request_owner_id" />
-                            <field name="responsible_id" />
-                            <field name="date" />
-                            <field name="description" />
-                        </group>
-                        <group>
+                            <field name="owner_id" />
+                            <field name="department_id" readonly="1"/>
+                            <field name="user_id" readonly="1"/>
                             <field name="has_period" invisible="1" />
                             <field name="has_city" invisible="1" />
                             <field name="has_country_id" invisible="1" />
@@ -40,6 +37,7 @@
                             </div>
                             <field name="city" attrs="{'invisible': [('has_city', '!=', True)], 'required': [('has_city', '=', True)]}"/>
                             <field name="country_id" attrs="{'invisible': [('has_country_id', '!=', True)], 'required': [('has_country_id', '=', True)]}"/>
+                            <field name="description" />
                         </group>
                         <group>
                             <field name="budget_commitment_id" required="1" />
@@ -66,6 +64,11 @@
                         </page>
                     </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
+                </div>
             </form>
         </field>
     </record>
@@ -90,6 +93,14 @@
                 <field name="name" />
                 <field name="department_id" />
                 <field name="category_id" />
+                <filter name="filter_draft" string="Draft" domain="[('state', '=', 'draft')]" />
+                <filter name="filter_submitted" string="Submitted" domain="[('state', '=', 'submitted')]" />
+                <filter name="filter_validated" string="Validated" domain="[('state', '=', 'validated')]" />
+                <filter name="filter_approved" string="Approved" domain="[('state', '=', 'approved')]" />
+                <filter name="filter_billed" string="Billed" domain="[('state', '=', 'billed')]" />
+                <filter name="filter_cancelled" string="Cancelled" domain="[('state', '=', 'cancelled')]" />
+                <separator />
+                <filter name="filter_archived" string="Archived" domain="[('active', '=', False)]" />
             </search>
         </field>
     </record>

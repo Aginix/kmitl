@@ -21,6 +21,12 @@ class ApprovalRequest(models.Model):
         "cancelled": [("readonly", True)],
     }
 
+    active = fields.Boolean(
+        string="Active",
+        default=True,
+        tracking=True,
+    )
+
     category_id = fields.Many2one(
         string="Category",
         comodel_name="approval.category",
@@ -47,27 +53,28 @@ class ApprovalRequest(models.Model):
     )
 
     date = fields.Date(
-        string="Date",
+        string="Request Date",
         required=True,
+        default=fields.Date.context_today,
         tracking=True,
         states=READONLY_STATES,
     )
 
-    request_owner_id = fields.Many2one(
+    owner_id = fields.Many2one(
         string="Request Owner",
-        comodel_name="res.partner",
+        comodel_name="res.users",
         default=lambda self: self.env.uid,
         required=True,
         tracking=True,
         states=READONLY_STATES,
     )
 
-    responsible_id = fields.Many2one(
+    user_id = fields.Many2one(
         string="Responsible Person",
-        comodel_name="res.partner",
+        comodel_name="res.users",
+        default=lambda self: self.env.uid,
         required=True,
         tracking=True,
-        states=READONLY_STATES,
     )
 
     description = fields.Text(
@@ -222,6 +229,10 @@ class ApprovalRequest(models.Model):
                 budget = rec.budget_commitment_id
                 rec.budget_account_id = budget.account_id
                 rec.analytic_distribution = budget.analytic_distribution
+
+    @api.onchange("owner_id")
+    def _onchange_owner_id(self):
+        self.department_id = self.owner_id.employee_id.department_id
 
     @api.model
     def _search_source_analytic_id(self, operator, value):
