@@ -233,6 +233,8 @@ class SarabunDocumentRecipient(models.Model):
             self.routing_line_id.preview_user_ids.sudo().write({
                 "recipient_id": self.id,
             })
+            # Invalidate cache so recipient_user_ids reflects the adoption immediately
+            self.invalidate_recordset(['recipient_user_ids'])
         else:
             # Fallback: resolve and create fresh
             self.routing_line_id._resolve_users() if self.routing_line_id else None
