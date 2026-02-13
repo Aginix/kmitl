@@ -34,20 +34,20 @@ class PurchaseRequestApproval(models.Model):
             "default_company_id": self.company_id.id,
             "default_currency_id": self.currency_id.id,
             "default_date_due": self.approval_date,
-            # "default_wa_line_ids": [
-            #     Command.create(
-            #         {
-            #             "approval_line_id": line.id,
-            #             "name": line.name,
-            #             "product_uom": line.product_uom.id,
-            #             "product_id": line.product_id.id,
-            #             "price_unit": line.price_unit,
-            #             "product_qty": line._get_product_qty(),
-            #         }
-            #     )
-            #     for line in self.order_line
-            #     if line._get_product_qty() != 0
-            # ],
+            "default_wa_line_ids": [
+                Command.create(
+                    {
+                        "approval_line_id": line.id,
+                        "name": line.name,
+                        "product_uom": line.product_uom.id,
+                        "product_id": line.product_id.id,
+                        "price_unit": line.price_unit,
+                        "product_qty": line._get_product_qty(),
+                    }
+                )
+                for line in self.line_ids
+                if line._get_product_qty() != 0
+            ],
         }
         if len(self.wa_ids) > 1 and not create_wa:
             result["domain"] = "[('id', 'in', " + str(self.wa_ids.ids) + ")]"
