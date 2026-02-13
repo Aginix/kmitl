@@ -6,8 +6,9 @@
         <field name="model">purchase.request</field>
         <field name="exception_type">by_py_code</field>
         <field name="code"><![CDATA[
-if not self.budget_account_id or not self.activity_analytic_id or not self.department_analytic_id or not self.fund_analytic_id or not self.source_analytic_id:
-    failed = True
+if self.state == 'to_verify':
+    if not self.budget_account_id or not self.activity_analytic_id or not self.department_analytic_id or not self.fund_analytic_id or not self.source_analytic_id:
+        failed = True
 ]]>
         </field>
     </record>
