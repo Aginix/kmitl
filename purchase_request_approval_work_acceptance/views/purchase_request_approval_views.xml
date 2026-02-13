@@ -13,6 +13,7 @@
                     <field name="wa_count" widget="statinfo" string="WA"/>
                     <field name="wa_ids" invisible="1"/>
                 </button>
+            </xpath>
         </field>
     </record>
   </odoo>

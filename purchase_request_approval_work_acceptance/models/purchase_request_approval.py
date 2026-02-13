@@ -28,12 +28,16 @@ class PurchaseRequestApproval(models.Model):
         act = self.env.ref("purchase_work_acceptance.action_work_acceptance")
         result = act.sudo().read()[0]
         create_wa = self.env.context.get("create_wa", False)
+        purchase_requests = self.request_id
+        lines = self._get_committee_line(purchase_requests)
         result["context"] = {
             "default_approval_id": self.id,
             "default_partner_id": self.partner_id.id,
             "default_company_id": self.company_id.id,
             "default_currency_id": self.currency_id.id,
             "default_date_due": self.approval_date,
+            "default_work_acceptance_committee_ids" : lines,
+            "default_wa_tier_validation": True,
             "default_wa_line_ids": [
                 Command.create(
                     {
@@ -59,6 +63,19 @@ class PurchaseRequestApproval(models.Model):
             if not create_wa:
                 result["res_id"] = self.wa_ids.id or False
         return result
+
+    def _prepare_committee_line(self, line):
+        return {
+            "employee_id": line.employee_id.id,
+            "name": line.name,
+            "approve_role": line.approve_role,
+            "note": line.note,
+        }
+
+    def _get_committee_line(self, approval):
+        committees = approval.mapped("work_acceptance_committee_ids")
+        lines = [(0, 0, self._prepare_committee_line(line)) for line in committees]
+        return lines
 
     def action_create_invoice(self):
         enable_wa = self.env.user.has_group(
