@@ -73,14 +73,6 @@
                     <group>
                         <field name="is_editable" invisible="1" />
                         <field name="date" invisible="1" />
-                        <field name="account_fiscal_year_id" readonly="1" force_save="1"/>
-                        <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit" attrs="{'readonly': [('is_editable','=', False)]}"/>
-                        <field
-                            name="department_id"
-                            attrs="{'readonly': [('is_editable','=', False)]}"
-                        />
-                        <field name="contract_number" />
-                        <field name="purchase_id" readonly="1" />
                         <field
                             name="source_of_asset"
                             required="1"
@@ -89,9 +81,17 @@
                             options="{'horizontal': true}"
                             force_save="1"
                         />
+                        <field name="account_fiscal_year_id" readonly="1" force_save="1"/>
+                        <field name="contract_number" />
+                        <field name="purchase_id" readonly="1" />
                         <field
                             name="received_from_agency"
                             attrs="{'invisible': [('source_of_asset', 'not in', ('donation', 'transfer'))], 'required': [('source_of_asset', 'in', ('donation', 'transfer'))]}"
+                        />
+                        <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit" attrs="{'readonly': [('is_editable','=', False)]}"/>
+                        <field
+                            name="department_id"
+                            attrs="{'readonly': [('is_editable','=', False)]}"
                         />
                         <field name="company_id" groups="base.group_multi_company" />
                         <field name="notes" />
@@ -169,6 +169,10 @@
                 There is no examples click here to add new Account Asset Batch.
             </p>
         </field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_account_asset_batch_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_account_asset_batch_form')}),
+        ]"/>
     </record>
 
     <menuitem

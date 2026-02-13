@@ -155,7 +155,7 @@ msgstr "บริษัท"
 #. module: account_asset_purchase
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__contract_number
 msgid "Contract Number"
-msgstr ""
+msgstr "เลขที่สัญญา/ใบสั่งซื้อ/จ้าง"
 
 #. module: account_asset_purchase
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__create_uid

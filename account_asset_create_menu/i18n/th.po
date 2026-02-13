@@ -33,7 +33,7 @@ msgstr ""
 
 #. module: account_asset_create_menu
 #: model_terms:ir.ui.view,arch_db:account_asset_create_menu.view_asset_batch_tree_procurement
-msgid "Contract Reference"
+msgid "Contract Number"
 msgstr "อ้างอิงเลขที่สัญญา"
 
 #. module: account_asset_create_menu
@@ -52,7 +52,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_asset_create_menu.view_asset_batch_tree_procurement
 #: model_terms:ir.ui.view,arch_db:account_asset_create_menu.view_asset_batch_tree_transfer
 msgid "Document No."
-msgstr ""
+msgstr "เลขที่"
 
 #. module: account_asset_create_menu
 #: model:ir.actions.act_window,name:account_asset_create_menu.action_asset_batch_donation

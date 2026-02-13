@@ -5,13 +5,13 @@
     <record id="view_asset_batch_tree_donation" model="ir.ui.view">
         <field name="name">account.asset.batch.tree.donation</field>
         <field name="model">account.asset.batch</field>
-        <!-- <field name="priority" eval="5"/> -->
+        <!-- <field name="priority" eval="30"/> -->
         <field name="arch" type="xml">
             <tree>
                 <field name="name" string="Document No."/>
                 <field name="account_fiscal_year_id"/>
                 <field name="received_from_agency" string="Received From"/>
-                <field name="state"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'done'"/>
             </tree>
         </field>
     </record>
@@ -19,7 +19,7 @@
     <record id="view_account_asset_batch_form_donation" model="ir.ui.view">
         <field name="name">account.asset.batch.form.donation</field>
         <field name="model">account.asset.batch</field>
-        <field name="priority" eval="5"/>
+        <!-- <field name="priority" eval="30"/> -->
         <field name="arch" type="xml">
             <form string="Asset Registration - Donation">
                 <header>
@@ -62,7 +62,7 @@
                         <field name="date" invisible="1"/>
                         <field name="purchase_id" invisible="1"/>
                         <field name="contract_number" invisible="1"/>
-                        <field name="source_of_asset" readonly="1" force_save="1" widget="radio"/>
+                        <field name="source_of_asset" readonly="1" force_save="1" widget="radio" options="{'horizontal': true}"/>
                         <field name="received_from_agency" required="1" attrs="{'readonly': [('is_editable','=', False)]}"/>
                         <field name="account_fiscal_year_id" required="1" attrs="{'readonly': [('is_editable','=', False)]}"/>
                         <field name="operating_unit_id" attrs="{'readonly': [('is_editable','=', False)]}" groups="operating_unit.group_multi_operating_unit"/>

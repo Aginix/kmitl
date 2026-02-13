@@ -1,5 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
+    <record id="account_asset_purchase.view_account_asset_batch_form" model="ir.ui.view">
+        <!-- <field name="priority" eval="10"/> -->
+    </record>
+
     <!-- Procurement Tree -->
     <record id="view_asset_batch_tree_procurement" model="ir.ui.view">
         <field name="name">account.asset.batch.tree.procurement</field>
@@ -9,9 +13,9 @@
             <tree create="0">
                 <field name="name" string="Document No."/>
                 <field name="account_fiscal_year_id"/>
-                <field name="contract_number" string="Contract Reference"/>
+                <field name="contract_number" string="Contract Number"/>
                 <field name="purchase_id" string="PO Reference"/>
-                <field name="state"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'done'"/>
             </tree>
         </field>
     </record>
