@@ -174,7 +174,10 @@ class AccountAssetBatch(models.Model):
             if rec.purchase_id and rec.purchase_id.department_id:
                 rec.department_id = rec.purchase_id.department_id
             elif not rec.department_id:
-                rec.department_id = False
+                if self.env.user.employee_id and self.env.user.employee_id.department_id:
+                    rec.department_id = self.env.user.employee_id.department_id
+                else:
+                    rec.department_id = False
 
     @api.model
     def default_get(self, fields_list):
@@ -184,6 +187,10 @@ class AccountAssetBatch(models.Model):
             purchase = self.env["purchase.order"].browse(purchase_id)
             if purchase.department_id and purchase.department_id.operating_unit_id:
                 res["operating_unit_id"] = purchase.department_id.operating_unit_id.id
+        else:
+            employee = self.env.user.employee_id
+            if employee.department_id and employee.department_id.operating_unit_id:
+                res["operating_unit_id"] = employee.department_id.operating_unit_id.id
         return res
 
     def action_register_assets(self):

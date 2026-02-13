@@ -23,6 +23,9 @@
         <field name="view_mode">tree,form</field>
         <field name="domain">[('source_of_asset','=','procurement')]</field>
         <field name="context">{'default_source_of_asset':'procurement'}</field>
-        <field name="view_id" ref="view_asset_batch_tree_procurement"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_asset_batch_tree_procurement')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('account_asset_purchase.view_account_asset_batch_form')}),
+        ]"/>
     </record>
 </odoo>

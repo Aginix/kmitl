@@ -62,7 +62,7 @@
                         <field name="date" invisible="1"/>
                         <field name="purchase_id" invisible="1"/>
                         <field name="contract_number" invisible="1"/>
-                        <field name="source_of_asset" readonly="1" force_save="1"/>
+                        <field name="source_of_asset" readonly="1" force_save="1" widget="radio"/>
                         <field name="received_from_agency" required="1" attrs="{'readonly': [('is_editable','=', False)]}"/>
                         <field name="account_fiscal_year_id" required="1" attrs="{'readonly': [('is_editable','=', False)]}"/>
                         <field name="operating_unit_id" attrs="{'readonly': [('is_editable','=', False)]}" groups="operating_unit.group_multi_operating_unit"/>

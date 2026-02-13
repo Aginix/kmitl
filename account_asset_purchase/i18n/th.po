@@ -197,7 +197,7 @@ msgstr ""
 
 #. module: account_asset_purchase
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__name
-msgid "Document no"
+msgid "Document No."
 msgstr "เลขที่"
 
 #. module: account_asset_purchase
