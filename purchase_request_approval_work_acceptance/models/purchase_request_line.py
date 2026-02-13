@@ -42,12 +42,10 @@ class PurchaseRequestLine(models.Model):
         "wa_line_ids.wa_id.state",
         "wa_line_ids.product_qty",
         "product_qty",
-        "product_uom_qty",
         "request_id.state",
     )
     def _compute_qty_accepted(self):
         for line in self:
-            # compute qty_accepted
             qty_accepted = 0.0
             for wa_line in line.wa_line_ids.filtered(
                 lambda l: l.wa_id.state == "accept"
@@ -57,4 +55,4 @@ class PurchaseRequestLine(models.Model):
                 )
             line.qty_accepted = qty_accepted
 
-            line.qty_to_accept = line.product_uom_qty - qty_accepted
+            line.qty_to_accept = line.product_qty - qty_accepted
