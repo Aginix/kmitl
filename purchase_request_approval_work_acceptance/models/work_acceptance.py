@@ -30,3 +30,11 @@ class WorkAcceptance(models.Model):
             'res_id': self.approval_id.id,
             'target': 'current',
         }
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        for record, vals in zip(records, vals_list):
+            if 'approval_id' in vals:
+                approval = self.env['purchase.request.approval'].browse(vals['approval_id'])
+                approval.write({'wa_ids': [(4, record.id)]})
+        return records

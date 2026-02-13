@@ -18,9 +18,6 @@ class PurchaseRequestApproval(models.Model):
     @api.depends("wa_line_ids")
     def _compute_wa_ids(self):
         for request in self:
-            request.wa_ids = (
-                request.mapped("line_ids").mapped("wa_line_ids").mapped("wa_id")
-            )
             request.wa_count = len(request.wa_ids)
 
     def action_view_wa(self):
@@ -37,7 +34,7 @@ class PurchaseRequestApproval(models.Model):
             "default_currency_id": self.currency_id.id,
             "default_date_due": self.approval_date,
             "default_work_acceptance_committee_ids" : lines,
-            "default_wa_tier_validation": True,
+            "default_wa_tier_validation": False,
             "default_wa_line_ids": [
                 Command.create(
                     {
