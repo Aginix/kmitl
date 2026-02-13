@@ -17,11 +17,11 @@ class PurchaseRequestApproval(models.Model):
 
     @api.depends("wa_line_ids")
     def _compute_wa_ids(self):
-        for order in self:
-            order.wa_ids = (
-                order.mapped("order_line").mapped("wa_line_ids").mapped("wa_id")
+        for request in self:
+            request.wa_ids = (
+                request.mapped("line_ids").mapped("wa_line_ids").mapped("wa_id")
             )
-            order.wa_count = len(order.wa_ids)
+            request.wa_count = len(request.wa_ids)
 
     def action_view_wa(self):
         self.ensure_one()
