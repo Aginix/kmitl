@@ -7,9 +7,9 @@
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
     'depends': ['purchase_work_acceptance', 'purchase_request_approval'],
-    'data': [
+    "data": [
         "views/purchase_request_approval_views.xml",
-        'security/ir.model.access.csv'
+        "views/work_acceptance_views.xml"
     ],
     'application': False,
     'installable': True,
