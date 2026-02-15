@@ -60,37 +60,46 @@ This is a collection of custom Odoo modules for KMITL (King Mongkut's Institute 
 
 **Account Analytics (`account_analytic_*`) - Financial Dimensions Framework**
 
-The analytic account system implements a **4-dimensional financial analysis framework** that serves as the foundation for KMITL's financial tracking and reporting:
+The analytic account system implements a **6-dimensional financial analysis framework** that serves as the foundation for KMITL's financial tracking and reporting. All dimensions are stored in the `analytic_distribution` JSON field.
 
 #### Core Modules
 - `account_analytic_plan_code`: Adds unique codes to analytic plans for identification
 - `account_analytic_seq`: Provides sequence-based ordering for hierarchical display
-- `account_analytic_kmitl`: Main integration module implementing the 4D framework
+- `account_analytic_kmitl`: Main integration module implementing the 6D framework
 
-#### Four Financial Dimensions
+#### Six Financial Dimensions
 
-1. **Activities (กิจกรรม)** - `activities`
-   - Tracks governmental programs and activities
-   - Hierarchical structure with codes like `090070101` (Education Support)
-   - Supports deep organizational hierarchies (up to 11-digit codes)
-
-2. **Departments (หน่วยงาน)** - `departments`
+1. **Departments (ส่วนงาน)** - `departments`
    - Organizational unit tracking across faculties and offices
    - Examples: `01` (Engineering), `89` (Rector's Office)
    - Hierarchical structure for sub-departments
+
+2. **Sources (แหล่งเงิน)** - `sources`
+   - Money source classification
+   - Examples: `1` (Government Budget), `2` (Revenue Budget)
+   - Flat classification structure
 
 3. **Funds (กองทุน)** - `funds`
    - Fund source classification and tracking
    - Examples: `0100` (General Fund), `0200` (Education Fund)
    - Hierarchical fund categories with sub-funds
 
-4. **Sources (แหล่งเงิน)** - `sources`
-   - Money source classification
-   - Examples: `1` (Government Budget), `2` (Revenue Budget)
-   - Flat classification structure
+4. **Activities (ด้าน/แผนงาน/กิจกรรม)** - `activities`
+   - Tracks governmental programs and activities
+   - Hierarchical structure with codes like `090070101` (Education Support)
+   - Supports deep organizational hierarchies (up to 11-digit codes)
+
+5. **KMITL Projects (โครงการ/กิจกรรม)** - `kmitl_project`
+   - Project/activity tracking
+   - Analytic account is assigned only after budget allocation (not at creation)
+
+6. **Procurement Plan (แผนจัดซื้อจัดจ้าง)** - `procurement_plan`
+   - Procurement planning dimension
+   - Analytic account is assigned only after budget allocation (not at creation)
 
 #### Technical Implementation
-- **AnalyticDistributionMixin**: Converts JSON distribution to discrete dimension fields
+- **`analytic_distribution`**: The primary JSON field for storing all dimension data. All data transfer between models and usage must go through this field.
+- **Convenience `*_analytic_id` fields**: Some models provide computed Many2one fields (e.g., `department_analytic_id`, `source_analytic_id`, `fund_analytic_id`, `activity_analytic_id`) for display (compute) and easy input (inverse). These are derived from `analytic_distribution` — never use them as the source of truth for data transfer.
 - **Hierarchical Budget Matching**: Parent appropriations can cover child commitments
 - **Domain Filtering**: Ensures data integrity across dimensions
 - **Performance Optimized**: Strategic indexing and computed fields for efficiency
@@ -136,10 +145,10 @@ module_name/
 - Double-entry principles ensure fiscal accuracy
 
 **Financial Dimensions Integration:**
-- **Budget Moves**: Direct dimension fields (`department_analytic_id`, `source_analytic_id`)
-- **Budget Move Lines**: Full 4D analytic distribution on each line item
+- **`analytic_distribution`**: The single source of truth for all 6 dimensions, used for data transfer between models
+- **Convenience fields**: `department_analytic_id`, `source_analytic_id`, etc. are computed/inverse helpers for UI only
 - **Budget Controller**: Hierarchical matching algorithm for parent-child appropriations
-- **Cross-dimensional Analysis**: Budget analysis across all four dimensions
+- **Cross-dimensional Analysis**: Budget analysis across all six dimensions
 - **Government Compliance**: Aligned with Thai government accounting standards
 
 **Approval Workflows:**
@@ -156,20 +165,32 @@ module_name/
 
 When developing features that interact with financial data:
 
-**Using the AnalyticDistributionMixin:**
+**Analytic Distribution (source of truth):**
 ```python
-# The mixin automatically provides dimension fields
-department_analytic_id  # Many2one to department dimension
-activity_analytic_id    # Many2one to activity dimension
-fund_analytic_id        # Many2one to fund dimension
-source_analytic_id      # Many2one to source dimension
+# analytic_distribution is the primary field — always use it for data transfer
+# Format: {"analytic_account_id": percentage, ...}
+analytic_distribution = {"42": 100, "55": 100, "78": 100}
+```
+
+**Convenience fields (UI helpers only):**
+```python
+# Some models provide computed Many2one fields derived from analytic_distribution
+department_analytic_id  # compute/inverse from analytic_distribution
+activity_analytic_id    # compute/inverse from analytic_distribution
+fund_analytic_id        # compute/inverse from analytic_distribution
+source_analytic_id      # compute/inverse from analytic_distribution
+# These are for display and easy input — never use them for data transfer
 ```
 
 **Domain Filtering for Dimensions:**
 ```python
 # Ensure correct dimension selection
-domain=[("root_plan_id.code", "=", "activities")]   # For activities
-domain=[("root_plan_id.code", "=", "departments")]  # For departments
+domain=[("root_plan_id.code", "=", "activities")]       # ด้าน/แผนงาน/กิจกรรม
+domain=[("root_plan_id.code", "=", "departments")]      # ส่วนงาน
+domain=[("root_plan_id.code", "=", "funds")]            # กองทุน
+domain=[("root_plan_id.code", "=", "sources")]          # แหล่งเงิน
+domain=[("root_plan_id.code", "=", "kmitl_project")]    # โครงการ/กิจกรรม
+domain=[("root_plan_id.code", "=", "procurement_plan")] # แผนจัดซื้อจัดจ้าง
 ```
 
 **Hierarchical Budget Matching:**
@@ -180,8 +201,8 @@ domain=[("root_plan_id.code", "=", "departments")]  # For departments
 **Key Models to Understand:**
 - `account.analytic.account`: Extended with hierarchy and sequences
 - `account.analytic.plan`: Enhanced with unique codes
-- `budget.move` & `budget.move.line`: Full 4D dimension tracking
-- `AnalyticDistributionMixin`: Core mixin for dimension fields
+- `budget.move` & `budget.move.line`: Full 6D dimension tracking via `analytic_distribution`
+- `AnalyticDistributionMixin`: Core mixin providing convenience dimension fields
 
 ### Development Standards
 
