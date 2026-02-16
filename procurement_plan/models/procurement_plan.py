@@ -247,8 +247,9 @@ class ProcurementPlan(models.Model):
     def name_get(self):
         res = []
         for rec in self:
+            source_name = rec.source_analytic_id.name if rec.source_analytic_id else _("ไม่ระบุแหล่งเงิน")
             res.append(
-                (rec.id, _(f"[%s] %s งบประมาณ {rec.total_price:,.2f} บาท - %s") % (rec.name, rec.description, rec.source_analytic_id.name))
+                (rec.id, _(f"[%s] %s งบประมาณ {rec.total_price:,.2f} บาท - %s") % (rec.name, rec.description, source_name))
             )
         return res
 
