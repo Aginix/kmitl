@@ -15,14 +15,15 @@
             <xpath expr="//group" position="after">
                 <group name="project" string="โครงการ/กิจกรรม" attrs="{'invisible': [('enable_project', '=', False)]}">
                     <div class="alert alert-info" role="alert" colspan="2">
-                        ระบบจะนำข้อมูลส่วนนี้ไปสร้างเป็นโครงการ/กิจกรรม
-                            <p class="fst-italic fw-light mt-1">
-                            ตัวอย่างการกรอกข้อมูล                            <br />
+                        ระบบจะนำข้อมูลส่วนนี้ไปสร้างเป็นการกันเงินโครงการ/กิจกรรม
+                        <p class="fst-italic fw-light mt-1">
+                            ตัวอย่างการกรอกข้อมูล<br />
                             ตัวอย่าง 1. "กิจกรรม KMITL Open House 2025" <br />
                             ตัวอย่าง 2. "โครงการเสริมสร้าง Soft Skill" <br />
                         </p>
                     </div>
-                    <field name="description" string="ชื่อโครงการ/กิจกรรม" attrs="{'required': [('enable_project', '=', True)]}" />
+                    <field name="description" string="ชื่อโครงการ/กิจกรรม" attrs="{'required': [('enable_project', '=', True)], 'invisible': [('budget_project_id', '!=', False)]}" />
+                    <field name="budget_project_id" attrs="{'invisible': [('budget_project_id', '=', False)]}" readonly="1" />
                     <field name="project_type" invisible="1" attrs="{'required': [('enable_project', '=', True)]}" />
                 </group>
             </xpath>
@@ -39,10 +40,11 @@
                 <field name="is_project" invisible="1" />
                 <field name="enable_project" invisible="1" />
                 <field name="project_type" invisible="1" />
+                <field name="budget_project_id" invisible="1" />
             </xpath>
             <xpath expr="//field[@name='line_ids']/tree" position="attributes">
-            <attribute name="decoration-info">is_project</attribute>
-        </xpath>
+                <attribute name="decoration-info">is_project</attribute>
+            </xpath>
         </field>
     </record>
 </odoo>

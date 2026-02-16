@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Form view -->
+    <record id="view_budget_project_form" model="ir.ui.view">
+        <field name="name">budget.project.form</field>
+        <field name="model">budget.project</field>
+        <field name="arch" type="xml">
+            <form string="การกันเงินโครงการ/กิจกรรม">
+                <header>
+                    <button name="action_create_kmitl_project" string="สร้างโครงการ/กิจกรรม" type="object" class="oe_highlight" attrs="{'invisible': [('is_matched', '=', True)]}" />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="ชื่อโครงการ/กิจกรรม" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="account_fiscal_year_id" />
+                            <field name="budget_account_id" />
+                            <field name="budget_amount" />
+                            <field name="project_type" />
+                        </group>
+                        <group>
+                            <field name="user_id" />
+                            <field name="company_id" invisible="1" />
+                            <field name="kmitl_project_id" attrs="{'readonly': [('is_matched', '=', True)]}" />
+                            <field name="is_matched" invisible="1" />
+                        </group>
+                    </group>
+                    <group string="มิติทางบัญชี">
+                        <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting" />
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree view -->
+    <record id="view_budget_project_tree" model="ir.ui.view">
+        <field name="name">budget.project.tree</field>
+        <field name="model">budget.project</field>
+        <field name="arch" type="xml">
+            <tree string="การกันเงินโครงการ/กิจกรรม" decoration-success="is_matched == True" decoration-muted="is_matched == False">
+                <field name="name" />
+                <field name="account_fiscal_year_id" />
+                <field name="budget_account_id" />
+                <field name="budget_amount" />
+                <field name="project_type" />
+                <field name="kmitl_project_id" />
+                <field name="is_matched" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search view -->
+    <record id="view_budget_project_search" model="ir.ui.view">
+        <field name="name">budget.project.search</field>
+        <field name="model">budget.project</field>
+        <field name="arch" type="xml">
+            <search string="การกันเงินโครงการ/กิจกรรม">
+                <field name="name" />
+                <field name="kmitl_project_id" />
+                <field name="account_fiscal_year_id" />
+                <filter name="not_matched" string="ยังไม่เชื่อมโยง" domain="[('is_matched', '=', False)]" />
+                <filter name="matched" string="เชื่อมโยงแล้ว" domain="[('is_matched', '=', True)]" />
+                <group expand="0" string="Group By">
+                    <filter name="group_fiscal_year" string="ปีงบประมาณ" context="{'group_by': 'account_fiscal_year_id'}" />
+                    <filter name="group_matched" string="สถานะการเชื่อมโยง" context="{'group_by': 'is_matched'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_budget_project" model="ir.actions.act_window">
+        <field name="name">การกันเงินโครงการ/กิจกรรม</field>
+        <field name="res_model">budget.project</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_budget_project_search" />
+    </record>
+
+</odoo>
