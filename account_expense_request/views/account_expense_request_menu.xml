@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<odoo>
-    <menuitem id="menu_account_expense_request" name="Expense Requests" parent="account.menu_finance_entries" sequence="10" />
-    <menuitem id="menu_account_expense_request_config" name="Expense Requests" parent="account.menu_finance_configuration" sequence="10" />
-</odoo>

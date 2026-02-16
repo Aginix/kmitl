@@ -1,8 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_account_expense_request_compensation_user,account.expense.request.compensation.user,model_account_expense_request_compensation,base.group_user,1,1,1,0
-access_account_expense_request_compensation_manager,account.expense.request.compensation.manager,model_account_expense_request_compensation,account.group_account_manager,1,1,1,1
-
-access_account_expense_request_compensation_line_user,account.expense.request.compensation.line.user,model_account_expense_request_compensation_line,base.group_user,1,1,1,1
-
-access_account_expense_request_compensation_type_user,account.expense.request.compensation.type.manager,model_account_expense_request_compensation_type,base.group_user,1,0,0,0
-access_account_expense_request_compensation_type_manager,account.expense.request.compensation.type.manager,model_account_expense_request_compensation_type,account.group_account_manager,1,1,1,1
