@@ -120,6 +120,51 @@ class BudgetAppropriationMasterSummary(models.Model):
         compute="_compute_f2_revenue_data",
         store=False,
     )
+    f4p_revenue_data = fields.Json(
+        string="F4-P Revenue Data",
+        compute="_compute_f4p_revenue_data",
+        store=False,
+    )
+    f4w_revenue_data = fields.Json(
+        string="F4-W Revenue Data",
+        compute="_compute_f4w_revenue_data",
+        store=False,
+    )
+    f5p_expense_data = fields.Json(
+        string="F5-P Expense Data",
+        compute="_compute_f5p_expense_data",
+        store=False,
+    )
+    f5w_expense_data = fields.Json(
+        string="F5-W Expense Data",
+        compute="_compute_f5w_expense_data",
+        store=False,
+    )
+    f7w_expense_data = fields.Json(
+        string="F7-W Expense Data",
+        compute="_compute_f7w_expense_data",
+        store=False,
+    )
+    f8w_expense_data = fields.Json(
+        string="F8-W Expense Data",
+        compute="_compute_f8w_expense_data",
+        store=False,
+    )
+    f9w_expense_data = fields.Json(
+        string="F9-W Expense Data",
+        compute="_compute_f9w_expense_data",
+        store=False,
+    )
+    f10w_expense_data = fields.Json(
+        string="F10-W Expense Data",
+        compute="_compute_f10w_expense_data",
+        store=False,
+    )
+    f11w_expense_data = fields.Json(
+        string="F11-W Expense Data",
+        compute="_compute_f11w_expense_data",
+        store=False,
+    )
 
     @api.depends("source_analytic_id", "account_fiscal_year_id")
     def _compute_name(self):
@@ -169,6 +214,60 @@ class BudgetAppropriationMasterSummary(models.Model):
         F2Model = self.env["budget.appropriation.summary.f2.revenue"]
         for record in self:
             record.f2_revenue_data = F2Model.get_data(record.id)
+
+    @api.depends("revenue_appropriation_ids", "compare_summary_id")
+    def _compute_f4p_revenue_data(self):
+        Model = self.env["budget.appropriation.summary.f4p.revenue"]
+        for record in self:
+            record.f4p_revenue_data = Model.get_data(record.id)
+
+    @api.depends("revenue_appropriation_ids", "compare_summary_id")
+    def _compute_f4w_revenue_data(self):
+        Model = self.env["budget.appropriation.summary.f4w.revenue"]
+        for record in self:
+            record.f4w_revenue_data = Model.get_data(record.id)
+
+    @api.depends("expense_appropriation_ids", "compare_summary_id")
+    def _compute_f5p_expense_data(self):
+        Model = self.env["budget.appropriation.summary.f5p.expense"]
+        for record in self:
+            record.f5p_expense_data = Model.get_data(record.id)
+
+    @api.depends("expense_appropriation_ids", "compare_summary_id")
+    def _compute_f5w_expense_data(self):
+        Model = self.env["budget.appropriation.summary.f5w.expense"]
+        for record in self:
+            record.f5w_expense_data = Model.get_data(record.id)
+
+    @api.depends("expense_appropriation_ids", "compare_summary_id")
+    def _compute_f7w_expense_data(self):
+        Model = self.env["budget.appropriation.summary.f7w.expense"]
+        for record in self:
+            record.f7w_expense_data = Model.get_data(record.id)
+
+    @api.depends("expense_appropriation_ids", "compare_summary_id")
+    def _compute_f8w_expense_data(self):
+        Model = self.env["budget.appropriation.summary.f8w.expense"]
+        for record in self:
+            record.f8w_expense_data = Model.get_data(record.id)
+
+    @api.depends("expense_appropriation_ids", "compare_summary_id")
+    def _compute_f9w_expense_data(self):
+        Model = self.env["budget.appropriation.summary.f9w.expense"]
+        for record in self:
+            record.f9w_expense_data = Model.get_data(record.id)
+
+    @api.depends("expense_appropriation_ids")
+    def _compute_f10w_expense_data(self):
+        Model = self.env["budget.appropriation.summary.f10w.expense"]
+        for record in self:
+            record.f10w_expense_data = Model.get_data(record.id)
+
+    @api.depends("expense_appropriation_ids", "compare_summary_id")
+    def _compute_f11w_expense_data(self):
+        Model = self.env["budget.appropriation.summary.f11w.expense"]
+        for record in self:
+            record.f11w_expense_data = Model.get_data(record.id)
 
     def action_confirm(self):
         self.write({"state": "confirmed"})
