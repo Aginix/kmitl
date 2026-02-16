@@ -119,6 +119,16 @@ class BudgetAppropriationCompilation(models.Model):
         string="หมายเหตุ",
         readonly=False,
     )
+    f4_revenue_data = fields.Json(
+        string="F4 Revenue Data",
+        compute="_compute_f4_revenue_data",
+        store=False,
+    )
+    f5_expense_data = fields.Json(
+        string="F5 Expense Data",
+        compute="_compute_f5_expense_data",
+        store=False,
+    )
 
     @api.depends(
         "department_analytic_id",
@@ -156,6 +166,38 @@ class BudgetAppropriationCompilation(models.Model):
                 record.expense_appropriation_ids.mapped("amount_net")
             )
 
+    @api.depends("revenue_appropriation_ids")
+    def _compute_f4_revenue_data(self):
+        F4Model = self.env["budget.appropriation.f4.report"]
+        for record in self:
+            if record.revenue_appropriation_ids:
+                record.f4_revenue_data = F4Model.get_f4_data(
+                    record.revenue_appropriation_ids.ids,
+                    {
+                        "department_name": record.department_analytic_id.complete_name.replace(
+                            " / ", " "
+                        )
+                    },
+                )
+            else:
+                record.f4_revenue_data = {}
+
+    @api.depends("expense_appropriation_ids")
+    def _compute_f5_expense_data(self):
+        F5Model = self.env["budget.appropriation.f5.report"]
+        for record in self:
+            if record.expense_appropriation_ids:
+                record.f5_expense_data = F5Model.get_f5_data(
+                    record.expense_appropriation_ids.ids,
+                    {
+                        "department_name": record.department_analytic_id.complete_name.replace(
+                            " / ", " "
+                        )
+                    },
+                )
+            else:
+                record.f5_expense_data = {}
+
     def action_confirm(self):
         self.write({"state": "confirmed"})
 
@@ -164,3 +206,35 @@ class BudgetAppropriationCompilation(models.Model):
 
     def action_draft(self):
         self.write({"state": "draft"})
+
+    def action_open_f4_report(self):
+        """Open F4 revenue report in a new browser tab as HTML."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "url": f"/budget_appropriation_summary/compilation/{self.id}/f4/html",
+            "target": "new",
+        }
+
+    def action_open_f5_report(self):
+        """Open F5 expense report in a new browser tab as HTML."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "url": f"/budget_appropriation_summary/compilation/{self.id}/f5/html",
+            "target": "new",
+        }
+
+    def action_print_f4_report(self):
+        """Print F4 revenue report as PDF."""
+        self.ensure_one()
+        return self.env.ref(
+            "budget_appropriation_summary.action_report_compilation_f4"
+        ).report_action(self)
+
+    def action_print_f5_report(self):
+        """Print F5 expense report as PDF."""
+        self.ensure_one()
+        return self.env.ref(
+            "budget_appropriation_summary.action_report_compilation_f5"
+        ).report_action(self)

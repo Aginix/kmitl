@@ -35,6 +35,24 @@
                     />
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_open_f4_report"
+                            string="ดูรายงาน F4"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-file-text-o"
+                            attrs="{'invisible': [('revenue_appropriation_ids', '=', [])]}"
+                        />
+                        <button
+                            name="action_open_f5_report"
+                            string="ดูรายงาน F5"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-file-text-o"
+                            attrs="{'invisible': [('expense_appropriation_ids', '=', [])]}"
+                        />
+                    </div>
                     <group>
                         <group>
                             <field name="name" readonly="1" />
@@ -135,18 +153,12 @@
         <field name="name">budget.appropriation.compilation.kanban</field>
         <field name="model">budget.appropriation.compilation</field>
         <field name="arch" type="xml">
-            <kanban
-                class="o_kanban_mobile"
-                default_group_by="state"
-                sample="1"
-            >
+            <kanban class="o_kanban_mobile" default_group_by="state" sample="1">
                 <field name="currency_id" />
                 <field name="state" />
                 <templates>
                     <t t-name="kanban-box">
-                        <div
-                            t-attf-class="oe_kanban_card oe_kanban_global_click"
-                        >
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
                             <div class="oe_kanban_content">
                                 <div class="o_kanban_record_top mb-0">
                                     <div class="o_kanban_record_headings">
@@ -168,10 +180,16 @@
                                 </div>
                                 <div class="o_kanban_record_bottom">
                                     <div class="oe_kanban_bottom_left">
-                                        <span>รายรับ: <field name="amount_revenue_total" widget="monetary" /></span>
+                                        <span>รายรับ: <field
+                                                name="amount_revenue_total"
+                                                widget="monetary"
+                                            /></span>
                                     </div>
                                     <div class="oe_kanban_bottom_right">
-                                        <span>รายจ่าย: <field name="amount_expense_total" widget="monetary" /></span>
+                                        <span>รายจ่าย: <field
+                                                name="amount_expense_total"
+                                                widget="monetary"
+                                            /></span>
                                     </div>
                                 </div>
                             </div>
