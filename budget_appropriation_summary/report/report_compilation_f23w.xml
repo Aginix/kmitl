@@ -49,7 +49,7 @@
                                 <th colspan="4">
                                     <t t-out="o.department_analytic_id.name" /> มีรายได้ทุกประเภทรวมกัน (หลังจากหัก 35% แล้ว)
                                 </th>
-                                <th class="text-end" style="width: 120pt;">
+                                <th class="text-end" style="width: 115pt;">
                                     <t t-out="'{:,.2f}'.format(o.revenue_net)" /> บาท
                                 </th>
                             </tr>

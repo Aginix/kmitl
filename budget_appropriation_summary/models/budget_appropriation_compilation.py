@@ -200,6 +200,42 @@ class BudgetAppropriationCompilation(models.Model):
         compute="_compute_totals",
     )
 
+    education_impact_line_ids = fields.One2many(
+        "budget.appropriation.compilation.impact",
+        "compilation_id",
+        string="รายการสัดส่วนผลกระทบ (การศึกษา)",
+        domain=[("impact_type", "=", "education")],
+        readonly=False,
+        states=READONLY_STATES,
+    )
+
+    academic_impact_line_ids = fields.One2many(
+        "budget.appropriation.compilation.impact",
+        "compilation_id",
+        string="รายการสัดส่วนผลกระทบ (การวิจัย)",
+        domain=[("impact_type", "=", "academic")],
+        readonly=False,
+        states=READONLY_STATES,
+    )
+
+    industrial_impact_line_ids = fields.One2many(
+        "budget.appropriation.compilation.impact",
+        "compilation_id",
+        string="รายการสัดส่วนผลกระทบ (อุตสาหกรรม)",
+        domain=[("impact_type", "=", "industrial")],
+        readonly=False,
+        states=READONLY_STATES,
+    )
+
+    social_impact_line_ids = fields.One2many(
+        "budget.appropriation.compilation.impact",
+        "compilation_id",
+        string="รายการสัดส่วนผลกระทบ (สังคม)",
+        domain=[("impact_type", "=", "social")],
+        readonly=False,
+        states=READONLY_STATES,
+    )
+
     @api.depends(
         "revenue_appropriation_ids.treasury_replenishment_amount",
         "revenue_appropriation_ids.deducted_reserve_amount",
@@ -207,7 +243,7 @@ class BudgetAppropriationCompilation(models.Model):
         "revenue_appropriation_ids.capital_budget_amount",
         "revenue_appropriation_ids.recurrent_budget_amount",
         "revenue_appropriation_ids.external_funding_amount",
-        "revenue_appropriation_ids.revenue_net",
+        "revenue_appropriation_ids.amount_net",
     )
     def _compute_totals(self):
         for record in self:
