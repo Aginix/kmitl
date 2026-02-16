@@ -80,17 +80,11 @@
 
             <div class="institution-info">
                 <h3 t-out="data.get('source', '')" />
-                <h3>ประมาณการรายรับ <t
-                        t-out="data.get('fiscal_year', '')"
-                    /></h3>
+                <h3>ประมาณการรายรับ <t t-out="data.get('fiscal_year', '')" /></h3>
                 <h3>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
                 <h3 t-out="data.get('department', '')" />
                 <div style="margin: 0 auto;">
-                    <table
-                        class="table-borderless"
-                        border="0"
-                        style="margin: 0 auto;"
-                    >
+                    <table class="table-borderless" border="0" style="margin: 0 auto;">
                         <tbody>
                             <tr>
                                 <td align="right">วงเงิน</td>
@@ -114,25 +108,17 @@
         >
             <thead>
                 <tr>
-                    <th
-                        style="text-align: left;"
-                        class="items-column"
-                    >รายการ</th>
+                    <th style="text-align: left;" class="items-column">รายการ</th>
                     <th
                         style="text-align: right; padding-right: 10px;"
                         class="code-column"
                     >รหัส</th>
-                    <th
-                        style="text-align: right;"
-                        class="amount-column"
-                    >งบประมาณ</th>
+                    <th style="text-align: right;" class="amount-column">งบประมาณ</th>
                 </tr>
             </thead>
             <tbody>
                 <t t-if="data.get('hierarchy')">
-                    <t
-                        t-call="budget_appropriation_summary.report_compilation_f4_rows"
-                    >
+                    <t t-call="budget_appropriation_summary.report_compilation_f4_rows">
                         <t t-set="nodes" t-value="data['hierarchy']" />
                     </t>
                 </t>
@@ -146,13 +132,8 @@
                 style="margin-top: 30px;"
             >
                 <tbody>
-                    <t
-                        t-call="budget_appropriation_summary.report_compilation_f4_rows"
-                    >
-                        <t
-                            t-set="nodes"
-                            t-value="data['deduct_hierarchy']"
-                        />
+                    <t t-call="budget_appropriation_summary.report_compilation_f4_rows">
+                        <t t-set="nodes" t-value="data['deduct_hierarchy']" />
                     </t>
                 </tbody>
             </table>
@@ -165,20 +146,14 @@
                     <td style="width: 60%" />
                     <th style="text-align: right;">รายรับรวม</th>
                     <td style="text-align: right;">
-                        <t
-                            t-out="'{:,}'.format(int(data.get('amount_total', 0)))"
-                        />
+                        <t t-out="'{:,}'.format(int(data.get('amount_total', 0)))" />
                     </td>
                 </tr>
                 <tr t-if="data.get('amount_deduct', 0) != 0">
                     <td style="width: 60%" />
                     <th style="text-align: right;">หัก</th>
-                    <td
-                        style="text-align: right; text-decoration-line: underline;"
-                    >
-                        <t
-                            t-out="'{:,}'.format(int(data.get('amount_deduct', 0)))"
-                        />
+                    <td style="text-align: right; text-decoration-line: underline;">
+                        <t t-out="'{:,}'.format(int(data.get('amount_deduct', 0)))" />
                     </td>
                 </tr>
                 <tr>
@@ -187,9 +162,7 @@
                     <td
                         style="text-align: right; text-decoration-line: underline; text-decoration-style: double;"
                     >
-                        <t
-                            t-out="'{:,}'.format(int(data.get('amount_net', 0)))"
-                        />
+                        <t t-out="'{:,}'.format(int(data.get('amount_net', 0)))" />
                     </td>
                 </tr>
             </tbody>
@@ -241,9 +214,9 @@
 
     <!-- Styles template -->
     <template id="report_compilation_f4_styles">
-        <style>
-            /* A4 paper simulation for screen */
-            @media screen {
+        <t t-set="is_html_preview" t-value="o.env.context.get('html_preview', False)" />
+        <t t-if="is_html_preview">
+            <style>
                 html, body {
                     background: #e0e0e0 !important;
                 }
@@ -256,21 +229,14 @@
                     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
                     box-sizing: border-box;
                 }
-            }
-
-            @media print {
-                .page {
-                    margin: 0;
-                    padding: 0 !important;
-                    box-shadow: none;
-                    width: auto;
-                    min-height: auto;
-                }
-            }
-
+            </style>
+        </t>
+        <style>
             .page {
-                padding-top: 0 !important;
-                margin-top: 0 !important;
+                page-break-after: always;
+            }
+            .page:last-child {
+                page-break-after: auto;
             }
 
             .budget-compilation-f4-report {

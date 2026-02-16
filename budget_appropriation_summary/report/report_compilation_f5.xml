@@ -86,11 +86,7 @@
                 <h3>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
                 <h3 t-out="data.get('department', '').replace(' / ', ' ')" />
                 <div style="margin: 0 auto;">
-                    <table
-                        class="table-borderless"
-                        border="0"
-                        style="margin: 0 auto;"
-                    >
+                    <table class="table-borderless" border="0" style="margin: 0 auto;">
                         <tbody>
                             <tr>
                                 <td align="right">วงเงิน</td>
@@ -108,7 +104,10 @@
         </div>
 
         <!-- Main Table -->
-        <table class="report-table table" style="border-spacing:0px 4px;">
+        <table
+            class="report-table table table-borderless"
+            style="border-spacing:0px 4px;"
+        >
             <thead>
                 <tr>
                     <th
@@ -135,9 +134,7 @@
             </thead>
             <tbody>
                 <t t-if="data.get('hierarchy')">
-                    <t
-                        t-call="budget_appropriation_summary.report_compilation_f5_rows"
-                    >
+                    <t t-call="budget_appropriation_summary.report_compilation_f5_rows">
                         <t t-set="nodes" t-value="data['hierarchy']" />
                         <t t-set="level" t-value="0" />
                     </t>
@@ -198,9 +195,9 @@
 
     <!-- Styles template -->
     <template id="report_compilation_f5_styles">
-        <style>
-            /* A4 paper simulation for screen */
-            @media screen {
+        <t t-set="is_html_preview" t-value="o.env.context.get('html_preview', False)" />
+        <t t-if="is_html_preview">
+            <style>
                 html, body {
                     background: #e0e0e0 !important;
                 }
@@ -213,21 +210,14 @@
                     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
                     box-sizing: border-box;
                 }
-            }
-
-            @media print {
-                .page {
-                    margin: 0;
-                    padding: 0 !important;
-                    box-shadow: none;
-                    width: auto;
-                    min-height: auto;
-                }
-            }
-
+            </style>
+        </t>
+        <style>
             .page {
-                padding-top: 0 !important;
-                margin-top: 0 !important;
+                page-break-after: always;
+            }
+            .page:last-child {
+                page-break-after: auto;
             }
 
             .budget-compilation-f5-report {

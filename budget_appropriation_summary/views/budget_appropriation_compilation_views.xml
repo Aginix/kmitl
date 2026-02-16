@@ -45,11 +45,27 @@
                             attrs="{'invisible': [('revenue_appropriation_ids', '=', [])]}"
                         />
                         <button
+                            name="action_print_f4_report"
+                            string="พิมพ์ F4"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-print"
+                            attrs="{'invisible': [('revenue_appropriation_ids', '=', [])]}"
+                        />
+                        <button
                             name="action_open_f5_report"
                             string="ดูรายงาน F5"
                             type="object"
                             class="oe_stat_button"
                             icon="fa-file-text-o"
+                            attrs="{'invisible': [('expense_appropriation_ids', '=', [])]}"
+                        />
+                        <button
+                            name="action_print_f5_report"
+                            string="พิมพ์ F5"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-print"
                             attrs="{'invisible': [('expense_appropriation_ids', '=', [])]}"
                         />
                     </div>
