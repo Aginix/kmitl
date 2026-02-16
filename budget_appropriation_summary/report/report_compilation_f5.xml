@@ -34,90 +34,116 @@
         <t t-call="web.basic_layout">
             <t t-call="budget_appropriation_summary.report_compilation_f5_styles" />
 
-            <div class="page budget-compilation-f5-report">
-                <t t-set="data" t-value="o.f5_expense_data" />
+            <t t-set="all_data" t-value="o.f5_expense_data" />
 
+            <t t-if="all_data and not all_data.get('error')">
+                <!-- Overview report -->
+                <t t-set="data" t-value="all_data.get('overview', {})" />
                 <t t-if="data and not data.get('error')">
-                    <div class="report-header">
-                        <div class="document-ref">
-                            <div>F5-P-วง-003</div>
-                        </div>
-
-                        <div class="institution-info">
-                            <h3 t-out="data.get('source', '')" />
-                            <h3>ประมาณการ<t t-out="data.get('type', '')" /> <t
-                                    t-out="data.get('fiscal_year', '')"
-                                /></h3>
-                            <h3>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
-                            <h3 t-out="data.get('department', '')" />
-                            <div style="margin: 0 auto;">
-                                <table
-                                    class="table-borderless"
-                                    border="0"
-                                    style="margin: 0 auto;"
-                                >
-                                    <tbody>
-                                        <tr>
-                                            <td align="right">วงเงิน</td>
-                                            <td align="right">
-                                                <t
-                                                    t-out="'{:,}'.format(int(data.get('amount_total', 0)))"
-                                                />
-                                            </td>
-                                            <td>บาท</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                    <div class="page budget-compilation-f5-report">
+                        <t
+                            t-call="budget_appropriation_summary.report_compilation_f5_content"
+                        />
                     </div>
+                </t>
 
-                    <!-- Main Table -->
-                    <table class="report-table table" style="border-spacing:0px 4px;">
-                        <thead>
-                            <tr>
-                                <th
-                                    style="vertical-align: bottom; text-align: left;"
-                                    class="items-column"
-                                    rowspan="2"
-                                >
-                                    <div />
-                                </th>
-                                <th
-                                    style="vertical-align: bottom; text-align: right; padding-right: 10px;"
-                                    class="code-column"
-                                    rowspan="2"
-                                >รหัส</th>
-                                <th
-                                    style="padding-bottom: 4px;"
-                                    colspan="2"
-                                >แหล่งเงิน (หน่วย : บาท)</th>
-                            </tr>
-                            <tr>
-                                <th class="amount-column">งบประมาณ</th>
-                                <th class="amount-column">รวมทั้งสิ้น</th>
-                            </tr>
-                        </thead>
+                <!-- Individual reports per appropriation -->
+                <t t-foreach="all_data.get('details', [])" t-as="data">
+                    <t t-if="data and not data.get('error')">
+                        <div class="page budget-compilation-f5-report">
+                            <t
+                                t-call="budget_appropriation_summary.report_compilation_f5_content"
+                            />
+                        </div>
+                    </t>
+                </t>
+            </t>
+
+            <t t-if="not all_data or all_data.get('error')">
+                <div class="page budget-compilation-f5-report">
+                    <div class="alert alert-warning">
+                        <t
+                            t-out="all_data.get('error', 'ไม่พบข้อมูลรายจ่าย') if all_data else 'ไม่พบข้อมูลรายจ่าย'"
+                        />
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- Reusable F5 content (renders a single data dict) -->
+    <template id="report_compilation_f5_content">
+        <div class="report-header">
+            <div class="document-ref">
+                <div>F5-P-วง-003</div>
+            </div>
+
+            <div class="institution-info">
+                <h3 t-out="data.get('source', '')" />
+                <h3>ประมาณการ<t t-out="data.get('type', '')" /> <t
+                        t-out="data.get('fiscal_year', '')"
+                    /></h3>
+                <h3>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
+                <h3 t-out="data.get('department', '').replace(' / ', ' ')" />
+                <div style="margin: 0 auto;">
+                    <table
+                        class="table-borderless"
+                        border="0"
+                        style="margin: 0 auto;"
+                    >
                         <tbody>
-                            <t t-if="data.get('hierarchy')">
-                                <t
-                                    t-call="budget_appropriation_summary.report_compilation_f5_rows"
-                                >
-                                    <t t-set="nodes" t-value="data['hierarchy']" />
-                                    <t t-set="level" t-value="0" />
-                                </t>
-                            </t>
+                            <tr>
+                                <td align="right">วงเงิน</td>
+                                <td align="right">
+                                    <t
+                                        t-out="'{:,}'.format(int(data.get('amount_total', 0)))"
+                                    />
+                                </td>
+                                <td>บาท</td>
+                            </tr>
                         </tbody>
                     </table>
-                </t>
-
-                <t t-if="not data or data.get('error')">
-                    <div class="alert alert-warning">
-                        <t t-out="data.get('error', 'ไม่พบข้อมูลรายจ่าย')" />
-                    </div>
-                </t>
+                </div>
             </div>
-        </t>
+        </div>
+
+        <!-- Main Table -->
+        <table class="report-table table" style="border-spacing:0px 4px;">
+            <thead>
+                <tr>
+                    <th
+                        style="vertical-align: bottom; text-align: left;"
+                        class="items-column"
+                        rowspan="2"
+                    >
+                        <div />
+                    </th>
+                    <th
+                        style="vertical-align: bottom; text-align: right; padding-right: 10px;"
+                        class="code-column"
+                        rowspan="2"
+                    >รหัส</th>
+                    <th
+                        style="padding-bottom: 4px;"
+                        colspan="2"
+                    >แหล่งเงิน (หน่วย : บาท)</th>
+                </tr>
+                <tr>
+                    <th class="amount-column">งบประมาณ</th>
+                    <th class="amount-column">รวมทั้งสิ้น</th>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-if="data.get('hierarchy')">
+                    <t
+                        t-call="budget_appropriation_summary.report_compilation_f5_rows"
+                    >
+                        <t t-set="nodes" t-value="data['hierarchy']" />
+                        <t t-set="level" t-value="0" />
+                    </t>
+                </t>
+            </tbody>
+        </table>
     </template>
 
     <!-- Recursive template for F5 hierarchy rows -->
@@ -173,6 +199,32 @@
     <!-- Styles template -->
     <template id="report_compilation_f5_styles">
         <style>
+            /* A4 paper simulation for screen */
+            @media screen {
+                html, body {
+                    background: #e0e0e0 !important;
+                }
+                .page {
+                    width: 210mm;
+                    min-height: 297mm;
+                    background: white !important;
+                    margin: 20px auto;
+                    padding: 15mm !important;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+                    box-sizing: border-box;
+                }
+            }
+
+            @media print {
+                .page {
+                    margin: 0;
+                    padding: 0 !important;
+                    box-shadow: none;
+                    width: auto;
+                    min-height: auto;
+                }
+            }
+
             .page {
                 padding-top: 0 !important;
                 margin-top: 0 !important;
@@ -181,8 +233,8 @@
             .budget-compilation-f5-report {
                 font-family: 'TH SarabunPSK', 'Sarabun', Arial, sans-serif;
                 font-size: 8pt;
-                margin-left: 24pt;
-                margin-right: 24pt;
+                margin-left: auto;
+                margin-right: auto;
                 margin-top: 0;
                 padding-top: 0;
             }

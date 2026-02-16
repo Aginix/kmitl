@@ -170,33 +170,43 @@ class BudgetAppropriationCompilation(models.Model):
     def _compute_f4_revenue_data(self):
         F4Model = self.env["budget.appropriation.f4.report"]
         for record in self:
-            if record.revenue_appropriation_ids:
-                record.f4_revenue_data = F4Model.get_f4_data(
-                    record.revenue_appropriation_ids.ids,
-                    {
-                        "department_name": record.department_analytic_id.complete_name.replace(
-                            " / ", " "
-                        )
-                    },
-                )
-            else:
+            if not record.revenue_appropriation_ids:
                 record.f4_revenue_data = {}
+                continue
+            dept_name = (record.department_analytic_id.complete_name or "").replace(
+                " / ", " "
+            )
+            overview = F4Model.get_f4_data(
+                record.revenue_appropriation_ids.ids,
+                {"department_name": f"{dept_name} (ภาพรวม)"},
+            )
+            details = []
+            for app in record.revenue_appropriation_ids.sorted(
+                lambda a: a.department_analytic_id.code or ""
+            ):
+                details.append(F4Model.get_f4_data(app.id))
+            record.f4_revenue_data = {"overview": overview, "details": details}
 
     @api.depends("expense_appropriation_ids")
     def _compute_f5_expense_data(self):
         F5Model = self.env["budget.appropriation.f5.report"]
         for record in self:
-            if record.expense_appropriation_ids:
-                record.f5_expense_data = F5Model.get_f5_data(
-                    record.expense_appropriation_ids.ids,
-                    {
-                        "department_name": record.department_analytic_id.complete_name.replace(
-                            " / ", " "
-                        )
-                    },
-                )
-            else:
+            if not record.expense_appropriation_ids:
                 record.f5_expense_data = {}
+                continue
+            dept_name = (record.department_analytic_id.complete_name or "").replace(
+                " / ", " "
+            )
+            overview = F5Model.get_f5_data(
+                record.expense_appropriation_ids.ids,
+                {"department_name": f"{dept_name} (ภาพรวม)"},
+            )
+            details = []
+            for app in record.expense_appropriation_ids.sorted(
+                lambda a: a.department_analytic_id.code or ""
+            ):
+                details.append(F5Model.get_f5_data(app.id))
+            record.f5_expense_data = {"overview": overview, "details": details}
 
     def action_confirm(self):
         self.write({"state": "confirmed"})
