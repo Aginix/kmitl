@@ -3,7 +3,7 @@
     <record id="approval_request_view_form_sarabun" model="ir.ui.view">
         <field name="name">approval.request.form.sarabun</field>
         <field name="model">approval.request</field>
-        <field name="inherit_id" ref="aginix_approval.approval_request_view_form" />
+        <field name="inherit_id" ref="agx_approval.approval_request_view_form" />
         <field name="arch" type="xml">
             <!-- Add button_box before oe_title -->
             <xpath expr="//div[hasclass('oe_title')]" position="before">
@@ -36,7 +36,7 @@
     <record id="approval_request_view_tree_sarabun" model="ir.ui.view">
         <field name="name">approval.request.tree.sarabun</field>
         <field name="model">approval.request</field>
-        <field name="inherit_id" ref="aginix_approval.approval_request_view_tree" />
+        <field name="inherit_id" ref="agx_approval.approval_request_view_tree" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="before">
                 <field name="main_sarabun_document_id" optional="show" />

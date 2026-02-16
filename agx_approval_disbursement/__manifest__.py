@@ -3,7 +3,7 @@
     "version": "16.0.1.0.0",
     "category": "Accounting",
     "author": "KMITL",
-    "depends": ["aginix_approval", "disbursement"],
+    "depends": ["agx_approval", "disbursement"],
     "data": [
         "views/approval_request_views.xml",
         "views/disbursement_request_views.xml",

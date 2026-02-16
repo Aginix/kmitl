@@ -8,7 +8,7 @@
     "website": "https://www.kmitl.ac.th",
     "license": "LGPL-3",
     "depends": [
-        "aginix_approval",
+        "agx_approval",
         "l10n_th_amount_to_text",
         "l10n_th_fonts",
         "thai_date_utils",
@@ -25,7 +25,7 @@
     ],
     "assets": {
         "web.assets_frontend": [
-            "aginix_approval_sarabun/static/src/js/approval_request_sidebar.js",
+            "agx_approval_sarabun/static/src/js/approval_request_sidebar.js",
         ],
     },
     "installable": True,

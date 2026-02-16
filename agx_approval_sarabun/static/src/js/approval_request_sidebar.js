@@ -1,4 +1,4 @@
-odoo.define('aginix_approval_sarabun.ApprovalRequestPortalSidebar', function (require) {
+odoo.define('agx_approval_sarabun.ApprovalRequestPortalSidebar', function (require) {
 'use strict';
 
 const dom = require('web.dom');

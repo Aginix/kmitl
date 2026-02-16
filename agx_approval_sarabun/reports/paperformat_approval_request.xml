@@ -21,7 +21,7 @@
         <field name="name">Approval Request Report</field>
         <field name="model">approval.request</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">aginix_approval_sarabun.report_approval_request_document</field>
+        <field name="report_name">agx_approval_sarabun.report_approval_request_document</field>
         <field name="print_report_name">'Approval Request - %s' % (object.name)</field>
         <field name="paperformat_id" ref="paperformat_approval_request_report"/>
         <field name="binding_model_id" />
@@ -31,7 +31,7 @@
         <field name="name">Approval Request</field>
         <field name="model">approval.request</field>
         <field name="report_type">qweb-html</field>
-        <field name="report_name">aginix_approval_sarabun.report_approval_request_document</field>
+        <field name="report_name">agx_approval_sarabun.report_approval_request_document</field>
         <field name="print_report_name">'Approval Request - %s' % (object.name)</field>
         <field name="paperformat_id" ref="paperformat_approval_request_report"/>
         <field name="binding_model_id" />

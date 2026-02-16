@@ -134,7 +134,7 @@
                         <!-- Budget Details -->
                         <div class="my-4" />
                         <p>รายละเอียดงบประมาณ</p>
-                        <t t-call="aginix_approval_sarabun.report_approval_request_budget" />
+                        <t t-call="agx_approval_sarabun.report_approval_request_budget" />
 
                         <!-- Signature Section -->
                         <div class="my-5" style="height: 10px" />

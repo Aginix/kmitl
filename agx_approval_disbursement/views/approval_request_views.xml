@@ -5,7 +5,7 @@
         <field name="model">approval.request</field>
         <field
             name="inherit_id"
-            ref="aginix_approval.approval_request_view_form"
+            ref="agx_approval.approval_request_view_form"
         />
         <field name="arch" type="xml">
             <xpath expr="//header/button[@name='action_submit']" position="before">
@@ -42,7 +42,7 @@
         <field name="model">approval.request</field>
         <field
             name="inherit_id"
-            ref="aginix_approval.approval_request_view_tree"
+            ref="agx_approval.approval_request_view_tree"
         />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='category_id']" position="after">

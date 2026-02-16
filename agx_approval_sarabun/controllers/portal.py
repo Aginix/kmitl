@@ -70,7 +70,7 @@ class ApprovalRequestPortal(CustomerPortal):
             }
         )
         return request.render(
-            "aginix_approval_sarabun.portal_my_approval_requests", values
+            "agx_approval_sarabun.portal_my_approval_requests", values
         )
 
     @http.route(
@@ -100,7 +100,7 @@ class ApprovalRequestPortal(CustomerPortal):
             return self._show_report(
                 model=approval_request_sudo,
                 report_type=report_type,
-                report_ref="aginix_approval_sarabun.action_report_approval_request",
+                report_ref="agx_approval_sarabun.action_report_approval_request",
                 download=download,
             )
 
@@ -108,7 +108,7 @@ class ApprovalRequestPortal(CustomerPortal):
             approval_request_sudo, access_token, **kw
         )
         return request.render(
-            "aginix_approval_sarabun.portal_approval_request_page", values
+            "agx_approval_sarabun.portal_approval_request_page", values
         )
 
     def _approval_request_get_page_view_values(
@@ -147,7 +147,7 @@ class ApprovalRequestPortal(CustomerPortal):
 
         if report_type == "html":
             report = request.env.ref(
-                "aginix_approval_sarabun.report_approval_request"
+                "agx_approval_sarabun.report_approval_request"
             )
             html = request.env["ir.actions.report"]._render_qweb_html(
                 report.id, [approval_request_sudo.id]
@@ -161,7 +161,7 @@ class ApprovalRequestPortal(CustomerPortal):
             )
         elif report_type == "pdf":
             report = request.env.ref(
-                "aginix_approval_sarabun.report_approval_request"
+                "agx_approval_sarabun.report_approval_request"
             )
             pdf_content, _ = request.env["ir.actions.report"]._render_qweb_pdf(
                 report.id, [approval_request_sudo.id]
