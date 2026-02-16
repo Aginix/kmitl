@@ -38,8 +38,8 @@
         <field name="model">account.expense.request.compensation.type</field>
         <field name="arch" type="xml">
             <search string="Expense Compensation Type">
-                <field name="code" string="Code" filter_domain="['|', ('name', 'ilike', self), ('ref', 'ilike', self)]" />
-                <field name="name" string="Name" filter_domain="['|', ('name', 'ilike', self), ('ref', 'ilike', self)]" />
+                <field name="code" string="Code" filter_domain="[('code', 'ilike', self)]" />
+                <field name="name" string="Name" filter_domain="[('name', 'ilike', self)]" />
             </search>
         </field>
     </record>

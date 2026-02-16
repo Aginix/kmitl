@@ -84,7 +84,7 @@
         <field name="model">account.expense.request.compensation</field>
         <field name="arch" type="xml">
             <search string="Expense Compensation">
-                <field name="name" string="Name" filter_domain="['|', ('name', 'ilike', self), ('ref', 'ilike', self)]" />
+                <field name="name" string="Name" filter_domain="[('name', 'ilike', self)]" />
                 <field name="requester_id" />
                 <separator />
                 <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]" />

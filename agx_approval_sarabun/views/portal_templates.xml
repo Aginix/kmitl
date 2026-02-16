@@ -97,7 +97,7 @@
                                     </div>
                                 </div>
                             </li>
-                            <li t-if="approval_request.request_owner_id" class="list-group-item flex-grow-1">
+                            <li t-if="approval_request.owner_id" class="list-group-item flex-grow-1">
                                 <div class="small mb-1">
                                     <strong class="text-muted">
                                         Request Owner
@@ -105,10 +105,10 @@
                                 </div>
                                 <div class="row">
                                     <div class="col flex-grow-0 pe-2">
-                                        <img class="rounded-circle mt-1 o_portal_contact_img" t-att-src="image_data_uri(approval_request.request_owner_id.avatar_128)" alt="Contact"/>
+                                        <img class="rounded-circle mt-1 o_portal_contact_img" t-att-src="image_data_uri(approval_request.owner_id.avatar_128)" alt="Contact"/>
                                     </div>
                                     <div class="col ps-0">
-                                        <span t-field="approval_request.request_owner_id" t-options='{"widget": "contact", "fields": ["name", "phone"], "no_marker": True}'/>
+                                        <span t-field="approval_request.owner_id" t-options='{"widget": "contact", "fields": ["name", "phone"], "no_marker": True}'/>
                                         <a href="#discussion" class="small">
                                             <i class="fa fa-fw fa-comments"/>
                                             <b>Send message</b>

@@ -13,7 +13,9 @@ class ApprovalRequestPortal(CustomerPortal):
         values = super()._prepare_home_portal_values(counters)
         if "approval_request_count" in counters:
             approval_request_count = (
-                request.env["approval.request"].search_count([])
+                request.env["approval.request"].search_count(
+                    [("owner_id", "=", request.env.user.id)]
+                )
                 if request.env["approval.request"].check_access_rights(
                     "read", raise_exception=False
                 )
@@ -33,7 +35,7 @@ class ApprovalRequestPortal(CustomerPortal):
         values = self._prepare_portal_layout_values()
         ApprovalRequest = request.env["approval.request"]
 
-        domain = []
+        domain = [("owner_id", "=", request.env.user.id)]
 
         # Sorting
         searchbar_sortings = {

@@ -303,9 +303,9 @@ class ApprovalRequest(models.Model):
 
     def action_cancel(self):
         for record in self:
-            if record.state == "cancel":
+            if record.state == "cancelled":
                 raise UserError(_("Request is already cancelled."))
-            record.state = "cancel"
+            record.state = "cancelled"
         return True
 
     def action_draft(self):

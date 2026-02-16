@@ -42,8 +42,10 @@ class ApprovalRequest(models.Model):
                 record.billing_status = "no"
             elif all(d.state == "validated" for d in disbursements):
                 record.billing_status = "full"
-            else:
+            elif any(d.state == "validated" for d in disbursements):
                 record.billing_status = "partial"
+            else:
+                record.billing_status = "no"
 
     def _prepare_disbursement_request_vals(self, partner, lines):
         return {
