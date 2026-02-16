@@ -30,6 +30,17 @@
                             <field name="is_matched" invisible="1" />
                         </group>
                     </group>
+                    <group string="มิติทางบัญชี">
+                        <group>
+                            <field name="activity_analytic_id" />
+                            <field name="department_analytic_id" />
+                        </group>
+                        <group>
+                            <field name="fund_analytic_id" />
+                            <field name="source_analytic_id" />
+                        </group>
+                        <field name="analytic_distribution" invisible="1" />
+                    </group>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" />

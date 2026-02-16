@@ -34,6 +34,41 @@ class BudgetProject(models.Model):
         tracking=True,
     )
     analytic_distribution = fields.Json(string="Analytic Distribution")
+
+    # Analytic dimension fields for UI (computed from analytic_distribution)
+    activity_analytic_id = fields.Many2one(
+        comodel_name="account.analytic.account",
+        string="กิจกรรม",
+        compute="_compute_analytic_ids",
+        inverse="_inverse_activity_analytic_id",
+        store=False,
+        domain=[("root_plan_id.code", "=", "activities")],
+    )
+    department_analytic_id = fields.Many2one(
+        comodel_name="account.analytic.account",
+        string="ส่วนงาน",
+        compute="_compute_analytic_ids",
+        inverse="_inverse_department_analytic_id",
+        store=False,
+        domain=[("root_plan_id.code", "=", "departments")],
+    )
+    fund_analytic_id = fields.Many2one(
+        comodel_name="account.analytic.account",
+        string="กองทุน",
+        compute="_compute_analytic_ids",
+        inverse="_inverse_fund_analytic_id",
+        store=False,
+        domain=[("root_plan_id.code", "=", "funds")],
+    )
+    source_analytic_id = fields.Many2one(
+        comodel_name="account.analytic.account",
+        string="แหล่งเงิน",
+        compute="_compute_analytic_ids",
+        inverse="_inverse_source_analytic_id",
+        store=False,
+        domain=[("root_plan_id.code", "=", "sources")],
+    )
+
     project_type = fields.Selection(
         [("project", "Project/Activity"), ("strategic_project", "Strategic Project")],
         tracking=True,
@@ -69,6 +104,50 @@ class BudgetProject(models.Model):
     def _compute_is_matched(self):
         for rec in self:
             rec.is_matched = bool(rec.kmitl_project_id)
+
+    @api.depends("analytic_distribution")
+    def _compute_analytic_ids(self):
+        """Compute analytic_id fields from analytic_distribution JSON."""
+        for rec in self:
+            account_ids = [int(account_id) for account_id in rec.analytic_distribution or {}]
+            accounts = self.env["account.analytic.account"].browse(account_ids)
+            rec.activity_analytic_id = accounts.filtered(lambda a: a.root_plan_id.code == "activities")[:1]
+            rec.department_analytic_id = accounts.filtered(lambda a: a.root_plan_id.code == "departments")[:1]
+            rec.fund_analytic_id = accounts.filtered(lambda a: a.root_plan_id.code == "funds")[:1]
+            rec.source_analytic_id = accounts.filtered(lambda a: a.root_plan_id.code == "sources")[:1]
+
+    def _update_analytic_distribution(self, plan_code, analytic_id):
+        """Update analytic_distribution JSON when individual field changes."""
+        self.ensure_one()
+        distribution = dict(self.analytic_distribution or {})
+
+        # Remove old account for this plan
+        account_ids = [int(aid) for aid in distribution.keys()]
+        accounts = self.env["account.analytic.account"].browse(account_ids)
+        for account in accounts.filtered(lambda a: a.root_plan_id.code == plan_code):
+            del distribution[str(account.id)]
+
+        # Add new account
+        if analytic_id:
+            distribution[str(analytic_id.id)] = 100
+
+        self.analytic_distribution = distribution if distribution else False
+
+    def _inverse_activity_analytic_id(self):
+        for rec in self:
+            rec._update_analytic_distribution("activities", rec.activity_analytic_id)
+
+    def _inverse_department_analytic_id(self):
+        for rec in self:
+            rec._update_analytic_distribution("departments", rec.department_analytic_id)
+
+    def _inverse_fund_analytic_id(self):
+        for rec in self:
+            rec._update_analytic_distribution("funds", rec.fund_analytic_id)
+
+    def _inverse_source_analytic_id(self):
+        for rec in self:
+            rec._update_analytic_distribution("sources", rec.source_analytic_id)
 
     def write(self, vals):
         res = super().write(vals)
