@@ -21,7 +21,7 @@
                     attrs="{
                         'invisible': [
                             '|','|',
-                            ('wa_count', '&gt;', 0),
+                            ('wa_count', '&lt;', 0),
                             ('use_purchase_order', '=', True),
                             ('state', '!=', 'approved')
                         ]

@@ -34,7 +34,7 @@ class PurchaseRequestApproval(models.Model):
             "default_currency_id": self.currency_id.id,
             "default_date_due": self.approval_date,
             "default_work_acceptance_committee_ids" : lines,
-            "default_wa_tier_validation": False,
+            "default_wa_tier_validation": True,
             "default_wa_line_ids": [
                 Command.create(
                     {
