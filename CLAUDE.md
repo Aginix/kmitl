@@ -213,6 +213,46 @@ domain=[("root_plan_id.code", "=", "procurement_plan")] # แผนจัดซ�
 - Use proper state management and validation in models
 - When working with analytic dimensions, always use the provided mixins and domain filters
 
+### Writing Tests
+
+Tests live in `module_name/tests/` with `__init__.py` importing test modules.
+
+**Testing abstract models / mixins:**
+Abstract models have no database table. To test them, define a `TransientModel` in the test file and register it dynamically in `setUpClass`:
+
+```python
+from odoo import fields, models
+from odoo.tests.common import TransactionCase, tagged
+
+class MyTestModel(models.TransientModel):
+    _name = "test.my.mixin"
+    _description = "Test Model"
+    _inherit = "analytic.mixin"  # the mixin under test
+
+    name = fields.Char()
+    # ... add fields that exercise the mixin ...
+
+@tagged("post_install", "-at_install")
+class TestMyMixin(TransactionCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # Register the test model so it gets a table
+        MyTestModel._build_model(cls.registry, cls.cr)
+        cls.registry.setup_models(cls.cr)
+        cls.registry.init_models(
+            cls.cr, ["test.my.mixin"], {"module": "my_module"}
+        )
+        cls.Model = cls.env["test.my.mixin"]
+```
+
+**Key points:**
+- Use `@tagged("post_install", "-at_install")` so all dependencies are installed
+- `_build_model` → registers the model class in the registry
+- `setup_models` → wires up fields, computes, inverses
+- `init_models` → creates the database table
+- Use `TransientModel` to avoid polluting the real schema
+
 ## Git Commit Guidelines
 
 When committing changes, do NOT include:
