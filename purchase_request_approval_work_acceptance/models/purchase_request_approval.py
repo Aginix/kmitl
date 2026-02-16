@@ -11,7 +11,7 @@ class PurchaseRequestApproval(models.Model):
     _inherit = 'purchase.request.approval'
 
     wa_count = fields.Integer(compute="_compute_wa_ids", string="WA count", default=0)
-    wa_ids = fields.One2many(comodel_name="work.acceptance",compute="_compute_wa_ids",string="Work Acceptances")
+    wa_ids = fields.One2many(comodel_name="work.acceptance", inverse_name="approval_id", string="Work Acceptances")
     wa_line_ids = fields.One2many(comodel_name="work.acceptance.line",inverse_name="approval_line_id",string="WA Lines", readonly=True)
     wa_accepted = fields.Boolean(string="WA Accepted",compute="_compute_wa_accepted",search="_search_wa_accepted")
 
