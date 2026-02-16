@@ -49,10 +49,6 @@ class BudgetProject(models.Model):
         required=True,
         default=lambda self: self.env.company,
     )
-    analytic_precision = fields.Integer(
-        default=2,
-        readonly=True,
-    )
     kmitl_project_id = fields.Many2one(
         comodel_name="kmitl.project",
         string="โครงการ/กิจกรรม",
