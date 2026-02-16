@@ -65,6 +65,7 @@ class BudgetAppropriationSummaryController(http.Controller):
         report_map = {
             "f4": "budget_appropriation_summary.action_report_compilation_f4",
             "f5": "budget_appropriation_summary.action_report_compilation_f5",
+            "f23w": "budget_appropriation_summary.action_report_compilation_f23w",
         }
 
         report_ref = report_map.get(report_name)

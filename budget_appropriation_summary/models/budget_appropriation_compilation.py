@@ -130,6 +130,118 @@ class BudgetAppropriationCompilation(models.Model):
         store=False,
     )
 
+    use_f23 = fields.Boolean(
+        string="ใช้รายงาน F23",
+        help="ถ้าเลือก จะแสดงแบบฟอร์มรายงาน F23 ให้ผู้ใช้กรอกข้อมูลเพิ่มเติม",
+        states=READONLY_STATES,
+        readonly=False,
+    )
+
+    treasury_replenishment_amount = fields.Monetary(
+        string="ชดใช้เงินคงคลัง",
+        currency_field="currency_id",
+        readonly=True,
+        compute="_compute_totals",
+    )
+
+    deducted_reserve_amount = fields.Monetary(
+        string="หักเงินสำรอง",
+        currency_field="currency_id",
+        readonly=True,
+        compute="_compute_totals",
+    )
+
+    maintenance_amount = fields.Monetary(
+        string="ค่าดูแลและบำรุงรักษา",
+        currency_field="currency_id",
+        readonly=True,
+        compute="_compute_totals",
+    )
+
+    capital_budget_amount = fields.Monetary(
+        string="งบลงทุน",
+        currency_field="currency_id",
+        readonly=True,
+        compute="_compute_totals",
+    )
+
+    recurrent_budget_amount = fields.Monetary(
+        string="งบประจำ",
+        currency_field="currency_id",
+        readonly=True,
+        compute="_compute_totals",
+    )
+
+    external_funding_amount = fields.Monetary(
+        string="เงินสนับสนุนจากหน่วยงานภายนอก",
+        currency_field="currency_id",
+        readonly=True,
+        compute="_compute_totals",
+    )
+
+    revenue_net = fields.Monetary(
+        string="รายรับรวมหลังหักโอน",
+        currency_field="currency_id",
+        readonly=True,
+        compute="_compute_totals",
+    )
+
+    fixed_expense_total = fields.Monetary(
+        string="รายจ่ายคงที่",
+        currency_field="currency_id",
+        readonly=True,
+        compute="_compute_totals",
+    )
+
+    fixed_expense_percentage = fields.Monetary(
+        string="รายจ่ายคงที่ (ร้อยละ)",
+        currency_field="currency_id",
+        readonly=True,
+        compute="_compute_totals",
+    )
+
+    @api.depends(
+        "revenue_appropriation_ids.treasury_replenishment_amount",
+        "revenue_appropriation_ids.deducted_reserve_amount",
+        "revenue_appropriation_ids.maintenance_amount",
+        "revenue_appropriation_ids.capital_budget_amount",
+        "revenue_appropriation_ids.recurrent_budget_amount",
+        "revenue_appropriation_ids.external_funding_amount",
+        "revenue_appropriation_ids.revenue_net",
+    )
+    def _compute_totals(self):
+        for record in self:
+            record.treasury_replenishment_amount = sum(
+                record.expense_appropriation_ids.mapped("treasury_replenishment_amount")
+            )
+            record.deducted_reserve_amount = sum(
+                record.expense_appropriation_ids.mapped("deducted_reserve_amount")
+            )
+            record.maintenance_amount = sum(
+                record.expense_appropriation_ids.mapped("maintenance_amount")
+            )
+            record.capital_budget_amount = sum(
+                record.expense_appropriation_ids.mapped("capital_budget_amount")
+            )
+            record.recurrent_budget_amount = sum(
+                record.expense_appropriation_ids.mapped("recurrent_budget_amount")
+            )
+            record.external_funding_amount = sum(
+                record.expense_appropriation_ids.mapped("external_funding_amount")
+            )
+            record.revenue_net = sum(
+                record.revenue_appropriation_ids.mapped("amount_net")
+            )
+            record.fixed_expense_total = record.revenue_net - (
+                record.treasury_replenishment_amount
+                + record.deducted_reserve_amount
+                + record.maintenance_amount
+                + record.capital_budget_amount
+                + record.recurrent_budget_amount
+                + record.external_funding_amount
+            )
+            record.fixed_expense_percentage = (record.fixed_expense_total * 100) / record.revenue_net
+
     @api.depends(
         "department_analytic_id",
         "source_analytic_id",
@@ -252,3 +364,12 @@ class BudgetAppropriationCompilation(models.Model):
         return self.env.ref(
             "budget_appropriation_summary.action_report_compilation_f5"
         ).report_action(self)
+
+    def action_open_f23w_report(self):
+        """Open F23W report in a new browser tab as HTML."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "url": f"/budget_appropriation_summary/compilation/{self.id}/f23w/html",
+            "target": "new",
+        }

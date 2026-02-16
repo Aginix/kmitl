@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Paper Format -->
+    <record id="paperformat_compilation_f23w" model="report.paperformat">
+        <field name="name">Budget Compilation F23W Portrait</field>
+        <field name="default" eval="False" />
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">8</field>
+        <field name="margin_bottom">8</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <!-- Report Action -->
+    <record id="action_report_compilation_f23w" model="ir.actions.report">
+        <field name="name">รายงาน F23W (รวมเล่ม)</field>
+        <field name="model">budget.appropriation.compilation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field
+            name="report_name"
+        >budget_appropriation_summary.report_compilation_f23w</field>
+        <field
+            name="report_file"
+        >budget_appropriation_summary.report_compilation_f23w</field>
+        <field name="paperformat_id" ref="paperformat_compilation_f23w" />
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- F23W Document Template -->
+    <template id="report_compilation_f23w_document">
+        <t t-call="web.basic_layout">
+            <t t-call="budget_appropriation_summary.report_compilation_f23w_styles" />
+
+            <div class="page budget-compilation-f23w-report">
+                <div class="report-header">
+                    <h4>สรุปงบประมาณรายจ่าย</h4>
+                    <h4>ประจำปีงบประมาณ พ.ศ. <t t-out="o.account_fiscal_year_id.name" /></h4>
+                    <h4>
+                        <t t-out="o.department_analytic_id.name" />
+                    </h4>
+                </div>
+                <div class="report-body">
+                    <table class="table table-borderless">
+                        <thead>
+                            <tr>
+                                <th colspan="4">
+                                    <t t-out="o.department_analytic_id.name" /> มีรายได้ทุกประเภทรวมกัน (หลังจากหัก 35% แล้ว)
+                                </th>
+                                <th class="text-end" style="width: 120pt;">
+                                    <t t-out="'{:,.2f}'.format(o.revenue_net)" /> บาท
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fw-bold">
+                                <td colspan="5">
+                                    (1) การจัดสรรตามประกาศสถาบันฯ
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    1. หักสำรองจ่าย
+                                </td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    2. ชดใช้เงินคงคลัง (ถ้ามี)
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="'{:,.2f}'.format(o.treasury_replenishment_amount)" /> บาท
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    3. ค่าดูแลและบำรุงรักษา <br />
+                                    (Preventive Maintenance บำรุงรักษาเชิงป้องกัน)
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="'{:,.2f}'.format(o.maintenance_amount)" /> บาท
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    4. งบลงทุน
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="'{:,.2f}'.format(o.capital_budget_amount)" /> บาท
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    5. งบประจำ
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="'{:,.2f}'.format(o.recurrent_budget_amount)" /> บาท
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    6. เงินสนับสนุนจากหน่วยงานภายนอก
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="'{:,.2f}'.format(o.external_funding_amount)" /> บาท
+                                </td>
+                            </tr>
+                            <tr class="fw-bold">
+                                <td>รวมประมาณการรายจ่ายคงที่</td>
+                                <td class="text-center">ร้อยละ</td>
+                                <td class="text-center">
+                                    <t t-out="'{:,.2f}'.format(o.fixed_expense_percentage)" />
+                                </td>
+                                <td />
+                                <td class="text-end" style="border-bottom: 3px double #000; border-top: 1px solid #000;">
+                                    <t t-out="'{:,.2f}'.format(o.fixed_expense_total)" /> บาท
+                                </td>
+                            </tr>
+                            <!--  -->
+                            <tr class="fw-bold">
+                                <td style="padding-top: 12pt;">
+                                    (2) การจัดสรรด้านต่าง ๆ ดังนี้
+                                </td>
+                                <td style="padding-top: 12pt;" class="text-center">
+                                    ร้อยละ
+                                </td>
+                                <td style="padding-top: 12pt;" class="text-center">
+                                    <t t-out="'{:,.2f}'.format(55.39)" />
+                                </td>
+                                <td style="padding-top: 12pt;" />
+                                <td style="padding-top: 12pt;" class="text-end" >
+                                    <t t-out="'{:,.2f}'.format(1234)" /> บาท
+                                </td>
+                            </tr>
+                            <tr>
+                                <td />
+                                <td class="text-center">
+                                    จุดเน้น
+                                </td>
+                                <td class="text-center">
+                                    จัดสรรโครงการ OKR
+                                </td>
+                                <td class="text-center">
+                                    ค่าใช้จ่ายบริหาร
+                                </td>
+                                <td />
+                            </tr>
+                            <tr>
+                                <td>
+                                    1) ด้านการศึกษา (Education)
+                                </td>
+                                <td class="text-center">
+                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
+                                </td>
+                                <td class="text-center">
+                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
+                                </td>
+                                <td class="text-center">
+                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="'{:,.2f}'.format(1234)" /> บาท
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    2) ด้านการวิจัย (Academic)
+                                </td>
+                                <td class="text-center">
+                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
+                                </td>
+                                <td class="text-center">
+                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
+                                </td>
+                                <td class="text-center">
+                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="'{:,.2f}'.format(1234)" /> บาท
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    3) ด้านตอบโจทย์ภาคอุตสาหกรรม (Industrial)
+                                </td>
+                                <td class="text-center">
+                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
+                                </td>
+                                <td class="text-center">
+                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
+                                </td>
+                                <td class="text-center">
+                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="'{:,.2f}'.format(1234)" /> บาท
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    4) ด้านสังคม (Social)
+                                </td>
+                                <td class="text-center">
+                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
+                                </td>
+                                <td class="text-center">
+                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
+                                </td>
+                                <td class="text-center">
+                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="'{:,.2f}'.format(1234)" /> บาท
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"></td>
+                                <td class="text-center">
+                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
+                                </td>
+                                <td class="text-center">
+                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
+                                </td>
+                                <td class="text-end">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    รวมจัดสรรทุกด้านร้อยละ 100
+                                </td>
+                                <td class="text-center">
+                                    <t t-out="'{:,.2f}'.format(1234)" />
+                                </td>
+                                <td class="text-center">
+                                    <t t-out="'{:,.2f}'.format(1234)" />
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="'{:,.2f}'.format(1234)" /> บาท
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    รวมประมาณการรายจ่ายทั้งสิ้น (1)+(2)
+                                </td>
+                                <td colspan="4" class="text-end">
+                                    <t t-out="'{:,.2f}'.format(1234)" /> บาท
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Styles template -->
+    <template id="report_compilation_f23w_styles">
+        <t
+            t-set="is_html_preview"
+            t-value="o.env.context.get('html_preview', False)"
+        />
+        <t t-if="is_html_preview">
+            <style>
+                html, body {
+                    background: #e0e0e0 !important;
+                }
+                .page {
+                    width: 210mm;
+                    min-height: 297mm;
+                    background: white !important;
+                    margin: 20px auto;
+                    padding: 15mm !important;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+                    box-sizing: border-box;
+                }
+            </style>
+        </t>
+        <style>
+            .page {
+                page-break-after: always;
+            }
+            .page:last-child {
+                page-break-after: auto;
+            }
+
+            .budget-compilation-f23w-report {
+                font-family: 'TH SarabunPSK', 'Sarabun', Arial, sans-serif;
+                font-size: 10pt;
+            }
+
+            .budget-compilation-f23w-report h3 {
+                margin: 0;
+                font-size: 14pt;
+                font-weight: 600;
+            }
+
+            .budget-compilation-f23w-report h4 {
+                margin: 0;
+                font-size: 12pt;
+                font-weight: normal;
+            }
+
+            .report-header {
+                text-align: center;
+                padding: 5px 0;
+                margin-bottom: 20px;
+            }
+        </style>
+    </template>
+
+    <!-- Main report template -->
+    <template id="report_compilation_f23w">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t
+                    t-call="budget_appropriation_summary.report_compilation_f23w_document"
+                />
+            </t>
+        </t>
+    </template>
+
+</odoo>

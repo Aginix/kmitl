@@ -68,6 +68,13 @@
                             icon="fa-print"
                             attrs="{'invisible': [('expense_appropriation_ids', '=', [])]}"
                         />
+                        <button
+                            name="action_open_f23w_report"
+                            string="ดูรายงาน F23"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-file-text-o"
+                        />
                     </div>
                     <group>
                         <group>
@@ -107,7 +114,9 @@
                                     <field name="date" invisible="1" />
                                     <field name="department_analytic_id" />
                                     <field name="source_analytic_id" invisible="1" />
-                                    <field name="amount_net" sum="รวม" />
+                                    <field name="amount_total" sum="รายรับรวม" />
+                                    <field name="amount_deduct" sum="หัก" />
+                                    <field name="amount_net" sum="รายรับสุทธิ" />
                                     <field name="state" invisible="1" />
                                 </tree>
                             </field>
