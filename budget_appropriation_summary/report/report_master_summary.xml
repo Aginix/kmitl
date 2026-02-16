@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Combined report that includes all sub-reports via t-call -->
+    <template id="report_master_summary">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
+                    <t t-call="budget_appropriation_summary.report_common_styles" />
+
+                    <!-- F2 Report - สรุปเปรียบเทียบประมาณการรายรับจําแนกตามประเภท -->
+                    <t t-call="budget_appropriation_summary.report_f2_revenue_content" />
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_master_summary" model="ir.actions.report">
+        <field name="name">รายงานรวมทั้งหมด</field>
+        <field name="model">budget.appropriation.master.summary</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_appropriation_summary.report_master_summary</field>
+        <field name="report_file">budget_appropriation_summary.report_master_summary</field>
+        <field name="paperformat_id" ref="paperformat_portrait" />
+    </record>
+</odoo>

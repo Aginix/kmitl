@@ -1,4 +1,5 @@
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class BudgetAppropriationMasterSummary(models.Model):
@@ -36,12 +37,45 @@ class BudgetAppropriationMasterSummary(models.Model):
         readonly=False,
         states=READONLY_STATES,
     )
+    compare_summary_id = fields.Many2one(
+        comodel_name="budget.appropriation.master.summary",
+        string="สรุปเปรียบเทียบ",
+        help="สำหรับเปรียบเทียบกับสรุปภาพรวมปีก่อน",
+        tracking=True,
+        readonly=False,
+        states=READONLY_STATES,
+    )
+    council_meeting_no = fields.Char(
+        string="ครั้งที่ประชุม",
+        help="เช่น 9/2567",
+        tracking=True,
+        readonly=False,
+        states=READONLY_STATES,
+    )
+    council_meeting_date = fields.Date(
+        string="วันที่มติ",
+        tracking=True,
+        readonly=False,
+        states=READONLY_STATES,
+    )
     compilation_ids = fields.One2many(
         comodel_name="budget.appropriation.compilation",
         inverse_name="master_summary_id",
         string="รวมเล่มหน่วยงาน",
         readonly=False,
         states=READONLY_STATES,
+    )
+    revenue_appropriation_ids = fields.Many2many(
+        comodel_name="budget.appropriation",
+        string="ประมาณการรายรับทั้งหมด",
+        compute="_compute_all_appropriation_ids",
+        store=False,
+    )
+    expense_appropriation_ids = fields.Many2many(
+        comodel_name="budget.appropriation",
+        string="ประมาณการรายจ่ายทั้งหมด",
+        compute="_compute_all_appropriation_ids",
+        store=False,
     )
     amount_revenue_total = fields.Monetary(
         string="รายรับรวมทั้งสถาบัน",
@@ -81,6 +115,11 @@ class BudgetAppropriationMasterSummary(models.Model):
         string="หมายเหตุ",
         readonly=False,
     )
+    f2_revenue_data = fields.Json(
+        string="F2 Revenue Data",
+        compute="_compute_f2_revenue_data",
+        store=False,
+    )
 
     @api.depends("source_analytic_id", "account_fiscal_year_id")
     def _compute_name(self):
@@ -89,6 +128,28 @@ class BudgetAppropriationMasterSummary(models.Model):
                 record.source_analytic_id.name or "",
                 record.account_fiscal_year_id.name or "",
             )
+
+    @api.constrains("compare_summary_id")
+    def _check_compare_summary_id(self):
+        for record in self:
+            if record.compare_summary_id and record.compare_summary_id.id == record.id:
+                raise ValidationError(
+                    _("ไม่สามารถเลือกสรุปภาพรวมตัวเองเป็นรายงานเปรียบเทียบได้")
+                )
+
+    @api.depends(
+        "compilation_ids.revenue_appropriation_ids",
+        "compilation_ids.expense_appropriation_ids",
+    )
+    def _compute_all_appropriation_ids(self):
+        for record in self:
+            revenue = self.env["budget.appropriation"]
+            expense = self.env["budget.appropriation"]
+            for compilation in record.compilation_ids:
+                revenue |= compilation.revenue_appropriation_ids
+                expense |= compilation.expense_appropriation_ids
+            record.revenue_appropriation_ids = revenue
+            record.expense_appropriation_ids = expense
 
     @api.depends(
         "compilation_ids.amount_revenue_total",
@@ -103,6 +164,12 @@ class BudgetAppropriationMasterSummary(models.Model):
                 record.compilation_ids.mapped("amount_expense_total")
             )
 
+    @api.depends("revenue_appropriation_ids", "compare_summary_id")
+    def _compute_f2_revenue_data(self):
+        F2Model = self.env["budget.appropriation.summary.f2.revenue"]
+        for record in self:
+            record.f2_revenue_data = F2Model.get_data(record.id)
+
     def action_confirm(self):
         self.write({"state": "confirmed"})
 
@@ -111,3 +178,18 @@ class BudgetAppropriationMasterSummary(models.Model):
 
     def action_draft(self):
         self.write({"state": "draft"})
+
+    def action_open_report(self):
+        """Open the report in a new browser tab as HTML."""
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "url": f"/budget_appropriation_summary/{self.id}/html",
+            "target": "new",
+        }
+
+    def action_print_report(self):
+        self.ensure_one()
+        return self.env.ref(
+            "budget_appropriation_summary.action_report_master_summary"
+        ).report_action(self)
