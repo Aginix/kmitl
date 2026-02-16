@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 class WorkAcceptance(models.Model):
     _inherit = 'work.acceptance'
 
-    approval_id = fields.Many2one('purchase.request.approval', string='Purchase Request Approval', readonly=True)
+    approval_id = fields.Many2one('purchase.request.approval', string='Purchase Request Approval', ondelete="set null", index=True)
     approval_count = fields.Integer(string='Approval Count', compute='_compute_approval_count')
 
     def _compute_approval_count(self):
