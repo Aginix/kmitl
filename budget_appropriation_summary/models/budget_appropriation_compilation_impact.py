@@ -21,7 +21,7 @@ class BudgetAppropriationCompilationImpact(models.Model):
     impact_type = fields.Selection(
         selection=[
             ('education', 'ด้านการศึกษา (Education)'),
-            ('academic', 'ด้านวการวิจัย (Academic)'),
+            ('academic', 'ด้านการวิจัย (Academic)'),
             ('industrial', 'ด้านอุตสาหกรรม (Industrial)'),
             ('social', 'ด้านสังคม (Social)'),
         ],
@@ -37,7 +37,17 @@ class BudgetAppropriationCompilationImpact(models.Model):
     amount = fields.Monetary(
         string='จำนวนเงิน',
         currency_field='currency_id',
-        required=True,
+        required=False,
+    )
+    management_amount = fields.Monetary(
+        string='ค่าใช้จ่ายบริหาร',
+        currency_field='currency_id',
+        required=False,
+    )
+    project_okr_amount = fields.Monetary(
+        string='จัดสรรโครงการ OKR',
+        currency_field='currency_id',
+        required=False,
     )
     currency_id = fields.Many2one(
         comodel_name='res.currency',
@@ -52,10 +62,10 @@ class BudgetAppropriationCompilationImpact(models.Model):
         required=True,
     )
 
-    @api.constrains('amount')
+    @api.constrains('management_amount', 'project_okr_amount')
     def _check_amount_positive(self):
         for record in self:
-            if record.amount <= 0:
+            if record.amount < 0:
                 raise ValidationError(_('จำนวนเงินต้องเป็นค่าบวกเท่านั้น'))
 
     def action_delete(self):

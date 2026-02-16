@@ -118,7 +118,23 @@
                                     <t t-out="'{:,.2f}'.format(o.fixed_expense_total)" /> บาท
                                 </td>
                             </tr>
-                            <!--  -->
+                            <!-- Compute impact data for all 4 types -->
+                            <t t-set="impact_types" t-value="[
+                                ('education', '1) ด้านการศึกษา (Education)'),
+                                ('academic', '2) ด้านการวิจัย (Academic)'),
+                                ('industrial', '3) ด้านตอบโจทย์ภาคอุตสาหกรรม (Industrial)'),
+                                ('social', '4) ด้านสังคม (Social)'),
+                            ]" />
+                            <t t-set="edu_data" t-value="o.get_impact_line_hierarchy('education')" />
+                            <t t-set="acad_data" t-value="o.get_impact_line_hierarchy('academic')" />
+                            <t t-set="ind_data" t-value="o.get_impact_line_hierarchy('industrial')" />
+                            <t t-set="soc_data" t-value="o.get_impact_line_hierarchy('social')" />
+                            <t t-set="all_impacts" t-value="[edu_data, acad_data, ind_data, soc_data]" />
+                            <t t-set="grand_okr" t-value="sum(d.get('total_project_okr', 0) for d in all_impacts)" />
+                            <t t-set="grand_mgmt" t-value="sum(d.get('total_management', 0) for d in all_impacts)" />
+                            <t t-set="grand_total" t-value="grand_okr + grand_mgmt" />
+                            <t t-set="variable_pct" t-value="(grand_total * 100 / o.revenue_net) if o.revenue_net else 0" />
+
                             <tr class="fw-bold">
                                 <td style="padding-top: 12pt;">
                                     (2) การจัดสรรด้านต่าง ๆ ดังนี้
@@ -127,125 +143,111 @@
                                     ร้อยละ
                                 </td>
                                 <td style="padding-top: 12pt;" class="text-center">
-                                    <t t-out="'{:,.2f}'.format(55.39)" />
+                                    <t t-out="'{:,.2f}'.format(variable_pct)" />
                                 </td>
                                 <td style="padding-top: 12pt;" />
-                                <td style="padding-top: 12pt;" class="text-end" >
-                                    <t t-out="'{:,.2f}'.format(1234)" /> บาท
+                                <td style="padding-top: 12pt;" class="text-end">
+                                    <t t-out="'{:,.2f}'.format(grand_total)" /> บาท
                                 </td>
                             </tr>
                             <tr>
                                 <td />
-                                <td class="text-center">
-                                    จุดเน้น
-                                </td>
-                                <td class="text-center">
-                                    จัดสรรโครงการ OKR
-                                </td>
-                                <td class="text-center">
-                                    ค่าใช้จ่ายบริหาร
-                                </td>
+                                <td class="text-center">จุดเน้น</td>
+                                <td class="text-center">จัดสรรโครงการ OKR</td>
+                                <td class="text-center">ค่าใช้จ่ายบริหาร</td>
                                 <td />
                             </tr>
+
+                            <!-- Impact type summary rows -->
+                            <t t-foreach="[('education', '1) ด้านการศึกษา (Education)', edu_data),
+                                           ('academic', '2) ด้านการวิจัย (Academic)', acad_data),
+                                           ('industrial', '3) ด้านตอบโจทย์ภาคอุตสาหกรรม (Industrial)', ind_data),
+                                           ('social', '4) ด้านสังคม (Social)', soc_data)]"
+                                t-as="impact">
+                                <t t-set="itype" t-value="impact[0]" />
+                                <t t-set="ilabel" t-value="impact[1]" />
+                                <t t-set="idata" t-value="impact[2]" />
+                                <t t-set="i_okr" t-value="idata.get('total_project_okr', 0)" />
+                                <t t-set="i_mgmt" t-value="idata.get('total_management', 0)" />
+                                <t t-set="i_total" t-value="i_okr + i_mgmt" />
+                                <t t-set="i_pct" t-value="(i_total * 100 / grand_total) if grand_total else 0" />
+                                <t t-set="i_okr_pct" t-value="(i_okr * 100 / grand_total) if grand_total else 0" />
+                                <t t-set="i_mgmt_pct" t-value="(i_mgmt * 100 / grand_total) if grand_total else 0" />
+                                <tr>
+                                    <td><t t-out="ilabel" /></td>
+                                    <td class="text-center">
+                                        ร้อยละ <t t-out="'{:,.2f}'.format(i_pct)" />
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-out="'{:,.2f}'.format(i_okr)" />
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-out="'{:,.2f}'.format(i_mgmt)" />
+                                    </td>
+                                    <td class="text-end">
+                                        <t t-out="'{:,.2f}'.format(i_total)" /> บาท
+                                    </td>
+                                </tr>
+                                <!-- Hierarchy rows for this impact type -->
+                                <t t-foreach="idata.get('rows', [])" t-as="row">
+                                    <tr class="impact-hierarchy-row">
+                                        <td>
+                                            <div t-att-style="'margin-left: ' + str(16 * (row.get('level', 0) + 1)) + 'px;'">
+                                                <t t-out="row.get('name', '')" />
+                                            </div>
+                                        </td>
+                                        <td />
+                                        <td class="text-center">
+                                            <t t-if="row.get('project_okr_amount', 0) != 0">
+                                                <t t-out="'{:,.2f}'.format(row['project_okr_amount'])" />
+                                            </t>
+                                        </td>
+                                        <td class="text-center">
+                                            <t t-if="row.get('management_amount', 0) != 0">
+                                                <t t-out="'{:,.2f}'.format(row['management_amount'])" />
+                                            </t>
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-set="row_total" t-value="row.get('project_okr_amount', 0) + row.get('management_amount', 0)" />
+                                            <t t-if="row_total != 0">
+                                                <t t-out="'{:,.2f}'.format(row_total)" /> บาท
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+
+                            <!-- Sub-totals row -->
                             <tr>
-                                <td>
-                                    1) ด้านการศึกษา (Education)
+                                <td colspan="2" />
+                                <td class="text-center" style="border-top: 1px solid #000;">
+                                    <t t-out="'{:,.2f}'.format(grand_okr)" />
                                 </td>
-                                <td class="text-center">
-                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
+                                <td class="text-center" style="border-top: 1px solid #000;">
+                                    <t t-out="'{:,.2f}'.format(grand_mgmt)" />
                                 </td>
-                                <td class="text-center">
-                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
-                                </td>
-                                <td class="text-center">
-                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
-                                </td>
-                                <td class="text-end">
-                                    <t t-out="'{:,.2f}'.format(1234)" /> บาท
-                                </td>
+                                <td class="text-end" />
                             </tr>
-                            <tr>
-                                <td>
-                                    2) ด้านการวิจัย (Academic)
-                                </td>
-                                <td class="text-center">
-                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
-                                </td>
-                                <td class="text-center">
-                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
-                                </td>
-                                <td class="text-center">
-                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
-                                </td>
-                                <td class="text-end">
-                                    <t t-out="'{:,.2f}'.format(1234)" /> บาท
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    3) ด้านตอบโจทย์ภาคอุตสาหกรรม (Industrial)
-                                </td>
-                                <td class="text-center">
-                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
-                                </td>
-                                <td class="text-center">
-                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
-                                </td>
-                                <td class="text-center">
-                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
-                                </td>
-                                <td class="text-end">
-                                    <t t-out="'{:,.2f}'.format(1234)" /> บาท
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    4) ด้านสังคม (Social)
-                                </td>
-                                <td class="text-center">
-                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
-                                </td>
-                                <td class="text-center">
-                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
-                                </td>
-                                <td class="text-center">
-                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
-                                </td>
-                                <td class="text-end">
-                                    <t t-out="'{:,.2f}'.format(1234)" /> บาท
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2"></td>
-                                <td class="text-center">
-                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
-                                </td>
-                                <td class="text-center">
-                                    ร้อยละ <t t-out="'{:,.2f}'.format(34.23)" />
-                                </td>
-                                <td class="text-end">
-                                </td>
-                            </tr>
-                            <tr>
+                            <tr class="fw-bold">
                                 <td colspan="2">
                                     รวมจัดสรรทุกด้านร้อยละ 100
                                 </td>
                                 <td class="text-center">
-                                    <t t-out="'{:,.2f}'.format(1234)" />
+                                    <t t-out="'{:,.2f}'.format(grand_okr)" />
                                 </td>
                                 <td class="text-center">
-                                    <t t-out="'{:,.2f}'.format(1234)" />
+                                    <t t-out="'{:,.2f}'.format(grand_mgmt)" />
                                 </td>
-                                <td class="text-end">
-                                    <t t-out="'{:,.2f}'.format(1234)" /> บาท
+                                <td class="text-end" style="border-top: 1px solid #000; border-bottom: 3px double #000;">
+                                    <t t-out="'{:,.2f}'.format(grand_total)" /> บาท
                                 </td>
                             </tr>
-                            <tr>
+                            <tr class="fw-bold">
                                 <td>
                                     รวมประมาณการรายจ่ายทั้งสิ้น (1)+(2)
                                 </td>
-                                <td colspan="4" class="text-end">
-                                    <t t-out="'{:,.2f}'.format(1234)" /> บาท
+                                <td colspan="4" class="text-end" style="border-bottom: 3px double #000;">
+                                    <t t-out="'{:,.2f}'.format(o.fixed_expense_total + grand_total)" /> บาท
                                 </td>
                             </tr>
                         </tbody>

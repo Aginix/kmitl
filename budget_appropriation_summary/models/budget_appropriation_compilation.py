@@ -401,6 +401,127 @@ class BudgetAppropriationCompilation(models.Model):
             "budget_appropriation_summary.action_report_compilation_f5"
         ).report_action(self)
 
+    def get_impact_line_hierarchy(self, impact_type=None, min_level=3):
+        """Build flattened hierarchy from impact lines for F23W report display.
+
+        Returns dict with rows containing project_okr_amount and management_amount.
+        """
+        self.ensure_one()
+        lines = self.env["budget.appropriation.compilation.impact"].search([
+            ("compilation_id", "=", self.id),
+            ("impact_type", "=", impact_type),
+        ]) if impact_type else self.env["budget.appropriation.compilation.impact"]
+
+        if not lines:
+            return {"rows": [], "total_project_okr": 0, "total_management": 0}
+
+        analytic_accounts = lines.mapped("analytic_account_id")
+        all_account_ids = set()
+        for account in analytic_accounts:
+            if account.parent_path:
+                parent_ids = [
+                    int(pid)
+                    for pid in account.parent_path.strip("/").split("/")
+                    if pid
+                ]
+                all_account_ids.update(parent_ids)
+            all_account_ids.add(account.id)
+
+        accounts = self.env["account.analytic.account"].browse(list(all_account_ids))
+
+        account_levels = {}
+        for acc in accounts:
+            if acc.parent_path:
+                level = len(
+                    [p for p in acc.parent_path.strip("/").split("/") if p]
+                )
+            else:
+                level = 1
+            account_levels[acc.id] = level
+
+        lines_by_account = {}
+        for line in lines:
+            acc_id = line.analytic_account_id.id
+            if acc_id not in lines_by_account:
+                lines_by_account[acc_id] = []
+            lines_by_account[acc_id].append({
+                "project_okr_amount": line.project_okr_amount,
+                "management_amount": line.management_amount,
+            })
+
+        # Calculate totals per account (including children)
+        account_totals = {}
+
+        def calc_total(account):
+            if account.id in account_totals:
+                return account_totals[account.id]
+            direct = lines_by_account.get(account.id, [])
+            okr = sum(l["project_okr_amount"] for l in direct)
+            mgmt = sum(l["management_amount"] for l in direct)
+            children = [
+                a for a in accounts
+                if a.parent_id and a.parent_id.id == account.id
+            ]
+            for child in children:
+                child_total = calc_total(child)
+                okr += child_total["project_okr_amount"]
+                mgmt += child_total["management_amount"]
+            account_totals[account.id] = {
+                "project_okr_amount": okr,
+                "management_amount": mgmt,
+            }
+            return account_totals[account.id]
+
+        for acc in accounts:
+            calc_total(acc)
+
+        rows = []
+
+        def flatten_node(account, display_level):
+            acc_level = account_levels.get(account.id, 1)
+            if acc_level >= min_level:
+                totals = account_totals.get(account.id, {})
+                rows.append({
+                    "type": "account",
+                    "level": display_level,
+                    "code": account.code or "",
+                    "name": account.name,
+                    "project_okr_amount": totals.get("project_okr_amount", 0),
+                    "management_amount": totals.get("management_amount", 0),
+                })
+            child_accounts = sorted(
+                [a for a in accounts if a.parent_id and a.parent_id.id == account.id],
+                key=lambda a: a.code or "",
+            )
+            for child in child_accounts:
+                next_level = display_level + 1 if acc_level >= min_level else display_level
+                flatten_node(child, next_level)
+
+        root_accounts = sorted(
+            [a for a in accounts if not a.parent_id or a.parent_id.id not in all_account_ids],
+            key=lambda a: a.code or "",
+        )
+        for root in root_accounts:
+            flatten_node(root, 0)
+
+        display_root_ids = [
+            a.id for a in accounts if account_levels.get(a.id, 1) == min_level
+        ]
+        total_project_okr = sum(
+            account_totals.get(aid, {}).get("project_okr_amount", 0)
+            for aid in display_root_ids
+        )
+        total_management = sum(
+            account_totals.get(aid, {}).get("management_amount", 0)
+            for aid in display_root_ids
+        )
+
+        return {
+            "rows": rows,
+            "total_project_okr": total_project_okr,
+            "total_management": total_management,
+        }
+
     def action_open_f23w_report(self):
         """Open F23W report in a new browser tab as HTML."""
         self.ensure_one()

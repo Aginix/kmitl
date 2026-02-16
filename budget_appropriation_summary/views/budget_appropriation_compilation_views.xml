@@ -156,7 +156,8 @@
                                     <tree editable="bottom">
                                         <field name="analytic_account_id" widget="helper_text" options="{'no_open': True}"/>
                                         <field name="impact_type" invisible="1"/>
-                                        <field name="amount" sum="รวม"/>
+                                        <field name="project_okr_amount" sum="จัดสรรโครงการ OKR"/>
+                                        <field name="management_amount" sum="ค่าใช้จ่ายบริหาร"/>
                                     </tree>
                                 </field>
                             </group>
@@ -166,7 +167,8 @@
                                     <tree editable="bottom">
                                         <field name="analytic_account_id" widget="helper_text" options="{'no_open': True}"/>
                                         <field name="impact_type" invisible="1"/>
-                                        <field name="amount" sum="รวม"/>
+                                        <field name="project_okr_amount" sum="จัดสรรโครงการ OKR"/>
+                                        <field name="management_amount" sum="ค่าใช้จ่ายบริหาร"/>
                                     </tree>
                                 </field>
                             </group>
@@ -176,7 +178,8 @@
                                     <tree editable="bottom">
                                         <field name="analytic_account_id" widget="helper_text" options="{'no_open': True}"/>
                                         <field name="impact_type" invisible="1"/>
-                                        <field name="amount" sum="รวม"/>
+                                        <field name="project_okr_amount" sum="จัดสรรโครงการ OKR"/>
+                                        <field name="management_amount" sum="ค่าใช้จ่ายบริหาร"/>
                                     </tree>
                                 </field>
                             </group>
@@ -186,7 +189,8 @@
                                     <tree editable="bottom">
                                         <field name="analytic_account_id" widget="helper_text" options="{'no_open': True}"/>
                                         <field name="impact_type" invisible="1"/>
-                                        <field name="amount" sum="รวม"/>
+                                        <field name="project_okr_amount" sum="จัดสรรโครงการ OKR"/>
+                                        <field name="management_amount" sum="ค่าใช้จ่ายบริหาร"/>
                                     </tree>
                                 </field>
                             </group>
