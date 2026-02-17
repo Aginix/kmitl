@@ -181,7 +181,7 @@
                                 </t>
                                 <tr>
                                     <td
-                                        colspan="2"
+                                        colspan="5"
                                         rowspan="3"
                                         class="text-center align-middle"
                                     >
@@ -193,17 +193,107 @@
                                         />
                                         )
                                     </td>
-                                    <td class="text-center" colspan="2">
+                                    <td class="text-center">
                                         ราคาก่อนรวมภาษีมูลค่าเพิ่ม
                                     </td>
-                                    <!-- <td
+                                    <td
                                         class="text-end"
-                                        t-out="'{0:,.2f}'.format(o.amount_untaxed)"
-                                    /> -->
+                                        t-esc="'{0:,.2f}'.format(sum(o.wa_line_ids.mapped('price_subtotal')))"
+                                    />
+                                </tr>
+                                <tr>
+                                    <td class="text-center">ภาษีมูลค่าเพิ่ม</td>
+                                    <td
+                                        class="text-end"
+                                        t-esc="'{0:,.2f}'.format(sum(o.wa_line_ids.mapped('price_subtotal')))"
+                                    />
+                                </tr>
+                                <tr>
+                                    <td class="text-center">รวมเป็นเงินทั้งสิ้น</td>
+                                    <td
+                                        class="text-end"
+                                        t-esc="'{0:,.2f}'.format(sum(o.wa_line_ids.mapped('price_subtotal')))"
+                                    />
                                 </tr>
                             </tbody>
                         </table>
+                        <div class="row">
+                            <div class="col">
+                                ลงชื่อ.....................................ผู้รับพัสดุ/เจ้าหน้าที่พัสดุ
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                (<span
+                                    class="ms-2 fw-bolder text-decoration-underline"
+                                    t-out="o.responsible_id.name"
+                                />)
+                            </div>
+                        </div>
                         <div class="my-5" style="height: 10px" />
+                        <div class="row">
+                            <div class="col">ส่วนบันทึกคณะกรรมการตรวจรับพัสดุ</div>
+                        </div>
+                        <div class="row">
+                            <div class="col">เรียน อธิการบดี</div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                คณะกรรมการตรวจรับพัสดุได้พร้อมกันตรวจรับพัสดุซึ่ง
+                                <span
+                                    class="ms-2 fw-bolder text-decoration-underline"
+                                    t-out="o.purchase_id.partner_id.name"
+                                />
+                                / (ผู้ขาย) ได้ส่งมอบพัสดุ ให้แก่
+                                สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง (ผู้ซื้อ)
+                                ตามข้อตกลงและสัญญาจ้างข้างต้น เป็นที่เรียบร้อยแล้ว
+                                โดยการนี้
+                                ได้ดำเนินการตรวจสอบแล้วถูกต้องตามสัญญา/ข้อตกลงตั้งแต่วันที่
+                                <span
+                                    class="ms-2 fw-bolder text-decoration-underline"
+                                    t-esc="o.format_date_thai(o.date_receive)"
+                                />
+                                และได้ตรวจรับพัสดุเรียบร้อยแล้ว ตั้งแต่วันที่
+                                <span
+                                    class="ms-2 fw-bolder text-decoration-underline"
+                                    t-esc="o.format_date_thai(o.date_receive)"
+                                />
+                                ผู้ขาย/ผู้รับจ้างควรได้รับเงินตามสัญญา ข้อ 1. เป็นเงิน
+                                <span
+                                    class="ms-2 fw-bolder text-decoration-underline"
+                                    t-esc="sum(o.wa_line_ids.mapped('price_subtotal'))"
+                                />
+                                บาท (
+                                <t
+                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(
+    sum(o.wa_line_ids.mapped('price_subtotal'))
+)"
+                                />
+                                ) เกินกำหนดสัญญาหรือข้อตกลง ตั้งแต่วันที่…-….
+                                เดือน...…-…..….พ.ศ…...-…...ถึงวันที่…..-….…เดือน.....-........พ.ศ......…-...เป็นเวลา.....…-……..วัน
+                                คงส่งมอบของล่าช้าเกินกำหนดสัญญา/ข้อตกลงไป……-…...วัน
+                                จะต้องเสียค่าปรับ วันละ..…-…….บาท (..……-….....)
+                                รวมเป็นเงิน…..-…...บาท (…...…-....….) คงได้รับเงินงวดนี้
+                                เป็นเงิน
+                                <span
+                                    class="ms-2 fw-bolder text-decoration-underline"
+                                    t-esc="sum(o.wa_line_ids.mapped('price_subtotal'))"
+                                />
+                                บาท (
+                                <t
+                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(
+    sum(o.wa_line_ids.mapped('price_subtotal'))
+)"
+                                />
+                                )
+                            </div>
+                        </div>
+                        <div class="my-5" style="height: 10px" />
+                        <div class="row">
+                            <div class="col text-end">
+                                (ลงชื่อ)..................................ประธาน
+                            </div>
+                        </div>
                     </div>
                 </t>
             </t>
