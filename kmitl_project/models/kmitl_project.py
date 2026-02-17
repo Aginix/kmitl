@@ -364,7 +364,7 @@ class KmitlProject(models.Model):
         "departments": "department_analytic_id",
         "funds": "fund_analytic_id",
         "sources": "source_analytic_id",
-        "project": "analytic_account_id",
+        "kmitl_project": "analytic_account_id",
     }
 
     def _inverse_activity_analytic(self):
@@ -390,7 +390,7 @@ class KmitlProject(models.Model):
     def _inverse_analytic_account_id(self):
         """Update distribution when source changes"""
         for line in self:
-            line._update_analytic_distribution("project")
+            line._update_analytic_distribution("kmitl_project")
 
     @api.onchange("operating_unit_id")
     def _onchange_operating_unit_id(self):
