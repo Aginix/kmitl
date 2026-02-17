@@ -93,10 +93,16 @@ msgstr "รับจาก"
 #: model_terms:ir.ui.view,arch_db:account_asset_create_menu.view_account_asset_batch_form_donation
 #: model_terms:ir.ui.view,arch_db:account_asset_create_menu.view_account_asset_batch_form_transfer
 msgid "Register Asset"
-msgstr ""
+msgstr "สร้างรายการครุภัณฑ์"
 
 #. module: account_asset_create_menu
 #: model:ir.actions.act_window,name:account_asset_create_menu.action_asset_batch_transfer
 #: model:ir.ui.menu,name:account_asset_create_menu.menu_asset_transfer
 msgid "Transfer"
 msgstr "รับโอน"
+
+#. module: account_asset_create_menu
+#: model_terms:ir.ui.view,arch_db:account_asset_create_menu.view_account_asset_batch_form_donation
+#: model_terms:ir.ui.view,arch_db:account_asset_create_menu.view_account_asset_batch_form_transfer
+msgid "Subcomponent"
+msgstr "ส่วนประกอบครุภัณฑ์"

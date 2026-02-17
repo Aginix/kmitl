@@ -120,7 +120,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_asset_purchase.field_purchase_order__asset_count
 #, python-format
 msgid "Assets"
-msgstr ""
+msgstr "สินทรัพย์"
 
 #. module: account_asset_purchase
 #: model:ir.model.fields,field_description:account_asset_purchase.field_account_asset_batch__message_attachment_count

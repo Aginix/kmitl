@@ -74,6 +74,7 @@
                         <page string="List">
                             <field name="line_ids" attrs="{'readonly': [('is_editable','=', False)]}">
                                 <tree editable="bottom">
+                                    <field name="is_editable" invisible="1"/>
                                     <field name="sequence" widget="handle"/>
                                     <field name="name" placeholder="Dell Computer All in one Set"/>
                                     <field name="profile_id"/>
