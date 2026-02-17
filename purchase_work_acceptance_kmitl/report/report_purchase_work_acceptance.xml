@@ -179,6 +179,26 @@
                                     </tr>
                                     <t t-set="row_no" t-value="row_no + 1" />
                                 </t>
+                                <tr>
+                                    <td
+                                        colspan="2"
+                                        rowspan="3"
+                                        class="text-center align-middle"
+                                    >
+                                        (
+                                        <t
+                                            t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)"
+                                        />
+                                        )
+                                    </td>
+                                    <td class="text-center" colspan="2">
+                                        ราคาก่อนรวมภาษีมูลค่าเพิ่ม
+                                    </td>
+                                    <td
+                                        class="text-end"
+                                        t-out="'{0:,.2f}'.format(o.amount_untaxed)"
+                                    />
+                                </tr>
                             </tbody>
                         </table>
                         <div class="my-5" style="height: 10px" />
