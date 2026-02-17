@@ -10,7 +10,7 @@
         <field name="margin_bottom">8</field>
         <field name="margin_left">8</field>
         <field name="margin_right">8</field>
-        <field name="dpi">120</field>
+        <field name="dpi">90</field>
     </record>
     <!-- Report Action -->
     <record id="action_report_compilation_f23w" model="ir.actions.report">
@@ -259,6 +259,7 @@
             <style>html, body {
                     background: #e0e0e0 !important;
                 }
+
                 .page {
                     width: 240mm;
                     min-height: 297mm;
@@ -268,6 +269,13 @@
                     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
                     box-sizing: border-box;
                 }</style>
+        </t>
+        <t t-else="">
+            <style>
+                * {
+                    line-height: 1.4;
+                }
+            </style>
         </t>
         <style>.page {
                 page-break-after: always;

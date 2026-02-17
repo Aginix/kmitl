@@ -598,3 +598,10 @@ class BudgetAppropriationCompilation(models.Model):
             "url": f"/budget_appropriation_summary/compilation/{self.id}/f23w/html",
             "target": "new",
         }
+
+    def action_print_f23w_report(self):
+        """Print F23W report as PDF."""
+        self.ensure_one()
+        return self.env.ref(
+            "budget_appropriation_summary.action_report_compilation_f23w"
+        ).report_action(self)

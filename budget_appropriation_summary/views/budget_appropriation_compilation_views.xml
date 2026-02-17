@@ -75,6 +75,13 @@
                             class="oe_stat_button"
                             icon="fa-file-text-o"
                         />
+                        <button
+                            name="action_print_f23w_report"
+                            string="พิมพ์ F23"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-print"
+                        />
                     </div>
                     <group>
                         <group>
