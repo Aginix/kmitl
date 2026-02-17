@@ -7,8 +7,9 @@
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
     'depends': ['purchase_request_approval_kmitl'],
-    'data': [
-        
+    "data": [
+        "views/purchase_request_views.xml",
+        "views/res_config_settings_views.xml"
     ],
     'installable': True,
     'auto_install': False,
