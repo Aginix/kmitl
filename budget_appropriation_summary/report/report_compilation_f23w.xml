@@ -234,7 +234,7 @@
                                 <td class="text-center">
                                     <t t-out="'{:,.0f}'.format(grand_mgmt)" />
                                 </td>
-                                <td class="text-end" style="border-top: 1px solid #000; border-bottom: 1px solid #000;">
+                                <td class="text-end" style="border-bottom: 1px solid #000;">
                                     <t t-out="'{:,.0f}'.format(grand_total)" />
                                     บาท
                                 </td>
