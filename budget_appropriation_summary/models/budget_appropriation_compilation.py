@@ -201,6 +201,20 @@ class BudgetAppropriationCompilation(models.Model):
         compute="_compute_totals",
     )
 
+    code_0702000002 = fields.Monetary(
+        string="สำรองจ่ายร้อยละ 15",
+        currency_field="currency_id",
+        readonly=True,
+        compute="_compute_totals",
+    )
+
+    code_0702000003 = fields.Monetary(
+        string="สำรองจ่าย เกินกว่าร้อยละ 15",
+        currency_field="currency_id",
+        readonly=True,
+        compute="_compute_totals",
+    )
+
     education_impact_line_ids = fields.One2many(
         "budget.appropriation.compilation.impact",
         "compilation_id",
@@ -245,6 +259,8 @@ class BudgetAppropriationCompilation(models.Model):
         "revenue_appropriation_ids.recurrent_budget_amount",
         "revenue_appropriation_ids.external_funding_amount",
         "revenue_appropriation_ids.amount_net",
+        "revenue_appropriation_ids.code_0702000002",
+        "revenue_appropriation_ids.code_0702000003",
     )
     def _compute_totals(self):
         for record in self:
@@ -268,6 +284,12 @@ class BudgetAppropriationCompilation(models.Model):
             )
             record.revenue_net = sum(
                 record.revenue_appropriation_ids.mapped("amount_net")
+            )
+            record.code_0702000002 = sum(
+                record.expense_appropriation_ids.mapped("code_0702000002")
+            )
+            record.code_0702000003 = sum(
+                record.expense_appropriation_ids.mapped("code_0702000003")
             )
             record.fixed_expense_total = record.revenue_net - (
                 record.treasury_replenishment_amount

@@ -52,8 +52,22 @@ class BudgetAppropriation(models.Model):
         compute="_compute_totals",
     )
 
-    TREASURY_REPLENISHMENT_CODES = ["0702000002", "0702000003"]
-    DEDUCTED_RESERVE_CODES = ["0702000001"]
+    code_0702000002 = fields.Monetary(
+        string="สำรองจ่ายร้อยละ 15",
+        currency_field="currency_id",
+        readonly=True,
+        compute="_compute_totals",
+    )
+
+    code_0702000003 = fields.Monetary(
+        string="สำรองจ่าย เกินกว่าร้อยละ 15",
+        currency_field="currency_id",
+        readonly=True,
+        compute="_compute_totals",
+    )
+
+    TREASURY_REPLENISHMENT_CODES = ["0702000001"]
+    DEDUCTED_RESERVE_CODES = ["0702000002", "0702000003"]
 
     # งบลงทุน
     CAPITAL_BUDGET_CODES = [
@@ -100,5 +114,15 @@ class BudgetAppropriation(models.Model):
                 line_ids.filtered(
                     lambda x: x.account_id.code in self.RECURRENT_BUDGET_CODES
                 ).mapped("balance")
+            )
+            record.code_0702000002 = sum(
+                line_ids.filtered(lambda x: x.account_id.code in ["0702000002"]).mapped(
+                    "balance"
+                )
+            )
+            record.code_0702000003 = sum(
+                line_ids.filtered(lambda x: x.account_id.code in ["0702000003"]).mapped(
+                    "balance"
+                )
             )
             record.external_funding_amount = 0
