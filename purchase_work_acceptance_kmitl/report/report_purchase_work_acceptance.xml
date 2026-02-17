@@ -187,7 +187,7 @@
                                     >
                                         (
                                         <t
-                                            t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.amount_total)"
+                                            t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.price_subtotal)"
                                         />
                                         )
                                     </td>

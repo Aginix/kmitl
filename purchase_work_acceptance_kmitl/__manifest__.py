@@ -11,6 +11,7 @@
         'base_tier_validation_comment',
         'thai_date_utils',
         'purchase_contract_kmitl',
+        'l10n_th_amount_to_text',
     ],
     "data": [
         "data/server_action.xml",
