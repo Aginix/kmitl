@@ -217,16 +217,21 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <div class="row">
-                            <div class="col">
-                                ลงชื่อ.....................................ผู้รับพัสดุ/เจ้าหน้าที่พัสดุ
+                        <div class="col-6 text-center">
+                            <div>
+                                ลงชื่อ
+                                <span
+                                    style="
+                                        display: inline-block;
+                                        width: 200px;
+                                        border-bottom: 1px dotted #000;
+                                    "
+                                ></span>
+                                ผู้รับพัสดุ/เจ้าหน้าที่พัสดุ
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
+                            <div class="mt-2">
                                 (<span
-                                    class="ms-2 fw-bolder text-decoration-underline"
-                                    t-out="o.responsible_id.name"
+                                    t-esc="o.work_acceptance_committee_ids[0].name"
                                 />)
                             </div>
                         </div>
@@ -289,9 +294,64 @@
                             </div>
                         </div>
                         <div class="my-5" style="height: 10px" />
-                        <div class="row">
-                            <div class="col text-end">
-                                (ลงชื่อ)..................................ประธาน
+                        <div class="row mt-4">
+                            <div class="col-6 offset-6 text-center">
+                                <div>
+                                    (ลงชื่อ)
+                                    <span
+                                        style="
+                                            display: inline-block;
+                                            width: 200px;
+                                            border-bottom: 1px dotted #000;
+                                        "
+                                    ></span>
+                                    ประธานกรรมการ
+                                </div>
+                                <div class="mt-2">
+                                    (<span
+                                        t-esc="o.work_acceptance_committee_ids[0].name"
+                                    />)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-6 offset-6 text-center">
+                                <div>
+                                    (ลงชื่อ)
+                                    <span
+                                        style="
+                                            display: inline-block;
+                                            width: 200px;
+                                            border-bottom: 1px dotted #000;
+                                        "
+                                    ></span>
+                                    กรรมการ
+                                </div>
+                                <div class="mt-2">
+                                    (<span
+                                        t-esc="o.work_acceptance_committee_ids[0].name"
+                                    />)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-6 offset-6 text-center">
+                                <div>
+                                    (ลงชื่อ)
+                                    <span
+                                        style="
+                                            display: inline-block;
+                                            width: 200px;
+                                            border-bottom: 1px dotted #000;
+                                        "
+                                    ></span>
+                                    กรรมการและเลขานุการ
+                                </div>
+                                <div class="mt-2">
+                                    (<span
+                                        t-esc="o.work_acceptance_committee_ids[0].name"
+                                    />)
+                                </div>
                             </div>
                         </div>
                     </div>
