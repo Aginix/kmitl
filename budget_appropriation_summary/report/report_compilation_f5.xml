@@ -156,12 +156,6 @@
                             <div class="account-content">
                                 <t t-out="node.get('name', '')" />
                             </div>
-                            <div
-                                t-if="node.get('description')"
-                                class="account-description"
-                            >
-                                <t t-out="node.get('description', '')" />
-                            </div>
                         </t>
                         <t t-else="">
                             <span class="node-content" t-out="node.get('name', '')" />

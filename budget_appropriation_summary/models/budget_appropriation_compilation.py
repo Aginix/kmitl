@@ -130,6 +130,7 @@ class BudgetAppropriationCompilation(models.Model):
         store=False,
     )
 
+
     use_f23 = fields.Boolean(
         string="ใช้รายงาน F23",
         help="ถ้าเลือก จะแสดงแบบฟอร์มรายงาน F23 ให้ผู้ใช้กรอกข้อมูลเพิ่มเติม",
@@ -346,7 +347,7 @@ class BudgetAppropriationCompilation(models.Model):
                 continue
             apps = record.expense_appropriation_ids
             if len(apps) == 1:
-                record.f5_expense_data = {"details": [F5Model.get_f5_data(apps.id)]}
+                data = {"details": [F5Model.get_f5_data(apps.id)]}
             else:
                 dept_name = (record.department_analytic_id.complete_name or "").replace(
                     " / ", " "
@@ -358,7 +359,52 @@ class BudgetAppropriationCompilation(models.Model):
                 details = []
                 for app in apps.sorted(lambda a: a.department_analytic_id.code or ""):
                     details.append(F5Model.get_f5_data(app.id))
-                record.f5_expense_data = {"overview": overview, "details": details}
+                data = {"overview": overview, "details": details}
+            record.f5_expense_data = self._merge_f5_last_level_nodes(data)
+
+    @api.model
+    def _merge_f5_last_level_nodes(self, data):
+        """Merge last-level account nodes with the same id for non-itemized mode."""
+
+        def merge_children(nodes):
+            merged = []
+            seen = {}
+            for node in nodes:
+                if node.get("children"):
+                    node["children"] = merge_children(node["children"])
+                # Merge leaf account nodes (no children) by id
+                if (
+                    node.get("type") == "account"
+                    and not node.get("children")
+                ):
+                    key = node.get("id")
+                    if key in seen:
+                        existing = seen[key]
+                        existing["amount"] = existing.get("amount", 0) + node.get(
+                            "amount", 0
+                        )
+                        existing["amount_total"] = existing.get(
+                            "amount_total", 0
+                        ) + node.get("amount_total", 0)
+                    else:
+                        node["description"] = ""
+                        node["note"] = ""
+                        seen[key] = node
+                        merged.append(node)
+                else:
+                    merged.append(node)
+            return merged
+
+        for key in ("overview", "details"):
+            if key == "details":
+                for detail in data.get("details", []):
+                    if detail.get("hierarchy"):
+                        detail["hierarchy"] = merge_children(detail["hierarchy"])
+            elif key == "overview" and data.get("overview"):
+                overview = data["overview"]
+                if overview.get("hierarchy"):
+                    overview["hierarchy"] = merge_children(overview["hierarchy"])
+        return data
 
     def action_confirm(self):
         self.write({"state": "confirmed"})
