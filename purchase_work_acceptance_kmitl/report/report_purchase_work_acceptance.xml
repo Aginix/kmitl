@@ -187,17 +187,19 @@
                                     >
                                         (
                                         <t
-                                            t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(o.price_subtotal)"
+                                            t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(
+    sum(o.wa_line_ids.mapped('price_subtotal'))
+)"
                                         />
                                         )
                                     </td>
                                     <td class="text-center" colspan="2">
                                         ราคาก่อนรวมภาษีมูลค่าเพิ่ม
                                     </td>
-                                    <td
+                                    <!-- <td
                                         class="text-end"
                                         t-out="'{0:,.2f}'.format(o.amount_untaxed)"
-                                    />
+                                    /> -->
                                 </tr>
                             </tbody>
                         </table>
