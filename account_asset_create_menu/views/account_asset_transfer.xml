@@ -80,6 +80,11 @@
                                     <field name="gpsc_id"/>
                                     <field name="amount"/>
                                     <field name="price_per_unit"/>
+                                    <button name="action_open_subcomponent_wizard"
+                                            type="object"
+                                            icon="fa-cubes"
+                                            string="Subcomponent"
+                                            attrs="{'invisible': [('is_editable', '=', False)]}"/>
                                     <field name="amount_total" readonly="1"/>
                                 </tree>
                             </field>

@@ -19,7 +19,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_asset_create_menu.view_account_asset_batch_form_donation
 #: model_terms:ir.ui.view,arch_db:account_asset_create_menu.view_account_asset_batch_form_transfer
 msgid "Asset"
-msgstr ""
+msgstr "สินทรัพย์"
 
 #. module: account_asset_create_menu
 #: model_terms:ir.ui.view,arch_db:account_asset_create_menu.view_account_asset_batch_form_donation
@@ -64,7 +64,7 @@ msgstr "รับบริจาค"
 #: model_terms:ir.ui.view,arch_db:account_asset_create_menu.view_account_asset_batch_form_donation
 #: model_terms:ir.ui.view,arch_db:account_asset_create_menu.view_account_asset_batch_form_transfer
 msgid "Done"
-msgstr ""
+msgstr "เสร็จสิ้น"
 
 #. module: account_asset_create_menu
 #: model_terms:ir.ui.view,arch_db:account_asset_create_menu.view_account_asset_batch_form_donation
