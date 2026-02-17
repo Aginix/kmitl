@@ -1,6 +1,10 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # 	* purchase_work_acceptance_kmitl
+# 	* purchase_work_acceptance
+# 	* purchase_work_acceptance_late_fines
+# 	* l10n_th_gov_work_acceptance
+# 	* purchase_work_acceptance_evaluation
 #
 msgid ""
 msgstr ""
@@ -14,6 +18,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
+
+#. modules: l10n_th_gov_work_acceptance, purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:l10n_th_gov_work_acceptance.view_work_acceptance_form_tier_validation
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_form
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_accepted_date_wizard
+msgid "Accept"
+msgstr "ตอบรับ"
 
 #. module: purchase_work_acceptance_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_kmitl
@@ -81,3 +92,563 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance_committee__mobile_phone
 msgid "Work Mobile"
 msgstr "เบอร์โทรศัพท์"
+
+#. modules: purchase_work_acceptance, purchase_work_acceptance_evaluation
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__date_accept
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__date_accept
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_accepted_date_wizard__date_accept
+#: model:ir.model.fields,field_description:purchase_work_acceptance_evaluation.field_work_acceptance_evaluation_report__date_accept
+msgid "Accepted Date"
+msgstr "วันที่ตรวจรับ"
+
+#. modules: purchase_work_acceptance, purchase_work_acceptance_late_fines
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_select_work_acceptance_wizard
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_form
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_accepted_date_wizard
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_late_fines.view_wa_create_fines
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. modules: purchase_work_acceptance, purchase_work_acceptance_evaluation
+#: model:ir.model.fields.selection,name:purchase_work_acceptance.selection__work_acceptance__state__cancel
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_evaluation.selection__work_acceptance_evaluation_report__wa_state__cancel
+msgid "Cancelled"
+msgstr "ยกเลิก"
+
+#. module: purchase_work_acceptance_evaluation
+#: model:ir.model.fields,field_description:purchase_work_acceptance_evaluation.field_work_acceptance_evaluation__name
+#: model:ir.model.fields,field_description:purchase_work_acceptance_evaluation.field_work_acceptance_evaluation_report__case_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_evaluation.field_work_acceptance_evaluation_result__case_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_evaluation.field_work_acceptance_evaluation_score__evaluation_id
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_evaluation.work_acceptance_evaluation_report_search_view
+msgid "Case Name"
+msgstr "หัวข้อ"
+
+#. module: l10n_th_gov_work_acceptance
+#: model:ir.model.fields.selection,name:l10n_th_gov_work_acceptance.selection__work_acceptance_committee__approve_role__chairman
+msgid "Chairman"
+msgstr "ประธาน"
+
+#. module: l10n_th_gov_work_acceptance
+#: model:ir.model.fields.selection,name:l10n_th_gov_work_acceptance.selection__work_acceptance_committee__approve_role__committee
+#: model_terms:ir.ui.view,arch_db:l10n_th_gov_work_acceptance.view_work_acceptance_form
+msgid "Committee"
+msgstr "คณะกรรมการ"
+
+#. module: l10n_th_gov_work_acceptance
+#: model:ir.model.fields,field_description:l10n_th_gov_work_acceptance.field_work_acceptance_committee__name
+msgid "Committee Name"
+msgstr "รายชื่อคณะกรรมการ"
+
+#. module: purchase_work_acceptance_late_fines
+#: model:ir.model,name:purchase_work_acceptance_late_fines.model_res_company
+msgid "Companies"
+msgstr "บริษัท"
+
+#. module: purchase_work_acceptance_late_fines
+#: model:ir.model,name:purchase_work_acceptance_late_fines.model_res_config_settings
+msgid "Config Settings"
+msgstr "ตั้งค่าการกำหนดค่า"
+
+#. module: l10n_th_gov_work_acceptance
+#: model:ir.model.fields,field_description:l10n_th_gov_work_acceptance.field_work_acceptance_committee__department_id
+msgid "Department"
+msgstr "หน่วยงาน"
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__name
+msgid "Description"
+msgstr "รายละเอียด"
+
+#. modules: purchase_work_acceptance, purchase_work_acceptance_evaluation
+#: model:ir.model.fields.selection,name:purchase_work_acceptance.selection__work_acceptance__state__draft
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_evaluation.selection__work_acceptance_evaluation__state_required__draft
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_evaluation.selection__work_acceptance_evaluation_report__wa_state__draft
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
+msgid "Draft"
+msgstr "แบบร่าง"
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__date_due
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__date_due
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
+msgid "Due Date"
+msgstr "วันสุดท้ายของการตรวจรับ"
+
+#. module: l10n_th_gov_work_acceptance
+#: model:ir.model.fields,field_description:l10n_th_gov_work_acceptance.field_work_acceptance_committee__employee_id
+msgid "Employee"
+msgstr "พนักงาน"
+
+#. modules: l10n_th_gov_work_acceptance, purchase_work_acceptance_evaluation
+#: model_terms:ir.ui.view,arch_db:l10n_th_gov_work_acceptance.view_work_acceptance_form_evaluation
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_evaluation.view_work_acceptance_evaluation_tab_form
+msgid "Evaluation"
+msgstr "การประเมิน"
+
+#. module: purchase_work_acceptance_late_fines
+#: model:ir.model.fields,field_description:purchase_work_acceptance_late_fines.field_work_acceptance__fines_late
+msgid "Fines Amount"
+msgstr "ค่าปรับรวม"
+
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__invoice_ref
+msgid "Invoice Reference"
+msgstr "อ้างอิงใบแจ้งหนี้"
+
+#. module: purchase_work_acceptance_late_fines
+#: model:ir.model,name:purchase_work_acceptance_late_fines.model_account_move
+msgid "Journal Entry"
+msgstr "รายการบันทึกประจำวัน"
+
+#. module: purchase_work_acceptance_late_fines
+#: model:ir.model.fields,field_description:purchase_work_acceptance_late_fines.field_work_acceptance__late_days
+msgid "Late Days"
+msgstr "วันที่ล่าช้า"
+
+#. module: purchase_work_acceptance_late_fines
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_late_fines.view_work_acceptance_fines_late_tab_form
+msgid "Late Fines"
+msgstr "ค่าปรับ"
+
+#. module: l10n_th_gov_work_acceptance
+#: model:ir.model.fields.selection,name:l10n_th_gov_work_acceptance.selection__work_acceptance_committee__status__not_accept
+msgid "No Accepted"
+msgstr "ไม่ให้ผ่าน"
+
+#. modules: l10n_th_gov_work_acceptance, purchase_work_acceptance_evaluation
+#: model:ir.model.fields,field_description:l10n_th_gov_work_acceptance.field_work_acceptance_committee__note
+#: model:ir.model.fields,field_description:purchase_work_acceptance_evaluation.field_work_acceptance_evaluation_report__note
+#: model:ir.model.fields,field_description:purchase_work_acceptance_evaluation.field_work_acceptance_evaluation_result__note
+msgid "Note"
+msgstr "หมายเหตุ"
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__notes
+msgid "Notes"
+msgstr "หมายเหตุ"
+
+#. module: l10n_th_gov_work_acceptance
+#: model:ir.model.fields.selection,name:l10n_th_gov_work_acceptance.selection__work_acceptance_committee__status__other
+#: model_terms:ir.ui.view,arch_db:l10n_th_gov_work_acceptance.view_work_acceptance_form_tier_validation
+msgid "Other"
+msgstr "อื่นๆ"
+
+#. module: l10n_th_gov_work_acceptance
+#: model:ir.model.fields,field_description:l10n_th_gov_work_acceptance.field_purchase_order__wa_tier_validation
+#: model:ir.model.fields,field_description:l10n_th_gov_work_acceptance.field_work_acceptance__wa_tier_validation
+#: model_terms:ir.ui.view,arch_db:l10n_th_gov_work_acceptance.view_work_acceptance_search
+msgid "Paperless WA"
+msgstr "จัดทำการตรวจรับ"
+
+#. module: purchase_work_acceptance
+#: model:ir.model,name:purchase_work_acceptance.model_stock_picking_type
+msgid "Picking Type"
+msgstr "ประเภทการรับ"
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__product_qty
+msgid "Quantity"
+msgstr "จำนวน"
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
+msgid "Receive Date"
+msgstr "วันที่สร้างใบตรวจรับ"
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__date_receive
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__date_receive
+msgid "Received Date"
+msgstr "วันที่ตรวจรับ"
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_tree
+msgid "Reference"
+msgstr "รหัสใบตรวจรับ"
+
+#. module: l10n_th_gov_work_acceptance
+#: model_terms:ir.ui.view,arch_db:l10n_th_gov_work_acceptance.view_work_acceptance_form_tier_validation
+msgid "Request Validation"
+msgstr "ส่งคำขออนุมัติ"
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_account_bank_statement_line__require_wa
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_account_move__require_wa
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_account_payment__require_wa
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard__require_wa
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_stock_picking__require_wa
+msgid "Require Wa"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__responsible_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__responsible_id
+msgid "Responsible Person"
+msgstr "ผู้จัดทำใบตรวจรับ"
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: l10n_th_gov_work_acceptance
+#: model_terms:ir.ui.view,arch_db:l10n_th_gov_work_acceptance.view_work_acceptance_form_tier_validation
+msgid "Restart Validation"
+msgstr "เริ่มการขออนุมัติใหม่"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance_committee__approve_role
+msgid "Role"
+msgstr "บทบาท"
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: purchase_work_acceptance_evaluation
+#: model:ir.model.fields,field_description:purchase_work_acceptance_evaluation.field_work_acceptance_evaluation__score_ids
+#: model:ir.model.fields,field_description:purchase_work_acceptance_evaluation.field_work_acceptance_evaluation_report__score
+#: model:ir.model.fields,field_description:purchase_work_acceptance_evaluation.field_work_acceptance_evaluation_result__score_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_evaluation.field_work_acceptance_evaluation_score__score
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_evaluation.view_work_acceptance_evaluation_form
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_evaluation.work_acceptance_evaluation_report_search_view
+msgid "Score"
+msgstr "คะแนน"
+
+#. module: purchase_work_acceptance_evaluation
+#: model:ir.model.fields,field_description:purchase_work_acceptance_evaluation.field_work_acceptance_evaluation_report__score_id
+msgid "Score ID"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__access_token
+msgid "Security Token"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#. odoo-python
+#: code:addons/purchase_work_acceptance/models/work_acceptance.py:0
+#, python-format
+msgid "Select Accept Date"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_accepted_date_wizard
+msgid "Select Accepted Date"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#. odoo-python
+#: code:addons/purchase_work_acceptance/models/purchase.py:0
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_select_work_acceptance_wizard
+#, python-format
+msgid "Select Work Acceptance"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model,name:purchase_work_acceptance.model_select_work_acceptance_wizard
+msgid "Select Work Acceptance Wizard"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model,name:purchase_work_acceptance.model_work_accepted_date_wizard
+msgid "Select work accepted date"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_form
+msgid "Set to draft"
+msgstr ""
+
+#. module: purchase_work_acceptance_evaluation
+#: model:ir.model.fields,field_description:purchase_work_acceptance_evaluation.field_work_acceptance_evaluation__state_required
+msgid "State Required"
+msgstr ""
+
+#. modules: l10n_th_gov_work_acceptance, purchase_work_acceptance,
+#. purchase_work_acceptance_evaluation
+#: model:ir.model.fields,field_description:l10n_th_gov_work_acceptance.field_work_acceptance_committee__status
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__state
+#: model:ir.model.fields,field_description:purchase_work_acceptance_evaluation.field_work_acceptance_evaluation_report__wa_state
+msgid "Status"
+msgstr "สถานะการตรวจรับ"
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,help:purchase_work_acceptance.field_work_acceptance__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: purchase_work_acceptance_evaluation
+#: model:ir.model.fields,help:purchase_work_acceptance_evaluation.field_work_acceptance_evaluation__state_required
+msgid "Status of Work Acceptance that user need to fill the evaluation"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__price_subtotal
+msgid "Subtotal"
+msgstr "ราคารวม"
+
+#. module: l10n_th_gov_work_acceptance
+#: model:ir.model.constraint,message:l10n_th_gov_work_acceptance.constraint_work_acceptance_committee_committee_wa_uniq
+msgid "The committee must be unique per work acceptance !"
+msgstr ""
+
+#. module: l10n_th_gov_work_acceptance
+#. odoo-python
+#: code:addons/l10n_th_gov_work_acceptance/models/work_acceptance_committee.py:0
+#, python-format
+msgid "The work acceptance is under validation."
+msgstr ""
+
+#. module: l10n_th_gov_work_acceptance
+#: model:ir.model,name:l10n_th_gov_work_acceptance.model_tier_validation
+msgid "Tier Validation (abstract)"
+msgstr ""
+
+#. module: l10n_th_gov_work_acceptance
+#: model_terms:ir.ui.view,arch_db:l10n_th_gov_work_acceptance.view_work_acceptance_form
+msgid "Timestamp"
+msgstr "เวลาที่ตรวจ"
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_form_inherit
+msgid "To Accept"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_purchase_order_line__qty_to_accept
+msgid "To Accept Qty."
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,help:purchase_work_acceptance.field_account_bank_statement_line__wa_id
+#: model:ir.model.fields,help:purchase_work_acceptance.field_account_move__wa_id
+#: model:ir.model.fields,help:purchase_work_acceptance.field_account_payment__wa_id
+msgid ""
+"To control quantity and unit price of the vendor bill, to be according to the quantity and unit price of the work "
+"acceptance."
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_form
+msgid "Total"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model,name:purchase_work_acceptance.model_stock_picking
+msgid "Transfer"
+msgstr "โอน"
+
+#. module: purchase_work_acceptance_late_fines
+#: model:ir.model.fields,field_description:purchase_work_acceptance_late_fines.field_work_acceptance_create_fines__move_type
+msgid "Type"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,help:purchase_work_acceptance.field_work_acceptance__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: purchase_work_acceptance
+#. odoo-python
+#: code:addons/purchase_work_acceptance/models/work_acceptance.py:0
+#, python-format
+msgid "Unable set to draft this work acceptance. You must first cancel the related receipts."
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__price_unit
+msgid "Unit Price"
+msgstr "ราคาต่อหน่วย"
+
+#. module: purchase_work_acceptance_evaluation
+#: model:ir.model.fields,field_description:purchase_work_acceptance_evaluation.field_work_acceptance_evaluation_score__name
+msgid "Values"
+msgstr ""
+
+#. modules: purchase_work_acceptance, purchase_work_acceptance_evaluation
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__partner_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_evaluation.field_work_acceptance_evaluation_report__partner_id
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_evaluation.work_acceptance_evaluation_report_search_view
+msgid "Vendor"
+msgstr "คู่ค้า"
+
+#. module: purchase_work_acceptance_late_fines
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_late_fines.selection__work_acceptance_create_fines__move_type__in_refund
+msgid "Vendor Refund"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_form_inherit
+msgid "WA"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_purchase_order__wa_accepted
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_view_search
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_purchase_order_filter
+msgid "WA Accepted"
+msgstr ""
+
+#. module: l10n_th_gov_work_acceptance
+#: model:tier.definition,name:l10n_th_gov_work_acceptance.wa_tier_001
+msgid "WA Committee #1"
+msgstr ""
+
+#. module: l10n_th_gov_work_acceptance
+#: model:tier.definition,name:l10n_th_gov_work_acceptance.wa_tier_002
+msgid "WA Committee #2"
+msgstr ""
+
+#. module: l10n_th_gov_work_acceptance
+#: model:tier.definition,name:l10n_th_gov_work_acceptance.wa_tier_003
+msgid "WA Committee #3"
+msgstr ""
+
+#. module: l10n_th_gov_work_acceptance
+#: model:tier.definition,name:l10n_th_gov_work_acceptance.wa_tier_004
+msgid "WA Committee #4"
+msgstr ""
+
+#. module: l10n_th_gov_work_acceptance
+#: model:tier.definition,name:l10n_th_gov_work_acceptance.wa_tier_005
+msgid "WA Committee #5"
+msgstr ""
+
+#. module: l10n_th_gov_work_acceptance
+#: model:tier.definition,name:l10n_th_gov_work_acceptance.wa_tier_006
+msgid "WA Committee #6"
+msgstr ""
+
+#. module: l10n_th_gov_work_acceptance
+#: model:tier.definition,name:l10n_th_gov_work_acceptance.wa_tier_007
+msgid "WA Committee #7"
+msgstr ""
+
+#. module: l10n_th_gov_work_acceptance
+#: model:tier.definition,name:l10n_th_gov_work_acceptance.wa_tier_008
+msgid "WA Committee #8"
+msgstr ""
+
+#. module: l10n_th_gov_work_acceptance
+#: model:tier.definition,name:l10n_th_gov_work_acceptance.wa_tier_009
+msgid "WA Committee #9"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_purchase_order__wa_line_ids
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_purchase_order_line__wa_line_ids
+msgid "WA Lines"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_view_search
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_purchase_order_filter
+msgid "WA Not Accepted"
+msgstr ""
+
+#. modules: purchase_work_acceptance, purchase_work_acceptance_evaluation
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_account_bank_statement_line__wa_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_account_move__wa_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_account_payment__wa_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_stock_picking__wa_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__wa_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_evaluation.field_work_acceptance_evaluation_report__wa_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance_evaluation.field_work_acceptance_evaluation_result__wa_id
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_evaluation.work_acceptance_evaluation_report_search_view
+msgid "WA Reference"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_purchase_order__wa_count
+msgid "WA count"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_stock_picking_type__bypass_wa
+msgid "WA not required"
+msgstr ""
+
+#. module: l10n_th_gov_work_acceptance
+#: model:ir.actions.server,name:l10n_th_gov_work_acceptance.ir_server_action_wa_committee_approve
+msgid "WA: Committee Approved"
+msgstr ""
+
+#. module: l10n_th_gov_work_acceptance
+#: model:ir.actions.server,name:l10n_th_gov_work_acceptance.ir_server_action_wa_committee_reject
+msgid "WA: Committee Rejected"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard__wa_ids
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_stock_picking__wa_ids
+msgid "Wa"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__website_message_ids
+msgid "Website Messages"
+
+#. module: l10n_th_gov_work_acceptance
+#: model:ir.model.fields,field_description:l10n_th_gov_work_acceptance.field_work_acceptance_committee__email
+msgid "Work Email"
+msgstr "อีเมลที่ทำงาน"
+
+#. module: l10n_th_gov_work_acceptance
+#: model:ir.model.fields,field_description:l10n_th_gov_work_acceptance.field_work_acceptance_committee__phone
+msgid "Work Phone"
+msgstr "เบอร์โทรศัพท์"
+
+#. module: purchase_work_acceptance_late_fines
+#: model:ir.model.constraint,message:purchase_work_acceptance_late_fines.constraint_work_acceptance_fines_late
+msgid "Wrong Fines Amount, it must be positive!"
+msgstr ""
+
+#. module: purchase_work_acceptance_late_fines
+#: model:ir.model.constraint,message:purchase_work_acceptance_late_fines.constraint_work_acceptance_fines_rate
+msgid "Wrong Fines Rate, it must be positive!"
+msgstr ""
+
+#. module: purchase_work_acceptance_late_fines
+#: model:ir.model.constraint,message:purchase_work_acceptance_late_fines.constraint_work_acceptance_late_days
+msgid "Wrong Late Days, it must be positive!"
+msgstr ""
+
+#. module: purchase_work_acceptance_late_fines
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_late_fines.view_wa_create_fines
+msgid "You can create fines as either customer invoice or vendor refund."
+msgstr ""
+
+#. module: purchase_work_acceptance
+#. odoo-python
+#: code:addons/purchase_work_acceptance/models/account_move.py:0
+#, python-format
+msgid "You cannot validate a bill if Quantity not equal accepted quantity"
+msgstr ""
+
+#. module: purchase_work_acceptance
+#. odoo-python
+#: code:addons/purchase_work_acceptance/models/stock_picking.py:0
+#, python-format
+msgid "You cannot validate a transfer if done quantity not equal accepted quantity"
+msgstr ""
+
+#. module: purchase_work_acceptance_late_fines
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_late_fines.res_config_settings_view_form_purchase
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_late_fines.view_work_acceptance_fines_late_tab_form
+msgid "per day"
+msgstr "ต่อวัน"
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_form_inherit
+msgid "Create WA"
+msgstr "สร้างการตรวจรับ"
