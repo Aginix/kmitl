@@ -2,54 +2,51 @@
 Budget Project
 ===============
 
-This module adds project/activity budgeting capabilities to the KMITL budget system.
+This module integrates KMITL projects with the budget system by adding project-related
+configuration to budget accounts.
 
 Features
 ========
 
-* Create and manage budget projects/activities
-* Link projects to specific budget accounts  
-* Track project budgets with 4-dimensional financial dimensions
-* Integrate with budget move lines for project allocation
-* State workflow: draft → confirmed → done
+* Configure budget accounts to support project/activity types
+* Define project types for budget accounts (research, education, service, etc.)
+* Integrate with the 6-dimensional financial framework (account_analytic_kmitl)
+* Link budget accounts with KMITL project management
 
 Configuration
 =============
 
 1. Go to Budgeting → Configuration → Budget Accounts
 2. Enable "Enable Project/Activity" checkbox on budget accounts that should support project management
-3. Only budget accounts with this flag enabled will be available for project creation
+3. Select the appropriate project type for the budget account
+4. Only budget accounts with this configuration will be available for project budget allocation
 
 Usage
 =====
 
-**Creating Projects/Activities:**
+**Configuring Budget Accounts for Projects:**
 
-1. Go to Budgeting → Projects/Activities
-2. Create a new project with name, budget amount, and budget account
-3. Set financial dimensions (department, activity, fund, source)
-4. Assign responsible user and set project dates
+1. Navigate to Budgeting → Configuration → Budget Accounts
+2. Open a budget account or create a new one
+3. In the "Project" section, check "Enable Project/Activity"
+4. Select the project type (research, education, service, etc.)
+5. Save the configuration
 
-**Managing Projects from Budget Moves:**
+**Integration with KMITL Projects:**
 
-1. When creating a budget appropriation, select a budget move line
-2. If the budget account has project enabled, a "Projects/Activities" tab will appear
-3. Create and manage projects directly from the budget move line form
-4. Projects will automatically inherit financial dimensions from the budget line
+The module extends budget accounts with project configuration that integrates with the
+kmitl_project module. When a budget account has project enabled:
 
-**Project States:**
+* The account becomes available for project budget allocation
+* Project types help categorize budget usage by activity type
+* Financial dimensions are tracked through the analytic distribution framework
 
-* Draft: Initial state for new projects
-* Confirmed: Project is approved and active
-* Done: Project is completed
-* Cancelled: Project is cancelled
+Technical Details
+=================
 
-Known Issues / Roadmap
-======================
-
-* Future: Add project budget consumption tracking
-* Future: Integration with procurement and accounting
-* Future: Project reporting and analytics
+* Depends on: budget, account_analytic_kmitl, kmitl_project
+* Extends: budget.account model with project fields
+* Provides: Project type configuration and project enablement flags
 
 Credits
 =======
