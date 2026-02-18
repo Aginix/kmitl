@@ -130,6 +130,12 @@ class BudgetAppropriationCompilation(models.Model):
         store=False,
     )
 
+    user_id = fields.Many2one(
+        comodel_name="res.users",
+        string="Created by",
+        default=lambda self: self.env.user,
+        readonly=True,
+    )
 
     use_f23 = fields.Boolean(
         string="ใช้รายงาน F23",

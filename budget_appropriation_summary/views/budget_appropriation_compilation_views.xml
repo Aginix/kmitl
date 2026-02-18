@@ -97,6 +97,7 @@
                                 required="1"
                             />
                             <field name="department_analytic_id" required="1" />
+                            <field name="user_id" readonly="1" />
                             <field name="use_f23" />
                         </group>
                         <group>

@@ -111,6 +111,12 @@ class BudgetAppropriationMasterSummary(models.Model):
         default=lambda self: self.env.company,
         required=True,
     )
+    user_id = fields.Many2one(
+        comodel_name="res.users",
+        string="Created by",
+        default=lambda self: self.env.user,
+        readonly=True,
+    )
     note = fields.Text(
         string="หมายเหตุ",
         readonly=False,
