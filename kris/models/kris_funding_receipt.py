@@ -308,7 +308,7 @@ class KrisFundingReceipt(models.Model):
                     "account_id": self.bank_account_id.id,
                     "debit": total,
                     "credit": 0.0,
-                    "currency_id": currency.id if currency != company_currency else False,
+                    "currency_id": currency.id,
                 }
             )
         )
@@ -341,7 +341,7 @@ class KrisFundingReceipt(models.Model):
                     "account_id": line.account_id.id,
                     "debit": 0.0,
                     "credit": line_amount,
-                    "currency_id": currency.id if currency != company_currency else False,
+                    "currency_id": currency.id,
                     "analytic_distribution": analytic_distribution or False,
                 }
             )
