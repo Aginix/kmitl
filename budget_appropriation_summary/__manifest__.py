@@ -26,6 +26,7 @@
         "report/report_compilation_f5.xml",
         "report/report_compilation_f23w.xml",
         "report/report_master_summary.xml",
+        "views/wizard_master_summary_done_views.xml",
         "views/budget_appropriation_compilation_views.xml",
         "views/budget_appropriation_master_summary_views.xml",
         "views/menu.xml",
