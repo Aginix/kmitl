@@ -437,14 +437,14 @@ class BudgetAppropriationCompilation(models.Model):
 
     def action_confirm(self):
         for record in self:
-            not_posted = (
+            not_ready = (
                 record.revenue_appropriation_ids + record.expense_appropriation_ids
-            ).filtered(lambda a: a.state != "posted")
-            if not_posted:
-                names = ", ".join(not_posted.mapped("name"))
+            ).filtered(lambda a: a.state not in ("review", "posted"))
+            if not_ready:
+                names = ", ".join(not_ready.mapped("name"))
                 raise ValidationError(
                     _(
-                        "ไม่สามารถยืนยันรวมเล่มได้ เนื่องจากรายการจัดสรรต่อไปนี้ยังไม่ได้รับการยืนยัน (posted):\n%s"
+                        "ไม่สามารถยืนยันรวมเล่มได้ เนื่องจากรายการจัดสรรต่อไปนี้ยังไม่ได้อยู่ในสถานะ review หรือ posted:\n%s"
                     )
                     % names
                 )
