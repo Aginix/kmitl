@@ -310,7 +310,6 @@ class ProcurementPlan(models.Model):
         "account.analytic.account",
         string="กิจกรรม",
         compute="_compute_analytic_id",
-        inverse="_inverse_activity_analytic",
         domain=[("root_plan_id.code", "=", "activities")],
         store=True,
         tracking=True,
@@ -321,7 +320,6 @@ class ProcurementPlan(models.Model):
         "account.analytic.account",
         string="ส่วนงาน",
         compute="_compute_analytic_id",
-        inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
         store=True,
         tracking=True,
@@ -332,7 +330,6 @@ class ProcurementPlan(models.Model):
         "account.analytic.account",
         string="กองทุน",
         compute="_compute_analytic_id",
-        inverse="_inverse_fund_analytic",
         domain=[("root_plan_id.code", "=", "funds")],
         store=True,
         tracking=True,
@@ -343,7 +340,6 @@ class ProcurementPlan(models.Model):
         "account.analytic.account",
         string="แหล่งเงิน",
         compute="_compute_analytic_id",
-        inverse="_inverse_source_analytic",
         domain=[("root_plan_id.code", "=", "sources")],
         store=True,
         tracking=True,
@@ -357,26 +353,6 @@ class ProcurementPlan(models.Model):
         "sources": "source_analytic_id",
         "procurement_plan": "analytic_account_id",
     }
-
-    def _inverse_activity_analytic(self):
-        """Update distribution when activity changes"""
-        for line in self:
-            line._update_analytic_distribution("activities")
-
-    def _inverse_department_analytic(self):
-        """Update distribution when department changes"""
-        for line in self:
-            line._update_analytic_distribution("departments")
-
-    def _inverse_fund_analytic(self):
-        """Update distribution when fund changes"""
-        for line in self:
-            line._update_analytic_distribution("funds")
-
-    def _inverse_source_analytic(self):
-        """Update distribution when fund changes"""
-        for line in self:
-            line._update_analytic_distribution("sources")
 
     def _inverse_analytic_account_id(self):
         """Update distribution when source changes"""
