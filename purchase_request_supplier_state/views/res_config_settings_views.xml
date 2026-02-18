@@ -10,7 +10,7 @@
         />
         <field name="arch" type="xml">
             <xpath expr="//div[@data-key='purchase']" position="inside">
-                <h2>Purchase Request Supplier State</h2>
+                <h2>Purchase Request Verification</h2>
                 <div
                     class="row mt16 o_settings_container"
                     name="purchase_request_supplier_state_settings"
@@ -25,7 +25,7 @@
                         <div class="o_setting_right_pane">
                             <label
                                 for="purchase_request_allow_supplier_state"
-                                string="Allow Supplier State"
+                                string="Allow Purchase Request Verification"
                             />
                             <div class="text-muted">
                                 เพิ่มขั้นตอนการตรวจสอบของเจ้าหน้าที่พัสดุก่อนเข้าสู่ขั้นตอนของการเงิน
