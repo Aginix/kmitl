@@ -10,7 +10,6 @@
     'data': [
         "data/budget_appropriation_report_action.xml",
         "data/paper_format.xml",
-        "security/ir.model.access.csv",
         "views/menus.xml",
     ],
     "assets": {
