@@ -223,7 +223,10 @@
                                                             <t t-out="line['name']" />
                                                         </span>
 
-                                                        <div t-if="line['note']" class="text-black-50 fs-6 budget-note-content" style="display:none; padding-left: 16px; white-space: pre-wrap;" t-out="line['note']"></div>
+                                                        <div t-if="line['note'] or line.get('description')" class="text-black-50 fs-6 budget-note-content" style="display:none; padding-left: 16px;">
+                                                            <div t-if="line['note']" style="white-space: pre-wrap;" t-out="line['note']"></div>
+                                                            <div t-if="line.get('description')" style="white-space: pre-wrap;" t-out="line['description']"></div>
+                                                        </div>
                                                     </div>
                                                 </td>
                                                 <td class="text-end">
@@ -405,7 +408,10 @@
                                                     <t t-out="line['name']" />
                                                 </span>
 
-                                                <div t-if="line['note']" class="text-black-50 fs-6 budget-note-content" style="display:none; padding-left: 16px; white-space: pre-wrap;" t-out="line['note']"></div>
+                                                <div t-if="line['note'] or line.get('description')" class="text-black-50 fs-6 budget-note-content" style="display:none; padding-left: 16px;">
+                                                    <div t-if="line['note']" style="white-space: pre-wrap;" t-out="line['note']"></div>
+                                                    <div t-if="line.get('description')" style="white-space: pre-wrap;" t-out="line['description']"></div>
+                                                </div>
                                             </div>
                                         </td>
                                         <td class="text-end">
