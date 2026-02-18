@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record
+        id="view_budget_appropriation_master_summary_done_wizard_form"
+        model="ir.ui.view"
+    >
+        <field name="name">budget.appropriation.master.summary.done.wizard.form</field>
+        <field name="model">budget.appropriation.master.summary.done.wizard</field>
+        <field name="arch" type="xml">
+            <form string="ยืนยันการเสร็จสิ้น">
+                <sheet>
+                    <group>
+                        <field name="master_summary_id" readonly="1" />
+                        <field name="appropriation_count" readonly="1" />
+                    </group>
+                    <p>
+                        การดำเนินการนี้จะ Post
+                        <strong>
+                            รายการจัดสรรงบประมาณทั้งหมด
+                            <field name="appropriation_count" nolabel="1" readonly="1" />
+                            รายการ
+                        </strong>
+                        ภายใต้สรุปภาพรวมนี้
+                        และเปลี่ยนสถานะเป็น <strong>เสร็จสิ้น</strong>
+                    </p>
+                    <p>ต้องการดำเนินการต่อหรือไม่?</p>
+                </sheet>
+                <footer>
+                    <button
+                        name="action_confirm"
+                        string="ยืนยัน"
+                        type="object"
+                        class="btn-primary"
+                    />
+                    <button string="ยกเลิก" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record
+        id="action_budget_appropriation_master_summary_done_wizard"
+        model="ir.actions.act_window"
+    >
+        <field name="name">ยืนยันการเสร็จสิ้น</field>
+        <field name="res_model">budget.appropriation.master.summary.done.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_budget_appropriation_master_summary_done_wizard_form" />
+    </record>
+
+</odoo>

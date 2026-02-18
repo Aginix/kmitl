@@ -1,4 +1,5 @@
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class BudgetAppropriationCompilation(models.Model):
@@ -435,6 +436,18 @@ class BudgetAppropriationCompilation(models.Model):
         return data
 
     def action_confirm(self):
+        for record in self:
+            not_posted = (
+                record.revenue_appropriation_ids + record.expense_appropriation_ids
+            ).filtered(lambda a: a.state != "posted")
+            if not_posted:
+                names = ", ".join(not_posted.mapped("name"))
+                raise ValidationError(
+                    _(
+                        "ไม่สามารถยืนยันรวมเล่มได้ เนื่องจากรายการจัดสรรต่อไปนี้ยังไม่ได้รับการยืนยัน (posted):\n%s"
+                    )
+                    % names
+                )
         self.write({"state": "confirmed"})
 
     def action_done(self):
