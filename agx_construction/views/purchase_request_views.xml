@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_request_form" model="ir.ui.view">
+        <field name="name">purchase.request.form.construction</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='description']" position="before">
+                <field name="is_construction"/>
+                <field name="project_id" attrs="{'invisible': [('is_construction', '!=', True)], 'required': [('is_construction', '=', True)]}"/>
+            </xpath>
+            <xpath expr="//field[@name='payment_type']" position="attributes">
+                <attribute name="attrs">{'readonly': [('is_construction', '=', True)]}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="construction_purchase_request_view_tree" model="ir.ui.view">
+        <field name="name">purchase.request.tree.construction</field>
+        <field name="model">purchase.request</field>
+        <field name="arch" type="xml">
+            <tree string="Constructions">
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="date_start"/>
+                <field name="requested_by" widget="many2one_avatar_user"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="estimated_cost"/>
+                <field name="state" widget="badge" decoration-success="state in ('done', 'approved', 'in_progress')" decoration-muted="state == 'draft'" decoration-warning="state == 'to_approve'" decoration-danger="state == 'rejected'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="construction_purchase_request_view_search" model="ir.ui.view">
+        <field name="name">purchase.request.search.construction</field>
+        <field name="model">purchase.request</field>
+        <field name="arch" type="xml">
+            <search string="Constructions">
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="requested_by"/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="In Progress" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Project" name="group_project" context="{'group_by': 'project_id'}"/>
+                    <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>
