@@ -345,10 +345,10 @@
                         context="{'group_by': 'state'}"
                     />
                 </group>
+                <searchpanel>
+                    <field name="department_analytic_id" icon="fa-users" select="multi" limit="0" />
+                </searchpanel>
             </search>
-            <searchpanel>
-                <field name="department_analytic_id" icon="fa-users" select="multi" limit="0" />
-            </searchpanel>
         </field>
     </record>
 
