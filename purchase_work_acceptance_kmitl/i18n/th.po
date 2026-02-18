@@ -36,6 +36,34 @@ msgstr "<span class=\"o_stat_text\">สัญญา/ใบสั่งซื้�
 msgid "Accepted"
 msgstr "ตรวจรับแล้ว"
 
+#. modules: l10n_th_gov_work_acceptance, purchase_work_acceptance,
+#. purchase_work_acceptance_evaluation
+#: model:ir.model.fields.selection,name:l10n_th_gov_work_acceptance.selection__work_acceptance_committee__status__accept
+#: model:ir.model.fields.selection,name:purchase_work_acceptance.selection__work_acceptance__state__accept
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_evaluation.selection__work_acceptance_evaluation__state_required__accept
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_evaluation.selection__work_acceptance_evaluation_report__wa_state__accept
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_form_inherit
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_evaluation.work_acceptance_evaluation_report_search_view
+msgid "Accepted"
+msgstr "ได้รับการตอบรับ"
+
+#. modules: l10n_th_gov_work_acceptance, purchase_work_acceptance,
+#. purchase_work_acceptance_late_fines
+#: model:ir.actions.act_window,name:purchase_work_acceptance.action_work_acceptance
+#: model:ir.model,name:purchase_work_acceptance_late_fines.model_work_acceptance
+#: model:ir.model.fields,field_description:l10n_th_gov_work_acceptance.field_work_acceptance_committee__wa_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard__wa_id
+#: model:ir.ui.menu,name:purchase_work_acceptance.menu_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.res_config_settings_view_form_purchase
+msgid "Work Acceptance"
+msgstr "การตรวจรับ"
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.actions.act_window,help:purchase_work_acceptance.action_work_acceptance
+msgid "Create a new work acceptance"
+msgstr "สร้างการตรวจรับใหม่"
+
 #. module: purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance__evaluation_result_ids
 msgid "Evaluation Results"
@@ -652,3 +680,55 @@ msgstr "ต่อวัน"
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_form_inherit
 msgid "Create WA"
 msgstr "สร้างการตรวจรับ"
+
+#. module: purchase_work_acceptance
+#: model:ir.model,name:purchase_work_acceptance.model_purchase_order
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__purchase_id
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
+msgid "Purchase Order"
+msgstr "คำสั่งซื้อ"
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_form
+msgid "Products"
+msgstr "สินค้า"
+
+
+#. module: purchase_work_acceptance
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__product_id
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__product_id
+msgid "Product"
+msgstr "สินค้า"
+
+#. module: l10n_th_gov_work_acceptance
+#: model:ir.model.fields,field_description:l10n_th_gov_work_acceptance.field_work_acceptance__completeness
+msgid "Progress"
+msgstr "ความคืบหน้า"
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
+msgid "My Work Acceptance"
+msgstr "การตรวจรับของฉัน"
+
+#. module: purchase_work_acceptance_late_fines
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_late_fines.view_work_acceptance_search
+msgid "Fines"
+msgstr "ค่าปรับ"
+
+#. module: purchase_work_acceptance
+#: model:ir.model,name:purchase_work_acceptance.model_purchase_order
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__purchase_id
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
+msgid "Purchase Order"
+msgstr "คำสั่งซื้อ"
+
+#. module: purchase_work_acceptance
+#: model:ir.model,name:purchase_work_acceptance.model_purchase_order_line
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__purchase_line_id
+msgid "Purchase Order Line"
+msgstr "รายการคำสั่งซื้อ"
+
+#. module: purchase_work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_form
+msgid "Define your terms and conditions ..."
+msgstr "สร้างเงื่อนไขการตรวจรับของคุณ..."
