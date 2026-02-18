@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <menuitem
+        id="menu_budget_appropriation_summary_root"
+        name="สรุปงบประมาณ"
+        parent="budget_appropriation.menu_budget_appropriation_root"
+        sequence="50"
+    />
+
+    <menuitem
+        id="menu_budget_appropriation_compilation"
+        name="รวมเล่มหน่วยงาน"
+        parent="menu_budget_appropriation_summary_root"
+        action="action_budget_appropriation_compilation"
+        sequence="10"
+    />
+
+    <menuitem
+        id="menu_budget_appropriation_master_summary"
+        name="สรุปภาพรวมสถาบัน"
+        parent="menu_budget_appropriation_summary_root"
+        action="action_budget_appropriation_master_summary"
+        sequence="20"
+    />
+
+</odoo>

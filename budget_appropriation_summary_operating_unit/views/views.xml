@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Compilation Form -->
+    <record id="view_budget_appropriation_compilation_ou_form" model="ir.ui.view">
+        <field name="name">budget.appropriation.compilation.form.ou</field>
+        <field name="model">budget.appropriation.compilation</field>
+        <field name="inherit_id" ref="budget_appropriation_summary.view_budget_appropriation_compilation_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='department_analytic_id']" position="after">
+                <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Compilation Tree -->
+    <record id="view_budget_appropriation_compilation_ou_tree" model="ir.ui.view">
+        <field name="name">budget.appropriation.compilation.tree.ou</field>
+        <field name="model">budget.appropriation.compilation</field>
+        <field name="inherit_id" ref="budget_appropriation_summary.view_budget_appropriation_compilation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="operating_unit_id" optional="hide" groups="operating_unit.group_multi_operating_unit" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Master Summary Form -->
+    <record id="view_budget_appropriation_master_summary_ou_form" model="ir.ui.view">
+        <field name="name">budget.appropriation.master.summary.form.ou</field>
+        <field name="model">budget.appropriation.master.summary</field>
+        <field name="inherit_id" ref="budget_appropriation_summary.view_budget_appropriation_master_summary_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='source_analytic_id']" position="after">
+                <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit" />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Master Summary Tree -->
+    <record id="view_budget_appropriation_master_summary_ou_tree" model="ir.ui.view">
+        <field name="name">budget.appropriation.master.summary.tree.ou</field>
+        <field name="model">budget.appropriation.master.summary</field>
+        <field name="inherit_id" ref="budget_appropriation_summary.view_budget_appropriation_master_summary_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="operating_unit_id" optional="hide" groups="operating_unit.group_multi_operating_unit" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

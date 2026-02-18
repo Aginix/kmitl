@@ -55,6 +55,7 @@ class BudgetAppropriationReport(models.Model):
         tracking=True,
         readonly=False,
         states=READONLY_STATES,
+        required=True,
     )
     state = fields.Selection(
         selection=[
@@ -119,6 +120,26 @@ class BudgetAppropriationReport(models.Model):
         string="จำนวนรายการ",
         compute="_compute_appropriation_count",
     )
+    currency_id = fields.Many2one(
+        comodel_name="res.currency",
+        default=lambda self: self.env.company.currency_id,
+    )
+    user_id = fields.Many2one(
+        comodel_name="res.users",
+        string="ผู้สร้างรายงาน",
+        default=lambda self: self.env.user,
+        readonly=True,
+    )
+    amount_revenue_total = fields.Monetary(
+        string="รายรับรวม",
+        compute="_compute_amount_totals",
+        currency_field="currency_id",
+    )
+    amount_expense_total = fields.Monetary(
+        string="รายจ่ายรวม",
+        compute="_compute_amount_totals",
+        currency_field="currency_id",
+    )
     f2_revenue_data = fields.Json(
         string="F2 Revenue Data",
         compute="_compute_f2_revenue_data",
@@ -169,6 +190,189 @@ class BudgetAppropriationReport(models.Model):
         compute="_compute_f10w_expense_data",
         store=False,
     )
+
+    use_f23 = fields.Boolean(
+        string="ใช้รายงาน F23",
+        help="ถ้าเลือก จะแสดงแบบฟอร์มรายงาน F23 ให้ผู้ใช้กรอกข้อมูลเพิ่มเติม",
+        states=READONLY_STATES,
+        readonly=False,
+    )
+
+    parent_id = fields.Many2one(
+        comodel_name="budget.appropriation.report",
+        string="รายงานหลัก",
+        readonly=False,
+        states=READONLY_STATES,
+    )
+
+    child_ids = fields.One2many(
+        "budget.appropriation.report",
+        "parent_id",
+        string="รายงานย่อย",
+        readonly=False,
+        states=READONLY_STATES,
+    )
+
+    department_analytic_id = fields.Many2one(
+        comodel_name="account.analytic.account",
+        string="หน่วยงาน",
+        domain=[("root_plan_id.code", "=", "departments")],
+        tracking=True,
+        readonly=False,
+        states=READONLY_STATES,
+        required=True,
+    )
+
+    education_percentage = fields.Float(
+        string="สัดส่วนการจัดสรรเพื่อการศึกษา (%)",
+        help="สัดส่วนการจัดสรรงบประมาณเพื่อการศึกษา (%)",
+        default=0.0,
+        readonly=True,
+        compute="_compute_impact_percentages",
+        store=True,
+    )
+    education_amount = fields.Monetary(
+        string="จำนวนเงินจัดสรรเพื่อการศึกษา",
+        help="จำนวนเงินจัดสรรงบประมาณเพื่อการศึกษา",
+        compute="_compute_impact_amounts",
+        store=True,
+        currency_field="currency_id",
+    )
+
+    academic_percentage = fields.Float(
+        string="สัดส่วนการจัดสรรเพื่อการวิจัย (%)",
+        help="สัดส่วนการจัดสรรงบประมาณเพื่อการวิจัย (%)",
+        default=0.0,
+        readonly=True,
+        compute="_compute_impact_percentages",
+        store=True,
+    )
+    academic_amount = fields.Monetary(
+        string="จำนวนเงินจัดสรรเพื่อการวิจัย",
+        help="จำนวนเงินจัดสรรงบประมาณเพื่อการวิจัย",
+        compute="_compute_impact_amounts",
+        store=True,
+        currency_field="currency_id",
+    )
+
+    industrial_percentage = fields.Float(
+        string="สัดส่วนการจัดสรรเพื่อตอบโจทย์ภาคอุตสาหกรรม (%)",
+        help="สัดส่วนการจัดสรรงบประมาณเพื่อตอบโจทย์ภาคอุตสาหกรรม (%)",
+        default=0.0,
+        readonly=True,
+        compute="_compute_impact_percentages",
+        store=True,
+    )
+    industrial_amount = fields.Monetary(
+        string="จำนวนเงินจัดสรรเพื่อตอบโจทย์ภาคอุตสาหกรรม",
+        help="จำนวนเงินจัดสรรงบประมาณเพื่อตอบโจทย์ภาคอุตสาหกรรม",
+        compute="_compute_impact_amounts",
+        store=True,
+        currency_field="currency_id",
+    )
+
+    social_percentage = fields.Float(
+        string="สัดส่วนการจัดสรรเพื่อด้านสังคม (%)",
+        help="สัดส่วนการจัดสรรงบประมาณเพื่อด้านสังคม (%)",
+        default=0.0,
+        readonly=True,
+        compute="_compute_impact_percentages",
+        store=True,
+    )
+    social_amount = fields.Monetary(
+        string="จำนวนเงินจัดสรรเพื่อด้านสังคม",
+        help="จำนวนเงินจัดสรรงบประมาณเพื่อด้านสังคม",
+        compute="_compute_impact_amounts",
+        store=True,
+        currency_field="currency_id",
+    )
+
+    impact_line_ids = fields.One2many(
+        "budget.appropriation.impact.line",
+        "report_id",
+        string="รายการสัดส่วนผลกระทบ",
+        readonly=False,
+        states=READONLY_STATES,
+    )
+    education_impact_line_ids = fields.One2many(
+        "budget.appropriation.impact.line",
+        "report_id",
+        string="รายการสัดส่วนผลกระทบ (การศึกษา)",
+        domain=[("impact_type", "=", "education")],
+        readonly=False,
+        states=READONLY_STATES,
+    )
+    academic_impact_line_ids = fields.One2many(
+        "budget.appropriation.impact.line",
+        "report_id",
+        string="รายการสัดส่วนผลกระทบ (การวิจัย)",
+        domain=[("impact_type", "=", "academic")],
+        readonly=False,
+        states=READONLY_STATES,
+    )
+    industrial_impact_line_ids = fields.One2many(
+        "budget.appropriation.impact.line",
+        "report_id",
+        string="รายการสัดส่วนผลกระทบ (อุตสาหกรรม)",
+        domain=[("impact_type", "=", "industrial")],
+        readonly=False,
+        states=READONLY_STATES,
+    )
+    social_impact_line_ids = fields.One2many(
+        "budget.appropriation.impact.line",
+        "report_id",
+        string="รายการสัดส่วนผลกระทบ (สังคม)",
+        domain=[("impact_type", "=", "social")],
+        readonly=False,
+        states=READONLY_STATES,
+    )
+
+    # Helper field for wizard - captures impact_type from context
+    wizard_impact_type = fields.Selection(
+        selection=[
+            ("education", "Education"),
+            ("academic", "Academic"),
+            ("industrial", "Industrial"),
+            ("social", "Social"),
+        ],
+        compute="_compute_wizard_impact_type",
+        store=False,
+    )
+
+    @api.depends_context("default_impact_type")
+    def _compute_wizard_impact_type(self):
+        impact_type = self.env.context.get("default_impact_type", "education")
+        for record in self:
+            record.wizard_impact_type = impact_type
+
+    @api.depends("impact_line_ids", "impact_line_ids.amount", "impact_line_ids.impact_type")
+    def _compute_impact_percentages(self):
+        for record in self:
+            record.education_percentage = 0.0
+            record.academic_percentage = 0.0
+            record.industrial_percentage = 0.0
+            record.social_percentage = 0.0
+
+    @api.depends("impact_line_ids", "impact_line_ids.amount", "amount_expense_total")
+    def _compute_impact_amounts(self):
+        for record in self:
+            education_amount = sum(
+                line.amount for line in record.impact_line_ids if line.impact_type == "education"
+            )
+            academic_amount = sum(
+                line.amount for line in record.impact_line_ids if line.impact_type == "academic"
+            )
+            industrial_amount = sum(
+                line.amount for line in record.impact_line_ids if line.impact_type == "industrial"
+            )
+            social_amount = sum(
+                line.amount for line in record.impact_line_ids if line.impact_type == "social"
+            )
+
+            record.education_amount = education_amount
+            record.academic_amount = academic_amount
+            record.industrial_amount = industrial_amount
+            record.social_amount = social_amount
 
     @api.depends("revenue_appropriation_ids", "compare_report_id")
     def _compute_f2_revenue_data(self):
@@ -255,6 +459,12 @@ class BudgetAppropriationReport(models.Model):
     def _compute_appropriation_count(self):
         for record in self:
             record.appropriation_count = len(record.revenue_appropriation_ids) + len(record.expense_appropriation_ids)
+
+    @api.depends("revenue_appropriation_ids.amount_net", "expense_appropriation_ids.amount_net")
+    def _compute_amount_totals(self):
+        for record in self:
+            record.amount_revenue_total = sum(record.revenue_appropriation_ids.mapped("amount_net"))
+            record.amount_expense_total = sum(record.expense_appropriation_ids.mapped("amount_net"))
 
     def action_confirm(self):
         self.write({"state": "confirmed"})
@@ -346,3 +556,147 @@ class BudgetAppropriationReport(models.Model):
             "domain": [("id", "in", self.appropriation_ids.ids)],
             "context": {"default_account_fiscal_year_id": self.account_fiscal_year_id.id},
         }
+
+    def get_impact_line_hierarchy(self, impact_type=None, min_level=3):
+        """Build flattened hierarchy list from impact_line_ids for table display.
+
+        Args:
+            impact_type: Filter by impact type (education, academic, industrial, social)
+            min_level: Minimum hierarchy level to display (1-based, default=3)
+
+        Returns:
+            dict: {
+                'rows': [flattened list with level info],
+                'total_amount': float
+            }
+        """
+        self.ensure_one()
+
+        # Filter lines by impact_type if specified
+        lines = self.impact_line_ids
+        if impact_type:
+            lines = lines.filtered(lambda l: l.impact_type == impact_type)
+
+        if not lines:
+            return {"rows": [], "total_amount": 0}
+
+        # Collect all analytic accounts and their ancestors
+        analytic_accounts = lines.mapped("analytic_account_id")
+        all_account_ids = set()
+
+        for account in analytic_accounts:
+            if account.parent_path:
+                parent_ids = [
+                    int(pid) for pid in account.parent_path.strip("/").split("/") if pid
+                ]
+                all_account_ids.update(parent_ids)
+            all_account_ids.add(account.id)
+
+        # Fetch all accounts with their hierarchy info
+        accounts = self.env["account.analytic.account"].browse(list(all_account_ids))
+
+        # Calculate hierarchy level for each account (1-based)
+        account_levels = {}
+        for acc in accounts:
+            if acc.parent_path:
+                level = len([p for p in acc.parent_path.strip("/").split("/") if p])
+            else:
+                level = 1
+            account_levels[acc.id] = level
+
+        # Group lines by their analytic account
+        lines_by_account = {}
+        for line in lines:
+            acc_id = line.analytic_account_id.id
+            if acc_id not in lines_by_account:
+                lines_by_account[acc_id] = []
+            lines_by_account[acc_id].append({
+                "id": line.id,
+                "amount": line.amount,
+            })
+
+        # Calculate totals for each account (including children)
+        account_totals = {}
+
+        def calc_total(account):
+            if account.id in account_totals:
+                return account_totals[account.id]
+            total = sum(l["amount"] for l in lines_by_account.get(account.id, []))
+            child_accounts = [
+                acc for acc in accounts
+                if acc.parent_id and acc.parent_id.id == account.id
+            ]
+            for child in child_accounts:
+                total += calc_total(child)
+            account_totals[account.id] = total
+            return total
+
+        # Calculate all totals first
+        for acc in accounts:
+            calc_total(acc)
+
+        # Build flattened rows (only for accounts at min_level or deeper)
+        rows = []
+
+        def flatten_node(account, display_level):
+            acc_level = account_levels.get(account.id, 1)
+
+            # Only add row if at or above min_level
+            if acc_level >= min_level:
+                rows.append({
+                    "id": f"acc_{account.id}",
+                    "type": "account",
+                    "level": display_level,
+                    "code": account.code or "",
+                    "name": account.name,
+                    "amount": account_totals.get(account.id, 0),
+                })
+
+                # Add line rows under this account
+                for line in lines_by_account.get(account.id, []):
+                    rows.append({
+                        "id": f"line_{line['id']}",
+                        "type": "line",
+                        "level": display_level + 1,
+                        "code": "",
+                        "name": "",
+                        "amount": line["amount"],
+                    })
+
+            # Process children
+            child_accounts = [
+                acc for acc in accounts
+                if acc.parent_id and acc.parent_id.id == account.id
+            ]
+            child_accounts = sorted(child_accounts, key=lambda a: a.code or "")
+            for child in child_accounts:
+                if acc_level >= min_level:
+                    flatten_node(child, display_level + 1)
+                else:
+                    flatten_node(child, display_level)
+
+        # Find root accounts and flatten
+        root_accounts = [
+            acc for acc in accounts
+            if not acc.parent_id or acc.parent_id.id not in all_account_ids
+        ]
+        root_accounts = sorted(root_accounts, key=lambda a: a.code or "")
+
+        for root in root_accounts:
+            flatten_node(root, 0)
+
+        # Total is sum of accounts at min_level (display roots)
+        display_root_ids = [
+            acc.id for acc in accounts
+            if account_levels.get(acc.id, 1) == min_level
+        ]
+        total_amount = sum(account_totals.get(acc_id, 0) for acc_id in display_root_ids)
+
+        return {
+            "rows": rows,
+            "total_amount": total_amount,
+        }
+
+    def action_save_impact_lines(self):
+        """Save impact lines and close wizard."""
+        return {"type": "ir.actions.act_window_close"}
