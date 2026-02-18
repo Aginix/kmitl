@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_kris_project_user,kris.project.user,kris.model_kris_project,kris.group_kris_user,1,1,1,0
+access_kris_project_manager,kris.project.manager,kris.model_kris_project,kris.group_kris_manager,1,1,1,1
+access_kris_funding_receipt_user,kris.funding.receipt.user,kris.model_kris_funding_receipt,kris.group_kris_user,1,1,1,0
+access_kris_funding_receipt_manager,kris.funding.receipt.manager,kris.model_kris_funding_receipt,kris.group_kris_manager,1,1,1,1
+access_kris_allocation_config_user,kris.allocation.config.user,kris.model_kris_allocation_config,kris.group_kris_user,1,0,0,0
+access_kris_allocation_config_manager,kris.allocation.config.manager,kris.model_kris_allocation_config,kris.group_kris_manager,1,1,1,1
+access_kris_allocation_config_line_user,kris.allocation.config.line.user,kris.model_kris_allocation_config_line,kris.group_kris_user,1,0,0,0
+access_kris_allocation_config_line_manager,kris.allocation.config.line.manager,kris.model_kris_allocation_config_line,kris.group_kris_manager,1,1,1,1

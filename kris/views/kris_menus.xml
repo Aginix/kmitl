@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Root menu -->
+    <menuitem id="menu_kris_root"
+              name="KRIS"
+              sequence="50"
+              web_icon="kris,static/description/icon.png" />
+
+    <!-- Research Projects -->
+    <menuitem id="menu_kris_project"
+              name="Research Projects"
+              parent="menu_kris_root"
+              action="kris.action_kris_project"
+              sequence="10"
+              groups="kris.group_kris_user" />
+
+    <!-- Funding Receipts -->
+    <menuitem id="menu_kris_funding_receipt"
+              name="Funding Receipts"
+              parent="menu_kris_root"
+              action="kris.action_kris_funding_receipt"
+              sequence="20"
+              groups="kris.group_kris_user" />
+
+    <!-- Configuration -->
+    <menuitem id="menu_kris_config"
+              name="Configuration"
+              parent="menu_kris_root"
+              sequence="100"
+              groups="kris.group_kris_manager" />
+
+    <menuitem id="menu_kris_allocation_config"
+              name="Allocation Configurations"
+              parent="menu_kris_config"
+              action="kris.action_kris_allocation_config"
+              sequence="10"
+              groups="kris.group_kris_manager" />
+</odoo>

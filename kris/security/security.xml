@@ -1,0 +1,54 @@
+<odoo>
+    <data noupdate="0">
+        <!-- Module Category -->
+        <record id="module_category_kris" model="ir.module.category">
+            <field name="name">KRIS</field>
+            <field name="description">User groups for managing KRIS research income sharing</field>
+            <field name="sequence">15</field>
+        </record>
+
+        <!-- User Group -->
+        <record id="group_kris_user" model="res.groups">
+            <field name="name">KRIS User</field>
+            <field name="category_id" ref="kris.module_category_kris"/>
+            <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]"/>
+        </record>
+
+        <!-- Finance Group (inherits from User) -->
+        <record id="group_kris_finance" model="res.groups">
+            <field name="name">KRIS Finance Officer</field>
+            <field name="category_id" ref="kris.module_category_kris"/>
+            <field name="implied_ids" eval="[(4, ref('group_kris_user'))]"/>
+        </record>
+
+        <!-- Manager Group (inherits from Finance) -->
+        <record id="group_kris_manager" model="res.groups">
+            <field name="name">KRIS Manager</field>
+            <field name="category_id" ref="kris.module_category_kris"/>
+            <field name="implied_ids" eval="[(4, ref('group_kris_finance'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+
+        <!-- Multi-company record rules -->
+        <record id="rule_kris_project_company" model="ir.rule">
+            <field name="name">KRIS Project: Multi-company</field>
+            <field name="model_id" ref="kris.model_kris_project"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="rule_kris_funding_receipt_company" model="ir.rule">
+            <field name="name">KRIS Funding Receipt: Multi-company</field>
+            <field name="model_id" ref="kris.model_kris_funding_receipt"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="rule_kris_allocation_config_company" model="ir.rule">
+            <field name="name">KRIS Allocation Config: Multi-company</field>
+            <field name="model_id" ref="kris.model_kris_allocation_config"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+    </data>
+</odoo>
