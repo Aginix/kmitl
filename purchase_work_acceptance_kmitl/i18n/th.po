@@ -382,20 +382,36 @@ msgstr ""
 msgid "Select Work Acceptance Wizard"
 msgstr ""
 
+#. module: purchase_work_acceptance_evaluation
+#: model:ir.actions.act_window,name:purchase_work_acceptance_evaluation.work_acceptance_evaluation_action
+#: model:ir.model,name:purchase_work_acceptance_evaluation.model_work_acceptance_evaluation
+#: model:ir.ui.menu,name:purchase_work_acceptance_evaluation.menu_work_acceptance_evaluation
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_evaluation.view_work_acceptance_evaluation_form
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_evaluation.view_work_acceptance_evaluation_search
+msgid "Work Acceptance Evaluation"
+msgstr "การประเมินการตรวจรับงาน"
+
+#. module: purchase_work_acceptance_evaluation
+#: model:ir.actions.act_window,name:purchase_work_acceptance_evaluation.work_acceptance_evaluation_report_action
+#: model:ir.model,name:purchase_work_acceptance_evaluation.model_work_acceptance_evaluation_report
+#: model:ir.ui.menu,name:purchase_work_acceptance_evaluation.work_acceptance_evaluation_report_menu
+msgid "Work Acceptance Evaluation Report"
+msgstr "รายงานการประเมินการตรวจรับงาน"
+
 #. module: purchase_work_acceptance
 #: model:ir.model,name:purchase_work_acceptance.model_work_accepted_date_wizard
 msgid "Select work accepted date"
-msgstr ""
+msgstr "เลือกวันที่ตรวจรับงาน"
 
 #. module: purchase_work_acceptance
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_form
 msgid "Set to draft"
-msgstr ""
+msgstr "กำหนดเป็นฉบับร่าง"
 
 #. module: purchase_work_acceptance_evaluation
 #: model:ir.model.fields,field_description:purchase_work_acceptance_evaluation.field_work_acceptance_evaluation__state_required
 msgid "State Required"
-msgstr ""
+msgstr "สถานะที่ต้องการ"
 
 #. modules: l10n_th_gov_work_acceptance, purchase_work_acceptance,
 #. purchase_work_acceptance_evaluation
@@ -468,7 +484,7 @@ msgstr ""
 #. module: purchase_work_acceptance
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_form
 msgid "Total"
-msgstr ""
+msgstr "รวม"
 
 #. module: purchase_work_acceptance
 #: model:ir.model,name:purchase_work_acceptance.model_stock_picking
@@ -518,71 +534,76 @@ msgstr ""
 #. module: purchase_work_acceptance
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_form_inherit
 msgid "WA"
-msgstr ""
+msgstr "การตรวจรับ"
 
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_purchase_order__wa_accepted
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_view_search
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_purchase_order_filter
 msgid "WA Accepted"
-msgstr ""
+msgstr "การตรวจรับได้รับการตอบรับแล้ว"
 
 #. module: l10n_th_gov_work_acceptance
 #: model:tier.definition,name:l10n_th_gov_work_acceptance.wa_tier_001
 msgid "WA Committee #1"
-msgstr ""
+msgstr "คณะกรรมการตรวจรับงาน #1"
 
 #. module: l10n_th_gov_work_acceptance
 #: model:tier.definition,name:l10n_th_gov_work_acceptance.wa_tier_002
 msgid "WA Committee #2"
-msgstr ""
+msgstr "คณะกรรมการตรวจรับงาน #2"
 
 #. module: l10n_th_gov_work_acceptance
 #: model:tier.definition,name:l10n_th_gov_work_acceptance.wa_tier_003
 msgid "WA Committee #3"
-msgstr ""
+msgstr "คณะกรรมการตรวจรับงาน #3"
 
 #. module: l10n_th_gov_work_acceptance
 #: model:tier.definition,name:l10n_th_gov_work_acceptance.wa_tier_004
 msgid "WA Committee #4"
-msgstr ""
+msgstr "คณะกรรมการตรวจรับงาน #4"
 
 #. module: l10n_th_gov_work_acceptance
 #: model:tier.definition,name:l10n_th_gov_work_acceptance.wa_tier_005
 msgid "WA Committee #5"
-msgstr ""
+msgstr "คณะกรรมการตรวจรับงาน #5"
 
 #. module: l10n_th_gov_work_acceptance
 #: model:tier.definition,name:l10n_th_gov_work_acceptance.wa_tier_006
 msgid "WA Committee #6"
-msgstr ""
+msgstr "คณะกรรมการตรวจรับงาน #6"
 
 #. module: l10n_th_gov_work_acceptance
 #: model:tier.definition,name:l10n_th_gov_work_acceptance.wa_tier_007
 msgid "WA Committee #7"
-msgstr ""
+msgstr "คณะกรรมการตรวจรับงาน #7"
 
 #. module: l10n_th_gov_work_acceptance
 #: model:tier.definition,name:l10n_th_gov_work_acceptance.wa_tier_008
 msgid "WA Committee #8"
-msgstr ""
+msgstr "คณะกรรมการตรวจรับงาน #8"
 
 #. module: l10n_th_gov_work_acceptance
 #: model:tier.definition,name:l10n_th_gov_work_acceptance.wa_tier_009
 msgid "WA Committee #9"
-msgstr ""
+msgstr "คณะกรรมการตรวจรับงาน #9"
 
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_purchase_order__wa_line_ids
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_purchase_order_line__wa_line_ids
 msgid "WA Lines"
-msgstr ""
+msgstr "รายการการตรวจรับ"
 
 #. module: purchase_work_acceptance
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.purchase_order_view_search
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_purchase_order_filter
 msgid "WA Not Accepted"
-msgstr ""
+msgstr "การตรวจรับไม่ได้รับการตอบรับ"
+
+#. module: l10n_th_gov_work_acceptance
+#: model_terms:ir.ui.view,arch_db:l10n_th_gov_work_acceptance.view_work_acceptance_form_tier_validation
+msgid "Not Accept"
+msgstr "ไม่ตอบรับ"
 
 #. modules: purchase_work_acceptance, purchase_work_acceptance_evaluation
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_account_bank_statement_line__wa_id
@@ -599,7 +620,7 @@ msgstr ""
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_purchase_order__wa_count
 msgid "WA count"
-msgstr ""
+msgstr "จำนวนการตรวจรับ"
 
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_stock_picking_type__bypass_wa
@@ -609,18 +630,18 @@ msgstr ""
 #. module: l10n_th_gov_work_acceptance
 #: model:ir.actions.server,name:l10n_th_gov_work_acceptance.ir_server_action_wa_committee_approve
 msgid "WA: Committee Approved"
-msgstr ""
+msgstr "กรรมการตรวจรับอนุมัติ"
 
 #. module: l10n_th_gov_work_acceptance
 #: model:ir.actions.server,name:l10n_th_gov_work_acceptance.ir_server_action_wa_committee_reject
 msgid "WA: Committee Rejected"
-msgstr ""
+msgstr "กรรมการตรวจรับปฏิเสธ"
 
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_select_work_acceptance_wizard__wa_ids
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_stock_picking__wa_ids
 msgid "Wa"
-msgstr ""
+msgstr "การตรวจรับ"
 
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__website_message_ids
@@ -649,12 +670,12 @@ msgstr ""
 #. module: purchase_work_acceptance_late_fines
 #: model:ir.model.constraint,message:purchase_work_acceptance_late_fines.constraint_work_acceptance_late_days
 msgid "Wrong Late Days, it must be positive!"
-msgstr ""
+msgstr "จำนวนวันที่ล่าช้าผิดพลาด ต้องเป็นค่าบวก!"
 
 #. module: purchase_work_acceptance_late_fines
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_late_fines.view_wa_create_fines
 msgid "You can create fines as either customer invoice or vendor refund."
-msgstr ""
+msgstr "คุณสามารถสร้างค่าปรับได้ทั้งในรูปแบบใบแจ้งหนี้ลูกค้าหรือใบคืนเงินผู้ขาย"
 
 #. module: purchase_work_acceptance
 #. odoo-python
@@ -732,3 +753,14 @@ msgstr "รายการคำสั่งซื้อ"
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_form
 msgid "Define your terms and conditions ..."
 msgstr "สร้างเงื่อนไขการตรวจรับของคุณ..."
+
+#. module: l10n_th_gov_work_acceptance
+#: model_terms:ir.ui.view,arch_db:l10n_th_gov_work_acceptance.view_work_acceptance_form_tier_validation
+msgid ""
+"<i class=\"fa fa-info-circle\"/>\n"
+"                        This Record needs to be\n"
+"                        validated."
+msgstr ""
+"<i class=\"fa fa-info-circle\"/>\n"
+"                        ต้องการการอนุมัติ\n"
+"                        สำหรับบันทึกนี้"
