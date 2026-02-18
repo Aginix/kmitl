@@ -26,7 +26,7 @@
         <field name="arch" type="xml">
             <form string="Procurement Plan">
                 <header>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,new,in_progress,done" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,new,ready,in_progress,done" />
                     <button name="action_ready" string="Ready" type="object" class="btn-primary" states="new" />
                 </header>
                 <sheet>
