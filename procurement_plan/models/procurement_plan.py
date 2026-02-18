@@ -85,7 +85,6 @@ class ProcurementPlan(models.Model):
         string="Procurement Method",
         required=False,
         tracking=True,
-        states=READONLY_STATES,
     )
     state = fields.Selection(
         [
