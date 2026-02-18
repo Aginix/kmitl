@@ -294,10 +294,124 @@
                             </div>
                         </div>
                         <div class="my-5" style="height: 10px" />
+                        <t t-foreach="o.work_acceptance_committee_ids" t-as="line">
+                            <div class="row mt-4">
+                                <div class="col-6 offset-6 text-center">
+                                    <div style="white-space: nowrap">
+                                        (ลงชื่อ)
+                                        <span
+                                            style="
+                                                display: inline-block;
+                                                width: 200px;
+                                                border-bottom: 1px dotted #000;
+                                            "
+                                        ></span>
+                                        <span t-field="line.approve_role" />
+                                    </div>
+                                    <div class="mt-2">(<span t-esc="line.name" />)</div>
+                                </div>
+                            </div>
+                        </t>
+                        <div class="my-5" style="height: 10px" />
+                        <div class="row">
+                            <div class="col">ส่วนบันทึกงานพัสดุ</div>
+                        </div>
+                        <div class="row">
+                            <div class="col ms-5">
+                                ด้วยสำนักงานพัสดุ สำนักงานอธิการบดี
+                                มีความประสงค์ขอเบิกเงินรายได้ ประจำปี 2568
+                                ตามรายละเอียดดังต่อไปนี้
+                            </div>
+                        </div>
+                        <table class="table table-borderless table-sm">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 60%">
+                                        สำนักบริหารข้อมูลดิจิทัลฯ
+                                    </td>
+                                    <td>รหัสสำนักงาน</td>
+                                    <td>09</td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 60%">กองทุนสินทรัพย์ถาวร</td>
+                                    <td>รหัสกองทุน</td>
+                                    <td>0600</td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 60%">
+                                        แผนงาน จัดการศึกษาอุดมศึกษา
+                                    </td>
+                                    <td>รหัสแผนงาน</td>
+                                    <td>09007</td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 60%">
+                                        งาน - กิจกรรมหลัก งานสนับสนุนการจัดการศึกษา
+                                    </td>
+                                    <td>รหัส - กิจกรรมหลัก</td>
+                                    <td>0101</td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 60%">
+                                        - กิจกรรมรอง บริการคอมพิวเตอร์ทางวิชาการ
+                                    </td>
+                                    <td>- กิจกรรมรอง</td>
+                                    <td>13</td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 60%">
+                                        - กิจกรรมย่อย งานด้านบริการคอมพิวเตอร์
+                                    </td>
+                                    <td>- กิจกรรมย่อย</td>
+                                    <td>134</td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 60%">งบรายจ่าย งบลงทุน</td>
+                                    <td>รหัสงบรายจ่าย</td>
+                                    <td>53000</td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 60%">ค่าใช้จ่ายงบลงทุน</td>
+                                    <td>รหัสประเภทรายจ่าย</td>
+                                    <td>53100</td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 60%">ครุภัณฑ์</td>
+                                    <td>รหัส</td>
+                                    <td>5412000000</td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 60%">ค่าครุภัณฑ์คอมพิวเตอร์</td>
+                                    <td>รหัส</td>
+                                    <td>5412000003</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            <div class="col">
+                                จำนวนเงิน
+                                <span
+                                    class="ms-2 fw-bolder text-decoration-underline"
+                                    t-esc="sum(o.wa_line_ids.mapped('price_subtotal'))"
+                                />
+                                บาท (
+                                <t
+                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(
+    sum(o.wa_line_ids.mapped('price_subtotal'))
+)"
+                                />)
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col ms-5">
+                                จึงเรียนมาเพื่อทราบรายงานการตรวจรับพัสดุของคณะกรรมการและเห็นควรแจ้งหน่วยงานที่เกี่ยวข้องเพื่อดำเนินการต่อไป
+                            </div>
+                        </div>
+                        <div class="my-5" style="height: 10px" />
                         <div class="row mt-4">
                             <div class="col-6 offset-6 text-center">
-                                <div>
-                                    (ลงชื่อ)
+                                <div style="white-space: nowrap">
+                                    ลงชื่อ
                                     <span
                                         style="
                                             display: inline-block;
@@ -305,54 +419,31 @@
                                             border-bottom: 1px dotted #000;
                                         "
                                     ></span>
-                                    ประธานกรรมการ
+                                    <span>ผู้อำนวยการสำนักงานพัสดุ</span>
                                 </div>
                                 <div class="mt-2">
-                                    (<span
-                                        t-esc="o.work_acceptance_committee_ids[0].name"
-                                    />)
+                                    (<span>นางสาวกรองทิพย์ สกุนตศรี</span>)
                                 </div>
                             </div>
                         </div>
                         <div class="row mt-4">
-                            <div class="col-6 offset-6 text-center">
-                                <div>
-                                    (ลงชื่อ)
-                                    <span
-                                        style="
-                                            display: inline-block;
-                                            width: 200px;
-                                            border-bottom: 1px dotted #000;
-                                        "
-                                    ></span>
-                                    กรรมการ
-                                </div>
-                                <div class="mt-2">
-                                    (<span
-                                        t-esc="o.work_acceptance_committee_ids[0].name"
-                                    />)
-                                </div>
+                            <div class="col-6 offset-6 text-center fw-bolder">
+                                ทราบ/ดำเนินการเสนอ
                             </div>
                         </div>
+                        <div class="my-5" style="height: 10px" />
                         <div class="row mt-4">
                             <div class="col-6 offset-6 text-center">
-                                <div>
-                                    (ลงชื่อ)
-                                    <span
-                                        style="
-                                            display: inline-block;
-                                            width: 200px;
-                                            border-bottom: 1px dotted #000;
-                                        "
-                                    ></span>
-                                    กรรมการและเลขานุการ
-                                </div>
-                                <div class="mt-2">
-                                    (<span
-                                        t-esc="o.work_acceptance_committee_ids[0].name"
-                                    />)
-                                </div>
+                                (รองศาสตราจารย์ไพฑูรย์ พิมดี)
                             </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 offset-6 text-center">
+                                รองอธิการบดีฝ่ายพัสดุ ปฏิบัติการแทน
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 offset-6 text-center">อธิการบดี</div>
                         </div>
                     </div>
                 </t>
