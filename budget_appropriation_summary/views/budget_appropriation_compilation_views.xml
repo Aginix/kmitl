@@ -117,6 +117,7 @@
                                         ('source_analytic_id', '=', source_analytic_id),
                                         ('source_analytic_id', '=', False),
                                 ]"
+                                attrs="{'readonly': ['|', '|', ('account_fiscal_year_id', '=', False), ('source_analytic_id', '=', False), ('department_analytic_id', '=', False)]}"
                                 context="{'can_edit': False}"
                             >
                                 <tree decoration-info="state == 'review'" decoration-danger="state == 'draft'" decoration-success="state == 'posted'" default_order="department_analytic_id, id">
@@ -141,6 +142,7 @@
                                         ('source_analytic_id', '=', source_analytic_id),
                                         ('source_analytic_id', '=', False),
                                 ]"
+                                attrs="{'readonly': ['|', '|', ('account_fiscal_year_id', '=', False), ('source_analytic_id', '=', False), ('department_analytic_id', '=', False)]}"
                             >
                                 <tree decoration-info="state == 'review'" decoration-danger="state == 'draft'" decoration-success="state == 'posted'" default_order="department_analytic_id, id">
                                     <field name="state" widget="badge" decoration-info="state == 'review'" decoration-danger="state == 'draft'" decoration-success="state == 'posted'" />
