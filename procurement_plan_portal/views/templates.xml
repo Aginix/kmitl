@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_procurement_plans" name="Procurement Plans - Overview">
+        <t t-call="portal.portal_layout">
+            <div id="procurement_plans_portal" class="container mt16">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h1 class="mb-0">แผนจัดซื้อจัดจ้าง</h1>
+                    <form method="get" action="/procurement-plans" class="d-flex align-items-center gap-2">
+                        <label class="mb-0 me-1">ปีงบประมาณ:</label>
+                        <select name="fiscal_year_id" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                            <t t-foreach="fiscal_years" t-as="fy">
+                                <option
+                                    t-att-value="fy.id"
+                                    t-att-selected="fy.id == current_fy.id"
+                                    t-out="fy.name"
+                                />
+                            </t>
+                        </select>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="card-body p-0">
+                        <table class="table table-hover table-sm mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th rowspan="2" style="width: 80px" class="text-center align-middle">รหัส</th>
+                                    <th rowspan="2" style="width: 220px" class="align-middle">ส่วนงาน</th>
+                                    <th colspan="2" class="text-center border-start">จำนวน (รายการ)</th>
+                                    <th colspan="2" class="text-center border-start">งบประมาณที่ได้รับ (บาท)</th>
+                                    <th rowspan="2" style="width: 130px" class="text-end align-middle border-start">รวมทั้งหมด (บาท)</th>
+                                </tr>
+                                <tr>
+                                    <th class="text-center border-start" style="width: 90px">งบประมาณแผ่นดิน</th>
+                                    <th class="text-center" style="width: 90px">เงินรายได้</th>
+                                    <th class="text-end border-start" style="width: 130px">งบประมาณแผ่นดิน</th>
+                                    <th class="text-end" style="width: 130px">เงินรายได้</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="dept_rows" t-as="row">
+                                    <tr>
+                                        <td class="text-center text-muted" t-out="row['dept'].code"/>
+                                        <td>
+                                            <a t-attf-href="/procurement-plans/#{row['dept'].code}?fiscal_year_id=#{current_fy.id}" t-out="row['dept'].name"/>
+                                        </td>
+                                        <td class="text-center border-start" t-out="row['gov_count']"/>
+                                        <td class="text-center" t-out="row['rev_count']"/>
+                                        <td class="text-end border-start" t-esc="'{:,.2f}'.format(row['gov_total'])"/>
+                                        <td class="text-end" t-esc="'{:,.2f}'.format(row['rev_total'])"/>
+                                        <td class="text-end border-start" t-esc="'{:,.2f}'.format(row['total_price'])"/>
+                                    </tr>
+                                </t>
+                                <t t-if="not dept_rows">
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted py-4">ไม่มีข้อมูลแผนจัดซื้อจัดจ้าง</td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot class="table-light fw-bold">
+                                <tr>
+                                    <td colspan="2" class="text-end">รวมทั้งหมด</td>
+                                    <td class="text-center border-start" t-out="grand_gov_count"/>
+                                    <td class="text-center" t-out="grand_rev_count"/>
+                                    <td class="text-end border-start" t-esc="'{:,.2f}'.format(grand_gov_total)"/>
+                                    <td class="text-end" t-esc="'{:,.2f}'.format(grand_rev_total)"/>
+                                    <td class="text-end border-start" t-esc="'{:,.2f}'.format(grand_total_price)"/>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_procurement_plan_department" name="Procurement Plans - Department Detail">
+        <t t-call="portal.portal_layout">
+            <div id="procurement_plan_department_portal" class="container mt16">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="mb-3">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="/procurement-plans">แผนจัดซื้อจัดจ้าง</a>
+                        </li>
+                        <li class="breadcrumb-item active" t-out="dept.name"/>
+                    </ol>
+                </nav>
+
+                <!-- Header + Fiscal Year Filter -->
+                <div class="d-flex align-items-end mb-3">
+                    <h2 class="mb-0 me-2" t-out="dept.name"/>
+                    <form t-attf-action="/procurement-plans/#{dept.code}" method="get" class="d-flex align-items-center gap-2">
+                        <t t-if="source != 'all'">
+                            <input type="hidden" name="source" t-att-value="source"/>
+                        </t>
+                        <label class="mb-0 me-1 h5 fw-normal">ปีงบประมาณ:</label>
+                        <select name="fiscal_year_id" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                            <t t-foreach="fiscal_years" t-as="fy">
+                                <option
+                                    t-att-value="fy.id"
+                                    t-att-selected="fy.id == current_fy.id"
+                                    t-out="fy.name"
+                                />
+                            </t>
+                        </select>
+                    </form>
+                </div>
+
+                <!-- Summary Cards (always unfiltered) -->
+                <div class="row g-3 mb-3">
+                    <div class="col-sm-4">
+                        <div class="card text-center h-100">
+                            <div class="card-body">
+                                <div class="fs-2 fw-bold text-primary" t-out="all_plan_count"/>
+                                <div class="text-muted">จำนวนแผนทั้งหมด</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="card text-center h-100">
+                            <div class="card-body">
+                                <div class="fs-4 fw-bold text-success" t-esc="'{:,.2f}'.format(all_total_price)"/>
+                                <div class="text-muted">วงเงินรวม (บาท)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div class="fw-bold mb-2">วิธีจัดซื้อจัดจ้าง</div>
+                                <t t-foreach="all_method_breakdown.items()" t-as="method_item">
+                                    <div class="d-flex justify-content-between small">
+                                        <span t-out="method_item[0]"/>
+                                        <span class="text-muted">
+                                            <t t-out="method_item[1]['count']"/> รายการ
+                                        </span>
+                                    </div>
+                                </t>
+                                <t t-if="not all_method_breakdown">
+                                    <span class="text-muted small">ไม่มีข้อมูล</span>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Source Filter Button Group -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="fw-medium me-2">แหล่งเงิน</div>
+                            <div class="btn-group" role="group">
+                                <a t-attf-href="/procurement-plans/#{dept.code}?fiscal_year_id=#{current_fy.id}"
+                                t-attf-class="btn #{'btn-primary' if source == 'all' else 'btn-outline-primary'}">
+                                    ทั้งหมด
+                                </a>
+                                <a t-attf-href="/procurement-plans/#{dept.code}?fiscal_year_id=#{current_fy.id}&amp;source=gov"
+                                t-attf-class="btn #{'btn-primary' if source == 'gov' else 'btn-outline-primary'}">
+                                    งบประมาณแผ่นดิน
+                                </a>
+                                <a t-attf-href="/procurement-plans/#{dept.code}?fiscal_year_id=#{current_fy.id}&amp;source=rev"
+                                t-attf-class="btn #{'btn-primary' if source == 'rev' else 'btn-outline-primary'}">
+                                    เงินรายได้
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plans Table -->
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-sm mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th rowspan="2" style="width: 50px" class="text-center align-middle">ลำดับ</th>
+                                        <th rowspan="2" class="align-middle">ชื่อรายการ</th>
+                                        <th colspan="2" class="text-center border-start">งบประมาณที่ได้รับ (บาท)</th>
+                                        <th rowspan="2" style="width: 140px" class="text-end align-middle border-start">งบประมาณที่ใช้จริง (บาท)</th>
+                                        <th rowspan="2" style="width: 110px" class="text-center align-middle border-start">สถานะการดำเนินงาน</th>
+                                        <th rowspan="2" style="width: 150px" class="text-center align-middle border-start">วิธีจัดซื้อจัดจ้าง</th>
+                                        <th rowspan="2" style="width: 110px" class="align-middle border-start">แก้ไขล่าสุด</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-center border-start" style="width: 130px">งบประมาณแผ่นดิน</th>
+                                        <th class="text-center" style="width: 130px">เงินรายได้</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="plans" t-as="plan">
+                                        <tr style="vertical-align: middle;">
+                                            <td class="text-center" t-out="plan_index + 1"/>
+                                            <td>
+                                                <a t-attf-href="/procurement-plans/#{dept.code}/#{plan.id}">
+                                                    <span class="text-muted me-1" t-out="plan.name"/>
+                                                    <t t-out="plan.description"/>
+                                                </a>
+                                            </td>
+                                            <td class="text-end border-start">
+                                                <t t-if="plan.source_analytic_id == src_gov" t-esc="'{:,.0f}'.format(plan.total_price)"/>
+                                                <t t-else="">-</t>
+                                            </td>
+                                            <td class="text-end">
+                                                <t t-if="plan.source_analytic_id == src_rev" t-esc="'{:,.0f}'.format(plan.total_price)"/>
+                                                <t t-else="">-</t>
+                                            </td>
+                                            <td class="text-end border-start">
+                                                <t t-if="plan.analytic_account_balance" t-esc="'{:,.0f}'.format(plan.analytic_account_balance)"/>
+                                                <t t-else="">-</t>
+                                            </td>
+                                            <td class="text-center border-start">
+                                                <t t-if="plan.state == 'new'">
+                                                    <span class="badge text-bg-secondary">ยังไม่เริ่ม</span>
+                                                </t>
+                                                <t t-elif="plan.state == 'on_hold'">
+                                                    <span class="badge text-bg-warning">รอดำเนินการ</span>
+                                                </t>
+                                                <t t-elif="plan.state == 'ready'">
+                                                    <span class="badge text-bg-info">พร้อม</span>
+                                                </t>
+                                                <t t-elif="plan.state == 'in_progress'">
+                                                    <span class="badge text-bg-primary">กำลังดำเนินการ</span>
+                                                </t>
+                                                <t t-elif="plan.state == 'done'">
+                                                    <span class="badge text-bg-success">เสร็จสิ้น</span>
+                                                </t>
+                                                <t t-elif="plan.state == 'cancel'">
+                                                    <span class="badge text-bg-danger">ยกเลิก</span>
+                                                </t>
+                                                <t t-else="">
+                                                    <span class="badge text-bg-light text-dark" t-out="plan.state"/>
+                                                </t>
+                                            </td>
+                                            <td class="border-start" t-out="plan.procurement_method_id.name or '-'"/>
+                                            <td class="border-start text-muted small" t-out="plan.write_date.strftime('%d/%m/%Y')"/>
+                                        </tr>
+                                    </t>
+                                    <t t-if="not plans">
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted py-4">ไม่มีข้อมูลแผนจัดซื้อจัดจ้าง</td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                                <tfoot class="table-light fw-bold">
+                                    <tr>
+                                        <td colspan="2" class="text-end">รวม</td>
+                                        <td class="text-end border-start" t-esc="'{:,.2f}'.format(gov_total)"/>
+                                        <td class="text-end" t-esc="'{:,.2f}'.format(rev_total)"/>
+                                        <td class="text-end border-start" t-esc="'{:,.2f}'.format(total_actual)"/>
+                                        <td colspan="3"/>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_procurement_plan_detail" name="Procurement Plan - Detail">
+        <t t-call="portal.portal_layout">
+            <div id="procurement_plan_detail_portal" class="container mt16">
+
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="mb-3">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="/procurement-plans">แผนจัดซื้อจัดจ้าง</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a t-attf-href="/procurement-plans/#{dept.code}?fiscal_year_id=#{plan.account_fiscal_year_id.id}" t-out="dept.name"/>
+                        </li>
+                        <li class="breadcrumb-item active" t-out="plan.name"/>
+                    </ol>
+                </nav>
+
+                <!-- Header -->
+                <div class="d-flex align-items-start justify-content-between mb-3">
+                    <div>
+                        <h1 class="mb-1" t-out="plan.description"/>
+                        <span class="text-muted" t-out="plan.name"/>
+                    </div>
+                    <div class="ms-3 flex-shrink-0">
+                        <t t-if="plan.state == 'new'">
+                            <span class="badge text-bg-secondary fs-6">ยังไม่เริ่ม</span>
+                        </t>
+                        <t t-elif="plan.state == 'on_hold'">
+                            <span class="badge text-bg-warning fs-6">รอดำเนินการ</span>
+                        </t>
+                        <t t-elif="plan.state == 'ready'">
+                            <span class="badge text-bg-info fs-6">พร้อม</span>
+                        </t>
+                        <t t-elif="plan.state == 'in_progress'">
+                            <span class="badge text-bg-primary fs-6">กำลังดำเนินการ</span>
+                        </t>
+                        <t t-elif="plan.state == 'done'">
+                            <span class="badge text-bg-success fs-6">เสร็จสิ้น</span>
+                        </t>
+                        <t t-elif="plan.state == 'cancel'">
+                            <span class="badge text-bg-danger fs-6">ยกเลิก</span>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Section 1: ข้อมูลทั่วไป -->
+                <div class="card mb-3">
+                    <div class="card-header fw-bold">ข้อมูลทั่วไป</div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm mb-0">
+                            <tbody>
+                                <tr>
+                                    <th style="width: 200px" class="text-muted fw-normal ps-3">ปีงบประมาณ</th>
+                                    <td t-out="plan.account_fiscal_year_id.name or '-'"/>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted fw-normal ps-3">ส่วนงาน</th>
+                                    <td t-out="plan.department_analytic_id.complete_name.replace(' / ', ' ') or '-'"/>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted fw-normal ps-3">แหล่งเงิน</th>
+                                    <td t-out="plan.source_analytic_id.name or '-'"/>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted fw-normal ps-3">กองทุน</th>
+                                    <td t-out="plan.fund_analytic_id.name or '-'"/>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted fw-normal ps-3">กิจกรรม</th>
+                                    <td t-out="plan.activity_analytic_id.complete_name.replace(' / ', ' ') or '-'"/>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted fw-normal ps-3">รหัสงบประมาณ</th>
+                                    <td t-out="plan.budget_account_id.name or '-'"/>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted fw-normal ps-3">วิธีจัดซื้อจัดจ้าง</th>
+                                    <td t-out="plan.procurement_method_id.name or '-'"/>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted fw-normal ps-3">จำนวน</th>
+                                    <td>
+                                        <t t-out="plan.amount"/>
+                                        <span class="text-muted ms-1" t-out="plan.unit or ''"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Section 2: งบประมาณ -->
+                <div class="card mb-3">
+                    <div class="card-header fw-bold">งบประมาณ</div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>แหล่งเงิน</th>
+                                    <th class="text-end" style="width: 180px">งบประมาณที่ได้รับ (บาท)</th>
+                                    <th class="text-end" style="width: 180px">งบประมาณที่ใช้จริง (บาท)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td t-out="plan.source_analytic_id.name or 'ไม่ระบุ'"/>
+                                    <td class="text-end" t-esc="'{:,.2f}'.format(plan.total_price)"/>
+                                    <td class="text-end" t-esc="'{:,.2f}'.format(actual)"/>
+                                </tr>
+                            </tbody>
+                            <tfoot class="table-light fw-bold">
+                                <tr>
+                                    <td class="text-end">รวม</td>
+                                    <td class="text-end" t-esc="'{:,.2f}'.format(plan.total_price)"/>
+                                    <td class="text-end" t-esc="'{:,.2f}'.format(actual)"/>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Section 3: แผนการดำเนินงาน -->
+                <div class="card mb-3">
+                    <div class="card-header fw-bold">แผนการดำเนินงาน</div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-center" style="width: 80px">ช่วงเวลา</th>
+                                    <th>ขั้นตอน</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center text-muted">
+                                        <t t-out="month_labels.get(plan.purchase_request_eta, '-')"/>
+                                    </td>
+                                    <td>ขอซื้อขอจ้าง (Purchase Request)</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center text-muted">
+                                        <t t-out="month_labels.get(plan.procurement_announcement_eta, '-')"/>
+                                    </td>
+                                    <td>ประกาศจัดซื้อจัดจ้าง</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center text-muted">
+                                        <t t-out="month_labels.get(plan.approval_signing_eta, '-')"/>
+                                    </td>
+                                    <td>อนุมัติ/ลงนาม</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center text-muted">
+                                        <t t-out="month_labels.get(plan.contract_order_signing_eta, '-')"/>
+                                    </td>
+                                    <td>ลงนามสัญญา/ใบสั่งซื้อ</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center text-muted">
+                                        <t t-out="month_labels.get(plan.acceptance_eta, '-')"/>
+                                    </td>
+                                    <td>ตรวจรับ</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Section 4: แผนการเบิกจ่าย -->
+                <t t-if="plan.payment_ids">
+                    <div class="card mb-3">
+                        <div class="card-header fw-bold">แผนการเบิกจ่าย</div>
+                        <div class="card-body p-0">
+                            <table class="table table-sm mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-center" style="width: 80px">งวดที่</th>
+                                        <th class="text-center" style="width: 130px">เดือน</th>
+                                        <th class="text-center" style="width: 130px">จำนวนวัน</th>
+                                        <th class="text-end" style="width: 180px">จำนวนเงิน (บาท)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="plan.payment_ids" t-as="pay">
+                                        <tr>
+                                            <td class="text-center" t-out="pay.number"/>
+                                            <td class="text-center" t-out="month_labels.get(pay.month, '-')"/>
+                                            <td class="text-center" t-out="pay.number_of_days"/>
+                                            <td class="text-end" t-esc="'{:,.2f}'.format(pay.amount)"/>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                                <tfoot class="table-light fw-bold">
+                                    <tr>
+                                        <td colspan="3" class="text-end">รวม</td>
+                                        <td class="text-end" t-esc="'{:,.2f}'.format(sum(plan.payment_ids.mapped('amount')))"/>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Section 5: หมายเหตุ -->
+                <t t-if="plan.note">
+                    <div class="card mb-3">
+                        <div class="card-header fw-bold">หมายเหตุ</div>
+                        <div class="card-body">
+                            <p class="mb-0" t-out="plan.note"/>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Footer metadata -->
+                <div class="text-muted small text-end mt-2 mb-4">
+                    แก้ไขล่าสุด: <t t-out="plan.write_date.strftime('%d/%m/%Y %H:%M')"/>
+                </div>
+
+            </div>
+        </t>
+    </template>
+</odoo>
