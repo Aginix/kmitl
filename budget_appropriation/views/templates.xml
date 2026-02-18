@@ -37,6 +37,12 @@
                                     <t t-out="format_monetary(object.amount_net)" />
  บาท
                                 </p>
+
+                                <div class="mb-2 d-print-none">
+                                    <label class="form-check-label me-1" for="f4ShowDetail">แสดงรายละเอียด</label>
+                                    <input class="form-check-input" type="checkbox" id="f4ShowDetail" />
+                                </div>
+
                                 <table class="table table-sm table-borderless">
                                     <thead>
                                         <tr>
@@ -58,7 +64,7 @@
                                                             <t t-out="line['name']" />
                                                         </span>
 
-                                                        <div class="text-black-50 fs-6" t-attf-style="padding-left: 16px;">
+                                                        <div class="text-black-50 fs-6 budget-note-content" style="display:none; padding-left: 16px;">
                                                             <t t-foreach="line['sub_rows']" t-as="row">
                                                                 <div style="white-space: pre-wrap;" t-out="row['note']"></div>
                                                             </t>
@@ -87,9 +93,11 @@
                                                             <t t-out="line['name']" />
                                                         </span>
 
-                                                        <t t-foreach="line['sub_rows']" t-as="row">
-                                                            <div class="text-black-50 fs-6" style="white-space: pre-wrap; padding-left: 16px;" t-out="row['note']"></div>
-                                                        </t>
+                                                        <div class="text-black-50 fs-6 budget-note-content" style="display:none; padding-left: 16px;">
+                                                            <t t-foreach="line['sub_rows']" t-as="row">
+                                                                <div style="white-space: pre-wrap;" t-out="row['note']"></div>
+                                                            </t>
+                                                        </div>
                                                     </div>
                                                 </td>
                                                 <td class="text-end" style="width: 140px">
@@ -138,6 +146,18 @@
                         </div>
                     </div>
                 </div>
+                <script>
+                    (function () {
+                        var cb = document.getElementById('f4ShowDetail');
+                        if (!cb) return;
+                        cb.addEventListener('change', function () {
+                            var notes = document.querySelectorAll('.budget-note-content');
+                            notes.forEach(function (el) {
+                                el.style.display = cb.checked ? '' : 'none';
+                            });
+                        });
+                    })();
+                </script>
             </xpath>
         </template>
 
@@ -169,7 +189,17 @@
                                     <t t-out="format_monetary(report.get('amount_total', object.amount_net))" />
  บาท
                                 </p>
-                                <table class="table table-sm table-borderless">
+
+                                <div class="mb-2 d-print-none">
+                                    <label class="form-check-label me-1" for="f5ShowItemized">แสดงแจกแจงรหัสงบประมาณ</label>
+                                    <input class="form-check-input" type="checkbox" id="f5ShowItemized" />
+                                </div>
+                                <div class="mb-3 d-print-none">
+                                    <label class="form-check-label me-1" for="f5ShowDetail">แสดงรายละเอียด</label>
+                                    <input class="form-check-input" type="checkbox" id="f5ShowDetail" />
+                                </div>
+
+                                <table class="table table-sm table-borderless" id="f5Table">
                                     <thead>
                                         <tr>
                                             <th>รายการ</th>
@@ -183,14 +213,17 @@
                                     </thead>
                                     <tbody>
                                         <t t-foreach="report['hierarchy']" t-as="line">
-                                            <tr>
+                                            <tr t-att-data-row-id="line['code'] or line['name']"
+                                                t-att-data-row-indent="line['indent']"
+                                                t-att-data-row-amount="line['amount_total']"
+                                                t-att-data-has-children="'1' if line.get('has_children') else '0'">
                                                 <td>
                                                     <div t-attf-style="padding-left: #{16 * line['indent']}px;">
                                                         <span t-attf-class="{{'fw-bolder' if line['indent'] == 0 else ''}}">
                                                             <t t-out="line['name']" />
                                                         </span>
 
-                                                        <div t-if="line['note']" class="text-black-50 fs-6" t-attf-style="padding-left: 16px; white-space: pre-wrap;" t-out="line['note']"></div>
+                                                        <div t-if="line['note']" class="text-black-50 fs-6 budget-note-content" style="display:none; padding-left: 16px; white-space: pre-wrap;" t-out="line['note']"></div>
                                                     </div>
                                                 </td>
                                                 <td class="text-end">
@@ -223,6 +256,91 @@
                         </div>
                     </div>
                 </div>
+                <script>
+                    (function () {
+                        function formatAmount(num) {
+                            return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        }
+
+                        function applyMerge(tbody) {
+                            // Reset: restore originals and show all rows
+                            Array.from(tbody.rows).forEach(function (row) {
+                                row.style.display = '';
+                                if (row.dataset.originalAmount) {
+                                    row.cells[2].textContent = row.dataset.originalAmount;
+                                    delete row.dataset.originalAmount;
+                                }
+                            });
+
+                            var rows = Array.from(tbody.rows);
+                            for (var i = 0; i &lt; rows.length; i++) {
+                                var row = rows[i];
+                                if (row.dataset.hasChildren === '1') continue;
+
+                                var rowId = row.dataset.rowId;
+                                var rowIndent = row.dataset.rowIndent;
+                                var sum = parseFloat(row.dataset.rowAmount) || 0;
+                                var dupes = [];
+
+                                for (var j = i + 1; j &lt; rows.length; j++) {
+                                    var next = rows[j];
+                                    if (next.dataset.hasChildren !== '0') break;
+                                    if (next.dataset.rowId === rowId &amp;&amp; next.dataset.rowIndent === rowIndent) {
+                                        sum += parseFloat(next.dataset.rowAmount) || 0;
+                                        dupes.push(next);
+                                    } else {
+                                        break;
+                                    }
+                                }
+
+                                if (dupes.length > 0) {
+                                    // Save original text and update first row's amount cell
+                                    if (!row.dataset.originalAmount) {
+                                        row.dataset.originalAmount = row.cells[2].textContent;
+                                    }
+                                    row.cells[2].textContent = formatAmount(sum);
+                                    dupes.forEach(function (d) { d.style.display = 'none'; });
+                                    i += dupes.length;
+                                }
+                            }
+                        }
+
+                        function applyItemized(tbody) {
+                            Array.from(tbody.rows).forEach(function (row) {
+                                row.style.display = '';
+                                if (row.dataset.originalAmount) {
+                                    row.cells[2].textContent = row.dataset.originalAmount;
+                                    delete row.dataset.originalAmount;
+                                }
+                            });
+                        }
+
+                        var table = document.getElementById('f5Table');
+                        var cbItemized = document.getElementById('f5ShowItemized');
+                        var cbDetail = document.getElementById('f5ShowDetail');
+                        if (!table || !cbItemized || !cbDetail) return;
+
+                        var tbody = table.querySelector('tbody');
+
+                        // Apply merged view on load
+                        applyMerge(tbody);
+
+                        cbItemized.addEventListener('change', function () {
+                            if (cbItemized.checked) {
+                                applyItemized(tbody);
+                            } else {
+                                applyMerge(tbody);
+                            }
+                        });
+
+                        cbDetail.addEventListener('change', function () {
+                            var notes = table.querySelectorAll('.budget-note-content');
+                            notes.forEach(function (el) {
+                                el.style.display = cbDetail.checked ? '' : 'none';
+                            });
+                        });
+                    })();
+                </script>
             </xpath>
         </template>
 
@@ -253,7 +371,17 @@
                             <t t-out="format_monetary(report.get('amount_total', object.amount_net))" />
  บาท
                         </p>
-                        <table class="table table-sm table-borderless">
+
+                        <div class="mb-2 d-print-none">
+                            <label class="form-check-label me-1" for="f5cShowItemized">แสดงแจกแจงรหัสงบประมาณ</label>
+                            <input class="form-check-input" type="checkbox" id="f5cShowItemized" />
+                        </div>
+                        <div class="mb-3 d-print-none">
+                            <label class="form-check-label me-1" for="f5cShowDetail">แสดงรายละเอียด</label>
+                            <input class="form-check-input" type="checkbox" id="f5cShowDetail" />
+                        </div>
+
+                        <table class="table table-sm table-borderless" id="f5cTable">
                             <thead>
                                 <tr>
                                     <th>รายการ</th>
@@ -267,14 +395,17 @@
                             </thead>
                             <tbody>
                                 <t t-foreach="report['hierarchy']" t-as="line">
-                                    <tr>
+                                    <tr t-att-data-row-id="line['code'] or line['name']"
+                                        t-att-data-row-indent="line['indent']"
+                                        t-att-data-row-amount="line['amount_total']"
+                                        t-att-data-has-children="'1' if line.get('has_children') else '0'">
                                         <td>
                                             <div t-attf-style="padding-left: #{16 * line['indent']}px;">
                                                 <span t-attf-class="{{'fw-bolder' if line['indent'] == 0 else ''}}">
                                                     <t t-out="line['name']" />
                                                 </span>
 
-                                                <div t-if="line['note']" class="text-black-50 fs-6" t-attf-style="padding-left: 16px; white-space: pre-wrap;" t-out="line['note']"></div>
+                                                <div t-if="line['note']" class="text-black-50 fs-6 budget-note-content" style="display:none; padding-left: 16px; white-space: pre-wrap;" t-out="line['note']"></div>
                                             </div>
                                         </td>
                                         <td class="text-end">
@@ -305,6 +436,88 @@
                         </div>
                     </div>
                 </div>
+                <script>
+                    (function () {
+                        function formatAmount(num) {
+                            return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        }
+
+                        function applyMerge(tbody) {
+                            Array.from(tbody.rows).forEach(function (row) {
+                                row.style.display = '';
+                                if (row.dataset.originalAmount) {
+                                    row.cells[2].textContent = row.dataset.originalAmount;
+                                    delete row.dataset.originalAmount;
+                                }
+                            });
+
+                            var rows = Array.from(tbody.rows);
+                            for (var i = 0; i &lt; rows.length; i++) {
+                                var row = rows[i];
+                                if (row.dataset.hasChildren === '1') continue;
+
+                                var rowId = row.dataset.rowId;
+                                var rowIndent = row.dataset.rowIndent;
+                                var sum = parseFloat(row.dataset.rowAmount) || 0;
+                                var dupes = [];
+
+                                for (var j = i + 1; j &lt; rows.length; j++) {
+                                    var next = rows[j];
+                                    if (next.dataset.hasChildren !== '0') break;
+                                    if (next.dataset.rowId === rowId &amp;&amp; next.dataset.rowIndent === rowIndent) {
+                                        sum += parseFloat(next.dataset.rowAmount) || 0;
+                                        dupes.push(next);
+                                    } else {
+                                        break;
+                                    }
+                                }
+
+                                if (dupes.length > 0) {
+                                    if (!row.dataset.originalAmount) {
+                                        row.dataset.originalAmount = row.cells[2].textContent;
+                                    }
+                                    row.cells[2].textContent = formatAmount(sum);
+                                    dupes.forEach(function (d) { d.style.display = 'none'; });
+                                    i += dupes.length;
+                                }
+                            }
+                        }
+
+                        function applyItemized(tbody) {
+                            Array.from(tbody.rows).forEach(function (row) {
+                                row.style.display = '';
+                                if (row.dataset.originalAmount) {
+                                    row.cells[2].textContent = row.dataset.originalAmount;
+                                    delete row.dataset.originalAmount;
+                                }
+                            });
+                        }
+
+                        var table = document.getElementById('f5cTable');
+                        var cbItemized = document.getElementById('f5cShowItemized');
+                        var cbDetail = document.getElementById('f5cShowDetail');
+                        if (!table || !cbItemized || !cbDetail) return;
+
+                        var tbody = table.querySelector('tbody');
+
+                        applyMerge(tbody);
+
+                        cbItemized.addEventListener('change', function () {
+                            if (cbItemized.checked) {
+                                applyItemized(tbody);
+                            } else {
+                                applyMerge(tbody);
+                            }
+                        });
+
+                        cbDetail.addEventListener('change', function () {
+                            var notes = table.querySelectorAll('.budget-note-content');
+                            notes.forEach(function (el) {
+                                el.style.display = cbDetail.checked ? '' : 'none';
+                            });
+                        });
+                    })();
+                </script>
             </t>
         </template>
     </data>
