@@ -133,7 +133,7 @@
                         <!-- Recipient (ปลายทาง) -->
                         <label for="recipient" string="To (เรียน)"/>
                         <div class="o_row">
-                            <field name="recipient" placeholder="Enter recipient name/department..." style="width: 80%;" required="1" />
+                            <field name="recipient" placeholder="Enter recipient name/department..." style="width: 80%;" />
                             <button name="action_lookup_recipient" string="Lookup" type="object" class="btn-link" icon="fa-search" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                         </div>
                     </group>
