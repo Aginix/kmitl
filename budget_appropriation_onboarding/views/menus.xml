@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Server action to auto-create onboarding records and open view -->
+    <record id="action_server_open_onboarding" model="ir.actions.server">
+        <field name="name">เปิด Onboarding</field>
+        <field name="model_id" ref="model_budget_appropriation_onboarding" />
+        <field name="state">code</field>
+        <field name="code">action = model.action_open_onboarding()</field>
+    </record>
+
+    <!-- Menu item at sequence 1 under budget appropriation root -->
+    <menuitem
+        id="menu_budget_appropriation_onboarding"
+        name="ติดตามความคืบหน้า"
+        parent="budget_appropriation.menu_budget_appropriation_root"
+        action="action_server_open_onboarding"
+        sequence="1"
+    />
+
+</odoo>
