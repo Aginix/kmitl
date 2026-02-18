@@ -265,6 +265,10 @@
                             return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                         }
 
+                        function getNoteContainer(row) {
+                            return row.cells[0].querySelector('.budget-note-content');
+                        }
+
                         function applyMerge(tbody) {
                             // Reset: restore originals and show all rows
                             Array.from(tbody.rows).forEach(function (row) {
@@ -272,6 +276,11 @@
                                 if (row.dataset.originalAmount) {
                                     row.cells[2].textContent = row.dataset.originalAmount;
                                     delete row.dataset.originalAmount;
+                                }
+                                var nc = getNoteContainer(row);
+                                if (nc &amp;&amp; nc.dataset.originalNotes !== undefined) {
+                                    nc.innerHTML = nc.dataset.originalNotes;
+                                    delete nc.dataset.originalNotes;
                                 }
                             });
 
@@ -297,11 +306,29 @@
                                 }
 
                                 if (dupes.length > 0) {
-                                    // Save original text and update first row's amount cell
                                     if (!row.dataset.originalAmount) {
                                         row.dataset.originalAmount = row.cells[2].textContent;
                                     }
                                     row.cells[2].textContent = formatAmount(sum);
+
+                                    // Collect note/description content from dupes into first row
+                                    var nc = getNoteContainer(row);
+                                    if (nc) {
+                                        if (nc.dataset.originalNotes === undefined) {
+                                            nc.dataset.originalNotes = nc.innerHTML;
+                                        }
+                                        dupes.forEach(function (d) {
+                                            var dnc = getNoteContainer(d);
+                                            if (dnc) {
+                                                Array.from(dnc.children).forEach(function (child) {
+                                                    if (child.textContent.trim()) {
+                                                        nc.appendChild(child.cloneNode(true));
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+
                                     dupes.forEach(function (d) { d.style.display = 'none'; });
                                     i += dupes.length;
                                 }
@@ -314,6 +341,11 @@
                                 if (row.dataset.originalAmount) {
                                     row.cells[2].textContent = row.dataset.originalAmount;
                                     delete row.dataset.originalAmount;
+                                }
+                                var nc = getNoteContainer(row);
+                                if (nc &amp;&amp; nc.dataset.originalNotes !== undefined) {
+                                    nc.innerHTML = nc.dataset.originalNotes;
+                                    delete nc.dataset.originalNotes;
                                 }
                             });
                         }
@@ -448,12 +480,21 @@
                             return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                         }
 
+                        function getNoteContainer(row) {
+                            return row.cells[0].querySelector('.budget-note-content');
+                        }
+
                         function applyMerge(tbody) {
                             Array.from(tbody.rows).forEach(function (row) {
                                 row.style.display = '';
                                 if (row.dataset.originalAmount) {
                                     row.cells[2].textContent = row.dataset.originalAmount;
                                     delete row.dataset.originalAmount;
+                                }
+                                var nc = getNoteContainer(row);
+                                if (nc &amp;&amp; nc.dataset.originalNotes !== undefined) {
+                                    nc.innerHTML = nc.dataset.originalNotes;
+                                    delete nc.dataset.originalNotes;
                                 }
                             });
 
@@ -483,6 +524,24 @@
                                         row.dataset.originalAmount = row.cells[2].textContent;
                                     }
                                     row.cells[2].textContent = formatAmount(sum);
+
+                                    var nc = getNoteContainer(row);
+                                    if (nc) {
+                                        if (nc.dataset.originalNotes === undefined) {
+                                            nc.dataset.originalNotes = nc.innerHTML;
+                                        }
+                                        dupes.forEach(function (d) {
+                                            var dnc = getNoteContainer(d);
+                                            if (dnc) {
+                                                Array.from(dnc.children).forEach(function (child) {
+                                                    if (child.textContent.trim()) {
+                                                        nc.appendChild(child.cloneNode(true));
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+
                                     dupes.forEach(function (d) { d.style.display = 'none'; });
                                     i += dupes.length;
                                 }
@@ -495,6 +554,11 @@
                                 if (row.dataset.originalAmount) {
                                     row.cells[2].textContent = row.dataset.originalAmount;
                                     delete row.dataset.originalAmount;
+                                }
+                                var nc = getNoteContainer(row);
+                                if (nc &amp;&amp; nc.dataset.originalNotes !== undefined) {
+                                    nc.innerHTML = nc.dataset.originalNotes;
+                                    delete nc.dataset.originalNotes;
                                 }
                             });
                         }
