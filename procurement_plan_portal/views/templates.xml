@@ -14,6 +14,34 @@
                         </select>
                     </form>
                 </div>
+                <!-- Summary Metrics -->
+                <div class="row g-3 mb-3">
+                    <div class="col-sm-4">
+                        <div class="card text-center h-100">
+                            <div class="card-body">
+                                <div class="fs-2 fw-bold text-primary" t-out="grand_total_count"/>
+                                <div class="text-muted">จำนวนแผนทั้งหมด</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="card text-center h-100">
+                            <div class="card-body">
+                                <div class="fs-4 fw-bold text-success" t-esc="'{:,.2f}'.format(grand_gov_total)"/>
+                                <div class="text-muted">งบประมาณแผ่นดิน (บาท)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="card text-center h-100">
+                            <div class="card-body">
+                                <div class="fs-4 fw-bold text-info" t-esc="'{:,.2f}'.format(grand_rev_total)"/>
+                                <div class="text-muted">เงินรายได้ (บาท)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card">
                     <div class="card-body p-0">
                         <table class="table table-hover table-sm mb-0">
