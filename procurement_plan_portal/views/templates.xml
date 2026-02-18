@@ -315,7 +315,7 @@
                                 </tr>
                                 <tr>
                                     <th class="text-muted fw-normal ps-3">รหัสงบประมาณ</th>
-                                    <td t-out="plan.budget_account_id.name or '-'" />
+                                    <td t-out="plan.budget_account_id.complete_name.replace(' / ', ' ') or '-'" />
                                 </tr>
                                 <tr>
                                     <th class="text-muted fw-normal ps-3">วิธีจัดซื้อจัดจ้าง</th>
