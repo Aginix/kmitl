@@ -764,3 +764,29 @@ msgstr ""
 "<i class=\"fa fa-info-circle\"/>\n"
 "                        ต้องการการอนุมัติ\n"
 "                        สำหรับบันทึกนี้"
+
+#. module: l10n_th_gov_work_acceptance
+#: model_terms:ir.ui.view,arch_db:l10n_th_gov_work_acceptance.view_work_acceptance_form_tier_validation
+msgid ""
+"<i class=\"fa fa-thumbs-down\"/>\n"
+"                        Operation has been\n"
+"                        <b>rejected</b>\n"
+"                        ."
+msgstr ""
+"<i class=\"fa fa-thumbs-down\"/>\n"
+"                        การดำเนินการถูก\n"
+"                        <b>ปฏิเสธ</b>\n"
+"                        ."
+
+#. module: l10n_th_gov_work_acceptance
+#: model_terms:ir.ui.view,arch_db:l10n_th_gov_work_acceptance.view_work_acceptance_form_tier_validation
+msgid ""
+"<i class=\"fa fa-thumbs-up\"/>\n"
+"                        Operation has been\n"
+"                        <b>validated</b>\n"
+"                        !"
+msgstr ""
+"<i class=\"fa fa-thumbs-up\"/>\n"
+"                        การดำเนินการถูก\n"
+"                        <b>อนุมัติ</b>\n"
+"                        !"
