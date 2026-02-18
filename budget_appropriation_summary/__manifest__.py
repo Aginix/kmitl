@@ -9,6 +9,7 @@
     "data": [
         "security/ir.model.access.csv",
         "data/paper_format.xml",
+        "data/dashboard_action.xml",
         "report/report_common.xml",
         "report/report_f2_revenue.xml",
         "report/report_f3w_f6w_revenue.xml",
@@ -29,6 +30,11 @@
         "views/budget_appropriation_master_summary_views.xml",
         "views/menu.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "budget_appropriation_summary/static/src/**/*",
+        ],
+    },
     "auto_install": False,
     "application": False,
     "installable": True,

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<odoo>
-    <menuitem id="menu_budget_appropriation_report_menu" name="รายงานประมาณการ" parent="budget_appropriation.menu_budget_appropriation_root" sequence="90">
-        <menuitem id="menu_budget_appropriation_dashboard" name="Dashboard การจัดสรรงบประมาณ" action="action_budget_appropriation_dashboard" sequence="1"/>
-    </menuitem>
-</odoo>
