@@ -27,9 +27,11 @@
             <form string="Procurement Plan">
                 <header>
                     <field name="state" widget="statusbar" statusbar_visible="draft,new,in_progress,done" />
+                    <button name="action_ready" string="Ready" type="object" class="btn-primary" states="new" />
                 </header>
                 <sheet>
                     <field name="can_edit" invisible="1"/>
+                    <field name="can_edit_description" invisible="1"/>
                     <div class="oe_button_box" name="button_box">
                         <field name="budget_commitment_count" invisible="1" />
                         <button name="action_open_budget_commitments" type="object" class="oe_stat_button" icon="fa-money" attrs="{'invisible': [('budget_commitment_count', '=', 0)]}">
@@ -47,17 +49,15 @@
                     </div>
                     <group>
                         <group name="basic">
-                            <field name="description" placeholder="e.g. ครุภัณฑ์วิทยาศาสตร์และการแพทย์, ปรับปรุงห้องปฏิบัติการฟิสิกส์" attrs="{'readonly': [('can_edit', '=', False)]}" />
-                            <field name="procurement_method_id" widget="selection" attrs="{'readonly': [('can_edit', '=', False)]}" />
-
+                            <field name="description" placeholder="e.g. ครุภัณฑ์วิทยาศาสตร์และการแพทย์, ปรับปรุงห้องปฏิบัติการฟิสิกส์" attrs="{'readonly': [('can_edit_description', '=', False)]}" />
                             <label for="amount" string="จำนวน" />
                             <div class="o_row">
                                 <field name="amount" attrs="{'readonly': [('can_edit', '=', False)]}"  />
                                 <field name="unit" placeholder="e.g. ชิ้น, รายการ, ตัว, ชุด" attrs="{'readonly': [('can_edit', '=', False)]}"  />
                             </div>
                             <field name="total_price" attrs="{'readonly': [('can_edit', '=', False)]}" />
-                            <field name="note" placeholder="Notes..." />
                             <field name="user_id" widget="many2one_avatar_user" required="1" attrs="{'readonly': [('can_edit', '=', False)]}" />
+                            <field name="note" placeholder="Notes..." />
                         </group>
                         <group>
                             <field name="account_fiscal_year_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': [('id', '!=', False)]}" />
@@ -69,14 +69,15 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="ข้อมูลแผนการดำเนินงาน">
+                        <page string="การดำเนินงาน">
                             <group>
-                                <group>
-                                    <field name="purchase_request_eta" />
-                                    <field name="procurement_announcement_eta" />
-                                    <field name="approval_signing_eta" />
-                                    <field name="contract_order_signing_eta" />
-                                    <field name="acceptance_eta" />
+                                <group string="แผน">
+                                    <field name="procurement_method_id" widget="selection" attrs="{'readonly': [('state', 'in', 'draft', 'new')]}" />
+                                    <field name="purchase_request_eta" attrs="{'readonly': [('state', 'in', 'draft', 'new')]}" />
+                                    <field name="procurement_announcement_eta" attrs="{'readonly': [('state', 'in', 'draft', 'new')]}" />
+                                    <field name="approval_signing_eta" attrs="{'readonly': [('state', 'in', 'draft', 'new')]}" />
+                                    <field name="contract_order_signing_eta" attrs="{'readonly': [('state', 'in', 'draft', 'new')]}" />
+                                    <field name="acceptance_eta" attrs="{'readonly': [('state', 'in', 'draft', 'new')]}" />
                                 </group>
                             </group>
                         </page>
@@ -128,8 +129,10 @@
                     <filter string="สถานะ" name="group_by_state" context="{'group_by': 'state'}" />
                 </group>
                 <searchpanel>
-                    <field name="state" icon="fa-calendar" enable_counters="1" />
-                    <field name="procurement_method_id" icon="fa-calendar" enable_counters="1" />
+                    <field name="state" icon="fa-calendar" select="multi" enable_counters="1" />
+                    <field name="source_analytic_id" icon="fa-money" select="multi" />
+                    <field name="fund_analytic_id" icon="fa-university" select="multi" />
+                    <field name="procurement_method_id" icon="fa-calendar" select="multi" />
                 </searchpanel>
             </search>
         </field>
