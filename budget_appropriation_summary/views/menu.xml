@@ -13,7 +13,7 @@
         name="Dashboard การจัดสรรงบประมาณ"
         parent="menu_budget_appropriation_summary_root"
         action="action_budget_appropriation_dashboard"
-        sequence="1"
+        sequence="30"
     />
 
     <menuitem
