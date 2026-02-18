@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_budget_appropriation_compilation_form_procurement_plan" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.compilation.form.procurement.plan</field>
+        <field name="model">budget.appropriation.compilation</field>
+        <field name="inherit_id" ref="budget_appropriation_summary.view_budget_appropriation_compilation_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[@name='expense_appropriations']" position="after">
+                <page name="procurement_plan_summary" string="สรุปแผนจัดซื้อจัดจ้าง">
+                    <field name="procurement_plan_line_ids" readonly="1" nolabel="1">
+                        <tree create="false" edit="false" delete="false">
+                            <field name="appropriation_id" string="ใบจัดสรรงบประมาณ" optional="hide" />
+                            <field name="description" string="ชื่อรายการ" />
+                            <field name="account_id" string="รหัสงบประมาณ" />
+                            <field name="activity_analytic_id" string="กิจกรรม" />
+                            <field name="procurement_plan_amount" string="จำนวน" />
+                            <field name="procurement_plan_unit" string="หน่วย" />
+                            <field name="balance" string="วงเงินรวม" sum="รวม" />
+                            <field name="procurement_plan_id" string="แผนจัดซื้อจัดจ้าง" invisible="1" />
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
