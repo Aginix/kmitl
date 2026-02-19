@@ -231,6 +231,11 @@ class BudgetAppropriationCompilation(models.Model):
         states=READONLY_STATES,
     )
 
+    education_impact_total = fields.Float(compute="_compute_impact_totals", store=False)
+    education_total = fields.Monetary(compute="_compute_impact_totals", store=False, currency_field="currency_id")
+    education_okr_percentage = fields.Float(compute="_compute_impact_totals", store=False)
+    education_mgt_percentage = fields.Float(compute="_compute_impact_totals", store=False)
+
     academic_impact_line_ids = fields.One2many(
         "budget.appropriation.compilation.impact",
         "compilation_id",
@@ -239,6 +244,11 @@ class BudgetAppropriationCompilation(models.Model):
         readonly=False,
         states=READONLY_STATES,
     )
+
+    academic_impact_total = fields.Float(compute="_compute_impact_totals", store=False)
+    academic_total = fields.Monetary(compute="_compute_impact_totals", store=False, currency_field="currency_id")
+    academic_okr_percentage = fields.Float(compute="_compute_impact_totals", store=False)
+    academic_mgt_percentage = fields.Float(compute="_compute_impact_totals", store=False)
 
     industrial_impact_line_ids = fields.One2many(
         "budget.appropriation.compilation.impact",
@@ -249,6 +259,11 @@ class BudgetAppropriationCompilation(models.Model):
         states=READONLY_STATES,
     )
 
+    industrial_impact_total = fields.Float(compute="_compute_impact_totals", store=False)
+    industrial_total = fields.Monetary(compute="_compute_impact_totals", store=False, currency_field="currency_id")
+    industrial_okr_percentage = fields.Float(compute="_compute_impact_totals", store=False)
+    industrial_mgt_percentage = fields.Float(compute="_compute_impact_totals", store=False)
+
     social_impact_line_ids = fields.One2many(
         "budget.appropriation.compilation.impact",
         "compilation_id",
@@ -257,6 +272,11 @@ class BudgetAppropriationCompilation(models.Model):
         readonly=False,
         states=READONLY_STATES,
     )
+
+    social_impact_total = fields.Float(compute="_compute_impact_totals", store=False)
+    social_total = fields.Monetary(compute="_compute_impact_totals", store=False, currency_field="currency_id")
+    social_okr_percentage = fields.Float(compute="_compute_impact_totals", store=False)
+    social_mgt_percentage = fields.Float(compute="_compute_impact_totals", store=False)
 
     @api.depends(
         "revenue_appropriation_ids.treasury_replenishment_amount",
@@ -307,6 +327,40 @@ class BudgetAppropriationCompilation(models.Model):
                 + record.external_funding_amount
             )
             record.fixed_expense_percentage = (record.fixed_expense_total * 100) / record.revenue_net
+
+    @api.depends(
+        "education_impact_line_ids.project_okr_amount",
+        "education_impact_line_ids.management_amount",
+        "academic_impact_line_ids.project_okr_amount",
+        "academic_impact_line_ids.management_amount",
+        "industrial_impact_line_ids.project_okr_amount",
+        "industrial_impact_line_ids.management_amount",
+        "social_impact_line_ids.project_okr_amount",
+        "social_impact_line_ids.management_amount",
+    )
+    def _compute_impact_totals(self):
+        impact_line_fields = {
+            "education": "education_impact_line_ids",
+            "academic": "academic_impact_line_ids",
+            "industrial": "industrial_impact_line_ids",
+            "social": "social_impact_line_ids",
+        }
+        for record in self:
+            totals = {}
+            grand_total = 0
+            for itype, field in impact_line_fields.items():
+                lines = record[field]
+                okr = sum(lines.mapped("project_okr_amount"))
+                mgmt = sum(lines.mapped("management_amount"))
+                total = okr + mgmt
+                totals[itype] = {"okr": okr, "mgmt": mgmt, "total": total}
+                grand_total += total
+            for itype in impact_line_fields:
+                t = totals[itype]
+                record[f"{itype}_total"] = t["total"]
+                record[f"{itype}_impact_total"] = (t["total"] * 100 / grand_total) if grand_total else 0
+                record[f"{itype}_okr_percentage"] = (t["okr"] * 100 / grand_total) if grand_total else 0
+                record[f"{itype}_mgt_percentage"] = (t["mgmt"] * 100 / grand_total) if grand_total else 0
 
     @api.depends(
         "department_analytic_id",
