@@ -187,6 +187,12 @@
                             >
                                 <t t-out="node.get('description', '')" />
                             </div>
+                            <div
+                                t-if="node.get('note')"
+                                class="account-note"
+                            >
+                                <t t-out="node.get('note', '')" />
+                            </div>
                         </t>
                         <t t-else="">
                             <span class="node-content" t-out="node.get('name', '')" />
@@ -321,6 +327,14 @@
                 font-weight: 400;
                 font-size: 11px;
                 line-height: 1.50;
+            }
+
+            .account-note {
+                margin-left: 16px;
+                font-weight: 400;
+                font-size: 11px;
+                line-height: 1.50;
+                white-space: pre-wrap;
             }
 
             .amount-cell {
