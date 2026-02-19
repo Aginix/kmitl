@@ -546,6 +546,8 @@ class BudgetAppropriationCompilation(models.Model):
         """Build flattened hierarchy from impact lines for F23W report display.
 
         Returns dict with rows containing project_okr_amount and management_amount.
+        Totals are flat sums of all lines (no bubble-up) to avoid double-counting.
+        Rows show direct amounts only — parent rows do not include children's amounts.
         """
         self.ensure_one()
         lines = self.env["budget.appropriation.compilation.impact"].search([
@@ -556,6 +558,11 @@ class BudgetAppropriationCompilation(models.Model):
         if not lines:
             return {"rows": [], "total_project_okr": 0, "total_management": 0}
 
+        # Flat sums — no hierarchy, no double-counting
+        total_project_okr = sum(lines.mapped("project_okr_amount"))
+        total_management = sum(lines.mapped("management_amount"))
+
+        # Build account set including ancestors for hierarchy display
         analytic_accounts = lines.mapped("analytic_account_id")
         all_account_ids = set()
         for account in analytic_accounts:
@@ -580,55 +587,28 @@ class BudgetAppropriationCompilation(models.Model):
                 level = 1
             account_levels[acc.id] = level
 
-        lines_by_account = {}
+        # Direct amounts per account only (no bubble-up to avoid double-counting)
+        direct_amounts = {}
         for line in lines:
             acc_id = line.analytic_account_id.id
-            if acc_id not in lines_by_account:
-                lines_by_account[acc_id] = []
-            lines_by_account[acc_id].append({
-                "project_okr_amount": line.project_okr_amount,
-                "management_amount": line.management_amount,
-            })
-
-        # Calculate totals per account (including children)
-        account_totals = {}
-
-        def calc_total(account):
-            if account.id in account_totals:
-                return account_totals[account.id]
-            direct = lines_by_account.get(account.id, [])
-            okr = sum(l["project_okr_amount"] for l in direct)
-            mgmt = sum(l["management_amount"] for l in direct)
-            children = [
-                a for a in accounts
-                if a.parent_id and a.parent_id.id == account.id
-            ]
-            for child in children:
-                child_total = calc_total(child)
-                okr += child_total["project_okr_amount"]
-                mgmt += child_total["management_amount"]
-            account_totals[account.id] = {
-                "project_okr_amount": okr,
-                "management_amount": mgmt,
-            }
-            return account_totals[account.id]
-
-        for acc in accounts:
-            calc_total(acc)
+            if acc_id not in direct_amounts:
+                direct_amounts[acc_id] = {"project_okr_amount": 0, "management_amount": 0}
+            direct_amounts[acc_id]["project_okr_amount"] += line.project_okr_amount
+            direct_amounts[acc_id]["management_amount"] += line.management_amount
 
         rows = []
 
         def flatten_node(account, display_level):
             acc_level = account_levels.get(account.id, 1)
             if acc_level >= min_level:
-                totals = account_totals.get(account.id, {})
+                amounts = direct_amounts.get(account.id, {"project_okr_amount": 0, "management_amount": 0})
                 rows.append({
                     "type": "account",
                     "level": display_level,
                     "code": account.code or "",
                     "name": account.name,
-                    "project_okr_amount": totals.get("project_okr_amount", 0),
-                    "management_amount": totals.get("management_amount", 0),
+                    "project_okr_amount": amounts["project_okr_amount"],
+                    "management_amount": amounts["management_amount"],
                 })
             child_accounts = sorted(
                 [a for a in accounts if a.parent_id and a.parent_id.id == account.id],
@@ -644,18 +624,6 @@ class BudgetAppropriationCompilation(models.Model):
         )
         for root in root_accounts:
             flatten_node(root, 0)
-
-        display_root_ids = [
-            a.id for a in accounts if account_levels.get(a.id, 1) == min_level
-        ]
-        total_project_okr = sum(
-            account_totals.get(aid, {}).get("project_okr_amount", 0)
-            for aid in display_root_ids
-        )
-        total_management = sum(
-            account_totals.get(aid, {}).get("management_amount", 0)
-            for aid in display_root_ids
-        )
 
         return {
             "rows": rows,
