@@ -181,17 +181,17 @@
                             <div class="account-content">
                                 <t t-out="node.get('name', '')" />
                             </div>
-                            <div
+                            <!-- <div
                                 t-if="node.get('description')"
                                 class="account-description"
                             >
                                 <t t-out="node.get('description', '')" />
-                            </div>
+                            </div> -->
                             <div
                                 t-if="node.get('note')"
                                 class="account-note"
                             >
-                                <t t-out="node.get('note', '')" />
+                                <t t-out="node.get('note', '').strip()" />
                             </div>
                         </t>
                         <t t-else="">

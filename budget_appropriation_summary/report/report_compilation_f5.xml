@@ -156,18 +156,17 @@
                             <div class="account-content">
                                 <t t-out="node.get('name', '')" />
                             </div>
-                            <div
+                            <!-- <div
                                 t-if="node.get('description')"
                                 class="account-description"
                             >
                                 <t t-out="node.get('description', '')" />
-                            </div>
+                            </div> -->
                             <div
                                 t-if="node.get('note')"
                                 class="account-note"
-                            >
-                                <t t-out="node.get('note', '')" />
-                            </div>
+                                t-out="node.get('note', '').strip()"
+                            />
                         </t>
                         <t t-else="">
                             <span class="node-content" t-out="node.get('name', '')" />
@@ -329,7 +328,7 @@
             .account-note {
                 margin-left: 10px;
                 font-weight: 400;
-                font-size: 11px;
+                font-size: 7.5pt;
                 line-height: 1.50;
                 white-space: pre-wrap;
             }
