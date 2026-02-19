@@ -395,12 +395,14 @@ class BudgetAppropriationCompilation(models.Model):
     def _merge_f5_last_level_nodes(self, data):
         """Merge last-level account nodes with the same id for non-itemized mode."""
 
-        def merge_children(nodes):
+        def merge_children(nodes, clear_text=False):
             merged = []
             seen = {}
             for node in nodes:
                 if node.get("children"):
-                    node["children"] = merge_children(node["children"])
+                    node["children"] = merge_children(
+                        node["children"], clear_text=clear_text
+                    )
                 # Merge leaf account nodes (no children) by id
                 if (
                     node.get("type") == "account"
@@ -416,8 +418,9 @@ class BudgetAppropriationCompilation(models.Model):
                             "amount_total", 0
                         ) + node.get("amount_total", 0)
                     else:
-                        node["description"] = ""
-                        node["note"] = ""
+                        if clear_text:
+                            node["description"] = ""
+                            node["note"] = ""
                         seen[key] = node
                         merged.append(node)
                 else:
@@ -428,11 +431,15 @@ class BudgetAppropriationCompilation(models.Model):
             if key == "details":
                 for detail in data.get("details", []):
                     if detail.get("hierarchy"):
-                        detail["hierarchy"] = merge_children(detail["hierarchy"])
+                        detail["hierarchy"] = merge_children(
+                            detail["hierarchy"], clear_text=False
+                        )
             elif key == "overview" and data.get("overview"):
                 overview = data["overview"]
                 if overview.get("hierarchy"):
-                    overview["hierarchy"] = merge_children(overview["hierarchy"])
+                    overview["hierarchy"] = merge_children(
+                        overview["hierarchy"], clear_text=True
+                    )
         return data
 
     def action_confirm(self):
