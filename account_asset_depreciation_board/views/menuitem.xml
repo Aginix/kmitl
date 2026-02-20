@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem
+        id="menu_asset_depreciation_board"
+        name="Depreciation Board"
+        parent="account_asset_usability_kmitl.menu_assets"
+        action="action_account_asset_line_depreciation_board"
+    />
+
+</odoo>

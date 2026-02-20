@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="account_asset_line_tree_view" model="ir.ui.view">
+        <field name="name">account.asset.line.tree.depreciation.board</field>
+        <field name="model">account.asset.line</field>
+        <field name="arch" type="xml">
+            <tree
+                decoration-info="not move_check"
+                decoration-muted="move_check"
+            >
+                <field name="asset_id"/>
+                <field name="profile_id"/>
+                <field name="line_date"/>
+                <field name="amount" sum="Total Amount"/>
+                <field name="depreciated_value"/>
+                <field name="remaining_value"/>
+                <field name="move_check" string="Posted"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="account_asset_line_search_view" model="ir.ui.view">
+        <field name="name">account.asset.line.search.depreciation.board</field>
+        <field name="model">account.asset.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="asset_id"/>
+                <field name="profile_id"/>
+                <field name="line_date"/>
+                <filter
+                    name="pending"
+                    string="Pending"
+                    domain="[
+                        ('type', '=', 'depreciate'),
+                        ('move_check', '=', False),
+                        ('init_entry', '=', False),
+                        ('parent_state', '=', 'open'),
+                    ]"
+                />
+                <filter
+                    name="posted"
+                    string="Posted"
+                    domain="[('move_check', '=', True)]"
+                />
+                <separator/>
+                <filter
+                    name="this_month"
+                    string="This Month"
+                    domain="[
+                        ('line_date', '>=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')),
+                        ('line_date', '&lt;=', (context_today() + relativedelta(day=31)).strftime('%Y-%m-%d')),
+                    ]"
+                />
+                <filter
+                    name="this_year"
+                    string="This Year"
+                    domain="[
+                        ('line_date', '>=', (context_today() + relativedelta(month=1, day=1)).strftime('%Y-%m-%d')),
+                        ('line_date', '&lt;=', (context_today() + relativedelta(month=12, day=31)).strftime('%Y-%m-%d')),
+                    ]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_profile"
+                        string="Asset Profile"
+                        context="{'group_by': 'profile_id'}"
+                    />
+                    <filter
+                        name="group_month"
+                        string="Month"
+                        context="{'group_by': 'line_date:month'}"
+                    />
+                    <filter
+                        name="group_asset"
+                        string="Asset"
+                        context="{'group_by': 'asset_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_account_asset_line_depreciation_board" model="ir.actions.act_window">
+        <field name="name">Depreciation Board</field>
+        <field name="res_model">account.asset.line</field>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="account_asset_line_tree_view"/>
+        <field name="search_view_id" ref="account_asset_line_search_view"/>
+        <field name="context">{"search_default_pending": 1}</field>
+    </record>
+
+    <record id="action_batch_post_depreciation" model="ir.actions.server">
+        <field name="name">Post Depreciation Entries</field>
+        <field name="model_id" ref="account_asset_management.model_account_asset_line"/>
+        <field name="binding_model_id" ref="account_asset_management.model_account_asset_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_batch_create_move()</field>
+        <field name="groups_id" eval="[(4, ref('account.group_account_user'))]"/>
+    </record>
+
+</odoo>
