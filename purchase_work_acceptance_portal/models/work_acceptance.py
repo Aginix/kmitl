@@ -24,6 +24,7 @@ class WorkAcceptance(models.Model):
             order_url = wa.purchase_id.get_portal_link()
             wa_url = wa.get_portal_link()
             for committee in wa.work_acceptance_committee_ids:
+                committee.get_portal_link()
                 user = committee.employee_id.user_id
                 if not user:
                     continue
