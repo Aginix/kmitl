@@ -1,0 +1,19 @@
+.o_wa_systray_toggle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 0.5rem;
+    cursor: pointer;
+}
+
+.o_wa_systray_dropdown {
+    .o_wa_systray_header {
+        background-color: #f8f9fa;
+    }
+
+    .o_wa_systray_item {
+        &:hover {
+            background-color: #f8f9fa;
+        }
+    }
+}

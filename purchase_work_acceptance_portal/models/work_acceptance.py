@@ -19,20 +19,22 @@ class WorkAcceptance(models.Model):
     def request_validation(self):
         res = super().request_validation()
         for wa in self:
-            purchase = wa.purchase_id
-            order_url = purchase.get_portal_link()
-            if wa.work_acceptance_committee_ids:
-                for committee in wa.work_acceptance_committee_ids:
-                    wa_url = wa.get_portal_link()
-                    message = f"กรุณาตรวจรับพัสดุที่มีชื่อว่า {wa.name} \n เอกสารสัญญา/ใบสั่งซื้อ/จ้าง : <a href='{order_url+'&wa_token='+str(wa.access_token)}'>คลิกที่นี่</a> \n เอกสารตรวจรับ : <a href='{wa_url+'&committee_token='+str(committee.access_token)}'>คลิกที่นี่</a>"
-                    partner = committee.employee_id.user_id.partner_id
-                    self.env['bus.bus']._sendone(
-                        partner,
-                        'simple_notification',
-                        {
-                            'title': 'แจ้งเตือนการตรวจรับพัสดุ',
-                            'message': message,
-                            'sticky': True,
-                        },
-                    )
+            if not wa.work_acceptance_committee_ids:
+                continue
+            for committee in wa.work_acceptance_committee_ids:
+                user = committee.employee_id.user_id
+                if not user:
+                    continue
+                Inbox = self.env["work.acceptance.inbox"].sudo()
+                existing = Inbox.search(
+                    [("user_id", "=", user.id), ("work_acceptance_id", "=", wa.id)],
+                    limit=1,
+                )
+                if not existing:
+                    Inbox.create({"user_id": user.id, "work_acceptance_id": wa.id})
+                self.env["bus.bus"]._sendone(
+                    user.partner_id,
+                    "work_acceptance/inbox",
+                    {"refresh": True, "wa_name": wa.name, "wa_id": wa.id},
+                )
         return res

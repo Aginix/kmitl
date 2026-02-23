@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="purchase_work_acceptance_portal.WaSystray" owl="1">
+        <Dropdown
+            position="'bottom-end'"
+            beforeOpen.bind="fetchData"
+        >
+            <t t-set-slot="toggler">
+                <span class="o_wa_systray_toggle">
+                    <i class="fa fa-fw fa-check-square-o" role="img" aria-label="Work Acceptance" title="ตรวจรับพัสดุ"/>
+                    <t t-if="state.totalCount > 0">
+                        <span class="badge" t-esc="state.totalCount"/>
+                    </t>
+                </span>
+            </t>
+            <div class="o_wa_systray_dropdown" style="min-width: 320px;">
+                <div class="o_wa_systray_header d-flex align-items-center px-3 py-2 border-bottom">
+                    <span class="fw-bold">ตรวจรับพัสดุ</span>
+                    <span class="ms-auto badge bg-primary text-white" t-if="state.totalCount > 0" t-esc="state.totalCount"/>
+                </div>
+                <t t-if="state.items.length === 0">
+                    <div class="text-muted text-center py-4">
+                        <i class="fa fa-check-circle fa-2x mb-2 d-block"/>
+                        <span>ไม่มีรายการรอตรวจรับ</span>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div style="max-height: 350px; overflow-y: auto;">
+                        <t t-foreach="state.items" t-as="item" t-key="item.id">
+                            <DropdownItem
+                                onSelected="() => this.onItemClick(item)"
+                                class="'o_wa_systray_item px-3 py-2'"
+                            >
+                                <div class="d-flex align-items-start">
+                                    <i class="fa fa-check-square-o me-2 mt-1 text-muted"/>
+                                    <div class="flex-grow-1 overflow-hidden">
+                                        <div class="fw-semibold text-truncate" t-esc="item.name"/>
+                                        <div class="small text-muted d-flex">
+                                            <span t-esc="item.purchase_name"/>
+                                            <t t-if="item.date">
+                                                <span class="mx-1">•</span>
+                                                <span t-esc="item.date"/>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </DropdownItem>
+                        </t>
+                    </div>
+                </t>
+            </div>
+        </Dropdown>
+    </t>
+
+</templates>
