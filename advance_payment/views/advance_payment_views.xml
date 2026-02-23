@@ -110,6 +110,7 @@
                             <field name="department_id"/>
                             <field name="partner_bank_id" domain="[('partner_id', '=', partner_id)]"/>
                             <field name="partner_id" invisible="1"/>
+                            <field name="reason" placeholder="สาเหตุในการยืมเงิน..."/>
                         </group>
                         <group string="จำนวนเงิน">
                             <field name="currency_id" groups="base.group_multi_currency"/>
@@ -157,7 +158,6 @@
                     </group>
 
                     <group string="เงื่อนไขการยืม">
-                        <field name="reason" placeholder="สาเหตุในการยืมเงิน..." colspan="2"/>
                         <field name="loan_term" colspan="2"/>
                     </group>
 
