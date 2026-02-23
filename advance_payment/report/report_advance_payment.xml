@@ -40,9 +40,9 @@
                                 </tr>
                                 <tr>
                                     <td class="label-col">พนักงาน</td>
-                                    <td><span t-field="o.employee_id"/></td>
+                                    <td><span t-out="o.employee_name or o.employee_id.name"/></td>
                                     <td class="label-col">ฝ่าย/แผนก</td>
-                                    <td><span t-field="o.department_id"/></td>
+                                    <td><span t-out="o.department_name or o.department_id.name"/></td>
                                 </tr>
                                 <tr t-if="o.partner_bank_id">
                                     <td class="label-col">ธนาคาร</td>
@@ -116,7 +116,7 @@
                             <div class="col text-center">
                                 <div class="mb-5">ลงชื่อ .............................................</div>
                                 <div class="signature-box mx-auto">ผู้ยืมเงิน</div>
-                                <div class="mt-1">(<span t-field="o.employee_id"/>)</div>
+                                <div class="mt-1">(<span t-out="o.employee_name or o.employee_id.name"/>)</div>
                                 <div class="mt-1">วันที่ ........................................</div>
                             </div>
                             <div class="col text-center">

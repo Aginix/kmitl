@@ -166,6 +166,10 @@ class AdvancePayment(models.Model):
         string="Has Outstanding",
         compute="_compute_has_outstanding",
     )
+    # Frozen snapshot fields — populated at submit time, never change after
+    employee_name = fields.Char(string="Employee Name (Frozen)", readonly=True, copy=False)
+    department_name = fields.Char(string="Department (Frozen)", readonly=True, copy=False)
+
     date_submitted = fields.Date(string="Submitted Date", readonly=True, copy=False)
     date_approved = fields.Date(string="Approved Date", readonly=True, copy=False)
     date_start = fields.Date(string="Payment Date", readonly=True, copy=False)
@@ -282,7 +286,12 @@ class AdvancePayment(models.Model):
                 raise UserError(
                     _("You can only submit advance payments for yourself.")
                 )
-            rec.write({"state": "submitted", "date_submitted": fields.Date.today()})
+            rec.write({
+                "state": "submitted",
+                "date_submitted": fields.Date.today(),
+                "employee_name": rec.employee_id.name or "",
+                "department_name": rec.department_id.name or "",
+            })
 
     def action_approve(self):
         self._check_officer()
