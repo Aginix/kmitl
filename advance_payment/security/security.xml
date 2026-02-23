@@ -1,0 +1,32 @@
+<odoo>
+    <data noupdate="0">
+        <!-- Module Category -->
+        <record id="module_category_advance_payment" model="ir.module.category">
+            <field name="name">Advance Payment</field>
+            <field name="description">User groups for managing advance payments</field>
+            <field name="sequence">16</field>
+        </record>
+
+        <!-- User Group -->
+        <record id="group_advance_payment_user" model="res.groups">
+            <field name="name">Advance Payment User</field>
+            <field name="category_id" ref="advance_payment.module_category_advance_payment"/>
+            <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]"/>
+        </record>
+
+        <!-- Officer Group (inherits from User) -->
+        <record id="group_advance_payment_officer" model="res.groups">
+            <field name="name">Advance Payment Officer</field>
+            <field name="category_id" ref="advance_payment.module_category_advance_payment"/>
+            <field name="implied_ids" eval="[(4, ref('group_advance_payment_user'))]"/>
+        </record>
+
+        <!-- Manager Group (inherits from Officer) -->
+        <record id="group_advance_payment_manager" model="res.groups">
+            <field name="name">Advance Payment Manager</field>
+            <field name="category_id" ref="advance_payment.module_category_advance_payment"/>
+            <field name="implied_ids" eval="[(4, ref('group_advance_payment_officer'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+    </data>
+</odoo>

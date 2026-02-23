@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_advance_payment_type_tree" model="ir.ui.view">
+        <field name="name">advance.payment.type.tree</field>
+        <field name="model">advance.payment.type</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_advance_payment_type_form" model="ir.ui.view">
+        <field name="name">advance.payment.type.form</field>
+        <field name="model">advance.payment.type</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_advance_payment_type" model="ir.actions.act_window">
+        <field name="name">ประเภทการยืม</field>
+        <field name="res_model">advance.payment.type</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

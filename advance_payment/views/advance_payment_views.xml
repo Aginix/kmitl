@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_advance_payment_form" model="ir.ui.view">
+        <field name="name">advance.payment.form</field>
+        <field name="model">advance.payment</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button
+                        name="action_submit"
+                        type="object"
+                        string="ยื่นคำขอ"
+                        class="btn-primary"
+                        attrs="{'invisible': [('show_submit_button', '=', False)]}"
+                    />
+                    <button
+                        name="action_approve"
+                        type="object"
+                        string="อนุมัติ"
+                        class="btn-success"
+                        attrs="{'invisible': [('show_approve_button', '=', False)]}"
+                    />
+                    <button
+                        name="action_create_payment"
+                        type="object"
+                        string="สร้างรายการจ่ายเงิน"
+                        class="btn-primary"
+                        attrs="{'invisible': [('show_create_payment_button', '=', False)]}"
+                    />
+                    <button
+                        name="action_mark_paid"
+                        type="object"
+                        string="บันทึกการจ่ายเงิน"
+                        class="btn-success"
+                        attrs="{'invisible': [('show_mark_paid_button', '=', False)]}"
+                    />
+                    <button
+                        name="action_accept"
+                        type="object"
+                        string="ยืนยันรับเงิน"
+                        class="btn-primary"
+                        attrs="{'invisible': [('show_accept_button', '=', False)]}"
+                    />
+                    <button
+                        name="action_cancel"
+                        type="object"
+                        string="ยกเลิก"
+                        class="btn-danger"
+                        attrs="{'invisible': [('show_cancel_button', '=', False)]}"
+                    />
+                    <button
+                        name="action_reset_to_draft"
+                        type="object"
+                        string="รีเซ็ตเป็นร่าง"
+                        attrs="{'invisible': [('state', '!=', 'cancel')]}"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,submitted,approved,partial,fully_paid"
+                    />
+                </header>
+                <sheet>
+                    <!-- Hidden button visibility fields -->
+                    <field name="show_submit_button" invisible="1"/>
+                    <field name="show_approve_button" invisible="1"/>
+                    <field name="show_create_payment_button" invisible="1"/>
+                    <field name="show_mark_paid_button" invisible="1"/>
+                    <field name="show_accept_button" invisible="1"/>
+                    <field name="show_cancel_button" invisible="1"/>
+
+                    <!-- Smart buttons -->
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_open_payment"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-money"
+                            attrs="{'invisible': [('payment_id', '=', False)]}"
+                        >
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">การจ่ายเงิน</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Alert banner: outstanding advances -->
+                    <div
+                        class="alert alert-warning"
+                        role="alert"
+                        attrs="{'invisible': [('has_outstanding', '=', False)]}"
+                    >
+                        <strong>คำเตือน: </strong>
+                        คุณมีรายการค้างชำระเงินทดรองจ่าย หากมีคำถามโปรดติดต่อเจ้าหน้าที่สำนักงานคลัง
+                    </div>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="ข้อมูลการยืม">
+                            <field name="type_id"/>
+                            <field name="employee_id"/>
+                            <field name="department_id"/>
+                            <field name="partner_bank_id" domain="[('partner_id', '=', partner_id)]"/>
+                            <field name="partner_id" invisible="1"/>
+                        </group>
+                        <group string="จำนวนเงิน">
+                            <field name="currency_id" groups="base.group_multi_currency"/>
+                            <field name="amount"/>
+                            <field name="amount_return"/>
+                            <field name="amount_residual"/>
+                            <field name="return_day"/>
+                        </group>
+                    </group>
+
+                    <!-- Dates group -->
+                    <group string="วันที่">
+                        <group>
+                            <field
+                                name="date_submitted"
+                                attrs="{'invisible': [('date_submitted', '=', False)]}"
+                            />
+                            <field
+                                name="date_approved"
+                                attrs="{'invisible': [('date_approved', '=', False)]}"
+                            />
+                            <field
+                                name="date_accepted"
+                                attrs="{'invisible': [('date_accepted', '=', False)]}"
+                            />
+                        </group>
+                        <group>
+                            <field
+                                name="date_start"
+                                attrs="{'invisible': [('date_start', '=', False)]}"
+                            />
+                            <field
+                                name="date_due"
+                                attrs="{'invisible': [('date_due', '=', False)]}"
+                            />
+                            <field
+                                name="date_end"
+                                attrs="{'invisible': [('date_end', '=', False)]}"
+                            />
+                            <field
+                                name="end_day"
+                                attrs="{'invisible': [('date_end', '=', False)]}"
+                            />
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="รายการคืนเงิน" name="returns">
+                            <field name="return_ids">
+                                <tree editable="bottom">
+                                    <field name="date_return"/>
+                                    <field name="return_type"/>
+                                    <field name="amount" sum="รวม"/>
+                                    <field name="state"/>
+                                    <field name="note"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="เงื่อนไขการยืม" name="loan_term">
+                            <group>
+                                <field name="reason" nolabel="1" placeholder="สาเหตุในการยืมเงิน..."/>
+                            </group>
+                            <group>
+                                <field name="loan_term" nolabel="1"/>
+                            </group>
+                        </page>
+                        <page string="เอกสารแนบ" name="attachments">
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_advance_payment_tree" model="ir.ui.view">
+        <field name="name">advance.payment.tree</field>
+        <field name="model">advance.payment</field>
+        <field name="arch" type="xml">
+            <tree decoration-info="state == 'draft'" decoration-warning="state == 'submitted'" decoration-success="state in ('approved', 'partial')" decoration-muted="state == 'cancel'">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="type_id"/>
+                <field name="amount"/>
+                <field name="amount_return"/>
+                <field name="amount_residual"/>
+                <field name="date_submitted"/>
+                <field name="date_approved"/>
+                <field name="date_start"/>
+                <field name="date_due"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'submitted'" decoration-success="state in ('approved', 'partial', 'fully_paid')" decoration-danger="state == 'cancel'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_advance_payment_search" model="ir.ui.view">
+        <field name="name">advance.payment.search</field>
+        <field name="model">advance.payment</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="type_id"/>
+                <separator/>
+                <filter string="คำขอของฉัน" name="my_requests" domain="[('owner_id', '=', uid)]"/>
+                <filter string="ร่าง" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="รออนุมัติ" name="submitted" domain="[('state', '=', 'submitted')]"/>
+                <filter string="อนุมัติแล้ว" name="approved" domain="[('state', '=', 'approved')]"/>
+                <filter string="ค้างชำระ" name="outstanding" domain="[('state', 'in', ('approved', 'partial'))]"/>
+                <filter string="คืนครบแล้ว" name="fully_paid" domain="[('state', '=', 'fully_paid')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="สถานะ" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="พนักงาน" name="group_employee" context="{'group_by': 'employee_id'}"/>
+                    <filter string="ฝ่าย" name="group_department" context="{'group_by': 'department_id'}"/>
+                    <filter string="ประเภท" name="group_type" context="{'group_by': 'type_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_advance_payment_my" model="ir.actions.act_window">
+        <field name="name">คำขอยืมเงินของฉัน</field>
+        <field name="res_model">advance.payment</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('owner_id', '=', uid)]</field>
+        <field name="search_view_id" ref="view_advance_payment_search"/>
+        <field name="context">{"search_default_my_requests": 1}</field>
+    </record>
+
+    <record id="action_advance_payment_all" model="ir.actions.act_window">
+        <field name="name">คำขอยืมเงินทั้งหมด</field>
+        <field name="res_model">advance.payment</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_advance_payment_search"/>
+    </record>
+</odoo>

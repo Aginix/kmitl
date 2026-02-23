@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_advance_payment_type_manager,advance.payment.type.manager,model_advance_payment_type,advance_payment.group_advance_payment_manager,1,1,1,1
+access_advance_payment_type_officer,advance.payment.type.officer,model_advance_payment_type,advance_payment.group_advance_payment_officer,1,0,0,0
+access_advance_payment_type_user,advance.payment.type.user,model_advance_payment_type,advance_payment.group_advance_payment_user,1,0,0,0
+access_advance_payment_user,advance.payment.user,model_advance_payment,advance_payment.group_advance_payment_user,1,1,1,0
+access_advance_payment_officer,advance.payment.officer,model_advance_payment,advance_payment.group_advance_payment_officer,1,1,1,0
+access_advance_payment_manager,advance.payment.manager,model_advance_payment,advance_payment.group_advance_payment_manager,1,1,1,1
+access_advance_payment_return_user,advance.payment.return.user,model_advance_payment_return,advance_payment.group_advance_payment_user,1,1,1,0
+access_advance_payment_return_officer,advance.payment.return.officer,model_advance_payment_return,advance_payment.group_advance_payment_officer,1,1,1,0
+access_advance_payment_return_manager,advance.payment.return.manager,model_advance_payment_return,advance_payment.group_advance_payment_manager,1,1,1,1
