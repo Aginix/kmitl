@@ -19,6 +19,7 @@
         "report/paperformat.xml",
         "report/report_advance_payment_action.xml",
         "report/report_advance_payment.xml",
+        "views/account_payment_views.xml",
         "views/advance_payment_type_views.xml",
         "views/advance_payment_views.xml",
         "views/advance_payment_menus.xml",

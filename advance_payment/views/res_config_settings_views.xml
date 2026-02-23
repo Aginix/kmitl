@@ -33,6 +33,16 @@
                                 <field name="advance_payment_loan_term"/>
                             </div>
                         </div>
+                        <div class="o_setting_box">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label for="advance_payment_receivable_account_id"/>
+                                <div class="text-muted">
+                                    บัญชีลูกหนี้เงินยืมทดรองที่ใช้เมื่อสร้างรายการจ่ายเงินยืม
+                                </div>
+                                <field name="advance_payment_receivable_account_id"/>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </xpath>

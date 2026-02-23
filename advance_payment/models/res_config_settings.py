@@ -12,3 +12,8 @@ class ResConfigSettings(models.TransientModel):
         string="Loan Term",
         config_parameter="advance_payment.loan_term",
     )
+    advance_payment_receivable_account_id = fields.Many2one(
+        "account.account",
+        string="Advance Payment Receivable Account",
+        config_parameter="advance_payment.receivable_account_id",
+    )

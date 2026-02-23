@@ -69,22 +69,20 @@
                     <field name="show_mark_paid_button" invisible="1"/>
                     <field name="show_accept_button" invisible="1"/>
                     <field name="show_cancel_button" invisible="1"/>
-                    <field name="payment_id" invisible="1"/>
+                    <field name="payment_count" invisible="1"/>
                     <field name="has_outstanding" invisible="1"/>
                     <field name="return_day_readonly" invisible="1"/>
 
                     <!-- Smart buttons -->
                     <div class="oe_button_box" name="button_box">
                         <button
-                            name="action_open_payment"
+                            name="action_open_payments"
                             type="object"
                             class="oe_stat_button"
                             icon="fa-money"
-                            attrs="{'invisible': [('payment_id', '=', False)]}"
+                            attrs="{'invisible': [('payment_count', '=', 0)]}"
                         >
-                            <div class="o_stat_info">
-                                <span class="o_stat_text">การจ่ายเงิน</span>
-                            </div>
+                            <field name="payment_count" widget="statinfo" string="การจ่ายเงิน"/>
                         </button>
                     </div>
 

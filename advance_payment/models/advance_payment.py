@@ -144,10 +144,15 @@ class AdvancePayment(models.Model):
         .sudo()
         .get_param("advance_payment.loan_term", ""),
     )
-    payment_id = fields.Many2one(
+    payment_ids = fields.One2many(
         "account.payment",
-        string="Payment",
+        "advance_payment_id",
+        string="Payments",
         copy=False,
+    )
+    payment_count = fields.Integer(
+        string="Payment Count",
+        compute="_compute_payment_count",
     )
     return_day = fields.Integer(
         string="Return Days",
@@ -189,6 +194,10 @@ class AdvancePayment(models.Model):
     show_accept_button = fields.Boolean(compute="_compute_show_buttons")
     show_cancel_button = fields.Boolean(compute="_compute_show_buttons")
     return_day_readonly = fields.Boolean(compute="_compute_show_buttons")
+
+    def _compute_payment_count(self):
+        for rec in self:
+            rec.payment_count = len(rec.payment_ids)
 
     @api.depends("return_ids.amount", "return_ids.state")
     def _compute_amount_return(self):
@@ -244,7 +253,7 @@ class AdvancePayment(models.Model):
             )
             rec.has_outstanding = bool(outstanding)
 
-    @api.depends("state", "release_state")
+    @api.depends("state", "release_state", "payment_ids")
     def _compute_show_buttons(self):
         is_officer = self.env.user.has_group(
             "advance_payment.group_advance_payment_officer"
@@ -320,13 +329,12 @@ class AdvancePayment(models.Model):
                 "journal_id": journal.id,
                 "company_id": rec.company_id.id,
                 "ref": rec.name,
+                "advance_payment_id": rec.id,
             }
             if rec.partner_bank_id:
                 payment_vals["partner_bank_id"] = rec.partner_bank_id.id
             payment = self.env["account.payment"].create(payment_vals)
-            rec.write(
-                {"payment_id": payment.id, "release_state": "in_payment"}
-            )
+            rec.write({"release_state": "in_payment"})
             return {
                 "type": "ir.actions.act_window",
                 "res_model": "account.payment",
@@ -369,13 +377,21 @@ class AdvancePayment(models.Model):
                 }
             )
 
-    def action_open_payment(self):
+    def action_open_payments(self):
         self.ensure_one()
+        if self.payment_count == 1:
+            return {
+                "type": "ir.actions.act_window",
+                "res_model": "account.payment",
+                "res_id": self.payment_ids[0].id,
+                "view_mode": "form",
+                "target": "current",
+            }
         return {
             "type": "ir.actions.act_window",
             "res_model": "account.payment",
-            "res_id": self.payment_id.id,
-            "view_mode": "form",
+            "view_mode": "tree,form",
+            "domain": [("advance_payment_id", "=", self.id)],
             "target": "current",
         }
 
