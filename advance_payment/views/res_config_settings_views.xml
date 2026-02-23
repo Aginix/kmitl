@@ -14,25 +14,23 @@
                     <h2>ยืมเงินทดรองจ่าย</h2>
                     <div class="o_settings_container">
                         <div class="o_setting_box">
-                            <div class="o_setting_left_pane">
-                                <field name="advance_payment_default_return_days"/>
-                            </div>
+                            <div class="o_setting_left_pane"/>
                             <div class="o_setting_right_pane">
                                 <label for="advance_payment_default_return_days"/>
                                 <div class="text-muted">
                                     จำนวนวันที่ต้องคืนเงินทดรองจ่ายโดยค่าเริ่มต้น
                                 </div>
+                                <field name="advance_payment_default_return_days"/>
                             </div>
                         </div>
                         <div class="o_setting_box">
-                            <div class="o_setting_left_pane">
-                                <field name="advance_payment_loan_term"/>
-                            </div>
+                            <div class="o_setting_left_pane"/>
                             <div class="o_setting_right_pane">
                                 <label for="advance_payment_loan_term"/>
                                 <div class="text-muted">
                                     เงื่อนไขการยืมเงินที่แสดงในแบบฟอร์มการยืมเงินโดยค่าเริ่มต้น
                                 </div>
+                                <field name="advance_payment_loan_term"/>
                             </div>
                         </div>
                     </div>
