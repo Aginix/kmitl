@@ -27,19 +27,17 @@ class WorkAcceptance(models.Model):
                 user = committee.employee_id.user_id
                 if not user:
                     continue
-                message = (
-                    f"<a href='{wa_url}&committee_token={committee.access_token}'>กรุณาตรวจรับพัสดุ</a><br/>"
-                    f"<a href='{order_url}&wa_token={wa.access_token}'>เอกสารสัญญา</a>"
-                )
+                wa_link = f"{wa_url}&committee_token={committee.access_token}"
+                order_link = f"{order_url}&wa_token={wa.access_token}"
                 Inbox = self.env["work.acceptance.inbox"].sudo()
                 existing = Inbox.search(
                     [("user_id", "=", user.id), ("work_acceptance_id", "=", wa.id)],
                     limit=1,
                 )
                 if existing:
-                    existing.write({"message": message, "is_read": False})
+                    existing.write({"wa_url": wa_link, "order_url": order_link, "is_read": False})
                 else:
-                    Inbox.create({"user_id": user.id, "work_acceptance_id": wa.id, "message": message})
+                    Inbox.create({"user_id": user.id, "work_acceptance_id": wa.id, "wa_url": wa_link, "order_url": order_link})
                 self.env["bus.bus"]._sendone(
                     user.partner_id,
                     "work_acceptance/inbox",

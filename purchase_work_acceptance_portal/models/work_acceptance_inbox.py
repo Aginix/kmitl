@@ -28,7 +28,8 @@ class WorkAcceptanceInbox(models.Model):
         default=False,
         index=True,
     )
-    message = fields.Html(string="Message")
+    wa_url = fields.Char(string="Work Acceptance URL")
+    order_url = fields.Char(string="Order URL")
 
     _sql_constraints = [
         (

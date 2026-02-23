@@ -28,8 +28,9 @@
                 <t t-else="">
                     <div style="max-height: 400px; overflow-y: auto;">
                         <t t-foreach="state.items" t-as="item" t-key="item.id">
-                            <div class="o_wa_systray_item px-3 py-2 border-bottom">
-                                <div class="small" t-out="item.message"/>
+                            <div class="o_wa_systray_item px-3 py-2 border-bottom small">
+                                <div><a t-att-href="item.wa_url" target="_blank">กรุณาตรวจรับพัสดุ</a></div>
+                                <div><a t-att-href="item.order_url" target="_blank">เอกสารสัญญา</a></div>
                             </div>
                         </t>
                     </div>

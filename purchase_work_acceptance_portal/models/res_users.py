@@ -21,6 +21,7 @@ class ResUsers(models.Model):
                 items.append({
                     "id": wa.id,
                     "name": wa.name,
-                    "message": entry.message or "",
+                    "wa_url": entry.wa_url or "",
+                    "order_url": entry.order_url or "",
                 })
         return {"items": items[:10], "total_count": len(seen)}
