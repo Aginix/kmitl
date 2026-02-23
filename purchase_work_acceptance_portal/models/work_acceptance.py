@@ -25,11 +25,14 @@ class WorkAcceptance(models.Model):
                 for committee in wa.work_acceptance_committee_ids:
                     wa_url = wa.get_portal_link()
                     message = f"กรุณาตรวจรับพัสดุที่มีชื่อว่า {wa.name} \n เอกสารสัญญา/ใบสั่งซื้อ/จ้าง : <a href='{order_url+'&wa_token='+str(wa.access_token)}'>คลิกที่นี่</a> \n เอกสารตรวจรับ : <a href='{wa_url+'&committee_token='+str(committee.access_token)}'>คลิกที่นี่</a>"
-                    wa.message_post(
-                        body=message,
-                        message_type='comment',
-                        subtype_xmlid='mail.mt_comment',
-                        partner_ids=[committee.employee_id.user_id.partner_id.id],
-                        notify_by_email=False,
+                    partner = committee.employee_id.user_id.partner_id
+                    self.env['bus.bus']._sendone(
+                        partner,
+                        'simple_notification',
+                        {
+                            'title': 'แจ้งเตือนการตรวจรับพัสดุ',
+                            'message': message,
+                            'sticky': True,
+                        },
                     )
         return res
