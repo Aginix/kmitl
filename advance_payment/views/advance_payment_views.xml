@@ -156,6 +156,11 @@
                         </group>
                     </group>
 
+                    <group string="เงื่อนไขการยืม">
+                        <field name="reason" nolabel="1" placeholder="สาเหตุในการยืมเงิน..." colspan="2"/>
+                        <field name="loan_term" nolabel="1" colspan="2"/>
+                    </group>
+
                     <notebook>
                         <page string="รายการคืนเงิน" name="returns">
                             <field name="return_ids">
@@ -167,14 +172,6 @@
                                     <field name="note"/>
                                 </tree>
                             </field>
-                        </page>
-                        <page string="เงื่อนไขการยืม" name="loan_term">
-                            <group>
-                                <field name="reason" nolabel="1" placeholder="สาเหตุในการยืมเงิน..."/>
-                            </group>
-                            <group>
-                                <field name="loan_term" nolabel="1"/>
-                            </group>
                         </page>
                         <page string="เอกสารแนบ" name="attachments">
                             <field name="attachment_ids" widget="many2many_binary"/>
