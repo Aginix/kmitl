@@ -71,6 +71,7 @@
                     <field name="show_cancel_button" invisible="1"/>
                     <field name="payment_id" invisible="1"/>
                     <field name="has_outstanding" invisible="1"/>
+                    <field name="return_day_readonly" invisible="1"/>
 
                     <!-- Smart buttons -->
                     <div class="oe_button_box" name="button_box">
@@ -162,7 +163,7 @@
                             <group string="จำนวนเงิน">
                                 <field name="amount_return"/>
                                 <field name="amount_residual"/>
-                                <field name="return_day"/>
+                                <field name="return_day" attrs="{'readonly': [('return_day_readonly', '=', True)]}"/>
                             </group>
                             <field
                                 name="return_ids"

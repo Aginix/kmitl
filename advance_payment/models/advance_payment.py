@@ -184,6 +184,7 @@ class AdvancePayment(models.Model):
     show_mark_paid_button = fields.Boolean(compute="_compute_show_buttons")
     show_accept_button = fields.Boolean(compute="_compute_show_buttons")
     show_cancel_button = fields.Boolean(compute="_compute_show_buttons")
+    return_day_readonly = fields.Boolean(compute="_compute_show_buttons")
 
     @api.depends("return_ids.amount", "return_ids.state")
     def _compute_amount_return(self):
@@ -261,6 +262,7 @@ class AdvancePayment(models.Model):
                 and not rec.date_accepted
             )
             rec.show_cancel_button = rec.state in ("draft", "submitted") and is_officer
+            rec.return_day_readonly = not is_officer
 
     @api.model_create_multi
     def create(self, vals_list):
