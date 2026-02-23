@@ -95,6 +95,11 @@ class AdvancePayment(models.Model):
         default=lambda self: self.env.user.employee_id,
         states=READONLY_STATES,
         tracking=True,
+        domain=lambda self: (
+            []
+            if self.env.user.has_group("advance_payment.group_advance_payment_officer")
+            else [("user_id", "=", self.env.uid)]
+        ),
     )
     user_id = fields.Many2one(
         "res.users",
@@ -265,9 +270,16 @@ class AdvancePayment(models.Model):
         return super().create(vals_list)
 
     def action_submit(self):
+        is_officer = self.env.user.has_group(
+            "advance_payment.group_advance_payment_officer"
+        )
         for rec in self:
             if not rec.amount or rec.amount <= 0:
                 raise UserError(_("Amount must be greater than zero."))
+            if not is_officer and rec.employee_id.user_id != self.env.user:
+                raise UserError(
+                    _("You can only submit advance payments for yourself.")
+                )
             rec.write({"state": "submitted", "date_submitted": fields.Date.today()})
 
     def action_approve(self):
