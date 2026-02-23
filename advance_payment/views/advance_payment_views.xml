@@ -110,14 +110,10 @@
                             <field name="department_id"/>
                             <field name="partner_bank_id" domain="[('partner_id', '=', partner_id)]"/>
                             <field name="partner_id" invisible="1"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
                             <field name="reason" placeholder="สาเหตุในการยืมเงิน..."/>
-                        </group>
-                        <group string="จำนวนเงิน">
                             <field name="currency_id" groups="base.group_multi_currency"/>
                             <field name="amount"/>
-                            <field name="amount_return"/>
-                            <field name="amount_residual"/>
-                            <field name="return_day"/>
                         </group>
                     </group>
 
@@ -158,11 +154,16 @@
                     </group>
 
                     <group string="เงื่อนไขการยืม">
-                        <field name="loan_term" colspan="2" readonly="1"/>
+                        <field name="loan_term" colspan="2" nolabel="1" readonly="1"/>
                     </group>
 
                     <notebook>
                         <page string="รายการคืนเงิน" name="returns">
+                            <group string="จำนวนเงิน">
+                                <field name="amount_return"/>
+                                <field name="amount_residual"/>
+                                <field name="return_day"/>
+                            </group>
                             <field
                                 name="return_ids"
                                 attrs="{'readonly': [('state', 'not in', ('approved', 'partial'))]}"
