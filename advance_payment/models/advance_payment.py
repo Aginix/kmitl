@@ -13,7 +13,7 @@ READONLY_STATES = {
 class AdvancePayment(models.Model):
     _name = "advance.payment"
     _description = "Advance Payment"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ["mail.thread", "mail.activity.mixin", "portal.mixin"]
     _order = "name desc"
 
     name = fields.Char(
@@ -369,6 +369,15 @@ class AdvancePayment(models.Model):
             "view_mode": "form",
             "target": "current",
         }
+
+    def _compute_access_url(self):
+        super()._compute_access_url()
+        for rec in self:
+            rec.access_url = f"/my/advance-payment/{rec.id}"
+
+    def _get_report_base_filename(self):
+        self.ensure_one()
+        return f"Advance-Payment-{self.name}"
 
     def _check_officer(self):
         if not self.env.user.has_group(

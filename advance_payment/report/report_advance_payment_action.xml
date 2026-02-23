@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_advance_payment" model="ir.actions.report">
+        <field name="name">Advance Payment</field>
+        <field name="binding_model_id" ref="model_advance_payment"/>
+        <field name="model">advance.payment</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">advance_payment.report_advance_payment</field>
+        <field name="paperformat_id" ref="paperformat_advance_payment_report"/>
+        <field name="report_file">advance_payment.report_advance_payment</field>
+    </record>
+</odoo>
