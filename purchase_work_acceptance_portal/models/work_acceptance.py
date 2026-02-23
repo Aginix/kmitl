@@ -28,11 +28,8 @@ class WorkAcceptance(models.Model):
                 if not user:
                     continue
                 message = (
-                    f"กรุณาตรวจรับพัสดุที่มีชื่อว่า {wa.name}<br/>"
-                    f"เอกสารสัญญา/ใบสั่งซื้อ/จ้าง : "
-                    f"<a href='{order_url}&wa_token={wa.access_token}'>คลิกที่นี่</a><br/>"
-                    f"เอกสารตรวจรับ : "
-                    f"<a href='{wa_url}&committee_token={committee.access_token}'>คลิกที่นี่</a>"
+                    f"<a href='{wa_url}&committee_token={committee.access_token}'>กรุณาตรวจรับพัสดุ</a><br/>"
+                    f"<a href='{order_url}&wa_token={wa.access_token}'>เอกสารสัญญา</a>"
                 )
                 Inbox = self.env["work.acceptance.inbox"].sudo()
                 existing = Inbox.search(
