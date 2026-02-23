@@ -18,20 +18,18 @@ class WorkAcceptance(models.Model):
 
     def request_validation(self):
         res = super().request_validation()
-        odoobot = self.env.ref("base.partner_root")
         for wa in self:
             purchase = wa.purchase_id
             order_url = purchase.get_portal_link()
             if wa.work_acceptance_committee_ids:
                 for committee in wa.work_acceptance_committee_ids:
-                    committee.get_portal_link()
                     wa_url = wa.get_portal_link()
                     message = f"กรุณาตรวจรับพัสดุที่มีชื่อว่า {wa.name} \n เอกสารสัญญา/ใบสั่งซื้อ/จ้าง : <a href='{order_url+'&wa_token='+str(wa.access_token)}'>คลิกที่นี่</a> \n เอกสารตรวจรับ : <a href='{wa_url+'&committee_token='+str(committee.access_token)}'>คลิกที่นี่</a>"
-                    channel = self.env['mail.channel'].channel_get([committee.employee_id.user_id.partner_id.id])
-                    channel_id = self.env['mail.channel'].browse(channel["id"])
-                    channel_id.message_post(
-                    body=message,
-                    message_type='comment',
-                    subtype_xmlid='mail.mt_comment',
+                    wa.message_post(
+                        body=message,
+                        message_type='comment',
+                        subtype_xmlid='mail.mt_comment',
+                        partner_ids=[committee.employee_id.user_id.partner_id.id],
+                        notify_by_email=False,
                     )
         return res
