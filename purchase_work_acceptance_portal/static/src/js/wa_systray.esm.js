@@ -3,14 +3,12 @@
 import { registry } from "@web/core/registry";
 import { useService, useBus } from "@web/core/utils/hooks";
 import { Dropdown } from "@web/core/dropdown/dropdown";
-import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 
 const { Component, useState, onWillStart } = owl;
 
 export class WaSystray extends Component {
     setup() {
         this.rpc = useService("rpc");
-        this.action = useService("action");
 
         this.state = useState({
             items: [],
@@ -42,22 +40,10 @@ export class WaSystray extends Component {
             this.state.totalCount = 0;
         }
     }
-
-    onItemClick(item) {
-        this.action.doAction({
-            type: "ir.actions.act_window",
-            name: item.name,
-            res_model: "work.acceptance",
-            res_id: item.id,
-            view_mode: "form",
-            views: [[false, "form"]],
-            target: "current",
-        });
-    }
 }
 
 WaSystray.template = "purchase_work_acceptance_portal.WaSystray";
-WaSystray.components = { Dropdown, DropdownItem };
+WaSystray.components = { Dropdown };
 
 registry.category("systray").add(
     "purchase_work_acceptance_portal.WaSystray",

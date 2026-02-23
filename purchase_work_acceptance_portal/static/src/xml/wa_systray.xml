@@ -14,7 +14,7 @@
                     </t>
                 </span>
             </t>
-            <div class="o_wa_systray_dropdown" style="min-width: 320px;">
+            <div class="o_wa_systray_dropdown" style="min-width: 360px;">
                 <div class="o_wa_systray_header d-flex align-items-center px-3 py-2 border-bottom">
                     <span class="fw-bold">ตรวจรับพัสดุ</span>
                     <span class="ms-auto badge bg-primary text-white" t-if="state.totalCount > 0" t-esc="state.totalCount"/>
@@ -26,26 +26,11 @@
                     </div>
                 </t>
                 <t t-else="">
-                    <div style="max-height: 350px; overflow-y: auto;">
+                    <div style="max-height: 400px; overflow-y: auto;">
                         <t t-foreach="state.items" t-as="item" t-key="item.id">
-                            <DropdownItem
-                                onSelected="() => this.onItemClick(item)"
-                                class="'o_wa_systray_item px-3 py-2'"
-                            >
-                                <div class="d-flex align-items-start">
-                                    <i class="fa fa-check-square-o me-2 mt-1 text-muted"/>
-                                    <div class="flex-grow-1 overflow-hidden">
-                                        <div class="fw-semibold text-truncate" t-esc="item.name"/>
-                                        <div class="small text-muted d-flex">
-                                            <span t-esc="item.purchase_name"/>
-                                            <t t-if="item.date">
-                                                <span class="mx-1">•</span>
-                                                <span t-esc="item.date"/>
-                                            </t>
-                                        </div>
-                                    </div>
-                                </div>
-                            </DropdownItem>
+                            <div class="o_wa_systray_item px-3 py-2 border-bottom">
+                                <div class="small" t-out="item.message"/>
+                            </div>
                         </t>
                     </div>
                 </t>

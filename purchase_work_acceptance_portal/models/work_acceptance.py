@@ -21,17 +21,28 @@ class WorkAcceptance(models.Model):
         for wa in self:
             if not wa.work_acceptance_committee_ids:
                 continue
+            order_url = wa.purchase_id.get_portal_link()
+            wa_url = wa.get_portal_link()
             for committee in wa.work_acceptance_committee_ids:
                 user = committee.employee_id.user_id
                 if not user:
                     continue
+                message = (
+                    f"กรุณาตรวจรับพัสดุที่มีชื่อว่า {wa.name}<br/>"
+                    f"เอกสารสัญญา/ใบสั่งซื้อ/จ้าง : "
+                    f"<a href='{order_url}&wa_token={wa.access_token}'>คลิกที่นี่</a><br/>"
+                    f"เอกสารตรวจรับ : "
+                    f"<a href='{wa_url}&committee_token={committee.access_token}'>คลิกที่นี่</a>"
+                )
                 Inbox = self.env["work.acceptance.inbox"].sudo()
                 existing = Inbox.search(
                     [("user_id", "=", user.id), ("work_acceptance_id", "=", wa.id)],
                     limit=1,
                 )
-                if not existing:
-                    Inbox.create({"user_id": user.id, "work_acceptance_id": wa.id})
+                if existing:
+                    existing.write({"message": message, "is_read": False})
+                else:
+                    Inbox.create({"user_id": user.id, "work_acceptance_id": wa.id, "message": message})
                 self.env["bus.bus"]._sendone(
                     user.partner_id,
                     "work_acceptance/inbox",

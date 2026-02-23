@@ -21,7 +21,6 @@ class ResUsers(models.Model):
                 items.append({
                     "id": wa.id,
                     "name": wa.name,
-                    "purchase_name": wa.purchase_id.name if wa.purchase_id else "",
-                    "date": wa.date_receive.strftime("%d/%m/%Y") if wa.date_receive else "",
+                    "message": entry.message or "",
                 })
         return {"items": items[:10], "total_count": len(seen)}

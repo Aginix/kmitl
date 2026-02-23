@@ -28,6 +28,7 @@ class WorkAcceptanceInbox(models.Model):
         default=False,
         index=True,
     )
+    message = fields.Html(string="Message")
 
     _sql_constraints = [
         (
