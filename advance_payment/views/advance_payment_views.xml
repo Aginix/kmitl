@@ -157,8 +157,8 @@
                     </group>
 
                     <group string="เงื่อนไขการยืม">
-                        <field name="reason" nolabel="1" placeholder="สาเหตุในการยืมเงิน..." colspan="2"/>
-                        <field name="loan_term" nolabel="1" colspan="2"/>
+                        <field name="reason" placeholder="สาเหตุในการยืมเงิน..." colspan="2"/>
+                        <field name="loan_term" colspan="2"/>
                     </group>
 
                     <notebook>
