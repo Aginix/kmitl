@@ -8,7 +8,7 @@ class ResConfigSettings(models.TransientModel):
         string="Default Return Days",
         config_parameter="advance_payment.default_return_days",
     )
-    advance_payment_loan_term = fields.Text(
+    advance_payment_loan_term = fields.Char(
         string="Loan Term",
         config_parameter="advance_payment.loan_term",
     )
