@@ -163,7 +163,10 @@
 
                     <notebook>
                         <page string="รายการคืนเงิน" name="returns">
-                            <field name="return_ids">
+                            <field
+                                name="return_ids"
+                                attrs="{'readonly': [('state', 'not in', ('approved', 'partial'))]}"
+                            >
                                 <tree editable="bottom">
                                     <field name="date_return"/>
                                     <field name="return_type"/>
