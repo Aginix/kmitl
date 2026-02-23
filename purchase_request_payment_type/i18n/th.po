@@ -39,3 +39,8 @@ msgstr "สำรองจ่าย"
 #: model:ir.model,name:purchase_request_payment_type.model_purchase_request
 msgid "Purchase Request"
 msgstr "คำขอซื้อขอจ้าง"
+
+#. module: purchase_request_payment_type
+#: view:purchase.request:purchase_request_payment_type.view_purchase_request_form
+msgid "When payment type is Prepaid, please select the advance payer's name in the Vendor field."
+msgstr "กรณีเลือกประเภทการจ่ายเงินเป็นสำรองจ่ายให้เลือกชื่อผู้สำรองจ่าย"
