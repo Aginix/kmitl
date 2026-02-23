@@ -118,42 +118,6 @@
                         </group>
                     </group>
 
-                    <!-- Dates group -->
-                    <group string="วันที่">
-                        <group>
-                            <field
-                                name="date_submitted"
-                                attrs="{'invisible': [('date_submitted', '=', False)]}"
-                            />
-                            <field
-                                name="date_approved"
-                                attrs="{'invisible': [('date_approved', '=', False)]}"
-                            />
-                            <field
-                                name="date_accepted"
-                                attrs="{'invisible': [('date_accepted', '=', False)]}"
-                            />
-                        </group>
-                        <group>
-                            <field
-                                name="date_start"
-                                attrs="{'invisible': [('date_start', '=', False)]}"
-                            />
-                            <field
-                                name="date_due"
-                                attrs="{'invisible': [('date_due', '=', False)]}"
-                            />
-                            <field
-                                name="date_end"
-                                attrs="{'invisible': [('date_end', '=', False)]}"
-                            />
-                            <field
-                                name="end_day"
-                                attrs="{'invisible': [('date_end', '=', False)]}"
-                            />
-                        </group>
-                    </group>
-
                     <group string="เงื่อนไขการยืม">
                         <field name="loan_term" colspan="2" nolabel="1" readonly="1"/>
                     </group>
@@ -177,6 +141,21 @@
                                     <field name="note"/>
                                 </tree>
                             </field>
+                        </page>
+                        <page string="วันที่" name="dates" attrs="{'invisible': [('date_submitted', '=', False)]}">
+                            <group>
+                                <group>
+                                    <field name="date_submitted" attrs="{'invisible': [('date_submitted', '=', False)]}"/>
+                                    <field name="date_approved" attrs="{'invisible': [('date_approved', '=', False)]}"/>
+                                    <field name="date_accepted" attrs="{'invisible': [('date_accepted', '=', False)]}"/>
+                                </group>
+                                <group>
+                                    <field name="date_start" attrs="{'invisible': [('date_start', '=', False)]}"/>
+                                    <field name="date_due" attrs="{'invisible': [('date_due', '=', False)]}"/>
+                                    <field name="date_end" attrs="{'invisible': [('date_end', '=', False)]}"/>
+                                    <field name="end_day" attrs="{'invisible': [('date_end', '=', False)]}"/>
+                                </group>
+                            </group>
                         </page>
                         <page string="เอกสารแนบ" name="attachments">
                             <field name="attachment_ids" widget="many2many_binary"/>
