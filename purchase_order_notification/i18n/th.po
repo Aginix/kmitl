@@ -38,3 +38,18 @@ msgid ""
 msgstr ""
 "มีสัญญา/ใบสั่งจ้าง/ซื้อ %s ฉบับที่กำลังจะหมดอายุ</b> <a href=\"/"
 "web#action=%s\">คลิกเพื่อตรวจสอบ</a>"
+
+#. module: purchase_order_notification
+#: model_terms:ir.ui.view,arch_db:purchase_order_notification.res_config_settings_view_form_purchase_notification
+msgid "Contract Expiry Notification"
+msgstr "แจ้งเตือนสัญญาใกล้หมดอายุ"
+
+#. module: purchase_order_notification
+#: model:ir.model.fields,field_description:purchase_order_notification.field_res_config_settings__purchase_contract_notify_days
+msgid "Notify Before Contract Expiry (Days)"
+msgstr "การแจ้งเตือนก่อนสัญญาหมดอายุ (วัน)"
+
+#. module: purchase_order_notification
+#: model_terms:ir.ui.view,arch_db:purchase_order_notification.res_config_settings_view_form_purchase_notification
+msgid "Notify purchase users when contract expires within this many days"
+msgstr "การแจ้งเตือนเจ้าหน้าที่พัสดุเมื่อสัญญาหมดอายุภายในจำนวนวันดังกล่าว"
