@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="user_role_purchase.purchase_role_user" model="res.users.role">
+            <field name="implied_ids" eval="[(4, ref('l10n_th_gov_account_asset_management.group_enable_asset_purchase'))]" />
+        </record>
+        <record id="user_role_purchase.purchase_role_manager" model="res.users.role">
+            <field name="implied_ids" eval="[(4, ref('l10n_th_gov_account_asset_management.group_enable_asset_purchase'))]" />
+        </record>
+        <record id="user_role_purchase.purchase_role_admin" model="res.users.role">
+            <field name="implied_ids" eval="[(4, ref('l10n_th_gov_account_asset_management.group_enable_asset_purchase'))]" />
+        </record>
+    </data>
+</odoo>
