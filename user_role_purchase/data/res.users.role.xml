@@ -3,7 +3,9 @@
     <data noupdate="0">
         <record id="purchase_role_user" model="res.users.role">
             <field name="name">เจ้าหน้าที่พัสดุส่วนงาน</field>
-            <field name="implied_ids" eval="[(6, 0, [
+            <field
+                name="implied_ids"
+                eval="[(6, 0, [
                 ref('budget.group_budget_user'),
                 ref('budget.group_budget_commitment'),
                 ref('l10n_th_gov_purchase_request.group_purchase_request_verify'),
@@ -12,17 +14,42 @@
                 ref('agx_sarabun.group_sarabun_user'),
                 ref('purchase.group_purchase_user'),
                 ref('purchase_request_security.group_purchase_request_user_all'),
-            ])]" />
+            ])]"
+            />
         </record>
         <record id="purchase_role_manager" model="res.users.role">
             <field name="name">เจ้าหน้าที่พัสดุส่วนกลาง</field>
-            <field name="implied_ids"
-                eval="[(6, 0, [ref('user_role_purchase.purchase_role_user'), ref('operating_unit_access_all.group_all_operating_unit')])]" />
+            <field
+                name="implied_ids"
+                eval="[(6, 0, [
+                ref('budget.group_budget_user'),
+                ref('budget.group_budget_commitment'),
+                ref('l10n_th_gov_purchase_request.group_purchase_request_verify'),
+                ref('disbursement.group_disbursement_user'),
+                ref('procurement_plan.group_procurement_plan_user'),
+                ref('agx_sarabun.group_sarabun_user'),
+                ref('purchase.group_purchase_user'),
+                ref('purchase_request_security.group_purchase_request_user_all'),
+                ref('operating_unit_access_all.group_all_operating_unit')])
+                ]"
+            />
         </record>
         <record id="purchase_role_admin" model="res.users.role">
             <field name="name">ผู้ดูแลระบบพัสดุ</field>
-            <field name="implied_ids"
-                eval="[(6, 0, [ref('user_role_purchase.purchase_role_user'), ref('operating_unit_access_all.group_all_operating_unit')])]" />
+            <field
+                name="implied_ids"
+                eval="[(6, 0, [
+                ref('budget.group_budget_user'),
+                ref('budget.group_budget_commitment'),
+                ref('l10n_th_gov_purchase_request.group_purchase_request_verify'),
+                ref('disbursement.group_disbursement_user'),
+                ref('procurement_plan.group_procurement_plan_user'),
+                ref('agx_sarabun.group_sarabun_user'),
+                ref('purchase.group_purchase_user'),
+                ref('purchase_request_security.group_purchase_request_user_all'),
+                ref('operating_unit_access_all.group_all_operating_unit')])
+                ]"
+            />
         </record>
     </data>
 </odoo>
