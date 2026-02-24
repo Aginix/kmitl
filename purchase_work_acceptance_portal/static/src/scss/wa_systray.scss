@@ -15,5 +15,19 @@
         &:hover {
             background-color: #f8f9fa;
         }
+
+        a {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-radius: 4px;
+            text-decoration: none;
+
+            &:hover {
+                background-color: #e9ecef;
+                text-decoration: underline;
+            }
+        }
     }
 }
