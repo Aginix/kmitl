@@ -6,7 +6,7 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['base_user_role', 'purchase_request_security', 'l10n_th_gov_purchase_request', 'budget', 'disbursement', 'procurement_plan', 'agx_sarabun', 'operating_unit'],
+    'depends': ['base_user_role', 'purchase_request_security', 'l10n_th_gov_purchase_request', 'budget', 'disbursement', 'procurement_plan', 'agx_sarabun', 'operating_unit_access_all'],
     'data': [
         'data/res.users.role.xml',
     ],
