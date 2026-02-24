@@ -63,9 +63,7 @@ class AssetDepreciationReportWizard(models.TransientModel):
         if self.department_id:
             domain.append(("department_id", "=", self.department_id.id))
         if self.source_analytic_id:
-            domain.append(
-                ("analytic_distribution", "like", str(self.source_analytic_id.id))
-            )
+            domain.append(("source_analytic_id", "=", self.source_analytic_id.id))
 
         assets = self.env["account.asset"].search(domain, order="number, id")
 
