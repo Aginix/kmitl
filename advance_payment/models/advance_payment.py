@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 READONLY_STATES = {
     "submitted": [("readonly", True)],
@@ -199,6 +199,12 @@ class AdvancePayment(models.Model):
         for rec in self:
             rec.payment_count = len(rec.payment_ids)
 
+    @api.constrains("amount")
+    def _check_amount_positive(self):
+        for rec in self:
+            if rec.amount <= 0:
+                raise ValidationError(_("จำนวนเงินต้องมากกว่า 0"))
+
     @api.depends("return_ids.amount", "return_ids.state")
     def _compute_amount_return(self):
         for rec in self:
@@ -274,14 +280,16 @@ class AdvancePayment(models.Model):
                 and rec.release_state == "paid"
                 and not rec.date_accepted
             )
-            rec.show_cancel_button = rec.state in ("draft", "submitted") and is_officer
+            rec.show_cancel_button = (rec.state == "draft") or (
+                rec.state == "submitted" and is_officer
+            )
             rec.return_day_readonly = not is_officer
 
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get("name", "/") == "/":
-                vals["name"] = self.env["ir.sequence"].next_by_code("advance.payment")
+                vals["name"] = "/"
         return super().create(vals_list)
 
     def action_submit(self):
@@ -305,7 +313,10 @@ class AdvancePayment(models.Model):
     def action_approve(self):
         self._check_officer()
         for rec in self:
-            rec.write({"state": "approved", "date_approved": fields.Date.today()})
+            name = rec.name
+            if name == "/":
+                name = self.env["ir.sequence"].next_by_code("advance.payment")
+            rec.write({"state": "approved", "date_approved": fields.Date.today(), "name": name})
 
     def action_create_payment(self):
         self._check_officer()
@@ -363,9 +374,16 @@ class AdvancePayment(models.Model):
                 rec.state = "partial"
 
     def action_cancel(self):
-        self._check_officer()
         for rec in self:
+            if rec.state != "draft":
+                rec._check_officer()
             rec.state = "cancel"
+
+    def unlink(self):
+        for rec in self:
+            if rec.state != "draft" or rec.date_submitted:
+                raise UserError(_("สามารถลบได้เฉพาะรายการที่ยังไม่เคยยื่นคำขอเท่านั้น"))
+        return super().unlink()
 
     def action_reset_to_draft(self):
         for rec in self:
