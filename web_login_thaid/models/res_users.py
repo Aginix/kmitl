@@ -12,9 +12,7 @@ class ResUsers(models.Model):
     _inherit = "res.users"
 
     def _auth_oauth_signin(self, provider, validation, params):
-        """Prevent auto-creation of users for providers that require api_key (ThaiD).
-        Admin must pre-map oauth_uid on existing users.
-        """
+        """Auto-create portal users for ThaiD login, bypassing invitation scope check."""
         oauth_provider = self.env["auth.oauth.provider"].browse(provider)
         if not oauth_provider.api_key:
             return super()._auth_oauth_signin(provider, validation, params)
@@ -23,7 +21,20 @@ class ResUsers(models.Model):
             [("oauth_uid", "=", oauth_uid), ("oauth_provider_id", "=", provider)]
         )
         if not oauth_user:
-            raise AccessDenied()
+            name = validation.get("name", oauth_uid)
+            values = {
+                "name": name,
+                "login": oauth_uid,
+                "email": oauth_uid,
+                "oauth_provider_id": provider,
+                "oauth_uid": oauth_uid,
+                "oauth_access_token": params["access_token"],
+                "active": True,
+            }
+            try:
+                oauth_user = self._create_user_from_template(values)
+            except Exception:
+                raise AccessDenied()
         assert len(oauth_user) == 1
         oauth_user.write({"oauth_access_token": params["access_token"]})
         return oauth_user.login

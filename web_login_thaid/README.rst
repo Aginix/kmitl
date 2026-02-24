@@ -1,6 +1,6 @@
-===============
+===================
 Web Login ThaiD
-===============
+===================
 
 Adds a ThaiD (Thailand Digital ID) login button to the Odoo login page,
 allowing users to authenticate via the ThaiD OpenID Connect provider.

@@ -5,9 +5,9 @@
     "name": "Web Login ThaiD",
     "version": "16.0.1.0.0",
     "license": "AGPL-3",
-    "author": "KMITL",
+    "author": "Aginix Technologies, KMITL",
     "summary": "ThaiD (Thailand Digital ID) login button for Odoo",
-    "depends": ["auth_oidc"],
+    "depends": ["auth_oidc", "auth_signup"],
     "data": [
         "views/auth_oauth_provider.xml",
         "data/auth_oauth_data.xml",
