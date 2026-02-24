@@ -22,6 +22,40 @@ class AccountAsset(models.Model):
         "sources": "source_analytic_id",
     }
 
+    _analytic_keys = {
+        "sources": "source_analytic_id",
+        "departments": "department_analytic_id",
+        "activities": "activity_analytic_id",
+    }
+
+    source_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="แหล่งเงิน",
+        compute="_compute_analytic_id",
+        inverse=lambda self: self._update_analytic_distribution("sources"),
+        store=True,
+        readonly=False,
+        domain=[("root_plan_id.code", "=", "sources")],
+    )
+    department_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="ส่วนงาน",
+        compute="_compute_analytic_id",
+        inverse=lambda self: self._update_analytic_distribution("departments"),
+        store=True,
+        readonly=False,
+        domain=[("root_plan_id.code", "=", "departments")],
+    )
+    activity_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="ด้าน/แผนงาน/กิจกรรม",
+        compute="_compute_analytic_id",
+        inverse=lambda self: self._update_analytic_distribution("activities"),
+        store=True,
+        readonly=False,
+        domain=[("root_plan_id.code", "=", "activities")],
+    )
+
     account_fiscal_year_id = fields.Many2one(
         "account.fiscal.year",
         string="Fiscal year"

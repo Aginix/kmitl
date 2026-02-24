@@ -1,0 +1,94 @@
+# -*- coding: utf-8 -*-
+import base64
+
+from odoo import _, api, fields, models
+
+
+class AssetDepreciationReportWizard(models.TransientModel):
+    _name = "asset.depreciation.report.wizard"
+    _description = "Asset Depreciation Report Wizard"
+
+    date = fields.Date(
+        string="ประจำวันที่",
+        required=True,
+        default=fields.Date.today,
+    )
+    account_fiscal_year_id = fields.Many2one(
+        "account.fiscal.year",
+        string="ปีงบประมาณ",
+        compute="_compute_account_fiscal_year_id",
+        store=True,
+        readonly=True,
+    )
+    profile_id = fields.Many2one(
+        "account.asset.profile",
+        string="ประเภท",
+    )
+    source_of_asset = fields.Selection(
+        [
+            ("procurement", "Procurement"),
+            ("donation", "Donation"),
+            ("transfer", "Transfer"),
+        ],
+        string="ที่มา",
+    )
+    source_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="แหล่งเงิน",
+        domain=[("root_plan_id.code", "=", "sources")],
+    )
+    department_id = fields.Many2one(
+        "hr.department",
+        string="หน่วยงาน",
+    )
+    data = fields.Binary(string="Report", readonly=True)
+    filename = fields.Char(string="Filename", readonly=True)
+
+    @api.depends("date")
+    def _compute_account_fiscal_year_id(self):
+        for rec in self:
+            if rec.date:
+                fy = self.env["account.fiscal.year"].search(
+                    [("date_from", "<=", rec.date), ("date_to", ">=", rec.date)],
+                    limit=1,
+                )
+                rec.account_fiscal_year_id = fy
+            else:
+                rec.account_fiscal_year_id = False
+
+    def _get_assets(self):
+        domain = [("state", "in", ["open", "close"])]
+        if self.profile_id:
+            domain.append(("profile_id", "=", self.profile_id.id))
+        if self.department_id:
+            domain.append(("department_id", "=", self.department_id.id))
+        if self.source_analytic_id:
+            domain.append(
+                ("analytic_distribution", "like", str(self.source_analytic_id.id))
+            )
+
+        assets = self.env["account.asset"].search(domain, order="number, id")
+
+        fy = self.account_fiscal_year_id
+        if fy:
+            assets = assets.filtered(
+                lambda a: any(
+                    line.type == "depreciate"
+                    and fy.date_from <= line.line_date <= fy.date_to
+                    for line in a.depreciation_line_ids
+                )
+            )
+        return assets
+
+    def action_generate_report(self):
+        self.ensure_one()
+        report_model = self.env["report.asset.depreciation.xlsx"]
+        xlsx_data = report_model.generate_xlsx(self)
+        filename = "asset_depreciation_report.xlsx"
+        self.write({"data": base64.b64encode(xlsx_data), "filename": filename})
+        return {
+            "type": "ir.actions.act_url",
+            "url": f"/web/content?model=asset.depreciation.report.wizard"
+                   f"&id={self.id}&field=data&download=true&filename={filename}",
+            "target": "self",
+        }
