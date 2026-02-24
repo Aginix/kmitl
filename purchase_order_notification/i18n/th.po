@@ -33,11 +33,10 @@ msgstr "คำสั่งซื้อ"
 #: code:addons/purchase_order_notification/models/purchase_order.py:0
 #, python-format
 msgid ""
-"There are %s contracts that are about to expire.</b> <a "
-"href=\"/web#action=%s\">Click to review</a>"
+"There are %s contracts that are about to expire. <a href=\"/"
+"web#action=%s\">Click to review</a>"
 msgstr ""
-"มีสัญญา/ใบสั่งจ้าง/ซื้อ %s ฉบับที่กำลังจะหมดอายุ</b> <a href=\"/"
-"web#action=%s\">คลิกเพื่อตรวจสอบ</a>"
+"มีสัญญา/ใบสั่งจ้าง/ซื้อ %s ฉบับที่กำลังจะหมดอายุ<a href=\"/web#action=%s\">คลิกเพื่อตรวจสอบ</a>"
 
 #. module: purchase_order_notification
 #: model_terms:ir.ui.view,arch_db:purchase_order_notification.res_config_settings_view_form_purchase_notification
