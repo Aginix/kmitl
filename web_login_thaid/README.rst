@@ -11,6 +11,10 @@ Configuration
 #. Go to **Settings > General Settings > Integrations > OAuth Providers**.
 #. Open the **ThaiD** provider record.
 #. Set **Client ID**, **Client Secret**, and **API Key** from your ThaiD application.
+#. Set the **Callback URL** in your ThaiD application to::
+
+      https://<your-odoo-domain>/auth_oauth/signin
+
 #. Enable the provider.
 
 Usage
