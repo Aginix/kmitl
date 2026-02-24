@@ -30,9 +30,7 @@ class ResUsers(models.Model):
 
     def _auth_oauth_get_tokens_auth_code_flow(self, oauth_provider, params):
         if not oauth_provider.api_key:
-            return super()._auth_oauth_get_tokens_auth_code_flow(
-                oauth_provider, params
-            )
+            return super()._auth_oauth_get_tokens_auth_code_flow(oauth_provider, params)
         code = params.get("code")
         auth = None
         if oauth_provider.client_secret:
