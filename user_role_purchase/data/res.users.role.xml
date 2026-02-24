@@ -17,11 +17,12 @@
         <record id="purchase_role_manager" model="res.users.role">
             <field name="name">เจ้าหน้าที่พัสดุส่วนกลาง</field>
             <field name="implied_ids"
-                eval="[(6, 0, [ref('purchase_role_user'), ref('operating_unit_access_all.group_all_operating_unit')])]" />
+                eval="[(6, 0, [ref('user_role_purchase.purchase_role_user'), ref('operating_unit_access_all.group_all_operating_unit')])]" />
         </record>
         <record id="purchase_role_admin" model="res.users.role">
             <field name="name">ผู้ดูแลระบบพัสดุ</field>
-            <field name="implied_ids" eval="[(6, 0, [ref('purchase_role_manager')])]" />
+            <field name="implied_ids"
+                eval="[(6, 0, [ref('user_role_purchase.purchase_role_user'), ref('operating_unit_access_all.group_all_operating_unit')])]" />
         </record>
     </data>
 </odoo>
