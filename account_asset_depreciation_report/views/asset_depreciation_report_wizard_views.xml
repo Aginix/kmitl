@@ -17,6 +17,10 @@
                         <field name="department_id" />
                     </group>
                 </group>
+                <group attrs="{'invisible': [('data', '=', False)]}">
+                    <field name="data" filename="filename" widget="binary" string="ดาวน์โหลดรายงาน" />
+                    <field name="filename" invisible="1" />
+                </group>
                 <footer>
                     <button
                         name="action_generate_report"
