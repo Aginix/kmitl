@@ -205,6 +205,15 @@ class AccountAsset(models.Model):
                     amount = remaining_value
                     remaining_value = 0.0
                 else:
+                    # Cap amount to remaining_value to prevent negative residual
+                    if (
+                        currency.compare_amounts(
+                            asset_sign * amount,
+                            asset_sign * remaining_value,
+                        )
+                        > 0
+                    ):
+                        amount = remaining_value
                     remaining_value -= amount
                 fy_amount_check += amount
                 line = {

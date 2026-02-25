@@ -336,3 +336,37 @@ class TestAccountAssetDepreciationImport(AccountTestInvoicingCommon):
             self.assertAlmostEqual(line.amount, 1000.0)
         # Last line cleans up any rounding to reach 0 remaining
         self.assertAlmostEqual(dlines[-1].remaining_value, 0.0)
+
+    # ------------------------------------------------------------------ #
+    # No negative remaining_value (regression)                             #
+    # ------------------------------------------------------------------ #
+
+    def test_board_no_negative_remaining_value(self):
+        """Remaining value must never go negative on any depreciation line."""
+        asset = self._make_asset(
+            purchase_value=1500.0,
+            import_amount=100.0,
+            salvage_value=1.0,
+            date_start="2026-02-25",
+            method_number=3,
+            method_period="month",
+        )
+        asset.compute_depreciation_board()
+        asset.invalidate_recordset()
+        dlines = asset.depreciation_line_ids.filtered(
+            lambda l: l.type == "depreciate"
+        ).sorted("line_date")
+        self.assertTrue(len(dlines) > 0)
+        for line in dlines:
+            self.assertGreaterEqual(
+                line.remaining_value,
+                0.0,
+                f"Negative remaining_value {line.remaining_value} on {line.line_date}",
+            )
+            self.assertGreaterEqual(
+                line.amount,
+                0.0,
+                f"Negative amount {line.amount} on {line.line_date}",
+            )
+        self.assertAlmostEqual(dlines[-1].remaining_value, 0.0)
+        self.assertAlmostEqual(dlines[0].depreciated_value, 100.0)
