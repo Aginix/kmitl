@@ -14,9 +14,34 @@ class AccountAsset(models.Model):
     _name = "account.asset"
     _inherit = ["account.asset", "portal.mixin"]
 
+    name = fields.Char(tracking=True)
+
+    state = fields.Selection(tracking=True)
+
+    number = fields.Char(tracking=True)
+
+    gpsc_id = fields.Many2one(tracking=True)
+
+    code = fields.Char(tracking=True)
+
+    purchase_value = fields.Monetary(tracking=True)
+
+    salvage_value = fields.Monetary(tracking=True)
+
+    date_start = fields.Date(tracking=True)
+
+    profile_id = fields.Many2one(tracking=True)
+
+    method_time = fields.Selection(tracking=True)
+
+    method = fields.Selection(tracking=True)
+
+    method_period = fields.Selection(tracking=True)
+
     account_fiscal_year_id = fields.Many2one(
         "account.fiscal.year",
-        string = "Fiscal year"
+        string = "Fiscal year",
+        tracking=True
     )
 
     gpsc_id =  fields.Many2one(
