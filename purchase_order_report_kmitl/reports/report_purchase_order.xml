@@ -49,7 +49,7 @@
                     <div style="height: 1px" />
                     <div class="page-header mt-5 mb-5">
                         <h3 class="text-center fw-bolder" style="line-height: 1.575">
-                            ใบสั่งซื้อ/จ้าง
+                            <span t-esc="o.contract_type_id.name" />
                         </h3>
                     </div>
                     <div class="row">
@@ -64,7 +64,7 @@
                             ใบสั่งซื้อเลขที่
                             <span
                                 class="ms-2 fw-normal fw-bolder text-decoration-underline"
-                                t-esc="o.name"
+                                t-esc="o.contract_name"
                             />
                         </div>
                     </div>
@@ -310,8 +310,10 @@
                             />
                             นี้อ้างอิงตามเลขที่โครงการ
                             <!-- ไม่รู้ต้องเลขอะไร -->
-                            <span class="fw-bolder text-decoration-underline">
-                                xxx
+                            <span
+                                class="fw-bolder text-decoration-underline"
+                                t-esc="o.contract_number or '-'"
+                            >
                             </span>
                             <span
                                 class="fw-bolder text-decoration-underline"
