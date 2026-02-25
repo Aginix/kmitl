@@ -171,7 +171,11 @@ class AccountAssetBatch(models.Model):
                     for _ in range(line.amount):
                         asset.create({
                             "name": line.name,
-                            "analytic_distribution": batch.purchase_id.analytic_distribution,
+                            # "analytic_distribution": batch.purchase_id.analytic_distribution,
+                            "activity_analytic_id": batch.activity_analytic_id.id,
+                            "department_analytic_id": batch.department_analytic_id.id,
+                            "fund_analytic_id": batch.fund_analytic_id.id,
+                            "source_analytic_id": batch.source_analytic_id.id,
                             "date_start": batch.date,
                             "account_fiscal_year_id": batch.account_fiscal_year_id.id,
                             "operating_unit_id": batch.operating_unit_id.id,
