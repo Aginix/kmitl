@@ -12,7 +12,7 @@ def _generate_random_code(length=8):
 
 class AccountAsset(models.Model):
     _name = "account.asset"
-    _inherit = ["account.asset", "portal.mixin"]
+    _inherit = ["account.asset", "portal.mixin", "analytic.mixin"]
 
     account_fiscal_year_id = fields.Many2one(
         "account.fiscal.year",
@@ -28,6 +28,22 @@ class AccountAsset(models.Model):
         "hr.department",
         string = "Department"
     )
+
+    source_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="แหล่งเงิน",
+        compute="_compute_analytic_id",
+        inverse="_inverse_source_analytic",
+        domain=[("root_plan_id.code", "=", "sources")],
+        store=False,
+        tracking=True,
+        copy=True,
+        readonly=False,
+    )
+
+    def _inverse_source_analytic(self):
+        for line in self:
+            line._update_analytic_distribution("sources")
 
     def _default_access_uid(self):
         return _generate_random_code(8)
