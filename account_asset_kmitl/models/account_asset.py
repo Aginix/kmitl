@@ -14,6 +14,8 @@ class AccountAsset(models.Model):
     _name = "account.asset"
     _inherit = ["account.asset", "portal.mixin", "analytic.mixin"]
 
+    _analytic_keys = {"sources": "source_analytic_id"}
+
     account_fiscal_year_id = fields.Many2one(
         "account.fiscal.year",
         string = "Fiscal year"

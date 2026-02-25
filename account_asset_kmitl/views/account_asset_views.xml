@@ -10,7 +10,7 @@
         />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='asset_location_id']" position="after">
-                <field name="source_analytic_id" />
+                <field name="department_id" />
             </xpath>
         </field>
     </record>
@@ -34,7 +34,7 @@
                 />
             </xpath>
             <xpath expr="//group[@id='header_right_group']" position="inside">
-                <field name="department_id" />
+                <field name="source_analytic_id" />
             </xpath>
         </field>
     </record>
