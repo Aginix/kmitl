@@ -62,7 +62,7 @@ class PurchaseRequest(models.Model):
     @api.depends_context("uid")
     def _compute_can_edit_egp(self):
         user_in_group = self.env.user.has_group(
-            "purchase_request_security.group_purchase_request_user_all"
+            "purchase_request_kmitl.group_purchase_request_user_all"
         )
         for record in self:
             record.can_edit_egp = bool(user_in_group and record.egp_status == "waiting")
