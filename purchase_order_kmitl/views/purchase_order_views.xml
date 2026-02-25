@@ -14,7 +14,7 @@
                     name="action_view_purchase_request"
                     type="object"
                     icon="fa-shopping-cart"
-                    string="View Purchase Request"
+                    string="Purchase Request"
                     class="oe_stat_button"
                 />
             </xpath>
