@@ -34,6 +34,9 @@
                 />
             </xpath>
             <xpath expr="//group[@id='header_right_group']" position="inside">
+                <field name="activity_analytic_id" />
+                <field name="department_analytic_id" />
+                <field name="fund_analytic_id" />
                 <field name="source_analytic_id" />
             </xpath>
         </field>
@@ -54,7 +57,10 @@
         </field>
     </record>
 
-    <record id="account_asset_management.account_asset_action" model="ir.actions.act_window">
+    <record
+        id="account_asset_management.account_asset_action"
+        model="ir.actions.act_window"
+    >
         <field name="name">Asset</field>
     </record>
 </odoo>
