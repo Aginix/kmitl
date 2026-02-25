@@ -13,6 +13,7 @@
         "hr",
         "purchase_operating_unit",
         "purchase_request_department",
+        "purchase_order_link_purchase_request",
     ],
     "data": ["views/purchase_order_views.xml"],
     "application": False,
