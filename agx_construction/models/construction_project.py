@@ -32,6 +32,18 @@ class ConstructionProject(models.Model):
         string="Purchase Requests",
     )
 
+    purchase_order_ids = fields.Many2many(
+        comodel_name="purchase.order",
+        string="Purchase Orders",
+        compute="_compute_purchase_order_ids",
+    )
+
+    def _compute_purchase_order_ids(self):
+        for record in self:
+            record.purchase_order_ids = record.purchase_request_ids.mapped(
+                "line_ids.purchase_lines.order_id"
+            )
+
     state = fields.Selection(
         [
             ("draft", "Draft"),

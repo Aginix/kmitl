@@ -43,11 +43,24 @@
                     <notebook>
                         <page string="Purchase Requests" name="purchase_requests">
                             <field name="purchase_request_ids" readonly="1">
-                                <tree>
+                                <tree no_open="1">
                                     <field name="name"/>
                                     <field name="date_start"/>
                                     <field name="requested_by"/>
                                     <field name="state"/>
+                                    <button name="action_open_in_new_tab" string="Open" type="object" icon="fa-external-link" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="PO" name="purchase_orders">
+                            <field name="purchase_order_ids" readonly="1">
+                                <tree no_open="1">
+                                    <field name="name"/>
+                                    <field name="partner_id"/>
+                                    <field name="date_order"/>
+                                    <field name="amount_total"/>
+                                    <field name="state"/>
+                                    <button name="action_open_in_new_tab" string="Open" type="object" icon="fa-external-link"/>
                                 </tree>
                             </field>
                         </page>

@@ -11,7 +11,23 @@ class PurchaseRequest(models.Model):
         comodel_name="construction.project",
         string="Construction Project",
         domain=[("state", "=", "in_progress")],
+        states={
+            "to_verify": [("readonly", True)],
+            "to_approve": [("readonly", True)],
+            "approved": [("readonly", True)],
+            "in_progress": [("readonly", True)],
+            "done": [("readonly", True)],
+            "rejected": [("readonly", True)],
+        },
     )
+
+    def action_open_in_new_tab(self):
+        self.ensure_one()
+        return {
+            "type": "ir.actions.act_url",
+            "url": f"/web#model=purchase.request&id={self.id}&view_type=form",
+            "target": "new",
+        }
 
     @api.onchange("is_construction")
     def _onchange_is_construction(self):
