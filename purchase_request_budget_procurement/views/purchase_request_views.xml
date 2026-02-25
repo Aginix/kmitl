@@ -26,7 +26,7 @@
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="l10n_th_gov_purchase_request.view_purchase_request_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='procurement_type_id']" position="before">
+            <xpath expr="//div[hasclass('oe_edit_only')]" position="before">
                 <group string="แผนจัดซื้อจัดจ้าง">
                     <field name="use_procurement_plan" attrs="{'readonly': [('is_editable','=', False)]}" />
                     <field name="procurement_plan_id" options="{'no_create_edit': True, 'no_create': True}" domain="[('state', '=', 'new')]" attrs="{'invisible': [('use_procurement_plan', '=', False)], 'required': [('use_procurement_plan', '=', True)], 'readonly': [('is_editable','=', False)]}" />
