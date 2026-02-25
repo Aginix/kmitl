@@ -79,8 +79,39 @@ class AccountAsset(models.Model):
         # Import covers everything (constraint should prevent this)
         return len(table), 0
 
+    def _compute_depreciation_table(self):
+        """Override to return a table that starts after the imported amount.
+
+        The standard table is computed in full, then all lines covered by
+        ``already_depreciated_amount_import`` are removed and the first
+        remaining line's amount is adjusted for partial coverage.
+        ``depreciated_value`` / ``remaining_value`` on every kept line are
+        recalculated so they start from the import amount.
+        """
+        table = super()._compute_depreciation_table()
+        import_amount = self.already_depreciated_amount_import
+        if not import_amount or not table:
+            return table
+        currency = self.company_id.currency_id
+        ti, li = self._find_import_start_position(table, import_amount, currency)
+        if ti >= len(table):
+            return []
+        table = table[ti:]
+        if li > 0:
+            table[0]["lines"] = table[0]["lines"][li:]
+        # Recalculate cumulative values starting from the import amount.
+        dep_val = import_amount
+        rem_val = self.depreciation_base - dep_val
+        for entry in table:
+            for line in entry["lines"]:
+                line["depreciated_value"] = dep_val
+                rem_val -= line["amount"]
+                line["remaining_value"] = rem_val
+                dep_val += line["amount"]
+        return table
+
     def compute_depreciation_board(self):
-        """Override to skip depreciation lines covered by the import amount."""
+        """Override to pass the import amount as the initial depreciated value."""
         line_obj = self.env["account.asset.line"]
 
         for asset in self:
@@ -115,7 +146,7 @@ class AccountAsset(models.Model):
             if old_lines:
                 old_lines.unlink()
 
-            # Standard table computation — no import adjustments
+            # Table already trimmed to future lines by _compute_depreciation_table.
             table = asset._compute_depreciation_table()
             if not table:
                 continue
@@ -126,9 +157,8 @@ class AccountAsset(models.Model):
             if posted_lines:
                 # --- posted lines exist --------------------------------
                 # Standard logic: find starting position by date.
-                # Adding import_amount to depreciated_value_posted makes
-                # the residual comparison match the standard table, so
-                # amount_diff naturally stays ≈ 0.
+                # Adding import_amount to depreciated_value_posted aligns
+                # the residual comparison with the trimmed table's values.
                 total_table_lines = sum(len(entry["lines"]) for entry in table)
                 move_check_lines = asset.depreciation_line_ids.filtered("move_check")
                 last_depreciation_date = last_line.line_date
@@ -190,11 +220,8 @@ class AccountAsset(models.Model):
 
             else:
                 # --- no posted lines -----------------------------------
-                # Skip table lines that are covered by the import amount,
-                # adjust the first future line's amount.
-                table_i_start, line_i_start = asset._find_import_start_position(
-                    table, import_amount, currency
-                )
+                # Table already starts at the first future line.
+                table_i_start = line_i_start = 0
                 depreciated_value_posted = import_amount
 
             asset._compute_depreciation_line(
