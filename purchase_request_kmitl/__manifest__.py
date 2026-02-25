@@ -12,7 +12,6 @@
         "account_fiscal_year",
         "purchase_order_kmitl",
         "purchase_operating_unit",
-        "purchase_contract_kmitl",
         "purchase_request_payment_type",
         "purchase_request_exception",
     ],
