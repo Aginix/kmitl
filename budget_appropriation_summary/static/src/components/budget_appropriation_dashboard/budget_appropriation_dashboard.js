@@ -1536,7 +1536,7 @@ export class BudgetAppropriationDashboard extends Component {
 }
 
 BudgetAppropriationDashboard.template =
-    "budget_appropriation_report.BudgetAppropriationDashboard";
+    "budget_appropriation_summary.BudgetAppropriationDashboard";
 BudgetAppropriationDashboard.components = {
     ControlPanel,
 };

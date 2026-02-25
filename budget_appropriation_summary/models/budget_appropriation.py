@@ -66,7 +66,8 @@ class BudgetAppropriation(models.Model):
         compute="_compute_totals",
     )
 
-    TREASURY_REPLENISHMENT_CODES = ["0702000001"]
+    # ชดใช้เงินคงคลัง
+    TREASURY_REPLENISHMENT_CODES = ["0702000001", "5108000038"]
     DEDUCTED_RESERVE_CODES = ["0702000002", "0702000003"]
 
     # งบลงทุน
@@ -111,9 +112,7 @@ class BudgetAppropriation(models.Model):
                 ).mapped("balance")
             )
             record.recurrent_budget_amount = sum(
-                line_ids.filtered(
-                    lambda x: x.account_id.code in self.RECURRENT_BUDGET_CODES
-                ).mapped("balance")
+                line_ids.filtered(lambda x: x.is_recurrent).mapped("balance")
             )
             record.code_0702000002 = sum(
                 line_ids.filtered(lambda x: x.account_id.code in ["0702000002"]).mapped(

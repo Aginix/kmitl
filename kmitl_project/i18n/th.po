@@ -426,7 +426,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project_exception_confirm__related_model_id
 #: model:ir.model.fields.selection,name:kmitl_project.selection__exception_rule__model__kmitl_project model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
 msgid "KMITL Project"
-msgstr "โครงการ/กิจกรรม"
+msgstr "โครงการ"
 
 #. module: kmitl_project
 #: model:ir.actions.act_window,name:kmitl_project.action_kmitl_project_test_tree model:ir.ui.menu,name:kmitl_project.menu_kmitl_project_test
@@ -441,7 +441,7 @@ msgstr ""
 #. module: kmitl_project
 #: model_terms:ir.ui.view,arch_db:kmitl_project.portal_my_home model_terms:ir.ui.view,arch_db:kmitl_project.portal_my_kmitl_projects
 msgid "KMITL Projects"
-msgstr "โครงการ/กิจกรรม"
+msgstr "โครงการ"
 
 #. module: kmitl_project
 #: model:ir.model.fields,field_description:kmitl_project.field_kmitl_project__key
@@ -688,7 +688,7 @@ msgstr "Impact"
 #. module: kmitl_project
 #: model_terms:ir.ui.view,arch_db:kmitl_project.view_kmitl_project_form
 msgid "Project Manager"
-msgstr "หัวหน้าโครงการ/กิจกรรม"
+msgstr "เจ้าของโครงการ"
 
 #. module: kmitl_project
 #: model:ir.actions.act_window,name:kmitl_project.action_project_methodology

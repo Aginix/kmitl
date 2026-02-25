@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-07 07:01+0000\n"
-"PO-Revision-Date: 2025-05-07 14:04+0700\n"
+"POT-Creation-Date: 2026-02-18 17:25+0000\n"
+"PO-Revision-Date: 2026-02-19 00:29+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -15,7 +15,17 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Poedit 3.8\n"
+
+#. module: procurement_plan
+#: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_form
+msgid "<span class=\"o_stat_text\">Budget Commitment</span>"
+msgstr "<span class=\"o_stat_text\">จองงบประมาณ</span>"
+
+#. module: procurement_plan
+#: model_terms:ir.ui.view,arch_db:procurement_plan.view_budget_commitment_form
+msgid "<span class=\"o_stat_text\">แผนจัดซื้อจัดจ้าง</span>"
+msgstr ""
 
 #. module: procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__acceptance_eta
@@ -25,6 +35,11 @@ msgstr "ตรวจรับ/ส่งมอบ"
 #. module: procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__message_needaction
 msgid "Action Needed"
+msgstr ""
+
+#. module: procurement_plan
+#: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_form
+msgid "Additional Info"
 msgstr ""
 
 #. module: procurement_plan
@@ -38,6 +53,13 @@ msgid "Analytic"
 msgstr "บัญชีวิเคราะห์"
 
 #. module: procurement_plan
+#: model:ir.model,name:procurement_plan.model_account_analytic_account
+#: model:ir.model.fields,field_description:procurement_plan.field_budget_move_line__procurement_plan_analytic_id
+#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__analytic_account_id
+msgid "Analytic Account"
+msgstr "บัญชีวิเคราะห์"
+
+#. module: procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__analytic_distribution_search
 msgid "Analytic Distribution Search"
 msgstr ""
@@ -45,6 +67,14 @@ msgstr ""
 #. module: procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__analytic_precision
 msgid "Analytic Precision"
+msgstr ""
+
+#. module: procurement_plan
+#: model:ir.model.fields,help:procurement_plan.field_budget_move_line__procurement_plan_analytic_id
+#: model:ir.model.fields,help:procurement_plan.field_procurement_plan__analytic_account_id
+msgid ""
+"Analytic account to which this procurement plan. \n"
+"Track the costs and revenues of your procurement plan by setting this analytic account on your related documents (e.g. budgetings, purchase requests, purchase orders etc.)."
 msgstr ""
 
 #. module: procurement_plan
@@ -78,9 +108,44 @@ msgid "August"
 msgstr "สิงหาคม"
 
 #. module: procurement_plan
+#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__analytic_account_balance
+msgid "Balance"
+msgstr "งบประมาณ"
+
+#. module: procurement_plan
+#: model:ir.model,name:procurement_plan.model_budget_account
+msgid "Budget Account"
+msgstr "รหัสงบประมาณ"
+
+#. module: procurement_plan
+#: model:ir.model,name:procurement_plan.model_budget_commitment
+msgid "Budget Commitment"
+msgstr "จองงบประมาณ"
+
+#. module: procurement_plan
+#: model:ir.model,name:procurement_plan.model_budget_move_line
+msgid "Budget Move Line"
+msgstr ""
+
+#. module: procurement_plan
+#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__can_edit
+msgid "Can Edit"
+msgstr ""
+
+#. module: procurement_plan
+#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__can_edit_description
+msgid "Can Edit Description"
+msgstr ""
+
+#. module: procurement_plan
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__state__cancel
 msgid "Cancelled"
 msgstr "ยกเลิกแผนจัดซื้อจัดจ้าง"
+
+#. module: procurement_plan
+#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__company_id
+msgid "Company"
+msgstr ""
 
 #. module: procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__contract_order_signing_eta
@@ -97,6 +162,21 @@ msgstr ""
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__create_date
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan_payment__create_date
 msgid "Created on"
+msgstr ""
+
+#. module: procurement_plan
+#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: procurement_plan
+#: model:ir.ui.menu,name:procurement_plan.action_procurement_plan_dashboard_menu_action
+msgid "Dashboard"
+msgstr ""
+
+#. module: procurement_plan
+#: model:ir.actions.client,name:procurement_plan.action_procurement_plan_dashboard
+msgid "Dashboard แผนจัดซื้อจัดจ้าง"
 msgstr ""
 
 #. module: procurement_plan
@@ -134,6 +214,11 @@ msgstr "แบบร่าง"
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan_payment__month__2
 msgid "February"
 msgstr "กุมภาพันธ์"
+
+#. module: procurement_plan
+#: model:ir.model.fields,help:procurement_plan.field_procurement_plan__description
+msgid "Fill the details include unit"
+msgstr ""
 
 #. module: procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__account_fiscal_year_id
@@ -175,6 +260,11 @@ msgstr ""
 #: model:ir.model.fields,help:procurement_plan.field_procurement_plan__message_has_error
 #: model:ir.model.fields,help:procurement_plan.field_procurement_plan__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: procurement_plan
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__state__in_progress
+msgid "In progress"
 msgstr ""
 
 #. module: procurement_plan
@@ -236,6 +326,13 @@ msgid "Last Updated on"
 msgstr ""
 
 #. module: procurement_plan
+#. odoo-javascript
+#: code:addons/procurement_plan/static/src/components/procurement_plan_dashboard/procurement_plan_dashboard.xml:0
+#, python-format
+msgid "Loading..."
+msgstr ""
+
+#. module: procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__message_main_attachment_id
 msgid "Main Attachment"
 msgstr ""
@@ -271,15 +368,21 @@ msgid "Messages"
 msgstr ""
 
 #. module: procurement_plan
-#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__name
-#: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_search
-msgid "Name"
-msgstr "ชื่อ"
+#. odoo-python
+#: code:addons/procurement_plan/models/procurement_plan.py:0 model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__state__new
+#, python-format
+msgid "New"
+msgstr "รอทำแผนดำเนินการ"
 
 #. module: procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__note
 msgid "Notes"
 msgstr "โน๊ต"
+
+#. module: procurement_plan
+#: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_form
+msgid "Notes..."
+msgstr ""
 
 #. module: procurement_plan
 #: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__acceptance_eta__11
@@ -327,6 +430,11 @@ msgid "October"
 msgstr "ตุลาคม"
 
 #. module: procurement_plan
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__state__on_hold
+msgid "On Hold"
+msgstr ""
+
+#. module: procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__payment_ids
 msgid "Payment"
 msgstr "การเบิกจ่าย"
@@ -342,24 +450,15 @@ msgid "Payment Disbursement Date (Month)"
 msgstr "วันเบิกจ่าย"
 
 #. module: procurement_plan
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__state__pending
-msgid "Pending"
-msgstr "รอจัดซื้อจัดจ้าง"
-
-#. module: procurement_plan
-#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__price_per_unit
-msgid "Price per unit"
-msgstr "ราคาต่อหน่วย"
-
-#. module: procurement_plan
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__state__procurement
-msgid "Procurement"
-msgstr "จัดซื้อจัดจ้าง"
-
-#. module: procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__procurement_announcement_eta
 msgid "Procurement Announcement (ETA)"
 msgstr "ประกาศจัดซื้อจัดจ้าง"
+
+#. module: procurement_plan
+#: model:ir.model.fields,field_description:procurement_plan.field_account_analytic_account__procurement_plan_count
+#: model:ir.model.fields,field_description:procurement_plan.field_account_analytic_account_public__procurement_plan_count
+msgid "Procurement Count"
+msgstr ""
 
 #. module: procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__procurement_method_id
@@ -367,14 +466,20 @@ msgid "Procurement Method"
 msgstr "วิธีการจัดซื้อจัดจ้าง"
 
 #. module: procurement_plan
-#: model:ir.actions.act_window,name:procurement_plan.action_procurement_plan
-#: model:ir.model,name:procurement_plan.model_procurement_plan
+#: model:ir.actions.act_window,name:procurement_plan.action_procurement_plan model:ir.model,name:procurement_plan.model_procurement_plan
+#: model:ir.model.fields,field_description:procurement_plan.field_budget_commitment__procurement_plan_id
+#: model:ir.model.fields,field_description:procurement_plan.field_budget_move_line__procurement_plan_id
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan_payment__procurement_plan_id
-#: model:ir.ui.menu,name:procurement_plan.action_procurement_plan_menu_action
-#: model:ir.ui.menu,name:procurement_plan.procurement_plan_root_menu
+#: model:ir.module.category,name:procurement_plan.module_category_procurement_plan model:ir.ui.menu,name:procurement_plan.action_procurement_plan_menu_action
+#: model:ir.ui.menu,name:procurement_plan.procurement_plan_root_menu model_terms:ir.ui.view,arch_db:procurement_plan.res_config_settings_view_form
 #: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_form
 msgid "Procurement Plan"
 msgstr "แผนจัดซื้อจัดจ้าง"
+
+#. module: procurement_plan
+#: model:res.groups,name:procurement_plan.group_procurement_plan_manager
+msgid "Procurement Plan Manager"
+msgstr ""
 
 #. module: procurement_plan
 #: model:ir.model,name:procurement_plan.model_procurement_plan_payment
@@ -382,9 +487,36 @@ msgid "Procurement Plan Payment"
 msgstr "การเบิกจ่าย"
 
 #. module: procurement_plan
+#: model:res.groups,name:procurement_plan.group_procurement_plan_user
+msgid "Procurement Plan User"
+msgstr ""
+
+#. module: procurement_plan
+#. odoo-python
+#: code:addons/procurement_plan/models/account_analytic_account.py:0
+#: model:ir.model.fields,field_description:procurement_plan.field_account_analytic_account__procurement_plan_ids
+#: model:ir.model.fields,field_description:procurement_plan.field_account_analytic_account_public__procurement_plan_ids
+#: model_terms:ir.ui.view,arch_db:procurement_plan.account_analytic_account_view_form_inherit_procurement_plan
+#, python-format
+msgid "Procurement Plans"
+msgstr "Procurement Plan"
+
+#. module: procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__purchase_request_eta
 msgid "Purchase Request (ETA)"
 msgstr "จัดทำ พ.1"
+
+#. module: procurement_plan
+#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__state__ready model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_form
+msgid "Ready"
+msgstr "ยังไม่ดำเนินการ"
+
+#. module: procurement_plan
+#. odoo-python
+#: code:addons/procurement_plan/models/procurement_plan.py:0
+#, python-format
+msgid "Record must be in new state to be set to ready."
+msgstr ""
 
 #. module: procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__message_has_sms_error
@@ -413,19 +545,26 @@ msgid "There is no examples click here to add new Procurement Plan."
 msgstr ""
 
 #. module: procurement_plan
-#: model:ir.model.fields.selection,name:procurement_plan.selection__procurement_plan__state__validate
-msgid "To Approve"
-msgstr "รออนุมัติแผนจัดซื้อจัดจ้าง"
-
-#. module: procurement_plan
-#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__total_price
-msgid "Total price"
-msgstr "วงเงินรวม"
-
-#. module: procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__unit
 msgid "Unit of Measure"
 msgstr "หน่วยนับ"
+
+#. module: procurement_plan
+#. odoo-python
+#: code:addons/procurement_plan/models/procurement_plan.py:0
+#, python-format
+msgid "Unknown Analytic Account"
+msgstr ""
+
+#. module: procurement_plan
+#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__user_id
+msgid "User"
+msgstr "ผู้ใช้"
+
+#. module: procurement_plan
+#: model:ir.module.category,description:procurement_plan.module_category_procurement_plan
+msgid "User groups for managing and using procurement plans"
+msgstr ""
 
 #. module: procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__website_message_ids
@@ -438,13 +577,37 @@ msgid "Website communication history"
 msgstr ""
 
 #. module: procurement_plan
+#. odoo-python
+#: code:addons/procurement_plan/models/account_analytic_account.py:0
+#, python-format
+msgid "You cannot change the company of an analytic account if it is related to a procurement_plan."
+msgstr ""
+
+#. module: procurement_plan
+#: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_form
+msgid "e.g. ครุภัณฑ์วิทยาศาสตร์และการแพทย์, ปรับปรุงห้องปฏิบัติการฟิสิกส์"
+msgstr ""
+
+#. module: procurement_plan
+#: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_form
+msgid "e.g. ชิ้น, รายการ, ตัว, ชุด"
+msgstr ""
+
+#. module: procurement_plan
+#. odoo-python
+#: code:addons/procurement_plan/models/procurement_plan.py:0
+#, python-format
+msgid "กรุณาระบุแผนการดำเนินงานให้เสร็จสิ้นทั้งหมด"
+msgstr ""
+
+#. module: procurement_plan
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__fund_analytic_id
 msgid "กองทุน"
 msgstr ""
 
 #. module: procurement_plan
 #: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_form
-msgid "การจัดซื้อจัดจ้าง"
+msgid "การดำเนินงาน"
 msgstr ""
 
 #. module: procurement_plan
@@ -453,8 +616,15 @@ msgid "การเบิกจ่าย"
 msgstr ""
 
 #. module: procurement_plan
-#: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_form
-msgid "จัดทำพ.1"
+#. odoo-javascript
+#: code:addons/procurement_plan/static/src/components/procurement_plan_dashboard/procurement_plan_dashboard.xml:0
+#, python-format
+msgid "กำลังดำเนินการ"
+msgstr ""
+
+#. module: procurement_plan
+#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__activity_analytic_id
+msgid "กิจกรรม"
 msgstr ""
 
 #. module: procurement_plan
@@ -463,18 +633,65 @@ msgid "จำนวน"
 msgstr ""
 
 #. module: procurement_plan
-#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__activity_analytic_id
-msgid "ด้าน/แผนงาน/กิจกรรม"
+#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__budget_commitment_count
+msgid "จำนวนผูกพันงบประมาณ"
 msgstr ""
 
 #. module: procurement_plan
-#: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_form
-msgid "ตรวจรับ/ส่งมอบ"
+#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__description
+msgid "ชื่อรายการ"
 msgstr ""
 
 #. module: procurement_plan
-#: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_form
-msgid "ประกาศจัดซื้อจัดจ้าง"
+#: model:ir.model.fields,help:procurement_plan.field_budget_account__procurement_plan model:ir.model.fields,help:procurement_plan.field_budget_move_line__procurement_plan
+msgid "ติ๊กถูกเพื่อระบุว่าเป็นประเภทงบลงทุน จะสามารถจัดสรรแผนจัดซื้อจัดจ้างได้"
+msgstr ""
+
+#. module: procurement_plan
+#. odoo-javascript
+#: code:addons/procurement_plan/static/src/components/procurement_plan_dashboard/procurement_plan_dashboard.xml:0
+#, python-format
+msgid "ทั้งหมด"
+msgstr ""
+
+#. module: procurement_plan
+#: model:ir.model.fields,field_description:procurement_plan.field_budget_account__procurement_plan
+#: model:ir.model.fields,field_description:procurement_plan.field_budget_move_line__procurement_plan
+msgid "ทำแผนจัดซื้อจัดจ้าง"
+msgstr ""
+
+#. module: procurement_plan
+#. odoo-javascript
+#: code:addons/procurement_plan/static/src/components/procurement_plan_dashboard/procurement_plan_dashboard.xml:0
+#, python-format
+msgid "บาท"
+msgstr ""
+
+#. module: procurement_plan
+#: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_search
+msgid "ปีงบประมาณ"
+msgstr ""
+
+#. module: procurement_plan
+#. odoo-javascript
+#: code:addons/procurement_plan/static/src/components/procurement_plan_dashboard/procurement_plan_dashboard.xml:0
+#, python-format
+msgid "ปีงบประมาณ:"
+msgstr ""
+
+#. module: procurement_plan
+#: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_search
+msgid "ปีงบประมาณปัจจุบัน"
+msgstr ""
+
+#. module: procurement_plan
+#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__budget_commitment_ids
+msgid "ผูกพันงบประมาณ"
+msgstr ""
+
+#. module: procurement_plan
+#: model:ir.actions.client,name:procurement_plan.action_procurement_plan_report model:ir.ui.menu,name:procurement_plan.action_procurement_plan_report_menu_action
+msgid "ภาพรวมแผนจัดซื้อจัดจ้าง"
 msgstr ""
 
 #. module: procurement_plan
@@ -483,46 +700,140 @@ msgid "รวมทั้งหมด"
 msgstr ""
 
 #. module: procurement_plan
-#: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_form
-msgid "ราคาต่อหน่วย"
+#. odoo-javascript
+#: code:addons/procurement_plan/static/src/components/procurement_plan_dashboard/procurement_plan_dashboard.xml:0
+#, python-format
+msgid "รหัส"
 msgstr ""
 
 #. module: procurement_plan
-#: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_form
-msgid "รายละเอียดงบประมาณ"
+#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__budget_account_id
+msgid "รหัสงบประมาณ"
 msgstr ""
 
 #. module: procurement_plan
-#: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_form
-msgid "ลงนามสัญญา/ใบสั่งซื้อสั่งจ้าง"
+#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__name
+msgid "รหัสเอกสาร"
+msgstr "ชื่อ"
+
+#. module: procurement_plan
+#. odoo-javascript
+#: code:addons/procurement_plan/static/src/components/procurement_plan_dashboard/procurement_plan_dashboard.xml:0
+#, python-format
+msgid "รายการ"
 msgstr ""
 
 #. module: procurement_plan
-#: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_form
+#. odoo-javascript
+#: code:addons/procurement_plan/static/src/components/procurement_plan_dashboard/procurement_plan_dashboard.xml:0
+#, python-format
+msgid "รายการทั้งหมด"
+msgstr ""
+
+#. module: procurement_plan
+#. odoo-javascript
+#: code:addons/procurement_plan/static/src/components/procurement_plan_dashboard/procurement_plan_dashboard.xml:0
+#, python-format
+msgid "รายการแผนจัดซื้อจัดจ้าง"
+msgstr ""
+
+#. module: procurement_plan
+#: model:ir.ui.menu,name:procurement_plan.action_procurement_plan_report_menu
+msgid "รายงาน"
+msgstr ""
+
+#. module: procurement_plan
+#. odoo-javascript
+#: code:addons/procurement_plan/static/src/components/procurement_plan_dashboard/procurement_plan_dashboard.xml:0
+#, python-format
+msgid "วงเงิน"
+msgstr ""
+
+#. module: procurement_plan
+#. odoo-javascript
+#: code:addons/procurement_plan/static/src/components/procurement_plan_dashboard/procurement_plan_dashboard.xml:0
+#: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__total_price
+#, python-format
 msgid "วงเงินรวม"
 msgstr ""
 
 #. module: procurement_plan
+#: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_search
+msgid "วิธีการจัดซื้อจัดจ้าง"
+msgstr ""
+
+#. module: procurement_plan
+#. odoo-javascript
+#: code:addons/procurement_plan/static/src/components/procurement_plan_dashboard/procurement_plan_dashboard.xml:0
+#: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_search
+#, python-format
+msgid "สถานะ"
+msgstr ""
+
+#. module: procurement_plan
+#. odoo-javascript
+#: code:addons/procurement_plan/static/src/components/procurement_plan_dashboard/procurement_plan_dashboard.xml:0
+#, python-format
+msgid "สถานะแผนจัดซื้อจัดจ้าง"
+msgstr ""
+
+#. module: procurement_plan
+#. odoo-javascript
+#: code:addons/procurement_plan/static/src/components/procurement_plan_dashboard/procurement_plan_dashboard.xml:0
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__department_analytic_id
+#, python-format
 msgid "ส่วนงาน"
 msgstr ""
 
 #. module: procurement_plan
-#: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_form
-msgid "หน่วยนับ"
+#. odoo-javascript
+#: code:addons/procurement_plan/static/src/components/procurement_plan_dashboard/procurement_plan_dashboard.xml:0
+#, python-format
+msgid "ส่วนงาน:"
+msgstr ""
+
+#. module: procurement_plan
+#. odoo-javascript
+#: code:addons/procurement_plan/static/src/components/procurement_plan_dashboard/procurement_plan_dashboard.xml:0
+#, python-format
+msgid "เสร็จสิ้น"
 msgstr ""
 
 #. module: procurement_plan
 #: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_form
-msgid "อนุมัติผล (รอลงนามสัญญา)"
+msgid "แผน"
 msgstr ""
 
 #. module: procurement_plan
-#: model_terms:ir.ui.view,arch_db:procurement_plan.view_procurement_plan_form
-msgid "แผนการดำเนินงาน"
+#: model:ir.ui.menu,name:procurement_plan.budget_procurement_plan_inherit_menu model_terms:ir.ui.view,arch_db:procurement_plan.view_budget_commitment_form
+msgid "แผนจัดซื้อจัดจ้าง"
 msgstr ""
 
 #. module: procurement_plan
+#. odoo-javascript
+#: code:addons/procurement_plan/static/src/components/procurement_plan_dashboard/procurement_plan_dashboard.xml:0
 #: model:ir.model.fields,field_description:procurement_plan.field_procurement_plan__source_analytic_id
+#, python-format
 msgid "แหล่งเงิน"
+msgstr ""
+
+#. module: procurement_plan
+#. odoo-javascript
+#: code:addons/procurement_plan/static/src/components/procurement_plan_dashboard/procurement_plan_dashboard.xml:0
+#, python-format
+msgid "แหล่งเงิน:"
+msgstr ""
+
+#. module: procurement_plan
+#. odoo-javascript
+#: code:addons/procurement_plan/static/src/components/procurement_plan_dashboard/procurement_plan_dashboard.xml:0
+#, python-format
+msgid "ไม่พบข้อมูล"
+msgstr ""
+
+#. module: procurement_plan
+#. odoo-python
+#: code:addons/procurement_plan/models/procurement_plan.py:0
+#, python-format
+msgid "ไม่ระบุแหล่งเงิน"
 msgstr ""
