@@ -7,49 +7,71 @@
         <field name="arch" type="xml">
             <form string="Approval Request">
                 <header>
-                    <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" />
+                    <field name="hide_reserve_budget_button" invisible="1" />
+                    <button
+                        name="action_reserve_budget"
+                        type="object" attrs="{'invisible':[('hide_reserve_budget_button', '=', True)]}"
+                        string="Reserve Budget"
+                        class="oe_highlight btn-success"
+                        groups="budget.group_budget_commitment"
+                    />
+                    <button name="action_to_verify" string="To Verify" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" />
+                    <!-- <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'to_verify')]}" /> -->
                     <button name="action_draft" string="Reset to draft" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', '!=', 'submitted')]}" groups="agx_approval.group_approval_manager"/>
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', '!=', 'approved')]}" groups="agx_approval.group_approval_manager"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved" />
                 </header>
                 <sheet>
+                    <div name="button_box" class="oe_button_box">
+                        <button name="action_open_budget_commitment" type="object" class="oe_stat_button" icon="fa-money" attrs="{'invisible':[('budget_commitment_id','=',False)]}">
+                            <field name="budget_commitment_id" invisible="1"/>
+                            <div class="o_stat_info">
+                                <span>Budget</span>
+                            </div>
+                        </button>
+                    </div>
+
                     <div class="oe_title">
                         <h1>
                             <field name="name" readonly="1"/>
                         </h1>
                     </div>
-                    <group>
-                        <group>
-                            <field name="date" />
-                            <field name="id" invisible="1" />
-                            <field name="category_id" attrs="{'readonly': [('id', '!=', False)]}" />
-                            <field name="owner_id" />
-                            <field name="department_id" readonly="1"/>
-                            <field name="user_id" readonly="1"/>
-                            <field name="has_period" invisible="1" />
-                            <field name="has_city" invisible="1" />
-                            <field name="has_country_id" invisible="1" />
-                            <label for="date_start" string="Period" attrs="{'invisible': [('has_period', '!=', True)]}"/>
-                            <div class="o_row" attrs="{'invisible': [('has_period', '!=', True)]}">
-                                <field name="date_start" widget="daterange" nolabel="1" class="oe_inline" options="{'related_end_date': 'date_end'}" attrs="{'invisible': [('has_period', '!=', True)], 'required': [('has_period', '=', True)]}"/>
-                                <i class="fa fa-long-arrow-right mx-2" aria-label="Arrow icon" title="Arrow"/>
-                                <field name="date_end" widget="daterange" nolabel="1" class="oe_inline" options="{'related_start_date': 'date_start'}" attrs="{'invisible': [('has_period', '!=', True)], 'required': [('has_period', '=', True)]}"/>
-                            </div>
-                            <field name="city" attrs="{'invisible': [('has_city', '!=', True)], 'required': [('has_city', '=', True)]}"/>
-                            <field name="country_id" attrs="{'invisible': [('has_country_id', '!=', True)], 'required': [('has_country_id', '=', True)]}"/>
-                            <field name="description" />
-                        </group>
-                        <group>
-                            <field name="budget_commitment_id" required="1" />
-                            <field name="source_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
-                            <field name="department_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
-                            <field name="fund_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
-                            <field name="activity_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
-                            <field name="budget_account_id" readonly="1" required="1" options="{'no_create': True, 'no_open': True}" />
-                            <field name="budget_account_id" readonly="0" invisible="1"/>
-                            <field name="analytic_distribution" invisible="1"/>
-                        </group>
+                    
+                    <group string="Approval Details">
+                        <field name="date" readonly="1"/>
+                        <field name="id" invisible="1" />
+                        <field name="category_id" attrs="{'readonly': [('id', '!=', False)]}" />
+                        <field name="owner_id" />
+                        <field name="department_id" readonly="1"/>
+                        <field name="user_id" readonly="1"/>
+                        <field name="has_period" invisible="1" />
+                        <field name="has_city" invisible="1" />
+                        <field name="has_country_id" invisible="1" />
+                        <label for="date_start" string="Period" attrs="{'invisible': [('has_period', '!=', True)]}"/>
+                        <div class="o_row" attrs="{'invisible': [('has_period', '!=', True)]}">
+                            <field name="date_start" widget="daterange" nolabel="1" class="oe_inline" options="{'related_end_date': 'date_end'}" attrs="{'invisible': [('has_period', '!=', True)], 'required': [('has_period', '=', True)]}"/>
+                            <i class="fa fa-long-arrow-right mx-2" aria-label="Arrow icon" title="Arrow"/>
+                            <field name="date_end" widget="daterange" nolabel="1" class="oe_inline" options="{'related_start_date': 'date_start'}" attrs="{'invisible': [('has_period', '!=', True)], 'required': [('has_period', '=', True)]}"/>
+                        </div>
+                        <field name="city" attrs="{'invisible': [('has_city', '!=', True)], 'required': [('has_city', '=', True)]}"/>
+                        <field name="country_id" attrs="{'invisible': [('has_country_id', '!=', True)], 'required': [('has_country_id', '=', True)]}"/>
+                        <field name="description" />
                     </group>
+                    <group string="Budget">
+                        <field name="is_budget_editable" invisible="1"/>
+                        <field name="budget_account_id" attrs="{'readonly': [('is_budget_editable', '=', False)], 'required': [('state', '=', 'to_verify')]}" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
+                        <field name="budget_account_id" invisible="1" />
+                        <field name="activity_analytic_id" attrs="{'readonly': [('is_budget_editable', '=', False)], 'required': [('state', '=', 'to_verify')]}" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
+                        <field name="activity_analytic_id" invisible="1" />
+                        <field name="department_analytic_id" attrs="{'readonly': [('is_budget_editable', '=', False)], 'required': [('state', '=', 'to_verify')]}" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
+                        <field name="department_analytic_id" invisible="1" />
+                        <field name="fund_analytic_id" widget="selection" attrs="{'readonly': [('is_budget_editable', '=', False)], 'required': [('state', '=', 'to_verify')]}"/>
+                        <field name="fund_analytic_id" widget="selection" invisible="1" />
+                        <field name="source_analytic_id" widget="selection" attrs="{'readonly': [('is_budget_editable', '=', False)], 'required': [('state', '=', 'to_verify')]}"/>
+                        <field name="source_analytic_id" widget="selection" invisible="1" />
+                        <field name="analytic_distribution" invisible="1"/>
+                    </group>
+                    
                     <notebook>
                         <page name="request_lines" string="Request Lines">
                             <field name="line_ids">

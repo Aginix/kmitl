@@ -1,0 +1,764 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* agx_approval
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-25 10:29+0000\n"
+"PO-Revision-Date: 2026-02-25 17:41+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.6\n"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid ""
+"<i class=\"fa fa-long-arrow-right mx-2\" aria-label=\"Arrow icon\" "
+"title=\"Arrow\"/>"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "<span>Budget</span>"
+msgstr "<span>งบประมาณ</span>"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__active
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__active
+msgid "Active"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.ui.menu,name:agx_approval.approval_all_approval_menu
+msgid "All Approval"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__allowed_product_ids
+msgid "Allowed Expenses"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__allowed_product_ids
+msgid "Allowed Product IDs"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__analytic_distribution
+msgid "Analytic"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__analytic_distribution_search
+msgid "Analytic Distribution Search"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__analytic_precision
+msgid "Analytic Precision"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.module.category,name:agx_approval.module_category_approval
+#: model:ir.ui.menu,name:agx_approval.approval_root_menu
+msgid "Approval"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.actions.act_window,name:agx_approval.action_approval_category
+#: model:ir.model,name:agx_approval.model_approval_category
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_view_form
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_view_tree
+msgid "Approval Category"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.actions.act_window,name:agx_approval.action_approval_category_group
+#: model:ir.model,name:agx_approval.model_approval_category_group
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_group_view_form
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_group_view_search
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_group_view_tree
+msgid "Approval Category Group"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Approval Details"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.actions.act_window,name:agx_approval.action_approval_request
+#: model:ir.model,name:agx_approval.model_approval_request
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_tree
+msgid "Approval Request"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model,name:agx_approval.model_approval_request_line
+msgid "Approval Request Line"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_view_search
+msgid "Approval category"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_view_kanban
+msgid "Approvals Types Image"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__approved
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "Approved"
+msgstr "คำขอได้รับอนุมัติแล้ว"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "Archived"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__billed
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "Billed"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Budget"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__budget_account_id
+msgid "Budget Account"
+msgstr "รหัสงบประมาณ"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__budget_commitment_id
+msgid "Budget Commitment"
+msgstr ""
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "Budget commitment %s has been cancelled"
+msgstr ""
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "Budget reserved: %s for amount %s"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__cancelled
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "Cancelled"
+msgstr "ยกเลิก"
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "Cannot reserve budget due to insufficient funds: %s"
+msgstr ""
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "Cannot reserve budget: %s"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.ui.menu,name:agx_approval.approval_setting_category_menu
+msgid "Categories"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__category_id
+msgid "Category"
+msgstr "ประเภทคำขออนุมัติค่าใช้จ่าย"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_view_search
+msgid "Category Group"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.ui.menu,name:agx_approval.approval_setting_category_group_menu
+msgid "Category Groups"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__city
+msgid "City"
+msgstr "จังหวัด/เมือง"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__company_id
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__company_id
+msgid "Company"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__country_id
+msgid "Country"
+msgstr "ประเทศ"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__create_uid
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__create_uid
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__create_uid
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__create_date
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__create_date
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__create_date
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.actions.act_window,name:agx_approval.action_approval_dashboard
+msgid "Dashboard"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__date_end
+msgid "Date End"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__date_start
+msgid "Date Start"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__default_description
+msgid "Default Description"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__department_id
+msgid "Department"
+msgstr "หน่วยงาน"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__description
+msgid "Description"
+msgstr "เหตุผล/ความจำเป็น"
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__payment_type__direct
+msgid "Direct paid"
+msgstr "จ่ายตรง"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__display_name
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__display_name
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__display_name
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__draft
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "Draft"
+msgstr "แบบร่าง"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__product_id
+msgid "Expense"
+msgstr "รหัสค่าใช้จ่าย"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__line_ids
+msgid "Expense Lines"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,help:agx_approval.field_approval_request__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_view_search
+msgid "Group By"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__has_city
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__has_city
+msgid "Has City"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__has_country_id
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__has_country_id
+msgid "Has Country"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__has_period
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__has_period
+msgid "Has Period"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__hide_reserve_budget_button
+msgid "Hide Reserve Budget Button"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__id
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__id
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__id
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__id
+msgid "ID"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,help:agx_approval.field_approval_request__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,help:agx_approval.field_approval_request__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,help:agx_approval.field_approval_request__message_has_error
+#: model:ir.model.fields,help:agx_approval.field_approval_request__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__image
+msgid "Image"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__is_budget_editable
+msgid "Is Budget Editable"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__is_editable
+msgid "Is Editable"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category____last_update
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category_group____last_update
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request____last_update
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__write_uid
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__write_uid
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__write_uid
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__write_date
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__write_date
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__write_date
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__payment_type__loan
+msgid "Loan"
+msgstr "เงินยืม"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.ui.menu,name:agx_approval.approval_manage_menu
+msgid "Manage"
+msgstr ""
+
+#. module: agx_approval
+#: model:res.groups,name:agx_approval.group_approval_manager
+msgid "Manager"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.ui.menu,name:agx_approval.approval_approvals_menu
+msgid "My Approvals"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.ui.menu,name:agx_approval.approval_my_request_menu
+msgid "My Request"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__name
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__name
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__name
+msgid "Name"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.ui.menu,name:agx_approval.approval_new_request_menu
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_category_view_kanban
+msgid "New Request"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,help:agx_approval.field_approval_request__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,help:agx_approval.field_approval_request__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "Only To Verify requests can be submitted."
+msgstr ""
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "Only draft requests can be verified."
+msgstr ""
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "Only submitted requests can be validated."
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__partner_id
+msgid "Partner"
+msgstr "คู่ค้า/บุคลากร"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__payment_type
+msgid "Payment Type"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Period"
+msgstr "ระยะเวลา"
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__payment_type__prepaid
+msgid "Prepaid"
+msgstr "สำรองจ่าย"
+
+#. module: agx_approval
+#: model:ir.model.fields,help:agx_approval.field_approval_request__budget_commitment_id
+msgid "Related budget commitment for this approval request"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__request_id
+msgid "Request"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__date
+msgid "Request Date"
+msgstr "วันที่จัดทำคำขอ"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__group_id
+msgid "Request Group"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Request Lines"
+msgstr "รายชื่อ"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__owner_id
+msgid "Request Owner"
+msgstr "ชื่อผู้ขออนุมัติ"
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "Request is already cancelled."
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Reserve Budget"
+msgstr ""
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Reset to draft"
+msgstr "รีเซ็ท"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__user_id
+msgid "Responsible Person"
+msgstr "ผู้จัดทำคำขอ"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category__sequence
+#: model:ir.model.fields,field_description:agx_approval.field_approval_category_group__sequence
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.ui.menu,name:agx_approval.approval_setting_menu
+msgid "Settings"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,help:agx_approval.field_approval_request__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__submitted
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "Submitted"
+msgstr "ส่งคำขอ"
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "The account move request '%(name)s' has been unlinked."
+msgstr ""
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid ""
+"The account move request <a href=\"%(link)s\" "
+"target=\"_blank\">'%(name)s'</a> has been linked to this record."
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__to_verify
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "To Verify"
+msgstr "จองงบประมาณ"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request_line__total_amount
+msgid "Total"
+msgstr "จำนวนเงิน"
+
+#. module: agx_approval
+#: model:ir.model.fields,help:agx_approval.field_approval_request__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: agx_approval
+#: model:res.groups,name:agx_approval.group_approval_user
+msgid "User"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields.selection,name:agx_approval.selection__approval_request__state__validated
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_search
+msgid "Validated"
+msgstr ""
+
+#. module: agx_approval
+#. odoo-python
+#: code:addons/agx_approval/models/approval_request.py:0
+#, python-format
+msgid "Warning: Could not cancel budget commitment: %s"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,help:agx_approval.field_approval_request__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__state
+msgid "state"
+msgstr "สถานะ"
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__fund_analytic_id
+msgid "กองทุน"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__activity_analytic_id
+msgid "กิจกรรม"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__department_analytic_id
+msgid "ส่วนงาน"
+msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__source_analytic_id
+msgid "แหล่งเงิน"
+msgstr ""
