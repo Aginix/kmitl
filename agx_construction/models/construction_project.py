@@ -24,10 +24,6 @@ class ConstructionProject(models.Model):
 
     name = fields.Char(string="Name", required=True, states=READONLY_STATES)
 
-    estimate_budget = fields.Float(string="Estimate Budget", states=READONLY_STATES)
-
-    approved_budget = fields.Float(string="Approved Budget", states=READONLY_STATES)
-
     date_end = fields.Date(string="End Date", readonly=True)
 
     purchase_request_ids = fields.One2many(

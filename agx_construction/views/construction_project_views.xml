@@ -8,8 +8,6 @@
                 <field name="ref"/>
                 <field name="name"/>
                 <field name="department_id"/>
-                <field name="estimate_budget"/>
-                <field name="approved_budget"/>
                 <field name="date_end"/>
                 <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state in ('in_progress', 'ended')" decoration-danger="state == 'cancelled'"/>
             </tree>
@@ -40,10 +38,6 @@
                             <field name="ref"/>
                             <field name="department_id"/>
                             <field name="date_end" attrs="{'invisible': [('state', '!=', 'ended')]}"/>
-                        </group>
-                        <group>
-                            <field name="estimate_budget"/>
-                            <field name="approved_budget"/>
                         </group>
                     </group>
                     <notebook>
