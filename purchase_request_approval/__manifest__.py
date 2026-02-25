@@ -9,7 +9,6 @@
         "l10n_th_gov_purchase_request",
         "purchase_request_kmitl",
         "purchase_request_sarabun",
-        "purchase_request_kmitl",
         "purchase_request_activity_kmitl",
         "purchase_request_hide_create_po_button",
         "purchase_request_vendor_kmitl",
