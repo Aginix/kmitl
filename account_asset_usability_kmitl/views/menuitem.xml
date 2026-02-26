@@ -38,10 +38,9 @@
 
     <menuitem
         id="menu_depreciation_report"
-        name="รายงานค่าเสื่อมราคา"
+        name="Report Depreciation"
         parent="menu_assets_management"
         action="account_asset_kmitl.action_wiz_depreciation_report"
-        sequence="50"
     />
 
     <menuitem

@@ -10,23 +10,24 @@ def _generate_random_code(length=8):
     chars = string.ascii_lowercase + string.digits
     return ''.join(random.choices(chars, k=length))
 
+
 class AccountAsset(models.Model):
     _name = "account.asset"
     _inherit = ["account.asset", "portal.mixin"]
 
     account_fiscal_year_id = fields.Many2one(
         "account.fiscal.year",
-        string = "Fiscal year"
+        string="Fiscal year"
     )
 
-    gpsc_id =  fields.Many2one(
+    gpsc_id = fields.Many2one(
         "procurement.gpsc",
-        string = "GPSC Id"
+        string="GPSC Id"
     )
 
     department_id = fields.Many2one(
         "hr.department",
-        string = "Department"
+        string="Department"
     )
 
     def _default_access_uid(self):
