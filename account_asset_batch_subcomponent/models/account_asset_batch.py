@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ class AccountAssetBatch(models.Model):
                 for i in range(line.amount):
                     asset = asset_model.create({
                         "name": line.name,
-                        "analytic_distribution": line.analytic_distribution,
+                        "analytic_distribution": batch.purchase_id.analytic_distribution,
                         "date_start": batch.date,
                         "account_fiscal_year_id": batch.account_fiscal_year_id.id,
                         "operating_unit_id": batch.operating_unit_id.id,

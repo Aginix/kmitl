@@ -165,11 +165,11 @@ class AccountAssetBatch(models.Model):
             if any(line.amount <= 0 for line in batch.line_ids):
                 raise ValidationError(_("Some lines have zero amount. Please correct them before proceeding."))
 
-            analytic_distribution = batch.purchase_id.analytic_distribution
             for line in batch.line_ids:
                 for _ in range(line.amount):
                     asset = self.env["account.asset"].create({
                         "name": line.name,
+                        "analytic_distribution": batch.purchase_id.analytic_distribution,
                         "date_start": batch.date,
                         "account_fiscal_year_id": batch.account_fiscal_year_id.id,
                         "operating_unit_id": batch.operating_unit_id.id,
@@ -181,8 +181,6 @@ class AccountAssetBatch(models.Model):
                         "batch_line_id": line.id,
                         "batch_id": batch.id,
                     })
-                    if analytic_distribution:
-                        asset.write({"analytic_distribution": analytic_distribution})
             batch.state = "done"
 
     def action_open_asset_items(self):
