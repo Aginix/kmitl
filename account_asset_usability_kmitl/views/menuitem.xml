@@ -36,9 +36,17 @@
         action="account_asset_management.account_asset_compute_action"
     />
 
-    <menuitem 
-        id="menu_asset_configuration" 
-        name="Configuration" 
+    <menuitem
+        id="menu_depreciation_report"
+        name="รายงานค่าเสื่อมราคา"
+        parent="menu_assets"
+        action="account_asset_kmitl.action_wiz_depreciation_report"
+        sequence="50"
+    />
+
+    <menuitem
+        id="menu_asset_configuration"
+        name="Configuration"
         parent="menu_assets_management"
         groups="account.group_account_manager"
     />

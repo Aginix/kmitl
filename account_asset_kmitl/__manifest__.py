@@ -13,6 +13,7 @@
         "views/purchase_order_views.xml",
         "views/template_asset_number.xml",
         "views/template_portal.xml",
+        "wizard/wiz_depreciation_report.xml",
     ],
     'installable': True,
     'auto_install': False,
