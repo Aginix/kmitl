@@ -92,6 +92,7 @@ msgstr ""
 
 #. module: purchase_menu
 #: model:ir.model.fields,field_description:purchase_menu.field_purchase_order__days_to_expire
+#: model:ir.model.fields,field_description:purchase_menu.field_purchase_order__days_to_expire_display
 msgid "Days to Expire"
 msgstr "วันที่คงเหลือของสัญญา"
 
@@ -99,7 +100,7 @@ msgstr "วันที่คงเหลือของสัญญา"
 #: model:ir.model.fields,field_description:purchase_menu.field_purchase_order__expire_range
 #: model_terms:ir.ui.view,arch_db:purchase_menu.view_purchase_order_search_expiring
 msgid "Expire Range"
-msgstr ""
+msgstr "วันที่คงเหลือของสัญญา"
 
 #. module: purchase_menu
 #: model:ir.model.fields.selection,name:purchase_menu.selection__purchase_order__expire_range__60+

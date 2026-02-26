@@ -16,12 +16,23 @@ class PurchaseOrder(models.Model):
         store=True
     )
     
-    expire_group_ids = fields.Many2many(
-        'expire.group',
-        string="Expire Groups",
-        compute="_compute_expire_group_ids",
-        store=True
+    expire_range = fields.Selection([
+        ('0-15', '0-15 Days'),
+        ('16-30', '16-30 Days'),
+        ('31-60', '31-60 Days'),
+        ('60+', 'Morethan 60 Days'),
+    ], string="Expire Range", compute="_compute_expire_range", store=True)
+
+    days_to_expire_display = fields.Char(
+        string="Days to Expire",
+        compute="_compute_days_to_expire_display",
+        store=False
     )
+
+    @api.depends('days_to_expire')
+    def _compute_days_to_expire_display(self):
+        for record in self:
+            record.days_to_expire_display = str(record.days_to_expire) if record.days_to_expire else ''
 
     @api.depends('work_end')
     def _compute_days_to_expire(self):
@@ -33,10 +44,14 @@ class PurchaseOrder(models.Model):
                 record.days_to_expire = 9999
     
     @api.depends('days_to_expire')
-    def _compute_expire_group_ids(self):
-        groups = self.env['expire.group'].search([])
+    def _compute_expire_range(self):
         for record in self:
-            matched_groups = groups.filtered(
-                lambda g: g.min_days <= record.days_to_expire <= g.max_days
-            )
-            record.expire_group_ids = matched_groups
+            days = record.days_to_expire
+            if days <= 15:
+                record.expire_range = '0-15'
+            elif days <= 30:
+                record.expire_range = '16-30'
+            elif days <= 60:
+                record.expire_range = '31-60'
+            else:
+                record.expire_range = '60+'

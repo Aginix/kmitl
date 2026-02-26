@@ -8,8 +8,7 @@
     "category": "Purchase",
     'depends': ['purchase_guarantee_kmitl', 'purchase_work_acceptance_kmitl', 'l10n_th_gov_account_asset_management', 'purchase_contract_kmitl'],
     'data': [
-        'security/ir.model.access.csv',
-        'data/expire_groups.xml',
+        'data/ir_cron_data.xml',
         'views/purchase_order_tree_expiring.xml',
         'views/purchase_tracking.xml',
         'views/menu.xml',
