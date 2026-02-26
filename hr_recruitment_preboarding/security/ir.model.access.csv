@@ -1,0 +1,7 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_preboarding_manager,hr.preboarding manager,model_hr_preboarding,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
+access_hr_preboarding_user,hr.preboarding user,model_hr_preboarding,hr_recruitment.group_hr_recruitment_user,1,1,1,0
+access_hr_preboarding_education_manager,hr.preboarding.education manager,model_hr_preboarding_education,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
+access_hr_preboarding_education_user,hr.preboarding.education user,model_hr_preboarding_education,hr_recruitment.group_hr_recruitment_user,1,1,1,0
+access_hr_preboarding_document_manager,hr.preboarding.document manager,model_hr_preboarding_document,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
+access_hr_preboarding_document_user,hr.preboarding.document user,model_hr_preboarding_document,hr_recruitment.group_hr_recruitment_user,1,1,1,0

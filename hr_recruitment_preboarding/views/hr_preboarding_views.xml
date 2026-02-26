@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="hr_preboarding_view_form" model="ir.ui.view">
+        <field name="name">hr.preboarding.form</field>
+        <field name="model">hr.preboarding</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button
+                        name="action_send_link"
+                        type="object"
+                        string="ส่งลิงก์"
+                        class="btn-primary"
+                        attrs="{'invisible': [('state', 'not in', ['draft', 'in_progress'])]}"
+                    />
+                    <button
+                        name="action_approve"
+                        type="object"
+                        string="อนุมัติ"
+                        class="btn-success"
+                        attrs="{'invisible': [('state', '!=', 'submitted')]}"
+                    />
+                    <button
+                        name="action_reject"
+                        type="object"
+                        string="ปฏิเสธ"
+                        class="btn-danger"
+                        attrs="{'invisible': [('state', '!=', 'submitted')]}"
+                    />
+                    <button
+                        name="action_create_employee"
+                        type="object"
+                        string="สร้างพนักงาน"
+                        class="btn-primary"
+                        attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('employee_id', '!=', False)]}"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,in_progress,submitted,approved"
+                    />
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="applicant_id"/>
+                            <field name="start_date"/>
+                            <field name="employee_id" readonly="1" attrs="{'invisible': [('employee_id', '=', False)]}"/>
+                        </group>
+                        <group>
+                            <field name="portal_url" string="Portal Link" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="ข้อมูลส่วนตัว" name="personal_info">
+                            <group>
+                                <group string="ข้อมูลพื้นฐาน">
+                                    <field name="title"/>
+                                    <field name="first_name"/>
+                                    <field name="last_name"/>
+                                    <field name="nickname"/>
+                                    <field name="id_card"/>
+                                    <field name="birthdate"/>
+                                    <field name="nationality"/>
+                                    <field name="religion"/>
+                                    <field name="marital_status"/>
+                                    <field name="ethnicity"/>
+                                </group>
+                                <group string="ที่อยู่และการติดต่อ">
+                                    <field name="phone"/>
+                                    <field name="mobile"/>
+                                    <field name="email"/>
+                                    <field name="address"/>
+                                    <field name="city"/>
+                                    <field name="zip"/>
+                                    <field name="country_id"/>
+                                </group>
+                            </group>
+                            <group string="ข้อมูลธนาคาร">
+                                <group>
+                                    <field name="bank_name"/>
+                                    <field name="bank_account_number"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="ประวัติการศึกษา" name="education">
+                            <field name="education_ids">
+                                <tree editable="bottom">
+                                    <field name="degree"/>
+                                    <field name="institution"/>
+                                    <field name="field_of_study"/>
+                                    <field name="graduation_year"/>
+                                    <field name="gpa"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="เอกสาร" name="documents">
+                            <field name="document_ids">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="required"/>
+                                    <field name="state"
+                                        decoration-success="state == 'uploaded'"
+                                        decoration-muted="state == 'pending'"
+                                        widget="badge"
+                                    />
+                                    <field name="attachment_ids" widget="many2many_tags"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="หมายเหตุ HR" name="hr_notes">
+                            <field name="hr_notes" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- List View -->
+    <record id="hr_preboarding_view_list" model="ir.ui.view">
+        <field name="name">hr.preboarding.list</field>
+        <field name="model">hr.preboarding</field>
+        <field name="arch" type="xml">
+            <tree
+                decoration-info="state == 'draft'"
+                decoration-warning="state == 'in_progress'"
+                decoration-primary="state == 'submitted'"
+                decoration-success="state == 'approved'"
+                decoration-danger="state == 'rejected'"
+            >
+                <field name="applicant_id"/>
+                <field name="start_date"/>
+                <field name="state" widget="badge"
+                    decoration-info="state == 'draft'"
+                    decoration-warning="state == 'in_progress'"
+                    decoration-primary="state == 'submitted'"
+                    decoration-success="state == 'approved'"
+                    decoration-danger="state == 'rejected'"
+                />
+                <field name="employee_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_hr_preboarding" model="ir.actions.act_window">
+        <field name="name">รายงานตัว</field>
+        <field name="res_model">hr.preboarding</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem
+        id="menu_hr_preboarding"
+        name="รายงานตัว"
+        parent="hr_recruitment.menu_hr_recruitment_root"
+        action="action_hr_preboarding"
+        sequence="20"
+    />
+</odoo>

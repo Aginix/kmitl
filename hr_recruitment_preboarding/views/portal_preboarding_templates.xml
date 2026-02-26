@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_preboarding_form" name="Preboarding Form">
+        <t t-call="portal.frontend_layout">
+            <t t-set="title">Pre-boarding Form</t>
+            <div
+                class="container mt-4 mb-5"
+                id="preboarding_form_container"
+                t-att-data-token="preboarding.token"
+            >
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <h2 class="mb-1">Pre-boarding Information Form</h2>
+                        <p class="text-muted mb-4">
+                            <t t-esc="preboarding.applicant_id.partner_name or preboarding.applicant_id.name"/>
+                            <t t-if="preboarding.applicant_id.job_id">
+                                — <t t-esc="preboarding.applicant_id.job_id.name"/>
+                            </t>
+                        </p>
+
+                        <t t-if="preboarding.state in ('submitted', 'approved', 'rejected')">
+                            <div class="alert alert-success text-center py-5">
+                                <h4 class="mb-3">Thank you for submitting your information.</h4>
+                                <p class="mb-0">
+                                    Your information has been recorded.
+                                    HR will contact you shortly.
+                                </p>
+                            </div>
+                        </t>
+
+                        <t t-else="">
+                            <form
+                                method="post"
+                                t-attf-action="/preboarding/#{preboarding.token}/submit"
+                            >
+                                <input
+                                    type="hidden"
+                                    name="education_data"
+                                    id="education_data"
+                                    value="[]"
+                                />
+
+                                <!-- Personal Information -->
+                                <div class="card mb-4">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0">Personal Information</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-2">
+                                                <label class="form-label">Title</label>
+                                                <select name="title" class="form-select">
+                                                    <option value="">-</option>
+                                                    <option value="mr">Mr.</option>
+                                                    <option value="mrs">Mrs.</option>
+                                                    <option value="miss">Miss</option>
+                                                    <option value="dr">Dr.</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <label class="form-label">
+                                                    First Name
+                                                    <span class="text-danger">*</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    name="first_name"
+                                                    class="form-control"
+                                                    required="required"
+                                                />
+                                            </div>
+                                            <div class="col-md-5">
+                                                <label class="form-label">
+                                                    Last Name
+                                                    <span class="text-danger">*</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    name="last_name"
+                                                    class="form-control"
+                                                    required="required"
+                                                />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Nickname</label>
+                                                <input
+                                                    type="text"
+                                                    name="nickname"
+                                                    class="form-control"
+                                                />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">ID Card Number</label>
+                                                <input
+                                                    type="text"
+                                                    name="id_card"
+                                                    class="form-control"
+                                                />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Date of Birth</label>
+                                                <input
+                                                    type="date"
+                                                    name="birthdate"
+                                                    class="form-control"
+                                                />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Nationality</label>
+                                                <input
+                                                    type="text"
+                                                    name="nationality"
+                                                    class="form-control"
+                                                />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Religion</label>
+                                                <input
+                                                    type="text"
+                                                    name="religion"
+                                                    class="form-control"
+                                                />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Marital Status</label>
+                                                <select
+                                                    name="marital_status"
+                                                    class="form-select"
+                                                >
+                                                    <option value="">-</option>
+                                                    <option value="single">Single</option>
+                                                    <option value="married">Married</option>
+                                                    <option value="divorced">Divorced</option>
+                                                    <option value="widowed">Widowed</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Ethnicity</label>
+                                                <input
+                                                    type="text"
+                                                    name="ethnicity"
+                                                    class="form-control"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Address & Contact -->
+                                <div class="card mb-4">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0">Address &amp; Contact</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            <div class="col-12">
+                                                <label class="form-label">Address</label>
+                                                <input
+                                                    type="text"
+                                                    name="address"
+                                                    class="form-control"
+                                                />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">City</label>
+                                                <input
+                                                    type="text"
+                                                    name="city"
+                                                    class="form-control"
+                                                />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">ZIP Code</label>
+                                                <input
+                                                    type="text"
+                                                    name="zip"
+                                                    class="form-control"
+                                                />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Country</label>
+                                                <select name="country_id" class="form-select">
+                                                    <option value="">-</option>
+                                                    <t
+                                                        t-foreach="countries"
+                                                        t-as="country"
+                                                    >
+                                                        <option t-att-value="country.id">
+                                                            <t t-esc="country.name"/>
+                                                        </option>
+                                                    </t>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Phone</label>
+                                                <input
+                                                    type="tel"
+                                                    name="phone"
+                                                    class="form-control"
+                                                />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Mobile</label>
+                                                <input
+                                                    type="tel"
+                                                    name="mobile"
+                                                    class="form-control"
+                                                />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Email</label>
+                                                <input
+                                                    type="email"
+                                                    name="email"
+                                                    class="form-control"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Bank Information -->
+                                <div class="card mb-4">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0">Bank Information</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Bank Name</label>
+                                                <input
+                                                    type="text"
+                                                    name="bank_name"
+                                                    class="form-control"
+                                                />
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Account Number</label>
+                                                <input
+                                                    type="text"
+                                                    name="bank_account_number"
+                                                    class="form-control"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Education History -->
+                                <div class="card mb-4">
+                                    <div
+                                        class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+                                    >
+                                        <h5 class="mb-0">Education History</h5>
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-light"
+                                            onclick="addEduRow()"
+                                        >+ Add Row</button>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Degree</th>
+                                                        <th>Institution</th>
+                                                        <th>Field of Study</th>
+                                                        <th>Graduation Year</th>
+                                                        <th>GPA</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="edu-rows">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Documents -->
+                                <div class="card mb-4">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0">Documents</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <t t-foreach="preboarding.document_ids" t-as="doc">
+                                            <div class="row align-items-center mb-3">
+                                                <div class="col-md-5">
+                                                    <t t-esc="doc.name"/>
+                                                    <t t-if="doc.required">
+                                                        <span class="text-danger ms-1">*</span>
+                                                    </t>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <input
+                                                        type="file"
+                                                        class="form-control form-control-sm"
+                                                        t-attf-id="doc_input_#{doc.id}"
+                                                        t-attf-onchange="uploadDocument(this, #{doc.id})"
+                                                    />
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <span t-attf-id="doc_status_#{doc.id}">
+                                                        <t t-if="doc.state == 'uploaded'">
+                                                            <span class="badge bg-success">Uploaded</span>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <span class="badge bg-secondary">Pending</span>
+                                                        </t>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+
+                                <div class="text-end mt-4 mb-5">
+                                    <button
+                                        type="submit"
+                                        class="btn btn-primary btn-lg px-5"
+                                    >Submit</button>
+                                </div>
+                            </form>
+                        </t>
+                    </div>
+                </div>
+            </div>
+
+            <script type="text/javascript">
+                (function () {
+                    var container = document.getElementById('preboarding_form_container');
+                    var token = container ? container.dataset.token : '';
+                    var eduCount = 0;
+
+                    function addEduRow() {
+                        var i = eduCount++;
+                        var tbody = document.getElementById('edu-rows');
+                        var tr = document.createElement('tr');
+                        tr.id = 'edu-row-' + i;
+                        tr.innerHTML =
+                            '<td><input type="text" class="form-control form-control-sm" data-field="degree" oninput="syncEduData()"/></td>' +
+                            '<td><input type="text" class="form-control form-control-sm" data-field="institution" oninput="syncEduData()"/></td>' +
+                            '<td><input type="text" class="form-control form-control-sm" data-field="field_of_study" oninput="syncEduData()"/></td>' +
+                            '<td><input type="text" class="form-control form-control-sm" data-field="graduation_year" oninput="syncEduData()"/></td>' +
+                            '<td><input type="number" step="0.01" min="0" max="4" class="form-control form-control-sm" data-field="gpa" oninput="syncEduData()"/></td>' +
+                            '<td><button type="button" class="btn btn-sm btn-outline-danger" onclick="removeEduRow(' + i + ')">&#x2715;</button></td>';
+                        tbody.appendChild(tr);
+                        syncEduData();
+                    }
+
+                    function removeEduRow(i) {
+                        var row = document.getElementById('edu-row-' + i);
+                        if (row) { row.remove(); }
+                        syncEduData();
+                    }
+
+                    function syncEduData() {
+                        var rows = document.querySelectorAll('#edu-rows tr');
+                        var data = [];
+                        rows.forEach(function (row) {
+                            data.push({
+                                degree: (row.querySelector('[data-field="degree"]') || {}).value || '',
+                                institution: (row.querySelector('[data-field="institution"]') || {}).value || '',
+                                field_of_study: (row.querySelector('[data-field="field_of_study"]') || {}).value || '',
+                                graduation_year: (row.querySelector('[data-field="graduation_year"]') || {}).value || '',
+                                gpa: (row.querySelector('[data-field="gpa"]') || {}).value || ''
+                            });
+                        });
+                        document.getElementById('education_data').value = JSON.stringify(data);
+                    }
+
+                    function uploadDocument(input, docId) {
+                        if (!input.files || !input.files[0]) { return; }
+                        var statusEl = document.getElementById('doc_status_' + docId);
+                        statusEl.innerHTML = '<span class="badge bg-warning text-dark">Uploading...</span>';
+                        var formData = new FormData();
+                        formData.append('ufile', input.files[0]);
+                        formData.append('document_id', docId);
+                        fetch('/preboarding/' + token + '/upload', {
+                            method: 'POST',
+                            body: formData
+                        }).then(function (r) {
+                            return r.json();
+                        }).then(function (data) {
+                            if (data.success) {
+                                statusEl.innerHTML = '<span class="badge bg-success">Uploaded</span>';
+                            } else {
+                                statusEl.innerHTML = '<span class="badge bg-danger">Error</span>';
+                            }
+                        }).catch(function () {
+                            statusEl.innerHTML = '<span class="badge bg-danger">Error</span>';
+                        });
+                    }
+
+                    window.addEduRow = addEduRow;
+                    window.removeEduRow = removeEduRow;
+                    window.syncEduData = syncEduData;
+                    window.uploadDocument = uploadDocument;
+                })();
+            </script>
+        </t>
+    </template>
+
+    <template id="portal_preboarding_success" name="Preboarding Success">
+        <t t-call="portal.frontend_layout">
+            <t t-set="title">Pre-boarding Submitted</t>
+            <div class="container mt-5 mb-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6 text-center">
+                        <div class="card shadow-sm p-5">
+                            <div class="mb-4">
+                                <i class="fa fa-check-circle fa-5x text-success"/>
+                            </div>
+                            <h3 class="mb-3">Thank You!</h3>
+                            <p class="text-muted mb-4">
+                                Your pre-boarding information has been submitted successfully.
+                                <br/>HR will review your information and contact you shortly.
+                            </p>
+                            <p class="text-muted small">
+                                If you have any questions, please contact the HR department.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
