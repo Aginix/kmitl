@@ -30,12 +30,16 @@ class AccountAssetRemove(models.TransientModel):
         assets = self.env["account.asset"].browse(asset_ids)
         ctx = dict(self.env.context)
         for asset in assets:
-            if (
-                asset.method in ["linear-limit", "degr-limit"]
-                and asset.value_residual != asset.salvage_value
-                or asset.value_residual
+            if asset.method == "linear-limit" and (
+                asset.value_residual != asset.salvage_value or asset.value_residual
+            ):
+                ctx.update({"early_removal": False})
+            elif asset.method == "degr-limit" and (
+                asset.value_residual != asset.salvage_value or asset.value_residual
             ):
                 ctx.update({"early_removal": True})
+            else:
+                ctx.update({"early_removal": False})
             ctx.update({"active_id": asset.id})
             self.with_context(**ctx).remove()
         return True
