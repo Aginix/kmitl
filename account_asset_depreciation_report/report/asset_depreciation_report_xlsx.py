@@ -48,12 +48,12 @@ class AssetDepreciationReportXlsx(models.AbstractModel):
             "border": 1, "num_format": "#,##0.00",
         })
 
-        # ---- Column widths (A=0 .. N=13) ----
-        col_widths = [6, 16, 30, 14, 10, 10, 14, 14, 14, 14, 14, 14, 14, 24]
+        # ---- Column widths (A=0 .. L=11) ----
+        col_widths = [6, 16, 30, 14, 10, 10, 14, 14, 14, 14, 14, 24]
         for i, w in enumerate(col_widths):
             sheet.set_column(i, i, w)
 
-        last_col = 13  # column N (0-indexed)
+        last_col = 11  # column L (0-indexed)
 
         # ---- Header section (rows 0-7) ----
         sheet.set_row(0, 24)
@@ -102,9 +102,7 @@ class AssetDepreciationReportXlsx(models.AbstractModel):
             (5, "อายุใช้งาน"),
             (6, "ราคาทุน"),
             (7, "ค่าเสื่อมราคาต่อปี"),
-            (11, "ราคาตามบัญชีต้นปีงบ"),
-            (12, "ราคาตามบัญชีปิดปีงบ"),
-            (13, "หน่วยงานรับผิดชอบ"),
+            (11, "หน่วยงานรับผิดชอบ"),
         ]
         for col, label in single_headers:
             sheet.merge_range(header_row1, col, header_row2, col, label, header_fmt)
@@ -176,9 +174,7 @@ class AssetDepreciationReportXlsx(models.AbstractModel):
             sheet.write(row, 8, depr_before, num_fmt)
             sheet.write(row, 9, depr_this_month, num_fmt)
             sheet.write(row, 10, depr_carry, num_fmt)
-            sheet.write(row, 11, "", data_fmt)
-            sheet.write(row, 12, "", data_fmt)
-            sheet.write(row, 13, asset.department_id.complete_name if asset.department_id else "", data_fmt)
+            sheet.write(row, 11, asset.department_id.complete_name if asset.department_id else "", data_fmt)
 
             total_purchase += asset.purchase_value or 0.0
             total_depr_year += depr_year
