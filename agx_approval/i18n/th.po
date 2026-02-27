@@ -582,7 +582,7 @@ msgstr "คู่ค้า/บุคลากร"
 #. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__payment_type
 msgid "Payment Type"
-msgstr ""
+msgstr "ประเภทการจ่ายเงิน"
 
 #. module: agx_approval
 #: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form

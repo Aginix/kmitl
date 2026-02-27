@@ -39,6 +39,7 @@
                     
                     <group string="Approval Details">
                         <field name="date" readonly="1"/>
+                        <field name="payment_type" />
                         <field name="id" invisible="1" />
                         <field name="category_id" attrs="{'readonly': [('id', '!=', False)]}" />
                         <field name="owner_id" />

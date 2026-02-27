@@ -1,0 +1,74 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* agx_approval_attachment
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-09 08:53+0000\n"
+"PO-Revision-Date: 2025-09-09 15:57+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.6\n"
+
+#. module: agx_approval_attachment
+#: model:ir.model,name:agx_approval_attachment.model_ir_attachment
+#: model_terms:ir.ui.view,arch_db:agx_approval_attachment.view_purchase_request_form
+msgid "Attachment"
+msgstr "เอกสารแนบ"
+
+#. module: agx_approval_attachment
+#: model:ir.model.fields,field_description:agx_approval_attachment.field_ir_attachment__attachment_type
+msgid "Attachment Type"
+msgstr "ประเภทเอกสาร"
+
+#. module: agx_approval_attachment
+#: model_terms:ir.ui.view,arch_db:agx_approval_attachment.view_purchase_request_form
+msgid "Description"
+msgstr "คำอธิบาย"
+
+#. module: agx_approval_attachment
+#: model:ir.model.fields,field_description:agx_approval_attachment.field_purchase_request__attachment_ids
+msgid "Document Attachments"
+msgstr "เอกสารแนบ"
+
+#. module: agx_approval_attachment
+#: model:ir.model.fields.selection,name:agx_approval_attachment.selection__ir_attachment__attachment_type__etc
+msgid "Etc"
+msgstr "อื่นๆ"
+
+#. module: agx_approval_attachment
+#: model_terms:ir.ui.view,arch_db:agx_approval_attachment.view_purchase_request_form
+msgid "File Name"
+msgstr "ชื่อไฟล์"
+
+#. module: agx_approval_attachment
+#: model_terms:ir.ui.view,arch_db:agx_approval_attachment.view_purchase_request_form
+msgid "File Name (auto-filled from upload)"
+msgstr "ชื่อไฟล์ (กรอกอัตโนมัติจากการอัปโหลด)"
+
+#. module: agx_approval_attachment
+#: model:ir.model,name:agx_approval_attachment.model_purchase_request
+msgid "Purchase Request"
+msgstr "คำขอซื้อขอจ้าง"
+
+#. module: agx_approval_attachment
+#: model:ir.model.fields.selection,name:agx_approval_attachment.selection__ir_attachment__attachment_type__rfq
+msgid "Quotation"
+msgstr "ใบเสนอราคา"
+
+#. module: agx_approval_attachment
+#: model:ir.model.fields,field_description:agx_approval_attachment.field_ir_attachment__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: agx_approval_attachment
+#: model:ir.model.fields.selection,name:agx_approval_attachment.selection__ir_attachment__attachment_type__tor
+msgid "Specification (TOR)"
+msgstr "ข้อกำหนดคุณลักษณะ (TOR)"
