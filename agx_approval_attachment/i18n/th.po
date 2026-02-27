@@ -44,26 +44,12 @@ msgid "Document Attachments"
 msgstr ""
 
 #. module: agx_approval_attachment
-#: model:ir.model.fields.selection,name:agx_approval_attachment.selection__ir_attachment__attachment_type__etc
-msgid "Etc"
-msgstr "อื่นๆ"
-
-#. module: agx_approval_attachment
 #: model_terms:ir.ui.view,arch_db:agx_approval_attachment.view_approval_request_form
 msgid "File Name"
 msgstr "ชื่อไฟล์"
-
-#. module: agx_approval_attachment
-#: model:ir.model.fields.selection,name:agx_approval_attachment.selection__ir_attachment__attachment_type__rfq
-msgid "Quotation"
-msgstr "ใบเสนอราคา"
 
 #. module: agx_approval_attachment
 #: model:ir.model.fields,field_description:agx_approval_attachment.field_ir_attachment__sequence
 msgid "Sequence"
 msgstr ""
 
-#. module: agx_approval_attachment
-#: model:ir.model.fields.selection,name:agx_approval_attachment.selection__ir_attachment__attachment_type__tor
-msgid "Specification (TOR)"
-msgstr "ข้อกำหนดคุณลักษณะ (TOR)"
