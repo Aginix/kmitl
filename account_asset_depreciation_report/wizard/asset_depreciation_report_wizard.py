@@ -85,7 +85,9 @@ class AssetDepreciationReportWizard(models.TransientModel):
         filename = "asset_depreciation_report.xlsx"
         self.write({"data": base64.b64encode(xlsx_data), "filename": filename})
         return {
-            "type": "ir.actions.act_url",
-            "url": f"/web/content/asset.depreciation.report.wizard/{self.id}/data/{filename}?download=true",
-            "target": "self",
+            "type": "ir.actions.client",
+            "tag": "asset_report_download",
+            "params": {
+                "url": f"/web/content/asset.depreciation.report.wizard/{self.id}/data/{filename}?download=true",
+            },
         }

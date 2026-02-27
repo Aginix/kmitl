@@ -12,6 +12,11 @@
         'security/ir.model.access.csv',
         'views/asset_depreciation_report_wizard_views.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'account_asset_depreciation_report/static/src/js/asset_report_download.js',
+        ],
+    },
     'installable': True,
     'auto_install': False,
     'license': 'LGPL-3',
