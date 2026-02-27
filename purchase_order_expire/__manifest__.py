@@ -8,9 +8,10 @@
     "category": "Purchase",
     'depends': ['purchase_menu', 'purchase_contract_kmitl'],
     "data": [
+        "data/ir_cron_data.xml",
+        "views/purchase_order_views.xml",
         "views/action.xml",
         "views/menu.xml",
-        "views/purchase_order_views.xml",
     ],
     'installable': True,
     'auto_install': False,
