@@ -37,6 +37,11 @@ msgstr "%(amount)s ถึงกำหนด %(date)s"
 msgid "%(product)s from %(original_receipt_date)s to %(new_receipt_date)s"
 msgstr "%(product)s จาก %(original_receipt_date)s เป็น %(new_receipt_date)s"
 
+#. module: purchase_order_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form
+msgid "Purchase Request"
+msgstr "คำขอซื้อขอจ้าง"
+
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
