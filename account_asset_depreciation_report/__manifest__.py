@@ -6,7 +6,7 @@
     'category': 'KMITL',
     'author': 'Aginix Technologies',
     'website': 'https://github.com/aginix/kmitl',
-    'depends': ['account_asset_kmitl', 'account_asset_usability_kmitl', 'account_fiscal_year'],
+    'depends': ['account_asset_kmitl', 'account_fiscal_year'],
     'external_dependencies': {'python': ['xlsxwriter']},
     'data': [
         'security/ir.model.access.csv',
