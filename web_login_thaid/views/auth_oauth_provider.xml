@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record model="ir.ui.view" id="view_thaid_provider_form">
+        <field name="name">auth.thaid.provider.form</field>
+        <field name="model">auth.oauth.provider</field>
+        <field name="inherit_id" ref="auth_oidc.view_oidc_provider_form" />
+        <field name="arch" type="xml">
+            <field name="client_secret" position="after">
+                <field name="api_key" password="True" />
+            </field>
+        </field>
+    </record>
+</odoo>
