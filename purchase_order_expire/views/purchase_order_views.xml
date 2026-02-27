@@ -1,4 +1,7 @@
-<odoo>
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+      
+    <!-- View purchase.order tree -->
     <record id="view_purchase_order_tree_expiring" model="ir.ui.view">
         <field name="name">purchase.order.tree.expiring</field>
         <field name="model">purchase.order</field>
@@ -30,4 +33,5 @@
             </search>
         </field>
     </record>
-</odoo>
+
+  </odoo>

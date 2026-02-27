@@ -5,7 +5,7 @@
     <menuitem id="purchase.menu_procurement_management" active="False"/>
 
     <!-- remove Product -->
-     <menuitem id="purchase.menu_purchase_products" active="False"/>
+    <menuitem id="purchase.menu_purchase_products" active="False"/>
     
     <!-- add products to config -->
     <menuitem name="Products" id="menu_product_form" action="purchase.product_normal_action_puchased" parent="purchase.menu_product_in_config_purchase" sequence="1"/>
@@ -33,18 +33,6 @@
               name="Contract Tracking"
               parent="purchase.menu_purchase_root"
               sequence="2"/>
-
-    <menuitem id="menu_purchase_cotract_expire"
-              name="Contract Nearly Expire"
-              parent="menu_purchase_tracking"
-              action="purchase_menu.action_contracts_expiring"
-              sequence="20"/>
-    
-    <menuitem id="menu_purchase_guarantee_expire"
-              name="Guarantee Expire"
-              parent="menu_purchase_tracking"
-              action="purchase_menu.action_guarantees_expiring"
-              sequence="20"/>
 
     <!-- Asset -->
     <menuitem id="l10n_th_gov_account_asset_management.menu_purchase_assets" active="False"/>
