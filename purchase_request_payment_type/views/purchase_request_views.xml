@@ -17,13 +17,16 @@
                     widget="radio"
                     options="{'horizontal': true}"
                 />
+            </xpath>
+            <xpath expr="//field[@name='line_ids']" position="before">
                 <div
                     colspan="2"
                     class="alert alert-warning show"
                     role="alert"
                     attrs="{'invisible': [('payment_type', '!=', 'prepaid')]}"
                 >
-                    When payment type is Prepaid, please select the advance payer's name in the Vendor field.
+                    When payment type is Prepaid, please select the advance payer's name
+                    in the Vendor field.
                 </div>
             </xpath>
         </field>
