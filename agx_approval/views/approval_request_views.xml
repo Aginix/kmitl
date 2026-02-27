@@ -8,6 +8,7 @@
             <form string="Approval Request">
                 <header>
                     <field name="hide_reserve_budget_button" invisible="1" />
+                    <field name="is_editable" invisible="1"/>
                     <button
                         name="action_reserve_budget"
                         type="object" attrs="{'invisible':[('hide_reserve_budget_button', '=', True)]}"
