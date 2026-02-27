@@ -44,7 +44,7 @@
     <menuitem
         id="menu_asset_report"
         name="รายงาน"
-        parent="account_asset_usability_kmitl.menu_assets_management"
+        parent="account_asset_kmitl.menu_assets_management"
         sequence="50"
     />
 
