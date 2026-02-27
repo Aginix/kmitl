@@ -242,7 +242,7 @@
                             ครบกำหนดส่งมอบวันที่
                             <span
                                 class="fw-bolder text-decoration-underline"
-                                t-esc="o.format_date_thai(o.date_order)"
+                                t-esc="o.format_date_thai(o.work_end)"
                             />
                         </li>
                         <li>
