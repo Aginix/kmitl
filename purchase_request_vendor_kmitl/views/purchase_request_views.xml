@@ -7,7 +7,7 @@
         <field name="model">purchase.request</field>
         <field name="inherit_id" ref="purchase_request_payment_type.view_purchase_request_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//div[@name='warning_prepaid']" position="before">
+            <xpath expr="//group[@name='warning_prepaid']" position="before">
                 <group>
                     <group>
                         <field name="is_required_partner_id" invisible="1" />
