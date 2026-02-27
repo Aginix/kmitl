@@ -20,6 +20,7 @@
             </xpath>
             <xpath expr="//field[@name='line_ids']" position="before">
                 <div
+                    name="warning_prepaid"
                     colspan="2"
                     class="alert alert-warning show"
                     role="alert"
