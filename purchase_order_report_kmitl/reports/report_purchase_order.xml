@@ -61,10 +61,10 @@
                             />
                         </div>
                         <div class="col-5">
-                            ใบสั่งซื้อเลขที่
+                            <span t-esc="o.contract_type_id.name" />เลขที่
                             <span
                                 class="ms-2 fw-normal fw-bolder text-decoration-underline"
-                                t-esc="o.contract_name"
+                                t-esc="o.contract_number"
                             />
                         </div>
                     </div>
@@ -309,10 +309,9 @@
                                 t-esc="o.contract_type_id.name"
                             />
                             นี้อ้างอิงตามเลขที่โครงการ
-                            <!-- ไม่รู้ต้องเลขอะไร -->
                             <span
                                 class="fw-bolder text-decoration-underline"
-                                t-esc="o.contract_number or '-'"
+                                t-esc="o.request_id.egp_project_id or '-'"
                             >
                             </span>
                             <span
