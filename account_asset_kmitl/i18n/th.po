@@ -219,8 +219,16 @@ msgstr "ครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_kmitl
 #: model:ir.model,name:account_asset_kmitl.model_account_asset
+#: model:ir.ui.menu,name:account_asset_kmitl.menu_assets
+#: model:ir.ui.menu,name:account_asset_kmitl.menu_assets_action
+#: model:ir.ui.menu,name:account_asset_kmitl.menu_assets_management
 msgid "Asset"
 msgstr "ครุภัณฑ์/สินทรัพย์"
+
+#. module: account_asset_kmitl
+#: model:ir.ui.menu,name:account_asset_kmitl.menu_asset_configuration
+msgid "Configuration"
+msgstr "การตั้งค่า"
 
 #. module: account_asset_management
 #. odoo-python

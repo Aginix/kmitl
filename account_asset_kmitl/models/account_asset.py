@@ -21,7 +21,47 @@ class AccountAsset(models.Model):
         "funds": "fund_analytic_id",
         "activities": "activity_analytic_id",
     }
+    
+    name = fields.Char(tracking=True)
 
+    state = fields.Selection(tracking=True)
+
+    number = fields.Char(tracking=True)
+
+    code = fields.Char(tracking=True)
+
+    purchase_value = fields.Monetary(tracking=True)
+
+    salvage_value = fields.Monetary(tracking=True)
+
+    date_start = fields.Date(tracking=True)
+
+    profile_id = fields.Many2one(tracking=True)
+
+    method_time = fields.Selection(tracking=True)
+
+    method = fields.Selection(tracking=True)
+
+    method_period = fields.Selection(tracking=True)
+
+    account_fiscal_year_id = fields.Many2one(
+        "account.fiscal.year",
+        string="Fiscal year",
+        tracking=True
+    )
+
+    gpsc_id = fields.Many2one(
+        "procurement.gpsc",
+        string="GPSC Id",
+        tracking=True
+    )
+
+    department_id = fields.Many2one(
+        "hr.department",
+        string="Department",
+        tracking=True
+    )
+    
     source_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="แหล่งเงิน",
@@ -31,6 +71,7 @@ class AccountAsset(models.Model):
         readonly=False,
         domain=[("root_plan_id.code", "=", "sources")],
     )
+    
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="ส่วนงาน",
@@ -59,21 +100,6 @@ class AccountAsset(models.Model):
         store=True,
         readonly=False,
         domain=[("root_plan_id.code", "=", "activities")],
-    )
-
-    account_fiscal_year_id = fields.Many2one(
-        "account.fiscal.year",
-        string="Fiscal year"
-    )
-
-    gpsc_id = fields.Many2one(
-        "procurement.gpsc",
-        string="GPSC Id"
-    )
-
-    department_id = fields.Many2one(
-        "hr.department",
-        string="Department"
     )
 
     def _default_access_uid(self):
