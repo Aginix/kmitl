@@ -28,14 +28,16 @@ class KrisProjectAllocationLine(models.Model):
     allocation_pct = fields.Float(
         string="% จัดสรร",
         digits=(5, 2),
+        compute="_compute_allocation_pct",
+        store=True,
     )
     estimated_amount = fields.Monetary(
         string="ประมาณการ (บาท)",
-        compute="_compute_amounts",
     )
     actual_amount = fields.Monetary(
         string="รับจริง (บาท)",
-        compute="_compute_amounts",
+        compute="_compute_actual_amount",
+        store=True,
     )
     currency_id = fields.Many2one(
         comodel_name="res.currency",
@@ -44,13 +46,18 @@ class KrisProjectAllocationLine(models.Model):
         readonly=True,
     )
 
-    @api.depends(
-        "allocation_pct",
-        "project_id.allocatable_value",
-        "project_id.total_received_amount",
-    )
-    def _compute_amounts(self):
+    @api.depends("estimated_amount", "project_id.maintenance_deduction_amount")
+    def _compute_allocation_pct(self):
         for line in self:
-            pct = line.allocation_pct / 100.0
-            line.estimated_amount = line.project_id.allocatable_value * pct
-            line.actual_amount = line.project_id.total_received_amount * pct
+            base = line.project_id.maintenance_deduction_amount
+            if base:
+                line.allocation_pct = line.estimated_amount / base * 100.0
+            else:
+                line.allocation_pct = 0.0
+
+    @api.depends("allocation_pct", "project_id.total_received_amount")
+    def _compute_actual_amount(self):
+        for line in self:
+            line.actual_amount = (
+                line.project_id.total_received_amount * line.allocation_pct / 100.0
+            )

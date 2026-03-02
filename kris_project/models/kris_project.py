@@ -11,15 +11,6 @@ READONLY_STATES = {
     "cancel": [("readonly", True)],
 }
 
-PROJECT_TYPE_SELECTION = [
-    ("consulting", "ให้คำปรึกษา"),
-    ("research_contract", "วิจัยตามสัญญา"),
-    ("training", "ฝึกอบรม"),
-    ("testing", "ทดสอบ/สอบเทียบ"),
-    ("external_research", "วิจัยแหล่งทุนภายนอก"),
-    ("internal_research", "วิจัยทุนภายใน"),
-]
-
 CLIENT_ORG_TYPE_SELECTION = [
     ("government", "หน่วยงานรัฐ"),
     ("state_enterprise", "รัฐวิสาหกิจ"),
@@ -48,11 +39,17 @@ class KrisProject(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
-    project_type = fields.Selection(
-        selection=PROJECT_TYPE_SELECTION,
+    project_type_id = fields.Many2one(
+        comodel_name="kris.project.type",
         string="ประเภทโครงการ",
+        required=True,
         tracking=True,
         states=READONLY_STATES,
+    )
+    project_type_category = fields.Selection(
+        related="project_type_id.category",
+        string="หมวดหมู่โครงการ",
+        store=True,
     )
     state = fields.Selection(
         selection=[
@@ -79,7 +76,8 @@ class KrisProject(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
-    leader_name = fields.Char(
+    leader_id = fields.Many2one(
+        comodel_name="hr.employee",
         string="หัวหน้าโครงการ",
         tracking=True,
         states=READONLY_STATES,
@@ -96,21 +94,11 @@ class KrisProject(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
+    # --- Financial fields ---
     project_value = fields.Monetary(
         string="มูลค่างาน",
         tracking=True,
         states=READONLY_STATES,
-    )
-    maintenance_deduction_pct = fields.Float(
-        string="% หักค่าบำรุง",
-        digits=(5, 2),
-        tracking=True,
-        states=READONLY_STATES,
-    )
-    value_after_deduction = fields.Monetary(
-        string="มูลค่าหลังหักค่าบำรุง",
-        compute="_compute_derived_values",
-        store=True,
     )
     equipment_cost = fields.Monetary(
         string="ค่าครุภัณฑ์",
@@ -127,6 +115,18 @@ class KrisProject(models.Model):
         compute="_compute_derived_values",
         store=True,
     )
+    maintenance_deduction_pct = fields.Float(
+        string="% หักค่าบำรุง",
+        digits=(5, 2),
+        tracking=True,
+        states=READONLY_STATES,
+    )
+    maintenance_deduction_amount = fields.Monetary(
+        string="มูลค่าหักค่าบำรุง",
+        compute="_compute_derived_values",
+        store=True,
+    )
+    # --- Contract fields ---
     contract_number = fields.Char(
         string="เลขที่สัญญา",
         tracking=True,
@@ -161,6 +161,7 @@ class KrisProject(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
+    # --- One2many ---
     installment_ids = fields.One2many(
         comodel_name="kris.project.installment",
         inverse_name="project_id",
@@ -176,6 +177,7 @@ class KrisProject(models.Model):
         inverse_name="project_id",
         string="การจัดสรรรายได้",
     )
+    # --- Computed totals ---
     total_installment_amount = fields.Monetary(
         string="มูลค่าตามงวด (รวม)",
         compute="_compute_totals",
@@ -191,6 +193,7 @@ class KrisProject(models.Model):
         compute="_compute_totals",
         store=True,
     )
+    # --- Standard fields ---
     company_id = fields.Many2one(
         comodel_name="res.company",
         string="บริษัท",
@@ -208,13 +211,13 @@ class KrisProject(models.Model):
         tracking=True,
     )
 
-    @api.depends("project_value", "maintenance_deduction_pct", "equipment_cost")
+    @api.depends("project_value", "equipment_cost", "maintenance_deduction_pct")
     def _compute_derived_values(self):
         for rec in self:
-            rec.value_after_deduction = rec.project_value * (
-                1 - rec.maintenance_deduction_pct / 100.0
-            )
             rec.allocatable_value = rec.project_value - rec.equipment_cost
+            rec.maintenance_deduction_amount = (
+                rec.allocatable_value * rec.maintenance_deduction_pct / 100.0
+            )
 
     @api.depends(
         "installment_ids.amount",
@@ -226,6 +229,11 @@ class KrisProject(models.Model):
             rec.total_installment_amount = sum(rec.installment_ids.mapped("amount"))
             rec.total_received_amount = sum(rec.receipt_ids.mapped("amount"))
             rec.revenue_remaining = rec.project_value - rec.total_received_amount
+
+    @api.onchange("faculty_id")
+    def _onchange_faculty_id(self):
+        if self.department_id and self.department_id.parent_id != self.faculty_id:
+            self.department_id = False
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -265,12 +273,21 @@ class KrisProject(models.Model):
         self.ensure_one()
         ALLOCATION_LINES = [
             (1, "ส่วนกลาง", 35.0),
-            (2, "คณะ", 35.0),
-            (3, "ภาค", 20.0),
+            (2, "คณะ/ส่วนงาน", 35.0),
+            (3, "ภาค/หน่วยงาน", 20.0),
             (4, "KRIS", 10.0),
         ]
+        base_amount = self.maintenance_deduction_amount
         self.allocation_line_ids.unlink()
         self.allocation_line_ids = [
-            (0, 0, {"sequence": seq, "name": name, "allocation_pct": pct})
+            (
+                0,
+                0,
+                {
+                    "sequence": seq,
+                    "name": name,
+                    "estimated_amount": base_amount * pct / 100.0,
+                },
+            )
             for seq, name, pct in ALLOCATION_LINES
         ]

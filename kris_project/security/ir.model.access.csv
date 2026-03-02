@@ -1,4 +1,6 @@
 id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_kris_project_type_user,kris_project_type_user,model_kris_project_type,kris_project.group_kris_project_user,1,0,0,0
+access_kris_project_type_manager,kris_project_type_manager,model_kris_project_type,kris_project.group_kris_project_manager,1,1,1,1
 access_kris_project_user,kris_project_user,model_kris_project,kris_project.group_kris_project_user,1,1,1,1
 access_kris_project_officer,kris_project_officer,model_kris_project,kris_project.group_kris_project_officer,1,1,1,1
 access_kris_project_manager,kris_project_manager,model_kris_project,kris_project.group_kris_project_manager,1,1,1,1

@@ -19,4 +19,22 @@
         groups="kris_project.group_kris_project_user"
     />
 
+    <!-- Configuration menu -->
+    <menuitem
+        id="menu_kris_project_config"
+        name="ตั้งค่า"
+        parent="menu_kris_project_root"
+        sequence="100"
+        groups="kris_project.group_kris_project_manager"
+    />
+
+    <menuitem
+        id="menu_kris_project_type"
+        name="ประเภทโครงการ"
+        parent="menu_kris_project_config"
+        action="action_kris_project_type"
+        sequence="10"
+        groups="kris_project.group_kris_project_manager"
+    />
+
 </odoo>

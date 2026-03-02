@@ -1,6 +1,6 @@
 import logging
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 _logger = logging.getLogger(__name__)
 
@@ -47,3 +47,8 @@ class KrisProjectReceipt(models.Model):
         string="สกุลเงิน",
         readonly=True,
     )
+
+    @api.onchange("installment_id")
+    def _onchange_installment_id(self):
+        if self.installment_id:
+            self.amount = self.installment_id.amount

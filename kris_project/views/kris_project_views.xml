@@ -57,10 +57,11 @@
                         </h2>
                     </div>
                     <field name="currency_id" invisible="1"/>
+                    <field name="project_type_category" invisible="1"/>
                     <group>
                         <group string="ข้อมูลโครงการ">
                             <field
-                                name="project_type"
+                                name="project_type_id"
                                 attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
                             />
                             <field
@@ -72,7 +73,7 @@
                                 attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
                             />
                             <field
-                                name="leader_name"
+                                name="leader_id"
                                 attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
                             />
                             <field
@@ -86,6 +87,7 @@
                             />
                             <field
                                 name="user_id"
+                                widget="many2one_avatar_user"
                                 attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
                             />
                         </group>
@@ -113,6 +115,7 @@
                         </group>
                     </group>
                     <notebook>
+                        <!-- Tab 1: มูลค่าและงวดงาน -->
                         <page string="มูลค่าและงวดงาน" name="financials">
                             <group>
                                 <group string="มูลค่าโครงการ">
@@ -121,13 +124,6 @@
                                         attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
                                     />
                                     <field
-                                        name="maintenance_deduction_pct"
-                                        attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
-                                    />
-                                    <field name="value_after_deduction" readonly="1"/>
-                                </group>
-                                <group string="ค่าใช้จ่าย">
-                                    <field
                                         name="equipment_cost"
                                         attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
                                     />
@@ -135,9 +131,17 @@
                                         name="operating_expense"
                                         attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
                                     />
+                                </group>
+                                <group string="การจัดสรร">
                                     <field name="allocatable_value" readonly="1"/>
+                                    <field
+                                        name="maintenance_deduction_pct"
+                                        attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                    />
+                                    <field name="maintenance_deduction_amount" readonly="1"/>
                                 </group>
                             </group>
+                            <separator string="งวดงานตามสัญญา"/>
                             <field
                                 name="installment_ids"
                                 attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
@@ -145,21 +149,29 @@
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle"/>
                                     <field name="name"/>
-                                    <field name="amount"/>
+                                    <field name="amount" sum="รวม"/>
                                     <field name="due_date"/>
-                                    <field name="state"/>
+                                    <field name="state" widget="badge"
+                                        decoration-info="state == 'pending'"
+                                        decoration-success="state == 'received'"
+                                    />
                                     <field name="currency_id" column_invisible="1"/>
                                 </tree>
                             </field>
+                            <group>
+                                <field name="total_installment_amount" readonly="1"/>
+                            </group>
                         </page>
+
+                        <!-- Tab 2: รายรับ -->
                         <page string="รายรับ" name="receipts">
                             <group>
                                 <group>
-                                    <field name="total_installment_amount" readonly="1"/>
                                     <field name="total_received_amount" readonly="1"/>
                                     <field name="revenue_remaining" readonly="1"/>
                                 </group>
                             </group>
+                            <separator string="บันทึกรายรับ"/>
                             <field
                                 name="receipt_ids"
                                 attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
@@ -167,16 +179,28 @@
                                 <tree editable="bottom">
                                     <field name="project_id" column_invisible="1"/>
                                     <field name="name"/>
+                                    <field name="installment_id"
+                                        domain="[('project_id', '=', parent.id)]"
+                                    />
                                     <field name="date"/>
-                                    <field name="installment_id"/>
-                                    <field name="amount"/>
+                                    <field name="amount" sum="รวม"/>
                                     <field name="note"/>
                                     <field name="currency_id" column_invisible="1"/>
                                 </tree>
                             </field>
                         </page>
+
+                        <!-- Tab 3: การจัดสรรรายได้ -->
                         <page string="การจัดสรรรายได้" name="allocation">
-                            <div class="o_form_buttons_view mb-3">
+                            <group>
+                                <group>
+                                    <field name="maintenance_deduction_amount"
+                                        readonly="1"
+                                        string="มูลค่าหักค่าบำรุงที่นำมาจัดสรร"
+                                    />
+                                </group>
+                            </group>
+                            <div class="mb-3">
                                 <button
                                     name="action_compute_allocation"
                                     string="คำนวณการจัดสรร"
@@ -185,19 +209,32 @@
                                     attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
                                 />
                             </div>
-                            <field name="allocation_line_ids" readonly="1">
-                                <tree>
+                            <field
+                                name="allocation_line_ids"
+                                attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
+                            >
+                                <tree editable="bottom">
                                     <field name="sequence" widget="handle"/>
                                     <field name="name"/>
-                                    <field name="allocation_pct" string="% จัดสรร"/>
-                                    <field name="estimated_amount"/>
-                                    <field name="actual_amount"/>
+                                    <field name="allocation_pct" string="% จัดสรร" readonly="1"/>
+                                    <field name="estimated_amount" sum="รวม"/>
+                                    <field name="actual_amount" readonly="1" sum="รวม"/>
                                     <field name="currency_id" column_invisible="1"/>
                                 </tree>
                             </field>
                         </page>
+
+                        <!-- Tab 4: เอกสารแนบ -->
+                        <page string="เอกสารแนบ" name="attachments">
+                            <field name="message_main_attachment_id" invisible="1"/>
+                            <div class="o_attachments"/>
+                        </page>
+
+                        <!-- Tab 5: หมายเหตุ -->
+                        <page string="หมายเหตุ" name="notes">
+                            <field name="note" placeholder="หมายเหตุ..." nolabel="1"/>
+                        </page>
                     </notebook>
-                    <field name="note" placeholder="หมายเหตุ..." nolabel="1"/>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>
@@ -219,11 +256,12 @@
             <tree>
                 <field name="name"/>
                 <field name="project_name"/>
-                <field name="project_type"/>
+                <field name="project_type_id"/>
                 <field name="partner_id"/>
+                <field name="leader_id" optional="show"/>
                 <field name="faculty_id"/>
-                <field name="project_value"/>
-                <field name="total_received_amount"/>
+                <field name="project_value" sum="รวม"/>
+                <field name="total_received_amount" sum="รวม" optional="show"/>
                 <field name="state" widget="badge"
                     decoration-info="state == 'draft'"
                     decoration-primary="state == 'confirmed'"
@@ -246,17 +284,18 @@
                 <field name="name" string="เลขที่เอกสาร"/>
                 <field name="project_name" string="ชื่อโครงการ"/>
                 <field name="partner_id"/>
-                <field name="leader_name"/>
+                <field name="leader_id"/>
+                <field name="project_type_id"/>
                 <!-- Filters -->
                 <filter
                     name="academic_service"
                     string="บริการวิชาการ"
-                    domain="[('project_type', 'in', ['consulting', 'training', 'testing'])]"
+                    domain="[('project_type_category', '=', 'academic_service')]"
                 />
                 <filter
                     name="research"
                     string="งานวิจัย"
-                    domain="[('project_type', 'in', ['research_contract', 'external_research', 'internal_research'])]"
+                    domain="[('project_type_category', '=', 'research')]"
                 />
                 <separator/>
                 <filter name="draft" string="ร่าง" domain="[('state', '=', 'draft')]"/>
@@ -271,7 +310,8 @@
                 />
                 <!-- Group By -->
                 <group expand="0" string="จัดกลุ่มตาม">
-                    <filter name="group_type" string="ประเภทโครงการ" context="{'group_by': 'project_type'}"/>
+                    <filter name="group_type" string="ประเภทโครงการ" context="{'group_by': 'project_type_id'}"/>
+                    <filter name="group_category" string="หมวดหมู่" context="{'group_by': 'project_type_category'}"/>
                     <filter name="group_state" string="สถานะ" context="{'group_by': 'state'}"/>
                     <filter name="group_faculty" string="คณะ" context="{'group_by': 'faculty_id'}"/>
                     <filter name="group_fiscal_year" string="ปีงบประมาณ" context="{'group_by': 'account_fiscal_year_id'}"/>
