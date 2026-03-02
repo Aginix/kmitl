@@ -47,6 +47,16 @@ class AssetDepreciationReportXlsx(models.AbstractModel):
             "bold": True, "font_size": 10, "align": "right", "valign": "vcenter",
             "border": 1, "num_format": "#,##0.00",
         })
+        sum_label_fmt = workbook.add_format({
+            "bold": True, "font_size": 10, "align": "left", "valign": "vcenter",
+        })
+        sum_num_fmt = workbook.add_format({
+            "bold": True, "font_size": 10, "align": "right", "valign": "vcenter",
+            "num_format": "#,##0.00",
+        })
+        sum_unit_fmt = workbook.add_format({
+            "bold": True, "font_size": 10, "align": "left", "valign": "vcenter",
+        })
 
         # ---- Column widths (A=0 .. L=11) ----
         col_widths = [6, 16, 30, 14, 10, 10, 14, 14, 14, 14, 14, 24]
@@ -124,6 +134,11 @@ class AssetDepreciationReportXlsx(models.AbstractModel):
 
         total_purchase = 0.0
         total_depr_year = 0.0
+        total_depr_before = 0.0
+        total_depr_this_month = 0.0
+        total_depr_carry = 0.0
+        total_book_oct = 0.0
+        total_book_sep = 0.0
 
         for seq, asset in enumerate(assets, start=1):
             depr_lines = asset.depreciation_line_ids.filtered(
@@ -153,6 +168,20 @@ class AssetDepreciationReportXlsx(models.AbstractModel):
             # Col K
             depr_carry = depr_before + depr_this_month
 
+            # Book value ต.ค. (start of fiscal year)
+            depr_before_fy = sum(
+                l.amount for l in depr_lines
+                if fy_date_from and l.line_date < fy_date_from
+            )
+            book_oct = (asset.purchase_value or 0.0) - depr_before_fy
+
+            # Book value ก.ย. (end of fiscal year)
+            depr_up_to_fy_end = sum(
+                l.amount for l in depr_lines
+                if fy_date_to and l.line_date <= fy_date_to
+            )
+            book_sep = (asset.purchase_value or 0.0) - depr_up_to_fy_end
+
             # Age in days
             if wizard_date and asset.date_start:
                 age_days = (wizard_date - asset.date_start).days
@@ -178,6 +207,11 @@ class AssetDepreciationReportXlsx(models.AbstractModel):
 
             total_purchase += asset.purchase_value or 0.0
             total_depr_year += depr_year
+            total_depr_before += depr_before
+            total_depr_this_month += depr_this_month
+            total_depr_carry += depr_carry
+            total_book_oct += book_oct
+            total_book_sep += book_sep
             row += 1
 
         # ---- Footer / totals ----
@@ -187,6 +221,24 @@ class AssetDepreciationReportXlsx(models.AbstractModel):
         sheet.write(row, 7, total_depr_year, total_fmt)
         for col in range(8, last_col + 1):
             sheet.write(row, col, "", total_fmt)
+        row += 2  # blank row separator
+
+        # ---- Summary rows ----
+        summary_items = [
+            ("ยอดรวม ราคาทุนรวม", total_purchase),
+            ("ยอดรวม ค่าเสื่อมราคา : ปี", total_depr_year),
+            ("ยอดรวม ค่าเสื่อมราคาสะสม (ยกมา)", total_depr_before),
+            ("ยอดรวม ค่าเสื่อมราคาสะสม (เดือนนี้)", total_depr_this_month),
+            ("ยอดรวม ค่าเสื่อมราคาสะสม (ยกไป)", total_depr_carry),
+            ("ยอดรวม ราคาตามบัญชี [ ต.ค. ]", total_book_oct),
+            ("ยอดรวม ราคาตามบัญชี [ ก.ย. ]", total_book_sep),
+        ]
+        for label, value in summary_items:
+            sheet.set_row(row, 18)
+            sheet.merge_range(row, 0, row, 8, label, sum_label_fmt)
+            sheet.merge_range(row, 9, row, 10, value, sum_num_fmt)
+            sheet.write(row, 11, "บาท", sum_unit_fmt)
+            row += 1
 
         workbook.close()
         return output.getvalue()
