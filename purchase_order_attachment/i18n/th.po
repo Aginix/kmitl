@@ -1,0 +1,47 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_order_attachment
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-02 09:35+0000\n"
+"PO-Revision-Date: 2026-03-02 09:35+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: purchase_order_attachment
+#: model:ir.model,name:purchase_order_attachment.model_ir_attachment
+#: model_terms:ir.ui.view,arch_db:purchase_order_attachment.view_purchase_order_form
+msgid "Attachment"
+msgstr "เอกสารแนบ"
+
+#. module: purchase_order_attachment
+#: model_terms:ir.ui.view,arch_db:purchase_order_attachment.view_purchase_order_form
+msgid "Description"
+msgstr "คำอธิบาย"
+
+#. module: purchase_order_attachment
+#: model:ir.model.fields,field_description:purchase_order_attachment.field_purchase_order__attachment_ids
+msgid "Document Attachments"
+msgstr "เอกสารแนบ"
+
+#. module: purchase_order_attachment
+#: model_terms:ir.ui.view,arch_db:purchase_order_attachment.view_purchase_order_form
+msgid "File Name"
+msgstr "ชื่อไฟล์"
+
+#. module: purchase_order_attachment
+#: model:ir.model,name:purchase_order_attachment.model_purchase_order
+msgid "Purchase Order"
+msgstr "คำสั่งซื้อ"
+
+#. module: purchase_order_attachment
+#: model:ir.model.fields,field_description:purchase_order_attachment.field_ir_attachment__sequence
+msgid "Sequence"
+msgstr ""
