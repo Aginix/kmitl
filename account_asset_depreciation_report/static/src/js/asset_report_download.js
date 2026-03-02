@@ -17,7 +17,15 @@ class AssetReportDownload extends Component {
             link.click();
             document.body.removeChild(link);
             URL.revokeObjectURL(blobUrl);
-            this.env.services.action.doAction({ type: "ir.actions.act_window_close" });
+            this.env.services.action.doAction(
+                {
+                    type: "ir.actions.act_window",
+                    res_model: "account.asset",
+                    view_mode: "list,form",
+                    views: [[false, "list"], [false, "form"]],
+                },
+                { clearBreadcrumbs: true }
+            );
         });
     }
 }
