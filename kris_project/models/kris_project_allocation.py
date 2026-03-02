@@ -1,6 +1,7 @@
 import logging
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -55,9 +56,29 @@ class KrisProjectAllocationLine(models.Model):
             else:
                 line.allocation_pct = 0.0
 
-    @api.depends("allocation_pct", "project_id.total_received_amount")
+    @api.depends(
+        "allocation_pct",
+        "project_id.total_net_received",
+        "project_id.maintenance_deduction_pct",
+    )
     def _compute_actual_amount(self):
         for line in self:
-            line.actual_amount = (
-                line.project_id.total_received_amount * line.allocation_pct / 100.0
+            base = (
+                line.project_id.total_net_received
+                * line.project_id.maintenance_deduction_pct
+                / 100.0
             )
+            line.actual_amount = base * line.allocation_pct / 100.0
+
+    @api.constrains("allocation_pct")
+    def _check_allocation_pct_sum(self):
+        for line in self:
+            sibling_lines = line.project_id.allocation_line_ids
+            total_pct = sum(sibling_lines.mapped("allocation_pct"))
+            if total_pct > 100.0 + 1e-9:
+                raise ValidationError(
+                    _(
+                        "ผลรวม % จัดสรรต้องไม่เกิน 100%% (ปัจจุบัน: %.2f%%)"
+                    )
+                    % total_pct
+                )

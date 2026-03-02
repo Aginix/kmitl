@@ -172,22 +172,30 @@
                             <group>
                                 <group>
                                     <field name="total_received_amount" readonly="1"/>
+                                    <field name="total_net_received" readonly="1"/>
                                     <field name="revenue_remaining" readonly="1"/>
                                 </group>
                             </group>
                             <separator string="บันทึกรายรับ"/>
-                            <field
-                                name="receipt_ids"
-                                attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
+                            <div class="mb-3"
+                                attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
                             >
-                                <tree editable="bottom">
+                                <button
+                                    name="action_add_receipt"
+                                    string="เพิ่มรายรับ"
+                                    type="object"
+                                    class="btn-secondary"
+                                />
+                            </div>
+                            <field name="receipt_ids" readonly="1">
+                                <tree>
                                     <field name="project_id" column_invisible="1"/>
                                     <field name="name"/>
-                                    <field name="installment_id"
-                                        domain="[('project_id', '=', parent.id)]"
-                                    />
+                                    <field name="installment_id"/>
                                     <field name="date"/>
+                                    <field name="equipment_cost_in_installment" sum="รวม"/>
                                     <field name="amount" sum="รวม"/>
+                                    <field name="net_amount" sum="รวม"/>
                                     <field name="note"/>
                                     <field name="currency_id" column_invisible="1"/>
                                 </tree>
@@ -220,7 +228,7 @@
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle"/>
                                     <field name="name"/>
-                                    <field name="allocation_pct" string="% จัดสรร" readonly="1"/>
+                                    <field name="allocation_pct" string="% จัดสรร" readonly="1" sum="รวม"/>
                                     <field name="estimated_amount" sum="รวม"/>
                                     <field name="actual_amount" readonly="1" sum="รวม"/>
                                     <field name="currency_id" column_invisible="1"/>
@@ -230,8 +238,11 @@
 
                         <!-- Tab 4: เอกสารแนบ -->
                         <page string="เอกสารแนบ" name="attachments">
-                            <field name="message_main_attachment_id" invisible="1"/>
-                            <div class="o_attachments"/>
+                            <field
+                                name="attachment_ids"
+                                widget="many2many_binary"
+                                string="ไฟล์แนบ"
+                            />
                         </page>
 
                         <!-- Tab 5: หมายเหตุ -->

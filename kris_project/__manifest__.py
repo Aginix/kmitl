@@ -17,6 +17,7 @@
         "security/security.xml",
         "security/ir.model.access.csv",
         "views/kris_project_type_views.xml",
+        "views/kris_project_receipt_wizard_views.xml",
         "views/kris_project_views.xml",
         "views/kris_project_menus.xml",
     ],

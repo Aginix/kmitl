@@ -34,9 +34,19 @@ class KrisProjectReceipt(models.Model):
         required=True,
         tracking=True,
     )
+    equipment_cost_in_installment = fields.Monetary(
+        string="มูลค่าครุภัณฑ์ในงวด",
+        default=0.0,
+        tracking=True,
+    )
     amount = fields.Monetary(
         string="จำนวนเงิน",
         tracking=True,
+    )
+    net_amount = fields.Monetary(
+        string="ยอดรับสุทธิ",
+        compute="_compute_net_amount",
+        store=True,
     )
     note = fields.Text(
         string="หมายเหตุ",
@@ -48,7 +58,7 @@ class KrisProjectReceipt(models.Model):
         readonly=True,
     )
 
-    @api.onchange("installment_id")
-    def _onchange_installment_id(self):
-        if self.installment_id:
-            self.amount = self.installment_id.amount
+    @api.depends("amount", "equipment_cost_in_installment")
+    def _compute_net_amount(self):
+        for rec in self:
+            rec.net_amount = rec.amount - rec.equipment_cost_in_installment

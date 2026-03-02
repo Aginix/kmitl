@@ -179,6 +179,13 @@ class KrisProject(models.Model):
         inverse_name="project_id",
         string="การจัดสรรรายได้",
     )
+    attachment_ids = fields.Many2many(
+        comodel_name="ir.attachment",
+        relation="kris_project_attachment_rel",
+        column1="project_id",
+        column2="attachment_id",
+        string="เอกสารแนบ",
+    )
     # --- Computed totals ---
     total_installment_amount = fields.Monetary(
         string="มูลค่าตามงวด (รวม)",
@@ -187,6 +194,11 @@ class KrisProject(models.Model):
     )
     total_received_amount = fields.Monetary(
         string="รับเงินแล้ว (รวม)",
+        compute="_compute_totals",
+        store=True,
+    )
+    total_net_received = fields.Monetary(
+        string="ยอดรับสุทธิรวม",
         compute="_compute_totals",
         store=True,
     )
@@ -224,12 +236,14 @@ class KrisProject(models.Model):
     @api.depends(
         "installment_ids.amount",
         "receipt_ids.amount",
+        "receipt_ids.net_amount",
         "project_value",
     )
     def _compute_totals(self):
         for rec in self:
             rec.total_installment_amount = sum(rec.installment_ids.mapped("amount"))
             rec.total_received_amount = sum(rec.receipt_ids.mapped("amount"))
+            rec.total_net_received = sum(rec.receipt_ids.mapped("net_amount"))
             rec.revenue_remaining = rec.project_value - rec.total_received_amount
 
     @api.onchange("project_category_id")
@@ -277,6 +291,17 @@ class KrisProject(models.Model):
             if rec.state != "cancel":
                 raise UserError(_("สามารถรีเซ็ตได้เฉพาะโครงการที่ถูกยกเลิกเท่านั้น"))
         self.write({"state": "draft"})
+
+    def action_add_receipt(self):
+        self.ensure_one()
+        return {
+            "name": "บันทึกรายรับ",
+            "type": "ir.actions.act_window",
+            "res_model": "kris.project.receipt.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_project_id": self.id},
+        }
 
     def action_compute_allocation(self):
         """Generate or regenerate the 4 standard revenue allocation lines."""
