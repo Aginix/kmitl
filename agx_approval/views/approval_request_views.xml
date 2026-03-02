@@ -39,25 +39,27 @@
                     </div>
                     
                     <group string="Approval Details">
-                        <field name="date" readonly="1"/>
-                        <field name="payment_type" required="1" widget="radio" options="{'horizontal': true}"/>
-                        <field name="id" invisible="1" />
-                        <field name="category_id" attrs="{'readonly': [('id', '!=', False)]}" />
-                        <field name="owner_id" />
-                        <field name="department_id" readonly="1"/>
-                        <field name="user_id" readonly="1"/>
-                        <field name="has_period" invisible="1" />
-                        <field name="has_city" invisible="1" />
-                        <field name="has_country_id" invisible="1" />
-                        <label for="date_start" string="Period" attrs="{'invisible': [('has_period', '!=', True)]}"/>
-                        <div class="o_row" attrs="{'invisible': [('has_period', '!=', True)]}">
-                            <field name="date_start" widget="daterange" nolabel="1" class="oe_inline" options="{'related_end_date': 'date_end'}" attrs="{'invisible': [('has_period', '!=', True)], 'required': [('has_period', '=', True)]}"/>
-                            <i class="fa fa-long-arrow-right mx-2" aria-label="Arrow icon" title="Arrow"/>
-                            <field name="date_end" widget="daterange" nolabel="1" class="oe_inline" options="{'related_start_date': 'date_start'}" attrs="{'invisible': [('has_period', '!=', True)], 'required': [('has_period', '=', True)]}"/>
-                        </div>
-                        <field name="city" attrs="{'invisible': [('has_city', '!=', True)], 'required': [('has_city', '=', True)]}"/>
-                        <field name="country_id" attrs="{'invisible': [('has_country_id', '!=', True)], 'required': [('has_country_id', '=', True)]}"/>
-                        <field name="description" />
+                        <group>
+                            <field name="date" readonly="1"/>
+                            <field name="id" invisible="1" />
+                            <field name="category_id" attrs="{'readonly': [('id', '!=', False)]}" />
+                            <field name="payment_type" required="1" widget="radio" options="{'horizontal': true}"/>
+                            <field name="owner_id" />
+                            <field name="department_id" readonly="1"/>
+                            <field name="user_id" readonly="1"/>
+                            <field name="has_period" invisible="1" />
+                            <field name="has_city" invisible="1" />
+                            <field name="has_country_id" invisible="1" />
+                            <label for="date_start" string="Period" attrs="{'invisible': [('has_period', '!=', True)]}"/>
+                            <div class="o_row" attrs="{'invisible': [('has_period', '!=', True)]}">
+                                <field name="date_start" widget="daterange" nolabel="1" class="oe_inline" options="{'related_end_date': 'date_end'}" attrs="{'invisible': [('has_period', '!=', True)], 'required': [('has_period', '=', True)]}"/>
+                                <i class="fa fa-long-arrow-right mx-2" aria-label="Arrow icon" title="Arrow"/>
+                                <field name="date_end" widget="daterange" nolabel="1" class="oe_inline" options="{'related_start_date': 'date_start'}" attrs="{'invisible': [('has_period', '!=', True)], 'required': [('has_period', '=', True)]}"/>
+                            </div>
+                            <field name="city" attrs="{'invisible': [('has_city', '!=', True)], 'required': [('has_city', '=', True)]}"/>
+                            <field name="country_id" attrs="{'invisible': [('has_country_id', '!=', True)], 'required': [('has_country_id', '=', True)]}"/>
+                            <field name="description" />
+                        </group>
                     </group>
                     <group string="Budget">
                         <field name="is_budget_editable" invisible="1"/>
