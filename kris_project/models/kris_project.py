@@ -39,17 +39,19 @@ class KrisProject(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
-    project_type_id = fields.Many2one(
-        comodel_name="kris.project.type",
+    project_category_id = fields.Many2one(
+        comodel_name="kris.project.category",
         string="ประเภทโครงการ",
         required=True,
         tracking=True,
         states=READONLY_STATES,
     )
-    project_type_category = fields.Selection(
-        related="project_type_id.category",
-        string="หมวดหมู่โครงการ",
-        store=True,
+    project_type_id = fields.Many2one(
+        comodel_name="kris.project.type",
+        string="ประเภทย่อย",
+        required=True,
+        tracking=True,
+        states=READONLY_STATES,
     )
     state = fields.Selection(
         selection=[
@@ -229,6 +231,14 @@ class KrisProject(models.Model):
             rec.total_installment_amount = sum(rec.installment_ids.mapped("amount"))
             rec.total_received_amount = sum(rec.receipt_ids.mapped("amount"))
             rec.revenue_remaining = rec.project_value - rec.total_received_amount
+
+    @api.onchange("project_category_id")
+    def _onchange_project_category_id(self):
+        if (
+            self.project_type_id
+            and self.project_type_id.category_id != self.project_category_id
+        ):
+            self.project_type_id = False
 
     @api.onchange("faculty_id")
     def _onchange_faculty_id(self):

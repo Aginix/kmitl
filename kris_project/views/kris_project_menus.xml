@@ -29,10 +29,10 @@
     />
 
     <menuitem
-        id="menu_kris_project_type"
+        id="menu_kris_project_category"
         name="ประเภทโครงการ"
         parent="menu_kris_project_config"
-        action="action_kris_project_type"
+        action="action_kris_project_category"
         sequence="10"
         groups="kris_project.group_kris_project_manager"
     />

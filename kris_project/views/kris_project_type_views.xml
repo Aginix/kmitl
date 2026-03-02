@@ -1,41 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="view_kris_project_type_tree" model="ir.ui.view">
-        <field name="name">kris.project.type.tree</field>
-        <field name="model">kris.project.type</field>
+    <!-- ============================================================ -->
+    <!-- CATEGORY (ประเภทโครงการ)                                      -->
+    <!-- ============================================================ -->
+
+    <record id="view_kris_project_category_form" model="ir.ui.view">
+        <field name="name">kris.project.category.form</field>
+        <field name="model">kris.project.category</field>
         <field name="arch" type="xml">
-            <tree editable="bottom">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="sequence"/>
+                    </group>
+                    <separator string="ประเภทย่อย"/>
+                    <field name="type_ids">
+                        <tree editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="name"/>
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_kris_project_category_tree" model="ir.ui.view">
+        <field name="name">kris.project.category.tree</field>
+        <field name="model">kris.project.category</field>
+        <field name="arch" type="xml">
+            <tree>
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
-                <field name="category"/>
+                <field name="type_ids" widget="many2many_tags"/>
             </tree>
         </field>
     </record>
 
-    <record id="view_kris_project_type_search" model="ir.ui.view">
-        <field name="name">kris.project.type.search</field>
-        <field name="model">kris.project.type</field>
-        <field name="arch" type="xml">
-            <search>
-                <field name="name"/>
-                <filter name="academic_service" string="งานบริการวิชาการ"
-                    domain="[('category', '=', 'academic_service')]"/>
-                <filter name="research" string="งานวิจัย"
-                    domain="[('category', '=', 'research')]"/>
-                <group expand="0" string="จัดกลุ่มตาม">
-                    <filter name="group_category" string="หมวดหมู่"
-                        context="{'group_by': 'category'}"/>
-                </group>
-            </search>
-        </field>
-    </record>
-
-    <record id="action_kris_project_type" model="ir.actions.act_window">
+    <record id="action_kris_project_category" model="ir.actions.act_window">
         <field name="name">ประเภทโครงการ</field>
-        <field name="res_model">kris.project.type</field>
-        <field name="view_mode">tree</field>
-        <field name="search_view_id" ref="view_kris_project_type_search"/>
+        <field name="res_model">kris.project.category</field>
+        <field name="view_mode">tree,form</field>
     </record>
 
 </odoo>

@@ -57,11 +57,15 @@
                         </h2>
                     </div>
                     <field name="currency_id" invisible="1"/>
-                    <field name="project_type_category" invisible="1"/>
                     <group>
                         <group string="ข้อมูลโครงการ">
                             <field
+                                name="project_category_id"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                            <field
                                 name="project_type_id"
+                                domain="[('category_id', '=', project_category_id)]"
                                 attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
                             />
                             <field
@@ -256,7 +260,8 @@
             <tree>
                 <field name="name"/>
                 <field name="project_name"/>
-                <field name="project_type_id"/>
+                <field name="project_category_id"/>
+                <field name="project_type_id" optional="show"/>
                 <field name="partner_id"/>
                 <field name="leader_id" optional="show"/>
                 <field name="faculty_id"/>
@@ -285,18 +290,8 @@
                 <field name="project_name" string="ชื่อโครงการ"/>
                 <field name="partner_id"/>
                 <field name="leader_id"/>
+                <field name="project_category_id"/>
                 <field name="project_type_id"/>
-                <!-- Filters -->
-                <filter
-                    name="academic_service"
-                    string="บริการวิชาการ"
-                    domain="[('project_type_category', '=', 'academic_service')]"
-                />
-                <filter
-                    name="research"
-                    string="งานวิจัย"
-                    domain="[('project_type_category', '=', 'research')]"
-                />
                 <separator/>
                 <filter name="draft" string="ร่าง" domain="[('state', '=', 'draft')]"/>
                 <filter name="confirmed" string="ยืนยัน" domain="[('state', '=', 'confirmed')]"/>
@@ -310,8 +305,8 @@
                 />
                 <!-- Group By -->
                 <group expand="0" string="จัดกลุ่มตาม">
-                    <filter name="group_type" string="ประเภทโครงการ" context="{'group_by': 'project_type_id'}"/>
-                    <filter name="group_category" string="หมวดหมู่" context="{'group_by': 'project_type_category'}"/>
+                    <filter name="group_category" string="ประเภทโครงการ" context="{'group_by': 'project_category_id'}"/>
+                    <filter name="group_type" string="ประเภทย่อย" context="{'group_by': 'project_type_id'}"/>
                     <filter name="group_state" string="สถานะ" context="{'group_by': 'state'}"/>
                     <filter name="group_faculty" string="คณะ" context="{'group_by': 'faculty_id'}"/>
                     <filter name="group_fiscal_year" string="ปีงบประมาณ" context="{'group_by': 'account_fiscal_year_id'}"/>
