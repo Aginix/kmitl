@@ -333,13 +333,6 @@
                                 </div>
                             </t>
                         </t>
-                    </div>
-
-                    <!-- PAGE 4: กรรมการและเลขานุการ + ส่วนบันทึกงานพัสดุ -->
-                    <div class="page" style="page-break-before: always">
-                        <div style="position: absolute; top: 0px; right: 0px">
-                            แบบ พ.36
-                        </div>
                         <t t-foreach="o.work_acceptance_committee_ids" t-as="line">
                             <t t-if="line.approve_role == 'secretary'">
                                 <div class="row mt-4">
@@ -356,6 +349,13 @@
                                 </div>
                             </t>
                         </t>
+                    </div>
+
+                    <!-- PAGE 4: กรรมการและเลขานุการ + ส่วนบันทึกงานพัสดุ -->
+                    <div class="page" style="page-break-before: always">
+                        <div style="position: absolute; top: 0px; right: 0px">
+                            แบบ พ.36
+                        </div>
                         <hr class="mt-5" />
                         <div class="row mt-3">
                             <div class="col fw-bolder">ส่วนบันทึกงานพัสดุ</div>
