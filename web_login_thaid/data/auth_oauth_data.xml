@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<odoo noupdate="1">
+    <record id="provider_thaid" model="auth.oauth.provider">
+        <field name="name">ThaiD</field>
+        <field name="flow">id_token_code</field>
+        <field name="enabled">False</field>
+        <field name="client_id">CHANGE_ME</field>
+        <field name="client_secret">CHANGE_ME</field>
+        <field name="api_key">CHANGE_ME</field>
+        <field
+            name="auth_endpoint"
+        >https://imauth.bora.dopa.go.th/api/v2/oauth2/auth/</field>
+        <field
+            name="token_endpoint"
+        >https://imauth.bora.dopa.go.th/api/v2/oauth2/token/</field>
+        <field
+            name="validation_endpoint"
+        >https://imauth.bora.dopa.go.th/api/v2/oauth2/userinfo/</field>
+        <field name="jwks_uri">https://imauth.bora.dopa.go.th/jwks/</field>
+        <field name="scope">openid pid name name_en given_name_en family_name_en</field>
+        <field name="token_map">pid:user_id name_en:name</field>
+        <field name="css_class">fa fa-fw thaid_icon</field>
+        <field name="body">เข้าสู่ระบบด้วย ThaiD</field>
+    </record>
+</odoo>

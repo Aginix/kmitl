@@ -9,6 +9,7 @@
     'depends': ['l10n_th_gov_account_asset_management', 'account_asset_operating_unit', 'account_fiscal_year', 'l10n_th_gov_gpsc', 'account_kmitl', 'account_asset_number', 'portal'],
     "data": [
         "data/account_asset_profile.xml",
+        "views/menuitem.xml",
         "views/account_asset_views.xml",
         "views/purchase_order_views.xml",
         "views/template_asset_number.xml",
