@@ -1,0 +1,47 @@
+# -*- coding: utf-8 -*-
+import logging
+
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError, ValidationError
+
+_logger = logging.getLogger(__name__)
+
+
+class WorkAcceptance(models.Model):
+    _inherit = 'work.acceptance'
+
+    is_external = fields.Boolean(
+        string="Use External Inspection",
+        default=False,
+        copy=False,
+    )
+
+    has_attachment = fields.Boolean(
+        string='Has Attachment',
+        compute='_compute_has_attachment',
+    )
+
+    @api.depends('attachment_ids')
+    def _compute_has_attachment(self):
+        for rec in self:
+            rec.has_attachment = bool(rec.attachment_ids)
+
+    @api.depends('review_ids', 'is_external')
+    def _compute_need_validation(self):
+        for rec in self:
+            if rec.is_external:
+                rec.need_validation = False
+            else:
+                super(WorkAcceptance, rec)._compute_need_validation()
+    
+    @api.model
+    def create(self, vals):
+        if not vals.get('is_external') and vals.get('purchase_order_id'):
+            po = self.env['purchase.order'].browse(vals['purchase_order_id'])
+            vals['is_external'] = po.is_external
+        return super().create(vals)
+
+    @api.onchange('purchase_order_id')
+    def _onchange_purchase_order_id_external(self):
+        if self.purchase_order_id:
+            self.is_external = self.purchase_order_id.is_external

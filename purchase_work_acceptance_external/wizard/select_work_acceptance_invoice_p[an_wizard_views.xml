@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_select_wa_invoice_plan_wizard_external" model="ir.ui.view">
+        <field name="name">select.work.acceptance.invoice.plan.wizard.external</field>
+        <field name="model">select.work.acceptance.invoice.plan.wizard</field>
+        <field name="inherit_id" ref="purchase_work_acceptance_invoice_plan.view_select_work_acceptance_invoice_plan_wizard"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='apply_method_id']" position="after">
+                <field name="is_external" widget="boolean_toggle"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
