@@ -165,6 +165,7 @@
                                 attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
                             >
                                 <tree editable="bottom">
+                                    <field name="project_id" column_invisible="1"/>
                                     <field name="name"/>
                                     <field name="date"/>
                                     <field name="installment_id"/>
