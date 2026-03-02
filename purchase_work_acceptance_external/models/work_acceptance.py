@@ -45,3 +45,11 @@ class WorkAcceptance(models.Model):
     def _onchange_purchase_order_id_external(self):
         if self.purchase_order_id:
             self.is_external = self.purchase_order_id.is_external
+
+    def button_accept(self):
+        for rec in self:
+            if rec.is_external and not rec.has_attachment:
+                raise UserError(
+                    _("Please attach at least one supporting document file before clicking accept.")
+                )
+        return super().button_accept()
