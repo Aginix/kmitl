@@ -7,8 +7,8 @@ from odoo.exceptions import UserError, ValidationError
 _logger = logging.getLogger(__name__)
 
 
-class Purchase_order(models.Model):
-    _inherit = 'purchase_order'
+class PurchaseOrder(models.Model):
+    _inherit = 'purchase.order'
 
     is_external = fields.Boolean(
         string="Use External Inspection",

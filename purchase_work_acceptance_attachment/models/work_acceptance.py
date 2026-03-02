@@ -7,8 +7,8 @@ from odoo.exceptions import UserError, ValidationError
 _logger = logging.getLogger(__name__)
 
 
-class Work_acceptance(models.Model):
-    _inherit = 'work_acceptance'
+class WorkAcceptance(models.Model):
+    _inherit = 'work.acceptance'
 
     attachment_ids = fields.One2many(
         'ir.attachment',
