@@ -230,7 +230,6 @@
                     decoration-success="state == 'done'"
                     decoration-danger="state == 'cancel'"
                 />
-                <field name="currency_id" column_invisible="1"/>
             </tree>
         </field>
     </record>
