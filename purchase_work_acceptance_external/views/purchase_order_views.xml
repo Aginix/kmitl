@@ -8,8 +8,8 @@
         <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="/form/sheet/notebook" position="before">
-              <group string="External WA" name="external_wa_section" attrs="{'invisible': [('use_invoice_plan', '=', True)], 'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}">
-                  <field name="is_external" />
+              <group string="External WA" name="external_wa_section" attrs="{'invisible': [('use_invoice_plan', '=', True)]}">
+                  <field name="is_external" attrs="{'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}"/>
               </group>
             </xpath>
         </field>

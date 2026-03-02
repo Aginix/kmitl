@@ -6,10 +6,11 @@
     "category": "Purchase",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['purchase_work_acceptance_attachment', 'purchase_work_acceptance_invoice_plan'],
+    'depends': ['purchase_work_acceptance_attachment', 'purchase_work_acceptance_invoice_plan', 'purchase_work_acceptance_tier_validation'],
     "data": [
         "views/purchase_order_views.xml",
-        "wizard/select_work_acceptance_invoice_p[an_wizard_views.xml",
+        "views/work_acceptance_views.xml",
+        "wizard/select_work_acceptance_invoice_p[an_wizard_views.xml"
     ],
     'installable': True,
     'auto_install': False,

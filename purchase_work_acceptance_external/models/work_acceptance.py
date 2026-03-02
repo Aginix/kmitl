@@ -34,22 +34,15 @@ class WorkAcceptance(models.Model):
             else:
                 super(WorkAcceptance, rec)._compute_need_validation()
     
-    @api.model
-    def create(self, vals):
-        if not vals.get('is_external') and vals.get('purchase_order_id'):
-            po = self.env['purchase.order'].browse(vals['purchase_order_id'])
-            vals['is_external'] = po.is_external
-        return super().create(vals)
+    def action_view_wa(self):
+        res = super().action_view_wa()
+        res['context']['default_is_external'] = self.is_external
+        return res
 
-    @api.onchange('purchase_order_id')
-    def _onchange_purchase_order_id_external(self):
-        if self.purchase_order_id:
-            self.is_external = self.purchase_order_id.is_external
-
-    def button_accept(self):
+    def button_accept(self, force=False):
         for rec in self:
             if rec.is_external and not rec.has_attachment:
                 raise UserError(
                     _("Please attach at least one supporting document file before clicking accept.")
                 )
-        return super().button_accept()
+        return super().button_accept(force=force)
