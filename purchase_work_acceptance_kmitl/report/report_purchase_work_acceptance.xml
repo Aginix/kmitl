@@ -335,8 +335,8 @@
                         </t>
                         <t t-foreach="o.work_acceptance_committee_ids" t-as="line">
                             <t t-if="line.approve_role == 'secretary'">
-                                <div class="row mt-4">
-                                    <div class="col-6 offset-3 text-center">
+                                <div class="row mt-5">
+                                    <div class="col-9 offset-3 text-center">
                                         <div style="white-space: nowrap">
                                             (ลงชื่อ)
                                             <span class="sig-line"></span>
