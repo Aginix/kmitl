@@ -89,5 +89,6 @@ class AssetDepreciationReportWizard(models.TransientModel):
             "tag": "asset_report_download",
             "params": {
                 "url": f"/web/content/asset.depreciation.report.wizard/{self.id}/data/{filename}?download=true",
+                "filename": filename,
             },
         }
