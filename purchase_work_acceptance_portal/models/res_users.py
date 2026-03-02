@@ -12,10 +12,27 @@ class ResUsers(models.Model):
             [("user_id", "=", self.env.user.id), ("is_read", "=", False)],
             order="create_date desc",
         )
+
+        employee = self.env["hr.employee"].search(
+            [("user_id", "=", self.env.user.id)], limit=1
+        )
+
         seen = set()
         items = []
         for entry in entries:
             wa = entry.work_acceptance_id
+
+            if employee:
+                committee = self.env["work.acceptance.committee"].search(
+                    [
+                        ("wa_id", "=", wa.id),
+                        ("employee_id", "=", employee.id),
+                    ],
+                    limit=1,
+                )
+                if committee and committee.status in ("accept", "not_accept", "other"):
+                    continue
+
             if wa.id not in seen:
                 seen.add(wa.id)
                 items.append({
@@ -24,4 +41,5 @@ class ResUsers(models.Model):
                     "wa_url": entry.wa_url or "",
                     "order_url": entry.order_url or "",
                 })
+
         return {"items": items[:10], "total_count": len(seen)}
