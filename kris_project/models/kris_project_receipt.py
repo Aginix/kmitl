@@ -1,0 +1,49 @@
+import logging
+
+from odoo import fields, models
+
+_logger = logging.getLogger(__name__)
+
+
+class KrisProjectReceipt(models.Model):
+    _name = "kris.project.receipt"
+    _description = "KRIS Project Receipt"
+    _inherit = ["mail.thread"]
+    _order = "date desc, id desc"
+
+    project_id = fields.Many2one(
+        comodel_name="kris.project",
+        string="โครงการ",
+        required=True,
+        ondelete="cascade",
+        index=True,
+    )
+    installment_id = fields.Many2one(
+        comodel_name="kris.project.installment",
+        string="งวดที่",
+        domain="[('project_id', '=', project_id)]",
+        ondelete="set null",
+    )
+    name = fields.Char(
+        string="เลขที่ใบเสร็จ",
+        required=True,
+        tracking=True,
+    )
+    date = fields.Date(
+        string="วันที่รับเงิน",
+        required=True,
+        tracking=True,
+    )
+    amount = fields.Monetary(
+        string="จำนวนเงิน",
+        tracking=True,
+    )
+    note = fields.Text(
+        string="หมายเหตุ",
+    )
+    currency_id = fields.Many2one(
+        comodel_name="res.currency",
+        related="project_id.currency_id",
+        string="สกุลเงิน",
+        readonly=True,
+    )

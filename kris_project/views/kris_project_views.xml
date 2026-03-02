@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================ -->
+    <!-- FORM VIEW                                                    -->
+    <!-- ============================================================ -->
+
+    <record id="view_kris_project_form" model="ir.ui.view">
+        <field name="name">kris.project.form</field>
+        <field name="model">kris.project</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button
+                        name="action_confirm"
+                        string="ยืนยัน"
+                        type="object"
+                        class="btn-primary"
+                        states="draft"
+                    />
+                    <button
+                        name="action_done"
+                        string="เสร็จสิ้น"
+                        type="object"
+                        class="btn-primary"
+                        states="confirmed"
+                    />
+                    <button
+                        name="action_cancel"
+                        string="ยกเลิก"
+                        type="object"
+                        states="draft,confirmed"
+                    />
+                    <button
+                        name="action_draft"
+                        string="รีเซ็ตเป็นร่าง"
+                        type="object"
+                        states="cancel"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,confirmed,done"
+                    />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                        <h2>
+                            <field
+                                name="project_name"
+                                placeholder="ชื่อโครงการ..."
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                        </h2>
+                    </div>
+                    <field name="currency_id" invisible="1"/>
+                    <group>
+                        <group string="ข้อมูลโครงการ">
+                            <field
+                                name="project_type"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                            <field
+                                name="partner_id"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                            <field
+                                name="client_org_type"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                            <field
+                                name="leader_name"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                            <field
+                                name="faculty_id"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                            <field
+                                name="department_id"
+                                domain="[('parent_id', '=', faculty_id)]"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                            <field
+                                name="user_id"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                        </group>
+                        <group string="ข้อมูลสัญญา">
+                            <field
+                                name="contract_number"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                            <field
+                                name="date_contract_start"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                            <field
+                                name="date_contract_end"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                            <field
+                                name="project_duration"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                            <field
+                                name="account_fiscal_year_id"
+                                attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                            />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="มูลค่าและงวดงาน" name="financials">
+                            <group>
+                                <group string="มูลค่าโครงการ">
+                                    <field
+                                        name="project_value"
+                                        attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                    />
+                                    <field
+                                        name="maintenance_deduction_pct"
+                                        attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                    />
+                                    <field name="value_after_deduction" readonly="1"/>
+                                </group>
+                                <group string="ค่าใช้จ่าย">
+                                    <field
+                                        name="equipment_cost"
+                                        attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                    />
+                                    <field
+                                        name="operating_expense"
+                                        attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                    />
+                                    <field name="allocatable_value" readonly="1"/>
+                                </group>
+                            </group>
+                            <field
+                                name="installment_ids"
+                                attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
+                            >
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="amount"/>
+                                    <field name="due_date"/>
+                                    <field name="state"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="รายรับ" name="receipts">
+                            <group>
+                                <group>
+                                    <field name="total_installment_amount" readonly="1"/>
+                                    <field name="total_received_amount" readonly="1"/>
+                                    <field name="revenue_remaining" readonly="1"/>
+                                </group>
+                            </group>
+                            <field
+                                name="receipt_ids"
+                                attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
+                            >
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="installment_id"/>
+                                    <field name="amount"/>
+                                    <field name="note"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="การจัดสรรรายได้" name="allocation">
+                            <div class="o_form_buttons_view mb-3">
+                                <button
+                                    name="action_compute_allocation"
+                                    string="คำนวณการจัดสรร"
+                                    type="object"
+                                    class="btn-secondary"
+                                    attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
+                                />
+                            </div>
+                            <field name="allocation_line_ids" readonly="1">
+                                <tree>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="allocation_pct" string="% จัดสรร"/>
+                                    <field name="estimated_amount"/>
+                                    <field name="actual_amount"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                    <field name="note" placeholder="หมายเหตุ..." nolabel="1"/>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- TREE VIEW                                                    -->
+    <!-- ============================================================ -->
+
+    <record id="view_kris_project_tree" model="ir.ui.view">
+        <field name="name">kris.project.tree</field>
+        <field name="model">kris.project</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="project_name"/>
+                <field name="project_type"/>
+                <field name="partner_id"/>
+                <field name="faculty_id"/>
+                <field name="project_value"/>
+                <field name="total_received_amount"/>
+                <field name="state" widget="badge"
+                    decoration-info="state == 'draft'"
+                    decoration-primary="state == 'confirmed'"
+                    decoration-success="state == 'done'"
+                    decoration-danger="state == 'cancel'"
+                />
+                <field name="currency_id" column_invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- SEARCH VIEW                                                  -->
+    <!-- ============================================================ -->
+
+    <record id="view_kris_project_search" model="ir.ui.view">
+        <field name="name">kris.project.search</field>
+        <field name="model">kris.project</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="เลขที่เอกสาร"/>
+                <field name="project_name" string="ชื่อโครงการ"/>
+                <field name="partner_id"/>
+                <field name="leader_name"/>
+                <!-- Filters -->
+                <filter
+                    name="academic_service"
+                    string="บริการวิชาการ"
+                    domain="[('project_type', 'in', ['consulting', 'training', 'testing'])]"
+                />
+                <filter
+                    name="research"
+                    string="งานวิจัย"
+                    domain="[('project_type', 'in', ['research_contract', 'external_research', 'internal_research'])]"
+                />
+                <separator/>
+                <filter name="draft" string="ร่าง" domain="[('state', '=', 'draft')]"/>
+                <filter name="confirmed" string="ยืนยัน" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="done" string="เสร็จสิ้น" domain="[('state', '=', 'done')]"/>
+                <filter name="cancel" string="ยกเลิก" domain="[('state', '=', 'cancel')]"/>
+                <separator/>
+                <filter
+                    name="my_projects"
+                    string="โครงการของฉัน"
+                    domain="[('user_id', '=', uid)]"
+                />
+                <!-- Group By -->
+                <group expand="0" string="จัดกลุ่มตาม">
+                    <filter name="group_type" string="ประเภทโครงการ" context="{'group_by': 'project_type'}"/>
+                    <filter name="group_state" string="สถานะ" context="{'group_by': 'state'}"/>
+                    <filter name="group_faculty" string="คณะ" context="{'group_by': 'faculty_id'}"/>
+                    <filter name="group_fiscal_year" string="ปีงบประมาณ" context="{'group_by': 'account_fiscal_year_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- ACTION                                                       -->
+    <!-- ============================================================ -->
+
+    <record id="action_kris_project" model="ir.actions.act_window">
+        <field name="name">โครงการ KRIS</field>
+        <field name="res_model">kris.project</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_kris_project_search"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                สร้างโครงการ KRIS ใหม่
+            </p>
+            <p>
+                บันทึกข้อมูลโครงการบริการวิชาการและวิจัยหลังลงนามสัญญา
+            </p>
+        </field>
+    </record>
+
+</odoo>
