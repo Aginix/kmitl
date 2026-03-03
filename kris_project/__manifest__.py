@@ -19,8 +19,14 @@
         "views/kris_project_type_views.xml",
         "views/kris_project_receipt_wizard_views.xml",
         "views/kris_project_views.xml",
+        "views/kris_project_dashboard_action.xml",
         "views/kris_project_menus.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "kris_project/static/src/**/*",
+        ],
+    },
     "application": True,
     "installable": True,
     "auto_install": False,

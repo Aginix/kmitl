@@ -9,6 +9,16 @@
         groups="kris_project.group_kris_project_user"
     />
 
+    <!-- Dashboard menu -->
+    <menuitem
+        id="menu_kris_project_dashboard"
+        name="Dashboard"
+        parent="menu_kris_project_root"
+        action="action_kris_project_dashboard"
+        sequence="1"
+        groups="kris_project.group_kris_project_user"
+    />
+
     <!-- Projects menu -->
     <menuitem
         id="menu_kris_project_list"

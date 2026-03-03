@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="kris_project.KrisProjectDashboard" owl="1">
+        <div class="o_action kris_project_dashboard">
+            <div class="o_content">
+                <div t-if="state.loading" class="text-center p-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div t-else="" class="kris_project_dashboard_content container-fluid p-4">
+
+                    <!-- Filter Bar -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body py-3">
+                            <div class="d-flex flex-wrap gap-3 align-items-end">
+                                <div>
+                                    <label class="form-label form-label-sm mb-1">วันที่รับเงิน ตั้งแต่</label>
+                                    <input
+                                        type="date"
+                                        class="form-control form-control-sm"
+                                        t-model="state.filters.date_from"
+                                    />
+                                </div>
+                                <div>
+                                    <label class="form-label form-label-sm mb-1">ถึง</label>
+                                    <input
+                                        type="date"
+                                        class="form-control form-control-sm"
+                                        t-model="state.filters.date_to"
+                                    />
+                                </div>
+                                <div>
+                                    <label class="form-label form-label-sm mb-1">หมวดหมู่</label>
+                                    <select class="form-select form-select-sm" t-on-change="onCategoryChange">
+                                        <option value="">ทั้งหมด</option>
+                                        <t t-foreach="state.data.filter_options.categories" t-as="cat" t-key="cat.id">
+                                            <option
+                                                t-att-value="cat.id"
+                                                t-att-selected="state.filters.category_id === cat.id"
+                                                t-esc="cat.name"
+                                            />
+                                        </t>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="form-label form-label-sm mb-1">ประเภทย่อย</label>
+                                    <select class="form-select form-select-sm" t-on-change="onTypeChange">
+                                        <option value="">ทั้งหมด</option>
+                                        <t t-foreach="filteredTypes" t-as="tp" t-key="tp.id">
+                                            <option
+                                                t-att-value="tp.id"
+                                                t-att-selected="state.filters.type_id === tp.id"
+                                                t-esc="tp.name"
+                                            />
+                                        </t>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="form-label form-label-sm mb-1">ปีงบประมาณ</label>
+                                    <select class="form-select form-select-sm" t-on-change="onFiscalYearChange">
+                                        <option value="">ทั้งหมด</option>
+                                        <t t-foreach="state.data.filter_options.fiscal_years" t-as="fy" t-key="fy.id">
+                                            <option
+                                                t-att-value="fy.id"
+                                                t-att-selected="state.filters.fiscal_year_id === fy.id"
+                                                t-esc="fy.name"
+                                            />
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-primary btn-sm" t-on-click="onApplyFilters">
+                                        <i class="fa fa-filter me-1"/>ค้นหา
+                                    </button>
+                                    <button class="btn btn-outline-secondary btn-sm" t-on-click="onResetFilters">
+                                        <i class="fa fa-times me-1"/>ล้าง
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Summary Cards -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-3">
+                            <div class="card h-100 border-0 shadow-sm border-start border-primary border-4">
+                                <div class="card-body text-center py-4">
+                                    <div class="text-muted small mb-1">มูลค่าโครงการรวม</div>
+                                    <div class="h4 fw-semibold text-primary mb-0">
+                                        <t t-esc="formatCurrency(state.data.cards.total_estimated)"/>
+                                    </div>
+                                    <div class="text-muted small mt-1">บาท</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card h-100 border-0 shadow-sm border-start border-success border-4">
+                                <div class="card-body text-center py-4">
+                                    <div class="text-muted small mb-1">รายรับรวม</div>
+                                    <div class="h4 fw-semibold text-success mb-0">
+                                        <t t-esc="formatCurrency(state.data.cards.total_received)"/>
+                                    </div>
+                                    <div class="text-muted small mt-1">บาท</div>
+                                    <div class="mt-2">
+                                        <span t-attf-class="badge #{state.data.cards.achievement_pct >= 80 ? 'bg-success' : state.data.cards.achievement_pct >= 50 ? 'bg-warning' : 'bg-secondary'}">
+                                            <t t-esc="formatPct(state.data.cards.achievement_pct)"/>%
+                                        </span>
+                                        <span class="text-muted ms-1 small">ของมูลค่างาน</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card h-100 border-0 shadow-sm border-start border-warning border-4">
+                                <div class="card-body text-center py-4">
+                                    <div class="text-muted small mb-1">ประมาณการ KRIS</div>
+                                    <div class="h4 fw-semibold text-warning mb-0">
+                                        <t t-esc="formatCurrency(state.data.cards.kris_estimated)"/>
+                                    </div>
+                                    <div class="text-muted small mt-1">บาท</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card h-100 border-0 shadow-sm border-start border-info border-4">
+                                <div class="card-body text-center py-4">
+                                    <div class="text-muted small mb-1">รับจริง KRIS</div>
+                                    <div class="h4 fw-semibold text-info mb-0">
+                                        <t t-esc="formatCurrency(state.data.cards.kris_actual)"/>
+                                    </div>
+                                    <div class="text-muted small mt-1">บาท</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- By-type Bar + Leaders Bar -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-lg-7">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title text-muted mb-3">รายรับ KRIS ตามประเภทโครงการ</h6>
+                                    <div id="kris_by_type_chart" style="height: 300px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title text-muted mb-3">Top 10 หัวหน้าโครงการ (รายรับรวม)</h6>
+                                    <div id="kris_leaders_chart" style="height: 300px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Combo Chart (monthly receipts) -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body">
+                            <h6 class="card-title text-muted mb-3">รายรับรายเดือน (ปีปัจจุบัน vs ปีก่อน)</h6>
+                            <div id="kris_combo_chart" style="height: 300px;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Heatmap (faculty × allocation type) -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body">
+                            <h6 class="card-title text-muted mb-3">การจัดสรรรายรับตามคณะ/หน่วยงาน</h6>
+                            <div id="kris_heatmap_chart" style="height: 400px;"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
