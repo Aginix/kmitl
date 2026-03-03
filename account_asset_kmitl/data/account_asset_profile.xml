@@ -1,325 +1,629 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="asset_profile_001" model="account.asset.profile">
         <field name="name">ครุภัณฑ์สำนักงาน</field>
-        <field name="account_asset_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251000001').code)])"/>
-        <field name="account_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251000003').code)])"/>
-        <field name="account_expense_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010004').code)])"/>
-        <field name="journal_id" model="base" eval="obj().env['account.journal'].search([('code', '=', 'JV')])"/>
+        <field
+            name="account_asset_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251000001').code)])"
+        />
+        <field
+            name="account_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251000003').code)])"
+        />
+        <field
+            name="account_expense_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010004').code)])"
+        />
+        <field
+            name="journal_id"
+            model="base"
+            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
+        />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear</field>
-        <field name="method_number">96</field>
-        <field name="method_period">month</field>
+        <field name="method_number">8</field>
+        <field name="method_period">year</field>
         <field name="method_time">year</field>
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
-        <field name="prorata" eval="False"/>
+        <field name="prorata" eval="False" />
     </record>
 
     <record id="asset_profile_002" model="account.asset.profile">
         <field name="name">ครุภัณฑ์ยานพาหนะและขนส่ง</field>
-        <field name="account_asset_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1252000001').code)])"/>
-        <field name="account_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1252000003').code)])"/>
-        <field name="account_expense_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010005').code)])"/>
-        <field name="journal_id" model="base" eval="obj().env['account.journal'].search([('code', '=', 'JV')])"/>
+        <field
+            name="account_asset_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1252000001').code)])"
+        />
+        <field
+            name="account_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1252000003').code)])"
+        />
+        <field
+            name="account_expense_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010005').code)])"
+        />
+        <field
+            name="journal_id"
+            model="base"
+            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
+        />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear</field>
-        <field name="method_number">84</field>
-        <field name="method_period">month</field>
+        <field name="method_number">7</field>
+        <field name="method_period">year</field>
         <field name="method_time">year</field>
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
-        <field name="prorata" eval="False"/>
+        <field name="prorata" eval="False" />
     </record>
 
     <record id="asset_profile_003" model="account.asset.profile">
         <field name="name">ครุภัณฑ์ไฟฟ้าและวิทยุ</field>
-        <field name="account_asset_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1253000001').code)])"/>
-        <field name="account_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1253000003').code)])"/>
-        <field name="account_expense_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010006').code)])"/>
-        <field name="journal_id" model="base" eval="obj().env['account.journal'].search([('code', '=', 'JV')])"/>
+        <field
+            name="account_asset_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1253000001').code)])"
+        />
+        <field
+            name="account_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1253000003').code)])"
+        />
+        <field
+            name="account_expense_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010006').code)])"
+        />
+        <field
+            name="journal_id"
+            model="base"
+            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
+        />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear</field>
-        <field name="method_number">60</field>
-        <field name="method_period">month</field>
+        <field name="method_number">5</field>
+        <field name="method_period">year</field>
         <field name="method_time">year</field>
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
-        <field name="prorata" eval="False"/>
+        <field name="prorata" eval="False" />
     </record>
 
     <record id="asset_profile_004" model="account.asset.profile">
         <field name="name">ครุภัณฑ์ไฟฟ้าและวิทยุ-เครื่องกำเนิดไฟฟ้า</field>
-        <field name="account_asset_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1253000001').code)])"/>
-        <field name="account_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1253000003').code)])"/>
-        <field name="account_expense_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010006').code)])"/>
-        <field name="journal_id" model="base" eval="obj().env['account.journal'].search([('code', '=', 'JV')])"/>
+        <field
+            name="account_asset_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1253000001').code)])"
+        />
+        <field
+            name="account_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1253000003').code)])"
+        />
+        <field
+            name="account_expense_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010006').code)])"
+        />
+        <field
+            name="journal_id"
+            model="base"
+            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
+        />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear</field>
-        <field name="method_number">180</field>
-        <field name="method_period">month</field>
+        <field name="method_number">15</field>
+        <field name="method_period">year</field>
         <field name="method_time">year</field>
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
-        <field name="prorata" eval="False"/>
+        <field name="prorata" eval="False" />
     </record>
 
     <record id="asset_profile_005" model="account.asset.profile">
         <field name="name">ครุภัณฑ์โฆษณาและเผยแพร่</field>
-        <field name="account_asset_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1254000001').code)])"/>
-        <field name="account_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1254000003').code)])"/>
-        <field name="account_expense_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010007').code)])"/>
-        <field name="journal_id" model="base" eval="obj().env['account.journal'].search([('code', '=', 'JV')])"/>
+        <field
+            name="account_asset_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1254000001').code)])"
+        />
+        <field
+            name="account_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1254000003').code)])"
+        />
+        <field
+            name="account_expense_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010007').code)])"
+        />
+        <field
+            name="journal_id"
+            model="base"
+            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
+        />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear</field>
-        <field name="method_number">60</field>
-        <field name="method_period">month</field>
+        <field name="method_number">5</field>
+        <field name="method_period">year</field>
         <field name="method_time">year</field>
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
-        <field name="prorata" eval="False"/>
+        <field name="prorata" eval="False" />
     </record>
 
     <record id="asset_profile_006" model="account.asset.profile">
         <field name="name">ครุภัณฑ์การเกษตร-เครื่องมือและอุปกรณ์</field>
-        <field name="account_asset_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1255000001').code)])"/>
-        <field name="account_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1255000003').code)])"/>
-        <field name="account_expense_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010008').code)])"/>
-        <field name="journal_id" model="base" eval="obj().env['account.journal'].search([('code', '=', 'JV')])"/>
+        <field
+            name="account_asset_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1255000001').code)])"
+        />
+        <field
+            name="account_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1255000003').code)])"
+        />
+        <field
+            name="account_expense_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010008').code)])"
+        />
+        <field
+            name="journal_id"
+            model="base"
+            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
+        />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear</field>
-        <field name="method_number">36</field>
-        <field name="method_period">month</field>
+        <field name="method_number">3</field>
+        <field name="method_period">year</field>
         <field name="method_time">year</field>
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
-        <field name="prorata" eval="False"/>
+        <field name="prorata" eval="False" />
     </record>
 
     <record id="asset_profile_007" model="account.asset.profile">
         <field name="name">ครุภัณฑ์การเกษตร-เครื่องจักรกล</field>
-        <field name="account_asset_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1255000001').code)])"/>
-        <field name="account_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1255000003').code)])"/>
-        <field name="account_expense_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010008').code)])"/>
-        <field name="journal_id" model="base" eval="obj().env['account.journal'].search([('code', '=', 'JV')])"/>
+        <field
+            name="account_asset_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1255000001').code)])"
+        />
+        <field
+            name="account_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1255000003').code)])"
+        />
+        <field
+            name="account_expense_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010008').code)])"
+        />
+        <field
+            name="journal_id"
+            model="base"
+            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
+        />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear</field>
-        <field name="method_number">96</field>
-        <field name="method_period">month</field>
+        <field name="method_number">8</field>
+        <field name="method_period">year</field>
         <field name="method_time">year</field>
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
-        <field name="prorata" eval="False"/>
+        <field name="prorata" eval="False" />
     </record>
 
     <record id="asset_profile_008" model="account.asset.profile">
         <field name="name">ครุภัณฑ์โรงงาน-เครื่องมือและอุปกรณ์</field>
-        <field name="account_asset_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1256000001').code)])"/>
-        <field name="account_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1256000003').code)])"/>
-        <field name="account_expense_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010009').code)])"/>
-        <field name="journal_id" model="base" eval="obj().env['account.journal'].search([('code', '=', 'JV')])"/>
+        <field
+            name="account_asset_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1256000001').code)])"
+        />
+        <field
+            name="account_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1256000003').code)])"
+        />
+        <field
+            name="account_expense_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010009').code)])"
+        />
+        <field
+            name="journal_id"
+            model="base"
+            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
+        />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear</field>
-        <field name="method_number">36</field>
-        <field name="method_period">month</field>
+        <field name="method_number">3</field>
+        <field name="method_period">year</field>
         <field name="method_time">year</field>
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
-        <field name="prorata" eval="False"/>
+        <field name="prorata" eval="False" />
     </record>
 
     <record id="asset_profile_009" model="account.asset.profile">
         <field name="name">ครุภัณฑ์โรงงาน-เครื่องจักรกล</field>
-        <field name="account_asset_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1256000001').code)])"/>
-        <field name="account_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1256000003').code)])"/>
-        <field name="account_expense_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010009').code)])"/>
-        <field name="journal_id" model="base" eval="obj().env['account.journal'].search([('code', '=', 'JV')])"/>
+        <field
+            name="account_asset_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1256000001').code)])"
+        />
+        <field
+            name="account_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1256000003').code)])"
+        />
+        <field
+            name="account_expense_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010009').code)])"
+        />
+        <field
+            name="journal_id"
+            model="base"
+            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
+        />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear</field>
-        <field name="method_number">96</field>
-        <field name="method_period">month</field>
+        <field name="method_number">8</field>
+        <field name="method_period">year</field>
         <field name="method_time">year</field>
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
-        <field name="prorata" eval="False"/>
+        <field name="prorata" eval="False" />
     </record>
 
     <record id="asset_profile_010" model="account.asset.profile">
         <field name="name">ครุภัณฑ์ก่อสร้าง-เครื่องมือและอุปกรณ์</field>
-        <field name="account_asset_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1257000001').code)])"/>
-        <field name="account_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1257000003').code)])"/>
-        <field name="account_expense_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010010').code)])"/>
-        <field name="journal_id" model="base" eval="obj().env['account.journal'].search([('code', '=', 'JV')])"/>
+        <field
+            name="account_asset_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1257000001').code)])"
+        />
+        <field
+            name="account_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1257000003').code)])"
+        />
+        <field
+            name="account_expense_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010010').code)])"
+        />
+        <field
+            name="journal_id"
+            model="base"
+            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
+        />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear</field>
-        <field name="method_number">60</field>
-        <field name="method_period">month</field>
+        <field name="method_number">5</field>
+        <field name="method_period">year</field>
         <field name="method_time">year</field>
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
-        <field name="prorata" eval="False"/>
+        <field name="prorata" eval="False" />
     </record>
 
     <record id="asset_profile_011" model="account.asset.profile">
         <field name="name">ครุภัณฑ์ก่อสร้าง-เครื่องจักรกล</field>
-        <field name="account_asset_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1257000001').code)])"/>
-        <field name="account_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1257000003').code)])"/>
-        <field name="account_expense_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010010').code)])"/>
-        <field name="journal_id" model="base" eval="obj().env['account.journal'].search([('code', '=', 'JV')])"/>
+        <field
+            name="account_asset_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1257000001').code)])"
+        />
+        <field
+            name="account_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1257000003').code)])"
+        />
+        <field
+            name="account_expense_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010010').code)])"
+        />
+        <field
+            name="journal_id"
+            model="base"
+            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
+        />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear</field>
-        <field name="method_number">96</field>
-        <field name="method_period">month</field>
+        <field name="method_number">8</field>
+        <field name="method_period">year</field>
         <field name="method_time">year</field>
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
-        <field name="prorata" eval="False"/>
+        <field name="prorata" eval="False" />
     </record>
 
     <record id="asset_profile_012" model="account.asset.profile">
         <field name="name">ครุภัณฑ์สำรวจ</field>
-        <field name="account_asset_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1258000001').code)])"/>
-        <field name="account_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1258000003').code)])"/>
-        <field name="account_expense_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010011').code)])"/>
-        <field name="journal_id" model="base" eval="obj().env['account.journal'].search([('code', '=', 'JV')])"/>
+        <field
+            name="account_asset_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1258000001').code)])"
+        />
+        <field
+            name="account_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1258000003').code)])"
+        />
+        <field
+            name="account_expense_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010011').code)])"
+        />
+        <field
+            name="journal_id"
+            model="base"
+            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
+        />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear</field>
-        <field name="method_number">96</field>
-        <field name="method_period">month</field>
+        <field name="method_number">8</field>
+        <field name="method_period">year</field>
         <field name="method_time">year</field>
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
-        <field name="prorata" eval="False"/>
+        <field name="prorata" eval="False" />
     </record>
 
     <record id="asset_profile_013" model="account.asset.profile">
         <field name="name">ครุภัณฑ์วิทยาศาสตร์และการแพทย์</field>
-        <field name="account_asset_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1259000001').code)])"/>
-        <field name="account_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1259000003').code)])"/>
-        <field name="account_expense_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010012').code)])"/>
-        <field name="journal_id" model="base" eval="obj().env['account.journal'].search([('code', '=', 'JV')])"/>
+        <field
+            name="account_asset_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1259000001').code)])"
+        />
+        <field
+            name="account_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1259000003').code)])"
+        />
+        <field
+            name="account_expense_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010012').code)])"
+        />
+        <field
+            name="journal_id"
+            model="base"
+            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
+        />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear</field>
-        <field name="method_number">60</field>
-        <field name="method_period">month</field>
+        <field name="method_number">5</field>
+        <field name="method_period">year</field>
         <field name="method_time">year</field>
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
-        <field name="prorata" eval="False"/>
+        <field name="prorata" eval="False" />
     </record>
 
     <record id="asset_profile_014" model="account.asset.profile">
         <field name="name">ครุภัณฑ์คอมพิวเตอร์</field>
-        <field name="account_asset_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251100001').code)])"/>
-        <field name="account_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251100003').code)])"/>
-        <field name="account_expense_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010013').code)])"/>
-        <field name="journal_id" model="base" eval="obj().env['account.journal'].search([('code', '=', 'JV')])"/>
+        <field
+            name="account_asset_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251100001').code)])"
+        />
+        <field
+            name="account_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251100003').code)])"
+        />
+        <field
+            name="account_expense_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010013').code)])"
+        />
+        <field
+            name="journal_id"
+            model="base"
+            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
+        />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear</field>
-        <field name="method_number">36</field>
-        <field name="method_period">month</field>
+        <field name="method_number">3</field>
+        <field name="method_period">year</field>
         <field name="method_time">year</field>
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
-        <field name="prorata" eval="False"/>
+        <field name="prorata" eval="False" />
     </record>
 
     <record id="asset_profile_015" model="account.asset.profile">
         <field name="name">ครุภัณฑ์กีฬา/กายภาพ</field>
-        <field name="account_asset_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251400001').code)])"/>
-        <field name="account_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251400003').code)])"/>
-        <field name="account_expense_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010016').code)])"/>
-        <field name="journal_id" model="base" eval="obj().env['account.journal'].search([('code', '=', 'JV')])"/>
+        <field
+            name="account_asset_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251400001').code)])"
+        />
+        <field
+            name="account_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251400003').code)])"
+        />
+        <field
+            name="account_expense_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010016').code)])"
+        />
+        <field
+            name="journal_id"
+            model="base"
+            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
+        />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear</field>
-        <field name="method_number">60</field>
-        <field name="method_period">month</field>
+        <field name="method_number">5</field>
+        <field name="method_period">year</field>
         <field name="method_time">year</field>
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
-        <field name="prorata" eval="False"/>
+        <field name="prorata" eval="False" />
     </record>
 
     <record id="asset_profile_016" model="account.asset.profile">
         <field name="name">ครุภัณฑ์สนาม</field>
-        <field name="account_asset_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251700001').code)])"/>
-        <field name="account_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251700003').code)])"/>
-        <field name="account_expense_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010019').code)])"/>
-        <field name="journal_id" model="base" eval="obj().env['account.journal'].search([('code', '=', 'JV')])"/>
+        <field
+            name="account_asset_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251700001').code)])"
+        />
+        <field
+            name="account_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251700003').code)])"
+        />
+        <field
+            name="account_expense_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010019').code)])"
+        />
+        <field
+            name="journal_id"
+            model="base"
+            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
+        />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear</field>
-        <field name="method_number">60</field>
-        <field name="method_period">month</field>
+        <field name="method_number">5</field>
+        <field name="method_period">year</field>
         <field name="method_time">year</field>
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
-        <field name="prorata" eval="False"/>
+        <field name="prorata" eval="False" />
     </record>
 
     <record id="asset_profile_017" model="account.asset.profile">
         <field name="name">ครุภัณฑ์งานบ้านงานครัว</field>
-        <field name="account_asset_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251300001').code)])"/>
-        <field name="account_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251300003').code)])"/>
-        <field name="account_expense_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010015').code)])"/>
-        <field name="journal_id" model="base" eval="obj().env['account.journal'].search([('code', '=', 'JV')])"/>
+        <field
+            name="account_asset_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251300001').code)])"
+        />
+        <field
+            name="account_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251300003').code)])"
+        />
+        <field
+            name="account_expense_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010015').code)])"
+        />
+        <field
+            name="journal_id"
+            model="base"
+            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
+        />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear</field>
-        <field name="method_number">60</field>
-        <field name="method_period">month</field>
+        <field name="method_number">5</field>
+        <field name="method_period">year</field>
         <field name="method_time">year</field>
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
-        <field name="prorata" eval="False"/>
+        <field name="prorata" eval="False" />
     </record>
 
     <record id="asset_profile_018" model="account.asset.profile">
         <field name="name">ครุภัณฑ์การศึกษา</field>
-        <field name="account_asset_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251200001').code)])"/>
-        <field name="account_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251200003').code)])"/>
-        <field name="account_expense_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010014').code)])"/>
-        <field name="journal_id" model="base" eval="obj().env['account.journal'].search([('code', '=', 'JV')])"/>
+        <field
+            name="account_asset_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251200001').code)])"
+        />
+        <field
+            name="account_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251200003').code)])"
+        />
+        <field
+            name="account_expense_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010014').code)])"
+        />
+        <field
+            name="journal_id"
+            model="base"
+            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
+        />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear</field>
-        <field name="method_number">60</field>
-        <field name="method_period">month</field>
+        <field name="method_number">5</field>
+        <field name="method_period">year</field>
         <field name="method_time">year</field>
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
-        <field name="prorata" eval="False"/>
+        <field name="prorata" eval="False" />
     </record>
 
     <record id="asset_profile_019" model="account.asset.profile">
         <field name="name">ครุภัณฑ์ดนตรี/นาฏศิลป์</field>
-        <field name="account_asset_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251500001').code)])"/>
-        <field name="account_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251500003').code)])"/>
-        <field name="account_expense_depreciation_id" model="base" eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010017').code)])"/>
-        <field name="journal_id" model="base" eval="obj().env['account.journal'].search([('code', '=', 'JV')])"/>
+        <field
+            name="account_asset_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251500001').code)])"
+        />
+        <field
+            name="account_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_1251500003').code)])"
+        />
+        <field
+            name="account_expense_depreciation_id"
+            model="base"
+            eval="obj().env['account.account'].search([('code', '=', obj().env.ref('account_kmitl.a_5105010017').code)])"
+        />
+        <field
+            name="journal_id"
+            model="base"
+            eval="obj().env['account.journal'].search([('code', '=', 'JV')])"
+        />
         <field name="barcode_type">qr</field>
         <field name="barcode_width">150</field>
         <field name="method">linear</field>
-        <field name="method_number">60</field>
-        <field name="method_period">month</field>
+        <field name="method_number">5</field>
+        <field name="method_period">year</field>
         <field name="method_time">year</field>
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
-        <field name="prorata" eval="False"/>
+        <field name="prorata" eval="False" />
     </record>
 </odoo>
