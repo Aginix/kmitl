@@ -10,18 +10,6 @@ _logger = logging.getLogger(__name__)
 class PurchaseInvoicePlan(models.Model):
     _inherit = 'purchase.invoice.plan'
 
-    READONLY_STATES = {
-        'purchase': [('readonly', True)],
-        'done': [('readonly', True)],
-        'cancel': [('readonly', True)],
-    }
-
-    invoice_plan_ids = fields.One2many(
-        comodel_name="purchase.invoice.plan",
-        inverse_name="purchase_id",
-        states=READONLY_STATES,
-    )
-
     @api.depends("percent")
     def _compute_amount(self):
         for rec in self:
