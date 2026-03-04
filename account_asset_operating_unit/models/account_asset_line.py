@@ -12,3 +12,4 @@ class AccountAssetLine(models.Model):
         if self.asset_id.operating_unit_id:
             move_data.update({"operating_unit_id": self.asset_id.operating_unit_id.id})
         return move_data
+

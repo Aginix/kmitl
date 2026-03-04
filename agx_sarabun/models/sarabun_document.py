@@ -482,6 +482,9 @@ class SarabunDocument(models.Model):
             if not document.routing_line_ids:
                 raise UserError(_("Please add at least one routing line."))
             
+            if not document.recipient:
+                raise UserError(_("กรุณาระบุผู้รับก่อนยืนยันเอกสาร"))
+            
             # # === VALIDATE ROUTING ORDER BEFORE SENDING ===
             lines = document.routing_line_ids.sorted("sequence")
             approve_lines = lines.filtered(lambda l: l.routing_type == "approve")

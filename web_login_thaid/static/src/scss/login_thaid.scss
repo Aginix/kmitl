@@ -1,0 +1,12 @@
+// ThaiD login button branding
+// auth_oauth renders: <a class="list-group-item ..."><i class="web_login_thaid_icon"/></a>
+// The css_class is applied to the <i> element; target the parent <a> via :has().
+
+.o_auth_oauth_providers .thaid_icon {
+    margin: 0 0.15em;
+    width: 1em;
+    height: 1em;
+    transform: translateY(2px);
+    background: url("/web_login_thaid/static/src/img/thaid_logo.png") center no-repeat;
+    background-size: contain;
+}

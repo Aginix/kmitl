@@ -276,10 +276,32 @@ class BudgetAppropriationMasterSummary(models.Model):
             record.f11w_expense_data = Model.get_data(record.id)
 
     def action_confirm(self):
+        for record in self:
+            not_confirmed = record.compilation_ids.filtered(
+                lambda c: c.state not in ("confirmed", "done")
+            )
+            if not_confirmed:
+                names = ", ".join(not_confirmed.mapped("name"))
+                raise ValidationError(
+                    _(
+                        "ไม่สามารถยืนยันสรุปภาพรวมได้ เนื่องจากรวมเล่มหน่วยงานต่อไปนี้ยังไม่ได้รับการยืนยัน:\n%s"
+                    )
+                    % names
+                )
         self.write({"state": "confirmed"})
 
     def action_done(self):
-        self.write({"state": "done"})
+        self.ensure_one()
+        wizard = self.env["budget.appropriation.master.summary.done.wizard"].create(
+            {"master_summary_id": self.id}
+        )
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "budget.appropriation.master.summary.done.wizard",
+            "res_id": wizard.id,
+            "view_mode": "form",
+            "target": "new",
+        }
 
     def action_draft(self):
         self.write({"state": "draft"})

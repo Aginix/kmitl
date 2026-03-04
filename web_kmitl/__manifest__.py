@@ -16,6 +16,9 @@ This module modifies the web addon to provide KMITL design and responsiveness.
     "auto_install": False,
     "data": [],
     "assets": {
+        'web.assets_frontend': [
+          "web_kmitl/static/src/scss/kmitl_theme.scss"
+        ],
         "web._assets_primary_variables": [
             (
                 "after",

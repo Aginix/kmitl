@@ -1,4 +1,5 @@
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class BudgetAppropriationCompilation(models.Model):
@@ -230,6 +231,11 @@ class BudgetAppropriationCompilation(models.Model):
         states=READONLY_STATES,
     )
 
+    education_impact_total = fields.Float(compute="_compute_impact_totals", store=False)
+    education_total = fields.Monetary(compute="_compute_impact_totals", store=False, currency_field="currency_id")
+    education_okr_percentage = fields.Float(compute="_compute_impact_totals", store=False)
+    education_mgt_percentage = fields.Float(compute="_compute_impact_totals", store=False)
+
     academic_impact_line_ids = fields.One2many(
         "budget.appropriation.compilation.impact",
         "compilation_id",
@@ -238,6 +244,11 @@ class BudgetAppropriationCompilation(models.Model):
         readonly=False,
         states=READONLY_STATES,
     )
+
+    academic_impact_total = fields.Float(compute="_compute_impact_totals", store=False)
+    academic_total = fields.Monetary(compute="_compute_impact_totals", store=False, currency_field="currency_id")
+    academic_okr_percentage = fields.Float(compute="_compute_impact_totals", store=False)
+    academic_mgt_percentage = fields.Float(compute="_compute_impact_totals", store=False)
 
     industrial_impact_line_ids = fields.One2many(
         "budget.appropriation.compilation.impact",
@@ -248,6 +259,11 @@ class BudgetAppropriationCompilation(models.Model):
         states=READONLY_STATES,
     )
 
+    industrial_impact_total = fields.Float(compute="_compute_impact_totals", store=False)
+    industrial_total = fields.Monetary(compute="_compute_impact_totals", store=False, currency_field="currency_id")
+    industrial_okr_percentage = fields.Float(compute="_compute_impact_totals", store=False)
+    industrial_mgt_percentage = fields.Float(compute="_compute_impact_totals", store=False)
+
     social_impact_line_ids = fields.One2many(
         "budget.appropriation.compilation.impact",
         "compilation_id",
@@ -256,6 +272,11 @@ class BudgetAppropriationCompilation(models.Model):
         readonly=False,
         states=READONLY_STATES,
     )
+
+    social_impact_total = fields.Float(compute="_compute_impact_totals", store=False)
+    social_total = fields.Monetary(compute="_compute_impact_totals", store=False, currency_field="currency_id")
+    social_okr_percentage = fields.Float(compute="_compute_impact_totals", store=False)
+    social_mgt_percentage = fields.Float(compute="_compute_impact_totals", store=False)
 
     @api.depends(
         "revenue_appropriation_ids.treasury_replenishment_amount",
@@ -306,6 +327,40 @@ class BudgetAppropriationCompilation(models.Model):
                 + record.external_funding_amount
             )
             record.fixed_expense_percentage = (record.fixed_expense_total * 100) / record.revenue_net
+
+    @api.depends(
+        "education_impact_line_ids.project_okr_amount",
+        "education_impact_line_ids.management_amount",
+        "academic_impact_line_ids.project_okr_amount",
+        "academic_impact_line_ids.management_amount",
+        "industrial_impact_line_ids.project_okr_amount",
+        "industrial_impact_line_ids.management_amount",
+        "social_impact_line_ids.project_okr_amount",
+        "social_impact_line_ids.management_amount",
+    )
+    def _compute_impact_totals(self):
+        impact_line_fields = {
+            "education": "education_impact_line_ids",
+            "academic": "academic_impact_line_ids",
+            "industrial": "industrial_impact_line_ids",
+            "social": "social_impact_line_ids",
+        }
+        for record in self:
+            totals = {}
+            grand_total = 0
+            for itype, field in impact_line_fields.items():
+                lines = record[field]
+                okr = sum(lines.mapped("project_okr_amount"))
+                mgmt = sum(lines.mapped("management_amount"))
+                total = okr + mgmt
+                totals[itype] = {"okr": okr, "mgmt": mgmt, "total": total}
+                grand_total += total
+            for itype in impact_line_fields:
+                t = totals[itype]
+                record[f"{itype}_total"] = t["total"]
+                record[f"{itype}_impact_total"] = (t["total"] * 100 / grand_total) if grand_total else 0
+                record[f"{itype}_okr_percentage"] = (t["okr"] * 100 / grand_total) if grand_total else 0
+                record[f"{itype}_mgt_percentage"] = (t["mgmt"] * 100 / grand_total) if grand_total else 0
 
     @api.depends(
         "department_analytic_id",
@@ -394,12 +449,14 @@ class BudgetAppropriationCompilation(models.Model):
     def _merge_f5_last_level_nodes(self, data):
         """Merge last-level account nodes with the same id for non-itemized mode."""
 
-        def merge_children(nodes):
+        def merge_children(nodes, clear_text=False):
             merged = []
             seen = {}
             for node in nodes:
                 if node.get("children"):
-                    node["children"] = merge_children(node["children"])
+                    node["children"] = merge_children(
+                        node["children"], clear_text=clear_text
+                    )
                 # Merge leaf account nodes (no children) by id
                 if (
                     node.get("type") == "account"
@@ -415,8 +472,9 @@ class BudgetAppropriationCompilation(models.Model):
                             "amount_total", 0
                         ) + node.get("amount_total", 0)
                     else:
-                        node["description"] = ""
-                        node["note"] = ""
+                        if clear_text:
+                            node["description"] = ""
+                            node["note"] = ""
                         seen[key] = node
                         merged.append(node)
                 else:
@@ -427,14 +485,30 @@ class BudgetAppropriationCompilation(models.Model):
             if key == "details":
                 for detail in data.get("details", []):
                     if detail.get("hierarchy"):
-                        detail["hierarchy"] = merge_children(detail["hierarchy"])
+                        detail["hierarchy"] = merge_children(
+                            detail["hierarchy"], clear_text=False
+                        )
             elif key == "overview" and data.get("overview"):
                 overview = data["overview"]
                 if overview.get("hierarchy"):
-                    overview["hierarchy"] = merge_children(overview["hierarchy"])
+                    overview["hierarchy"] = merge_children(
+                        overview["hierarchy"], clear_text=True
+                    )
         return data
 
     def action_confirm(self):
+        for record in self:
+            not_ready = (
+                record.revenue_appropriation_ids + record.expense_appropriation_ids
+            ).filtered(lambda a: a.state not in ("review", "posted"))
+            if not_ready:
+                names = ", ".join(not_ready.mapped("name"))
+                raise ValidationError(
+                    _(
+                        "ไม่สามารถยืนยันรวมเล่มได้ เนื่องจากรายการจัดสรรต่อไปนี้ยังไม่ได้อยู่ในสถานะ review หรือ posted:\n%s"
+                    )
+                    % names
+                )
         self.write({"state": "confirmed"})
 
     def action_done(self):
@@ -479,6 +553,8 @@ class BudgetAppropriationCompilation(models.Model):
         """Build flattened hierarchy from impact lines for F23W report display.
 
         Returns dict with rows containing project_okr_amount and management_amount.
+        Totals are flat sums of all lines (no bubble-up) to avoid double-counting.
+        Rows show direct amounts only — parent rows do not include children's amounts.
         """
         self.ensure_one()
         lines = self.env["budget.appropriation.compilation.impact"].search([
@@ -489,6 +565,11 @@ class BudgetAppropriationCompilation(models.Model):
         if not lines:
             return {"rows": [], "total_project_okr": 0, "total_management": 0}
 
+        # Flat sums — no hierarchy, no double-counting
+        total_project_okr = sum(lines.mapped("project_okr_amount"))
+        total_management = sum(lines.mapped("management_amount"))
+
+        # Build account set including ancestors for hierarchy display
         analytic_accounts = lines.mapped("analytic_account_id")
         all_account_ids = set()
         for account in analytic_accounts:
@@ -513,55 +594,28 @@ class BudgetAppropriationCompilation(models.Model):
                 level = 1
             account_levels[acc.id] = level
 
-        lines_by_account = {}
+        # Direct amounts per account only (no bubble-up to avoid double-counting)
+        direct_amounts = {}
         for line in lines:
             acc_id = line.analytic_account_id.id
-            if acc_id not in lines_by_account:
-                lines_by_account[acc_id] = []
-            lines_by_account[acc_id].append({
-                "project_okr_amount": line.project_okr_amount,
-                "management_amount": line.management_amount,
-            })
-
-        # Calculate totals per account (including children)
-        account_totals = {}
-
-        def calc_total(account):
-            if account.id in account_totals:
-                return account_totals[account.id]
-            direct = lines_by_account.get(account.id, [])
-            okr = sum(l["project_okr_amount"] for l in direct)
-            mgmt = sum(l["management_amount"] for l in direct)
-            children = [
-                a for a in accounts
-                if a.parent_id and a.parent_id.id == account.id
-            ]
-            for child in children:
-                child_total = calc_total(child)
-                okr += child_total["project_okr_amount"]
-                mgmt += child_total["management_amount"]
-            account_totals[account.id] = {
-                "project_okr_amount": okr,
-                "management_amount": mgmt,
-            }
-            return account_totals[account.id]
-
-        for acc in accounts:
-            calc_total(acc)
+            if acc_id not in direct_amounts:
+                direct_amounts[acc_id] = {"project_okr_amount": 0, "management_amount": 0}
+            direct_amounts[acc_id]["project_okr_amount"] += line.project_okr_amount
+            direct_amounts[acc_id]["management_amount"] += line.management_amount
 
         rows = []
 
         def flatten_node(account, display_level):
             acc_level = account_levels.get(account.id, 1)
             if acc_level >= min_level:
-                totals = account_totals.get(account.id, {})
+                amounts = direct_amounts.get(account.id, {"project_okr_amount": 0, "management_amount": 0})
                 rows.append({
                     "type": "account",
                     "level": display_level,
                     "code": account.code or "",
                     "name": account.name,
-                    "project_okr_amount": totals.get("project_okr_amount", 0),
-                    "management_amount": totals.get("management_amount", 0),
+                    "project_okr_amount": amounts["project_okr_amount"],
+                    "management_amount": amounts["management_amount"],
                 })
             child_accounts = sorted(
                 [a for a in accounts if a.parent_id and a.parent_id.id == account.id],
@@ -577,18 +631,6 @@ class BudgetAppropriationCompilation(models.Model):
         )
         for root in root_accounts:
             flatten_node(root, 0)
-
-        display_root_ids = [
-            a.id for a in accounts if account_levels.get(a.id, 1) == min_level
-        ]
-        total_project_okr = sum(
-            account_totals.get(aid, {}).get("project_okr_amount", 0)
-            for aid in display_root_ids
-        )
-        total_management = sum(
-            account_totals.get(aid, {}).get("management_amount", 0)
-            for aid in display_root_ids
-        )
 
         return {
             "rows": rows,
