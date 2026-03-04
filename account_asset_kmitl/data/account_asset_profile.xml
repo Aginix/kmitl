@@ -31,6 +31,7 @@
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
         <field name="prorata" eval="True" />
+        <field name="days_calc" eval="True" />
     </record>
 
     <record id="asset_profile_002" model="account.asset.profile">
@@ -64,6 +65,7 @@
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
         <field name="prorata" eval="True" />
+        <field name="days_calc" eval="True" />
     </record>
 
     <record id="asset_profile_003" model="account.asset.profile">
@@ -97,6 +99,7 @@
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
         <field name="prorata" eval="True" />
+        <field name="days_calc" eval="True" />
     </record>
 
     <record id="asset_profile_004" model="account.asset.profile">
@@ -130,6 +133,7 @@
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
         <field name="prorata" eval="True" />
+        <field name="days_calc" eval="True" />
     </record>
 
     <record id="asset_profile_005" model="account.asset.profile">
@@ -163,6 +167,7 @@
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
         <field name="prorata" eval="True" />
+        <field name="days_calc" eval="True" />
     </record>
 
     <record id="asset_profile_006" model="account.asset.profile">
@@ -196,6 +201,7 @@
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
         <field name="prorata" eval="True" />
+        <field name="days_calc" eval="True" />
     </record>
 
     <record id="asset_profile_007" model="account.asset.profile">
@@ -229,6 +235,7 @@
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
         <field name="prorata" eval="True" />
+        <field name="days_calc" eval="True" />
     </record>
 
     <record id="asset_profile_008" model="account.asset.profile">
@@ -262,6 +269,7 @@
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
         <field name="prorata" eval="True" />
+        <field name="days_calc" eval="True" />
     </record>
 
     <record id="asset_profile_009" model="account.asset.profile">
@@ -295,6 +303,7 @@
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
         <field name="prorata" eval="True" />
+        <field name="days_calc" eval="True" />
     </record>
 
     <record id="asset_profile_010" model="account.asset.profile">
@@ -328,6 +337,7 @@
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
         <field name="prorata" eval="True" />
+        <field name="days_calc" eval="True" />
     </record>
 
     <record id="asset_profile_011" model="account.asset.profile">
@@ -361,6 +371,7 @@
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
         <field name="prorata" eval="True" />
+        <field name="days_calc" eval="True" />
     </record>
 
     <record id="asset_profile_012" model="account.asset.profile">
@@ -394,6 +405,7 @@
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
         <field name="prorata" eval="True" />
+        <field name="days_calc" eval="True" />
     </record>
 
     <record id="asset_profile_013" model="account.asset.profile">
@@ -427,6 +439,7 @@
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
         <field name="prorata" eval="True" />
+        <field name="days_calc" eval="True" />
     </record>
 
     <record id="asset_profile_014" model="account.asset.profile">
@@ -460,6 +473,7 @@
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
         <field name="prorata" eval="True" />
+        <field name="days_calc" eval="True" />
     </record>
 
     <record id="asset_profile_015" model="account.asset.profile">
@@ -493,6 +507,7 @@
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
         <field name="prorata" eval="True" />
+        <field name="days_calc" eval="True" />
     </record>
 
     <record id="asset_profile_016" model="account.asset.profile">
@@ -526,6 +541,7 @@
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
         <field name="prorata" eval="True" />
+        <field name="days_calc" eval="True" />
     </record>
 
     <record id="asset_profile_017" model="account.asset.profile">
@@ -559,6 +575,7 @@
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
         <field name="prorata" eval="True" />
+        <field name="days_calc" eval="True" />
     </record>
 
     <record id="asset_profile_018" model="account.asset.profile">
@@ -592,6 +609,7 @@
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
         <field name="prorata" eval="True" />
+        <field name="days_calc" eval="True" />
     </record>
 
     <record id="asset_profile_019" model="account.asset.profile">
@@ -625,5 +643,6 @@
         <field name="salvage_value">1</field>
         <field name="salvage_type">fixed</field>
         <field name="prorata" eval="True" />
+        <field name="days_calc" eval="True" />
     </record>
 </odoo>
