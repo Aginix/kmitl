@@ -1,4 +1,4 @@
-from odoo import api, fields, models, tools, _
+from odoo import _, api, fields, models, tools
 from odoo.exceptions import UserError
 
 
@@ -287,7 +287,6 @@ class ApprovalRequest(models.Model):
             line._update_analytic_distribution("sources")
 
     def action_submit(self):
-        # TODO: validate budget commitment before submit
         for record in self:
             if record.state != "draft":
                 raise UserError(_("Only draft requests can be submitted."))

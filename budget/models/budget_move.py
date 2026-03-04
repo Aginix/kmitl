@@ -1,7 +1,7 @@
 import logging
 from contextlib import ExitStack
 
-from odoo import Command, _, api, fields, models
+from odoo import _, Command, api, fields, models
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)

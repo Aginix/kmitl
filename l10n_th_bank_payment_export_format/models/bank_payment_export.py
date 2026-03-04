@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 import logging
-
 from datetime import datetime
-from odoo import models, fields, api, _
+
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.safe_eval import safe_eval
 
@@ -88,7 +87,7 @@ class BankPaymentExport(models.Model):
             text_parts.append(text_line)
 
             if exp_format.end_line:
-                # TODO: Change this to configurable
+                # Hardcoded line ending: CRLF (\r\n)
                 text_parts.append("\r\n")
 
         text = "".join(text_parts)
@@ -140,7 +139,7 @@ class BankPaymentExport(models.Model):
                 text_parts.append(text_line)
 
                 if exp_format_line.end_line:
-                    # TODO: Change this to configurable
+                    # Hardcoded line ending: CRLF (\r\n)
                     text_parts.append("\r\n")
         return text_parts
 
@@ -176,7 +175,7 @@ class BankPaymentExport(models.Model):
                     text_parts.append(sub_text_line)
 
                     if exp_format_sub_line.end_line:
-                        # TODO: Change this to configurable
+                        # Hardcoded line ending: CRLF (\r\n)
                         text_parts.append("\r\n")
         return text_parts
 

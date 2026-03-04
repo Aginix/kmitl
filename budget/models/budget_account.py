@@ -43,9 +43,7 @@ class BudgetAccount(models.Model):
     _inherit = ["mail.thread"]
 
     def _default_sequence(self):
-        """
-        TODO: จะต้องแก้ให้ดึงค่า sequence จากเฉพาะกลุ่ม parent_id ของตัวเองเท่านั้น
-        """
+        # หมายเหตุ: ปัจจุบัน sequence ดึงจากทุก record — ควรกรองเฉพาะในกลุ่ม parent_id เดียวกัน
         return (self.search([], order="sequence desc", limit=1).sequence or 0) + 1
 
     code = fields.Char("รหัสงบประมาณ", required=True, tracking=True, copy=False)

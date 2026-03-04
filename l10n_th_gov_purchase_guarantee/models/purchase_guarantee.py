@@ -98,15 +98,6 @@ class PurchaseGuarantee(models.Model):
         string="Domain Analytic Account",
         compute_sudo=True,
     )
-    # ver 16 ไม่มี analytic_tag_ids
-    # analytic_tag_ids = fields.Many2many(
-    #     comodel_name="account.analytic.tag",
-    #     string="Analytic Tags",
-    #     compute="_compute_analytic",
-    #     store=True,
-    #     readonly=False,
-    #     compute_sudo=True,
-    # )
     invoice_ids = fields.Many2many(
         comodel_name="account.move",
         relation="account_move_guarantee_rel",
@@ -225,23 +216,6 @@ class PurchaseGuarantee(models.Model):
         for rec in self.filtered("purchase_id"):
             rec.partner_id = rec.purchase_id.partner_id.id
 
-    # 15
-    # @api.depends("reference")
-    # def _compute_analytic(self):
-    #     for rec in self:
-    #         origin = False
-    #         if rec.reference:
-    #             if rec.reference._name == "purchase.requisition":
-    #                 origin = rec.reference.line_ids
-    #             elif rec.reference._name == "purchase.order":
-    #                 origin = rec.reference.order_line
-    #         analytics = origin and origin.mapped("account_analytic_id") or False
-    #         rec.domain_analytic_account_ids = analytics
-    #         rec.analytic_tag_ids = origin and origin.mapped("analytic_tag_ids") or False
-    #         if analytics and len(analytics) == 1:
-    #             rec.analytic_account_id = analytics
-
-    # รองรับ 16
     @api.depends("reference")
     def _compute_analytic(self):
         AnalyticAccount = self.env["account.analytic.account"]

@@ -1,6 +1,6 @@
 import logging
 
-from odoo import api, fields, models, _
+from odoo import _, api, fields, models
 from ..utils.tree_builder import BudgetTreeBuilder, TreeConfig, BudgetTreeExporter
 
 _logger = logging.getLogger(__name__)

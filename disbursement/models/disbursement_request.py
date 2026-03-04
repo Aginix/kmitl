@@ -2,7 +2,7 @@
 
 import logging
 
-from odoo import Command, _, api, fields, models
+from odoo import _, Command, api, fields, models
 from odoo.exceptions import UserError
 from odoo.osv import expression
 

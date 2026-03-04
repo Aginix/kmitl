@@ -9,7 +9,7 @@ Note: This is an EXAMPLE file for documentation purposes.
 To implement this in your module, adapt the code to your specific needs.
 """
 
-from odoo import api, fields, models, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 

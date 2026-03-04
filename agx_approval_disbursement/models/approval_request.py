@@ -1,4 +1,4 @@
-from odoo import Command, _, api, fields, models
+from odoo import _, Command, api, fields, models
 
 
 class ApprovalRequest(models.Model):

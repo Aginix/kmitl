@@ -75,7 +75,7 @@ class BudgetMoveLine(models.Model):
         string="รหัสงบประมาณ",
         index=True,
         required=True,
-        # TODO: ต้องกรองข้อมูลเฉพาะรหัสงบประมาณ ที่อยู่ภายใต้กองทุนที่เลือกเท่านั้น
+        # หมายเหตุ: domain ปัจจุบันกรองเฉพาะ budget_type — ยังไม่กรองตาม fund ที่เลือก
         domain="[('budget_type', '=', budget_type)]",
         tracking=True,
     )
