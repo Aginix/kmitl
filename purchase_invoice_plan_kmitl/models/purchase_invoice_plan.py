@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -9,6 +9,18 @@ _logger = logging.getLogger(__name__)
 
 class PurchaseInvoicePlan(models.Model):
     _inherit = 'purchase.invoice.plan'
+
+    READONLY_STATES = {
+        'purchase': [('readonly', True)],
+        'done': [('readonly', True)],
+        'cancel': [('readonly', True)],
+    }
+
+    invoice_plan_ids = fields.One2many(
+        comodel_name="purchase.invoice.plan",
+        inverse_name="purchase_id",
+        states=READONLY_STATES,
+    )
 
     @api.depends("percent")
     def _compute_amount(self):
