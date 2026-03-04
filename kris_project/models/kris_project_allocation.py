@@ -59,15 +59,25 @@ class KrisProjectAllocationLine(models.Model):
     @api.depends(
         "allocation_pct",
         "project_id.total_net_received",
-        "project_id.maintenance_deduction_pct",
+        "project_id.total_kris_net_received",
+        "project_id.maintenance_deduction_amount",
+        "project_id.allocatable_value",
     )
     def _compute_actual_amount(self):
         for line in self:
-            base = (
-                line.project_id.total_net_received
-                * line.project_id.maintenance_deduction_pct
-                / 100.0
+            allocatable = line.project_id.allocatable_value
+            if not allocatable:
+                line.actual_amount = 0.0
+                continue
+            # Use the effective maintenance rate (works for both tiered and custom)
+            effective_rate = (
+                line.project_id.maintenance_deduction_amount / allocatable
             )
+            # KRIS only gets a share from receipts flagged for KRIS allocation
+            if line.name == "KRIS":
+                base = line.project_id.total_kris_net_received * effective_rate
+            else:
+                base = line.project_id.total_net_received * effective_rate
             line.actual_amount = base * line.allocation_pct / 100.0
 
     @api.constrains("allocation_pct")

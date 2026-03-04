@@ -42,6 +42,11 @@ class KrisProjectReceiptWizard(models.TransientModel):
         string="ยอดรับสุทธิ",
         compute="_compute_net_amount",
     )
+    allocate_to_kris = fields.Boolean(
+        string="ปันส่วนไป KRIS",
+        default=True,
+        help="หากเลือก รายรับนี้จะถูกนำไปคำนวณส่วนแบ่งของ KRIS ด้วย",
+    )
     note = fields.Text(
         string="หมายเหตุ",
     )
@@ -81,6 +86,7 @@ class KrisProjectReceiptWizard(models.TransientModel):
                 "date": self.date,
                 "equipment_cost_in_installment": self.equipment_cost_in_installment,
                 "amount": self.amount,
+                "allocate_to_kris": self.allocate_to_kris,
                 "note": self.note,
             }
         )

@@ -48,6 +48,11 @@ class KrisProjectReceipt(models.Model):
         compute="_compute_net_amount",
         store=True,
     )
+    allocate_to_kris = fields.Boolean(
+        string="ปันส่วนไป KRIS",
+        default=True,
+        help="หากเลือก รายรับนี้จะถูกนำไปคำนวณส่วนแบ่งของ KRIS ด้วย",
+    )
     note = fields.Text(
         string="หมายเหตุ",
     )

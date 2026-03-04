@@ -18,6 +18,33 @@ CLIENT_ORG_TYPE_SELECTION = [
     ("other", "อื่นๆ"),
 ]
 
+# Progressive (tiered) deduction brackets: (upper_limit, rate)
+_TIERED_BRACKETS = [
+    (1_000_000.0, 0.10),
+    (5_000_000.0, 0.09),
+    (10_000_000.0, 0.08),
+    (float("inf"), 0.07),
+]
+
+
+def _compute_tiered_deduction(amount):
+    """Return progressive tiered deduction for the given base amount.
+
+    Brackets:
+      0 – 1,000,000       → 10 %
+      1,000,001 – 5,000,000  → 9 %
+      5,000,001 – 10,000,000 → 8 %
+      > 10,000,000           → 7 %
+    """
+    total = 0.0
+    prev = 0.0
+    for cap, rate in _TIERED_BRACKETS:
+        if amount <= prev:
+            break
+        total += (min(amount, cap) - prev) * rate
+        prev = cap
+    return total
+
 
 class KrisProject(models.Model):
     _name = "kris.project"
@@ -117,6 +144,17 @@ class KrisProject(models.Model):
         compute="_compute_derived_values",
         store=True,
     )
+    maintenance_deduction_type = fields.Selection(
+        selection=[
+            ("tiered", "ขั้นบันได"),
+            ("custom", "กำหนดเอง"),
+        ],
+        string="วิธีคิดค่าบำรุง",
+        default="tiered",
+        required=True,
+        tracking=True,
+        states=READONLY_STATES,
+    )
     maintenance_deduction_pct = fields.Float(
         string="% หักค่าบำรุง",
         digits=(5, 2),
@@ -202,6 +240,11 @@ class KrisProject(models.Model):
         compute="_compute_totals",
         store=True,
     )
+    total_kris_net_received = fields.Monetary(
+        string="ยอดรับสุทธิ (ปันส่วน KRIS)",
+        compute="_compute_totals",
+        store=True,
+    )
     revenue_remaining = fields.Monetary(
         string="คงเหลือ",
         compute="_compute_totals",
@@ -225,18 +268,29 @@ class KrisProject(models.Model):
         tracking=True,
     )
 
-    @api.depends("project_value", "equipment_cost", "maintenance_deduction_pct")
+    @api.depends(
+        "project_value",
+        "equipment_cost",
+        "maintenance_deduction_type",
+        "maintenance_deduction_pct",
+    )
     def _compute_derived_values(self):
         for rec in self:
             rec.allocatable_value = rec.project_value - rec.equipment_cost
-            rec.maintenance_deduction_amount = (
-                rec.allocatable_value * rec.maintenance_deduction_pct / 100.0
-            )
+            if rec.maintenance_deduction_type == "tiered":
+                rec.maintenance_deduction_amount = _compute_tiered_deduction(
+                    rec.allocatable_value
+                )
+            else:
+                rec.maintenance_deduction_amount = (
+                    rec.allocatable_value * rec.maintenance_deduction_pct / 100.0
+                )
 
     @api.depends(
         "installment_ids.amount",
         "receipt_ids.amount",
         "receipt_ids.net_amount",
+        "receipt_ids.allocate_to_kris",
         "project_value",
     )
     def _compute_totals(self):
@@ -244,6 +298,11 @@ class KrisProject(models.Model):
             rec.total_installment_amount = sum(rec.installment_ids.mapped("amount"))
             rec.total_received_amount = sum(rec.receipt_ids.mapped("amount"))
             rec.total_net_received = sum(rec.receipt_ids.mapped("net_amount"))
+            rec.total_kris_net_received = sum(
+                rec.receipt_ids.filtered(lambda r: r.allocate_to_kris).mapped(
+                    "net_amount"
+                )
+            )
             rec.revenue_remaining = rec.project_value - rec.total_received_amount
 
     @api.onchange("project_category_id")

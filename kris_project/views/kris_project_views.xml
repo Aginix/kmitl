@@ -139,8 +139,16 @@
                                 <group string="การจัดสรร">
                                     <field name="allocatable_value" readonly="1"/>
                                     <field
-                                        name="maintenance_deduction_pct"
+                                        name="maintenance_deduction_type"
                                         attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
+                                        widget="radio"
+                                    />
+                                    <field
+                                        name="maintenance_deduction_pct"
+                                        attrs="{
+                                            'invisible': [('maintenance_deduction_type', '!=', 'custom')],
+                                            'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]
+                                        }"
                                     />
                                     <field name="maintenance_deduction_amount" readonly="1"/>
                                 </group>
@@ -187,8 +195,11 @@
                                     class="btn-secondary"
                                 />
                             </div>
-                            <field name="receipt_ids" readonly="1">
-                                <tree>
+                            <field
+                                name="receipt_ids"
+                                attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
+                            >
+                                <tree create="0">
                                     <field name="project_id" column_invisible="1"/>
                                     <field name="name"/>
                                     <field name="installment_id"/>
@@ -196,6 +207,7 @@
                                     <field name="equipment_cost_in_installment" sum="รวม"/>
                                     <field name="amount" sum="รวม"/>
                                     <field name="net_amount" sum="รวม"/>
+                                    <field name="allocate_to_kris" widget="boolean_toggle"/>
                                     <field name="note"/>
                                     <field name="currency_id" column_invisible="1"/>
                                 </tree>
