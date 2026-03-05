@@ -48,10 +48,10 @@ class KrisProjectReceipt(models.Model):
         compute="_compute_net_amount",
         store=True,
     )
-    allocate_to_kris = fields.Boolean(
-        string="ปันส่วนไป KRIS",
-        default=True,
-        help="หากเลือก รายรับนี้จะถูกนำไปคำนวณส่วนแบ่งของ KRIS ด้วย",
+    allocation_ids = fields.One2many(
+        comodel_name="kris.project.receipt.allocation",
+        inverse_name="receipt_id",
+        string="การจัดสรร",
     )
     note = fields.Text(
         string="หมายเหตุ",

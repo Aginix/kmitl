@@ -22,9 +22,16 @@ class KrisProjectAllocationLine(models.Model):
         string="ลำดับ",
         default=10,
     )
-    name = fields.Char(
+    item_id = fields.Many2one(
+        comodel_name="kris.project.allocation.item",
         string="ผู้รับจัดสรร",
         required=True,
+    )
+    name = fields.Char(
+        string="ผู้รับจัดสรร",
+        related="item_id.name",
+        store=True,
+        readonly=True,
     )
     allocation_pct = fields.Float(
         string="% จัดสรร",
@@ -39,6 +46,16 @@ class KrisProjectAllocationLine(models.Model):
         string="รับจริง (บาท)",
         compute="_compute_actual_amount",
         store=True,
+    )
+    installment_allocation_ids = fields.One2many(
+        comodel_name="kris.project.installment.allocation",
+        inverse_name="allocation_line_id",
+        string="การจัดสรรตามงวด",
+    )
+    receipt_allocation_ids = fields.One2many(
+        comodel_name="kris.project.receipt.allocation",
+        inverse_name="allocation_line_id",
+        string="การจัดสรรตามรายรับ",
     )
     currency_id = fields.Many2one(
         comodel_name="res.currency",
@@ -56,39 +73,22 @@ class KrisProjectAllocationLine(models.Model):
             else:
                 line.allocation_pct = 0.0
 
-    @api.depends(
-        "allocation_pct",
-        "project_id.total_net_received",
-        "project_id.total_kris_net_received",
-        "project_id.maintenance_deduction_amount",
-        "project_id.allocatable_value",
-    )
+    @api.depends("receipt_allocation_ids.amount")
     def _compute_actual_amount(self):
         for line in self:
-            allocatable = line.project_id.allocatable_value
-            if not allocatable:
-                line.actual_amount = 0.0
-                continue
-            # Use the effective maintenance rate (works for both tiered and custom)
-            effective_rate = (
-                line.project_id.maintenance_deduction_amount / allocatable
-            )
-            # KRIS only gets a share from receipts flagged for KRIS allocation
-            if line.name == "KRIS":
-                base = line.project_id.total_kris_net_received * effective_rate
-            else:
-                base = line.project_id.total_net_received * effective_rate
-            line.actual_amount = base * line.allocation_pct / 100.0
+            line.actual_amount = sum(line.receipt_allocation_ids.mapped("amount"))
 
-    @api.constrains("allocation_pct")
-    def _check_allocation_pct_sum(self):
+    @api.constrains("estimated_amount")
+    def _check_estimated_amount_sum(self):
         for line in self:
-            sibling_lines = line.project_id.allocation_line_ids
-            total_pct = sum(sibling_lines.mapped("allocation_pct"))
-            if total_pct > 100.0 + 1e-9:
+            base = line.project_id.maintenance_deduction_amount
+            if not base:
+                continue
+            total = sum(line.project_id.allocation_line_ids.mapped("estimated_amount"))
+            if total > base + 1e-9:
                 raise ValidationError(
                     _(
-                        "ผลรวม % จัดสรรต้องไม่เกิน 100%% (ปัจจุบัน: %.2f%%)"
+                        "ผลรวมประมาณการจัดสรรต้องไม่เกินมูลค่าหักค่าบำรุง (%.2f บาท)"
                     )
-                    % total_pct
+                    % base
                 )

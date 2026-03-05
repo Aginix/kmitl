@@ -14,10 +14,13 @@
     "data": [
         "data/sequence.xml",
         "data/kris_project_type_data.xml",
+        "data/kris_project_allocation_data.xml",
         "security/security.xml",
         "security/ir.model.access.csv",
         "views/kris_project_type_views.xml",
+        "views/kris_project_allocation_views.xml",
         "views/kris_project_receipt_wizard_views.xml",
+        "views/kris_project_installment_wizard_views.xml",
         "views/kris_project_views.xml",
         "views/kris_project_dashboard_action.xml",
         "views/kris_project_menus.xml",

@@ -39,6 +39,11 @@ class KrisProjectInstallment(models.Model):
         string="สถานะ",
         default="pending",
     )
+    allocation_ids = fields.One2many(
+        comodel_name="kris.project.installment.allocation",
+        inverse_name="installment_id",
+        string="การจัดสรร",
+    )
     currency_id = fields.Many2one(
         comodel_name="res.currency",
         related="project_id.currency_id",

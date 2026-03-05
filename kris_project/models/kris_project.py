@@ -141,7 +141,7 @@ class KrisProject(models.Model):
     )
     allocatable_value = fields.Monetary(
         string="มูลค่าที่จัดสรรได้",
-        compute="_compute_derived_values",
+        compute="_compute_allocatable_value",
         store=True,
     )
     maintenance_deduction_type = fields.Selection(
@@ -163,8 +163,14 @@ class KrisProject(models.Model):
     )
     maintenance_deduction_amount = fields.Monetary(
         string="มูลค่าหักค่าบำรุง",
-        compute="_compute_derived_values",
+        compute="_compute_maintenance_deduction_amount",
         store=True,
+    )
+    # --- Allocation template ---
+    allocation_template_id = fields.Many2one(
+        comodel_name="kris.project.allocation.template",
+        string="แม่แบบการจัดสรร",
+        states=READONLY_STATES,
     )
     # --- Contract fields ---
     contract_number = fields.Char(
@@ -240,11 +246,6 @@ class KrisProject(models.Model):
         compute="_compute_totals",
         store=True,
     )
-    total_kris_net_received = fields.Monetary(
-        string="ยอดรับสุทธิ (ปันส่วน KRIS)",
-        compute="_compute_totals",
-        store=True,
-    )
     revenue_remaining = fields.Monetary(
         string="คงเหลือ",
         compute="_compute_totals",
@@ -268,15 +269,18 @@ class KrisProject(models.Model):
         tracking=True,
     )
 
+    @api.depends("operating_expense")
+    def _compute_allocatable_value(self):
+        for rec in self:
+            rec.allocatable_value = rec.operating_expense
+
     @api.depends(
-        "project_value",
-        "equipment_cost",
+        "allocatable_value",
         "maintenance_deduction_type",
         "maintenance_deduction_pct",
     )
-    def _compute_derived_values(self):
+    def _compute_maintenance_deduction_amount(self):
         for rec in self:
-            rec.allocatable_value = rec.project_value - rec.equipment_cost
             if rec.maintenance_deduction_type == "tiered":
                 rec.maintenance_deduction_amount = _compute_tiered_deduction(
                     rec.allocatable_value
@@ -290,7 +294,6 @@ class KrisProject(models.Model):
         "installment_ids.amount",
         "receipt_ids.amount",
         "receipt_ids.net_amount",
-        "receipt_ids.allocate_to_kris",
         "project_value",
     )
     def _compute_totals(self):
@@ -298,12 +301,11 @@ class KrisProject(models.Model):
             rec.total_installment_amount = sum(rec.installment_ids.mapped("amount"))
             rec.total_received_amount = sum(rec.receipt_ids.mapped("amount"))
             rec.total_net_received = sum(rec.receipt_ids.mapped("net_amount"))
-            rec.total_kris_net_received = sum(
-                rec.receipt_ids.filtered(lambda r: r.allocate_to_kris).mapped(
-                    "net_amount"
-                )
-            )
             rec.revenue_remaining = rec.project_value - rec.total_received_amount
+
+    @api.onchange("project_value", "equipment_cost")
+    def _onchange_operating_expense_suggest(self):
+        self.operating_expense = self.project_value - self.equipment_cost
 
     @api.onchange("project_category_id")
     def _onchange_project_category_id(self):
@@ -362,15 +364,22 @@ class KrisProject(models.Model):
             "context": {"default_project_id": self.id},
         }
 
-    def action_compute_allocation(self):
-        """Generate or regenerate the 4 standard revenue allocation lines."""
+    def action_add_installment(self):
         self.ensure_one()
-        ALLOCATION_LINES = [
-            (1, "ส่วนกลาง", 35.0),
-            (2, "คณะ/ส่วนงาน", 35.0),
-            (3, "ภาค/หน่วยงาน", 20.0),
-            (4, "KRIS", 10.0),
-        ]
+        return {
+            "name": "เพิ่มงวดงาน",
+            "type": "ir.actions.act_window",
+            "res_model": "kris.project.installment.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_project_id": self.id},
+        }
+
+    def action_apply_allocation_template(self):
+        """Apply the selected allocation template to create allocation lines."""
+        self.ensure_one()
+        if not self.allocation_template_id:
+            raise UserError(_("กรุณาเลือกแม่แบบการจัดสรรก่อน"))
         base_amount = self.maintenance_deduction_amount
         self.allocation_line_ids.unlink()
         self.allocation_line_ids = [
@@ -378,10 +387,10 @@ class KrisProject(models.Model):
                 0,
                 0,
                 {
-                    "sequence": seq,
-                    "name": name,
-                    "estimated_amount": base_amount * pct / 100.0,
+                    "sequence": tl.sequence,
+                    "item_id": tl.item_id.id,
+                    "estimated_amount": base_amount * tl.allocation_pct / 100.0,
                 },
             )
-            for seq, name, pct in ALLOCATION_LINES
+            for tl in self.allocation_template_id.line_ids
         ]

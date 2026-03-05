@@ -154,11 +154,21 @@
                                 </group>
                             </group>
                             <separator string="งวดงานตามสัญญา"/>
+                            <div class="mb-3"
+                                attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
+                            >
+                                <button
+                                    name="action_add_installment"
+                                    string="เพิ่มงวด"
+                                    type="object"
+                                    class="btn-secondary"
+                                />
+                            </div>
                             <field
                                 name="installment_ids"
                                 attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
                             >
-                                <tree editable="bottom">
+                                <tree create="0">
                                     <field name="sequence" widget="handle"/>
                                     <field name="name"/>
                                     <field name="amount" sum="รวม"/>
@@ -207,7 +217,6 @@
                                     <field name="equipment_cost_in_installment" sum="รวม"/>
                                     <field name="amount" sum="รวม"/>
                                     <field name="net_amount" sum="รวม"/>
-                                    <field name="allocate_to_kris" widget="boolean_toggle"/>
                                     <field name="note"/>
                                     <field name="currency_id" column_invisible="1"/>
                                 </tree>
@@ -224,13 +233,21 @@
                                     />
                                 </group>
                             </group>
-                            <div class="mb-3">
+                            <div class="mb-3"
+                                attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
+                            >
+                                <field
+                                    name="allocation_template_id"
+                                    nolabel="1"
+                                    class="d-inline-block me-2"
+                                    style="min-width: 250px;"
+                                    placeholder="เลือกแม่แบบ..."
+                                />
                                 <button
-                                    name="action_compute_allocation"
-                                    string="คำนวณการจัดสรร"
+                                    name="action_apply_allocation_template"
+                                    string="นำแม่แบบมาใช้"
                                     type="object"
                                     class="btn-secondary"
-                                    attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
                                 />
                             </div>
                             <field
@@ -239,7 +256,7 @@
                             >
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle"/>
-                                    <field name="name"/>
+                                    <field name="item_id"/>
                                     <field name="allocation_pct" string="% จัดสรร" readonly="1" sum="รวม"/>
                                     <field name="estimated_amount" sum="รวม"/>
                                     <field name="actual_amount" readonly="1" sum="รวม"/>

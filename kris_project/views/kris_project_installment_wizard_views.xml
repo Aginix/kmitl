@@ -1,27 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="view_kris_project_receipt_wizard_form" model="ir.ui.view">
-        <field name="name">kris.project.receipt.wizard.form</field>
-        <field name="model">kris.project.receipt.wizard</field>
+    <record id="view_kris_project_installment_wizard_form" model="ir.ui.view">
+        <field name="name">kris.project.installment.wizard.form</field>
+        <field name="model">kris.project.installment.wizard</field>
         <field name="arch" type="xml">
-            <form string="บันทึกรายรับ">
+            <form string="เพิ่มงวดงาน">
                 <field name="currency_id" invisible="1"/>
-                <field name="available_installment_ids" invisible="1"/>
                 <group>
                     <field name="project_id" readonly="1"/>
                     <field name="name"/>
-                    <field
-                        name="installment_id"
-                        domain="[('id', 'in', available_installment_ids)]"
-                    />
-                    <field name="date"/>
-                    <field name="equipment_cost_in_installment"/>
                     <field name="amount"/>
-                    <field name="net_amount" readonly="1"/>
-                    <field name="note"/>
+                    <field name="due_date"/>
                 </group>
-                <separator string="การจัดสรรตามรายรับ"/>
+                <separator string="การจัดสรรตามงวด"/>
                 <field name="allocation_ids">
                     <tree editable="bottom">
                         <field name="name" readonly="1" string="ผู้รับจัดสรร"/>
