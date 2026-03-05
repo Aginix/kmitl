@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="approval_category_view_form" model="ir.ui.view">
+        <field name="name">approval.category.view.form</field>
+        <field name="model">approval.category</field>
+        <field name="arch" type="xml">
+            <form string="Approval Category">
+                <sheet>
+                    <group>
+                        <field name="image" widget="image" class="oe_avatar" options='{"preview_image": "image", "size": [80, 80]}'/>
+                        <field name="group_id" />
+                        <field name="name" />
+                        <field name="has_period" />
+                        <field name="has_city" />
+                        <field name="has_country_id" />
+                        <field name="allowed_product_ids" widget="many2many_tags"/>
+                        <field name="default_description" />
+
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="approval_category_view_kanban" model="ir.ui.view">
+        <field name="name">approval.category.view.kanban</field>
+        <field name="model">approval.category</field>
+        <field name="arch" type="xml">
+            <kanban create="false" class="o_modules_kanban">
+                <field name="name"/>
+                <field name="id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_module_vignette">
+                            <t t-if="record.id">
+                                <img t-att-src="kanban_image('approval.category', 'image', record.id.raw_value)" alt="Approvals Types Image" class="oe_kanban_avatar float-start me-3" width="64" height="64"/>
+                            </t>
+                            <div class="oe_module_desc">
+                                <h4 class="o_kanban_record_title">
+                                    <field name="name"/>
+                                </h4>
+                                <div class="oe_module_action" t-if="!selection_mode">
+                                    <button type="object" class="btn btn-primary btn-sm" name="create_request" context="{'category_id':'active_id'}">New Request</button>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="approval_category_view_tree" model="ir.ui.view">
+        <field name="name">approval.category.view.tree</field>
+        <field name="model">approval.category</field>
+        <field name="arch" type="xml">
+            <tree string="Approval Category">
+                <field name="name" />
+                <field name="group_id" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="approval_category_view_search" model="ir.ui.view">
+        <field name="name">approval.category.view.search</field>
+        <field name="model">approval.category</field>
+        <field name="arch" type="xml">
+            <search string="Approval category">
+                <field name="name" />
+                <group string="Group By">
+                    <filter string="Category Group" name="group_by_group_id" context="{'group_by': 'group_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_approval_category" model="ir.actions.act_window">
+        <field name="name">Approval Category</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">approval.category</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="domain">[]</field>
+        <field name="context">{"search_default_group_by_group_id":1}</field>
+    </record>
+
+
+    <record id="action_approval_dashboard" model="ir.actions.act_window">
+        <field name="name">Dashboard</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">approval.category</field>
+        <field name="view_mode">kanban</field>
+        <field name="domain">[]</field>
+        <field name="context">{'group_by': ['group_id']}</field>
+    </record>
+
+</odoo>

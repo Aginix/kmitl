@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+
+    <!-- Route Template for Approval Request -->
+    <record id="route_template_approval_request" model="sarabun.route.template">
+        <field name="name">Approval Request Approval</field>
+        <field name="description">Route template for approval request workflow</field>
+        <field name="sequence">10</field>
+        <field name="origin_model">approval.request</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <!-- Route Template Line 1: Approver -->
+    <record id="route_template_line_approval_approve" model="sarabun.route.template.line">
+        <field name="template_id" ref="route_template_approval_request"/>
+        <field name="sequence">10</field>
+        <field name="routing_type">approve</field>
+        <field name="recipient_type">user</field>
+        <field name="user_id" ref="base.user_admin"/>
+    </record>
+
+</odoo>

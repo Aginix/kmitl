@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+
+    <!-- View budget.appropriation.line form -->
+    <record id="view_budget_appropriation_line_form" model="ir.ui.view">
+        <field name="name">view.budget.appropriation.line.form</field>
+        <field name="model">budget.appropriation.line</field>
+        <field name="inherit_id" ref="budget_appropriation.view_budget_appropriation_line_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='balance']" position="after">
+                <field name="is_recurrent" />
+            </xpath>
+        </field>
+    </record>
+
+  </odoo>

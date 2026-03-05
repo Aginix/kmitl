@@ -18,21 +18,14 @@ Features:
     "author": "KMITL",
     "website": "https://www.kmitl.ac.th",
     "depends": [
-        "budget_appropriation",
+        "budget",
         "account_analytic_kmitl",
         "kmitl_project"
     ],
     "data": [
         "data/budget_account_project_update.xml",
         "views/budget_account_views.xml",
-        "views/budget_appropriation_views.xml",
-        "views/menu_views.xml",
     ],
-    "assets": {
-        "web.assets_backend": [
-            "budget_project/static/src/**/*",
-        ],
-    },
     "installable": True,
     "auto_install": False,
     "application": False,

@@ -6,7 +6,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    'depends': ['account_asset_number_kmitl', 'purchase_order_kmitl', 'l10n_th_gov_gpsc', 'account_asset_usability_kmitl', 'purchase_contract_kmitl'],
+    'depends': ['account_asset_number_kmitl', 'purchase_order_kmitl', 'l10n_th_gov_gpsc', 'purchase_contract_kmitl'],
     "data": [
         "data/sequence.xml",
         "security/ir.model.access.csv",

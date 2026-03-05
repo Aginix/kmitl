@@ -10,6 +10,19 @@ _logger = logging.getLogger(__name__)
 class BudgetAppropriation(models.Model):
     _inherit = "budget.appropriation"
 
+    procurement_plan_ids = fields.One2many(
+        "budget.appropriation.line",
+        compute="_compute_procurement_plan_ids",
+        store=False,
+        readonly=True,
+    )
+
+    @api.depends("line_ids.enable_procurement_plan", "line_ids.procurement_plan_amount", "line_ids.procurement_plan_unit", "line_ids.procurement_plan_id")
+    def _compute_procurement_plan_ids(self):
+        for record in self:
+            line_ids = record.line_ids.filtered(lambda x: x.enable_procurement_plan)
+            record.procurement_plan_ids = line_ids
+
     def action_review(self):
         super().action_review()
 
@@ -41,6 +54,4 @@ class BudgetAppropriation(models.Model):
             )
 
     def _get_record_url(self):
-        return "/web#id={}&model={}&view_type=form".format(
-            self.id, self._name
-        )
+        return "/web#id={}&model={}&view_type=form".format(self.id, self._name)

@@ -1,0 +1,43 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* web_login_thaid
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-24 11:18+0000\n"
+"PO-Revision-Date: 2026-02-24 18:23+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.8\n"
+
+#. module: web_login_thaid
+#: model:ir.model.fields,field_description:web_login_thaid.field_auth_oauth_provider__api_key
+msgid "API Key"
+msgstr ""
+
+#. module: web_login_thaid
+#: model:auth.oauth.provider,body:web_login_thaid.provider_thaid
+msgid "Log in with ThaiD"
+msgstr "เข้าสู่ระบบด้วย ไทยดี (ThaiD)"
+
+#. module: web_login_thaid
+#: model:ir.model,name:web_login_thaid.model_auth_oauth_provider
+msgid "OAuth2 provider"
+msgstr "ผู้ให้บริการ OAuth2"
+
+#. module: web_login_thaid
+#: model:ir.model.fields,help:web_login_thaid.field_auth_oauth_provider__api_key
+msgid "ThaiD requires this key as an HTTP header on token and JWKS requests."
+msgstr ""
+
+#. module: web_login_thaid
+#: model:ir.model,name:web_login_thaid.model_res_users
+msgid "User"
+msgstr "ผู้ใช้"
