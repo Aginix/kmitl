@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="construction_project_end_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.project.end.wizard.form</field>
+        <field name="model">construction.project.end.wizard</field>
+        <field name="arch" type="xml">
+            <form string="End Construction Project">
+                <group>
+                    <field name="project_id" invisible="1"/>
+                    <field name="date_end"/>
+                </group>
+                <footer>
+                    <button name="action_end" string="Confirm" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
