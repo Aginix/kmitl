@@ -28,8 +28,6 @@
         "analytic_operating_unit",
         "account_analytic_kmitl",
         "disbursement",
-        "agx_sarabun",
-        "procurement_plan"
 
     ],
     "data": [
@@ -44,6 +42,7 @@
         "data/ir_config_parameter.xml",
         "data/purchase.request.xml",
         "data/account.analytic.account.xml",
+        "data/res.users.role.xml",
     ],
     "post_init_hook": "post_init",
     "uninstall_hook": "uninstall_hook",
