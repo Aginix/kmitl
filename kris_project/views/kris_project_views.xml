@@ -2,6 +2,38 @@
 <odoo>
 
     <!-- ============================================================ -->
+    <!-- INSTALLMENT FORM VIEW                                       -->
+    <!-- ============================================================ -->
+
+    <record id="view_kris_project_installment_form" model="ir.ui.view">
+        <field name="name">kris.project.installment.form</field>
+        <field name="model">kris.project.installment</field>
+        <field name="arch" type="xml">
+            <form string="งวดงาน">
+                <field name="currency_id" invisible="1"/>
+                <group>
+                    <field name="project_id" readonly="1"/>
+                    <field name="name"/>
+                    <field name="amount"/>
+                    <field name="due_date"/>
+                    <field name="state" widget="badge"
+                        decoration-info="state == 'pending'"
+                        decoration-success="state == 'received'"
+                    />
+                </group>
+                <separator string="การจัดสรรตามงวด"/>
+                <field name="allocation_ids">
+                    <tree editable="bottom" create="0" delete="0">
+                        <field name="allocation_line_id" string="ผู้รับจัดสรร" readonly="1"/>
+                        <field name="amount" sum="รวม"/>
+                        <field name="currency_id" invisible="1"/>
+                    </tree>
+                </field>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
     <!-- FORM VIEW                                                    -->
     <!-- ============================================================ -->
 
@@ -177,7 +209,7 @@
                                         decoration-info="state == 'pending'"
                                         decoration-success="state == 'received'"
                                     />
-                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="currency_id" invisible="1"/>
                                 </tree>
                             </field>
                             <group>
@@ -210,7 +242,7 @@
                                 attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
                             >
                                 <tree create="0">
-                                    <field name="project_id" column_invisible="1"/>
+                                    <field name="project_id" invisible="1"/>
                                     <field name="name"/>
                                     <field name="installment_id"/>
                                     <field name="date"/>
@@ -218,7 +250,7 @@
                                     <field name="amount" sum="รวม"/>
                                     <field name="net_amount" sum="รวม"/>
                                     <field name="note"/>
-                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="currency_id" invisible="1"/>
                                 </tree>
                             </field>
                         </page>
@@ -260,7 +292,7 @@
                                     <field name="allocation_pct" string="% จัดสรร" readonly="1" sum="รวม"/>
                                     <field name="estimated_amount" sum="รวม"/>
                                     <field name="actual_amount" readonly="1" sum="รวม"/>
-                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="currency_id" invisible="1"/>
                                 </tree>
                             </field>
                         </page>
