@@ -1,8 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<odoo>
-    <menuitem id="menu_purchase_cotract_expire"
-              name="Contract Nearly Expire"
-              parent="purchase_menu.menu_purchase_tracking"
-              action="purchase_order_expire.action_contracts_expiring"
-              sequence="20"/>
-</odoo>

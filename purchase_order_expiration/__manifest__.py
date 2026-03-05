@@ -10,8 +10,6 @@
     "data": [
         "data/ir_cron_data.xml",
         "views/purchase_order_views.xml",
-        "views/action.xml",
-        "views/menu.xml",
     ],
     'installable': True,
     'auto_install': False,

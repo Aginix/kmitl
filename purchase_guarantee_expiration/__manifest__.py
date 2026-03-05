@@ -8,8 +8,7 @@
     "category": "Purchase",
     'depends': ['purchase_menu', 'purchase_guarantee_kmitl'],
     'data': [
-        "views/action.xml",
-        "views/menu.xml",
+        "views/view.xml",
     ],
     'installable': True,
     'auto_install': False,

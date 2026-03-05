@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
+
+    <!-- Action -->
     <record id="action_guarantees_expiring" model="ir.actions.act_window">
         <field name="name">Guarantee Expire</field>
         <field name="res_model">purchase.guarantee</field>
@@ -7,4 +9,12 @@
         <field name="domain">[('date_due_guarantee', '&lt;', (context_today() + relativedelta(days=30)))]</field>
         <field name="context">{}</field>
     </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_purchase_guarantee_expire"
+              name="Guarantee Expire"
+              parent="purchase_menu.menu_purchase_tracking"
+              action="purchase_guarantee_expiration.action_guarantees_expiring"
+              sequence="30"/>
+
 </odoo>

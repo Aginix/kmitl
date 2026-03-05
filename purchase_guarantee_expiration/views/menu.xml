@@ -1,8 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<odoo>
-    <menuitem id="menu_purchase_guarantee_expire"
-              name="Guarantee Expire"
-              parent="purchase_menu.menu_purchase_tracking"
-              action="purchase_guarantee_expire.action_guarantees_expiring"
-              sequence="30"/>
-</odoo>

@@ -21,6 +21,7 @@
         </field>
     </record>
 
+    <!-- Search View -->
     <record id="view_purchase_order_search_expiring" model="ir.ui.view">
         <field name="name">purchase.order.search.expiring</field>
         <field name="model">purchase.order</field>
@@ -33,5 +34,23 @@
             </search>
         </field>
     </record>
+
+    <!-- Action -->
+    <record id="action_contracts_expiring" model="ir.actions.act_window">
+        <field name="name">Contract Nearly Expire</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="purchase_order_expiration.view_purchase_order_tree_expiring"/>
+        <field name="search_view_id" ref="purchase_order_expiration.view_purchase_order_search_expiring"/>
+        <field name="domain">[('days_to_expire', '&lt;', 90)]</field>
+        <field name="context">{'search_default_group_by_expire_range': 1}</field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_purchase_cotract_expire"
+              name="Contract Nearly Expire"
+              parent="purchase_menu.menu_purchase_tracking"
+              action="purchase_order_expiration.action_contracts_expiring"
+              sequence="20"/>
 
   </odoo>
