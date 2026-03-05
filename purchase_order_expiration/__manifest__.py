@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Purchase Order Expire',
+    'name': 'Purchase Order Exipration',
     'version': '16.0.1.0.0',
-    'summary': """ Purchase Order Expire Summary """,
+    'summary': """ Purchase Order Exipration Summary """,
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "Purchase",

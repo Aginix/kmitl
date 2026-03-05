@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Purchase Guarantee Expire',
+    'name': 'Purchase Guarantee Expiration',
     'version': '16.0.1.0.0',
-    'summary': """ Purchase Guarantee Expire Summary """,
+    'summary': """ Purchase Guarantee Expiration Summary """,
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "Purchase",
