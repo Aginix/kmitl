@@ -15,7 +15,6 @@ class AccountAssetBatch(models.Model):
     name = fields.Char(
         string="Document No.",
         tracking=True,
-        required=True
     )
 
     date = fields.Date(
