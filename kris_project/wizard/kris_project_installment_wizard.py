@@ -77,7 +77,6 @@ class KrisProjectInstallmentWizardLine(models.TransientModel):
         comodel_name="kris.project.allocation.line",
         string="การจัดสรร",
         required=True,
-        readonly=True,
     )
     name = fields.Char(
         related="allocation_line_id.name",
