@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Master Summary: source_2 (เงินรายได้) ปี 2568 -->
+        <record id="master_summary_source2_y2568" model="budget.appropriation.master.summary">
+            <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="council_meeting_no">9/2567</field>
+            <field name="council_meeting_date">2024-09-25</field>
+        </record>
+
+        <!-- Compilation 1: dept_01 (คณะวิศวกรรมศาสตร์) - 12 expense appropriations -->
+        <record id="compilation_dept01_y2568" model="budget.appropriation.compilation">
+            <field name="master_summary_id" ref="master_summary_source2_y2568"/>
+            <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_01"/>
+            <field name="expense_appropriation_ids" eval="[
+                Command.link(ref('budget_appropriation_demo.budget_appropriation_demo_dept01_source2_y2568')),
+                Command.link(ref('budget_appropriation_demo.budget_appropriation_demo_dept01041_source2_y2568')),
+                Command.link(ref('budget_appropriation_demo.budget_appropriation_demo_dept01043_source2_y2568')),
+                Command.link(ref('budget_appropriation_demo.budget_appropriation_demo_dept01050_source2_y2568')),
+                Command.link(ref('budget_appropriation_demo.budget_appropriation_demo_dept01060_source2_y2568')),
+                Command.link(ref('budget_appropriation_demo.budget_appropriation_demo_dept01070_source2_y2568')),
+                Command.link(ref('budget_appropriation_demo.budget_appropriation_demo_dept01080_source2_y2568')),
+                Command.link(ref('budget_appropriation_demo.budget_appropriation_demo_dept01120_source2_y2568')),
+                Command.link(ref('budget_appropriation_demo.budget_appropriation_demo_dept01130_source2_y2568')),
+                Command.link(ref('budget_appropriation_demo.budget_appropriation_demo_dept01160_source2_y2568')),
+                Command.link(ref('budget_appropriation_demo.budget_appropriation_demo_dept01280_source2_y2568')),
+                Command.link(ref('budget_appropriation_demo.budget_appropriation_demo_dept01290_source2_y2568')),
+            ]"/>
+        </record>
+
+        <!-- Compilation 2: dept_02 - 1 expense appropriation -->
+        <record id="compilation_dept02_y2568" model="budget.appropriation.compilation">
+            <field name="master_summary_id" ref="master_summary_source2_y2568"/>
+            <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_02"/>
+            <field name="expense_appropriation_ids" eval="[
+                Command.link(ref('budget_appropriation_demo.budget_appropriation_demo_dept02_source2_y2568')),
+            ]"/>
+        </record>
+
+        <!-- Compilation 3: dept_03 - 1 revenue appropriation -->
+        <record id="compilation_dept03_y2568" model="budget.appropriation.compilation">
+            <field name="master_summary_id" ref="master_summary_source2_y2568"/>
+            <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_03"/>
+            <field name="revenue_appropriation_ids" eval="[
+                Command.link(ref('budget_appropriation_demo.dept03_source2_68_rev')),
+            ]"/>
+        </record>
+
+        <!-- Compilation 4: dept_06 - 1 revenue appropriation -->
+        <record id="compilation_dept06_y2568" model="budget.appropriation.compilation">
+            <field name="master_summary_id" ref="master_summary_source2_y2568"/>
+            <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_06"/>
+            <field name="revenue_appropriation_ids" eval="[
+                Command.link(ref('budget_appropriation_demo.dept06_source2_68_rev')),
+            ]"/>
+        </record>
+
+        <!-- Compilation 5: dept_09 - 1 revenue appropriation -->
+        <record id="compilation_dept09_y2568" model="budget.appropriation.compilation">
+            <field name="master_summary_id" ref="master_summary_source2_y2568"/>
+            <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_09"/>
+            <field name="revenue_appropriation_ids" eval="[
+                Command.link(ref('budget_appropriation_demo.dept09_source2_68_rev')),
+            ]"/>
+        </record>
+
+        <!-- Compilation 6: dept_10 - 1 revenue appropriation -->
+        <record id="compilation_dept10_y2568" model="budget.appropriation.compilation">
+            <field name="master_summary_id" ref="master_summary_source2_y2568"/>
+            <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_10"/>
+            <field name="revenue_appropriation_ids" eval="[
+                Command.link(ref('budget_appropriation_demo.dept10_source2_68_rev')),
+            ]"/>
+        </record>
+
+        <!-- Compilation 7: dept_40 - 1 revenue appropriation -->
+        <record id="compilation_dept40_y2568" model="budget.appropriation.compilation">
+            <field name="master_summary_id" ref="master_summary_source2_y2568"/>
+            <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_40"/>
+            <field name="revenue_appropriation_ids" eval="[
+                Command.link(ref('budget_appropriation_demo.dept40_source2_68_rev')),
+            ]"/>
+        </record>
+
+        <!-- Compilation 8: dept_41 - 1 revenue appropriation -->
+        <record id="compilation_dept41_y2568" model="budget.appropriation.compilation">
+            <field name="master_summary_id" ref="master_summary_source2_y2568"/>
+            <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_41"/>
+            <field name="revenue_appropriation_ids" eval="[
+                Command.link(ref('budget_appropriation_demo.dept41_source2_68_rev')),
+            ]"/>
+        </record>
+
+        <!-- Compilation 9: dept_89 (สำนักงานอธิการบดี) - 2 revenue appropriations -->
+        <record id="compilation_dept89_y2568" model="budget.appropriation.compilation">
+            <field name="master_summary_id" ref="master_summary_source2_y2568"/>
+            <field name="account_fiscal_year_id" ref="kmitl_demo.account_fiscal_year_y2568"/>
+            <field name="source_analytic_id" ref="account_analytic_kmitl.source_2"/>
+            <field name="department_analytic_id" ref="account_analytic_kmitl.dept_89"/>
+            <field name="revenue_appropriation_ids" eval="[
+                Command.link(ref('budget_appropriation_demo.dept89340_source2_68_rev')),
+                Command.link(ref('budget_appropriation_demo.dept89380_source2_68_rev')),
+            ]"/>
+        </record>
+
+    </data>
+</odoo>

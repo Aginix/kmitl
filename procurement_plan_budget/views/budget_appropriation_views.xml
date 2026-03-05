@@ -57,6 +57,21 @@
             <xpath expr="//field[@name='line_ids']/tree" position="attributes">
                 <attribute name="decoration-info">procurement_plan</attribute>
             </xpath>
+            <xpath expr="//notebook/page[@name='line_ids']" position="after">
+                <page name="procurement_plan_summary" string="แผนจัดซื้อจัดจ้าง"
+                      attrs="{'invisible': [('budget_type', '!=', 'expense')]}">
+                    <field name="procurement_plan_ids" readonly="1" nolabel="1">
+                        <tree create="false" edit="false" delete="false">
+                            <field name="description" string="ชื่อรายการ" />
+                            <field name="account_id" string="รหัสงบประมาณ" />
+                            <field name="activity_analytic_id" string="กิจกรรม" />
+                            <field name="procurement_plan_amount" string="จำนวน" />
+                            <field name="procurement_plan_unit" string="หน่วย" />
+                            <field name="balance" string="วงเงินรวม" sum="รวม" />
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
         </field>
     </record>
 </odoo>

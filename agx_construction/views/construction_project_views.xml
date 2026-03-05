@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="construction_project_view_tree" model="ir.ui.view">
+        <field name="name">construction.project.view.tree</field>
+        <field name="model">construction.project</field>
+        <field name="arch" type="xml">
+            <tree string="Construction Projects">
+                <field name="ref"/>
+                <field name="name"/>
+                <field name="department_id"/>
+                <field name="date_end"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state in ('in_progress', 'ended')" decoration-danger="state == 'cancelled'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="construction_project_view_form" model="ir.ui.view">
+        <field name="name">construction.project.view.form</field>
+        <field name="model">construction.project</field>
+        <field name="arch" type="xml">
+            <form string="Construction Project">
+                <header>
+                    <button name="action_start" string="Start" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_end" string="End" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'in_progress')]}"/>
+                    <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ('ended', 'cancelled'))]}"/>
+                    <button name="action_draft" string="Reset to Draft" type="object" attrs="{'invisible': [('state', 'not in', ('cancelled', 'ended'))]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,ended"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Ended" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'ended')]}"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Project Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="ref"/>
+                            <field name="department_id"/>
+                            <field name="date_end" attrs="{'invisible': [('state', '!=', 'ended')]}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Purchase Requests" name="purchase_requests">
+                            <field name="purchase_request_ids" readonly="1">
+                                <tree no_open="1">
+                                    <field name="name"/>
+                                    <field name="date_start"/>
+                                    <field name="requested_by"/>
+                                    <field name="state"/>
+                                    <button name="action_open_in_new_tab" string="Open" type="object" icon="fa-external-link" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="PO" name="purchase_orders">
+                            <field name="purchase_order_ids" readonly="1">
+                                <tree no_open="1">
+                                    <field name="name"/>
+                                    <field name="partner_id"/>
+                                    <field name="date_order"/>
+                                    <field name="amount_total"/>
+                                    <field name="state"/>
+                                    <button name="action_open_in_new_tab" string="Open" type="object" icon="fa-external-link"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="construction_project_view_search" model="ir.ui.view">
+        <field name="name">construction.project.view.search</field>
+        <field name="model">construction.project</field>
+        <field name="arch" type="xml">
+            <search string="Construction Projects">
+                <field name="name"/>
+                <field name="ref"/>
+                <field name="department_id"/>
+                <group expand="0" string="Group By">
+                    <filter string="Department" name="group_department" context="{'group_by': 'department_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_project" model="ir.actions.act_window">
+        <field name="name">Construction Projects</field>
+        <field name="res_model">construction.project</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="action_construction_purchase_request" model="ir.actions.act_window">
+        <field name="name">Constructions</field>
+        <field name="res_model">purchase.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('is_construction', '=', True)]</field>
+        <field name="context">{'default_is_construction': True}</field>
+        <field name="search_view_id" ref="construction_purchase_request_view_search"/>
+    </record>
+
+    <record id="action_construction_purchase_request_view_tree" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="construction_purchase_request_view_tree"/>
+        <field name="act_window_id" ref="action_construction_purchase_request"/>
+    </record>
+
+</odoo>
