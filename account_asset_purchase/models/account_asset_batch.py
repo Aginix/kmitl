@@ -132,13 +132,35 @@ class AccountAssetBatch(models.Model):
             source = vals.get('source_of_asset', self.env.context.get('default_source_of_asset'))
             
             if vals.get('name', 'New') == 'New':
-                if source == 'procurement':
-                    vals['name'] = self.env['ir.sequence'].next_by_code('asset.batch.procurement') or 'New'
-                elif source == 'donation':
-                    vals['name'] = self.env['ir.sequence'].next_by_code('asset.batch.donation') or 'New'
-                elif source == 'transfer':
-                    vals['name'] = self.env['ir.sequence'].next_by_code('asset.batch.transfer') or 'New'
-            
+                fy_id = self.env["account.fiscal.year"].browse(vals.get("account_fiscal_year_id"))
+                fiscal_year = fy_id.name[-2:] if fy_id else fields.Date.today().strftime("%y")
+
+                code_map = {
+                    'procurement': ('asset.batch.procurement', 'PROC'),
+                    'donation': ('asset.batch.donation', 'DON'),
+                    'transfer': ('asset.batch.transfer', 'TRAN'),
+                }
+
+                if source in code_map:
+                    base_code, prefix = code_map[source]
+                    yearly_code = f"{base_code}.{fiscal_year}"
+
+                    seq = self.env['ir.sequence'].sudo().search(
+                        [('code', '=', yearly_code)], limit=1
+                    )
+                    if not seq:
+                        seq = self.env['ir.sequence'].sudo().create({
+                            'name': f"{prefix} {fiscal_year}",
+                            'code': yearly_code,
+                            'prefix': f"{prefix}/{fiscal_year}/",
+                            'padding': 5,
+                            'number_next': 1,
+                            'number_increment': 1,
+                            'company_id': False,
+                        })
+
+                    vals['name'] = seq.next_by_code(yearly_code) or 'New'
+
             if vals.get('purchase_id'):
                 vals['source_of_asset'] = 'procurement'
                 
