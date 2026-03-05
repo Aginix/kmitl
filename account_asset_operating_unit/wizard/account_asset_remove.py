@@ -19,5 +19,5 @@ class AccountAssetRemove(models.TransientModel):
         # Assign operating unit to journal entry if any
         if asset and move:
             move.operating_unit_id = asset.operating_unit_id
-            move._onchange_invoice_line_ids()
+            move.line_ids.write({"operating_unit_id": asset.operating_unit_id.id})
         return res
