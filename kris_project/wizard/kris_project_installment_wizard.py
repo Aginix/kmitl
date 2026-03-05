@@ -83,9 +83,40 @@ class KrisProjectInstallmentWizardLine(models.TransientModel):
         string="ผู้รับจัดสรร",
         readonly=True,
     )
+    estimated_amount = fields.Monetary(
+        related="allocation_line_id.estimated_amount",
+        string="ประมาณการ (บาท)",
+        readonly=True,
+    )
+    allocated_amount = fields.Monetary(
+        string="จัดสรรแล้ว",
+        compute="_compute_allocated_amount",
+        readonly=True,
+    )
+    remaining_amount = fields.Monetary(
+        string="ยอดคงเหลือที่จัดสรรได้",
+        compute="_compute_allocated_amount",
+        readonly=True,
+    )
     amount = fields.Monetary(string="จำนวนเงิน")
     currency_id = fields.Many2one(
         comodel_name="res.currency",
         related="wizard_id.currency_id",
         readonly=True,
     )
+
+    @api.depends("allocation_line_id", "estimated_amount")
+    def _compute_allocated_amount(self):
+        InstAlloc = self.env["kris.project.installment.allocation"]
+        for line in self:
+            if not line.allocation_line_id:
+                line.allocated_amount = 0.0
+                line.remaining_amount = 0.0
+                continue
+            allocated = sum(
+                InstAlloc.search(
+                    [("allocation_line_id", "=", line.allocation_line_id.id)]
+                ).mapped("amount")
+            )
+            line.allocated_amount = allocated
+            line.remaining_amount = line.estimated_amount - allocated
