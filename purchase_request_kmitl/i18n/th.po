@@ -548,7 +548,9 @@ msgstr "พนักงาน"
 msgid ""
 "Employee %s cannot appear in multiple committees except TOR and Evaluation "
 "committees."
-msgstr "คณะกรรมการพิจารณาผลและคณะกรรมการจัดทำ TOR สามารถมีพนักงานคนเดียวกันได้ แต่คณะกรรมการอื่นๆ ไม่สามารถมีพนักงานคนเดียวกันได้"
+msgstr ""
+"คณะกรรมการ %s ไม่สามารถมีซ้ำกันในประเภทอื่นได้"
+"ยกเว้นคณะกรรมการพิจารณาผลและคณะกรรมการจัดทำ TOR"
 
 #. module: purchase_request
 #. odoo-python
