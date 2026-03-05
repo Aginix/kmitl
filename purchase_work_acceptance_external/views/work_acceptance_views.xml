@@ -3,13 +3,30 @@
       
     <!-- View work.acceptance form -->
     <record id="view_work_acceptance_form" model="ir.ui.view">
-        <field name="name">view.work.acceptance.form</field>
+        <field name="name">view.work.acceptance.form External</field>
         <field name="model">work.acceptance</field>
         <field name="inherit_id" ref="purchase_work_acceptance.view_work_acceptance_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='invoice_ref']" position="after">
               <field name="is_external" readonly="1"/>
               <field name="has_attachment" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_work_acceptance_attachment_form" model="ir.ui.view">
+        <field name="name">view.work.acceptance.form External</field>
+        <field name="model">work.acceptance</field>
+        <field name="inherit_id" ref="purchase_work_acceptance_attachment.view_work_acceptance_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='document']" position="inside">
+              <field name="is_external" invisible="1"/>
+            </xpath>
+            
+            <xpath expr="//page[@name='document']" position="attributes">
+              <attribute name="attrs">
+                {'invisible': [('is_external', '=', False)]}
+              </attribute>
             </xpath>
         </field>
     </record>
