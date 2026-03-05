@@ -30,7 +30,7 @@
                         />
                     </div>
                     <div style="position: absolute; top: 0px; right: 0px">
-                        <div>แทนพ.1</div>
+                        <div>พ.1</div>
                     </div>
                     <div class="oe_structure" />
                     <div style="height: 1px" />
@@ -115,15 +115,6 @@
                             <span
                                 class="fw-bolder text-decoration-underline"
                                 t-field="o.account_fiscal_year_id"
-                            />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            โดยมีการเบิกจ่ายดังนี้
-                            <span
-                                class="fw-bolder text-decoration-underline"
-                                t-field="o.payment_type"
                             />
                         </div>
                     </div>
