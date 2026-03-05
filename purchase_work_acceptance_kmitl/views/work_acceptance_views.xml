@@ -67,6 +67,12 @@
             >
                 <attribute name="optional">hide</attribute>
             </xpath>
+
+            <xpath expr="//field[@name='invoice_ref']" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': [('state', '!=', 'draft')]}
+                </attribute>
+            </xpath>
         </field>
     </record>
 
