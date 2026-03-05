@@ -1,15 +1,15 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* purchase_request
 # 	* l10n_th_gov_purchase_request
+# 	* purchase_request
 # 	* purchase_request_kmitl
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-05 04:55+0000\n"
-"PO-Revision-Date: 2026-03-05 04:55+0000\n"
+"POT-Creation-Date: 2026-03-05 10:05+0000\n"
+"PO-Revision-Date: 2026-03-05 10:05+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -549,8 +549,9 @@ msgid ""
 "Employee %s cannot appear in multiple committees except TOR and Evaluation "
 "committees."
 msgstr ""
-"คณะกรรมการ %s ไม่สามารถมีซ้ำกันในประเภทอื่นได้"
-"ยกเว้นคณะกรรมการพิจารณาผลและคณะกรรมการจัดทำ TOR"
+"คณะกรรมการ %s "
+"ไม่สามารถมีซ้ำกันในประเภทอื่นได้ยกเว้นคณะกรรมการพิจารณาผลและคณะกรรมการจัดทำ "
+"TOR"
 
 #. module: purchase_request
 #. odoo-python
@@ -1897,6 +1898,17 @@ msgstr "อีเมลที่ทำงาน"
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__phone
 msgid "Work Phone"
 msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__procurement_committee__committee_type__work_supervisor
+msgid "Work Supervisor"
+msgstr "ผู้ควบคุมงาน"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__work_supervisor_ids
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form_l10n
+msgid "Work Supervisors"
+msgstr "รายชื่อผู้ควบคุมงาน"
 
 #. module: l10n_th_gov_purchase_request
 #. odoo-python

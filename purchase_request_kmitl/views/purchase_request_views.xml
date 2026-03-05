@@ -86,7 +86,6 @@
                             <field name="email" />
                             <field name="phone" />
                             <field name="mobile_phone" />
-                            <field name="note" />
                         </tree>
                     </field>
                 </page>
