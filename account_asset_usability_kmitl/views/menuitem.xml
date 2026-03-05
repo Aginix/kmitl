@@ -41,7 +41,6 @@
         name="Configuration" 
         parent="menu_assets_management"
         groups="account.group_account_manager"
-        sequence="50"
     />
 
     <menuitem 

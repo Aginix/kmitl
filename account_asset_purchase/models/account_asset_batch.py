@@ -15,6 +15,7 @@ class AccountAssetBatch(models.Model):
     name = fields.Char(
         string="Document No.",
         tracking=True,
+        required=True
     )
 
     date = fields.Date(
@@ -201,25 +202,23 @@ class AccountAssetBatch(models.Model):
             if any(line.amount <= 0 for line in batch.line_ids):
                 raise ValidationError(_("Some lines have zero amount. Please correct them before proceeding."))
 
-            asset = self.env["account.asset"]
-            for batch in self:
-                for line in batch.line_ids:
-                    for _ in range(line.amount):
-                        asset.create({
-                            "name": line.name,
-                            "analytic_distribution": line.analytic_distribution,
-                            "date_start": batch.date,
-                            "account_fiscal_year_id": batch.account_fiscal_year_id.id,
-                            "operating_unit_id": batch.operating_unit_id.id,
-                            "department_id": batch.department_id.id,
-                            "purchase_id": batch.purchase_id.id if batch.purchase_id else False,
-                            "gpsc_id": line.gpsc_id.id,
-                            "profile_id": line.profile_id.id,
-                            "purchase_value": line.price_per_unit,
-                            "batch_line_id": line.id,
-                            "batch_id": batch.id,
-                        })
-                batch.state = "done"
+            for line in batch.line_ids:
+                for _ in range(line.amount):
+                    asset = self.env["account.asset"].create({
+                        "name": line.name,
+                        "analytic_distribution": batch.purchase_id.analytic_distribution,
+                        "date_start": batch.date,
+                        "account_fiscal_year_id": batch.account_fiscal_year_id.id,
+                        "operating_unit_id": batch.operating_unit_id.id,
+                        "department_id": batch.department_id.id,
+                        "purchase_id": batch.purchase_id.id if batch.purchase_id else False,
+                        "gpsc_id": line.gpsc_id.id,
+                        "profile_id": line.profile_id.id,
+                        "purchase_value": line.price_per_unit,
+                        "batch_line_id": line.id,
+                        "batch_id": batch.id,
+                    })
+            batch.state = "done"
 
     def action_open_asset_items(self):
         self.ensure_one()
