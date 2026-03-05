@@ -17,6 +17,7 @@ class ProcurementCommittee(models.Model):
             ("tor_committee", "TOR Committee"),
             ("price_determine", "Price Determine Committee"),
             ("evaluation", "Evaluation Committee"),
+            ("work_supervisor", "Work Supervisor"),
         ],
     )
     approve_role = fields.Selection(
@@ -38,7 +39,7 @@ class ProcurementCommittee(models.Model):
 
     @api.constrains("employee_id", "request_id", "committee_type")
     def _check_committee_cross_type_unique(self):
-        allowed_overlap = {"tor_committee", "evaluation"}
+        allowed_overlap = {"tor_committee", "evaluation", "work_supervisor"}
         for rec in self:
             if not rec.employee_id or not rec.request_id:
                 continue

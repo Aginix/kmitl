@@ -71,6 +71,25 @@
                     <separator string="Work Acceptance Committee" />
                     <field name="work_acceptance_committee_ids" nolabel="1" context="{'default_committee_type': 'work_acceptance'}" attrs="{'readonly': [('is_editable', '=', False)]}" />
                 </page>
+                <page name="work_supervisor" string="Work Supervisors">
+                    <field
+                        name="work_supervisor_ids"
+                        nolabel="1"
+                        context="{'default_committee_type': 'work_supervisor'}"
+                        attrs="{'readonly': [('is_editable', '=', False)]}"
+                    >
+                        <tree editable="bottom">
+                            <field name="committee_type" invisible="1" />
+                            <field name="employee_id" options="{'no_create': True, 'no_open': True}" />
+                            <field name="name" />
+                            <field name="department_id" />
+                            <field name="email" />
+                            <field name="phone" />
+                            <field name="mobile_phone" />
+                            <field name="note" />
+                        </tree>
+                    </field>
+                </page>
             </xpath>
         </field>
     </record>
