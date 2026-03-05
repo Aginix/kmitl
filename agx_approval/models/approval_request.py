@@ -22,6 +22,13 @@ class ApprovalRequest(models.Model):
         "cancelled": [("readonly", True)],
     }
 
+    attachment_ids = fields.One2many(
+        'ir.attachment',
+        'res_id',
+        string='Document Attachments',
+        tracking=True,
+    )
+
     active = fields.Boolean(
         string="Active",
         default=True,
