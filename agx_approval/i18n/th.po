@@ -154,6 +154,17 @@ msgid "Archived"
 msgstr ""
 
 #. module: agx_approval
+#: model:ir.model,name:agx_approval.model_ir_attachment
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "Attachment"
+msgstr "เอกสารแนบ"
+
+#. module: agx_approval
+#: model_terms:ir.ui.view,arch_db:agx_approval.approval_request_view_form
+msgid "File Name"
+msgstr "ชื่อไฟล์"
+
+#. module: agx_approval
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__message_attachment_count
 msgid "Attachment Count"
 msgstr ""
@@ -767,3 +778,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:agx_approval.field_approval_request__source_analytic_id
 msgid "แหล่งเงิน"
 msgstr ""
+
+#. module: agx_approval
+#: model:ir.model.fields,field_description:agx_approval.field_approval_request__attachment_ids
+msgid "Document Attachments"
+msgstr "เอกสารแนบ"
