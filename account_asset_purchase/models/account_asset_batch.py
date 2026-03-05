@@ -116,6 +116,7 @@ class AccountAssetBatch(models.Model):
         string="Source of asset",
         tracking=True,
     )
+    
     received_from_agency = fields.Char(
         string="received from agency",
         tracking=True,
