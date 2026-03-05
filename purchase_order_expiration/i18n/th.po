@@ -1,6 +1,6 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* purchase_order_expire
+# 	* purchase_order_expiration
 #
 msgid ""
 msgstr ""
@@ -17,61 +17,61 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.6\n"
 
-#. module: purchase_order_expire
-#: model:ir.model.fields.selection,name:purchase_order_expire.selection__purchase_order__expire_range__0-15
+#. module: purchase_order_expiration
+#: model:ir.model.fields.selection,name:purchase_order_expiration.selection__purchase_order__expire_range__0-15
 msgid "0-15 Days"
 msgstr "อายุสัญญา 0-15"
 
-#. module: purchase_order_expire
-#: model:ir.model.fields.selection,name:purchase_order_expire.selection__purchase_order__expire_range__16-30
+#. module: purchase_order_expiration
+#: model:ir.model.fields.selection,name:purchase_order_expiration.selection__purchase_order__expire_range__16-30
 msgid "16-30 Days"
 msgstr "อายุสัญญา 16-30"
 
-#. module: purchase_order_expire
-#: model:ir.model.fields.selection,name:purchase_order_expire.selection__purchase_order__expire_range__31-60
+#. module: purchase_order_expiration
+#: model:ir.model.fields.selection,name:purchase_order_expiration.selection__purchase_order__expire_range__31-60
 msgid "31-60 Days"
 msgstr "อายุสัญญา 31-60"
 
-#. module: purchase_order_expire
-#: model:ir.actions.act_window,name:purchase_order_expire.action_contracts_expiring
-#: model:ir.ui.menu,name:purchase_order_expire.menu_purchase_cotract_expire
+#. module: purchase_order_expiration
+#: model:ir.actions.act_window,name:purchase_order_expiration.action_contracts_expiring
+#: model:ir.ui.menu,name:purchase_order_expiration.menu_purchase_cotract_expire
 msgid "Contract Nearly Expire"
 msgstr "สัญญาใกล้หมดอายุ"
 
-#. module: purchase_order_expire
-#: model_terms:ir.ui.view,arch_db:purchase_order_expire.view_purchase_order_tree_expiring
+#. module: purchase_order_expiration
+#: model_terms:ir.ui.view,arch_db:purchase_order_expiration.view_purchase_order_tree_expiring
 msgid "Contracts Nearly Expiring"
 msgstr "สัญญาใกล้หมดอายุ"
 
-#. module: purchase_order_expire
-#: model:ir.model.fields,field_description:purchase_order_expire.field_purchase_order__days_to_expire
-#: model:ir.model.fields,field_description:purchase_order_expire.field_purchase_order__days_to_expire_display
+#. module: purchase_order_expiration
+#: model:ir.model.fields,field_description:purchase_order_expiration.field_purchase_order__days_to_expire
+#: model:ir.model.fields,field_description:purchase_order_expiration.field_purchase_order__days_to_expire_display
 msgid "Days to Expire"
 msgstr "วันที่คงเหลือของสัญญา"
 
-#. module: purchase_order_expire
-#: model:ir.model.fields,field_description:purchase_order_expire.field_purchase_order__expire_range
-#: model_terms:ir.ui.view,arch_db:purchase_order_expire.view_purchase_order_search_expiring
+#. module: purchase_order_expiration
+#: model:ir.model.fields,field_description:purchase_order_expiration.field_purchase_order__expire_range
+#: model_terms:ir.ui.view,arch_db:purchase_order_expiration.view_purchase_order_search_expiring
 msgid "Expire Range"
 msgstr "วันที่คงเหลือของสัญญา"
 
-#. module: purchase_order_expire
-#: model_terms:ir.ui.view,arch_db:purchase_order_expire.view_purchase_order_search_expiring
+#. module: purchase_order_expiration
+#: model_terms:ir.ui.view,arch_db:purchase_order_expiration.view_purchase_order_search_expiring
 msgid "Group By"
 msgstr ""
 
-#. module: purchase_order_expire
-#: model:ir.model.fields.selection,name:purchase_order_expire.selection__purchase_order__expire_range__60+
+#. module: purchase_order_expiration
+#: model:ir.model.fields.selection,name:purchase_order_expiration.selection__purchase_order__expire_range__60+
 msgid "Morethan 60 Days"
-msgstr "มากกว่า 60 วัน"
+msgstr "อายุสัญญามากกว่า 60 วัน"
 
-#. module: purchase_order_expire
-#: model:ir.model,name:purchase_order_expire.model_purchase_order
+#. module: purchase_order_expiration
+#: model:ir.model,name:purchase_order_expiration.model_purchase_order
 msgid "Purchase Order"
 msgstr "คำสั่งซื้อ"
 
-#. module: purchase_order_expire
-#: model:ir.actions.server,name:purchase_order_expire.ir_cron_recompute_expire_ir_actions_server
-#: model:ir.cron,cron_name:purchase_order_expire.ir_cron_recompute_expire
+#. module: purchase_order_expiration
+#: model:ir.actions.server,name:purchase_order_expiration.ir_cron_recompute_expire_ir_actions_server
+#: model:ir.cron,cron_name:purchase_order_expiration.ir_cron_recompute_expire
 msgid "Recompute Contract Expire Days"
 msgstr ""

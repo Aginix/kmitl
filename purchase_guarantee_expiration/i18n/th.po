@@ -1,6 +1,6 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* purchase_guarantee_expire
+# 	* purchase_guarantee_expiration
 #
 msgid ""
 msgstr ""
@@ -15,8 +15,8 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
-#. module: purchase_guarantee_expire
-#: model:ir.actions.act_window,name:purchase_guarantee_expire.action_guarantees_expiring
-#: model:ir.ui.menu,name:purchase_guarantee_expire.menu_purchase_guarantee_expire
+#. module: purchase_guarantee_expiration
+#: model:ir.actions.act_window,name:purchase_guarantee_expiration.action_guarantees_expiring
+#: model:ir.ui.menu,name:purchase_guarantee_expiration.menu_purchase_guarantee_expiration
 msgid "Guarantee Expire"
 msgstr "หลักประกันหมดอายุ"
