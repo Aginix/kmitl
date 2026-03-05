@@ -6,7 +6,7 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    'depends': ['account_asset_batch_subcomponent', 'account_asset_usability_kmitl'],
+    'depends': ['account_asset_batch_subcomponent', 'account_asset_kmitl'],
     "data": [
         "views/account_asset_donation.xml",
         "views/account_asset_procurement.xml",
