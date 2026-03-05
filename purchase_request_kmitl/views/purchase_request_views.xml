@@ -84,7 +84,6 @@
                             <field name="name" />
                             <field name="department_id" />
                             <field name="email" />
-                            <field name="phone" />
                             <field name="mobile_phone" />
                         </tree>
                     </field>
