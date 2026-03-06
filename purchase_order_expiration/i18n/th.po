@@ -75,3 +75,28 @@ msgstr "คำสั่งซื้อ"
 #: model:ir.cron,cron_name:purchase_order_expiration.ir_cron_recompute_expire
 msgid "Recompute Contract Expire Days"
 msgstr ""
+
+#. module: purchase_order_expiration
+#. odoo-python
+#: code:addons/purchase_order_expiration/models/purchase_order.py:0
+#, python-format
+msgid ""
+"There are %s contracts that are about to expire. <a href=\"/"
+"web#action=%s\">Click to review</a>"
+msgstr ""
+"มีสัญญา/ใบสั่งจ้าง/ซื้อ %s ฉบับที่กำลังจะหมดอายุ<a href=\"/web#action=%s\">คลิกเพื่อตรวจสอบ</a>"
+
+#. module: purchase_order_expiration
+#: model_terms:ir.ui.view,arch_db:purchase_order_expiration.res_config_settings_view_form_purchase_notification
+msgid "Contract Expiry Notification"
+msgstr "แจ้งเตือนสัญญาใกล้หมดอายุ"
+
+#. module: purchase_order_expiration
+#: model:ir.model.fields,field_description:purchase_order_expiration.field_res_config_settings__purchase_contract_notify_days
+msgid "Notify Before Contract Expiry (Days)"
+msgstr "การแจ้งเตือนก่อนสัญญาหมดอายุ (วัน)"
+
+#. module: purchase_order_expiration
+#: model_terms:ir.ui.view,arch_db:purchase_order_expiration.res_config_settings_view_form_purchase_notification
+msgid "Notify purchase users when contract expires within this many days"
+msgstr "การแจ้งเตือนเจ้าหน้าที่พัสดุเมื่อสัญญาหมดอายุภายในจำนวนวันดังกล่าว"
