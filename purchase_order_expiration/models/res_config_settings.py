@@ -13,5 +13,5 @@ class ResConfigSettings(models.TransientModel):
     purchase_contract_notify_days = fields.Integer(
         string="Notify Before Contract Expiry (Days)",
         default=15,
-        config_parameter='purchase_order_notification.notify_before_days',
+        config_parameter='purchase_order_expiration.notify_before_days',
     )

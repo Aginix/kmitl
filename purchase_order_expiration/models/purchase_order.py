@@ -66,7 +66,7 @@ class PurchaseOrder(models.Model):
         today = fields.Date.today()
         notify_before_days = int(
             self.env['ir.config_parameter'].sudo().get_param(
-                'purchase_order_notification.notify_before_days',
+                'purchase_order_expiration.notify_before_days',
                 default=15,
             )
         )
