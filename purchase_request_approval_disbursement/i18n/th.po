@@ -24,7 +24,7 @@ msgid ""
 "                            If you select \"Use Purchase Order\", you must create a Purchase Order."
 msgstr ""
 "<strong>หมายเหตุ:</strong>\n"
-"                            ถ้าหากเลือก “สร้างใบจัดซื้อ/จ้าง”, ระบบจะบังคับให้สร้างใบจัดซื้อ/จ้าง เท่านั้น"
+"                            ถ้าหากเลือก “สร้างสัญญา/ใบสั่งซื้อ/จ้าง”, ระบบจะบังคับให้สร้างสัญญา/ใบสั่งซื้อ/จ้าง เท่านั้น"
 
 #. module: purchase_request_approval_disbursement
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_search
@@ -56,7 +56,7 @@ msgstr "สร้างใบขอเบิก"
 #. module: purchase_request_approval_disbursement
 #: model_terms:ir.ui.view,arch_db:purchase_request_approval_disbursement.view_purchase_request_approval_form
 msgid "Create Purchase Order"
-msgstr "สร้างใบจัดซื้อ/จ้าง"
+msgstr "สร้างสัญญา/ใบสั่งซื้อ/จ้าง"
 
 #. module: purchase_request_approval_disbursement
 #: model:ir.model,name:purchase_request_approval_disbursement.model_disbursement_request
@@ -141,7 +141,7 @@ msgstr "จำนวนใบขอเบิก"
 #. module: purchase_request_approval_disbursement
 #: model:ir.model.fields,field_description:purchase_request_approval_disbursement.field_purchase_request_approval__use_purchase_order
 msgid "Use Purchase Order"
-msgstr "สร้างใบจัดซื้อ/จ้าง"
+msgstr "สร้างสัญญา/ใบสั่งซื้อ/จ้าง"
 
 #. module: purchase_request_approval_disbursement
 #: model:ir.model.fields.selection,name:purchase_request_approval_disbursement.selection__purchase_request_approval__billing_status__validated
