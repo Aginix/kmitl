@@ -13,9 +13,3 @@ class AccountAssetLine(models.Model):
             move_data.update({"operating_unit_id": self.asset_id.operating_unit_id.id})
         return move_data
 
-    def create_move(self):
-        created_move_ids = super().create_move()
-        moves = self.env["account.move"].browse(created_move_ids)
-        for move in moves:
-            move._onchange_invoice_line_ids()
-        return created_move_ids
