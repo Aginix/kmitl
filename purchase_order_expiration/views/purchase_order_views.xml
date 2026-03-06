@@ -49,7 +49,7 @@
     <!-- Menu -->
     <menuitem id="menu_purchase_cotract_expire"
               name="Contract Nearly Expire"
-              parent="purchase_menu.menu_purchase_tracking"
+              parent="purchase_kmitl.menu_purchase_tracking"
               action="purchase_order_expiration.action_contracts_expiring"
               sequence="20"/>
 

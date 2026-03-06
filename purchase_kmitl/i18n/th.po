@@ -1,6 +1,6 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* purchase_menu
+# 	* purchase_kmitl
 #
 msgid ""
 msgstr ""
@@ -17,37 +17,27 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.6\n"
 
-#. module: purchase_menu
-#: model:ir.ui.menu,name:purchase_menu.menu_purchase_assets
-msgid "Assets"
-msgstr "ครุภัณฑ์/สินทรัพย์"
-
-#. module: purchase_menu
-#: model:ir.ui.menu,name:purchase_menu.menu_purchase_contract_orders
+#. module: purchase_kmitl
+#: model:ir.ui.menu,name:purchase_kmitl.menu_purchase_contract_orders
 msgid "Contract Orders"
 msgstr "รายการสัญญา/ใบสั่งซื้อ/จ้าง"
 
-#. module: purchase_menu
-#: model:ir.ui.menu,name:purchase_menu.menu_purchase_tracking
+#. module: purchase_kmitl
+#: model:ir.ui.menu,name:purchase_kmitl.menu_purchase_tracking
 msgid "Contract Tracking"
 msgstr "ติตดามสัญญา"
 
-#. module: purchase_menu
-#: model:ir.ui.menu,name:purchase_menu.menu_product_form
+#. module: purchase_kmitl
+#: model:ir.ui.menu,name:purchase_kmitl.menu_product_form
 msgid "Products"
 msgstr "สินค้า"
 
-#. module: purchase_menu
-#: model:ir.ui.menu,name:purchase_menu.menu_purchase_contract_root
+#. module: purchase_kmitl
+#: model:ir.ui.menu,name:purchase_kmitl.menu_purchase_contract_root
 msgid "Purchase Contract"
 msgstr "สัญญา/ใบสั่งซื้อ/จ้าง"
 
-#. module: purchase_menu
-#: model:ir.ui.menu,name:purchase_menu.menu_vendor
+#. module: purchase_kmitl
+#: model:ir.ui.menu,name:purchase_kmitl.menu_vendor
 msgid "Vendors"
 msgstr "คู่ค้า"
-
-#. module: purchase_menu
-#: model:ir.ui.menu,name:purchase_menu.menu_purchase_work_acceptance
-msgid "Work Acceptance"
-msgstr "การตรวจรับ"
