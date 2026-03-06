@@ -44,10 +44,16 @@ class ReadonlyManagementFields(models.Model):
         compute='_compute_used_field_ids',
         store=False,
     )
+
     used_model = fields.Many2one(
         'ir.model',
         compute='_compute_used_field_ids',
         store=False,
+    )
+
+    force_readonly = fields.Boolean(
+        string='Force Readonly',
+        default=True,
     )
 
     @api.depends('management_id')
