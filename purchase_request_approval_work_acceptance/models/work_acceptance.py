@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
-import logging
-
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
+from odoo.exceptions import UserError
 
 
 class WorkAcceptance(models.Model):
@@ -30,6 +26,7 @@ class WorkAcceptance(models.Model):
             'res_id': self.approval_id.id,
             'target': 'current',
         }
+
     @api.model_create_multi
     def create(self, vals_list):
         records = super().create(vals_list)

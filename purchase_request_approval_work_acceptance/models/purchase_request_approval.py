@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
-import logging
-
 from odoo import Command, _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
+from odoo.exceptions import UserError
 
 
 class PurchaseRequestApproval(models.Model):
@@ -12,8 +8,8 @@ class PurchaseRequestApproval(models.Model):
 
     wa_count = fields.Integer(compute="_compute_wa_ids", string="WA count", default=0)
     wa_ids = fields.One2many(comodel_name="work.acceptance", inverse_name="approval_id", string="Work Acceptances")
-    wa_line_ids = fields.One2many(comodel_name="work.acceptance.line",inverse_name="approval_line_id",string="WA Lines", readonly=True)
-    wa_accepted = fields.Boolean(string="WA Accepted",compute="_compute_wa_accepted",search="_search_wa_accepted")
+    wa_line_ids = fields.One2many(comodel_name="work.acceptance.line", inverse_name="approval_line_id", string="WA Lines", readonly=True)
+    wa_accepted = fields.Boolean(string="WA Accepted", compute="_compute_wa_accepted", search="_search_wa_accepted")
 
     @api.depends("wa_line_ids")
     def _compute_wa_ids(self):
@@ -33,7 +29,7 @@ class PurchaseRequestApproval(models.Model):
             "default_company_id": self.company_id.id,
             "default_currency_id": self.currency_id.id,
             "default_date_due": self.approval_date,
-            "default_work_acceptance_committee_ids" : lines,
+            "default_work_acceptance_committee_ids": lines,
             "default_wa_tier_validation": True,
             "default_wa_line_ids": [
                 Command.create(
