@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Account Asset Usability Kmitl',
+    'name': 'Purchase work acceptance cancel restriction',
     'version': '16.0.1.0.0',
-    'summary': """ Account Asset Usability Kmitl Summary """,
+    'summary': """ Purchase work acceptance cancel restriction Summary """,
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['l10n_th_gov_account_asset_management'],
-    'data': [
-        "views/menuitem.xml"
+    'depends': ['purchase_work_acceptance_kmitl'],
+    "data": [
+        "views/work_acceptance_views.xml"
     ],
     'installable': True,
     'auto_install': False,

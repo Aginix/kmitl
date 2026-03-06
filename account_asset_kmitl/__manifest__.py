@@ -10,6 +10,7 @@
     "data": [
         "data/res.users.role.xml",
         "data/account_asset_profile.xml",
+        "views/menuitem.xml",
         "views/account_asset_views.xml",
         "views/purchase_order_views.xml",
         "views/template_asset_number.xml",
