@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 
 
 class ReadonlyManagementFields(models.Model):
@@ -17,13 +17,13 @@ class ReadonlyManagementFields(models.Model):
         'ir.model',
         related='management_id.model_id',
         store=True,
-        readonly=False
+        readonly=False,
     )
 
     model_name = fields.Char(
         related='model_id.model',
         store=False,
-        readonly=True
+        readonly=True,
     )
 
     field_id = fields.Many2one(
@@ -34,14 +34,9 @@ class ReadonlyManagementFields(models.Model):
         ondelete='cascade',
     )
 
-    force_readonly = fields.Boolean(
-        string='Force Readonly',
-        default=True,
-    )
-
     domain = fields.Char(
         string='Domain',
-        help="Domain to specify when the field should be editable.",
+        help="Domain to specify when the field should be readonly.",
     )
 
     used_field_ids = fields.Many2many(
@@ -63,3 +58,4 @@ class ReadonlyManagementFields(models.Model):
                 rec.used_model = rec.management_id.model_id
             else:
                 rec.used_field_ids = False
+                rec.used_model = False
