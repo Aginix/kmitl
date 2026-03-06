@@ -82,7 +82,7 @@ class PurchaseOrder(models.Model):
         if not purchase_orders:
             return
 
-        action = self.env.ref('purchase_menu.action_contracts_expiring')
+        action = self.env.ref('purchase_order_expiration.action_contracts_expiring')
         odoobot_user = self.env.ref('base.user_root')
         orders_by_user = {}
 
