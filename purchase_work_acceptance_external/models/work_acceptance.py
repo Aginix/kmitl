@@ -26,19 +26,6 @@ class WorkAcceptance(models.Model):
         for rec in self:
             rec.has_attachment = bool(rec.attachment_ids)
 
-    @api.depends('review_ids', 'is_external')
-    def _compute_need_validation(self):
-        for rec in self:
-            if rec.is_external:
-                rec.need_validation = False
-            else:
-                super(WorkAcceptance, rec)._compute_need_validation()
-    
-    def action_view_wa(self):
-        res = super().action_view_wa()
-        res['context']['default_is_external'] = self.is_external
-        return res
-
     def button_accept(self, force=False):
         for rec in self:
             if rec.is_external and not rec.has_attachment:

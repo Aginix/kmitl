@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View work.acceptance.committee.wizard form -->
+    <record id="view_work_acceptance_committee_wizard_form" model="ir.ui.view">
+        <field name="name">view.work.acceptance.committee.wizard.form</field>
+        <field name="model">work.acceptance.committee.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Work Acceptance Committee Wizard">
+                <field name="wa_id" invisible="1"/>
+                <field name="line_ids" nolabel="1">
+                    <tree editable="bottom" create="0" delete="0">
+                        <field name="committee_id" invisible="1"/>
+                        <field name="employee_name" readonly="1"/>
+                        <field name="approve_role" readonly="1"/>
+                        <field
+                            name="status"
+                            decoration-success="status == 'accept'"
+                            decoration-danger="status == 'not_accept'"
+                            required="1"
+                        />
+                        <field
+                            name="note"
+                            attrs="{
+                                'invisible': [('status', '!=', 'not_accept')],
+                                'required': [('status', '=', 'not_accept')]
+                            }"
+                        />
+                    </tree>
+                </field>
+                <footer>
+                    <button
+                        name="button_confirm"
+                        string="Confirm"
+                        type="object"
+                        class="oe_highlight"
+                    />
+                    <button special="cancel" string="Cancel" class="oe_link"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

@@ -6,7 +6,7 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['purchase_work_acceptance_kmitl'],
+    'depends': ['l10n_th_gov_work_acceptance'],
     "data": [
         "views/work_acceptance_views.xml"
     ],

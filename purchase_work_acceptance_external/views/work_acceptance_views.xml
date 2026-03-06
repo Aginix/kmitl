@@ -7,8 +7,8 @@
         <field name="model">work.acceptance</field>
         <field name="inherit_id" ref="purchase_work_acceptance.view_work_acceptance_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='invoice_ref']" position="after">
-              <field name="is_external" readonly="1"/>
+            <xpath expr="//field[@name='partner_id']" position="before">
+              <field name="is_external" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
               <field name="has_attachment" invisible="1"/>
             </xpath>
         </field>
