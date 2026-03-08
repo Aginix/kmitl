@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 Aginix
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html). -->
+<odoo>
+    <record
+        id="partner_identification_th_national_id_category"
+        model="res.partner.id_category"
+    >
+        <field name="name">Thai National ID</field>
+        <field name="code">th_national_id</field>
+        <field
+            name="validation_code"
+        ><![CDATA[failed = self.validate_res_partner_th_national_id(id_number)]]></field>
+    </record>
+</odoo>
