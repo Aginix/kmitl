@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="portal_profile_view_form" model="ir.ui.view">
+        <field name="name">portal.profile.form</field>
+        <field name="model">portal.profile</field>
+        <field name="arch" type="xml">
+            <form string="Portal Profile">
+                <sheet>
+                    <group>
+                        <field name="partner_id" />
+                    </group>
+                    <notebook>
+                        <page string="Name Info" name="name_info">
+                            <group>
+                                <field name="title" />
+                            </group>
+                            <group>
+                                <group string="Thai Name">
+                                    <field name="first_name" />
+                                    <field name="middle_name" />
+                                    <field name="last_name" />
+                                </group>
+                                <group string="English Name">
+                                    <field name="first_name_en" />
+                                    <field name="middle_name_en" />
+                                    <field name="last_name_en" />
+                                </group>
+                            </group>
+                            <group string="Contact Info">
+                                <group>
+                                    <field name="email" />
+                                    <field name="phone" />
+                                </group>
+                                <group>
+                                    <field name="street" />
+                                    <field name="street2" />
+                                    <field name="zip_id" />
+                                    <field name="city" />
+                                    <field name="state_id" />
+                                    <field name="zip" />
+                                    <field name="country_id" />
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Personal Info" name="personal_info">
+                            <group>
+                                <group>
+                                    <field name="birthday" />
+                                    <field name="nationality_id" />
+                                </group>
+                                <group>
+                                    <field name="marital" />
+                                    <field
+                                        name="spouse_prefix"
+                                        attrs="{'invisible': [('marital', '!=', 'married')]}"
+                                    />
+                                    <field
+                                        name="spouse_first_name"
+                                        attrs="{'invisible': [('marital', '!=', 'married')]}"
+                                    />
+                                    <field
+                                        name="spouse_middle_name"
+                                        attrs="{'invisible': [('marital', '!=', 'married')]}"
+                                    />
+                                    <field
+                                        name="spouse_last_name"
+                                        attrs="{'invisible': [('marital', '!=', 'married')]}"
+                                    />
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Emergency Contact" name="emergency_contact">
+                            <group>
+                                <group>
+                                    <field name="emergency_contact_name" />
+                                    <field name="emergency_contact_relation" />
+                                </group>
+                                <group>
+                                    <field name="emergency_contact_phone" />
+                                    <field name="emergency_contact_email" />
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Health" name="health">
+                            <group>
+                                <field name="chronic_disease" />
+                            </group>
+                        </page>
+                        <page string="Academic Position" name="academic">
+                            <group>
+                                <group>
+                                    <field name="academic_position" />
+                                    <field name="academic_position_date" />
+                                </group>
+                            </group>
+                        </page>
+                        <page string="OCSC" name="ocsc">
+                            <group>
+                                <group>
+                                    <field name="has_ocsc_exam" />
+                                    <field
+                                        name="ocsc_exam_level"
+                                        attrs="{'invisible': [('has_ocsc_exam', '=', False)]}"
+                                    />
+                                    <field
+                                        name="ocsc_exam_date"
+                                        attrs="{'invisible': [('has_ocsc_exam', '=', False)]}"
+                                    />
+                                    <field
+                                        name="ocsc_exam_number"
+                                        attrs="{'invisible': [('has_ocsc_exam', '=', False)]}"
+                                    />
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Education History" name="education_history">
+                            <field name="education_history_ids">
+                                <tree editable="bottom">
+                                    <field name="level" />
+                                    <field name="program" />
+                                    <field name="major" />
+                                    <field name="institution" />
+                                    <field name="country_id" />
+                                    <field name="graduation_date" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Work History" name="work_history">
+                            <field name="work_history_ids">
+                                <tree editable="bottom">
+                                    <field name="company_name" />
+                                    <field name="job_title" />
+                                    <field name="salary" />
+                                    <field name="date_start" />
+                                    <field name="date_end" />
+                                    <field name="duration" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Skills &amp; Interests" name="skills">
+                            <group>
+                                <field name="foreign_language_skills" />
+                                <field name="computer_skills" />
+                                <field name="other_abilities" />
+                                <field name="interests" />
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="portal_profile_view_tree" model="ir.ui.view">
+        <field name="name">portal.profile.tree</field>
+        <field name="model">portal.profile</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="partner_id" />
+                <field name="birthday" />
+                <field name="nationality_id" />
+                <field name="marital" />
+                <field name="academic_position" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="portal_profile_action" model="ir.actions.act_window">
+        <field name="name">Portal Profiles</field>
+        <field name="res_model">portal.profile</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,482 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* portal_profile
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-06 00:00+0000\n"
+"PO-Revision-Date: 2026-03-06 00:00+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "-- Select --"
+msgstr "-- เลือก --"
+
+#. module: portal_profile
+#: model:ir.model.fields,help:portal_profile.field_portal_profile__partner_id_unique
+msgid "A profile already exists for this partner."
+msgstr "มีข้อมูลโปรไฟล์สำหรับคู่ค้านี้แล้ว"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__academic_position
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_profile_view_form
+msgid "Academic Position"
+msgstr "ตำแหน่งทางวิชาการ"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__academic_position_date
+msgid "Academic Position Date"
+msgstr "แต่งตั้งเมื่อ"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "Appointed Date"
+msgstr "แต่งตั้งเมื่อ"
+
+#. module: portal_profile
+#: model:ir.model.fields.selection,name:portal_profile.selection__portal_profile__academic_position__assistant_professor
+msgid "Assistant Professor"
+msgstr "ผู้ช่วยศาสตราจารย์"
+
+#. module: portal_profile
+#: model:ir.model.fields.selection,name:portal_profile.selection__portal_profile__academic_position__associate_professor
+msgid "Associate Professor"
+msgstr "รองศาสตราจารย์"
+
+#. module: portal_profile
+#: model:ir.model.fields.selection,name:portal_profile.selection__portal_profile__ocsc_exam_level__bachelor
+msgid "Bachelor"
+msgstr "ปริญญาตรี"
+
+#. module: portal_profile
+#: model:ir.model.fields.selection,name:portal_profile.selection__portal_education_history__level__bachelor
+msgid "Bachelor's Degree"
+msgstr "ปริญญาตรี"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__birthday
+msgid "Birthday"
+msgstr "วันเกิด"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__chronic_disease
+msgid "Chronic Disease"
+msgstr "โรคประจำตัว"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__city
+msgid "City"
+msgstr "เมือง"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_work_history__company_name
+msgid "Company"
+msgstr "บริษัท"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__computer_skills
+msgid "Computer Skills"
+msgstr "ความรู้ความสามารถทางคอมพิวเตอร์"
+
+#. module: portal_profile
+#: model:ir.model,name:portal_profile.model_res_partner
+msgid "Contact"
+msgstr "ผู้ติดต่อ"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "Contact &amp; Address"
+msgstr "ข้อมูลติดต่อและที่อยู่"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_profile_view_form
+msgid "Contact Info"
+msgstr "ข้อมูลติดต่อ"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_education_history__country_id
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__country_id
+msgid "Country"
+msgstr "ประเทศ"
+
+#. module: portal_profile
+#: model:ir.model.fields.selection,name:portal_profile.selection__portal_profile__marital__divorced
+msgid "Divorced"
+msgstr "หย่า"
+
+#. module: portal_profile
+#: model:ir.model.fields.selection,name:portal_profile.selection__portal_education_history__level__doctor
+msgid "Doctoral Degree"
+msgstr "ปริญญาเอก"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_work_history__duration
+msgid "Duration"
+msgstr "ระยะเวลา"
+
+#. module: portal_profile
+#: model:ir.model,name:portal_profile.model_portal_education_history
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__education_history_ids
+msgid "Education History"
+msgstr "ประวัติการศึกษา"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__email
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "Email"
+msgstr "อีเมล"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_profile_view_form
+msgid "Emergency Contact"
+msgstr "ผู้ติดต่อฉุกเฉิน"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__emergency_contact_email
+msgid "Emergency Contact Email"
+msgstr "อีเมลฉุกเฉิน"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__emergency_contact_name
+msgid "Emergency Contact Name"
+msgstr "ชื่อผู้ติดต่อฉุกเฉิน"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__emergency_contact_phone
+msgid "Emergency Contact Phone"
+msgstr "เบอร์โทรศัพท์ฉุกเฉิน"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__emergency_contact_relation
+msgid "Emergency Contact Relation"
+msgstr "ความสัมพันธ์"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_work_history__date_end
+msgid "End Date"
+msgstr "วันที่สิ้นสุด"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_profile_view_form
+msgid "English Name"
+msgstr "ชื่อภาษาอังกฤษ"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "Exam Date"
+msgstr "ผ่าน ก.พ. วันที่"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "Exam Level"
+msgstr "ผ่านระดับ"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "Exam Number"
+msgstr "เลขที่สอบผ่าน ก.พ."
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__first_name_en
+msgid "First Name (EN)"
+msgstr "ชื่อ (อังกฤษ)"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__first_name
+msgid "First Name (TH)"
+msgstr "ชื่อ"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__foreign_language_skills
+msgid "Foreign Language Skills"
+msgstr "ความรู้ความสามารถทางภาษาต่างประเทศ"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_education_history__graduation_date
+msgid "Graduation Date"
+msgstr "วันที่สำเร็จการศึกษา"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__has_ocsc_exam
+msgid "Has OCSC Exam"
+msgstr "มีใบสอบ ก.พ."
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_profile_view_form
+msgid "Health"
+msgstr "สุขภาพ"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_education_history__institution
+msgid "Institution"
+msgstr "สถานศึกษา"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__interests
+msgid "Interests"
+msgstr "ความสนใจ"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_work_history__job_title
+msgid "Job Title / Description"
+msgstr "ตำแหน่ง / ลักษณะงาน"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__last_name_en
+msgid "Last Name (EN)"
+msgstr "นามสกุล (อังกฤษ)"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__last_name
+msgid "Last Name (TH)"
+msgstr "นามสกุล"
+
+#. module: portal_profile
+#: model:ir.model.fields.selection,name:portal_profile.selection__portal_profile__academic_position__lecturer
+msgid "Lecturer"
+msgstr "อาจารย์"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_education_history__level
+msgid "Level"
+msgstr "ระดับการศึกษา"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_education_history__major
+msgid "Major"
+msgstr "สาขา/วิชาเอก"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__marital
+msgid "Marital Status"
+msgstr "สถานะการสมรส"
+
+#. module: portal_profile
+#: model:ir.model.fields.selection,name:portal_profile.selection__portal_profile__marital__married
+msgid "Married"
+msgstr "สมรส"
+
+#. module: portal_profile
+#: model:ir.model.fields.selection,name:portal_profile.selection__portal_profile__ocsc_exam_level__master
+msgid "Master"
+msgstr "ปริญญาโท"
+
+#. module: portal_profile
+#: model:ir.model.fields.selection,name:portal_profile.selection__portal_education_history__level__master
+msgid "Master's Degree"
+msgstr "ปริญญาโท"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__middle_name_en
+msgid "Middle Name (EN)"
+msgstr "ชื่อกลาง (อังกฤษ)"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__middle_name
+msgid "Middle Name (TH)"
+msgstr "ชื่อกลาง"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_home_profile
+msgid "My Profile"
+msgstr "ข้อมูลส่วนตัว"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "Name"
+msgstr "ชื่อ"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_profile_view_form
+msgid "Name Info"
+msgstr "ข้อมูลชื่อ"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__nationality_id
+msgid "Nationality"
+msgstr "สัญชาติ"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_profile_view_form
+msgid "OCSC"
+msgstr "ก.พ."
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__ocsc_exam_date
+msgid "OCSC Exam Date"
+msgstr "ผ่าน ก.พ. วันที่"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__ocsc_exam_level
+msgid "OCSC Exam Level"
+msgstr "ผ่านระดับ ก.พ."
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__ocsc_exam_number
+msgid "OCSC Exam Number"
+msgstr "เลขที่สอบผ่าน ก.พ."
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__other_abilities
+msgid "Other Abilities"
+msgstr "ความรู้ความสามารถด้านอื่น ๆ"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__partner_id
+msgid "Partner"
+msgstr "คู่ค้า"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_profile_view_form
+msgid "Personal Info"
+msgstr "ข้อมูลส่วนตัว"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__phone
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "Phone"
+msgstr "เบอร์โทรศัพท์"
+
+#. module: portal_profile
+#: model:ir.model,name:portal_profile.model_portal_profile
+msgid "Portal Profile"
+msgstr "โปรไฟล์พอร์ทัล"
+
+#. module: portal_profile
+#: model:ir.actions.act_window,name:portal_profile.portal_profile_action
+msgid "Portal Profiles"
+msgstr "โปรไฟล์พอร์ทัล"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "Position"
+msgstr "ตำแหน่ง"
+
+#. module: portal_profile
+#: model:ir.model.fields.selection,name:portal_profile.selection__portal_profile__academic_position__professor
+msgid "Professor"
+msgstr "ศาสตราจารย์"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_res_partner__profile_ids
+#: model_terms:ir.ui.view,arch_db:portal_profile.view_partner_form_inherit_profile
+msgid "Profile"
+msgstr "โปรไฟล์"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_education_history__program
+msgid "Program"
+msgstr "หลักสูตร"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "Relation"
+msgstr "ความสัมพันธ์"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_work_history__salary
+msgid "Salary"
+msgstr "เงินเดือน"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "Save"
+msgstr "บันทึก"
+
+#. module: portal_profile
+#: model:ir.model.fields.selection,name:portal_profile.selection__portal_profile__marital__single
+msgid "Single"
+msgstr "โสด"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_profile_view_form
+msgid "Skills &amp; Interests"
+msgstr "ทักษะและความสนใจ"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__spouse_first_name
+msgid "Spouse First Name"
+msgstr "ชื่อคู่สมรส"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__spouse_last_name
+msgid "Spouse Last Name"
+msgstr "นามสกุลคู่สมรส"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__spouse_middle_name
+msgid "Spouse Middle Name"
+msgstr "ชื่อกลางคู่สมรส"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__spouse_prefix
+msgid "Spouse Prefix"
+msgstr "คำนำหน้าชื่อคู่สมรส"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_work_history__date_start
+msgid "Start Date"
+msgstr "วันที่เริ่มต้น"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__state_id
+msgid "State"
+msgstr "จังหวัด"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__street
+msgid "Street"
+msgstr "ที่อยู่"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__street2
+msgid "Street2"
+msgstr "ที่อยู่ 2"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_profile_view_form
+msgid "Thai Name"
+msgstr "ชื่อภาษาไทย"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__title
+msgid "Title"
+msgstr "คำนำหน้าชื่อ"
+
+#. module: portal_profile
+#: model:ir.model.fields.selection,name:portal_profile.selection__portal_education_history__level__under_bachelor
+msgid "Under Bachelor's Degree"
+msgstr "ต่ำกว่าปริญญาตรี"
+
+#. module: portal_profile
+#: model:ir.model.fields.selection,name:portal_profile.selection__portal_profile__marital__widowed
+msgid "Widowed"
+msgstr "ม่าย"
+
+#. module: portal_profile
+#: model:ir.model,name:portal_profile.model_portal_work_history
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__work_history_ids
+msgid "Work History"
+msgstr "ประวัติการทำงาน"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__zip_id
+msgid "ZIP Location"
+msgstr "ที่ตั้งรหัสไปรษณีย์"
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__zip
+msgid "Zip"
+msgstr "รหัสไปรษณีย์"
