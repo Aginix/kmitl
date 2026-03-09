@@ -1,0 +1,133 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* readonly_management
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-09 00:00+0000\n"
+"PO-Revision-Date: 2026-03-09 07:00+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: readonly_management
+#: model:ir.model,name:readonly_management.model_readonly_management
+msgid "Readonly Management"
+msgstr "การจัดการ Readonly"
+
+#. module: readonly_management
+#: model:ir.model,name:readonly_management.model_readonly_management_fields
+msgid "Readonly Management Field Rule"
+msgstr "กฎ Readonly สำหรับฟิลด์"
+
+#. module: readonly_management
+#: model:ir.model.fields,field_description:readonly_management.field_readonly_management__name
+msgid "Configuration Name"
+msgstr "ชื่อกฎ"
+
+#. module: readonly_management
+#: model:ir.model.fields,field_description:readonly_management.field_readonly_management__model_id
+msgid "Target Model"
+msgstr "โมเดลเป้าหมาย"
+
+#. module: readonly_management
+#: model:ir.model.fields,field_description:readonly_management.field_readonly_management__model_name
+msgid "Model Technical Name"
+msgstr "ชื่อโมเดล (เทคนิค)"
+
+#. module: readonly_management
+#: model:ir.model.fields,field_description:readonly_management.field_readonly_management__field_ids
+msgid "Field Rules"
+msgstr "กฎสำหรับแต่ละฟิลด์"
+
+#. module: readonly_management
+#: model:ir.model.fields,field_description:readonly_management.field_readonly_management__apply_on_domain
+msgid "Global Gate Condition"
+msgstr "เงื่อนไขหลัก (Domain)"
+
+#. module: readonly_management
+#: model:ir.model.fields,field_description:readonly_management.field_readonly_management__note
+msgid "Notes"
+msgstr "โน้ต"
+
+#. module: readonly_management
+#: model:ir.model.fields,field_description:readonly_management.field_readonly_management__active
+msgid "Active"
+msgstr "ใช้งาน"
+
+#. module: readonly_management
+#: model:ir.model.fields,field_description:readonly_management.field_readonly_management_fields__management_id
+msgid "Configuration"
+msgstr "กฎหลัก"
+
+#. module: readonly_management
+#: model:ir.model.fields,field_description:readonly_management.field_readonly_management_fields__field_id
+msgid "Field"
+msgstr "ฟิลด์"
+
+#. module: readonly_management
+#: model:ir.model.fields,field_description:readonly_management.field_readonly_management_fields__field_name
+msgid "Field Technical Name"
+msgstr "ชื่อฟิลด์ (เทคนิค)"
+
+#. module: readonly_management
+#: model:ir.model.fields,field_description:readonly_management.field_readonly_management_fields__force_readonly
+msgid "Always Readonly (no per-field condition)"
+msgstr "readonly เสมอ (ตามเงื่อนไขหลักเท่านั้น)"
+
+#. module: readonly_management
+#: model:ir.model.fields,field_description:readonly_management.field_readonly_management_fields__domain
+msgid "Per-Field Condition"
+msgstr "เงื่อนไขเพิ่มเติม (Domain)"
+
+#. module: readonly_management
+#: model:ir.ui.menu,name:readonly_management.menu_readonly_management
+#: model:ir.actions.act_window,name:readonly_management.action_readonly_management
+msgid "Readonly Management"
+msgstr "การจัดการ Readonly"
+
+#. module: readonly_management
+#: model_terms:ir.ui.view,arch_db:readonly_management.view_readonly_management_form
+msgid "Configuration name..."
+msgstr "ชื่อกฎ..."
+
+#. module: readonly_management
+#: model_terms:ir.ui.view,arch_db:readonly_management.view_readonly_management_form
+msgid "Settings"
+msgstr "การตั้งค่าหลัก"
+
+#. module: readonly_management
+#: model_terms:ir.ui.view,arch_db:readonly_management.view_readonly_management_form
+msgid "Notes"
+msgstr "โน้ต"
+
+#. module: readonly_management
+#: model_terms:ir.ui.view,arch_db:readonly_management.view_readonly_management_form
+msgid "Field Rules"
+msgstr "กฎสำหรับแต่ละฟิลด์"
+
+#. module: readonly_management
+#: model_terms:ir.ui.view,arch_db:readonly_management.view_readonly_management_form
+msgid "Always Readonly"
+msgstr "readonly เสมอ"
+
+#. module: readonly_management
+#: model_terms:ir.ui.view,arch_db:readonly_management.view_readonly_management_form
+msgid "Per-Field Condition"
+msgstr "เงื่อนไขเพิ่มเติม"
+
+#. module: readonly_management
+#: model_terms:ir.ui.view,arch_db:readonly_management.view_readonly_management_form
+msgid "Archived"
+msgstr "จัดเก็บถาวร"
+
+#. module: readonly_management
+#: model_terms:ir.actions.act_window,help:readonly_management.action_readonly_management
+msgid "No readonly configurations yet. Click here to create one."
+msgstr "ยังไม่มีกฎ readonly คลิกที่นี่เพื่อสร้างกฎใหม่"

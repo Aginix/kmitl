@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem
+        id="menu_readonly_management"
+        name="Readonly Management"
+        parent="base.menu_action_technical"
+        action="action_readonly_management"
+        sequence="99"
+        groups="base.group_system"
+    />
+
+</odoo>

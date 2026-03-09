@@ -1,0 +1,5 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_readonly_management_user,readonly_management_user,model_readonly_management,base.group_user,1,0,0,0
+access_readonly_management_system,readonly_management_system,model_readonly_management,base.group_system,1,1,1,1
+access_readonly_management_fields_user,readonly_management_fields_user,model_readonly_management_fields,base.group_user,1,0,0,0
+access_readonly_management_fields_system,readonly_management_fields_system,model_readonly_management_fields,base.group_system,1,1,1,1

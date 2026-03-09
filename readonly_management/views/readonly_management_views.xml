@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Tree View -->
+    <record id="view_readonly_management_tree" model="ir.ui.view">
+        <field name="name">view.readonly.management.tree</field>
+        <field name="model">readonly.management</field>
+        <field name="arch" type="xml">
+            <tree string="Readonly Management">
+                <field name="name" string="Configuration Name" />
+                <field name="model_id" string="Target Model" />
+                <field name="model_name" string="Model Technical Name" optional="hide" />
+                <field name="apply_on_domain" string="Global Gate Condition" optional="hide" />
+                <field name="active" widget="boolean_toggle" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_readonly_management_form" model="ir.ui.view">
+        <field name="name">view.readonly.management.form</field>
+        <field name="model">readonly.management</field>
+        <field name="arch" type="xml">
+            <form string="Readonly Management">
+                <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': [('active', '=', True)]}"
+                    />
+                    <field name="active" invisible="1" />
+                    <div class="oe_title">
+                        <label for="name" />
+                        <h1>
+                            <field name="name" placeholder="Configuration name..." />
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Settings">
+                            <field
+                                name="model_id"
+                                string="Target Model"
+                                options="{'no_create': True, 'no_open': True}"
+                            />
+                            <field name="model_name" string="Model Technical Name" readonly="1" />
+                            <field
+                                name="apply_on_domain"
+                                string="Global Gate Condition"
+                                placeholder="[('state', 'in', ['submit', 'to_verify'])]"
+                            />
+                        </group>
+                        <group string="Notes">
+                            <field name="note" string="Notes" nolabel="1" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="field_rules" string="Field Rules">
+                            <field name="field_ids" string="Field Rules">
+                                <tree editable="bottom">
+                                    <field
+                                        name="field_id"
+                                        string="Field"
+                                        domain="[('model_id', '=', parent.model_id)]"
+                                        options="{'no_create': True, 'no_open': True}"
+                                    />
+                                    <field
+                                        name="field_name"
+                                        string="Field Technical Name"
+                                        readonly="1"
+                                        optional="hide"
+                                    />
+                                    <field
+                                        name="force_readonly"
+                                        string="Always Readonly"
+                                        widget="boolean_toggle"
+                                    />
+                                    <field
+                                        name="domain"
+                                        string="Per-Field Condition"
+                                        attrs="{'invisible': [('force_readonly', '=', True)]}"
+                                        placeholder="[('total_amount', '>', 100000)]"
+                                        optional="show"
+                                    />
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_readonly_management_search" model="ir.ui.view">
+        <field name="name">view.readonly.management.search</field>
+        <field name="model">readonly.management</field>
+        <field name="arch" type="xml">
+            <search string="Search Readonly Configurations">
+                <field name="name" string="Configuration Name" />
+                <field name="model_id" string="Target Model" />
+                <field name="model_name" string="Model Technical Name" />
+                <separator />
+                <filter
+                    name="active"
+                    string="Active"
+                    domain="[('active', '=', True)]"
+                />
+                <filter
+                    name="archived"
+                    string="Archived"
+                    domain="[('active', '=', False)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Target Model"
+                        name="group_model"
+                        domain="[]"
+                        context="{'group_by': 'model_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Window Action -->
+    <record id="action_readonly_management" model="ir.actions.act_window">
+        <field name="name">Readonly Management</field>
+        <field name="res_model">readonly.management</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                No readonly configurations yet. Click here to create one.
+            </p>
+        </field>
+    </record>
+
+</odoo>
