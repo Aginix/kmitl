@@ -71,4 +71,19 @@
         action="l10n_th_gov_account_asset_management.action_account_asset_location"
     />
 
+    <!-- Menu At Purchase -->
+        <!-- Hide -->
+    <menuitem id="l10n_th_gov_account_asset_management.menu_purchase_assets" active="False"/>
+    <menuitem id="l10n_th_gov_account_asset_management.purchase_account_asset_menu" active="False"/>
+
+        <!-- Add Menu -->
+    <menuitem
+        id="menu_purchase_assets"
+        name="Assets"
+        parent="purchase.menu_purchase_root"
+        sequence="80"
+        groups="l10n_th_gov_account_asset_management.group_enable_asset_purchase"
+        action="account_asset_management.account_asset_action"
+    />
+
 </odoo>
