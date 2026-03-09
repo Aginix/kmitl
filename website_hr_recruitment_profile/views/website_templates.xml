@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Pre-fill job application form from portal profile -->
+    <template
+        id="apply_profile_prefill"
+        inherit_id="website_hr_recruitment.apply"
+        name="Apply Form Profile Pre-fill"
+    >
+        <!--
+            Use data-for mechanism (same as standard Odoo) to pre-fill form.
+            The s_website_form JS checks dataForValues[name] BEFORE data-fill-with,
+            so profile values take priority. Empty strings are falsy so
+            the JS falls back to data-fill-with for unfilled fields.
+        -->
+        <xpath expr="//span[@data-for='hr_recruitment_form']" position="attributes">
+            <attribute name="t-att-data-values">{
+                'department_id': job and job.department_id.id or '',
+                'job_id': job and job.id or '',
+                'partner_name': default.get('partner_name', ''),
+                'email_from': default.get('email_from', ''),
+                'partner_mobile': default.get('partner_phone', ''),
+                'applicant_title': default.get('applicant_title', ''),
+                'first_name': default.get('first_name', ''),
+                'middle_name': default.get('middle_name', ''),
+                'last_name': default.get('last_name', ''),
+                'first_name_en': default.get('first_name_en', ''),
+                'middle_name_en': default.get('middle_name_en', ''),
+                'last_name_en': default.get('last_name_en', ''),
+                'birthday': default.get('birthday', ''),
+                'nationality_id': default.get('nationality_id', ''),
+                'marital': default.get('marital', ''),
+                'spouse_prefix': default.get('spouse_prefix', ''),
+                'spouse_first_name': default.get('spouse_first_name', ''),
+                'spouse_middle_name': default.get('spouse_middle_name', ''),
+                'spouse_last_name': default.get('spouse_last_name', ''),
+                'street': default.get('street', ''),
+                'street2': default.get('street2', ''),
+                'city': default.get('city', ''),
+                'state_id': default.get('state_id', ''),
+                'zip': default.get('zip', ''),
+                'country_id': default.get('country_id', ''),
+                'emergency_contact_name': default.get('emergency_contact_name', ''),
+                'emergency_contact_relation': default.get('emergency_contact_relation', ''),
+                'emergency_contact_phone': default.get('emergency_contact_phone', ''),
+                'emergency_contact_email': default.get('emergency_contact_email', ''),
+                'chronic_disease': default.get('chronic_disease', ''),
+                'academic_position': default.get('academic_position', ''),
+                'academic_position_date': default.get('academic_position_date', ''),
+                'has_ocsc_exam': default.get('has_ocsc_exam', ''),
+                'ocsc_exam_level': default.get('ocsc_exam_level', ''),
+                'ocsc_exam_date': default.get('ocsc_exam_date', ''),
+                'ocsc_exam_number': default.get('ocsc_exam_number', ''),
+                'foreign_language_skills': default.get('foreign_language_skills', ''),
+                'computer_skills': default.get('computer_skills', ''),
+                'other_abilities': default.get('other_abilities', ''),
+                'interests': default.get('interests', ''),
+            }</attribute>
+        </xpath>
+    </template>
+</odoo>
