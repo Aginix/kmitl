@@ -10,6 +10,7 @@
         'purchase_work_acceptance_cancel_restriction',
         'purchase_work_acceptance_external',
         'base_tier_validation_comment',
+        'purchase_kmitl'
     ],
     "data": [
         "data/server_action.xml",

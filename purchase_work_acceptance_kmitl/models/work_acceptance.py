@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError, ValidationError
+
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -36,7 +38,8 @@ class WorkAcceptance(models.Model):
             committees = rec.work_acceptance_committee_ids
             if committees and all(c.status == 'accept' for c in committees):
                 rec.all_committee_validated = True
-                rec.with_context(skip_committee_wizard=True).button_accept()
+                if not rec.is_external or (rec.is_external and rec.has_attachment):
+                    rec.with_context(skip_committee_wizard=True).button_accept()
             else:
                 rec.all_committee_validated = False
 
@@ -47,13 +50,21 @@ class WorkAcceptance(models.Model):
                 rec.state == 'in_review'
                 and rec.validation_status == 'validated'
                 and not self.env.context.get('skip_committee_wizard')
-                and not rec.is_external
+                and (not rec.is_external or (rec.is_external and rec.has_attachment))
             ):
                 rec.with_context(skip_committee_wizard=True).button_accept()
         return res
 
     def button_accept(self, force=False):
         if self.env.context.get('skip_committee_wizard'):
+
+            for rec in self:
+                if rec.is_external and not rec.has_attachment:
+                    raise UserError(
+                        _("Please attach at least one supporting document file before clicking accept.")
+                    )
+
+            self.mapped('review_ids').unlink()
             self._unlink_zero_quantity()
             date_accept = force or fields.Datetime.now()
 
