@@ -97,7 +97,7 @@ class ReadonlyManagementFields(models.Model):
     )
     force_readonly = fields.Boolean(
         string="Always Readonly (no per-field condition)",
-        default=False,
+        default=True,
         help=(
             "When checked, this field is readonly purely based on the parent "
             "config's Global Gate Condition (or always if no gate is set). "

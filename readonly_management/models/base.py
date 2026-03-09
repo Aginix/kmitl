@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import ast
+import json
 import logging
 
 from lxml import etree
@@ -76,60 +77,62 @@ def _merge_conditions_or(conditions):
     return expression.OR(conditions)
 
 
+def _domain_to_json(domain):
+    """Convert Odoo domain (may contain tuples) to JSON-serializable lists."""
+    if isinstance(domain, tuple):
+        return list(domain)
+    if isinstance(domain, list):
+        return [_domain_to_json(item) for item in domain]
+    return domain
+
+
 def _inject_readonly(field_el, condition):
     """
     Inject or merge readonly condition onto a <field> XML element.
 
-    condition is True  → set readonly="1", clear attrs readonly
-    condition is list  → set/merge into attrs={'readonly': ...}
+    In Odoo 16, postprocess_and_fields() converts attrs/readonly into a
+    'modifiers' JSON attribute before get_view() returns. We must read/write
+    that attribute directly — injecting attrs or readonly has no effect.
+
+    condition is True  → modifiers readonly=true
+    condition is list  → merge domain into modifiers readonly
     """
+    existing_modifiers_str = field_el.get("modifiers", "")
+    try:
+        existing_modifiers = (
+            json.loads(existing_modifiers_str) if existing_modifiers_str else {}
+        )
+    except Exception:
+        _logger.warning(
+            "readonly_management: cannot parse existing modifiers %r on <%s name=%r>, skipping",
+            existing_modifiers_str,
+            field_el.tag,
+            field_el.get("name"),
+        )
+        return
+
     if condition is True:
-        # Remove existing domain-based readonly (superseded)
-        existing_attrs_str = field_el.get("attrs", "")
-        if existing_attrs_str:
-            try:
-                existing_attrs = ast.literal_eval(existing_attrs_str)
-                existing_attrs.pop("readonly", None)
-                if existing_attrs:
-                    field_el.set("attrs", str(existing_attrs))
-                else:
-                    del field_el.attrib["attrs"]
-            except Exception:
-                pass
-        field_el.set("readonly", "1")
+        existing_modifiers["readonly"] = True
+        field_el.set("modifiers", json.dumps(existing_modifiers))
         return
 
     # condition is a domain list
-    # If already unconditionally readonly, nothing to do
-    if field_el.get("readonly") == "1":
-        return
-
-    existing_attrs_str = field_el.get("attrs", "")
-    if existing_attrs_str:
-        try:
-            existing_attrs = ast.literal_eval(existing_attrs_str)
-        except Exception:
-            _logger.warning(
-                "readonly_management: cannot parse existing attrs %r on <%s name=%r>, skipping merge",
-                existing_attrs_str,
-                field_el.tag,
-                field_el.get("name"),
-            )
-            existing_attrs = {}
-    else:
-        existing_attrs = {}
-
-    existing_ro = existing_attrs.get("readonly")
+    existing_ro = existing_modifiers.get("readonly")
     if existing_ro is True or existing_ro == 1:
-        # Already unconditionally readonly via attrs
         return
-    if existing_ro:
-        # Merge with OR
-        existing_attrs["readonly"] = _merge_conditions_or([existing_ro, condition])
-    else:
-        existing_attrs["readonly"] = condition
 
-    field_el.set("attrs", str(existing_attrs))
+    if existing_ro:
+        # existing_ro from JSON is list-of-lists; expression handles both
+        merged = _merge_conditions_or([existing_ro, condition])
+    else:
+        merged = condition
+
+    if merged is True:
+        existing_modifiers["readonly"] = True
+    else:
+        existing_modifiers["readonly"] = _domain_to_json(merged)
+
+    field_el.set("modifiers", json.dumps(existing_modifiers))
 
 
 def _is_inside_tree(element):

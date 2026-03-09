@@ -49,8 +49,6 @@
                                 string="Global Gate Condition"
                                 placeholder="[('state', 'in', ['submit', 'to_verify'])]"
                             />
-                        </group>
-                        <group string="Notes">
                             <field name="note" string="Notes" nolabel="1" />
                         </group>
                     </group>
