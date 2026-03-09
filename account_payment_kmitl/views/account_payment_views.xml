@@ -35,10 +35,14 @@
                 <attribute name="statusbar_visible">draft,submitted,posted</attribute>
             </xpath>
 
-            <!-- Add KMITL payment type after payment_type -->
-            <xpath expr="//field[@name='payment_type']" position="after">
-                <field name="kmitl_payment_type_id"/>
+            <!-- Hide payment_type selector (controlled by kmitl_payment_type_id) -->
+            <xpath expr="//field[@name='payment_type']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
+
+            <!-- Add KMITL payment type where payment_type was -->
+            <xpath expr="//field[@name='payment_type']" position="after">
+                <field name="kmitl_payment_type_id" domain="[('direction', '=', payment_type)]"/></xpath>
 
         </field>
     </record>

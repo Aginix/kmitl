@@ -121,21 +121,45 @@
         sequence="60"
     />
 
-    <!-- Action: account.payment (outbound only) -->
-    <record id="action_account_payment" model="ir.actions.act_window">
-        <field name="name">รายการจ่ายเงิน</field>
+    <!-- Action: account.payment outbound -->
+    <record id="action_account_payment_outbound" model="ir.actions.act_window">
+        <field name="name">จ่ายเงิน</field>
         <field name="res_model">account.payment</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,kanban,form,graph</field>
         <field name="domain">[('payment_type', '=', 'outbound')]</field>
-        <field name="context">{'default_payment_type': 'outbound'}</field>
+        <field name="context">{
+            'default_payment_type': 'outbound',
+            'default_partner_type': 'supplier',
+            'default_move_journal_types': ('bank', 'cash'),
+        }</field>
+    </record>
+
+    <!-- Action: account.payment inbound -->
+    <record id="action_account_payment_inbound" model="ir.actions.act_window">
+        <field name="name">รับเงิน</field>
+        <field name="res_model">account.payment</field>
+        <field name="view_mode">tree,kanban,form,graph</field>
+        <field name="domain">[('payment_type', '=', 'inbound')]</field>
+        <field name="context">{
+            'default_payment_type': 'inbound',
+            'default_partner_type': 'customer',
+            'default_move_journal_types': ('bank', 'cash'),
+        }</field>
     </record>
 
     <menuitem
-        id="menu_account_payment"
-        name="รายการจ่ายเงิน"
+        id="menu_account_payment_outbound"
+        name="จ่ายเงิน"
         parent="menu_payment_root"
-        action="action_account_payment"
+        action="action_account_payment_outbound"
         sequence="10"
+    />
+    <menuitem
+        id="menu_account_payment_inbound"
+        name="รับเงิน"
+        parent="menu_payment_root"
+        action="action_account_payment_inbound"
+        sequence="15"
     />
 
     <!-- Bank Payment Export -->
