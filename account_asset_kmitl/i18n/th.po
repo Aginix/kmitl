@@ -2109,3 +2109,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_asset_kmitl.portal_account_asset
 msgid "ไม่มีรูปภาพ"
 msgstr ""
+
+#. module: account_asset_kmitl
+#: model:ir.ui.menu,name:account_asset_kmitl.menu_purchase_assets
+msgid "Assets"
+msgstr "ครุภัณฑ์/สินทรัพย์"
