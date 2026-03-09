@@ -5,4 +5,36 @@
         web_icon="purchase_kmitl,static/description/icon.png"
         sequence="135"
     />
+
+    <!-- remove orders -->
+    <menuitem id="purchase.menu_procurement_management" active="False"/>
+
+    <!-- remove Product -->
+    <menuitem id="purchase.menu_purchase_products" active="False"/>
+    
+    <!-- add products to config -->
+    <menuitem name="Products" id="menu_product_form" action="purchase.product_normal_action_puchased" parent="purchase.menu_product_in_config_purchase" sequence="1"/>
+
+    <!-- Contract -->
+    <menuitem id="menu_purchase_contract_root"
+              name="Purchase Contract"
+              parent="purchase.menu_purchase_root"
+              sequence="1"/>
+
+    <menuitem id="menu_purchase_contract_orders"
+              name="Contract Orders"
+              parent="menu_purchase_contract_root"
+              action="purchase.purchase_form_action"
+              sequence="10"/>
+
+    <!-- Tracking -->
+    <menuitem id="menu_purchase_tracking"
+              name="Contract Tracking"
+              parent="purchase.menu_purchase_root"
+              sequence="2"/>
+
+    <!-- Vendor -->
+    <menuitem id="menu_vendor" name="Vendors"
+            parent="purchase.menu_purchase_root"
+            action="account.res_partner_action_supplier" sequence="5"/>
 </odoo>
