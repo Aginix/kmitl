@@ -4,7 +4,7 @@
     <t t-name="web_fiscal_year_systray.FiscalYearSystray" owl="1">
         <t t-if="state.fiscalYearName">
             <span class="o_menu_systray_item d-flex align-items-center px-2">
-                <span class="text-muted small" t-esc="'ปีงบ ' + state.fiscalYearName"/>
+                <span class="text-white" t-esc="'ปีงบ พ.ศ. ' + state.fiscalYearName"/>
             </span>
         </t>
     </t>
