@@ -1,27 +1,14 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-import logging
-
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.osv import expression
 
-_logger = logging.getLogger(__name__)
-
 
 class BankPaymentExport(models.Model):
     _name = "bank.payment.export"
-    _inherit = ["bank.payment.export", "sarabun.document.mixin", "thai.date.mixin"]
+    _inherit = ["bank.payment.export", "thai.date.mixin"]
 
-    state = fields.Selection(
-        selection_add=[("submitted", "Submitted"), ("confirm",)],
-        ondelete={"submitted": "set default"},
-    )
-    main_sarabun_document_id = fields.Many2one(
-        comodel_name="sarabun.document",
-        string="Main Sarabun Document",
-        copy=False,
-    )
     account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="Fiscal Year",
@@ -103,68 +90,3 @@ class BankPaymentExport(models.Model):
                 new_domain.append(leaf)
         return new_domain
 
-    # -------------------------------------------------------------------------
-    # Sarabun integration
-    # -------------------------------------------------------------------------
-    def _prepare_sarabun_document_vals(self):
-        self.ensure_one()
-        vals = super()._prepare_sarabun_document_vals()
-        vals["subject"] = _("Bank Payment Export: %s") % self.name
-        return vals
-
-    def _on_sarabun_completed(self, document):
-        _logger.info(
-            "Sarabun completed for Bank Payment Export %s (id=%s) from document %s",
-            self.name,
-            self.id,
-            document.name,
-        )
-        self.action_confirm()
-        self.message_post(
-            body=_("Approved via Sarabun document: %s") % document.name,
-        )
-
-    def _on_sarabun_rejected(self, document, recipient):
-        self.state = "draft"
-        reason = recipient.comment if recipient else _("No reason provided")
-        self.message_post(
-            body=_("Rejected via Sarabun. Reason: %s") % reason,
-        )
-
-    def _get_sarabun_report_action(self):
-        return self.env.ref(
-            "account_payment_kmitl.action_report_bank_payment_export"
-        )
-
-    def action_submit_to_sarabun(self):
-        """Submit bank payment export to Sarabun for approval routing."""
-        self.ensure_one()
-        if self.state != "draft":
-            raise UserError(_("Only draft exports can be submitted."))
-        self._check_constraint_confirm()
-        result = self.action_create_sarabun_document()
-        document = self.env["sarabun.document"].browse(result.get("res_id"))
-        self.main_sarabun_document_id = document
-        self.state = "submitted"
-        self.message_post(
-            body=_("Submitted to Sarabun for approval: %s") % document.name,
-        )
-        return {
-            "type": "ir.actions.act_window",
-            "res_model": "sarabun.document",
-            "res_id": document.id,
-            "view_mode": "form",
-            "target": "current",
-        }
-
-    # -------------------------------------------------------------------------
-    # Override cancel to also handle submitted state
-    # -------------------------------------------------------------------------
-    def action_cancel(self):
-        """Allow canceling from submitted state as well."""
-        for rec in self:
-            if rec.state == "submitted":
-                rec.state = "cancel"
-            else:
-                super(BankPaymentExport, rec).action_cancel()
-        return True

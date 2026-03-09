@@ -8,52 +8,9 @@
         <field name="inherit_id" ref="l10n_th_bank_payment_export.bank_payment_export_view_form"/>
         <field name="arch" type="xml">
 
-            <!-- Hide original Confirm button (replaced by Sarabun submit) -->
-            <xpath expr="//button[@name='action_confirm']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-
-            <!-- Add Submit to Sarabun button before the hidden Confirm -->
-            <xpath expr="//button[@name='action_confirm']" position="before">
-                <field name="sarabun_document_count" invisible="1"/>
-                <button
-                    name="action_submit_to_sarabun"
-                    string="ส่งอนุมัติ (สารบรรณ)"
-                    type="object"
-                    class="btn-primary"
-                    attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('sarabun_document_count', '&gt;', 0)]}"
-                />
-            </xpath>
-
-            <!-- Allow Cancel from submitted state too -->
-            <xpath expr="//button[@name='action_cancel']" position="attributes">
-                <attribute name="states">draft,confirm,submitted</attribute>
-            </xpath>
-
-            <!-- Update statusbar to include submitted -->
-            <xpath expr="//field[@name='state'][@widget='statusbar']" position="attributes">
-                <attribute name="statusbar_visible">draft,submitted,confirm,done</attribute>
-            </xpath>
-
-            <!-- Add Sarabun and fiscal year fields to right_header group -->
+            <!-- Add fiscal year field to right_header group -->
             <xpath expr="//group[@name='right_header']" position="inside">
                 <field name="account_fiscal_year_id" readonly="1"/>
-                <field name="main_sarabun_document_id" readonly="1"/>
-            </xpath>
-
-            <!-- Add Sarabun stat button (insert button_box before title) -->
-            <xpath expr="//div[@class='oe_title']" position="before">
-                <div class="oe_button_box" name="button_box">
-                    <button
-                        type="object"
-                        name="action_view_sarabun_documents"
-                        class="oe_stat_button"
-                        icon="fa-file-text-o"
-                        attrs="{'invisible': [('sarabun_document_count', '=', 0)]}"
-                    >
-                        <field name="sarabun_document_count" widget="statinfo" string="หนังสือ"/>
-                    </button>
-                </div>
             </xpath>
 
         </field>
@@ -92,13 +49,6 @@
         <field name="model">bank.payment.export</field>
         <field name="inherit_id" ref="l10n_th_bank_payment_export.bank_payment_export_view_search"/>
         <field name="arch" type="xml">
-            <xpath expr="//filter[@name='bank_payment_export_state_done']" position="after">
-                <filter
-                    name="bank_payment_export_state_submitted"
-                    string="Submitted"
-                    domain="[('state', '=', 'submitted')]"
-                />
-            </xpath>
             <xpath expr="//filter[@name='group_by_state']" position="after">
                 <filter
                     string="Fiscal Year"
@@ -198,13 +148,6 @@
         parent="menu_payment_settings"
         action="action_kmitl_payment_type"
         sequence="5"
-    />
-    <menuitem
-        id="menu_settings_sarabun_route_template"
-        name="Sarabun Route Templates"
-        parent="menu_payment_settings"
-        action="agx_sarabun.action_sarabun_route_template"
-        sequence="30"
     />
 
 </odoo>
