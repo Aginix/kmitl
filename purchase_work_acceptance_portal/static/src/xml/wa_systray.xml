@@ -17,7 +17,10 @@
             <div class="o_wa_systray_dropdown" style="min-width: 360px;">
                 <div class="o_wa_systray_header d-flex align-items-center px-3 py-2 border-bottom">
                     <span class="fw-bold">ตรวจรับพัสดุ</span>
-                    <span class="ms-auto badge bg-primary text-white" t-if="state.totalCount > 0" t-esc="state.totalCount"/>
+                    <t t-if="state.totalCount > 0">
+                        <span class="ms-auto badge bg-primary text-white" t-esc="state.totalCount"/>
+                        <button class="btn btn-sm btn-link ms-2 p-0" t-on-click="markAllRead">อ่านทั้งหมด</button>
+                    </t>
                 </div>
                 <t t-if="state.items.length === 0">
                     <div class="text-muted text-center py-4">
@@ -29,7 +32,7 @@
                     <div style="max-height: 400px; overflow-y: auto;">
                         <t t-foreach="state.items" t-as="item" t-key="item.id">
                             <div class="o_wa_systray_item px-2 py-2 border-bottom">
-                                <div><a t-att-href="item.wa_url" target="_blank">กรุณาตรวจรับพัสดุ</a></div>
+                                <div><a t-att-href="item.wa_url" target="_blank" t-on-click="() => markRead(item)">กรุณาตรวจรับพัสดุ</a></div>
                                 <div><a t-att-href="item.order_url" target="_blank">เอกสารสัญญา</a></div>
                             </div>
                         </t>

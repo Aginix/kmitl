@@ -8,37 +8,37 @@ const { Component, useState, onWillStart } = owl;
 
 export class WaSystray extends Component {
     setup() {
-        this.rpc = useService("rpc");
+        this.orm = useService("orm");
 
         this.state = useState({
             items: [],
             totalCount: 0,
         });
 
-        onWillStart(async () => {
-            await this.fetchData();
-        });
+        onWillStart(() => this.fetchData());
 
-        useBus(this.env.bus, "wa_inbox_updated", () => {
-            this.fetchData();
-        });
+        useBus(this.env.bus, "wa_inbox_updated", () => this.fetchData());
     }
 
     async fetchData() {
         try {
-            const result = await this.rpc("/web/dataset/call_kw/res.users/get_wa_inbox_count", {
-                model: "res.users",
-                method: "get_wa_inbox_count",
-                args: [],
-                kwargs: {},
-            });
+            const result = await this.orm.call("res.users", "get_wa_inbox_count", [], {});
             this.state.items = result.items || [];
             this.state.totalCount = result.total_count || 0;
-        } catch (error) {
-            console.error("Failed to fetch WA inbox count:", error);
+        } catch {
             this.state.items = [];
             this.state.totalCount = 0;
         }
+    }
+
+    async markRead(item) {
+        await this.orm.call("work.acceptance.inbox", "action_mark_read", [[item.id]]);
+        await this.fetchData();
+    }
+
+    async markAllRead() {
+        await this.orm.call("res.users", "mark_all_wa_read", [], {});
+        await this.fetchData();
     }
 }
 

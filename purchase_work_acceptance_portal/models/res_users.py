@@ -7,39 +7,54 @@ class ResUsers(models.Model):
 
     @api.model
     def get_wa_inbox_count(self):
-        """Return recent unread work acceptances (up to 10). Used by systray."""
+        """Return unread work acceptances for the current user. Used by systray."""
         entries = self.env["work.acceptance.inbox"].search(
             [("user_id", "=", self.env.user.id), ("is_read", "=", False)],
             order="create_date desc",
         )
+        if not entries:
+            return {"items": [], "total_count": 0}
 
         employee = self.env["hr.employee"].search(
             [("user_id", "=", self.env.user.id)], limit=1
         )
 
+        # Batch-fetch completed committees to avoid N+1 queries
+        done_wa_ids = set()
+        if employee:
+            done_wa_ids = set(
+                self.env["work.acceptance.committee"]
+                .search([
+                    ("wa_id", "in", entries.mapped("work_acceptance_id").ids),
+                    ("employee_id", "=", employee.id),
+                    ("status", "in", ("accept", "not_accept", "other")),
+                ])
+                .mapped("wa_id")
+                .ids
+            )
+
         seen = set()
         items = []
         for entry in entries:
             wa = entry.work_acceptance_id
-
-            if employee:
-                committee = self.env["work.acceptance.committee"].search(
-                    [
-                        ("wa_id", "=", wa.id),
-                        ("employee_id", "=", employee.id),
-                    ],
-                    limit=1,
-                )
-                if committee and committee.status in ("accept", "not_accept", "other"):
-                    continue
-
+            if wa.id in done_wa_ids:
+                continue
             if wa.id not in seen:
                 seen.add(wa.id)
                 items.append({
-                    "id": wa.id,
+                    "id": entry.id,
+                    "wa_id": wa.id,
                     "name": wa.name,
                     "wa_url": entry.wa_url or "",
                     "order_url": entry.order_url or "",
                 })
 
-        return {"items": items[:10], "total_count": len(seen)}
+        return {"items": items, "total_count": len(items)}
+
+    @api.model
+    def mark_all_wa_read(self):
+        """Mark all unread inbox entries as read for the current user."""
+        self.env["work.acceptance.inbox"].search([
+            ("user_id", "=", self.env.user.id),
+            ("is_read", "=", False),
+        ]).action_mark_read()
