@@ -38,7 +38,6 @@ class CreateManualStockPicking(models.TransientModel):
         if picking_id.id not in purchase_order.picking_ids.ids:
             purchase_order.write({
                 'picking_ids': [(4, picking_id.id)],
-                'contract_number': self.contract_number or '',
             })
         return res
 
