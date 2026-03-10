@@ -30,6 +30,20 @@ class AccountPayment(models.Model):
             if ptype and ptype.override_account_id:
                 pay.destination_account_id = ptype.override_account_id
 
+    def _seek_for_lines(self):
+        """Treat override account as counterpart even if not receivable/payable."""
+        liquidity_lines, counterpart_lines, writeoff_lines = super()._seek_for_lines()
+        ptype = self.kmitl_payment_type_id
+        if ptype and ptype.override_account_id and not counterpart_lines:
+            new_writeoff = self.env["account.move.line"]
+            for line in writeoff_lines:
+                if line.account_id == ptype.override_account_id:
+                    counterpart_lines += line
+                else:
+                    new_writeoff += line
+            writeoff_lines = new_writeoff
+        return liquidity_lines, counterpart_lines, writeoff_lines
+
     def _get_trigger_fields_to_synchronize(self):
         return (
             *super()._get_trigger_fields_to_synchronize(),
