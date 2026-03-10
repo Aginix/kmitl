@@ -93,21 +93,6 @@
                     <field name="warn_allocation_mismatch" invisible="1"/>
                     <field name="warn_installment_maintenance_mismatch" invisible="1"/>
                     <field name="warn_installment_total_mismatch" invisible="1"/>
-                    <div class="alert alert-warning" role="alert"
-                        attrs="{'invisible': [('warn_allocation_mismatch', '=', False)]}"
-                    >
-                        ผลรวมจัดสรรรายได้ไม่เท่ากับมูลค่าหักค่าบำรุง กรุณาตรวจสอบการจัดสรร
-                    </div>
-                    <div class="alert alert-warning" role="alert"
-                        attrs="{'invisible': [('warn_installment_total_mismatch', '=', False)]}"
-                    >
-                        ผลรวมจำนวนเงินที่ได้รับในงวดงานไม่เท่ากับมูลค่างาน กรุณาตรวจสอบงวดงาน
-                    </div>
-                    <div class="alert alert-warning" role="alert"
-                        attrs="{'invisible': [('warn_installment_maintenance_mismatch', '=', False)]}"
-                    >
-                        ผลรวมค่าบำรุงสถาบันในงวดงานไม่เท่ากับมูลค่าหักค่าบำรุง กรุณาตรวจสอบการจัดสรรในแต่ละงวด
-                    </div>
                     <div class="oe_title">
                         <h1>
                             <field name="name" readonly="1"/>
@@ -243,6 +228,11 @@
                                     class="btn-secondary"
                                 />
                             </div>
+                            <div class="alert alert-danger mb-2" role="alert"
+                                attrs="{'invisible': [('warn_allocation_mismatch', '=', False)]}"
+                            >
+                                ผลรวมจัดสรรรายได้ไม่เท่ากับมูลค่าหักค่าบำรุง กรุณาตรวจสอบการจัดสรร
+                            </div>
                             <field
                                 name="allocation_line_ids"
                                 attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
@@ -257,6 +247,16 @@
                                 </tree>
                             </field>
                             <separator string="3. งวดงานตามสัญญา" name="installment_separator" />
+                            <div class="alert alert-danger mb-2" role="alert"
+                                attrs="{'invisible': [('warn_installment_total_mismatch', '=', False)]}"
+                            >
+                                ผลรวมจำนวนเงินที่ได้รับในงวดงานไม่เท่ากับมูลค่างาน กรุณาตรวจสอบงวดงาน
+                            </div>
+                            <div class="alert alert-danger mb-2" role="alert"
+                                attrs="{'invisible': [('warn_installment_maintenance_mismatch', '=', False)]}"
+                            >
+                                ผลรวมค่าบำรุงสถาบันในงวดงานไม่เท่ากับมูลค่าหักค่าบำรุง กรุณาตรวจสอบการจัดสรรในแต่ละงวด
+                            </div>
                             <div class="mb-3"
                                 attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
                             >
