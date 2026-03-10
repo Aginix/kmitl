@@ -75,6 +75,27 @@ class KrisProjectInstallment(models.Model):
         readonly=True,
     )
 
+    @api.model
+    def default_get(self, fields_list):
+        res = super().default_get(fields_list)
+        project_id = res.get("project_id") or self.env.context.get("default_project_id")
+        if project_id and "allocation_ids" in fields_list:
+            project = self.env["kris.project"].browse(project_id)
+            res["allocation_ids"] = [
+                (0, 0, {"allocation_line_id": line.id, "amount": 0.0})
+                for line in project.allocation_line_ids
+            ]
+        return res
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if not vals.get("sequence") and vals.get("project_id"):
+                project = self.env["kris.project"].browse(vals["project_id"])
+                max_seq = max(project.installment_ids.mapped("sequence") or [0])
+                vals["sequence"] = max_seq + 10
+        return super().create(vals_list)
+
     @api.depends("amount", "deduction_guarantee", "deduction_advance")
     def _compute_received_from_employer(self):
         for rec in self:

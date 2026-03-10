@@ -369,7 +369,7 @@ class KrisProject(models.Model):
         return {
             "name": "เพิ่มงวดงาน",
             "type": "ir.actions.act_window",
-            "res_model": "kris.project.installment.wizard",
+            "res_model": "kris.project.installment",
             "view_mode": "form",
             "target": "new",
             "context": {"default_project_id": self.id},
