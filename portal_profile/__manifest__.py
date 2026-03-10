@@ -4,7 +4,13 @@
     "author": "Aginix Technologies",
     "category": "Website",
     "summary": "Portal profile page for personal information management",
-    "depends": ["portal", "base_location", "partner_firstname", "partner_middlename"],
+    "depends": [
+        "portal",
+        "base_location",
+        "partner_firstname",
+        "partner_middlename",
+        "partner_identification_th",
+    ],
     "data": [
         "security/ir.model.access.csv",
         "views/portal_profile_views.xml",

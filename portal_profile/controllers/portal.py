@@ -18,6 +18,13 @@ class PortalProfile(CustomerPortal):
         "email",
         "phone",
         "street",
+        "national_id",
+        "ethnicity",
+        "religion",
+        "line_id",
+        "father_name",
+        "mother_name",
+        "child_name",
         "spouse_prefix",
         "spouse_first_name",
         "spouse_middle_name",
@@ -30,6 +37,8 @@ class PortalProfile(CustomerPortal):
     ]
 
     TEXT_FIELDS = [
+        "registered_address",
+        "current_address",
         "chronic_disease",
         "foreign_language_skills",
         "computer_skills",
@@ -141,6 +150,7 @@ class PortalProfile(CustomerPortal):
                     return request.render("portal_profile.portal_my_profile", values)
                 vals = self._prepare_profile_values(post)
                 profile.sudo().write(vals)
+                self._sync_national_id(profile)
                 self._save_education_history(profile, post)
             return request.redirect("/my/profile")
 
@@ -232,6 +242,39 @@ class PortalProfile(CustomerPortal):
                     EduHistory.create(vals)
             elif rec:
                 rec.unlink()
+
+    def _sync_national_id(self, profile):
+        try:
+            th_cat = request.env.ref(
+                "partner_identification_th"
+                ".partner_identification_th_national_id_category"
+            )
+        except Exception:
+            return
+        id_num = (
+            request.env["res.partner.id_number"]
+            .sudo()
+            .search(
+                [
+                    ("partner_id", "=", profile.partner_id.id),
+                    ("category_id", "=", th_cat.id),
+                ],
+                limit=1,
+            )
+        )
+        if profile.national_id:
+            if id_num:
+                id_num.name = profile.national_id
+            else:
+                request.env["res.partner.id_number"].sudo().create(
+                    {
+                        "partner_id": profile.partner_id.id,
+                        "category_id": th_cat.id,
+                        "name": profile.national_id,
+                    }
+                )
+        elif id_num:
+            id_num.unlink()
 
     def _prepare_profile_values(self, post):
         vals = {}
