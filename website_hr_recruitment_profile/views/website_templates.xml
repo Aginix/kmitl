@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Pre-fill job application form from portal profile -->
+    <template
+        id="apply_profile_prefill"
+        inherit_id="website_hr_recruitment.apply"
+        name="Apply Form Profile Pre-fill"
+    >
+        <xpath expr="//span[@data-for='hr_recruitment_form']" position="attributes">
+            <attribute name="t-att-data-values">{
+                'department_id': job and job.department_id.id or '',
+                'job_id': job and job.id or '',
+                'partner_name': default.get('partner_name', ''),
+                'email_from': default.get('email_from', ''),
+                'partner_mobile': default.get('partner_phone', ''),
+                'applicant_title': default.get('applicant_title', ''),
+                'first_name': default.get('first_name', ''),
+                'middle_name': default.get('middle_name', ''),
+                'last_name': default.get('last_name', ''),
+                'first_name_en': default.get('first_name_en', ''),
+                'middle_name_en': default.get('middle_name_en', ''),
+                'last_name_en': default.get('last_name_en', ''),
+                'birthday': default.get('birthday', ''),
+                'nationality_id': default.get('nationality_id', ''),
+                'marital': default.get('marital', ''),
+                'spouse_prefix': default.get('spouse_prefix', ''),
+                'spouse_first_name': default.get('spouse_first_name', ''),
+                'spouse_middle_name': default.get('spouse_middle_name', ''),
+                'spouse_last_name': default.get('spouse_last_name', ''),
+                'street': default.get('street', ''),
+                'street2': default.get('street2', ''),
+                'city': default.get('city', ''),
+                'state_id': default.get('state_id', ''),
+                'zip': default.get('zip', ''),
+                'country_id': default.get('country_id', ''),
+                'emergency_contact_name': default.get('emergency_contact_name', ''),
+                'emergency_contact_relation': default.get('emergency_contact_relation', ''),
+                'emergency_contact_phone': default.get('emergency_contact_phone', ''),
+                'emergency_contact_email': default.get('emergency_contact_email', ''),
+                'chronic_disease': default.get('chronic_disease', ''),
+                'academic_position': default.get('academic_position', ''),
+                'academic_position_date': default.get('academic_position_date', ''),
+                'has_ocsc_exam': default.get('has_ocsc_exam', ''),
+                'ocsc_exam_level': default.get('ocsc_exam_level', ''),
+                'ocsc_exam_date': default.get('ocsc_exam_date', ''),
+                'ocsc_exam_number': default.get('ocsc_exam_number', ''),
+                'foreign_language_skills': default.get('foreign_language_skills', ''),
+                'computer_skills': default.get('computer_skills', ''),
+                'other_abilities': default.get('other_abilities', ''),
+                'interests': default.get('interests', ''),
+            }</attribute>
+        </xpath>
+    </template>
+
+    <!-- Education History section in apply form -->
+    <template
+        id="apply_education_section"
+        inherit_id="website_hr_recruitment.apply"
+        name="Apply Form Education History"
+    >
+        <xpath expr="//div[hasclass('s_website_form_submit')]" position="before">
+            <div class="col-12 mb-3" id="education_history_section">
+                <h5 class="mt-3 mb-2">Education History</h5>
+
+                <!-- Hidden template row for JS cloning -->
+                <div id="education_row_template" class="d-none">
+                    <div class="education-row card mb-2">
+                        <div class="card-body py-2">
+                            <div class="row">
+                                <div class="col-md-4 mb-2">
+                                    <label class="col-form-label small">Level</label>
+                                    <select class="form-select" data-field="level">
+                                        <option value="">-- Select --</option>
+                                        <option value="doctor">Doctoral Degree</option>
+                                        <option value="master">Master's Degree</option>
+                                        <option
+                                            value="bachelor"
+                                        >Bachelor's Degree</option>
+                                        <option
+                                            value="under_bachelor"
+                                        >Under Bachelor's Degree</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <label class="col-form-label small">Program</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        data-field="program"
+                                    />
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <label class="col-form-label small">Major</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        data-field="major"
+                                    />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-2">
+                                    <label
+                                        class="col-form-label small"
+                                    >Institution</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        data-field="institution"
+                                    />
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <label class="col-form-label small">Country</label>
+                                    <select class="form-select" data-field="country_id">
+                                        <option value="">-- Select --</option>
+                                        <t t-foreach="countries or []" t-as="c">
+                                            <option t-att-value="c.id">
+                                                <t t-esc="c.name" />
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <label
+                                        class="col-form-label small"
+                                    >Graduation Date</label>
+                                    <input
+                                        type="date"
+                                        class="form-control"
+                                        data-field="graduation_date"
+                                    />
+                                </div>
+                                <div class="col-md-1 mb-2 d-flex align-items-end">
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-danger btn-sm education-remove-btn"
+                                    >
+                                        <i class="fa fa-trash" />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Container for education rows -->
+                <div id="education_rows_container" />
+
+                <!-- Add button -->
+                <button
+                    type="button"
+                    class="btn btn-outline-primary btn-sm mt-1"
+                    id="education_add_btn"
+                >
+                    <i class="fa fa-plus" /> Add Education
+                </button>
+
+                <!-- Pre-fill data for JS -->
+                <input
+                    type="hidden"
+                    id="education_prefill_data"
+                    t-att-value="education_prefill or '[]'"
+                />
+
+                <!-- Inline JS for education rows (avoids asset bundle caching) -->
+                <script type="text/javascript">
+                    (function () {
+                        var nextIndex = 0;
+
+                        function addRow(data) {
+                            var template = document.querySelector(
+                                '#education_row_template .education-row'
+                            );
+                            if (!template) return;
+                            var row = template.cloneNode(true);
+                            var idx = nextIndex++;
+                            var fields = row.querySelectorAll('[data-field]');
+                            for (var i = 0; i &lt; fields.length; i++) {
+                                var f = fields[i];
+                                var name = 'education_' + f.getAttribute('data-field') + '_' + idx;
+                                f.setAttribute('name', name);
+                            }
+                            if (data.level) row.querySelector("[data-field='level']").value = data.level;
+                            if (data.program) row.querySelector("[data-field='program']").value = data.program;
+                            if (data.major) row.querySelector("[data-field='major']").value = data.major;
+                            if (data.institution) row.querySelector("[data-field='institution']").value = data.institution;
+                            if (data.country_id) row.querySelector("[data-field='country_id']").value = data.country_id;
+                            if (data.graduation_date) row.querySelector("[data-field='graduation_date']").value = data.graduation_date;
+                            document.getElementById('education_rows_container').appendChild(row);
+                        }
+
+                        function reindexRows() {
+                            var container = document.getElementById('education_rows_container');
+                            var rows = container.querySelectorAll('.education-row');
+                            for (var r = 0; r &lt; rows.length; r++) {
+                                var fields = rows[r].querySelectorAll('[data-field]');
+                                for (var i = 0; i &lt; fields.length; i++) {
+                                    var f = fields[i];
+                                    f.setAttribute('name', 'education_' + f.getAttribute('data-field') + '_' + r);
+                                }
+                            }
+                            nextIndex = rows.length;
+                        }
+
+                        document.addEventListener('click', function (ev) {
+                            var btn = ev.target.closest('#education_add_btn');
+                            if (btn) {
+                                ev.preventDefault();
+                                addRow({});
+                                return;
+                            }
+                            var removeBtn = ev.target.closest('.education-remove-btn');
+                            if (removeBtn) {
+                                ev.preventDefault();
+                                removeBtn.closest('.education-row').remove();
+                                reindexRows();
+                            }
+                        });
+
+                        // Pre-fill on load
+                        var prefillEl = document.getElementById('education_prefill_data');
+                        if (prefillEl &amp;&amp; prefillEl.value) {
+                            try {
+                                var data = JSON.parse(prefillEl.value);
+                                for (var i = 0; i &lt; data.length; i++) {
+                                    addRow(data[i]);
+                                }
+                            } catch (e) {}
+                        }
+                    })();
+                </script>
+            </div>
+        </xpath>
+    </template>
+</odoo>
