@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class CreateGuaranteePaymentWizard(models.TransientModel):
@@ -14,7 +14,17 @@ class CreateGuaranteePaymentWizard(models.TransientModel):
         comodel_name="kmitl.payment.type",
         string="Payment Type (KMITL)",
         required=True,
+        compute="_compute_kmitl_payment_type_id",
+        store=True,
+        readonly=False,
     )
+
+    @api.depends("purchase_guarantee_id")
+    def _compute_kmitl_payment_type_id(self):
+        for rec in self:
+            rec.kmitl_payment_type_id = (
+                rec.purchase_guarantee_id.guarantee_method_id.kmitl_payment_type_id
+            )
 
     def action_create_payment(self):
         self.ensure_one()
