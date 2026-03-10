@@ -27,12 +27,8 @@ class AccountPayment(models.Model):
         super()._compute_destination_account_id()
         for pay in self:
             ptype = pay.kmitl_payment_type_id
-            if not ptype:
-                continue
-            if ptype.direction == "inbound" and ptype.receivable_account_id:
-                pay.destination_account_id = ptype.receivable_account_id
-            elif ptype.direction == "outbound" and ptype.payable_account_id:
-                pay.destination_account_id = ptype.payable_account_id
+            if ptype and ptype.override_account_id:
+                pay.destination_account_id = ptype.override_account_id
 
     def _get_trigger_fields_to_synchronize(self):
         return (

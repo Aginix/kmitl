@@ -25,14 +25,9 @@ class KmitlPaymentType(models.Model):
         domain="[('type', 'in', ('bank', 'cash'))]",
         help="Default journal for this payment type. Leave empty to use the default.",
     )
-    receivable_account_id = fields.Many2one(
+    override_account_id = fields.Many2one(
         comodel_name="account.account",
-        string="Receivable Account",
-        help="Override the receivable account. Leave empty to use partner's default.",
-    )
-    payable_account_id = fields.Many2one(
-        comodel_name="account.account",
-        string="Payable Account",
-        help="Override the payable account. Leave empty to use partner's default.",
+        string="Override Account",
+        help="Override the destination account. Leave empty to use partner's default.",
     )
 
