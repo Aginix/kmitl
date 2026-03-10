@@ -7,16 +7,24 @@
         <field name="sequence">10</field>
     </record>
 
+    <record id="payment_type_guarantee_receive" model="kmitl.payment.type">
+        <field name="name">รับเงินค้ำประกันสัญญา</field>
+        <field name="direction">inbound</field>
+        <field name="sequence">20</field>
+        <field name="override_account_id" search="[('code', '=', '2150000006')]" model="account.account"/>
+    </record>
+
+    <record id="payment_type_bid_guarantee_receive" model="kmitl.payment.type">
+        <field name="name">รับเงินหลักประกันการเสนอราคา</field>
+        <field name="direction">inbound</field>
+        <field name="sequence">30</field>
+        <field name="override_account_id" search="[('code', '=', '2150000006')]" model="account.account"/>
+    </record>
+
     <record id="payment_type_normal_outbound" model="kmitl.payment.type">
         <field name="name">จ่ายเงินออก</field>
         <field name="direction">outbound</field>
-        <field name="sequence">20</field>
-    </record>
-
-    <record id="payment_type_guarantee_receive" model="kmitl.payment.type">
-        <field name="name">รับเงินประกันสัญญา</field>
-        <field name="direction">inbound</field>
-        <field name="sequence">30</field>
+        <field name="sequence">40</field>
     </record>
 
 </odoo>
