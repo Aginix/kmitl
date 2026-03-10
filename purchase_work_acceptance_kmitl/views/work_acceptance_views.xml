@@ -67,6 +67,12 @@
             >
                 <attribute name="optional">hide</attribute>
             </xpath>
+
+            <xpath expr="//field[@name='invoice_ref']" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': [('state', '!=', 'draft')]}
+                </attribute>
+            </xpath>
         </field>
     </record>
 
@@ -158,4 +164,11 @@
             </xpath>
         </field>
     </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_purchase_work_acceptance"
+              name="Work Acceptance"
+              parent="purchase_kmitl.menu_purchase_contract_root"
+              action="purchase_work_acceptance.action_work_acceptance"
+              sequence="20"/>
 </odoo>
