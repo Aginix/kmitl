@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-06 00:00+0000\n"
-"PO-Revision-Date: 2026-03-06 00:00+0700\n"
+"POT-Creation-Date: 2026-03-10 05:21+0000\n"
+"PO-Revision-Date: 2026-03-10 12:26+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -15,20 +15,117 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.8\n"
 
 #. module: portal_profile
 #: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
-msgid "-- Select --"
-msgstr "-- เลือก --"
+msgid "<i class=\"fa fa-briefcase text-primary me-2\"/>Work History"
+msgstr "<i class=\"fa fa-briefcase text-primary me-2\"/>ประวัติการทำงาน"
 
 #. module: portal_profile
-#: model:ir.model.fields,help:portal_profile.field_portal_profile__partner_id_unique
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "<i class=\"fa fa-certificate text-success me-2\"/>OCSC"
+msgstr "<i class=\"fa fa-certificate text-success me-2\"/>ก.พ."
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid ""
+"<i class=\"fa fa-exclamation-triangle text-warning me-2\"/>Emergency Contact"
+msgstr ""
+"<i class=\"fa fa-exclamation-triangle text-warning me-2\"/>ผู้ติดต่อฉุกเฉิน"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "<i class=\"fa fa-graduation-cap me-1\"/> Education &amp; Work"
+msgstr "<i class=\"fa fa-graduation-cap me-1\"/> การศึกษา &amp; งาน"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "<i class=\"fa fa-graduation-cap text-primary me-2\"/>Education History"
+msgstr "<i class=\"fa fa-graduation-cap text-primary me-2\"/>ประวัติการศึกษา"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "<i class=\"fa fa-heartbeat text-danger me-2\"/>Health"
+msgstr "<i class=\"fa fa-heartbeat text-danger me-2\"/>สุขภาพ"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "<i class=\"fa fa-id-card text-primary me-2\"/>Name Info"
+msgstr "<i class=\"fa fa-id-card text-primary me-2\"/>ข้อมูลชื่อ"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "<i class=\"fa fa-info-circle text-primary me-2\"/>Personal Info"
+msgstr "<i class=\"fa fa-info-circle text-primary me-2\"/>ข้อมูลส่วนตัว"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "<i class=\"fa fa-map-marker text-primary me-2\"/>Contact &amp; Address"
+msgstr "<i class=\"fa fa-map-marker text-primary me-2\"/>การติดต่อ &amp; ที่อยู่"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "<i class=\"fa fa-phone me-1\"/> Emergency &amp; Health"
+msgstr "<i class=\"fa fa-phone me-1\"/> ฉุกเฉิน &amp; สุขภาพ"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "<i class=\"fa fa-plus\"/> Add"
+msgstr "<i class=\"fa fa-plus\"/> เพิ่ม"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "<i class=\"fa fa-plus-circle text-success me-1\"/> Add Work History"
+msgstr "<i class=\"fa fa-plus-circle text-success me-1\"/> เพิ่มประวัติการทำงาน"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "<i class=\"fa fa-save me-2\"/>Save"
+msgstr "<i class=\"fa fa-save me-2\"/>บันทึก"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "<i class=\"fa fa-star me-1\"/> Skills &amp; Interests"
+msgstr "<i class=\"fa fa-star me-1\"/> ทักษะ &amp; ความสนใจ"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "<i class=\"fa fa-star text-warning me-2\"/>Skills &amp; Interests"
+msgstr "<i class=\"fa fa-star text-warning me-2\"/>ทักษะ &amp; ความสนใจ"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "<i class=\"fa fa-university me-1\"/> Academic"
+msgstr "<i class=\"fa fa-university me-1\"/> วิชาการ"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "<i class=\"fa fa-university text-primary me-2\"/>Academic Position"
+msgstr "<i class=\"fa fa-university text-primary me-2\"/>ตำแหน่งทางวิชาการ"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "<i class=\"fa fa-user me-1\"/> Personal Info"
+msgstr "<i class=\"fa fa-user me-1\"/> ข้อมูลส่วนตัว"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "<option value=\"\">-- Select --</option>"
+msgstr "<option value=\"\">-- เลือก --</option>"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.view_partner_form_inherit_profile
+msgid "<span class=\"o_stat_text\">Profile</span>"
+msgstr "<span class=\"o_stat_text\">โปรไฟล์</span>"
+
+#. module: portal_profile
+#: model:ir.model.constraint,message:portal_profile.constraint_portal_profile_partner_id_unique
 msgid "A profile already exists for this partner."
-msgstr "มีข้อมูลโปรไฟล์สำหรับคู่ค้านี้แล้ว"
+msgstr ""
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__academic_position
-#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 #: model_terms:ir.ui.view,arch_db:portal_profile.portal_profile_view_form
 msgid "Academic Position"
 msgstr "ตำแหน่งทางวิชาการ"
@@ -40,21 +137,29 @@ msgstr "แต่งตั้งเมื่อ"
 
 #. module: portal_profile
 #: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "Address"
+msgstr "ที่อยู่"
+
+#. module: portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Appointed Date"
 msgstr "แต่งตั้งเมื่อ"
 
 #. module: portal_profile
 #: model:ir.model.fields.selection,name:portal_profile.selection__portal_profile__academic_position__assistant_professor
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Assistant Professor"
 msgstr "ผู้ช่วยศาสตราจารย์"
 
 #. module: portal_profile
 #: model:ir.model.fields.selection,name:portal_profile.selection__portal_profile__academic_position__associate_professor
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Associate Professor"
 msgstr "รองศาสตราจารย์"
 
 #. module: portal_profile
 #: model:ir.model.fields.selection,name:portal_profile.selection__portal_profile__ocsc_exam_level__bachelor
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Bachelor"
 msgstr "ปริญญาตรี"
 
@@ -65,11 +170,13 @@ msgstr "ปริญญาตรี"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__birthday
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Birthday"
 msgstr "วันเกิด"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__chronic_disease
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Chronic Disease"
 msgstr "โรคประจำตัว"
 
@@ -80,26 +187,22 @@ msgstr "เมือง"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_work_history__company_name
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Company"
 msgstr "บริษัท"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__computer_skills
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Computer Skills"
 msgstr "ความรู้ความสามารถทางคอมพิวเตอร์"
 
 #. module: portal_profile
 #: model:ir.model,name:portal_profile.model_res_partner
 msgid "Contact"
-msgstr "ผู้ติดต่อ"
+msgstr "ติดต่อ"
 
 #. module: portal_profile
-#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
-msgid "Contact &amp; Address"
-msgstr "ข้อมูลติดต่อและที่อยู่"
-
-#. module: portal_profile
-#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 #: model_terms:ir.ui.view,arch_db:portal_profile.portal_profile_view_form
 msgid "Contact Info"
 msgstr "ข้อมูลติดต่อ"
@@ -107,11 +210,34 @@ msgstr "ข้อมูลติดต่อ"
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_education_history__country_id
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__country_id
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Country"
 msgstr "ประเทศ"
 
 #. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_education_history__create_uid
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__create_uid
+#: model:ir.model.fields,field_description:portal_profile.field_portal_work_history__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_education_history__create_date
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__create_date
+#: model:ir.model.fields,field_description:portal_profile.field_portal_work_history__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_education_history__display_name
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__display_name
+#: model:ir.model.fields,field_description:portal_profile.field_portal_work_history__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: portal_profile
 #: model:ir.model.fields.selection,name:portal_profile.selection__portal_profile__marital__divorced
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Divorced"
 msgstr "หย่า"
 
@@ -122,12 +248,14 @@ msgstr "ปริญญาเอก"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_work_history__duration
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Duration"
 msgstr "ระยะเวลา"
 
 #. module: portal_profile
 #: model:ir.model,name:portal_profile.model_portal_education_history
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__education_history_ids
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_profile_view_form
 msgid "Education History"
 msgstr "ประวัติการศึกษา"
 
@@ -164,8 +292,14 @@ msgstr "ความสัมพันธ์"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_work_history__date_end
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "End Date"
 msgstr "วันที่สิ้นสุด"
+
+#. module: portal_profile
+#: model:ir.model.constraint,message:portal_profile.constraint_portal_work_history_date_check
+msgid "End date must be after start date."
+msgstr "วันที่สิ้นสุดต้องมากกว่าวันที่เริ่มต้น"
 
 #. module: portal_profile
 #: model_terms:ir.ui.view,arch_db:portal_profile.portal_profile_view_form
@@ -189,26 +323,31 @@ msgstr "เลขที่สอบผ่าน ก.พ."
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__first_name_en
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "First Name (EN)"
 msgstr "ชื่อ (อังกฤษ)"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__first_name
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "First Name (TH)"
 msgstr "ชื่อ"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__foreign_language_skills
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Foreign Language Skills"
 msgstr "ความรู้ความสามารถทางภาษาต่างประเทศ"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_education_history__graduation_date
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Graduation Date"
 msgstr "วันที่สำเร็จการศึกษา"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__has_ocsc_exam
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Has OCSC Exam"
 msgstr "มีใบสอบ ก.พ."
 
@@ -218,32 +357,66 @@ msgid "Health"
 msgstr "สุขภาพ"
 
 #. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_education_history__id
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__id
+#: model:ir.model.fields,field_description:portal_profile.field_portal_work_history__id
+msgid "ID"
+msgstr ""
+
+#. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_education_history__institution
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Institution"
 msgstr "สถานศึกษา"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__interests
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Interests"
 msgstr "ความสนใจ"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_work_history__job_title
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Job Title / Description"
 msgstr "ตำแหน่ง / ลักษณะงาน"
 
 #. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_education_history____last_update
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile____last_update
+#: model:ir.model.fields,field_description:portal_profile.field_portal_work_history____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__last_name_en
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Last Name (EN)"
 msgstr "นามสกุล (อังกฤษ)"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__last_name
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Last Name (TH)"
 msgstr "นามสกุล"
 
 #. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_education_history__write_uid
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__write_uid
+#: model:ir.model.fields,field_description:portal_profile.field_portal_work_history__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_education_history__write_date
+#: model:ir.model.fields,field_description:portal_profile.field_portal_profile__write_date
+#: model:ir.model.fields,field_description:portal_profile.field_portal_work_history__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: portal_profile
 #: model:ir.model.fields.selection,name:portal_profile.selection__portal_profile__academic_position__lecturer
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Lecturer"
 msgstr "อาจารย์"
 
@@ -254,21 +427,25 @@ msgstr "ระดับการศึกษา"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_education_history__major
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Major"
 msgstr "สาขา/วิชาเอก"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__marital
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Marital Status"
 msgstr "สถานะการสมรส"
 
 #. module: portal_profile
 #: model:ir.model.fields.selection,name:portal_profile.selection__portal_profile__marital__married
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Married"
 msgstr "สมรส"
 
 #. module: portal_profile
 #: model:ir.model.fields.selection,name:portal_profile.selection__portal_profile__ocsc_exam_level__master
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Master"
 msgstr "ปริญญาโท"
 
@@ -279,16 +456,19 @@ msgstr "ปริญญาโท"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__middle_name_en
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Middle Name (EN)"
 msgstr "ชื่อกลาง (อังกฤษ)"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__middle_name
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Middle Name (TH)"
 msgstr "ชื่อกลาง"
 
 #. module: portal_profile
 #: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_home_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "My Profile"
 msgstr "ข้อมูลส่วนตัว"
 
@@ -304,11 +484,16 @@ msgstr "ข้อมูลชื่อ"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__nationality_id
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Nationality"
 msgstr "สัญชาติ"
 
 #. module: portal_profile
 #: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
+msgid "No work history records."
+msgstr "ไม่มีบันทึกประวัติการทำงาน"
+
+#. module: portal_profile
 #: model_terms:ir.ui.view,arch_db:portal_profile.portal_profile_view_form
 msgid "OCSC"
 msgstr "ก.พ."
@@ -329,7 +514,13 @@ msgid "OCSC Exam Number"
 msgstr "เลขที่สอบผ่าน ก.พ."
 
 #. module: portal_profile
+#: model:ir.model.constraint,message:portal_profile.constraint_portal_education_history_profile_level_unique
+msgid "Only one record per education level is allowed."
+msgstr ""
+
+#. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__other_abilities
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Other Abilities"
 msgstr "ความรู้ความสามารถด้านอื่น ๆ"
 
@@ -351,6 +542,7 @@ msgstr "เบอร์โทรศัพท์"
 
 #. module: portal_profile
 #: model:ir.model,name:portal_profile.model_portal_profile
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_profile_view_form
 msgid "Portal Profile"
 msgstr "โปรไฟล์พอร์ทัล"
 
@@ -366,17 +558,21 @@ msgstr "ตำแหน่ง"
 
 #. module: portal_profile
 #: model:ir.model.fields.selection,name:portal_profile.selection__portal_profile__academic_position__professor
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Professor"
 msgstr "ศาสตราจารย์"
 
 #. module: portal_profile
+#: model:ir.model.fields,field_description:portal_profile.field_portal_education_history__profile_id
+#: model:ir.model.fields,field_description:portal_profile.field_portal_work_history__profile_id
 #: model:ir.model.fields,field_description:portal_profile.field_res_partner__profile_ids
-#: model_terms:ir.ui.view,arch_db:portal_profile.view_partner_form_inherit_profile
+#: model:ir.model.fields,field_description:portal_profile.field_res_users__profile_ids
 msgid "Profile"
 msgstr "โปรไฟล์"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_education_history__program
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Program"
 msgstr "หลักสูตร"
 
@@ -387,46 +583,48 @@ msgstr "ความสัมพันธ์"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_work_history__salary
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Salary"
 msgstr "เงินเดือน"
 
 #. module: portal_profile
-#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
-msgid "Save"
-msgstr "บันทึก"
-
-#. module: portal_profile
 #: model:ir.model.fields.selection,name:portal_profile.selection__portal_profile__marital__single
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Single"
 msgstr "โสด"
 
 #. module: portal_profile
 #: model_terms:ir.ui.view,arch_db:portal_profile.portal_profile_view_form
-msgid "Skills &amp; Interests"
-msgstr "ทักษะและความสนใจ"
+msgid "Skills & Interests"
+msgstr "ทักษะ และ ความสนใจ"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__spouse_first_name
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Spouse First Name"
 msgstr "ชื่อคู่สมรส"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__spouse_last_name
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Spouse Last Name"
 msgstr "นามสกุลคู่สมรส"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__spouse_middle_name
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Spouse Middle Name"
 msgstr "ชื่อกลางคู่สมรส"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__spouse_prefix
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Spouse Prefix"
 msgstr "คำนำหน้าชื่อคู่สมรส"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_work_history__date_start
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Start Date"
 msgstr "วันที่เริ่มต้น"
 
@@ -452,6 +650,7 @@ msgstr "ชื่อภาษาไทย"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__title
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Title"
 msgstr "คำนำหน้าชื่อ"
 
@@ -462,17 +661,20 @@ msgstr "ต่ำกว่าปริญญาตรี"
 
 #. module: portal_profile
 #: model:ir.model.fields.selection,name:portal_profile.selection__portal_profile__marital__widowed
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "Widowed"
 msgstr "ม่าย"
 
 #. module: portal_profile
 #: model:ir.model,name:portal_profile.model_portal_work_history
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__work_history_ids
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_profile_view_form
 msgid "Work History"
 msgstr "ประวัติการทำงาน"
 
 #. module: portal_profile
 #: model:ir.model.fields,field_description:portal_profile.field_portal_profile__zip_id
+#: model_terms:ir.ui.view,arch_db:portal_profile.portal_my_profile
 msgid "ZIP Location"
 msgstr "ที่ตั้งรหัสไปรษณีย์"
 
