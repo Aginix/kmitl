@@ -2,6 +2,7 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import float_compare
 
 _logger = logging.getLogger(__name__)
 
@@ -268,6 +269,56 @@ class KrisProject(models.Model):
         string="หมายเหตุ",
         tracking=True,
     )
+    # --- Warning flags ---
+    warn_allocation_mismatch = fields.Boolean(
+        compute="_compute_warnings",
+    )
+    warn_installment_maintenance_mismatch = fields.Boolean(
+        compute="_compute_warnings",
+    )
+    warn_installment_total_mismatch = fields.Boolean(
+        compute="_compute_warnings",
+    )
+
+    @api.depends(
+        "maintenance_deduction_amount",
+        "allocation_line_ids.estimated_amount",
+        "installment_ids.maintenance_fee",
+        "total_installment_amount",
+        "project_value",
+    )
+    def _compute_warnings(self):
+        prec = self.env["decimal.precision"].precision_get("Account")
+        for rec in self:
+            alloc_total = sum(rec.allocation_line_ids.mapped("estimated_amount"))
+            rec.warn_allocation_mismatch = (
+                bool(rec.allocation_line_ids)
+                and float_compare(
+                    alloc_total, rec.maintenance_deduction_amount, precision_digits=prec
+                )
+                != 0
+            )
+            if rec.installment_ids:
+                maint_total = sum(rec.installment_ids.mapped("maintenance_fee"))
+                rec.warn_installment_maintenance_mismatch = (
+                    float_compare(
+                        maint_total,
+                        rec.maintenance_deduction_amount,
+                        precision_digits=prec,
+                    )
+                    != 0
+                )
+                rec.warn_installment_total_mismatch = (
+                    float_compare(
+                        rec.total_installment_amount,
+                        rec.project_value,
+                        precision_digits=prec,
+                    )
+                    != 0
+                )
+            else:
+                rec.warn_installment_maintenance_mismatch = False
+                rec.warn_installment_total_mismatch = False
 
     @api.depends("operating_expense")
     def _compute_allocatable_value(self):
