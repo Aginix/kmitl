@@ -13,7 +13,8 @@
         "data/purchase_guarantee_rules.xml",
         "data/purchase_guarantee_type_data.xml",
         "views/purchase_guarantee_action.xml",
-        "views/purchase_guarantee_views.xml"
+        "views/purchase_guarantee_views.xml",
+        "views/account_move_views.xml",
     ],
     'installable': True,
     'auto_install': False,
