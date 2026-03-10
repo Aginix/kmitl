@@ -21,27 +21,10 @@ class WorkAcceptance(models.Model):
         states={"draft": [("readonly", False)]},
     )
 
-    all_committee_validated = fields.Boolean(
-        compute='_compute_all_committee_validated',
-        store=True,
-        string='All Committee Validated',
-    )
-
     def _check_state_conditions(self, vals):
         if self.env.context.get('skip_committee_wizard'):
             return False
         return super()._check_state_conditions(vals)
-
-    @api.depends('work_acceptance_committee_ids.status')
-    def _compute_all_committee_validated(self):
-        for rec in self:
-            committees = rec.work_acceptance_committee_ids
-            if committees and all(c.status == 'accept' for c in committees):
-                rec.all_committee_validated = True
-                if not rec.is_external or (rec.is_external and rec.has_attachment):
-                    rec.with_context(skip_committee_wizard=True).button_accept()
-            else:
-                rec.all_committee_validated = False
 
     def write(self, vals):
         res = super().write(vals)
@@ -50,7 +33,7 @@ class WorkAcceptance(models.Model):
                 rec.state == 'in_review'
                 and rec.validation_status == 'validated'
                 and not self.env.context.get('skip_committee_wizard')
-                and (not rec.is_external or (rec.is_external and rec.has_attachment))
+                and (not rec.is_external or rec.has_attachment)
             ):
                 rec.with_context(skip_committee_wizard=True).button_accept()
         return res
