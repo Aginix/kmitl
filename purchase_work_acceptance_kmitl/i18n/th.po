@@ -1321,3 +1321,82 @@ msgstr "ต่อวัน"
 #: model:ir.ui.menu,name:purchase_work_acceptance_kmitl.menu_purchase_work_acceptance
 msgid "Work Acceptance"
 msgstr "การตรวจรับ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__status__accept
+msgid "Accept"
+msgstr "ตรวจรับ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__status__not_accept
+msgid "Not Accept"
+msgstr "ไม่ตรวจรับ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_committee_wizard_form
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__approve_role__chairman
+msgid "Chairman"
+msgstr "ประธาน"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__approve_role__committee
+msgid "Committee"
+msgstr "คณะกรรมการ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance_committee_wizard_line__employee_name
+msgid "Committee Name"
+msgstr "รายชื่อคณะกรรมการ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_committee_wizard_form
+msgid "Confirm"
+msgstr "ยืนยัน"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__note__leave
+msgid "Leave"
+msgstr "ลา"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__note__mission
+msgid "Mission"
+msgstr "ติดภารกิจ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__status__not_accept
+msgid "Not Accept"
+msgstr "ไม่ตรวจรับ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance_committee_wizard_line__note
+msgid "Note"
+msgstr "หมายเหตุ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance_committee__approve_role
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance_committee_wizard_line__approve_role
+msgid "Role"
+msgstr "บทบาท"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee__approve_role__secretary
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__approve_role__secretary
+msgid "Secretary"
+msgstr "กรรมการและเลขานุการ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance_committee_wizard_line__status
+msgid "Status"
+msgstr "สถานะการตรวจรับ"
+
+#. module: purchase_work_acceptance_kmitl
+#. odoo-python
+#: code:addons/purchase_work_acceptance_kmitl/models/work_acceptance.py:0
+#, python-format
+msgid "Work Acceptance Wizard"
+msgstr "การตรวจรับ"
