@@ -14,6 +14,8 @@ class WorkAcceptance(models.Model):
         string="Use External Inspection",
         default=False,
         copy=False,
+        readonly=True,
+        states={"draft": [("readonly", False)]},
     )
 
     has_attachment = fields.Boolean(
