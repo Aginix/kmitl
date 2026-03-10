@@ -77,11 +77,11 @@ class AssetDepreciationReportXlsx(models.AbstractModel):
         fy_name = fy.name if fy else "-"
         profile_name = wizard.profile_id.name if wizard.profile_id else "ทั้งหมด"
         source_of_asset_labels = {
-            "procurement": "Procurement", "donation": "Donation", "transfer": "Transfer",
+            "procurement": "จัดซื้อจัดจ้าง", "donation": "รับบริจาค", "transfer": "รับโอน",
         }
         source_of_asset_name = source_of_asset_labels.get(wizard.source_of_asset, "ทั้งหมด")
         source_name = wizard.source_analytic_id.name if wizard.source_analytic_id else "ทั้งหมด"
-        dept_name = wizard.department_id.complete_name if wizard.department_id else "ทั้งหมด"
+        dept_name = wizard.department_id.complete_name if wizard.department_id else "ทุกหน่วยงาน"
 
         info_rows = [
             f"ประเภท: {profile_name}",
