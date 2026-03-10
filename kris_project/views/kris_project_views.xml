@@ -168,7 +168,7 @@
                         <!-- Tab 1: มูลค่าและงวดงาน -->
                         <page string="มูลค่าและงวดงาน" name="financials">
                             <group>
-                                <group string="มูลค่าโครงการ">
+                                <group string="1. มูลค่าโครงการ">
                                     <field
                                         name="project_value"
                                         attrs="{'readonly': [('state', 'in', ['confirmed', 'done', 'cancel'])]}"
@@ -199,7 +199,46 @@
                                     <field name="maintenance_deduction_amount" readonly="1"/>
                                 </group>
                             </group>
-                            <separator string="งวดงานตามสัญญา"/>
+                            <separator string="2. จัดสรรรายได้" name="allocation_separator" />
+                            <group>
+                                <group>
+                                    <field name="maintenance_deduction_amount"
+                                        readonly="1"
+                                        string="มูลค่าหักค่าบำรุงที่นำมาจัดสรร"
+                                    />
+                                </group>
+                            </group>
+                            <div class="mb-3"
+                                attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
+                            >
+                                <field
+                                    name="allocation_template_id"
+                                    nolabel="1"
+                                    class="d-inline-block me-2"
+                                    style="min-width: 250px;"
+                                    placeholder="เลือกแม่แบบ..."
+                                />
+                                <button
+                                    name="action_apply_allocation_template"
+                                    string="นำแม่แบบมาใช้"
+                                    type="object"
+                                    class="btn-secondary"
+                                />
+                            </div>
+                            <field
+                                name="allocation_line_ids"
+                                attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
+                            >
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="item_id"/>
+                                    <field name="allocation_pct" string="% จัดสรร" readonly="1" sum="รวม"/>
+                                    <field name="estimated_amount" sum="รวม"/>
+                                    <field name="actual_amount" readonly="1" sum="รวม"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </tree>
+                            </field>
+                            <separator string="3. งวดงานตามสัญญา" name="installment_separator" />
                             <div class="mb-3"
                                 attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
                             >
@@ -275,49 +314,7 @@
                             </field>
                         </page>
 
-                        <!-- Tab 3: การจัดสรรรายได้ -->
-                        <page string="การจัดสรรรายได้" name="allocation">
-                            <group>
-                                <group>
-                                    <field name="maintenance_deduction_amount"
-                                        readonly="1"
-                                        string="มูลค่าหักค่าบำรุงที่นำมาจัดสรร"
-                                    />
-                                </group>
-                            </group>
-                            <div class="mb-3"
-                                attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}"
-                            >
-                                <field
-                                    name="allocation_template_id"
-                                    nolabel="1"
-                                    class="d-inline-block me-2"
-                                    style="min-width: 250px;"
-                                    placeholder="เลือกแม่แบบ..."
-                                />
-                                <button
-                                    name="action_apply_allocation_template"
-                                    string="นำแม่แบบมาใช้"
-                                    type="object"
-                                    class="btn-secondary"
-                                />
-                            </div>
-                            <field
-                                name="allocation_line_ids"
-                                attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
-                            >
-                                <tree editable="bottom">
-                                    <field name="sequence" widget="handle"/>
-                                    <field name="item_id"/>
-                                    <field name="allocation_pct" string="% จัดสรร" readonly="1" sum="รวม"/>
-                                    <field name="estimated_amount" sum="รวม"/>
-                                    <field name="actual_amount" readonly="1" sum="รวม"/>
-                                    <field name="currency_id" invisible="1"/>
-                                </tree>
-                            </field>
-                        </page>
-
-                        <!-- Tab 4: เอกสารแนบ -->
+                        <!-- Tab 3: เอกสารแนบ -->
                         <page string="เอกสารแนบ" name="attachments">
                             <field
                                 name="attachment_ids"
@@ -326,7 +323,7 @@
                             />
                         </page>
 
-                        <!-- Tab 5: หมายเหตุ -->
+                        <!-- Tab 4: หมายเหตุ -->
                         <page string="หมายเหตุ" name="notes">
                             <field name="note" placeholder="หมายเหตุ..." nolabel="1"/>
                         </page>
