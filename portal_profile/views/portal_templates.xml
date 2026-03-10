@@ -857,64 +857,80 @@
                                 <p class="text-muted">No work history records.</p>
                             </t>
                             <hr />
-                            <h6 class="fw-bold"><i
-                                            class="fa fa-plus-circle text-success me-1"
-                                        /> Add Work History</h6>
-                            <div class="row">
-                                <div class="mb-3 col-lg-6">
-                                    <label class="col-form-label">Company</label>
-                                    <input
-                                                type="text"
-                                                name="wh_company_name"
-                                                class="form-control"
-                                            />
-                                </div>
-                                <div class="mb-3 col-lg-6">
-                                    <label
-                                                class="col-form-label"
-                                            >Job Title / Description</label>
-                                    <input
-                                                type="text"
-                                                name="wh_job_title"
-                                                class="form-control"
-                                            />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="mb-3 col-lg-4">
-                                    <label class="col-form-label">Salary</label>
-                                    <input
-                                                type="number"
-                                                name="wh_salary"
-                                                class="form-control"
-                                                step="0.01"
-                                            />
-                                </div>
-                                <div class="mb-3 col-lg-4">
-                                    <label class="col-form-label">Start Date</label>
-                                    <input
-                                                type="date"
-                                                name="wh_date_start"
-                                                class="form-control"
-                                            />
-                                </div>
-                                <div class="mb-3 col-lg-4">
-                                    <label class="col-form-label">End Date</label>
-                                    <input
-                                                type="date"
-                                                name="wh_date_end"
-                                                class="form-control"
-                                            />
-                                </div>
-                            </div>
                             <button
-                                        type="submit"
-                                        name="add_work_history"
-                                        value="1"
-                                        class="btn btn-sm btn-secondary"
+                                        type="button"
+                                        class="btn btn-sm btn-outline-success mb-3"
+                                        id="btn-toggle-wh-form"
                                     >
-                                <i class="fa fa-plus" /> Add
+                                <i class="fa fa-plus-circle me-1" /> Add Work History
                             </button>
+                            <div id="wh-form-section" class="d-none">
+                                <h6 class="fw-bold"><i
+                                                class="fa fa-plus-circle text-success me-1"
+                                            /> Add Work History</h6>
+                                <div class="row">
+                                    <div class="mb-3 col-lg-6">
+                                        <label class="col-form-label">Company</label>
+                                        <input
+                                                    type="text"
+                                                    name="wh_company_name"
+                                                    class="form-control"
+                                                />
+                                    </div>
+                                    <div class="mb-3 col-lg-6">
+                                        <label
+                                                    class="col-form-label"
+                                                >Job Title / Description</label>
+                                        <input
+                                                    type="text"
+                                                    name="wh_job_title"
+                                                    class="form-control"
+                                                />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="mb-3 col-lg-4">
+                                        <label class="col-form-label">Salary</label>
+                                        <input
+                                                    type="number"
+                                                    name="wh_salary"
+                                                    class="form-control"
+                                                    step="0.01"
+                                                />
+                                    </div>
+                                    <div class="mb-3 col-lg-4">
+                                        <label class="col-form-label">Start Date</label>
+                                        <input
+                                                    type="date"
+                                                    name="wh_date_start"
+                                                    class="form-control"
+                                                />
+                                    </div>
+                                    <div class="mb-3 col-lg-4">
+                                        <label class="col-form-label">End Date</label>
+                                        <input
+                                                    type="date"
+                                                    name="wh_date_end"
+                                                    class="form-control"
+                                                />
+                                    </div>
+                                </div>
+                                <button
+                                            type="submit"
+                                            name="add_work_history"
+                                            value="1"
+                                            class="btn btn-sm btn-secondary me-2"
+                                        >
+                                    <i class="fa fa-plus" /> Add
+                                </button>
+                                <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-secondary"
+                                            id="btn-cancel-wh-form"
+                                        >
+                                    Cancel
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -1008,6 +1024,37 @@
                                     history.replaceState(null, null, e.target.dataset.bsTarget);
                                 });
                             });
+
+                            // Toggle work history form
+                            var toggleBtn = document.getElementById('btn-toggle-wh-form');
+                            var whFormSection = document.getElementById('wh-form-section');
+                            var cancelBtn = document.getElementById('btn-cancel-wh-form');
+                            // Disable WH inputs when hidden to prevent empty values in POST
+                            function setWhInputs(enabled) {
+                                whFormSection.querySelectorAll('input').forEach(function (inp) {
+                                    inp.disabled = !enabled;
+                                });
+                            }
+                            if (toggleBtn &amp;&amp; whFormSection) {
+                                setWhInputs(false);
+                                toggleBtn.addEventListener('click', function () {
+                                    whFormSection.classList.remove('d-none');
+                                    toggleBtn.classList.add('d-none');
+                                    setWhInputs(true);
+                                });
+                                // Prevent Enter key inside WH fields from submitting via WH button
+                                whFormSection.addEventListener('keydown', function (e) {
+                                    if (e.key === 'Enter') { e.preventDefault(); }
+                                });
+                            }
+                            if (cancelBtn &amp;&amp; whFormSection &amp;&amp; toggleBtn) {
+                                cancelBtn.addEventListener('click', function () {
+                                    whFormSection.classList.add('d-none');
+                                    toggleBtn.classList.remove('d-none');
+                                    whFormSection.querySelectorAll('input').forEach(function (inp) { inp.value = ''; });
+                                    setWhInputs(false);
+                                });
+                            }
 
                             // Preserve tab on work history add
                             var addBtn = document.querySelector('[name="add_work_history"]');

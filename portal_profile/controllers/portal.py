@@ -59,6 +59,26 @@ class PortalProfile(CustomerPortal):
         "has_ocsc_exam",
     ]
 
+    def _prepare_profile_render_values(self, partner, profile, error_message=None):
+        """Prepare common render values for the profile page."""
+        values = self._prepare_portal_layout_values()
+        values.update(
+            {
+                "profile": profile,
+                "partner": partner,
+                "titles": request.env["res.partner.title"].sudo().search([]),
+                "countries": request.env["res.country"].sudo().search([]),
+                "zips": request.env["res.city.zip"].sudo().search([]),
+                "education_by_level": {
+                    rec.level: rec for rec in profile.education_history_ids
+                },
+                "page_name": "my_profile",
+                "error": {},
+                "error_message": error_message or [],
+            }
+        )
+        return values
+
     @http.route(["/my/profile"], type="http", auth="user", website=True)
     def portal_my_profile(self, **post):
         partner = request.env.user.partner_id
@@ -78,26 +98,10 @@ class PortalProfile(CustomerPortal):
                     if not post.get(field, "").strip()
                 ]
                 if missing:
-                    education_by_level = {
-                        rec.level: rec for rec in profile.education_history_ids
-                    }
-                    values = self._prepare_portal_layout_values()
-                    values.update(
-                        {
-                            "profile": profile,
-                            "partner": partner,
-                            "titles": request.env["res.partner.title"]
-                            .sudo()
-                            .search([]),
-                            "countries": request.env["res.country"].sudo().search([]),
-                            "zips": request.env["res.city.zip"].sudo().search([]),
-                            "education_by_level": education_by_level,
-                            "page_name": "my_profile",
-                            "error": {},
-                            "error_message": [
-                                "Please fill required fields: %s" % ", ".join(missing)
-                            ],
-                        }
+                    values = self._prepare_profile_render_values(
+                        partner,
+                        profile,
+                        ["Please fill required fields: %s" % ", ".join(missing)],
                     )
                     return request.render("portal_profile.portal_my_profile", values)
                 wh_vals = {
@@ -131,24 +135,8 @@ class PortalProfile(CustomerPortal):
                     )
                 errors.extend(self._validate_education_history(post))
                 if errors:
-                    education_by_level = {
-                        rec.level: rec for rec in profile.education_history_ids
-                    }
-                    values = self._prepare_portal_layout_values()
-                    values.update(
-                        {
-                            "profile": profile,
-                            "partner": partner,
-                            "titles": request.env["res.partner.title"]
-                            .sudo()
-                            .search([]),
-                            "countries": request.env["res.country"].sudo().search([]),
-                            "zips": request.env["res.city.zip"].sudo().search([]),
-                            "education_by_level": education_by_level,
-                            "page_name": "my_profile",
-                            "error": {},
-                            "error_message": errors,
-                        }
+                    values = self._prepare_profile_render_values(
+                        partner, profile, errors
                     )
                     return request.render("portal_profile.portal_my_profile", values)
                 vals = self._prepare_profile_values(post)
@@ -156,23 +144,7 @@ class PortalProfile(CustomerPortal):
                 self._save_education_history(profile, post)
             return request.redirect("/my/profile")
 
-        education_by_level = {rec.level: rec for rec in profile.education_history_ids}
-
-        values = self._prepare_portal_layout_values()
-        values.update(
-            {
-                "profile": profile,
-                "partner": partner,
-                "titles": request.env["res.partner.title"].sudo().search([]),
-                "countries": request.env["res.country"].sudo().search([]),
-                "zips": request.env["res.city.zip"].sudo().search([]),
-                "education_by_level": education_by_level,
-                "page_name": "my_profile",
-                "error": {},
-                "error_message": [],
-            }
-        )
-
+        values = self._prepare_profile_render_values(partner, profile)
         response = request.render("portal_profile.portal_my_profile", values)
         response.headers["X-Frame-Options"] = "SAMEORIGIN"
         return response
@@ -186,7 +158,10 @@ class PortalProfile(CustomerPortal):
     def portal_work_history_delete(self, **post):
         partner = request.env.user.partner_id
         profile = partner.sudo()._get_or_create_profile()
-        wh_id = int(post.get("id", 0))
+        try:
+            wh_id = int(post.get("id", 0))
+        except (ValueError, TypeError):
+            wh_id = 0
         if wh_id:
             record = (
                 request.env["portal.work.history"]
