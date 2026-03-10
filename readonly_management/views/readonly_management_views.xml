@@ -33,28 +33,38 @@
                     <div class="oe_title">
                         <label for="name" />
                         <h1>
-                            <field name="name" placeholder="Configuration name..." />
+                            <field name="name" placeholder="ชื่อ config..." />
                         </h1>
                     </div>
                     <group>
-                        <group string="Settings">
+                        <group string="เป้าหมาย">
                             <field
                                 name="model_id"
-                                string="Target Model"
+                                string="Model"
                                 options="{'no_create': True, 'no_open': True}"
                             />
-                            <field name="model_name" string="Model Technical Name" readonly="1" />
+                            <field name="model_name" string="Technical Name" readonly="1" />
+                        </group>
+                        <group string="เงื่อนไขเปิดใช้งาน">
                             <field
                                 name="apply_on_domain"
-                                string="Global Gate Condition"
-                                placeholder="[('state', 'in', ['submit', 'to_verify'])]"
+                                string="Domain"
+                                widget="domain"
+                                options="{'model': 'model_name'}"
+                                nolabel="1"
                             />
-                            <field name="note" string="Notes" nolabel="1" />
+                            <div class="text-muted small" colspan="2">
+                                กำหนด domain เพื่อเปิดใช้งาน config นี้ เช่น ล็อก field เมื่อ state = submit
+                                (ถ้าไม่ระบุ = ล็อกเสมอ)
+                            </div>
                         </group>
                     </group>
+                    <group string="หมายเหตุ" attrs="{'invisible': [('note', '=', False)]}">
+                        <field name="note" nolabel="1" />
+                    </group>
                     <notebook>
-                        <page name="field_rules" string="Field Rules">
-                            <field name="field_ids" string="Field Rules">
+                        <page name="field_rules" string="Field ที่ต้องการล็อก">
+                            <field name="field_ids">
                                 <tree editable="bottom">
                                     <field
                                         name="field_id"
@@ -64,24 +74,28 @@
                                     />
                                     <field
                                         name="field_name"
-                                        string="Field Technical Name"
+                                        string="Technical Name"
                                         readonly="1"
                                         optional="hide"
                                     />
                                     <field
                                         name="force_readonly"
-                                        string="Always Readonly"
+                                        string="ล็อกตาม Global Condition"
                                         widget="boolean_toggle"
                                     />
                                     <field
                                         name="domain"
-                                        string="Per-Field Condition"
-                                        attrs="{'invisible': [('force_readonly', '=', True)]}"
-                                        placeholder="[('total_amount', '>', 100000)]"
-                                        optional="show"
+                                        string="เงื่อนไขเพิ่มเติม (AND)"
+                                        widget="domain"
+                                        options="{'model': 'parent.model_name'}"
+                                        attrs="{'invisible': [('force_readonly', '=', True)], 'required': [('force_readonly', '=', False)]}"
                                     />
                                 </tree>
                             </field>
+                            <div class="text-muted small mt-2">
+                                <b>ล็อกตาม Global Condition</b> = ใช้เงื่อนไขจาก Domain ด้านบนเท่านั้น |
+                                <b>เงื่อนไขเพิ่มเติม</b> = AND กับ Global Condition
+                            </div>
                         </page>
                     </notebook>
                 </sheet>
