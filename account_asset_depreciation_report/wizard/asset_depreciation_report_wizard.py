@@ -9,20 +9,20 @@ class AssetDepreciationReportWizard(models.TransientModel):
     _description = "Asset Depreciation Report Wizard"
 
     date = fields.Date(
-        string="ประจำวันที่",
+        string="Date",
         required=True,
         default=fields.Date.today,
     )
     account_fiscal_year_id = fields.Many2one(
         "account.fiscal.year",
-        string="ปีงบประมาณ",
+        string="Fiscal Year",
         compute="_compute_account_fiscal_year_id",
         store=True,
         readonly=True,
     )
     profile_id = fields.Many2one(
         "account.asset.profile",
-        string="ประเภท",
+        string="Asset Type",
     )
     source_of_asset = fields.Selection(
         [
@@ -30,16 +30,16 @@ class AssetDepreciationReportWizard(models.TransientModel):
             ("donation", "Donation"),
             ("transfer", "Transfer"),
         ],
-        string="ที่มา",
+        string="Source of Asset",
     )
     source_analytic_id = fields.Many2one(
         "account.analytic.account",
-        string="แหล่งเงิน",
+        string="Funding Source",
         domain=[("root_plan_id.code", "=", "sources")],
     )
     department_id = fields.Many2one(
         "hr.department",
-        string="หน่วยงาน",
+        string="Department",
     )
     data = fields.Binary(string="Report", readonly=True)
     filename = fields.Char(string="Filename", readonly=True)

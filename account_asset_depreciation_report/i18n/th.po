@@ -87,23 +87,28 @@ msgstr "รับโอน"
 
 #. module: account_asset_depreciation_report
 #: model:ir.model.fields,field_description:account_asset_depreciation_report.field_asset_depreciation_report_wizard__source_of_asset
-msgid "ที่มา"
-msgstr ""
+msgid "Source of Asset"
+msgstr "ที่มา"
 
 #. module: account_asset_depreciation_report
 #: model:ir.model.fields,field_description:account_asset_depreciation_report.field_asset_depreciation_report_wizard__date
-msgid "ประจำวันที่"
-msgstr ""
+msgid "Date"
+msgstr "ประจำวันที่"
 
 #. module: account_asset_depreciation_report
 #: model:ir.model.fields,field_description:account_asset_depreciation_report.field_asset_depreciation_report_wizard__profile_id
-msgid "ประเภท"
-msgstr ""
+msgid "Asset Type"
+msgstr "ประเภทครุภัณฑ์/ทรัพย์สิน"
 
 #. module: account_asset_depreciation_report
 #: model:ir.model.fields,field_description:account_asset_depreciation_report.field_asset_depreciation_report_wizard__account_fiscal_year_id
-msgid "ปีงบประมาณ"
-msgstr ""
+msgid "Fiscal Year"
+msgstr "ปีงบประมาณ"
+
+#. module: account_asset_depreciation_report
+#: model_terms:ir.ui.view,arch_db:account_asset_depreciation_report.view_asset_depreciation_report_wizard_form
+msgid "Leave department empty to export data for all departments."
+msgstr "กรณีต้องการนำออกข้อมูลทุกหน่วยงานไม่ต้องเลือกหน่วยงาน"
 
 #. module: account_asset_depreciation_report
 #: model_terms:ir.ui.view,arch_db:account_asset_depreciation_report.view_asset_depreciation_report_wizard_form
@@ -129,10 +134,10 @@ msgstr ""
 
 #. module: account_asset_depreciation_report
 #: model:ir.model.fields,field_description:account_asset_depreciation_report.field_asset_depreciation_report_wizard__department_id
-msgid "หน่วยงาน"
-msgstr ""
+msgid "Department"
+msgstr "หน่วยงาน"
 
 #. module: account_asset_depreciation_report
 #: model:ir.model.fields,field_description:account_asset_depreciation_report.field_asset_depreciation_report_wizard__source_analytic_id
-msgid "แหล่งเงิน"
-msgstr ""
+msgid "Funding Source"
+msgstr "แหล่งเงิน"
