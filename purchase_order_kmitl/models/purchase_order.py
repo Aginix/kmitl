@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -38,3 +38,18 @@ class PurchaseOrder(models.Model):
         ("purchase", "Open"),
         ("done", "Done")
     ])
+
+    def action_view_purchase_request(self):
+        self.ensure_one()
+        if not self.request_id:
+            return
+
+        return {
+            'name': _('Purchase Request'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'purchase.request',
+            'res_id': self.request_id.id,
+            'view_mode': 'form',
+            'view_type': 'form',
+            'target': 'current',
+        }

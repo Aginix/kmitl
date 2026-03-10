@@ -1,6 +1,7 @@
 import logging
+import re
 
-from odoo import api, fields, models, _
+from odoo import api, fields, models
 from ..utils.tree_builder import BudgetTreeBuilder, TreeConfig, BudgetTreeExporter
 
 _logger = logging.getLogger(__name__)
@@ -10,63 +11,129 @@ class BudgetAppropriationF4Report(models.TransientModel):
     _name = "budget.appropriation.f4.report"
     _description = "Budget Appropriation F4 Report"
 
-    appropriation_id = fields.Many2one("budget.appropriation", string="Budget Appropriation", required=True)
+    appropriation_id = fields.Many2one(
+        "budget.appropriation", string="Budget Appropriation", required=True
+    )
 
     @api.model
     def get_f4_data(self, appropriation_id, options=None):
-        """Generate F4 hierarchical data for revenue budget appropriation"""
+        """
+        Generate F4 hierarchical data for revenue budget appropriation(s).
+
+        Args:
+            appropriation_id: int or list of int - single ID or list of IDs
+            options: dict with optional keys:
+                - department_name: str - override department name for merged report
+
+        Returns:
+            dict: F4 report data with hierarchy, totals, and metadata
+        """
         if options is None:
             options = {}
 
-        appropriation = self.env["budget.appropriation"].browse(appropriation_id)
+        # Normalize to list for unified handling
+        if isinstance(appropriation_id, int):
+            appropriation_ids = [appropriation_id]
+        else:
+            appropriation_ids = appropriation_id
 
-        if not appropriation:
-            return {"error": "Invalid appropriation"}
+        appropriations = self.env["budget.appropriation"].browse(appropriation_ids)
 
-        # Validate REVENUE type only
-        if appropriation.budget_type != 'revenue':
-            return {"error": "F4 report is only available for revenue type appropriations"}
+        # Validate appropriations
+        error = self._validate_appropriations(appropriations)
+        if error:
+            return {"error": error}
 
-        # Get appropriation lines
-        lines = appropriation.line_ids
+        # Merge lines from all appropriations
+        lines = appropriations.mapped("line_ids")
+        deduct_lines = appropriations.mapped("deduct_line_ids")
 
-        # Build hierarchy: Budget Accounts → Lines (no Activity/Fund for revenue)
+        # Build hierarchies
         hierarchy = self._build_hierarchy(lines)
+        deduct_hierarchy = self._build_hierarchy(deduct_lines)
 
         # Calculate totals
         amount_total = sum(line.balance for line in lines)
+        amount_deduct = sum(line.balance for line in deduct_lines)
+        amount_net = amount_total - amount_deduct
+
+        # Get metadata from first appropriation
+        first = appropriations[0]
+        if len(appropriations) > 1:
+            department_name = options.get(
+                "department_name",
+                self._get_complete_name_without_codes(first.department_analytic_id),
+            )
+        else:
+            department_name = self._get_complete_name_without_codes(
+                first.department_analytic_id
+            )
 
         return {
             "appropriation": {
-                "id": appropriation.id,
-                "name": appropriation.name,
-                "date": appropriation.date.strftime("%d/%m/%Y") if appropriation.date else "",
-                "state": appropriation.state,
+                "id": first.id,
+                "name": first.name,
+                "date": first.date.strftime("%d/%m/%Y") if first.date else "",
+                "state": first.state,
                 "amount_total": amount_total,
-                "currency_symbol": appropriation.currency_id.symbol or "฿",
+                "amount_deduct": amount_deduct,
+                "amount_net": amount_net,
+                "currency_symbol": first.currency_id.symbol or "฿",
                 "fiscal_year": {
-                    "id": appropriation.account_fiscal_year_id.id,
-                    "name": appropriation.account_fiscal_year_id.name,
-                } if appropriation.account_fiscal_year_id else None,
+                    "id": first.account_fiscal_year_id.id,
+                    "name": first.account_fiscal_year_id.name,
+                }
+                if first.account_fiscal_year_id
+                else None,
                 "department": {
-                    "id": appropriation.department_analytic_id.id,
-                    "name": appropriation.department_analytic_id.name,
-                    "code": appropriation.department_analytic_id.code,
-                    "complete_name": self._get_complete_name_without_codes(appropriation.department_analytic_id),
-                } if appropriation.department_analytic_id else None,
+                    "id": first.department_analytic_id.id,
+                    "name": first.department_analytic_id.name,
+                    "code": first.department_analytic_id.code,
+                    "complete_name": department_name,
+                }
+                if first.department_analytic_id
+                else None,
                 "source": {
-                    "id": appropriation.source_analytic_id.id,
-                    "name": appropriation.source_analytic_id.name,
-                    "code": appropriation.source_analytic_id.code,
-                } if appropriation.source_analytic_id else None,
+                    "id": first.source_analytic_id.id,
+                    "name": first.source_analytic_id.name,
+                    "code": first.source_analytic_id.code,
+                }
+                if first.source_analytic_id
+                else None,
             },
+            "department": department_name,
+            "source": first.source_analytic_id.name if first.source_analytic_id else "",
+            "fiscal_year": first.account_fiscal_year_id.name
+            if first.account_fiscal_year_id
+            else "",
+            "amount_total": amount_total,
+            "amount_deduct": amount_deduct,
+            "amount_net": amount_net,
             "hierarchy": hierarchy,
+            "deduct_hierarchy": deduct_hierarchy,
             "summary": {
                 "total_lines": len(lines),
                 "amount_total": amount_total,
                 "accounts_count": len(hierarchy),
-            }
+                "appropriations_count": len(appropriations),
+            },
         }
+
+    def _validate_appropriations(self, appropriations):
+        """
+        Validate all appropriations are revenue type.
+
+        Returns:
+            str: error message if validation fails, None if valid
+        """
+        if not appropriations:
+            return "No appropriations selected"
+
+        non_revenue = appropriations.filtered(lambda a: a.budget_type != "revenue")
+        if non_revenue:
+            return "F4 report is only available for revenue type appropriations"
+
+        return None
 
     def _build_hierarchy(self, lines):
         """Build hierarchical tree structure for revenue: Account only"""
@@ -89,8 +156,6 @@ class BudgetAppropriationF4Report(models.TransientModel):
         if not record:
             return ""
 
-        if hasattr(record, 'complete_name') and record.complete_name:
-            # Remove codes from complete_name
-            import re
-            return re.sub(r'\[.*?\]\s*', '', record.complete_name)
+        if hasattr(record, "complete_name") and record.complete_name:
+            return re.sub(r"\[.*?\]\s*", "", record.complete_name)
         return record.name

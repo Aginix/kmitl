@@ -1,5 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Add ribbon widget and purchase order button to work acceptance form -->
+    <record id="view_work_acceptance_form_kmitl" model="ir.ui.view">
+        <field name="name">view.work.acceptance.form.kmitl</field>
+        <field name="model">work.acceptance</field>
+        <field name="inherit_id" ref="purchase_work_acceptance.view_work_acceptance_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <widget
+                    name="web_ribbon"
+                    title="Accepted"
+                    bg_color="bg-success"
+                    attrs="{'invisible': [('state', '!=', 'accept')]}"
+                />
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+              <button name="action_view_purchase_order"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-file-text-o"
+                        attrs="{'invisible': [('purchase_id', '=', False)]}">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Purchase Order</span>
+                    </div>
+              </button>
+            </xpath>
+        </field>
+    </record>
+
     <!-- View work.acceptance form -->
     <record id="view_work_acceptance_form" model="ir.ui.view">
         <field name="name">view.work.acceptance.form</field>
@@ -38,6 +66,12 @@
                 position="attributes"
             >
                 <attribute name="optional">hide</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='invoice_ref']" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': [('state', '!=', 'draft')]}
+                </attribute>
             </xpath>
         </field>
     </record>
@@ -130,4 +164,11 @@
             </xpath>
         </field>
     </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_purchase_work_acceptance"
+              name="Work Acceptance"
+              parent="purchase_kmitl.menu_purchase_contract_root"
+              action="purchase_work_acceptance.action_work_acceptance"
+              sequence="20"/>
 </odoo>

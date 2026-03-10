@@ -11,26 +11,19 @@ class ResUsers(models.Model):
         Return recent unread sarabun documents (up to 10).
         Used by the systray notification widget.
         """
-        Recipient = self.env["sarabun.document.recipient"]
-        user = self.env.user
+        Inbox = self.env["sarabun.inbox"]
 
-        # Build domain for recipients the current user can access
-        # and that are in 'new' state (unread/unactioned)
-        recipients = Recipient.sudo().search([
-            ("state", "=", "new"),
+        entries = Inbox.search([
+            ("user_id", "=", self.env.user.id),
+            ("is_read", "=", False),
             ("document_id.state", "=", "sent"),
         ], order="create_date desc")
 
-        # Filter to only recipients this user can access
-        accessible_recipients = recipients.filtered(
-            lambda r: r._can_user_access(user)
-        )
-
-        # Get unique documents (a document may have multiple recipients)
+        # Deduplicate by document
         seen_docs = set()
         documents = []
-        for recipient in accessible_recipients:
-            doc = recipient.document_id
+        for entry in entries:
+            doc = entry.document_id
             if doc.id not in seen_docs:
                 seen_docs.add(doc.id)
                 documents.append({

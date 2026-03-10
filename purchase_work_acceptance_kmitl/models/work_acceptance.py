@@ -15,3 +15,19 @@ class WorkAcceptance(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
     )
+
+    def action_view_purchase_order(self):
+        self.ensure_one()
+        if not self.purchase_id:
+            return
+
+        return {
+            'name': _('Purchase Order'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'purchase.order',
+            'res_id': self.purchase_id.id,
+            'view_mode': 'form',
+            'view_type': 'form',
+            'target': 'current',
+            'context': self.env.context,
+        }

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem
+        id="menu_assets_management"
+        name="Asset"
+        web_icon="account_asset_kmitl,static/description/icon.png"
+        sequence="22"
+    />
+
+    <menuitem
+        id="menu_assets"
+        name="Asset"
+        parent="menu_assets_management"
+        action="account_asset_management.account_asset_action"
+    />
+
+    <menuitem
+        id="menu_assets_action"
+        name="Asset"
+        parent="menu_assets"
+        action="account_asset_management.account_asset_action"
+    />
+
+    <menuitem
+        id="menu_asset_parent"
+        name="Parent Asset"
+        parent="menu_assets"
+        action="l10n_th_account_asset_management.action_account_asset_parent"
+    />
+
+    <menuitem
+        id="menu_asset_compute"
+        name="Computed Asset"
+        parent="menu_assets"
+        action="account_asset_management.account_asset_compute_action"
+    />
+
+    <menuitem 
+        id="menu_asset_configuration" 
+        name="Configuration" 
+        parent="menu_assets_management"
+        groups="account.group_account_manager"
+    />
+
+    <menuitem 
+        id="menu_asset_profile" 
+        name="Asset Profiles" 
+        parent="menu_asset_configuration"
+        action="account_asset_management.account_asset_profile_action"
+    />
+
+    <menuitem 
+        id="menu_asset_group" 
+        name="Asset Groups" 
+        parent="menu_asset_configuration"
+        action="account_asset_management.account_asset_group_action"
+    />
+
+    <menuitem 
+        id="menu_asset_sub_status" 
+        name="Asset Sub-Status" 
+        parent="menu_asset_configuration"
+        action="l10n_th_account_asset_management.action_account_asset_sub_state"
+    />
+
+    <menuitem 
+        id="menu_asset_location" 
+        name="Asset Locations" 
+        parent="menu_asset_configuration"
+        action="l10n_th_gov_account_asset_management.action_account_asset_location"
+    />
+
+    <!-- Menu At Purchase -->
+        <!-- Hide -->
+    <menuitem id="l10n_th_gov_account_asset_management.menu_purchase_assets" active="False"/>
+    <menuitem id="l10n_th_gov_account_asset_management.purchase_account_asset_menu" active="False"/>
+
+        <!-- Add Menu -->
+    <menuitem
+        id="menu_purchase_assets"
+        name="Assets"
+        parent="purchase.menu_purchase_root"
+        sequence="80"
+        groups="l10n_th_gov_account_asset_management.group_enable_asset_purchase"
+        action="account_asset_management.account_asset_action"
+    />
+
+</odoo>

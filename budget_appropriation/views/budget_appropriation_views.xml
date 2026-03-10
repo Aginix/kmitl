@@ -24,7 +24,7 @@
         <field name="name">view.budget.appropriation.form</field>
         <field name="model">budget.appropriation</field>
         <field name="arch" type="xml">
-            <form string="Budget Appropriation">
+            <form string="Budget Appropriation" edit="context.get('can_edit', True)">
                 <header>
                     <button name="action_review" string="Submit for review" class="oe_highlight" type="object" data-hotkey="r" attrs="{'invisible': [('hide_review_button', '=', True)]}" />
                     <button name="action_post" string="Post" class="oe_highlight" type="object" data-hotkey="v" attrs="{'invisible': [('hide_post_button', '=', True)]}" />
