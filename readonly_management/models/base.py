@@ -111,26 +111,11 @@ def _inject_readonly(field_el, condition):
         )
         return
 
+    # Replace any existing readonly condition entirely with the new one
     if condition is True:
         existing_modifiers["readonly"] = True
-        field_el.set("modifiers", json.dumps(existing_modifiers))
-        return
-
-    # condition is a domain list
-    existing_ro = existing_modifiers.get("readonly")
-    if existing_ro is True or existing_ro == 1:
-        return
-
-    if existing_ro:
-        # existing_ro from JSON is list-of-lists; expression handles both
-        merged = _merge_conditions_or([existing_ro, condition])
     else:
-        merged = condition
-
-    if merged is True:
-        existing_modifiers["readonly"] = True
-    else:
-        existing_modifiers["readonly"] = _domain_to_json(merged)
+        existing_modifiers["readonly"] = _domain_to_json(condition)
 
     field_el.set("modifiers", json.dumps(existing_modifiers))
 
