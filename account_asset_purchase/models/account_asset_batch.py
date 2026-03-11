@@ -224,11 +224,26 @@ class AccountAssetBatch(models.Model):
             if any(line.amount <= 0 for line in batch.line_ids):
                 raise ValidationError(_("Some lines have zero amount. Please correct them before proceeding."))
 
+            # Filter analytic_distribution to plan codes supported by account.asset
+            asset_keys = set(self.env["account.asset"]._analytic_keys)
+            raw_dist = batch.purchase_id.analytic_distribution or {}
+            if raw_dist:
+                accounts = self.env["account.analytic.account"].browse(
+                    [int(k) for k in raw_dist]
+                )
+                analytic_distribution = {
+                    str(aa.id): raw_dist[str(aa.id)]
+                    for aa in accounts
+                    if aa.plan_id.code in asset_keys
+                } or False
+            else:
+                analytic_distribution = False
+
             for line in batch.line_ids:
                 for _ in range(line.amount):
                     asset = self.env["account.asset"].create({
                         "name": line.name,
-                        "analytic_distribution": batch.purchase_id.analytic_distribution,
+                        "analytic_distribution": analytic_distribution,
                         "date_start": batch.date,
                         "account_fiscal_year_id": batch.account_fiscal_year_id.id,
                         "operating_unit_id": batch.operating_unit_id.id,
