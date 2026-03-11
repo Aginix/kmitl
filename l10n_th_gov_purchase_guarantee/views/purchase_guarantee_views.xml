@@ -175,6 +175,7 @@
                                 groups="analytic.group_analytic_accounting"
                                 widget="analytic_distribution"
                             />
+                            <field name="analytic_distribution" invisible="1" />
                             <field
                                 name="invoice_ids"
                                 widget="many2many_tags"
