@@ -176,17 +176,6 @@ class AccountAssetBatch(models.Model):
                 ("batch_id", "=", batch.id)
             ])
 
-    @api.depends('purchase_id', 'purchase_id.department_id')
-    def _compute_department_id(self):
-        for rec in self:
-            if rec.purchase_id and rec.purchase_id.department_id:
-                rec.department_id = rec.purchase_id.department_id
-            elif not rec.department_id:
-                if self.env.user.employee_id and self.env.user.employee_id.department_id:
-                    rec.department_id = self.env.user.employee_id.department_id
-                else:
-                    rec.department_id = False
-
     @api.model
     def default_get(self, fields_list):
         res = super().default_get(fields_list)
