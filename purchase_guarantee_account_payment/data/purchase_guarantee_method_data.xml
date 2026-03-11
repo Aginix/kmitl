@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="l10n_th_gov_purchase_guarantee.bid_guarantee" model="purchase.guarantee.method">
+        <field name="kmitl_payment_type_id" ref="account_payment_kmitl.payment_type_bid_guarantee_receive" />
+    </record>
+    <record id="l10n_th_gov_purchase_guarantee.advance_payment_guarantee" model="purchase.guarantee.method">
+        <field name="kmitl_payment_type_id" ref="account_payment_kmitl.payment_type_guarantee_receive" />
+    </record>
+</odoo>

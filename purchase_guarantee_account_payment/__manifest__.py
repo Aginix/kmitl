@@ -11,7 +11,7 @@
     ],
     "data": [
         "security/ir.model.access.csv",
-        "wizard/create_guarantee_payment_wizard_views.xml",
+        "data/purchase_guarantee_method_data.xml",
         "views/account_payment_views.xml",
         "views/purchase_guarantee_method_views.xml",
         "views/purchase_guarantee_views.xml",

@@ -32,12 +32,25 @@ class PurchaseGuarantee(models.Model):
 
     def action_create_payment(self):
         self.ensure_one()
+        payment_type = self.guarantee_method_id.kmitl_payment_type_id
+        vals = {
+            "partner_id": self.partner_id.id,
+            "amount": self.amount,
+            "currency_id": self.currency_id.id,
+            "purchase_guarantee_id": self.id,
+        }
+        if payment_type:
+            vals.update({
+                "kmitl_payment_type_id": payment_type.id,
+                "payment_type": payment_type.direction,
+            })
+            if payment_type.journal_id:
+                vals["journal_id"] = payment_type.journal_id.id
+        payment = self.env["account.payment"].create(vals)
         return {
             "type": "ir.actions.act_window",
-            "res_model": "create.guarantee.payment.wizard",
+            "res_model": "account.payment",
+            "res_id": payment.id,
             "view_mode": "form",
-            "target": "new",
-            "context": {
-                "default_purchase_guarantee_id": self.id,
-            },
+            "target": "current",
         }
