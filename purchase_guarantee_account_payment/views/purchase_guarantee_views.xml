@@ -12,7 +12,7 @@
                 <header>
                     <button
                         name="action_create_payment"
-                        string="สร้างใบเบิกจ่าย"
+                        string="สร้างใบส่งเงิน"
                         type="object"
                         class="btn-primary"
                     />
