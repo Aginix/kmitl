@@ -3,34 +3,35 @@
 
     <t t-name="budget.BudgetSelectionWidget" owl="1">
         <div class="budget_selection_widget">
-            <div t-if="hasBudgetData" class="d-flex flex-column gap-1 mb-1">
-                <div t-if="budgetAccountName" class="d-flex">
-                    <span class="text-muted" style="min-width: 40%;">รหัสงบประมาณ</span>
-                    <span t-esc="budgetAccountName"/>
-                </div>
-                <div t-if="activityName" class="d-flex">
-                    <span class="text-muted" style="min-width: 40%;">ด้าน/แผนงาน/กิจกรรม</span>
-                    <span t-esc="activityName"/>
-                </div>
-                <div t-if="departmentName" class="d-flex">
-                    <span class="text-muted" style="min-width: 40%;">ส่วนงาน</span>
-                    <span t-esc="departmentName"/>
-                </div>
-                <div t-if="fundName" class="d-flex">
-                    <span class="text-muted" style="min-width: 40%;">กองทุน</span>
-                    <span t-esc="fundName"/>
-                </div>
-                <div t-if="sourceName" class="d-flex">
-                    <span class="text-muted" style="min-width: 40%;">แหล่งเงิน</span>
-                    <span t-esc="sourceName"/>
-                </div>
-            </div>
-            <span t-if="!hasBudgetData" class="text-muted">ยังไม่ได้เลือกงบประมาณ</span>
             <button t-if="isEditable"
-                    class="btn btn-sm btn-secondary mt-1"
-                    t-on-click="onSelectBudget">
+                class="btn btn-sm btn-primary mt-1"
+                t-on-click="onSelectBudget">
                 เลือกงบประมาณ
             </button>
+            <table t-if="hasBudgetData" class="table table-sm table-borderless mb-1">
+                <tr t-if="budgetAccountName">
+                    <td class="text-muted" style="width: 160px;">รหัสงบประมาณ</td>
+                    <td t-esc="budgetAccountName"/>
+                </tr>
+                <tr t-if="activityName">
+                    <td class="text-muted py-2">ด้าน/แผนงาน/กิจกรรม</td>
+                    <td class="py-2" t-esc="activityName"/>
+                </tr>
+                <tr t-if="departmentName">
+                    <td class="text-muted py-2">ส่วนงาน</td>
+                    <td class="py-2" t-esc="departmentName"/>
+                </tr>
+                <tr t-if="fundName">
+                    <td class="text-muted py-2">กองทุน</td>
+                    <td class="py-2" t-esc="fundName"/>
+                </tr>
+                <tr t-if="sourceName">
+                    <td class="text-muted py-2">แหล่งเงิน</td>
+                    <td class="py-2" t-esc="sourceName"/>
+                </tr>
+            </table>
+            <span t-if="!hasBudgetData" class="text-muted">ยังไม่ได้เลือกงบประมาณ</span>
+
         </div>
     </t>
 

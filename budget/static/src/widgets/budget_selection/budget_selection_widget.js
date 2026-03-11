@@ -13,29 +13,29 @@ export class BudgetSelectionWidget extends Component {
         return this.props.record;
     }
 
-    get budgetAccountName() {
-        const val = this.record.data.budget_account_id;
+    _getDisplayName(fieldName) {
+        const val = this.record.data[fieldName];
         return val ? (val[1] || val.display_name || "") : "";
+    }
+
+    get budgetAccountName() {
+        return this._getDisplayName("budget_account_id");
     }
 
     get activityName() {
-        const val = this.record.data.activity_analytic_id;
-        return val ? (val[1] || val.display_name || "") : "";
+        return this._getDisplayName("activity_analytic_id");
     }
 
     get departmentName() {
-        const val = this.record.data.department_analytic_id;
-        return val ? (val[1] || val.display_name || "") : "";
+        return this._getDisplayName("department_analytic_id");
     }
 
     get fundName() {
-        const val = this.record.data.fund_analytic_id;
-        return val ? (val[1] || val.display_name || "") : "";
+        return this._getDisplayName("fund_analytic_id");
     }
 
     get sourceName() {
-        const val = this.record.data.source_analytic_id;
-        return val ? (val[1] || val.display_name || "") : "";
+        return this._getDisplayName("source_analytic_id");
     }
 
     get hasBudgetData() {

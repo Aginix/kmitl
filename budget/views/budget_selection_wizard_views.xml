@@ -8,14 +8,14 @@
                 <group>
                     <field name="res_model" invisible="1"/>
                     <field name="res_id" invisible="1"/>
-                    <field name="budget_account_id"
-                           options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
                     <field name="activity_analytic_id"
-                           options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
+                        options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
                     <field name="department_analytic_id"
-                           options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
+                        options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
                     <field name="fund_analytic_id" widget="selection"/>
                     <field name="source_analytic_id" widget="selection"/>
+                    <field name="budget_account_id"
+                           options="{'no_create_edit': True, 'no_open': True, 'no_create': True}"/>
                 </group>
                 <footer>
                     <button string="บันทึก" name="action_apply" type="object" class="btn-primary"/>
