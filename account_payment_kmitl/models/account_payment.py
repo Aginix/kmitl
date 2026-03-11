@@ -24,6 +24,8 @@ class AccountPayment(models.Model):
 
     @api.depends("kmitl_payment_type_id")
     def _compute_destination_account_id(self):
+        # Let base compute first (handles standard receivable/payable logic),
+        # then override only when a custom account is explicitly configured.
         super()._compute_destination_account_id()
         for pay in self:
             ptype = pay.kmitl_payment_type_id
@@ -31,9 +33,17 @@ class AccountPayment(models.Model):
                 pay.destination_account_id = ptype.override_account_id
 
     def _seek_for_lines(self):
-        """Treat override account as counterpart even if not receivable/payable."""
+        """Treat override account as counterpart even if not receivable/payable.
+
+        Base Odoo classifies lines as liquidity / counterpart / writeoff based on
+        account type. When kmitl_payment_type uses a non-standard account
+        (e.g. a deposit account that is neither receivable nor payable), base
+        leaves counterpart_lines empty and puts that line in writeoff_lines.
+        We re-classify it here so the rest of the payment logic works correctly.
+        """
         liquidity_lines, counterpart_lines, writeoff_lines = super()._seek_for_lines()
         ptype = self.kmitl_payment_type_id
+        # Only reclassify when base couldn't find a counterpart on its own.
         if ptype and ptype.override_account_id and not counterpart_lines:
             new_writeoff = self.env["account.move.line"]
             for line in writeoff_lines:
@@ -44,7 +54,26 @@ class AccountPayment(models.Model):
             writeoff_lines = new_writeoff
         return liquidity_lines, counterpart_lines, writeoff_lines
 
+    def _prepare_move_line_default_vals(self, write_off_line_vals=None):
+        """Propagate analytic_distribution to all generated move lines.
+
+        Base Odoo does not copy analytic_distribution from the payment to the
+        move lines it creates (liquidity + counterpart). We propagate it here
+        so analytic reporting reflects the correct distribution on both entries.
+
+        Note: analytic_distribution lives on account.move (via _inherits), so
+        writing it on the payment goes directly to the move — it does NOT go
+        through _synchronize_to_moves and therefore must be pushed to lines here.
+        """
+        line_vals_list = super()._prepare_move_line_default_vals(write_off_line_vals)
+        if self.analytic_distribution:
+            for line_vals in line_vals_list:
+                line_vals["analytic_distribution"] = self.analytic_distribution
+        return line_vals_list
+
     def _get_trigger_fields_to_synchronize(self):
+        # Extend the base tuple (immutable) so that changing kmitl_payment_type_id
+        # also triggers a move re-synchronization (account/journal may change).
         return (
             *super()._get_trigger_fields_to_synchronize(),
             "kmitl_payment_type_id",

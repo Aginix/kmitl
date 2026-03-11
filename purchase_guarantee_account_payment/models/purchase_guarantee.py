@@ -46,6 +46,7 @@ class PurchaseGuarantee(models.Model):
             "amount": self.amount,
             "currency_id": self.currency_id.id,
             "purchase_guarantee_id": self.id,
+            "analytic_distribution": self.analytic_distribution,
             "kmitl_payment_type_id": payment_type.id,
             "payment_type": payment_type.direction,
         }
