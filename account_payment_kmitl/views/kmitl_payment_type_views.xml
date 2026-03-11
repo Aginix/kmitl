@@ -10,8 +10,7 @@
                 <field name="name"/>
                 <field name="direction"/>
                 <field name="journal_id" optional="show"/>
-                <field name="receivable_account_id" optional="show"/>
-                <field name="payable_account_id" optional="show"/>
+                <field name="override_account_id" optional="show"/>
             </tree>
         </field>
     </record>
@@ -34,8 +33,7 @@
                             <field name="active"/>
                         </group>
                         <group string="Account Overrides">
-                            <field name="receivable_account_id"/>
-                            <field name="payable_account_id"/>
+                            <field name="override_account_id"/>
                         </group>
                     </group>
                 </sheet>
