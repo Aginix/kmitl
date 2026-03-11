@@ -28,9 +28,9 @@
                 'stock_inventory_department', 'stock_inventory_kmitl', 'stock_inventory_restriction',
                 'stock_scrap_reason_text', 'stock_scrap_responsible_user', 'thai_date_utils', 'web_kmitl', 'web_widget_helper_text', 'web_theme_classic_extended', 'kmitl_project',
                 'hr_department_short_name_tracking', 'hr_department_tracking', 'procurement_type_no_security', 'purchase_invoice_plan_kmitl',
-                'purchase_guarantee_account_payment', 'purchase_guarantee_attachment', 'purchase_guarantee_bid_guarantee_kmitl',
-                'purchase_guarantee_kmitl', 'purchase_guarantee_lock', 'purchase_guarantee_no_invoice_bill', 'purchase_guarantee_purchase_order_kmitl',
-                'purchase_guarantee_tracking', 'purchase_manual_delivery_security', 'purchase_manual_delivery_work_acceptance',
+                'purchase_guarantee_account_payment', 'purchase_guarantee_bid_guarantee_kmitl',
+                'purchase_guarantee_kmitl',
+                'purchase_manual_delivery_security', 'purchase_manual_delivery_work_acceptance',
                 'purchase_operating_unit_access_all', 'purchase_order_disbursement', 'purchase_order_disbursement_attach_existing_attachments',
                 'purchase_order_disbursement_budget'],
     'data': [
