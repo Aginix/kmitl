@@ -7,3 +7,6 @@ class HrJob(models.Model):
     role = fields.Selection(
         [("academic", "Academic"), ("support", "Support")],
     )
+    type = fields.Selection(
+        [("special", "Special"), ("academic", "Academic")], required=True
+    )

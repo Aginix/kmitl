@@ -2,7 +2,7 @@
 
 {
     "name": "Payment",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "category": "Accounting",
     "summary": "ระบบเบิกจ่ายเงิน - รวมการสร้างรายการจ่าย และส่งข้อมูล e-Payment",
     "license": "LGPL-3",
