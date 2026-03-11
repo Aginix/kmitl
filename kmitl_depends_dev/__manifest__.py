@@ -8,7 +8,7 @@
     "website": "https://github.com/aginix/kmitl",
     'depends': ['kmitl_demo', 'budget_demo', 'budget_appropriation_demo', 'procurement_plan_demo', 'account_analytic_ux_kmitl',
                 'account_asset_kmitl', 'account_asset_number_kmitl', 'account_asset_operating_unit_access_all',
-                'account_asset_purchase', 'account_asset_subcomponent_kmitl',
+                'account_asset_batch', 'account_asset_subcomponent_kmitl',
                 'account_fiscal_year_all_user', 'account_fiscal_year_enhance',
                 'disbursement', 'account_move_kmitl',
                 'account_payment_budget', 'analytic_operating_unit_tree', 'base_tier_validation_comment', 'budget_account_mass_edit',
