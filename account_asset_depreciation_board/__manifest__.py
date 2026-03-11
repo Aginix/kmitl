@@ -5,7 +5,7 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["account_asset_usability_kmitl"],
+    "depends": ["account_asset_kmitl"],
     "data": [
         "views/account_asset_line_views.xml",
         "views/menuitem.xml",
