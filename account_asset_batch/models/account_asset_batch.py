@@ -115,6 +115,7 @@ class AccountAssetBatch(models.Model):
         ],
         string="Source of asset",
         tracking=True,
+        default=lambda self: self.env.context.get('default_source_of_asset'),
     )
     
     received_from_agency = fields.Char(

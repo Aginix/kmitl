@@ -9,6 +9,7 @@
     'depends': [
         'l10n_th_gov_work_acceptance',
         'base_tier_validation_comment',
+        'purchase_kmitl',
     ],
     "data": [
         "data/server_action.xml",

@@ -24,10 +24,11 @@ class PurchaseOrder(models.Model):
     def action_open_asset_batch(self):    
         self.ensure_one()
         action = self.env["ir.actions.act_window"]._for_xml_id(
-            "account_asset_purchase.action_account_asset_batch"
+            "account_asset_batch.action_asset_batch_procurement"
         )
         action["domain"] = [("purchase_id", "=", self.id)]
         action["context"] = {
             "default_purchase_id": self.id,
+            "create": True
         }
         return action

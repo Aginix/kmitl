@@ -7,10 +7,30 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
-                <field name="account_fiscal_year_id" optional="hide" />
+                <field name="account_fiscal_year_id" optional="show" />
+                <field name="contract_number" optional="show" />
                 <field name="purchase_id" optional="show" />
-                <field name="department_id" optional="show" />
+                <field name="department_id" optional="hide" />
                 <field name="operating_unit_id" optional="hide" />
+                <field
+                    name="state"
+                    widget="badge"
+                    decoration-info="state == 'draft'"
+                    decoration-success="state == 'done'"
+                />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Tree view for donation / transfer -->
+    <record id="view_account_asset_batch_tree_donation_transfer" model="ir.ui.view">
+        <field name="name">view.account.asset.batch.tree.donation.transfer</field>
+        <field name="model">account.asset.batch</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="account_fiscal_year_id" />
+                <field name="received_from_agency" />
                 <field
                     name="state"
                     widget="badge"
@@ -81,9 +101,9 @@
                             options="{'horizontal': true}"
                             force_save="1"
                         />
-                        <field name="account_fiscal_year_id" readonly="1" force_save="1"/>
-                        <field name="contract_number" />
-                        <field name="purchase_id" readonly="1" />
+                        <field name="account_fiscal_year_id" attrs="{'readonly': [('source_of_asset','not in', ('donation', 'transfer'))]}" force_save="1"/>
+                        <field name="contract_number" attrs="{'invisible': [('source_of_asset', 'in', ('donation', 'transfer'))]}"/>
+                        <field name="purchase_id" readonly="1" attrs="{'invisible': [('source_of_asset', 'in', ('donation', 'transfer'))]}"/>
                         <field
                             name="received_from_agency"
                             attrs="{'invisible': [('source_of_asset', 'not in', ('donation', 'transfer'))], 'required': [('source_of_asset', 'in', ('donation', 'transfer'))]}"
@@ -156,29 +176,52 @@
         </field>
     </record>
 
-    <!-- Action account.asset.batch -->
-    <record id="action_account_asset_batch" model="ir.actions.act_window">
-        <field name="name">Asset Batch</field>
+    <!-- Action: Procurement -->
+    <record id="action_asset_batch_procurement" model="ir.actions.act_window">
+        <field name="name">Procurement</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">account.asset.batch</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[]</field>
-        <field name="context">{}</field>
-        <field name="help" type="html">
-            <p class="oe_view_nocontent_create">
-                There is no examples click here to add new Account Asset Batch.
-            </p>
-        </field>
+        <field name="domain">[('source_of_asset', '=', 'procurement')]</field>
+        <field name="context">{'default_source_of_asset': 'procurement', 'create': False}</field>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('view_account_asset_batch_tree')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('view_account_asset_batch_form')}),
         ]"/>
     </record>
 
-    <menuitem
+    <!-- Action: Donation -->
+    <record id="action_asset_batch_donation" model="ir.actions.act_window">
+        <field name="name">Donation</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">account.asset.batch</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('source_of_asset', '=', 'donation')]</field>
+        <field name="context">{'default_source_of_asset': 'donation'}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_account_asset_batch_tree_donation_transfer')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_account_asset_batch_form')}),
+        ]"/>
+    </record>
+
+    <!-- Action: Transfer -->
+    <record id="action_asset_batch_transfer" model="ir.actions.act_window">
+        <field name="name">Transfer</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">account.asset.batch</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('source_of_asset', '=', 'transfer')]</field>
+        <field name="context">{'default_source_of_asset': 'transfer'}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_account_asset_batch_tree_donation_transfer')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_account_asset_batch_form')}),
+        ]"/>
+    </record>
+
+    <!-- <menuitem
         id="menu_assets_batch"
         name="Asset Batch"
         parent="account_asset_kmitl.menu_assets"
         action="action_account_asset_batch"
-    />
+    /> -->
 </odoo>
