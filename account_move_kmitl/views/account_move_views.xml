@@ -20,19 +20,8 @@
 
             <!-- Submit and Reset to Draft buttons -->
             <xpath expr="//button[@name='action_post'][2]" position="after">
-                <button
-                    name="action_submit"
-                    string="Submit"
-                    type="object"
-                    class="oe_highlight"
-                    attrs="{'invisible': [('state', '!=', 'draft')]}"
-                />
-                <button
-                    name="action_draft"
-                    string="Reset to Draft"
-                    type="object"
-                    attrs="{'invisible': ['|', ('state', '!=', 'submitted'), ('validation_status', 'in', ['validated', 'rejected', 'pending'])]}"
-                />
+                <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" />
+                <button name="action_draft" string="Reset to Draft" type="object" attrs="{'invisible': ['|', ('state', '!=', 'submitted'), ('validation_status', 'in', ['validated', 'rejected', 'pending'])]}" />
             </xpath>
 
             <!-- Budget tab -->
@@ -42,6 +31,7 @@
                         <group name="budget_info">
                             <field name="budget_commitment_id" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                             <field name="analytic_distribution" widget="analytic_distribution" readonly="1"/>
+                            <field name="analytic_distribution" invisible="1"/>
                         </group>
                         <group name="analytic_dimensions">
                             <field name="activity_analytic_id" domain="[('plan_id.code', '=', 'activities')]" options="{'no_create': True}" attrs="{'readonly': [('state', '=', 'posted')]}"/>
