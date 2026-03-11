@@ -2,7 +2,8 @@ from odoo import _, api, fields, models
 
 
 class PurchaseGuarantee(models.Model):
-    _inherit = "purchase.guarantee"
+    _name = "purchase.guarantee"
+    _inherit = ["analytic.mixin", "purchase.guarantee"]
 
     # --- Tracking (from purchase_guarantee_tracking) ---
     reference = fields.Reference(tracking=True)
