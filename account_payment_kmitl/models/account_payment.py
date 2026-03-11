@@ -44,6 +44,13 @@ class AccountPayment(models.Model):
             writeoff_lines = new_writeoff
         return liquidity_lines, counterpart_lines, writeoff_lines
 
+    def _prepare_move_line_default_vals(self, write_off_line_vals=None):
+        line_vals_list = super()._prepare_move_line_default_vals(write_off_line_vals)
+        if self.analytic_distribution:
+            for line_vals in line_vals_list:
+                line_vals["analytic_distribution"] = self.analytic_distribution
+        return line_vals_list
+
     def _get_trigger_fields_to_synchronize(self):
         return (
             *super()._get_trigger_fields_to_synchronize(),
