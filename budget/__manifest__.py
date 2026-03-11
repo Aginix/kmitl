@@ -11,6 +11,7 @@
         "account_fiscal_year",
         "mail",
         "l10n_th_base_sequence",
+        "base_exception",
     ],
     "data": [
         "data/budget_journal.xml",
@@ -29,6 +30,7 @@
         "views/res_config_settings_views.xml",
         "views/account_move_views.xml",
         "views/budget_selection_wizard_views.xml",
+        "data/budget_selection_exception.xml",
     ],
     "assets": {
         "web.assets_backend": [

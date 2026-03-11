@@ -1,9 +1,10 @@
-from odoo import _, api, fields, models
+from odoo import _, fields, models
 from odoo.exceptions import ValidationError
 
 
 class BudgetSelectionWizard(models.TransientModel):
     _name = "budget.selection.wizard"
+    _inherit = ["base.exception"]
     _description = "Budget Selection Wizard"
 
     res_model = fields.Char(required=True)
@@ -37,6 +38,7 @@ class BudgetSelectionWizard(models.TransientModel):
 
     def action_apply(self):
         self.ensure_one()
+        self._check_exception()
         record = self.env[self.res_model].browse(self.res_id)
         if not record.exists():
             raise ValidationError(_("Record not found."))

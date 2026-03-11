@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!--
+        Exception rules for budget.selection.wizard
+        =============================================
+        These rules are evaluated when user clicks "บันทึก" in the wizard.
+        All rules with model="budget.selection.wizard" apply to every model
+        that uses the <widget name="budget_selection"/> widget.
+
+        To add a rule that applies only to a specific consumer model,
+        use self.res_model in the Python code:
+
+            if self.res_model == 'purchase.request':
+                if some_condition:
+                    failed = True
+
+        Available fields in self:
+            - res_model (str): consumer model name, e.g. 'purchase.request'
+            - res_id (int): consumer record id
+            - budget_account_id (Many2one: budget.account)
+            - activity_analytic_id (Many2one: account.analytic.account)
+            - department_analytic_id (Many2one: account.analytic.account)
+            - fund_analytic_id (Many2one: account.analytic.account)
+            - source_analytic_id (Many2one: account.analytic.account)
+    -->
+
+    <record id="budget_selection_excep_5_digit_code" model="exception.rule">
+        <field name="name">ไม่สามารถเลือกรหัสงบประมาณที่มี 5 หลักได้ กรุณาเลือกรหัสงบประมาณย่อย</field>
+        <field name="description">รหัสงบประมาณ</field>
+        <field name="model">budget.selection.wizard</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code"><![CDATA[
+if self.budget_account_id and len(self.budget_account_id.code or "") == 5:
+    failed = True
+]]>
+        </field>
+    </record>
+</odoo>
