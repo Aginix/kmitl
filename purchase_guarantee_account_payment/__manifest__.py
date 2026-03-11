@@ -11,9 +11,7 @@
     ],
     "data": [
         "security/ir.model.access.csv",
-        "data/purchase_guarantee_method_data.xml",
         "views/account_payment_views.xml",
-        "views/purchase_guarantee_method_views.xml",
         "views/purchase_guarantee_views.xml",
     ],
     "installable": True,
