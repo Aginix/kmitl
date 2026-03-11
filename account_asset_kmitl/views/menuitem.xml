@@ -37,10 +37,18 @@
     />
 
     <menuitem 
+        id="menu_asset_registration_root"
+        name="Create Asset"
+        parent="menu_assets_management"
+        sequence="25"
+    />
+
+    <menuitem 
         id="menu_asset_configuration" 
         name="Configuration" 
         parent="menu_assets_management"
         groups="account.group_account_manager"
+        sequence="50"
     />
 
     <menuitem 

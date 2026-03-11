@@ -19,6 +19,5 @@ from . import budget_transfer_reject_wizard
 # Configuration settings
 from . import res_config_settings
 from . import budget_tree
-from . import account_move
 from . import budget_selection_wizard
 from . import exception_rule

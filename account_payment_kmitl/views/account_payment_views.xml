@@ -8,9 +8,9 @@
         <field name="inherit_id" ref="account.view_account_payment_form"/>
         <field name="arch" type="xml">
 
-            <!-- Hide original Confirm (action_post) in draft - force submit flow -->
+            <!-- Hide Confirm (action_post) - posting is done from account.move -->
             <xpath expr="//button[@name='action_post']" position="attributes">
-                <attribute name="attrs">{'invisible': [('state', '!=', 'submitted')]}</attribute>
+                <attribute name="invisible">1</attribute>
             </xpath>
 
             <!-- Add Submit button before the hidden Confirm -->
