@@ -4,7 +4,7 @@
     <menuitem
         id="menu_asset_depreciation_board"
         name="Depreciation Board"
-        parent="account_asset_usability_kmitl.menu_assets"
+        parent="account_asset_kmitl.menu_assets"
         action="action_account_asset_line_depreciation_board"
     />
 
