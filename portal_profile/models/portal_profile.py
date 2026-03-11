@@ -74,7 +74,7 @@ class PortalProfile(models.Model):
         ],
         string="Marital Status",
     )
-    spouse_prefix = fields.Char()
+    spouse_prefix = fields.Many2one("res.partner.title")
     spouse_first_name = fields.Char()
     spouse_middle_name = fields.Char()
     spouse_last_name = fields.Char()
@@ -98,6 +98,7 @@ class PortalProfile(models.Model):
         ],
     )
     academic_position_date = fields.Date()
+    academic_position_institution = fields.Char()
 
     # OCSC exam
     has_ocsc_exam = fields.Boolean(string="Has OCSC Exam")
@@ -110,19 +111,6 @@ class PortalProfile(models.Model):
     )
     ocsc_exam_date = fields.Date(string="OCSC Exam Date")
     ocsc_exam_number = fields.Char(string="OCSC Exam Number")
-
-    # Additional personal info
-    national_id = fields.Char(string="National ID")
-    registered_address = fields.Text(string="Registered Address")
-    current_address = fields.Text(string="Current Address")
-    ethnicity = fields.Char(string="Ethnicity")
-    religion = fields.Char(string="Religion")
-    line_id = fields.Char(string="LINE ID")
-
-    # Family info
-    father_name = fields.Char(string="Father's Name")
-    mother_name = fields.Char(string="Mother's Name")
-    child_name = fields.Char(string="Child/Children's Name")
 
     # Skills & interests
     foreign_language_skills = fields.Text()

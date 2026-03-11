@@ -48,14 +48,6 @@
                                 <group>
                                     <field name="birthday" />
                                     <field name="nationality_id" />
-                                    <field name="national_id" />
-                                    <field name="ethnicity" />
-                                    <field name="religion" />
-                                    <field name="line_id" />
-                                </group>
-                                <group>
-                                    <field name="registered_address" />
-                                    <field name="current_address" />
                                 </group>
                             </group>
                             <group string="Family">
@@ -77,11 +69,6 @@
                                         name="spouse_last_name"
                                         attrs="{'invisible': [('marital', '!=', 'married')]}"
                                     />
-                                    <field name="child_name" />
-                                </group>
-                                <group>
-                                    <field name="father_name" />
-                                    <field name="mother_name" />
                                 </group>
                             </group>
                         </page>
@@ -107,6 +94,7 @@
                                 <group>
                                     <field name="academic_position" />
                                     <field name="academic_position_date" />
+                                    <field name="academic_position_institution" />
                                 </group>
                             </group>
                         </page>

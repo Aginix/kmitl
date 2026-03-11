@@ -18,14 +18,6 @@ class PortalProfile(CustomerPortal):
         "email",
         "phone",
         "street",
-        "national_id",
-        "ethnicity",
-        "religion",
-        "line_id",
-        "father_name",
-        "mother_name",
-        "child_name",
-        "spouse_prefix",
         "spouse_first_name",
         "spouse_middle_name",
         "spouse_last_name",
@@ -34,11 +26,10 @@ class PortalProfile(CustomerPortal):
         "emergency_contact_phone",
         "emergency_contact_email",
         "ocsc_exam_number",
+        "academic_position_institution",
     ]
 
     TEXT_FIELDS = [
-        "registered_address",
-        "current_address",
         "chronic_disease",
         "foreign_language_skills",
         "computer_skills",
@@ -60,6 +51,7 @@ class PortalProfile(CustomerPortal):
 
     M2O_FIELDS = [
         "title",
+        "spouse_prefix",
         "nationality_id",
         "zip_id",
     ]
@@ -94,95 +86,37 @@ class PortalProfile(CustomerPortal):
         profile = partner.sudo()._get_or_create_profile()
 
         if post and request.httprequest.method == "POST":
-            if post.get("add_work_history"):
-                wh_required = {
-                    "wh_company_name": "Company",
-                    "wh_job_title": "Job Title / Description",
-                    "wh_salary": "Salary",
-                    "wh_date_start": "Start Date",
-                }
-                missing = [
-                    label
-                    for field, label in wh_required.items()
-                    if not post.get(field, "").strip()
-                ]
-                if missing:
-                    values = self._prepare_profile_render_values(
-                        partner,
-                        profile,
-                        ["Please fill required fields: %s" % ", ".join(missing)],
-                    )
-                    return request.render("portal_profile.portal_my_profile", values)
-                wh_vals = {
-                    "profile_id": profile.id,
-                    "company_name": post["wh_company_name"],
-                    "job_title": post["wh_job_title"],
-                    "date_start": post["wh_date_start"],
-                    "date_end": post.get("wh_date_end") or False,
-                }
-                try:
-                    wh_vals["salary"] = float(post["wh_salary"])
-                except (ValueError, TypeError):
-                    wh_vals["salary"] = 0
-                request.env["portal.work.history"].sudo().create(wh_vals)
-            else:
-                profile_required = {
-                    "first_name": "First Name",
-                    "last_name": "Last Name",
-                    "email": "Email",
-                    "phone": "Phone",
-                }
-                errors = []
-                missing_profile = [
-                    label
-                    for field, label in profile_required.items()
-                    if not post.get(field, "").strip()
-                ]
-                if missing_profile:
-                    errors.append(
-                        "Please fill required fields: %s" % ", ".join(missing_profile)
-                    )
-                errors.extend(self._validate_education_history(post))
-                if errors:
-                    values = self._prepare_profile_render_values(
-                        partner, profile, errors
-                    )
-                    return request.render("portal_profile.portal_my_profile", values)
-                vals = self._prepare_profile_values(post)
-                profile.sudo().write(vals)
-                self._sync_national_id(profile)
-                self._save_education_history(profile, post)
+            profile_required = {
+                "first_name": "First Name",
+                "last_name": "Last Name",
+                "email": "Email",
+                "phone": "Phone",
+            }
+            errors = []
+            missing_profile = [
+                label
+                for field, label in profile_required.items()
+                if not post.get(field, "").strip()
+            ]
+            if missing_profile:
+                errors.append(
+                    "Please fill required fields: %s" % ", ".join(missing_profile)
+                )
+            errors.extend(self._validate_education_history(post))
+            errors.extend(self._validate_work_history(request.httprequest.form))
+            if errors:
+                values = self._prepare_profile_render_values(partner, profile, errors)
+                return request.render("portal_profile.portal_my_profile", values)
+            vals = self._prepare_profile_values(post)
+            profile.sudo().write(vals)
+            self._save_education_history(profile, post)
+            self._save_work_history(profile, request.httprequest.form)
             return request.redirect("/my/profile")
 
         values = self._prepare_profile_render_values(partner, profile)
         response = request.render("portal_profile.portal_my_profile", values)
         response.headers["X-Frame-Options"] = "SAMEORIGIN"
         return response
-
-    @http.route(
-        ["/my/profile/work_history/delete"],
-        type="http",
-        auth="user",
-        website=True,
-    )
-    def portal_work_history_delete(self, **post):
-        partner = request.env.user.partner_id
-        profile = partner.sudo()._get_or_create_profile()
-        try:
-            wh_id = int(post.get("id", 0))
-        except (ValueError, TypeError):
-            wh_id = 0
-        if wh_id:
-            record = (
-                request.env["portal.work.history"]
-                .sudo()
-                .search(
-                    [("id", "=", wh_id), ("profile_id", "=", profile.id)],
-                    limit=1,
-                )
-            )
-            record.unlink()
-        return request.redirect("/my/profile")
 
     EDUCATION_LEVEL_LABELS = {
         "doctor": "Doctoral Degree",
@@ -243,38 +177,78 @@ class PortalProfile(CustomerPortal):
             elif rec:
                 rec.unlink()
 
-    def _sync_national_id(self, profile):
-        try:
-            th_cat = request.env.ref(
-                "partner_identification_th"
-                ".partner_identification_th_national_id_category"
-            )
-        except Exception:
-            return
-        id_num = (
-            request.env["res.partner.id_number"]
-            .sudo()
-            .search(
-                [
-                    ("partner_id", "=", profile.partner_id.id),
-                    ("category_id", "=", th_cat.id),
-                ],
-                limit=1,
-            )
-        )
-        if profile.national_id:
-            if id_num:
-                id_num.name = profile.national_id
-            else:
-                request.env["res.partner.id_number"].sudo().create(
-                    {
-                        "partner_id": profile.partner_id.id,
-                        "category_id": th_cat.id,
-                        "name": profile.national_id,
-                    }
+    WH_REQUIRED_FIELDS = {
+        "wh_company_name": "Company",
+        "wh_job_title": "Job Title / Description",
+        "wh_salary": "Last Salary",
+        "wh_date_start": "Start Date",
+    }
+
+    def _validate_work_history(self, form):
+        errors = []
+        wh_company_names = form.getlist("wh_company_name")
+        if not wh_company_names:
+            return errors
+        field_lists = {key: form.getlist(key) for key in self.WH_REQUIRED_FIELDS}
+        for i in range(len(wh_company_names)):
+            missing = []
+            for key, label in self.WH_REQUIRED_FIELDS.items():
+                values = field_lists[key]
+                val = values[i].strip() if i < len(values) else ""
+                if not val:
+                    missing.append(label)
+            if missing:
+                errors.append(
+                    "Work History row %d: please fill %s" % (i + 1, ", ".join(missing))
                 )
-        elif id_num:
-            id_num.unlink()
+        return errors
+
+    def _save_work_history(self, profile, form):
+        """Save work history from multi-value form fields."""
+        WorkHistory = request.env["portal.work.history"].sudo()
+        wh_ids = form.getlist("wh_id")
+        wh_company_names = form.getlist("wh_company_name")
+        wh_job_titles = form.getlist("wh_job_title")
+        wh_salaries = form.getlist("wh_salary")
+        wh_date_starts = form.getlist("wh_date_start")
+        wh_date_ends = form.getlist("wh_date_end")
+
+        submitted_ids = set()
+        for i in range(len(wh_ids)):
+            wh_id = int(wh_ids[i] or 0)
+            vals = {
+                "company_name": wh_company_names[i]
+                if i < len(wh_company_names)
+                else "",
+                "job_title": wh_job_titles[i] if i < len(wh_job_titles) else "",
+                "date_start": wh_date_starts[i] if i < len(wh_date_starts) else False,
+                "date_end": wh_date_ends[i] if i < len(wh_date_ends) else False,
+            }
+            try:
+                vals["salary"] = float(wh_salaries[i]) if i < len(wh_salaries) else 0
+            except (ValueError, TypeError):
+                vals["salary"] = 0
+            if not vals["date_start"]:
+                vals["date_start"] = False
+            if not vals["date_end"]:
+                vals["date_end"] = False
+            if wh_id:
+                rec = WorkHistory.search(
+                    [("id", "=", wh_id), ("profile_id", "=", profile.id)], limit=1
+                )
+                if rec:
+                    rec.write(vals)
+                    submitted_ids.add(wh_id)
+            else:
+                if vals.get("company_name"):
+                    vals["profile_id"] = profile.id
+                    new_rec = WorkHistory.create(vals)
+                    submitted_ids.add(new_rec.id)
+
+        # Delete removed rows
+        for rec in profile.work_history_ids:
+            if rec.id not in submitted_ids:
+                rec.unlink()
 
     def _prepare_profile_values(self, post):
         vals = {}

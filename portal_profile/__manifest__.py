@@ -9,7 +9,6 @@
         "base_location",
         "partner_firstname",
         "partner_middlename",
-        "partner_identification_th",
     ],
     "data": [
         "security/ir.model.access.csv",
