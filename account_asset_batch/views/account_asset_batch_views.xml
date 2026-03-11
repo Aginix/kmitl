@@ -218,10 +218,22 @@
         ]"/>
     </record>
 
-    <!-- <menuitem
-        id="menu_assets_batch"
-        name="Asset Batch"
-        parent="account_asset_kmitl.menu_assets"
-        action="action_account_asset_batch"
-    /> -->
+    <!-- Menu -->
+    <menuitem id="menu_asset_procurement"
+            name="Procurement"
+            parent="account_asset_kmitl.menu_asset_registration_root"
+            action="account_asset_batch.action_asset_batch_procurement"
+            sequence="10"/>
+
+    <menuitem id="menu_asset_donation"
+            name="Donation"
+            parent="account_asset_kmitl.menu_asset_registration_root"
+            action="account_asset_batch.action_asset_batch_donation"
+            sequence="20"/>
+
+    <menuitem id="menu_asset_transfer"
+            name="Transfer"
+            parent="account_asset_kmitl.menu_asset_registration_root"
+            action="account_asset_batch.action_asset_batch_transfer"
+            sequence="30"/>
 </odoo>

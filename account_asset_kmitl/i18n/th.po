@@ -2114,3 +2114,8 @@ msgstr ""
 #: model:ir.ui.menu,name:account_asset_kmitl.menu_purchase_assets
 msgid "Assets"
 msgstr "ครุภัณฑ์/สินทรัพย์"
+
+#. module: account_asset_kmitl
+#: model:ir.ui.menu,name:account_asset_kmitl.menu_asset_registration_root
+msgid "Create Asset"
+msgstr "แบบลงทะเบียนครุภัณฑ์"

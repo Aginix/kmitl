@@ -548,8 +548,3 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_asset_batch.field_account_asset_batch__received_from_agency
 msgid "received from agency"
 msgstr "รับจากหน่วยงาน"
-
-#. module: account_asset_batch
-#: model:ir.ui.menu,name:account_asset_batch.menu_asset_registration_root
-msgid "Create Asset"
-msgstr "แบบลงทะเบียนครุภัณฑ์"

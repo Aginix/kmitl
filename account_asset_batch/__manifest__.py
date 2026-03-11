@@ -13,7 +13,6 @@
         "views/account_asset_batch_views.xml",
         "views/account_asset_views.xml",
         "views/purchase_order_views.xml",
-        "views/menu.xml"
     ],
     'installable': True,
     'auto_install': False,
