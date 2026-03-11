@@ -171,20 +171,10 @@
                         <group>
                             <field name="date_due_guarantee" />
                             <field
-                                name="domain_analytic_account_ids"
+                                name="analytic_distribution"
                                 groups="analytic.group_analytic_accounting"
-                                widget="many2many_tags"
+                                widget="analytic_distribution"
                             />
-                            <field
-                                name="analytic_account_id"
-                                groups="analytic.group_analytic_accounting"
-                                domain="[('id', 'in', domain_analytic_account_ids)]"
-                            />
-                            <!-- <field
-                                name="analytic_tag_ids"
-                                groups="analytic.group_analytic_tags"
-                                widget="many2many_tags"
-                            /> -->
                             <field
                                 name="invoice_ids"
                                 widget="many2many_tags"

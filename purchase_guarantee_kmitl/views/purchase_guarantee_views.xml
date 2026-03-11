@@ -124,14 +124,8 @@
                 </attribute>
             </xpath>
 
-            <!-- Hide analytic fields -->
-            <xpath
-                expr="//field[@name='domain_analytic_account_ids']"
-                position="attributes"
-            >
-                <attribute name="groups">base.group_no_one</attribute>
-            </xpath>
-            <xpath expr="//field[@name='analytic_account_id']" position="attributes">
+            <!-- Hide analytic field -->
+            <xpath expr="//field[@name='analytic_distribution']" position="attributes">
                 <attribute name="groups">base.group_no_one</attribute>
             </xpath>
 

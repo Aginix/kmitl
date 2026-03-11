@@ -15,7 +15,7 @@ class PurchaseGuarantee(models.Model):
     company_id = fields.Many2one(tracking=True)
     amount = fields.Monetary(tracking=True)
     date_guarantee_receive = fields.Date(tracking=True)
-    analytic_account_id = fields.Many2one(tracking=True)
+    analytic_distribution = fields.Json(tracking=True)
     amount_received = fields.Monetary(tracking=True)
     document_ref = fields.Char(tracking=True)
     date_return = fields.Date(tracking=True)
