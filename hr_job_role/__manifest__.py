@@ -1,6 +1,6 @@
 {
     "name": "Hr Job Role",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "summary": "Add role (สายงาน) to job positions",
     "category": "KMITL",
     "author": "Aginix Technologies",
