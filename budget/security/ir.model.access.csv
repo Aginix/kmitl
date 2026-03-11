@@ -18,3 +18,4 @@ access_budget_journal_viewer,budget_journal_viewer,model_budget_journal,group_bu
 access_budget_transfer_viewer,budget_transfer_viewer,model_budget_transfer,group_budget_viewer,1,0,0,0
 access_budget_transfer_line_viewer,budget_transfer_line_viewer,model_budget_transfer_line,group_budget_viewer,1,0,0,0
 access_account_move_budget_viewer,account.move budget viewer,account.model_account_move,group_budget_viewer,1,0,0,0
+access_budget_selection_wizard,budget_selection_wizard,model_budget_selection_wizard,,1,1,1,1

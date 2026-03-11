@@ -20,3 +20,4 @@ from . import budget_transfer_reject_wizard
 from . import res_config_settings
 from . import budget_tree
 from . import account_move
+from . import budget_selection_wizard

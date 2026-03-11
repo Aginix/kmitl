@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="budget.BudgetSelectionWidget" owl="1">
+        <div class="budget_selection_widget">
+            <div t-if="hasBudgetData" class="d-flex flex-column gap-1 mb-1">
+                <div t-if="budgetAccountName" class="d-flex">
+                    <span class="text-muted" style="min-width: 40%;">รหัสงบประมาณ</span>
+                    <span t-esc="budgetAccountName"/>
+                </div>
+                <div t-if="activityName" class="d-flex">
+                    <span class="text-muted" style="min-width: 40%;">ด้าน/แผนงาน/กิจกรรม</span>
+                    <span t-esc="activityName"/>
+                </div>
+                <div t-if="departmentName" class="d-flex">
+                    <span class="text-muted" style="min-width: 40%;">ส่วนงาน</span>
+                    <span t-esc="departmentName"/>
+                </div>
+                <div t-if="fundName" class="d-flex">
+                    <span class="text-muted" style="min-width: 40%;">กองทุน</span>
+                    <span t-esc="fundName"/>
+                </div>
+                <div t-if="sourceName" class="d-flex">
+                    <span class="text-muted" style="min-width: 40%;">แหล่งเงิน</span>
+                    <span t-esc="sourceName"/>
+                </div>
+            </div>
+            <span t-if="!hasBudgetData" class="text-muted">ยังไม่ได้เลือกงบประมาณ</span>
+            <button t-if="isEditable"
+                    class="btn btn-sm btn-secondary mt-1"
+                    t-on-click="onSelectBudget">
+                เลือกงบประมาณ
+            </button>
+        </div>
+    </t>
+
+</templates>
