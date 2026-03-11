@@ -31,14 +31,16 @@ class PurchaseGuarantee(models.Model):
             action["domain"] = [("id", "in", self.payment_ids.ids)]
         return action
 
-    def action_create_payment(self):
-        self.ensure_one()
+    def _prepare_account_payment_vals(self):
         if self.guarantee_method_id == self.env.ref("l10n_th_gov_purchase_guarantee.bid_guarantee"):
-            payment_type = self.env.ref("account_payment_kmitl.payment_type_bid_guarantee_receive")
+            payment_type = self.env.ref(
+                "account_payment_kmitl.payment_type_bid_guarantee_receive")
         elif self.guarantee_method_id == self.env.ref("l10n_th_gov_purchase_guarantee.advance_payment_guarantee"):
-            payment_type = self.env.ref("account_payment_kmitl.payment_type_guarantee_receive")
+            payment_type = self.env.ref(
+                "account_payment_kmitl.payment_type_guarantee_receive")
         else:
-            raise UserError(_("ไม่สามารถสร้างใบส่งเงินสำหรับประเภทหลักประกัน '%s' ได้", self.guarantee_method_id.name))
+            raise UserError(
+                _("ไม่สามารถสร้างใบส่งเงินสำหรับประเภทหลักประกัน '%s' ได้", self.guarantee_method_id.name))
         vals = {
             "partner_id": self.partner_id.id,
             "amount": self.amount,
@@ -49,7 +51,15 @@ class PurchaseGuarantee(models.Model):
         }
         if payment_type.journal_id:
             vals["journal_id"] = payment_type.journal_id.id
+        return vals
+
+    def action_create_payment(self):
+        self.ensure_one()
+
+        vals = self._prepare_account_payment_vals()
+
         payment = self.env["account.payment"].create(vals)
+
         return {
             "type": "ir.actions.act_window",
             "res_model": "account.payment",
