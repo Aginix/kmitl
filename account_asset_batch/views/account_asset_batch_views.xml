@@ -108,7 +108,7 @@
                             name="received_from_agency"
                             attrs="{'invisible': [('source_of_asset', 'not in', ('donation', 'transfer'))], 'required': [('source_of_asset', 'in', ('donation', 'transfer'))]}"
                         />
-                        <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit" attrs="{'readonly': [('is_editable','=', False)]}"/>
+                        <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit"/>
                         <field
                             name="department_id"
                             attrs="{'readonly': [('is_editable','=', False)]}"

@@ -29,6 +29,8 @@ class PurchaseOrder(models.Model):
         action["domain"] = [("purchase_id", "=", self.id)]
         action["context"] = {
             "default_purchase_id": self.id,
-            "create": True
+            "create": True,
+            "default_account_fiscal_year_id": self.account_fiscal_year_id.id,
+            "default_department_id": self.department_id.id,
         }
         return action

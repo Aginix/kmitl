@@ -25,7 +25,6 @@ class AccountAssetBatch(models.Model):
 
     account_fiscal_year_id = fields.Many2one(
         "account.fiscal.year",
-        compute='_compute_account_fiscal_year_id',
         store=True,
         readonly=False,
         required=True,
@@ -36,6 +35,9 @@ class AccountAssetBatch(models.Model):
     operating_unit_id = fields.Many2one(
         "operating.unit",
         string="Operating Unit",
+        default=lambda self: self.env["res.users"].operating_unit_default_get(
+            self.env.user.id
+        ),
     )
 
     purchase_id = fields.Many2one(
@@ -75,9 +77,9 @@ class AccountAssetBatch(models.Model):
     department_id = fields.Many2one(
         "hr.department",
         string="Department",
-        compute='_compute_department_id',
         store=True,
         readonly=False,
+        default=lambda self: self.env.user.employee_id.department_id,
     )
 
     asset_count = fields.Integer(
@@ -131,41 +133,31 @@ class AccountAssetBatch(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
-            source = vals.get('source_of_asset', self.env.context.get('default_source_of_asset'))
-            
             if vals.get('name', 'New') == 'New':
                 fy_id = self.env["account.fiscal.year"].browse(vals.get("account_fiscal_year_id"))
-                fiscal_year = fy_id.name[-2:] if fy_id else fields.Date.today().strftime("%y")
+                fiscal_year = fy_id.name if fy_id else str(fields.Date.today().year)
 
-                code_map = {
-                    'procurement': ('asset.batch.procurement', 'PROC'),
-                    'donation': ('asset.batch.donation', 'DON'),
-                    'transfer': ('asset.batch.transfer', 'TRAN'),
-                }
+                yearly_code = f"asset.batch.{fiscal_year}"
 
-                if source in code_map:
-                    base_code, prefix = code_map[source]
-                    yearly_code = f"{base_code}.{fiscal_year}"
+                seq = self.env['ir.sequence'].sudo().search(
+                    [('code', '=', yearly_code)], limit=1
+                )
+                if not seq:
+                    seq = self.env['ir.sequence'].sudo().create({
+                        'name': f"Asset Batch {fiscal_year}",
+                        'code': yearly_code,
+                        'prefix': f"ASSET/{fiscal_year}/",
+                        'padding': 4,
+                        'number_next': 1,
+                        'number_increment': 1,
+                        'company_id': False,
+                    })
 
-                    seq = self.env['ir.sequence'].sudo().search(
-                        [('code', '=', yearly_code)], limit=1
-                    )
-                    if not seq:
-                        seq = self.env['ir.sequence'].sudo().create({
-                            'name': f"{prefix} {fiscal_year}",
-                            'code': yearly_code,
-                            'prefix': f"{prefix}/{fiscal_year}/",
-                            'padding': 5,
-                            'number_next': 1,
-                            'number_increment': 1,
-                            'company_id': False,
-                        })
-
-                    vals['name'] = seq.next_by_code(yearly_code) or 'New'
+                vals['name'] = seq.next_by_code(yearly_code) or 'New'
 
             if vals.get('purchase_id'):
                 vals['source_of_asset'] = 'procurement'
-                
+
         return super().create(vals_list)
 
     @api.depends('line_ids.amount_total')
@@ -184,14 +176,6 @@ class AccountAssetBatch(models.Model):
                 ("batch_id", "=", batch.id)
             ])
 
-    @api.depends('purchase_id', 'purchase_id.account_fiscal_year_id')
-    def _compute_account_fiscal_year_id(self):
-        for rec in self:
-            if rec.purchase_id and rec.purchase_id.account_fiscal_year_id:
-                rec.account_fiscal_year_id = rec.purchase_id.account_fiscal_year_id
-            elif not rec.account_fiscal_year_id:
-                rec.account_fiscal_year_id = False
-
     @api.depends('purchase_id', 'purchase_id.department_id')
     def _compute_department_id(self):
         for rec in self:
@@ -209,12 +193,8 @@ class AccountAssetBatch(models.Model):
         purchase_id = self.env.context.get("default_purchase_id")
         if purchase_id:
             purchase = self.env["purchase.order"].browse(purchase_id)
-            if purchase.department_id and purchase.department_id.operating_unit_id:
-                res["operating_unit_id"] = purchase.department_id.operating_unit_id.id
-        else:
-            employee = self.env.user.employee_id
-            if employee.department_id and employee.department_id.operating_unit_id:
-                res["operating_unit_id"] = employee.department_id.operating_unit_id.id
+            if purchase.operating_unit_id:
+                res["operating_unit_id"] = purchase.operating_unit_id.id
         return res
 
     def action_register_assets(self):
