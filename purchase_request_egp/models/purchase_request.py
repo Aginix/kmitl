@@ -26,6 +26,7 @@ class PurchaseRequest(models.Model):
         selection=_STATES,
         string="e-GP Status",
         tracking=True,
+        copy=False,
     )
     can_edit_egp = fields.Boolean(
         compute="_compute_can_edit_egp",

@@ -346,6 +346,11 @@
                 <filter string="Done" name="done" domain="[('state', '=', 'done')]" />
                 <group expand="0" string="Group By">
                     <filter
+                        string="แหล่งเงิน"
+                        name="group_by_source"
+                        context="{'group_by': 'source_analytic_id'}"
+                    />
+                    <filter
                         string="ปีงบประมาณ"
                         name="group_by_fiscal_year"
                         context="{'group_by': 'account_fiscal_year_id'}"
@@ -373,7 +378,7 @@
         <field name="name">รวมเล่มหน่วยงาน</field>
         <field name="res_model">budget.appropriation.compilation</field>
         <field name="view_mode">kanban,tree,form</field>
-        <field name="context">{'search_default_current_fiscal_year': 1}</field>
+        <field name="context">{'search_default_current_fiscal_year': 1, 'search_default_group_by_source': 1}</field>
         <field
             name="search_view_id"
             ref="view_budget_appropriation_compilation_search"
