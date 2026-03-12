@@ -1,5 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_hr_applicant_education_history_user,hr.applicant.education.history.user,model_hr_applicant_education_history,hr_recruitment.group_hr_recruitment_user,1,1,1,1
-access_hr_applicant_education_history_portal,hr.applicant.education.history.portal,model_hr_applicant_education_history,base.group_portal,1,0,1,0
-access_hr_applicant_work_history_user,hr.applicant.work.history.user,model_hr_applicant_work_history,hr_recruitment.group_hr_recruitment_user,1,1,1,1
-access_hr_applicant_work_history_portal,hr.applicant.work.history.portal,model_hr_applicant_work_history,base.group_portal,1,0,1,0
