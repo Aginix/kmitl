@@ -228,7 +228,7 @@ class BudgetTransfer(models.Model):
         string="Transfer FROM Lines",
         domain=[("transfer_direction", "=", "from")],
         context={"default_transfer_direction": "from"},
-        copy=True,
+        copy=False,
         readonly=False,
         states=READONLY_STATES,
     )
@@ -239,7 +239,7 @@ class BudgetTransfer(models.Model):
         string="Transfer TO Lines",
         domain=[("transfer_direction", "=", "to")],
         context={"default_transfer_direction": "to"},
-        copy=True,
+        copy=False,
         readonly=False,
         states=READONLY_STATES,
     )
