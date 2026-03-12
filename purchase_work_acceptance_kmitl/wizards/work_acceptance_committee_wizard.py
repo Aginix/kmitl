@@ -35,7 +35,7 @@ class WorkAcceptanceCommitteeWizard(models.TransientModel):
                     'employee_name': committee.name,
                     'approve_role': committee.approve_role,
                     'status': committee.status,
-                    'note': committee.note or '',
+                    'note': committee.note,
                 }))
             res['line_ids'] = lines
         return res

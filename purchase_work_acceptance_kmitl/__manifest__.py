@@ -18,7 +18,8 @@
         "security/ir.model.access.csv",
         "views/purchase_order_views.xml",
         "views/work_acceptance_views.xml",
-        "wizards/work_acceptance_committee_wizard.xml"
+        "wizards/work_acceptance_committee_wizard.xml",
+        "wizards/comment_wizard.xml",
     ],
     'installable': True,
     'auto_install': False,

@@ -161,6 +161,7 @@
                 position="attributes"
             >
                 <attribute name="name">reject_tier</attribute>
+                <attribute name="context" />
             </xpath>
         </field>
     </record>

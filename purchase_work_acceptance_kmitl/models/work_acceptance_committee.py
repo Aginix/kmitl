@@ -21,3 +21,11 @@ class WorkAcceptanceCommittee(models.Model):
     mobile_phone = fields.Char(
         related='employee_id.mobile_phone'
     )
+
+    note = fields.Selection(
+        selection=[
+            ('leave', 'Leave'),
+            ('mission', 'Mission'),
+        ],
+        string='Note',
+    )
