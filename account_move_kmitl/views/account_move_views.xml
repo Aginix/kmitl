@@ -34,11 +34,11 @@
                             <field name="analytic_distribution" invisible="1"/>
                         </group>
                         <group name="analytic_dimensions">
-                            <field name="activity_analytic_id" domain="[('plan_id.code', '=', 'activities')]" options="{'no_create': True}" attrs="{'readonly': [('state', '=', 'posted')]}"/>
-                            <field name="department_analytic_id" domain="[('plan_id.code', '=', 'departments')]" options="{'no_create': True}" attrs="{'readonly': [('state', '=', 'posted')]}"/>
-                            <field name="fund_analytic_id" domain="[('plan_id.code', '=', 'funds')]" options="{'no_create': True}" attrs="{'readonly': [('state', '=', 'posted')]}"/>
-                            <field name="source_analytic_id" domain="[('plan_id.code', '=', 'sources')]" options="{'no_create': True}" attrs="{'readonly': [('state', '=', 'posted')]}"/>
-                            <field name="budget_account_id" options="{'no_create': True}" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                            <field name="activity_analytic_id" domain="[('plan_id.code', '=', 'activities')]" options="{'no_create': True}" required="1" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '=', 'posted')]}"/>
+                            <field name="department_analytic_id" domain="[('plan_id.code', '=', 'departments')]" options="{'no_create': True}" required="1" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '=', 'posted')]}"/>
+                            <field name="fund_analytic_id" domain="[('plan_id.code', '=', 'funds')]" options="{'no_create': True}" required="1" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '=', 'posted')]}"/>
+                            <field name="source_analytic_id" domain="[('plan_id.code', '=', 'sources')]" options="{'no_create': True}" required="1" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '=', 'posted')]}"/>
+                            <field name="budget_account_id" options="{'no_create': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '=', 'posted')]}"/>
                         </group>
                     </group>
                     <div class="oe_button_box" name="button_box_budget">
