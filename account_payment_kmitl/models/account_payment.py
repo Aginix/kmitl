@@ -10,6 +10,36 @@ class AccountPayment(models.Model):
         comodel_name="kmitl.payment.type",
         string="Payment Type (KMITL)",
     )
+    to_reconcile_payment_line_ids = fields.Many2many(
+        comodel_name="account.move.line",
+        relation="account_payment_to_reconcile_line_rel",
+        column1="payment_id",
+        column2="move_line_id",
+        string="Lines to Reconcile",
+        copy=False,
+    )
+
+    def action_post(self):
+        """Reconcile with source invoice lines after posting."""
+        res = super().action_post()
+        self._reconcile_source_invoice_lines()
+        return res
+
+    def _reconcile_source_invoice_lines(self):
+        """Reconcile payment lines with stored source invoice lines."""
+        domain = [
+            ("parent_state", "=", "posted"),
+            ("account_type", "in", ("asset_receivable", "liability_payable")),
+            ("reconciled", "=", False),
+        ]
+        for payment in self.filtered("to_reconcile_payment_line_ids"):
+            payment_lines = payment.line_ids.filtered_domain(domain)
+            source_lines = payment.to_reconcile_payment_line_ids
+            for account in payment_lines.account_id:
+                (payment_lines + source_lines).filtered_domain(
+                    [("account_id", "=", account.id), ("reconciled", "=", False)]
+                ).reconcile()
+            payment.to_reconcile_payment_line_ids = False
 
     def action_submit(self):
         """Submit payment for approval. Delegates to account.move."""
