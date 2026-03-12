@@ -31,40 +31,26 @@ class Base(models.AbstractModel):
         _walk(domain)
         return field_names
 
-    @api.model
-    def get_view(self, view_id=None, view_type='form', **options):
-        result = super().get_view(view_id=view_id, view_type=view_type, **options)
+    def _build_modifier_rules(self, configs, modifier_model_label):
+        """Build rules dict from a set of management configs.
 
-        if view_type != 'form':
-            return result
-
-        configs = self.env['readonly.management'].sudo().search([
-            ('model_id.model', '=', self._name)
-        ])
-        # ถ้าไม่มี config → ไม่ต้องแตะ view
-        if not configs:
-            return result
-
-        """ field_rules format:
-        {
-            'field_name': [domain1, domain2, ...]
-        }
+        Returns (rules, required_fields) where rules is:
+            {'field_name': [domain1, domain2, ...]}
+        and required_fields is the set of field names referenced in all domains.
         """
-        field_rules = {}
+        rules = {}
         required_fields = set()
 
         for cfg in configs:
             apply_domain = None
             if cfg.apply_on_domain:
                 try:
-                    # เป็น Char → แปลงเป็น domain จริง
                     apply_domain = ast.literal_eval(cfg.apply_on_domain)
-                    # ดึง field ที่ domain นี้ใช้ เพื่อ inject invisible field
                     required_fields |= self._extract_domain_fields(apply_domain)
                 except Exception:
                     _logger.warning(
-                        "readonly.management id=%s: invalid apply_on_domain %r",
-                        cfg.id, cfg.apply_on_domain,
+                        "%s id=%s: invalid apply_on_domain %r",
+                        modifier_model_label, cfg.id, cfg.apply_on_domain,
                     )
                     continue
 
@@ -74,13 +60,12 @@ class Base(models.AbstractModel):
                 field_domain = True
                 if field_cfg.domain:
                     try:
-                        # แปลงเป็น domain
                         field_domain = ast.literal_eval(field_cfg.domain)
                         required_fields |= self._extract_domain_fields(field_domain)
                     except Exception:
                         _logger.warning(
-                            "readonly.management.fields id=%s: invalid domain %r",
-                            field_cfg.id, field_cfg.domain,
+                            "%s.fields id=%s: invalid domain %r",
+                            modifier_model_label, field_cfg.id, field_cfg.domain,
                         )
                         continue
 
@@ -92,36 +77,70 @@ class Base(models.AbstractModel):
                 else:
                     final_domain = field_domain
 
-                field_rules.setdefault(field_name, []).append(final_domain)
+                rules.setdefault(field_name, []).append(final_domain)
 
-        if not field_rules:
+        return rules, required_fields
+
+    def _apply_modifier_rules(self, doc, rules, modifier_key):
+        """Apply modifier_key modifiers to field nodes in doc based on rules."""
+        for field_name, domains in rules.items():
+            if any(d is True for d in domains):
+                value = True
+            elif len(domains) == 1:
+                value = domains[0]
+            else:
+                value = OR(domains)
+
+            for node in doc.xpath(f"//field[@name='{field_name}']"):
+                modifiers = json.loads(node.get('modifiers', '{}'))
+                modifiers[modifier_key] = value
+                node.set('modifiers', json.dumps(modifiers))
+
+    @api.model
+    def get_view(self, view_id=None, view_type='form', **options):
+        result = super().get_view(view_id=view_id, view_type=view_type, **options)
+
+        if view_type != 'form':
+            return result
+
+        model_domain = [('model_id.model', '=', self._name)]
+
+        readonly_configs = self.env['readonly.management'].sudo().search(model_domain)
+        invisible_configs = self.env['invisible.management'].sudo().search(model_domain)
+        required_configs = self.env['required.management'].sudo().search(model_domain)
+
+        if not readonly_configs and not invisible_configs and not required_configs:
+            return result
+
+        readonly_rules, req_fields_ro = self._build_modifier_rules(
+            readonly_configs, 'readonly.management'
+        )
+        invisible_rules, req_fields_inv = self._build_modifier_rules(
+            invisible_configs, 'invisible.management'
+        )
+        required_rules, req_fields_req = self._build_modifier_rules(
+            required_configs, 'required.management'
+        )
+
+        if not readonly_rules and not invisible_rules and not required_rules:
             return result
 
         # แปลง arch XML เป็น DOM
         doc = etree.fromstring(result['arch'])
 
         # Inject invisible fields needed by domains but absent from the view
+        all_required_fields = req_fields_ro | req_fields_inv | req_fields_req
         existing_fields = {n.attrib['name'] for n in doc.xpath('//field[@name]')}
         sheet = doc.xpath('//sheet')
         target = sheet[0] if sheet else doc
 
-        for fname in required_fields:
+        for fname in all_required_fields:
             if fname not in existing_fields:
                 etree.SubElement(target, 'field', name=fname, invisible="1")
 
-        # Apply readonly modifiers; OR multiple rules for the same field
-        for field_name, domains in field_rules.items():
-            if any(d is True for d in domains):
-                readonly_value = True
-            elif len(domains) == 1:
-                readonly_value = domains[0]
-            else:
-                readonly_value = OR(domains)
-
-            for node in doc.xpath(f"//field[@name='{field_name}']"):
-                modifiers = json.loads(node.get('modifiers', '{}'))
-                modifiers['readonly'] = readonly_value
-                node.set('modifiers', json.dumps(modifiers))
+        self._apply_modifier_rules(doc, readonly_rules, 'readonly')
+        self._apply_modifier_rules(doc, invisible_rules, 'invisible')
+        self._apply_modifier_rules(doc, required_rules, 'required')
 
         result['arch'] = etree.tostring(doc, encoding='unicode')
         return result
