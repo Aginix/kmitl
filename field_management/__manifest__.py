@@ -11,7 +11,6 @@
         'views/readonly_management_views.xml',
         'security/ir.model.access.csv',
         'views/readonly_management_fields_views.xml',
-        'data/readonly_management_data.xml',
     ],
     'installable': True,
     'auto_install': False,
