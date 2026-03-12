@@ -46,7 +46,6 @@ class StockRequest(models.Model):
         'stock.location',
         string='From Location',
         required=True,
-        default=lambda self: self.env['stock.location'].search([('complete_name', '=', 'WH/Stock')], limit=1),
         tracking=True
     )
     location_dest_id = fields.Many2one(
@@ -87,6 +86,38 @@ class StockRequest(models.Model):
         compute="_compute_is_editable",
         store=False
     )
+    operating_unit_id = fields.Many2one(
+        "operating.unit",
+        string="Operating Unit",
+        default=lambda self: self.env["res.users"].operating_unit_default_get(
+            self.env.user.id
+        ),
+    )
+
+    @api.model
+    def default_get(self, fields_list):
+        res = super().default_get(fields_list)
+        if 'location_id' not in res:
+            operating_unit = self.env["res.users"].operating_unit_default_get(
+                self.env.user.id
+            )
+            if operating_unit:
+                location = self.env['stock.location'].search(
+                    [('operating_unit_id', '=', operating_unit.id)], 
+                    limit=1
+                )
+                if location:
+                    res['location_id'] = location.id
+        return res
+
+    @api.onchange('operating_unit_id')
+    def _onchange_operating_unit_id(self):
+        if self.operating_unit_id:
+            location = self.env['stock.location'].search(
+                [('operating_unit_id', '=', self.operating_unit_id.id)],
+                limit=1
+            )
+            self.location_id = location if location else False
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -230,6 +261,12 @@ class StockRequestLine(models.Model):
         string='Total Price',
         compute='_compute_total_price_from_valuation',
         store=False
+    )
+
+    operating_unit_id = fields.Many2one(
+        comodel_name="operating.unit",
+        related="request_id.operating_unit_id",
+        string="Operating Unit",
     )
 
     @api.depends('request_id.picking_id.move_ids_without_package')

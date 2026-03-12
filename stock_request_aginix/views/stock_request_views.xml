@@ -112,6 +112,7 @@
                             <field name="location_id" readonly="1" />
                             <field name="location_dest_id" readonly="1" />
                             <field name="user_id" />
+                            <field name="operating_unit_id" groups="operating_unit.group_multi_operating_unit"/>
                         </group>
                         <group name="right">
                             <field name="request_date" attrs="{'readonly': [('is_editable','=', False)]}"/>

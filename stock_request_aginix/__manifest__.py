@@ -6,7 +6,7 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['stock_account'],
+    'depends': ['stock_account', 'stock_operating_unit'],
     "data": [
         "data/stock_request_sequence.xml",
         "security/stock_request_security.xml",
