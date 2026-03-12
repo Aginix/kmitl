@@ -49,7 +49,7 @@
                     <div style="height: 1px" />
                     <div class="page-header mt-5 mb-5">
                         <h3 class="text-center fw-bolder" style="line-height: 1.575">
-                            ใบสั่งซื้อ/จ้าง
+                            <span t-esc="o.contract_type_id.name" />
                         </h3>
                     </div>
                     <div class="row">
@@ -61,10 +61,10 @@
                             />
                         </div>
                         <div class="col-5">
-                            ใบสั่งซื้อเลขที่
+                            <span t-esc="o.contract_type_id.name" />เลขที่
                             <span
                                 class="ms-2 fw-normal fw-bolder text-decoration-underline"
-                                t-esc="o.name"
+                                t-esc="o.contract_number"
                             />
                         </div>
                     </div>
@@ -242,7 +242,7 @@
                             ครบกำหนดส่งมอบวันที่
                             <span
                                 class="fw-bolder text-decoration-underline"
-                                t-esc="o.format_date_thai(o.date_order)"
+                                t-esc="o.format_date_thai(o.work_end)"
                             />
                         </li>
                         <li>
@@ -309,9 +309,10 @@
                                 t-esc="o.contract_type_id.name"
                             />
                             นี้อ้างอิงตามเลขที่โครงการ
-                            <!-- ไม่รู้ต้องเลขอะไร -->
-                            <span class="fw-bolder text-decoration-underline">
-                                xxx
+                            <span
+                                class="fw-bolder text-decoration-underline"
+                                t-esc="o.request_id.egp_project_id or '-'"
+                            >
                             </span>
                             <span
                                 class="fw-bolder text-decoration-underline"

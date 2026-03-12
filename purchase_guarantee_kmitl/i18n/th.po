@@ -2,6 +2,8 @@
 # This file contains the translation of the following modules:
 # 	* l10n_th_gov_purchase_guarantee
 # 	* purchase_guarantee_kmitl
+# 	* purchase_guarantee_lock (merged)
+# 	* purchase_guarantee_attachment (merged)
 #
 msgid ""
 msgstr ""
@@ -506,3 +508,30 @@ msgstr ""
 #: model:ir.model.fields,help:l10n_th_gov_purchase_guarantee.field_purchase_guarantee__website_message_ids
 msgid "Website communication history"
 msgstr ""
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields.selection,name:purchase_guarantee_kmitl.selection__purchase_guarantee__state__draft
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_guarantee_form
+msgid "Draft"
+msgstr "แบบร่าง"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields.selection,name:purchase_guarantee_kmitl.selection__purchase_guarantee__state__lock
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_guarantee_form
+msgid "Lock"
+msgstr "ล๊อค"
+
+#. module: purchase_guarantee_kmitl
+#: model:ir.model.fields,field_description:purchase_guarantee_kmitl.field_purchase_guarantee__state
+msgid "Status"
+msgstr "สถานะ"
+
+#. module: purchase_guarantee_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_guarantee_form
+msgid "Attachment"
+msgstr "เอกสารแนบ"
+
+#. module: purchase_guarantee_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_guarantee_kmitl.view_purchase_guarantee_form
+msgid "File Name"
+msgstr "ชื่อไฟล์"
