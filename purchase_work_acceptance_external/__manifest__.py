@@ -6,7 +6,7 @@
     "category": "Purchase",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['purchase_work_acceptance_attachment', 'purchase_work_acceptance_tier_validation'],
+    'depends': ['purchase_work_acceptance_attachment', 'purchase_work_acceptance_cancel_restriction'],
     "data": [
         "views/work_acceptance_views.xml",
     ],

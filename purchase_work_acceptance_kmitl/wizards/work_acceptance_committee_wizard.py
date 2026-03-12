@@ -34,7 +34,7 @@ class WorkAcceptanceCommitteeWizard(models.TransientModel):
                     'committee_id': committee.id,
                     'employee_name': committee.name,
                     'approve_role': committee.approve_role,
-                    'status': committee.status or 'accept',
+                    'status': committee.status,
                     'note': committee.note or '',
                 }))
             res['line_ids'] = lines
@@ -45,7 +45,7 @@ class WorkAcceptanceCommitteeWizard(models.TransientModel):
         for line in self.line_ids:
             vals = {
                 'status': line.status,
-                'note': line.note if line.status == 'not_accept' else '',
+                'note': line.note if line.status == 'other' else '',
             }
             line.committee_id.write(vals)
 
@@ -86,7 +86,7 @@ class WorkAcceptanceCommitteeWizardLine(models.TransientModel):
     status = fields.Selection(
         selection=[
             ('accept', 'Accept'),
-            ('not_accept', 'Not Accept'),
+            ('other', 'Other'),
         ],
         string='Status',
         required=True,

@@ -11,9 +11,14 @@
               <field name="is_external"/>
               <field name="has_attachment" invisible="1"/>
             </xpath>
+
+            <xpath expr="//button[@name='button_cancel']" position="after">
+              <button name="button_review" type="object" string="Confirm" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('is_external', '=', False)]}"/>/>
+            </xpath>
         </field>
     </record>
 
+    <!-- Attachment -->
     <record id="view_work_acceptance_attachment_form" model="ir.ui.view">
         <field name="name">view.work.acceptance.form External</field>
         <field name="model">work.acceptance</field>
@@ -27,6 +32,28 @@
               <attribute name="attrs">
                 {'invisible': [('is_external', '=', False)]}
               </attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- l10n -->
+    <record id="view_l10n_work_acceptance_form" model="ir.ui.view">
+        <field name="name">view.work.acceptance.form l10n inherit</field>
+        <field name="model">work.acceptance</field>
+        <field name="inherit_id" ref="purchase_work_acceptance_cancel_restriction.view_l10n_work_acceptance_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+              <field name="is_external" invisible="1"/>
+            </xpath>
+            
+            <xpath expr="//button[@name='request_validation']" position="attributes">
+                <attribute name="states"></attribute>
+                <attribute name="attrs">
+                    {'invisible': ['|',
+                        ('is_external', '=', True),
+                        ('state', 'not in', ['draft'])
+                    ]}
+                </attribute>
             </xpath>
         </field>
     </record>

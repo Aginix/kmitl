@@ -23,3 +23,6 @@ class WorkAcceptance(models.Model):
     def request_validation(self):
         self.write({"state": "in_review"})
         return super().request_validation()
+    
+    def button_review(self):
+        self.write({"state": "in_review"})

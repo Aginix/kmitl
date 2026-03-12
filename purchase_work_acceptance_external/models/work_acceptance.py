@@ -27,11 +27,11 @@ class WorkAcceptance(models.Model):
     def _compute_has_attachment(self):
         for rec in self:
             rec.has_attachment = bool(rec.attachment_ids)
-
-    def button_accept(self, force=False):
+    
+    def button_review(self, force=False):
         for rec in self:
             if rec.is_external and not rec.has_attachment:
                 raise UserError(
                     _("Please attach at least one supporting document file before clicking accept.")
                 )
-        return super().button_accept(force=force)
+        return super().button_review(force=force)

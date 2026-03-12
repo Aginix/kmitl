@@ -16,14 +16,13 @@
                         <field
                             name="status"
                             decoration-success="status == 'accept'"
-                            decoration-danger="status == 'not_accept'"
                             required="1"
                         />
                         <field
                             name="note"
                             attrs="{
-                                'invisible': [('status', '!=', 'not_accept')],
-                                'required': [('status', '=', 'not_accept')]
+                                'invisible': [('status', '!=', 'other')],
+                                'required': [('status', '=', 'other')]
                             }"
                         />
                     </tree>
