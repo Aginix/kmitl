@@ -26,12 +26,64 @@ class WorkAcceptance(models.Model):
             return False
         return super()._check_state_conditions(vals)
 
+    def _check_allow_write_under_validation(self, vals):
+        res = super()._check_allow_write_under_validation(vals)
+        return res
+
+    def _rejected_tier(self, tiers=False):
+        """
+        Override: แทนที่จะ set status = rejected
+        ให้ set status = approved เพื่อให้ WA ไม่ถูก rejected
+        แต่ยัง trigger rejected_server_action เพื่อ set committee status = other
+        """
+        self.ensure_one()
+        tier_reviews = tiers or self.review_ids
+        user_reviews = tier_reviews.filtered(
+            lambda r: r.status == "pending" and (self.env.user in r.reviewer_ids)
+        )
+        # Set approved แทน rejected เพื่อไม่ให้ WA ถูก set rejected = True
+        user_reviews.write({
+            'status': 'approved',
+            'done_by': self.env.user.id,
+            'reviewed_date': fields.Datetime.now(),
+        })
+        # Trigger rejected_server_action manually
+        # เพื่อให้ committee status = other + บันทึก comment
+        for review in user_reviews:
+            if review.definition_id.rejected_server_action_id:
+                review.definition_id.rejected_server_action_id\
+                    .with_context(
+                        active_id=self.id,
+                        active_model=self._name,
+                    ).sudo().run()
+        self._update_counter({'review_deleted': True})
+
+        if (
+            self.state == 'in_review'
+            and self.completeness == 100
+            and not self.env.context.get('skip_committee_wizard')
+            and (not self.is_external or self.has_attachment)
+        ):
+            self.with_context(skip_committee_wizard=True).button_accept()
+    
+    def _validate_tier(self, reviews):
+        """Override เพื่อเช็ค completeness หลัง validate tier"""
+        res = super()._validate_tier(reviews)
+        if (
+            self.state == 'in_review'
+            and self.completeness == 100
+            and not self.env.context.get('skip_committee_wizard')
+            and (not self.is_external or self.has_attachment)
+        ):
+            self.with_context(skip_committee_wizard=True).button_accept()
+        return res
+
     def write(self, vals):
         res = super().write(vals)
         for rec in self:
             if (
                 rec.state == 'in_review'
-                and rec.validation_status == 'validated'
+                and rec.completeness == 100
                 and not self.env.context.get('skip_committee_wizard')
                 and (not rec.is_external or rec.has_attachment)
             ):

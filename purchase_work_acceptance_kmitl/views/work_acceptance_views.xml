@@ -156,12 +156,12 @@
                 <attribute name="context" />
             </xpath>
 
-            <!-- <xpath
+            <xpath
                 expr="//div[@class='alert alert-warning']//button[contains(@class, 'btn-warning') and @icon='fa-arrow-circle-right']"
                 position="attributes"
             >
-                <attribute name="attrs">{'invisible': True}</attribute>
-            </xpath> -->
+                <attribute name="name">reject_tier</attribute>
+            </xpath>
         </field>
     </record>
 
