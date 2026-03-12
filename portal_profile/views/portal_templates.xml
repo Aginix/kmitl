@@ -866,7 +866,7 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <div class="mb-3 col-lg-6">
+                                <div class="mb-3 col-lg-12">
                                     <label
                                                 class="col-form-label d-block"
                                             >Position</label>
