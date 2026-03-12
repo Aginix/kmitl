@@ -11,7 +11,7 @@
             model="readonly.management.fields"
         >
             <field name="management_id" ref="readonly_management_purchase_request_test"/>
-            <field name="field_id" ref="purchase_request.field_purchase_request__title"/>
+            <field name="field_id" ref="purchase_request_kmitl.field_purchase_request__title"/>
             <field name="domain">[('state', '!=', 'draft')]</field>
             <field name="force_readonly" eval="False"/>
         </record>

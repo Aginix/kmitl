@@ -6,7 +6,7 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    "depends": ["field_management", "purchase_request"],
+    "depends": ["field_management", "purchase_request_kmitl"],
     "data": [
         "data/readonly_management_data.xml",
     ],
