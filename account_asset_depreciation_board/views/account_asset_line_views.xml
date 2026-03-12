@@ -75,8 +75,8 @@
                         context="{'group_by': 'profile_id'}"
                     />
                     <filter
-                        name="group_month"
-                        string="Month"
+                        name="group_date"
+                        string="วันที่"
                         context="{'group_by': 'line_date:month'}"
                     />
                     <filter
