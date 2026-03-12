@@ -127,6 +127,11 @@ class StockRequest(models.Model):
             ], limit=1)
             if location:
                 self.location_id = location
+    
+    def _get_location_for_ou(self, operating_unit_id):
+        return self.env['stock.location'].search([
+            ('operating_unit_id', '=', operating_unit_id)
+        ], limit=1)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -134,6 +139,13 @@ class StockRequest(models.Model):
             if vals.get('name') in (False, _('New')):
                 vals['name'] = _('New')
         return super().create(vals_list)
+    
+    def write(self, vals):
+        if vals.get('operating_unit_id'):
+            location = self._get_location_for_ou(vals['operating_unit_id'])
+            if location:
+                vals['location_id'] = location.id
+        return super().write(vals)
 
     def action_submitted(self):
         for rec in self:
