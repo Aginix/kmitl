@@ -17,6 +17,13 @@
                 <field name="remaining_value"/>
                 <field name="move_check" string="Posted"/>
                 <field name="currency_id" invisible="1"/>
+                <button
+                    name="open_move"
+                    icon="fa-folder-open-o"
+                    string="View Move"
+                    type="object"
+                    attrs="{'invisible': [('move_check', '!=', True)]}"
+                />
             </tree>
         </field>
     </record>
