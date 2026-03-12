@@ -39,7 +39,6 @@ class StockRequest(models.Model):
         'stock.picking.type',
         string="Picking Type",
         required=True,
-        default=lambda self: self.env['stock.picking.type'].search([('code', '=', 'outgoing')], limit=1),
         tracking=True
     )
     location_id = fields.Many2one(
@@ -97,27 +96,37 @@ class StockRequest(models.Model):
     @api.model
     def default_get(self, fields_list):
         res = super().default_get(fields_list)
-        if 'location_id' not in res:
-            operating_unit = self.env["res.users"].operating_unit_default_get(
-                self.env.user.id
-            )
-            if operating_unit:
-                location = self.env['stock.location'].search(
-                    [('operating_unit_id', '=', operating_unit.id)], 
-                    limit=1
-                )
-                if location:
-                    res['location_id'] = location.id
+        operating_unit = self.env["res.users"].operating_unit_default_get(
+            self.env.user.id
+        )
+        picking_type = self.env['stock.picking.type'].search([
+            ('code', '=', 'outgoing'),
+        ], limit=1)
+        location = self.env['stock.location'].search([
+            ('operating_unit_id', '=', operating_unit.id)
+        ], limit=1)
+        if picking_type:
+            res['picking_type_id'] = picking_type.id
+        if location:
+            res['location_id'] = location.id
         return res
 
     @api.onchange('operating_unit_id')
     def _onchange_operating_unit_id(self):
         if self.operating_unit_id:
-            location = self.env['stock.location'].search(
-                [('operating_unit_id', '=', self.operating_unit_id.id)],
-                limit=1
-            )
+            location = self.env['stock.location'].search([
+                ('operating_unit_id', '=', self.operating_unit_id.id)
+            ], limit=1)
             self.location_id = location if location else False
+
+    @api.onchange('picking_type_id')
+    def _onchange_picking_type_id(self):
+        if self.picking_type_id and self.operating_unit_id:
+            location = self.env['stock.location'].search([
+                ('operating_unit_id', '=', self.operating_unit_id.id)
+            ], limit=1)
+            if location:
+                self.location_id = location
 
     @api.model_create_multi
     def create(self, vals_list):
