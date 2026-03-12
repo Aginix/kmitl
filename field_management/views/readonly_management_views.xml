@@ -34,9 +34,12 @@
                             </group>
                         </page>
                         <page name="Field" string="Field">
-                            <group>
-                                <field name="field_ids" />
-                            </group>
+                            <separator string="Fields" />
+                            <field
+                                name="field_ids"
+                                nolabel="1"
+                                attrs="{'readonly': [('model_id', '=', False)]}"
+                            />
                         </page>
                         <page name="note" string="Note">
                             <group>
