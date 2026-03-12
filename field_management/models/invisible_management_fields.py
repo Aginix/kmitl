@@ -39,6 +39,11 @@ class InvisibleManagementFields(models.Model):
         help="Domain to specify when the field should be invisible.",
     )
 
+    force_invisible = fields.Boolean(
+        string='Force Invisible',
+        default=True,
+    )
+
     used_field_ids = fields.Many2many(
         'ir.model.fields',
         compute='_compute_used_field_ids',

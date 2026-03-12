@@ -29,10 +29,11 @@
                             name="field_id"
                             domain="[('model_id', '=', used_model),('id', 'not in', used_field_ids)]"
                         />
+                        <field name="force_required" />
                     </group>
 
                     <notebook>
-                        <page name="domain" string="Domain">
+                        <page name="domain" string="Domain" attrs="{'invisible': [('force_required', '=', True)]}">
                             <group>
                                 <field
                                     name="domain"

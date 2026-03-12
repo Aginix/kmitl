@@ -33,7 +33,7 @@
                     </group>
 
                     <notebook>
-                        <page name="domain" string="Domain">
+                        <page name="domain" string="Domain" attrs="{'invisible': [('force_readonly', '=', True)]}">
                             <group>
                                 <field
                                     name="domain"

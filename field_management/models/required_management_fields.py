@@ -39,6 +39,11 @@ class RequiredManagementFields(models.Model):
         help="Domain to specify when the field should be required.",
     )
 
+    force_required = fields.Boolean(
+        string='Force Required',
+        default=True,
+    )
+
     used_field_ids = fields.Many2many(
         'ir.model.fields',
         compute='_compute_used_field_ids',

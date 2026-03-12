@@ -8,6 +8,8 @@ class RequiredManagement(models.Model):
 
     name = fields.Char('Name')
 
+    active = fields.Boolean(default=True)
+
     model_id = fields.Many2one(
         'ir.model',
         string='Model',

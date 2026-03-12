@@ -31,12 +31,15 @@ class Base(models.AbstractModel):
         _walk(domain)
         return field_names
 
-    def _build_modifier_rules(self, configs, modifier_model_label):
+    def _build_modifier_rules(self, configs, modifier_model_label, force_field=None):
         """Build rules dict from a set of management configs.
 
         Returns (rules, required_fields) where rules is:
             {'field_name': [domain1, domain2, ...]}
         and required_fields is the set of field names referenced in all domains.
+
+        force_field: name of the boolean field on field_cfg that means
+        "always apply unconditionally" (e.g. 'force_readonly').
         """
         rules = {}
         required_fields = set()
@@ -56,6 +59,12 @@ class Base(models.AbstractModel):
 
             for field_cfg in cfg.field_ids:
                 field_name = field_cfg.field_id.name
+
+                # Force flag → unconditional modifier, skip domain parsing
+                if force_field and getattr(field_cfg, force_field, False):
+                    final_domain = apply_domain if apply_domain is not None else True
+                    rules.setdefault(field_name, []).append(final_domain)
+                    continue
 
                 field_domain = True
                 if field_cfg.domain:
@@ -113,13 +122,13 @@ class Base(models.AbstractModel):
             return result
 
         readonly_rules, req_fields_ro = self._build_modifier_rules(
-            readonly_configs, 'readonly.management'
+            readonly_configs, 'readonly.management', 'force_readonly'
         )
         invisible_rules, req_fields_inv = self._build_modifier_rules(
-            invisible_configs, 'invisible.management'
+            invisible_configs, 'invisible.management', 'force_invisible'
         )
         required_rules, req_fields_req = self._build_modifier_rules(
-            required_configs, 'required.management'
+            required_configs, 'required.management', 'force_required'
         )
 
         if not readonly_rules and not invisible_rules and not required_rules:
