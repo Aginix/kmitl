@@ -66,8 +66,9 @@ class TestPurchaseGuarantee(common.TransactionCase):
                             "product_qty": qty,
                             "product_uom_id": self.product1.uom_po_id.id,
                             "price_unit": unit_price,
-                            "account_analytic_id": analytic_account
-                            and analytic_account.id,
+                            "analytic_distribution": {str(analytic_account.id): 100}
+                            if analytic_account
+                            else False,
                         },
                     )
                 ],
@@ -99,8 +100,7 @@ class TestPurchaseGuarantee(common.TransactionCase):
                         "account_id": guarantee.guarantee_method_id.account_id.id,
                         "quantity": 1,
                         "price_unit": guarantee.amount,
-                        "analytic_account_id": guarantee.analytic_account_id.id,
-                        "analytic_tag_ids": [(6, 0, guarantee.analytic_tag_ids.ids)],
+                        "analytic_distribution": guarantee.analytic_distribution or False,
                     },
                 )
             ],
@@ -157,7 +157,9 @@ class TestPurchaseGuarantee(common.TransactionCase):
         self.assertEqual(
             pr_guarantee.guarantee_method_id.account_id, self.account_guarantee
         )
-        self.assertEqual(pr_guarantee.analytic_account_id, analytic_camp)
+        self.assertEqual(
+            pr_guarantee.analytic_distribution, {str(analytic_camp.id): 100}
+        )
         # Check name search and name get
         self.assertEqual(
             pr_guarantee.name_get()[0][1], "{} ({})".format(pr_guarantee.name, pr.name)

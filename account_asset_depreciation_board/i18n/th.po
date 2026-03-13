@@ -1,0 +1,102 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* account_asset_depreciation_board
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-12 06:43+0000\n"
+"PO-Revision-Date: 2026-03-12 06:43+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: account_asset_depreciation_board
+#: model_terms:ir.ui.view,arch_db:account_asset_depreciation_board.account_asset_line_search_view
+msgid "Asset"
+msgstr "ครุภัณฑ์/สินทรัพย์"
+
+#. module: account_asset_depreciation_board
+#: model:ir.model.fields,field_description:account_asset_depreciation_board.field_account_asset_line__profile_id
+#: model_terms:ir.ui.view,arch_db:account_asset_depreciation_board.account_asset_line_search_view
+msgid "Asset Profile"
+msgstr "หมวดหมู่สินทรัพย์"
+
+#. module: account_asset_depreciation_board
+#: model:ir.model,name:account_asset_depreciation_board.model_account_asset_line
+msgid "Asset depreciation table line"
+msgstr "ตารางค่าเสื่อม"
+
+#. module: account_asset_depreciation_board
+#: model:ir.actions.act_window,name:account_asset_depreciation_board.action_account_asset_line_depreciation_board
+#: model:ir.ui.menu,name:account_asset_depreciation_board.menu_asset_depreciation_board
+msgid "Depreciation Board"
+msgstr "ตารางค่าเสื่อม"
+
+#. module: account_asset_depreciation_board
+#. odoo-python
+#: code:addons/account_asset_depreciation_board/models/account_asset_line.py:0
+#, python-format
+msgid "Depreciation Entries"
+msgstr "รายการค่าเสื่อม"
+
+#. module: account_asset_depreciation_board
+#: model_terms:ir.ui.view,arch_db:account_asset_depreciation_board.account_asset_line_search_view
+msgid "Group By"
+msgstr "จัดกลุ่ม"
+
+#. module: account_asset_depreciation_board
+#: model_terms:ir.ui.view,arch_db:account_asset_depreciation_board.account_asset_line_search_view
+msgid "Pending"
+msgstr "รอดำเนินการ"
+
+#. module: account_asset_depreciation_board
+#: model:ir.actions.server,name:account_asset_depreciation_board.action_batch_post_depreciation
+msgid "Post Depreciation Entries"
+msgstr "สร้างรายการค่าเสื่อม (ส่งบัญชี)"
+
+#. module: account_asset_depreciation_board
+#: model_terms:ir.ui.view,arch_db:account_asset_depreciation_board.account_asset_line_search_view
+#: model_terms:ir.ui.view,arch_db:account_asset_depreciation_board.account_asset_line_tree_view
+msgid "Posted"
+msgstr "ลงบัญชีแล้ว"
+
+#. module: account_asset_depreciation_board
+#. odoo-python
+#: code:addons/account_asset_depreciation_board/models/account_asset_line.py:0
+#, python-format
+msgid ""
+"The following lines cannot be posted: %s\n"
+"Only pending depreciation lines on open assets are allowed."
+msgstr ""
+"ไม่สามารถบันทึกรายการต่อไปนี้ได้: %s\n"
+"อนุญาตเฉพาะรายการค่าเสื่อมราคาที่รอดำเนินการของครุภัณฑ์/สินทรัพย์ที่ยังเปิดใช้งานอยู่เท่านั้น"
+
+#. module: account_asset_depreciation_board
+#: model_terms:ir.ui.view,arch_db:account_asset_depreciation_board.account_asset_line_search_view
+msgid "This Month"
+msgstr "เดือนนี้"
+
+#. module: account_asset_depreciation_board
+#: model_terms:ir.ui.view,arch_db:account_asset_depreciation_board.account_asset_line_search_view
+msgid "This Year"
+msgstr "ปีนี้"
+
+#. module: account_asset_depreciation_board
+#: model_terms:ir.ui.view,arch_db:account_asset_depreciation_board.account_asset_line_tree_view
+msgid "Total Amount"
+msgstr "รวม"
+
+#. module: account_asset_depreciation_board
+#: model_terms:ir.ui.view,arch_db:account_asset_depreciation_board.account_asset_line_tree_view
+msgid "View Move"
+msgstr "ดูรายการบัญชี"
+
+#. module: account_asset_depreciation_board
+#: model_terms:ir.ui.view,arch_db:account_asset_depreciation_board.account_asset_line_search_view
+msgid "วันที่"
+msgstr ""

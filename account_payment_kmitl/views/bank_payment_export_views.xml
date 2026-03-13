@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Inherit Form View -->
+    <record id="bank_payment_export_view_form_inherit" model="ir.ui.view">
+        <field name="name">bank.payment.export.form.inherit.kmitl</field>
+        <field name="model">bank.payment.export</field>
+        <field name="inherit_id" ref="l10n_th_bank_payment_export.bank_payment_export_view_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Add fiscal year field to right_header group -->
+            <xpath expr="//group[@name='right_header']" position="inside">
+                <field name="account_fiscal_year_id" readonly="1"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Inherit Export Line Tree View: add e-payment columns -->
+    <record id="bank_payment_export_line_view_tree_inherit" model="ir.ui.view">
+        <field name="name">bank.payment.export.line.tree.inherit.kmitl</field>
+        <field name="model">bank.payment.export.line</field>
+        <field name="inherit_id" ref="l10n_th_bank_payment_export.bank_payment_export_line_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="epayment_status" optional="hide"/>
+                <field name="epayment_ref" optional="hide"/>
+                <field name="epayment_date" optional="hide"/>
+                <field name="epayment_note" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Inherit Tree View: add fiscal year and update state badge -->
+    <record id="bank_payment_export_view_tree_inherit" model="ir.ui.view">
+        <field name="name">bank.payment.export.tree.inherit.kmitl</field>
+        <field name="model">bank.payment.export</field>
+        <field name="inherit_id" ref="l10n_th_bank_payment_export.bank_payment_export_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='total_amount']" position="after">
+                <field name="account_fiscal_year_id" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Inherit Search View: add fiscal year filter -->
+    <record id="bank_payment_export_view_search_inherit" model="ir.ui.view">
+        <field name="name">bank.payment.export.search.inherit.kmitl</field>
+        <field name="model">bank.payment.export</field>
+        <field name="inherit_id" ref="l10n_th_bank_payment_export.bank_payment_export_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='group_by_state']" position="after">
+                <filter
+                    string="Fiscal Year"
+                    name="group_by_fiscal_year"
+                    context="{'group_by': 'account_fiscal_year_id'}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Menus: Payment app                                           -->
+    <!-- ============================================================ -->
+
+    <!-- Root menu -->
+    <menuitem
+        id="menu_payment_root"
+        name="Payment"
+        web_icon="account_payment_kmitl,static/description/icon.png"
+        sequence="60"
+    />
+
+    <!-- Action: account.payment outbound -->
+    <record id="action_account_payment_outbound" model="ir.actions.act_window">
+        <field name="name">จ่ายเงิน</field>
+        <field name="res_model">account.payment</field>
+        <field name="view_mode">tree,kanban,form,graph</field>
+        <field name="domain">[('payment_type', '=', 'outbound')]</field>
+        <field name="context">{
+            'default_payment_type': 'outbound',
+            'default_partner_type': 'supplier',
+            'default_move_journal_types': ('bank', 'cash'),
+        }</field>
+    </record>
+
+    <!-- Action: account.payment inbound -->
+    <record id="action_account_payment_inbound" model="ir.actions.act_window">
+        <field name="name">รับเงิน</field>
+        <field name="res_model">account.payment</field>
+        <field name="view_mode">tree,kanban,form,graph</field>
+        <field name="domain">[('payment_type', '=', 'inbound')]</field>
+        <field name="context">{
+            'default_payment_type': 'inbound',
+            'default_partner_type': 'customer',
+            'default_move_journal_types': ('bank', 'cash'),
+        }</field>
+    </record>
+
+    <menuitem
+        id="menu_account_payment_outbound"
+        name="จ่ายเงิน"
+        parent="menu_payment_root"
+        action="action_account_payment_outbound"
+        sequence="10"
+    />
+    <menuitem
+        id="menu_account_payment_inbound"
+        name="รับเงิน"
+        parent="menu_payment_root"
+        action="action_account_payment_inbound"
+        sequence="15"
+    />
+
+    <!-- Bank Payment Export -->
+    <menuitem
+        id="menu_bank_payment_export"
+        name="Bank Payment Export"
+        parent="menu_payment_root"
+        action="l10n_th_bank_payment_export.action_bank_payment_export"
+        sequence="20"
+    />
+
+    <!-- Settings submenu -->
+    <menuitem
+        id="menu_payment_settings"
+        name="Settings"
+        parent="menu_payment_root"
+        sequence="90"
+    />
+    <menuitem
+        id="menu_settings_bank_payment_template"
+        name="Bank Payment Templates"
+        parent="menu_payment_settings"
+        action="l10n_th_bank_payment_export.action_bank_payment_template"
+        sequence="10"
+    />
+    <menuitem
+        id="menu_settings_bank_export_format"
+        name="Bank Export Formats"
+        parent="menu_payment_settings"
+        action="l10n_th_bank_payment_export_format.action_bank_export_format_template"
+        sequence="20"
+    />
+    <menuitem
+        id="menu_settings_payment_types"
+        name="Payment Types (KMITL)"
+        parent="menu_payment_settings"
+        action="action_kmitl_payment_type"
+        sequence="5"
+    />
+
+</odoo>
