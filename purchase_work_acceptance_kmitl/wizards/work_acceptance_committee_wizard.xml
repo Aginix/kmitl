@@ -20,20 +20,20 @@
                             required="1"
                         />
                         <field
-                            name="note"
-                            readonly="1"
-                            attrs="{
-                                'invisible': [('status', '!=', 'other')],
-                            }"
-                            force_save="1"
-                        />
-                        <field
                             name="reason"
                             attrs="{
                                 'invisible': [('status', '!=', 'other')],
                                 'required': [('is_reason_editable', '=', True)],
                                 'readonly': [('is_reason_editable', '=', False)]
                             }"
+                        />
+                        <field
+                            name="note"
+                            readonly="1"
+                            attrs="{
+                                'invisible': [('status', '!=', 'other')],
+                            }"
+                            force_save="1"
                         />
                     </tree>
                 </field>

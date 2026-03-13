@@ -93,6 +93,11 @@ msgstr ""
 msgid "Accepted"
 msgstr "ได้รับการตอบรับ"
 
+#. module: purchase_work_acceptance_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_form_kmitl
+msgid "Accepted"
+msgstr "ได้รับการตอบรับ"
+
 #. module: purchase_work_acceptance
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
 msgid "Accepted By"

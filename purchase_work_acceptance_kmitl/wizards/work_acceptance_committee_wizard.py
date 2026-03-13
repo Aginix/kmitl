@@ -104,8 +104,8 @@ class WorkAcceptanceCommitteeWizardLine(models.TransientModel):
 
     reason = fields.Selection(
         selection=[
-            ('leave', 'Leave'),
-            ('mission', 'Mission'),
+            ('leave', 'ลา'),
+            ('mission', 'ติดภารกิจ'),
         ],
         string='Reason',
     )
