@@ -60,6 +60,7 @@
                         attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
                     <field name="state" widget="statusbar"
                         statusbar_visible="draft,in_progress,in_review,done"/>
+                    <field name="confirmed" invisible="1"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
