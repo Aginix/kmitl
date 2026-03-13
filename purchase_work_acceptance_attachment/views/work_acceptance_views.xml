@@ -6,6 +6,7 @@
         <field name="name">view.work.acceptance.form Attachment</field>
         <field name="model">work.acceptance</field>
         <field name="inherit_id" ref="purchase_work_acceptance.view_work_acceptance_form"/>
+        <field name="priority">20</field>
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
               <page name="document" string="Attachment">
