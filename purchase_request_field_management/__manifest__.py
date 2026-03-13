@@ -13,6 +13,7 @@
         "purchase_request_egp",
         "purchase_request_vendor_kmitl",
         "purchase_request_price_tax_included",
+        "purchase_request_budget",
     ],
     "data": [
         "data/readonly_management_data.xml",
