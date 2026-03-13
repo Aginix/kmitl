@@ -58,8 +58,25 @@ class AccountPayment(models.Model):
             if analytic_accounts:
                 self.analytic_distribution = analytic_accounts
 
+    def _check_analytic_distribution_complete(self):
+        required_plan_codes = {"activities", "departments", "funds", "sources"}
+        if not self.analytic_distribution:
+            raise ValidationError(_("Analytic distribution is required."))
+        account_ids = [int(k) for k in self.analytic_distribution.keys()]
+        accounts = self.env["account.analytic.account"].browse(account_ids)
+        present_codes = set(accounts.mapped("root_plan_id.code"))
+        missing = required_plan_codes - present_codes
+        if missing:
+            raise ValidationError(
+                _("Missing required analytic dimensions: %s")
+                % ", ".join(missing)
+            )
+
     def action_post(self):
-        if self.budget_commitment_id and self.payment_type == 'outbound':
-            self._consume_commitment(amount=self.amount)
+        for payment in self:
+            if payment.payment_type == "outbound":
+                payment._check_analytic_distribution_complete()
+            if payment.budget_commitment_id and payment.payment_type == "outbound":
+                payment._consume_commitment(amount=payment.amount)
 
         return super().action_post()

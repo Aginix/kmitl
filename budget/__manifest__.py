@@ -27,7 +27,6 @@
         "views/budget_transfer_views.xml",
         "views/budget_menus.xml",
         "views/res_config_settings_views.xml",
-        "views/account_move_views.xml",
     ],
     "auto_install": False,
     "application": True,

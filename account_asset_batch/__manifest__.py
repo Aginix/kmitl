@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Account Asset Purchase',
+    'name': 'Account Asset Batch',
     'version': '16.0.1.0.0',
-    'summary': """ Account Asset Purchase Summary """,
+    'summary': """ Account Asset Batch Summary """,
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
@@ -12,7 +12,7 @@
         "views/account_asset_batch_line_views.xml",
         "views/account_asset_batch_views.xml",
         "views/account_asset_views.xml",
-        "views/purchase_order_views.xml"
+        "views/purchase_order_views.xml",
     ],
     'installable': True,
     'auto_install': False,

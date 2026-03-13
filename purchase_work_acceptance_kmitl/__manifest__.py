@@ -12,6 +12,7 @@
         'thai_date_utils',
         'purchase_contract_kmitl',
         'l10n_th_amount_to_text',
+        'purchase_kmitl',
     ],
     "data": [
         "data/server_action.xml",

@@ -2,7 +2,7 @@
 import logging
 
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -83,40 +83,24 @@ class PurchaseGuarantee(models.Model):
     
     @api.depends("reference")
     def _compute_guarantee_method_id(self):
-        GuaranteeMethod = self.env["purchase.guarantee.method"]
         super()._compute_guarantee_method_id()
         for rec in self.filtered("reference"):
-            dom = []
             if rec.reference._name == "purchase.request":
                 dom = [("default_for_model", "=", rec.reference._name)]
-            rec.guarantee_method_id = GuaranteeMethod.search(dom)[:1]
+                rec.guarantee_method_id = self.env["purchase.guarantee.method"].search(dom)[:1]
 
     @api.depends("reference")
     def _compute_analytic(self):
-        AnalyticAccount = self.env["account.analytic.account"]
-
-        for rec in self:
-            rec.analytic_account_id = False
-            rec.domain_analytic_account_ids = False
-
-            origin = False
-            if rec.reference:
-                if rec.reference._name == "purchase.request":
-                    origin = rec.reference.line_ids
-                elif rec.reference._name == "purchase.order":
-                    origin = rec.reference.order_line
-
-            analytics = AnalyticAccount.browse()
-
-            if origin and "analytic_distribution" in origin._fields:
-                for line in origin:
-                    distribution = line.analytic_distribution
-                    if distribution:
-                        analytics |= AnalyticAccount.browse([int(aid) for aid in distribution.keys()])
-
-            rec.domain_analytic_account_ids = analytics
-            if len(analytics) == 1:
-                rec.analytic_account_id = analytics[0]
+        super()._compute_analytic()
+        for rec in self.filtered("reference"):
+            if rec.reference._name == "purchase.request":
+                merged = {}
+                origin = rec.reference.line_ids
+                if "analytic_distribution" in origin._fields:
+                    for line in origin:
+                        if line.analytic_distribution:
+                            merged.update(line.analytic_distribution)
+                rec.analytic_distribution = merged or False
 
     def action_view_purchase_request(self):
         self.ensure_one()
