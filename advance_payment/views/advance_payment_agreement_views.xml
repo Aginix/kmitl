@@ -4,7 +4,7 @@
         <field name="name">advance.payment.agreement.list</field>
         <field name="model">advance.payment.agreement</field>
         <field name="arch" type="xml">
-            <list string="สัญญายืมเงิน">
+            <tree string="สัญญายืมเงิน">
                 <field name="name"/>
                 <field name="borrower_name"/>
                 <field name="loan_type_id"/>
@@ -17,7 +17,7 @@
                     decoration-primary="state == 'in_review'"
                     decoration-success="state == 'done'"
                     decoration-danger="state == 'cancelled'"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -31,33 +31,33 @@
                         string="ยืนยันส่งข้อมูล"
                         type="object"
                         class="btn-primary"
-                        invisible="state != 'draft' or confirmed"/>
+                        attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('confirmed', '=', True)]}"/>
                     <button name="action_approve"
                         string="อนุมัติ"
                         type="object"
                         class="btn-primary"
-                        invisible="state != 'draft' or not confirmed"/>
+                        attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('confirmed', '=', False)]}"/>
                     <button name="action_open_usage_wizard"
                         string="บันทึกการใช้เงิน"
                         type="object"
-                        invisible="state != 'in_progress'"/>
+                        attrs="{'invisible': [('state', '!=', 'in_progress')]}"/>
                     <button name="action_open_return_wizard"
                         string="คืนเงิน"
                         type="object"
-                        invisible="state != 'in_progress'"/>
+                        attrs="{'invisible': [('state', '!=', 'in_progress')]}"/>
                     <button name="action_close"
                         string="ปิดสัญญา"
                         type="object"
                         class="btn-primary"
-                        invisible="state != 'in_review'"/>
+                        attrs="{'invisible': [('state', '!=', 'in_review')]}"/>
                     <button name="action_cancel"
                         string="ยกเลิก"
                         type="object"
-                        invisible="state != 'draft'"/>
+                        attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <button name="action_reset_to_draft"
                         string="Reset to Draft"
                         type="object"
-                        invisible="state != 'cancelled'"/>
+                        attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
                     <field name="state" widget="statusbar"
                         statusbar_visible="draft,in_progress,in_review,done"/>
                 </header>
@@ -86,18 +86,18 @@
                         <field name="bank_id"/>
                         <field name="bank_account_number"/>
                     </group>
-                    <group string="สรุปยอดเงิน" invisible="state == 'draft'">
+                    <group string="สรุปยอดเงิน" attrs="{'invisible': [('state', '=', 'draft')]}">
                         <field name="amount_used"/>
                         <field name="amount_remaining"/>
                     </group>
                     <notebook>
                         <page string="รายการใช้เงิน" name="usage_lines">
                             <field name="usage_line_ids" readonly="1">
-                                <list>
+                                <tree>
                                     <field name="date"/>
                                     <field name="amount"/>
                                     <field name="note"/>
-                                </list>
+                                </tree>
                             </field>
                         </page>
                         <page string="เอกสารแนบ" name="attachments">
@@ -138,6 +138,6 @@
     <record id="action_advance_payment_agreement" model="ir.actions.act_window">
         <field name="name">สัญญายืมเงิน</field>
         <field name="res_model">advance.payment.agreement</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">tree,form</field>
     </record>
 </odoo>

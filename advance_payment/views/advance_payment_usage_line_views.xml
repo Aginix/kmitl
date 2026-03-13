@@ -4,12 +4,12 @@
         <field name="name">advance.payment.usage.line.list</field>
         <field name="model">advance.payment.usage.line</field>
         <field name="arch" type="xml">
-            <list string="รายการบันทึกการใช้เงินยืม">
+            <tree string="รายการบันทึกการใช้เงินยืม">
                 <field name="agreement_id"/>
                 <field name="date"/>
                 <field name="amount"/>
                 <field name="note"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -37,6 +37,6 @@
     <record id="action_advance_payment_usage_line" model="ir.actions.act_window">
         <field name="name">รายการบันทึกการใช้เงินยืม</field>
         <field name="res_model">advance.payment.usage.line</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">tree,form</field>
     </record>
 </odoo>

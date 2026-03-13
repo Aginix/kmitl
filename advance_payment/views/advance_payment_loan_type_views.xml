@@ -4,10 +4,10 @@
         <field name="name">advance.payment.loan.type.list</field>
         <field name="model">advance.payment.loan.type</field>
         <field name="arch" type="xml">
-            <list string="ประเภทเงินยืม" editable="bottom">
+            <tree string="ประเภทเงินยืม" editable="bottom">
                 <field name="name"/>
                 <field name="active"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -29,6 +29,6 @@
     <record id="action_advance_payment_loan_type" model="ir.actions.act_window">
         <field name="name">ประเภทเงินยืม</field>
         <field name="res_model">advance.payment.loan.type</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">tree,form</field>
     </record>
 </odoo>
