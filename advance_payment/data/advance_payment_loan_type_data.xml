@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="loan_type_travel" model="advance.payment.loan.type">
+            <field name="name">เดินทางไปปฏิบัติงาน</field>
+        </record>
+        <record id="loan_type_procurement" model="advance.payment.loan.type">
+            <field name="name">จัดซื้อจัดจ้างพัสดุ</field>
+        </record>
+        <record id="loan_type_speaker" model="advance.payment.loan.type">
+            <field name="name">ค่าวิทยากร</field>
+        </record>
+        <record id="loan_type_training" model="advance.payment.loan.type">
+            <field name="name">ฝึกอบรม/ประชุม/สัมมนา</field>
+        </record>
+        <record id="loan_type_other" model="advance.payment.loan.type">
+            <field name="name">ค่าใช้จ่ายอื่นใด</field>
+        </record>
+        <record id="loan_type_education" model="advance.payment.loan.type">
+            <field name="name">เพื่อการศึกษาต่อ</field>
+        </record>
+    </data>
+</odoo>

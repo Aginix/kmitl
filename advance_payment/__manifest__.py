@@ -1,0 +1,28 @@
+{
+    "name": "Advance Payment Agreement (สัญญายืมเงิน)",
+    "version": "16.0.1.0.0",
+    "author": "Aginix Technologies",
+    "website": "https://github.com/aginix/kmitl",
+    "category": "KMITL",
+    "depends": [
+        "mail",
+        "l10n_th_base_sequence",
+    ],
+    "data": [
+        "security/ir.model.access.csv",
+        "data/advance_payment_sequence.xml",
+        "data/advance_payment_loan_type_data.xml",
+        "data/advance_payment_bank_data.xml",
+        "wizards/advance_payment_usage_wizard_views.xml",
+        "wizards/advance_payment_return_wizard_views.xml",
+        "views/advance_payment_loan_type_views.xml",
+        "views/advance_payment_bank_views.xml",
+        "views/advance_payment_usage_line_views.xml",
+        "views/advance_payment_agreement_views.xml",
+        "views/advance_payment_menus.xml",
+    ],
+    "application": True,
+    "installable": True,
+    "auto_install": False,
+    "license": "LGPL-3",
+}

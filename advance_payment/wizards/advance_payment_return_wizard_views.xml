@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_advance_payment_return_wizard_form" model="ir.ui.view">
+        <field name="name">advance.payment.return.wizard.form</field>
+        <field name="model">advance.payment.return.wizard</field>
+        <field name="arch" type="xml">
+            <form string="คืนเงิน">
+                <group string="สรุปยอดเงิน">
+                    <field name="agreement_id" readonly="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="loan_amount"/>
+                    <field name="amount_used"/>
+                    <field name="amount_remaining"/>
+                </group>
+                <footer>
+                    <button name="action_confirm_return" string="ยืนยันการคืนเงิน" type="object" class="btn-primary"/>
+                    <button string="ยกเลิก" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
