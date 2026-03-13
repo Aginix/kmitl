@@ -208,6 +208,17 @@ class BankPaymentExport(models.Model):
         for export in self:
             export.scb_is_editable = True if export.bank == "SICOTHBK" else False
 
+    def _get_address(self, partner, max_length):
+        """Concatenate partner address fields into a single string."""
+        parts = [
+            partner.street or "",
+            partner.street2 or "",
+            partner.city or "",
+            partner.state_id.name if partner.state_id else "",
+            partner.zip or "",
+        ]
+        return " ".join(p for p in parts if p)[:max_length]
+
     def _get_wht_income_type(self, wht_line):
         wht_income_type = wht_line.wht_cert_income_type.lower()
         if len(wht_income_type) == 4:
