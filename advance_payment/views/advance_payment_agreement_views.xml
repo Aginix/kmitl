@@ -76,7 +76,7 @@
                             <field name="sub_department"/>
                         </group>
                         <group string="ข้อมูลการยืม">
-                            <field name="origin_reference"/>
+                            <field name="origin_reference" placeholder="เลขที่ใบขอซื้อ/จ้าง"/>
                             <field name="loan_type_id"/>
                             <field name="loan_reason"/>
                             <field name="currency_id" invisible="1"/>

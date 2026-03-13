@@ -49,7 +49,6 @@ class AdvancePaymentAgreement(models.Model):
 
     origin_reference = fields.Char(
         string="Reference",
-        placeholder="เลขที่ใบขอซื้อ/จ้าง",
         states=READONLY_STATES,
     )
 
