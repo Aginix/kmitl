@@ -395,6 +395,7 @@ msgstr ""
 
 #. module: stock_request_aginix
 #: model:ir.model.fields,field_description:stock_request_aginix.field_stock_picking__stock_request_id
+#: model:ir.ui.menu,name:stock_request_aginix.menu_stock_request_root
 msgid "Stock Requests"
 msgstr "คำขอเบิก-จ่ายพัสดุ"
 
