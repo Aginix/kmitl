@@ -5,6 +5,11 @@ from odoo.exceptions import UserError
 class PurchaseGuarantee(models.Model):
     _inherit = "purchase.guarantee"
 
+    state = fields.Selection(
+        selection_add=[("received", "Received"), ("returned", "Returned")],
+        ondelete={"received": "set default", "returned": "set default"},
+    )
+
     disbursement_request_ids = fields.One2many(
         comodel_name="disbursement.request",
         inverse_name="guarantee_id",
@@ -13,24 +18,31 @@ class PurchaseGuarantee(models.Model):
     disbursement_request_count = fields.Integer(
         compute="_compute_disbursement_request",
     )
-    is_disbursement_refund_allowed = fields.Boolean(
-        compute="_compute_disbursement_request",
+    hide_create_payment_button = fields.Boolean(
+        compute="_compute_hide_create_payment_button",
     )
     hide_create_disbursement_button = fields.Boolean(
         compute="_compute_hide_create_disbursement_button",
     )
 
-    @api.depends("disbursement_request_ids", "amount", "amount_returned")
+    @api.depends("disbursement_request_ids")
     def _compute_disbursement_request(self):
         for rec in self:
             rec.disbursement_request_count = len(rec.disbursement_request_ids)
-            rec.is_disbursement_refund_allowed = (rec.amount - rec.amount_returned) > 0
 
-    @api.depends("state", "is_disbursement_refund_allowed")
+    @api.depends("state", "payment_count")
+    def _compute_hide_create_payment_button(self):
+        for rec in self:
+            rec.hide_create_payment_button = (
+                rec.state != "lock" or rec.payment_count > 0
+            )
+
+    @api.depends("state", "amount", "amount_returned")
     def _compute_hide_create_disbursement_button(self):
         for rec in self:
             rec.hide_create_disbursement_button = (
-                rec.state != "lock" or not rec.is_disbursement_refund_allowed
+                rec.state != "received"
+                or (rec.amount - rec.amount_returned) <= 0
             )
 
     def _prepare_disbursement_request_vals(self):
@@ -55,8 +67,17 @@ class PurchaseGuarantee(models.Model):
 
     def action_create_disbursement_refund(self):
         self.ensure_one()
+        if self.state != "received":
+            raise UserError(
+                _("สามารถคืนเงินหลักประกันได้เฉพาะเมื่อรับเงินเสร็จสิ้นแล้วเท่านั้น")
+            )
         if self.amount - self.amount_returned <= 0:
             raise UserError(_("ไม่มียอดเงินหลักประกันคงเหลือที่จะคืน"))
+        if not self.guarantee_method_id.account_id:
+            raise UserError(
+                _("กรุณาตั้งค่าบัญชีในประเภทหลักประกัน '%s' ก่อน")
+                % self.guarantee_method_id.name
+            )
         disbursement = self.env["disbursement.request"].create(
             self._prepare_disbursement_request_vals()
         )

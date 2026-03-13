@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Inherit KMITL guarantee form: statusbar + disbursement button -->
     <record id="view_purchase_guarantee_form" model="ir.ui.view">
         <field name="name">purchase.guarantee.form.disbursement</field>
         <field name="model">purchase.guarantee</field>
@@ -10,7 +11,13 @@
         <field name="arch" type="xml">
             <!-- Hidden fields -->
             <xpath expr="//div[@name='button_box']" position="before">
+                <field name="hide_create_payment_button" invisible="1"/>
                 <field name="hide_create_disbursement_button" invisible="1"/>
+            </xpath>
+
+            <!-- Update statusbar to show all 4 states -->
+            <xpath expr="//field[@name='state'][@widget='statusbar']" position="attributes">
+                <attribute name="statusbar_visible">draft,lock,received,returned</attribute>
             </xpath>
 
             <!-- Refund button in header -->
@@ -24,7 +31,7 @@
                 />
             </xpath>
 
-            <!-- Smart button -->
+            <!-- Disbursement smart button -->
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button
                     name="action_view_disbursement_requests"
@@ -39,6 +46,21 @@
                         string="Disbursement"
                     />
                 </button>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Inherit payment view: control payment button visibility -->
+    <record id="view_purchase_guarantee_form_payment" model="ir.ui.view">
+        <field name="name">purchase.guarantee.form.disbursement.payment</field>
+        <field name="model">purchase.guarantee</field>
+        <field
+            name="inherit_id"
+            ref="purchase_guarantee_account_payment.view_purchase_guarantee_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_create_payment']" position="attributes">
+                <attribute name="attrs">{'invisible': [('hide_create_payment_button', '=', True)]}</attribute>
             </xpath>
         </field>
     </record>

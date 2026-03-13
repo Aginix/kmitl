@@ -5,7 +5,7 @@
     "author": "KMITL",
     "website": "https://www.kmitl.ac.th",
     "category": "KMITL",
-    "depends": ["purchase_guarantee_kmitl", "disbursement"],
+    "depends": ["purchase_guarantee_account_payment", "disbursement"],
     "data": [
         "security/ir.model.access.csv",
         "views/disbursement_request_views.xml",
