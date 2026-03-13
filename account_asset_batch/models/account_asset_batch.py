@@ -13,9 +13,8 @@ class AccountAssetBatch(models.Model):
     _description = 'AccountAssetBatch'
 
     name = fields.Char(
-        string="Document name",
+        string="Document No.",
         tracking=True,
-        required=True
     )
 
     date = fields.Date(
@@ -26,7 +25,8 @@ class AccountAssetBatch(models.Model):
 
     account_fiscal_year_id = fields.Many2one(
         "account.fiscal.year",
-        related='purchase_id.account_fiscal_year_id',
+        store=True,
+        readonly=False,
         required=True,
         tracking=True,
         string="Fiscal year",
@@ -35,6 +35,9 @@ class AccountAssetBatch(models.Model):
     operating_unit_id = fields.Many2one(
         "operating.unit",
         string="Operating Unit",
+        default=lambda self: self.env["res.users"].operating_unit_default_get(
+            self.env.user.id
+        ),
     )
 
     purchase_id = fields.Many2one(
@@ -74,7 +77,9 @@ class AccountAssetBatch(models.Model):
     department_id = fields.Many2one(
         "hr.department",
         string="Department",
-        related="purchase_id.department_id"
+        store=True,
+        readonly=False,
+        default=lambda self: self.env.user.employee_id.department_id,
     )
 
     asset_count = fields.Integer(
@@ -112,7 +117,9 @@ class AccountAssetBatch(models.Model):
         ],
         string="Source of asset",
         tracking=True,
+        default=lambda self: self.env.context.get('default_source_of_asset'),
     )
+    
     received_from_agency = fields.Char(
         string="received from agency",
         tracking=True,
@@ -125,11 +132,33 @@ class AccountAssetBatch(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        records = super().create(vals_list)
-        for record in records:
-            if record.purchase_id:
-                record.source_of_asset = 'procurement'
-        return records
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                fy_id = self.env["account.fiscal.year"].browse(vals.get("account_fiscal_year_id"))
+                fiscal_year = fy_id.name if fy_id else str(fields.Date.today().year)
+
+                yearly_code = f"asset.batch.{fiscal_year}"
+
+                seq = self.env['ir.sequence'].sudo().search(
+                    [('code', '=', yearly_code)], limit=1
+                )
+                if not seq:
+                    seq = self.env['ir.sequence'].sudo().create({
+                        'name': f"Asset Batch {fiscal_year}",
+                        'code': yearly_code,
+                        'prefix': f"ASSET/{fiscal_year}/",
+                        'padding': 4,
+                        'number_next': 1,
+                        'number_increment': 1,
+                        'company_id': False,
+                    })
+
+                vals['name'] = seq.next_by_code(yearly_code) or 'New'
+
+            if vals.get('purchase_id'):
+                vals['source_of_asset'] = 'procurement'
+
+        return super().create(vals_list)
 
     @api.depends('line_ids.amount_total')
     def _compute_total_amount(self):
@@ -153,8 +182,8 @@ class AccountAssetBatch(models.Model):
         purchase_id = self.env.context.get("default_purchase_id")
         if purchase_id:
             purchase = self.env["purchase.order"].browse(purchase_id)
-            if purchase.department_id and purchase.department_id.operating_unit_id:
-                res["operating_unit_id"] = purchase.department_id.operating_unit_id.id
+            if purchase.operating_unit_id:
+                res["operating_unit_id"] = purchase.operating_unit_id.id
         return res
 
     def action_register_assets(self):
@@ -189,7 +218,7 @@ class AccountAssetBatch(models.Model):
                         "account_fiscal_year_id": batch.account_fiscal_year_id.id,
                         "operating_unit_id": batch.operating_unit_id.id,
                         "department_id": batch.department_id.id,
-                        "purchase_id": batch.purchase_id.id,
+                        "purchase_id": batch.purchase_id.id if batch.purchase_id else False,
                         "gpsc_id": line.gpsc_id.id,
                         "profile_id": line.profile_id.id,
                         "purchase_value": line.price_per_unit,

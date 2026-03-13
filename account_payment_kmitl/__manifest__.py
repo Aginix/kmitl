@@ -10,7 +10,7 @@
     "website": "https://www.kmitl.ac.th",
     "depends": [
         "account",
-        "account_move_submitted_state",
+        "account_move_kmitl",
         "account_fiscal_year_enhance",
         "l10n_th_bank_payment_export",
         "l10n_th_bank_payment_export_format",

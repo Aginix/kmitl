@@ -32,11 +32,7 @@ class AccountMove(models.Model):
             "account_id": guarantee.guarantee_method_id.account_id.id,
             "quantity": 1,
             "price_unit": guarantee.amount,
-            'analytic_distribution': {
-                guarantee.analytic_account_id.id: 1.0
-            } if guarantee.analytic_account_id else False,
-            # "analytic_account_id": guarantee.analytic_account_id.id,
-            # "analytic_tag_ids": [(6, 0, guarantee.analytic_tag_ids.ids)],
+            "analytic_distribution": guarantee.analytic_distribution or False,
             "move_id": self.id,
         }
 

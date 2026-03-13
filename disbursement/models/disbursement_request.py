@@ -3,7 +3,7 @@
 import logging
 
 from odoo import Command, _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
@@ -278,6 +278,24 @@ class DisbursementRequest(models.Model):
                 budget = rec.budget_commitment_id
                 rec.budget_account_id = budget.account_id
                 rec.analytic_distribution = budget.analytic_distribution
+
+    @api.constrains("analytic_distribution")
+    def _check_analytic_distribution_complete(self):
+        required_plan_codes = {"activities", "departments", "funds", "sources"}
+        for rec in self:
+            if rec.state == "cancel":
+                continue
+            if not rec.analytic_distribution:
+                raise ValidationError(_("Analytic distribution is required."))
+            account_ids = [int(k) for k in rec.analytic_distribution.keys()]
+            accounts = self.env["account.analytic.account"].browse(account_ids)
+            present_codes = set(accounts.mapped("root_plan_id.code"))
+            missing = required_plan_codes - present_codes
+            if missing:
+                raise ValidationError(
+                    _("Missing required analytic dimensions: %s")
+                    % ", ".join(missing)
+                )
 
     @api.model
     def _search_source_analytic_id(self, operator, value):
@@ -567,6 +585,9 @@ class DisbursementRequest(models.Model):
                 "currency_id": self.currency_id.id,
                 "company_id": self.company_id.id,
                 "invoice_line_ids": invoice_lines,
+                "budget_commitment_id": self.budget_commitment_id.id,
+                "budget_account_id": self.budget_account_id.id,
+                "analytic_distribution": self.analytic_distribution,
             }
         )
 
