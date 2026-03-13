@@ -43,9 +43,17 @@ class WorkAcceptanceCommitteeWizard(models.TransientModel):
     def button_confirm(self):
         self.ensure_one()
         for line in self.line_ids:
+            if line.reason:
+                reason_label = dict(
+                    line._fields['reason'].selection
+                ).get(line.reason, line.reason)
+                note_value = reason_label
+            else:
+                note_value = line.note
+
             vals = {
                 'status': line.status,
-                'note': line.note if line.status == 'other' else '',
+                'note': note_value,
             }
             line.committee_id.write(vals)
 
@@ -91,15 +99,30 @@ class WorkAcceptanceCommitteeWizardLine(models.TransientModel):
         string='Status',
         required=True,
     )
-    note = fields.Selection(
+
+    note = fields.Text(string='Note')
+
+    reason = fields.Selection(
         selection=[
             ('leave', 'Leave'),
             ('mission', 'Mission'),
         ],
-        string='Note',
+        string='Reason',
+    )
+
+    is_reason_editable = fields.Boolean(
+        compute='_compute_is_reason_editable'
     )
 
     @api.onchange('status')
     def _onchange_status(self):
         if self.status == 'accept':
             self.note = False
+
+    @api.depends('status', 'note')
+    def _compute_is_reason_editable(self):
+        for rec in self:
+            rec.is_reason_editable = (
+                rec.status == 'other' and not rec.note
+            )
+

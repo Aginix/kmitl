@@ -162,6 +162,7 @@
             >
                 <attribute name="name">reject_tier</attribute>
                 <attribute name="context" />
+                <attribute name="class">btn-icon btn-secondary ms-2</attribute>
             </xpath>
         </field>
     </record>

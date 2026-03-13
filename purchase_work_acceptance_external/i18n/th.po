@@ -30,7 +30,7 @@ msgstr ""
 #: code:addons/purchase_work_acceptance_external/models/work_acceptance.py:0
 #, python-format
 msgid "Please attach at least one supporting document file before clicking accept."
-msgstr "กรุณาแนบเอกสารหลักฐานอย่างน้อยหนึ่งไฟล์ก่อนคลิกยอมรับ"
+msgstr "กรุณาแนบหลักฐานการตรวจรับ"
 
 #. module: purchase_work_acceptance_external
 #: model:ir.model,name:purchase_work_acceptance_external.model_purchase_order
@@ -47,9 +47,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_work_acceptance_external.field_select_work_acceptance_invoice_plan_wizard__is_external
 #: model:ir.model.fields,field_description:purchase_work_acceptance_external.field_work_acceptance__is_external
 msgid "Use External Inspection"
-msgstr "มีการตรวจรับภายนอก"
+msgstr "ตรวจรับภายนอกระบบ"
 
 #. module: purchase_work_acceptance_external
 #: model:ir.model,name:purchase_work_acceptance_external.model_work_acceptance
 msgid "Work Acceptance"
 msgstr "การตรวจรับ"
+
+#. module: purchase_work_acceptance_external
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_external.view_work_acceptance_form
+msgid "Confirm"
+msgstr "ยืนยัน"

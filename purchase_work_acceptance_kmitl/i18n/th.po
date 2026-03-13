@@ -47,6 +47,9 @@ msgid ""
 "                        This Record needs to be\n"
 "                        validated."
 msgstr ""
+"<i class=\"fa fa-info-circle\"/>\n"
+"                        ข้อมูลนี้ต้องการได้รับ\n"
+"                        การตรวจสอบ"
 
 #. module: l10n_th_gov_work_acceptance
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_work_acceptance.view_work_acceptance_form_tier_validation
@@ -741,7 +744,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:l10n_th_gov_work_acceptance.selection__work_acceptance_committee__status__other
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_work_acceptance.view_work_acceptance_form_tier_validation
 msgid "Other"
-msgstr "อื่นๆ"
+msgstr "ตรวจรับแบบมีเงื่อนไข"
 
 #. module: l10n_th_gov_work_acceptance
 #: model:ir.model.fields,field_description:l10n_th_gov_work_acceptance.field_purchase_order__wa_tier_validation
@@ -1333,6 +1336,11 @@ msgid "Not Accept"
 msgstr "ไม่ตรวจรับ"
 
 #. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__status__other
+msgid "Other"
+msgstr "ตรวจรับแบบมีเงื่อนไข"
+
+#. module: purchase_work_acceptance_kmitl
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_kmitl.view_work_acceptance_committee_wizard_form
 msgid "Cancel"
 msgstr "ยกเลิก"
@@ -1358,12 +1366,12 @@ msgid "Confirm"
 msgstr "ยืนยัน"
 
 #. module: purchase_work_acceptance_kmitl
-#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__note__leave
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__reason__leave
 msgid "Leave"
 msgstr "ลา"
 
 #. module: purchase_work_acceptance_kmitl
-#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__note__mission
+#: model:ir.model.fields.selection,name:purchase_work_acceptance_kmitl.selection__work_acceptance_committee_wizard_line__reason__mission
 msgid "Mission"
 msgstr "ติดภารกิจ"
 
@@ -1375,7 +1383,7 @@ msgstr "ไม่ตรวจรับ"
 #. module: purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance_committee_wizard_line__note
 msgid "Note"
-msgstr "หมายเหตุ"
+msgstr "เหตุผล"
 
 #. module: purchase_work_acceptance_kmitl
 #: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance_committee__approve_role
@@ -1400,3 +1408,8 @@ msgstr "สถานะการตรวจรับ"
 #, python-format
 msgid "Work Acceptance Wizard"
 msgstr "การตรวจรับ"
+
+#. module: purchase_work_acceptance_kmitl
+#: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance_committee_wizard_line__reason
+msgid "Reason"
+msgstr "หมายเหตุ"
