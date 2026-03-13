@@ -12,7 +12,107 @@
         >
             <field name="management_id" ref="readonly_management_purchase_request_test"/>
             <field name="field_id" ref="purchase_request_kmitl.field_purchase_request__title"/>
-            <field name="domain">[('state', '!=', 'draft')]</field>
+            <field name="domain">[('is_editable', '!=', False)]</field>
+            <field name="force_readonly" eval="False"/>
+        </record>
+
+        <record
+            id="readonly_management_fields_purchase_request_description"
+            model="readonly.management.fields"
+        >
+            <field name="management_id" ref="readonly_management_purchase_request_test"/>
+            <field name="field_id" ref="purchase_request.field_purchase_request__description"/>
+            <field name="domain">[('is_editable', '!=', False)]</field>
+            <field name="force_readonly" eval="False"/>
+        </record>
+
+        <record
+            id="readonly_management_fields_purchase_request_requested_by"
+            model="readonly.management.fields"
+        >
+            <field name="management_id" ref="readonly_management_purchase_request_test"/>
+            <field name="field_id" ref="purchase_request.field_purchase_request__requested_by"/>
+            <field name="domain">[('is_editable', '!=', False)]</field>
+            <field name="force_readonly" eval="False"/>
+        </record>
+
+        <record
+            id="readonly_management_fields_purchase_request_department_id"
+            model="readonly.management.fields"
+        >
+            <field name="management_id" ref="readonly_management_purchase_request_test"/>
+            <field name="field_id" ref="purchase_request_department.field_purchase_request__department_id"/>
+            <field name="domain">[('is_editable', '!=', False)]</field>
+            <field name="force_readonly" eval="False"/>
+        </record>
+
+        <record
+            id="readonly_management_fields_purchase_request_user_id"
+            model="readonly.management.fields"
+        >
+            <field name="management_id" ref="readonly_management_purchase_request_test"/>
+            <field name="field_id" ref="purchase_request_responsible_user.field_purchase_request__user_id"/>
+            <field name="domain">[('is_editable', '!=', False)]</field>
+            <field name="force_readonly" eval="False"/>
+        </record>
+
+        <record
+            id="readonly_management_fields_purchase_request_account_fiscal_year_id"
+            model="readonly.management.fields"
+        >
+            <field name="management_id" ref="readonly_management_purchase_request_test"/>
+            <field name="field_id" ref="purchase_request_account_fiscal_year.field_purchase_request__account_fiscal_year_id"/>
+            <field name="domain">[('is_editable', '!=', False)]</field>
+            <field name="force_readonly" eval="False"/>
+        </record>
+
+        <record
+            id="readonly_management_fields_purchase_request_procurement_type_id"
+            model="readonly.management.fields"
+        >
+            <field name="management_id" ref="readonly_management_purchase_request_test"/>
+            <field name="field_id" ref="l10n_th_gov_purchase_request.field_purchase_request__procurement_type_id"/>
+            <field name="domain">[('is_editable', '!=', False)]</field>
+            <field name="force_readonly" eval="False"/>
+        </record>
+
+        <record
+            id="readonly_management_fields_purchase_request_payment_type"
+            model="readonly.management.fields"
+        >
+            <field name="management_id" ref="readonly_management_purchase_request_test"/>
+            <field name="field_id" ref="purchase_request_payment_type.field_purchase_request__payment_type"/>
+            <field name="domain">[('is_editable', '!=', False)]</field>
+            <field name="force_readonly" eval="False"/>
+        </record>
+
+        <record
+            id="readonly_management_fields_purchase_request_is_egp"
+            model="readonly.management.fields"
+        >
+            <field name="management_id" ref="readonly_management_purchase_request_test"/>
+            <field name="field_id" ref="purchase_request_egp.field_purchase_request__is_egp"/>
+            <field name="domain">[('is_editable', '!=', False)]</field>
+            <field name="force_readonly" eval="False"/>
+        </record>
+
+        <record
+            id="readonly_management_fields_purchase_request_partner_id"
+            model="readonly.management.fields"
+        >
+            <field name="management_id" ref="readonly_management_purchase_request_test"/>
+            <field name="field_id" ref="purchase_request_vendor_kmitl.field_purchase_request__partner_id"/>
+            <field name="domain">[('is_editable', '!=', False)]</field>
+            <field name="force_readonly" eval="False"/>
+        </record>
+
+        <record
+            id="readonly_management_fields_purchase_request_vat_included"
+            model="readonly.management.fields"
+        >
+            <field name="management_id" ref="readonly_management_purchase_request_test"/>
+            <field name="field_id" ref="purchase_request_price_tax_included.field_purchase_request__vat_included"/>
+            <field name="domain">[('is_editable', '!=', False)]</field>
             <field name="force_readonly" eval="False"/>
         </record>
     </data>
