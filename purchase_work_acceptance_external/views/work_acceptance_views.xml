@@ -13,7 +13,7 @@
             </xpath>
 
             <xpath expr="//button[@name='button_cancel']" position="after">
-              <button name="button_review" type="object" string="Confirm" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('is_external', '=', False)]}"/>/>
+              <button name="button_review" type="object" string="Confirm" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('is_external', '=', False)]}"/>
             </xpath>
         </field>
     </record>
