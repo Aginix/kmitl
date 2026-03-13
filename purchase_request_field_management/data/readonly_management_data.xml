@@ -2,7 +2,7 @@
 <odoo>
     <data noupdate="1">
         <record id="readonly_management_purchase_request_test" model="readonly.management">
-            <field name="name">ทดสอบ</field>
+            <field name="name">ฟอร์มคำขอซื้อขอจ้าง</field>
             <field name="model_id" ref="purchase_request.model_purchase_request"/>
         </record>
 
