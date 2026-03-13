@@ -1,14 +1,15 @@
 {
-    "name": "Account Move Tier Validation KMITL",
+    "name": "Account Move KMITL",
     "version": "16.0.1.0.0",
     "category": "KMITL/Accounting",
-    "summary": "KMITL integration for Account Move Tier Validation",
-    "author": "Aginix Technologies",
-    "website": "https://github.com/aginix/kmitl",
+    "summary": "KMITL customizations for Account Moves: submitted state, "
+    "tier validation, and budget commitment linking",
+    "author": "KMITL",
+    "website": "https://www.kmitl.ac.th",
     "license": "AGPL-3",
     "depends": [
         "account_move_tier_validation",
-        "account_move_submitted_state",
+        "budget",
     ],
     "data": [
         "views/account_move_views.xml",

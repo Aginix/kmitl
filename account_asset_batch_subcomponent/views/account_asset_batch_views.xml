@@ -5,7 +5,7 @@
     <record id="view_account_asset_batch_form" model="ir.ui.view">
         <field name="name">view.account.asset.batch.form</field>
         <field name="model">account.asset.batch</field>
-        <field name="inherit_id" ref="account_asset_purchase.view_account_asset_batch_form"/>
+        <field name="inherit_id" ref="account_asset_batch.view_account_asset_batch_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='price_per_unit']" position="after">
                 <field name="is_editable" invisible="1"/>
