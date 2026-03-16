@@ -1,0 +1,35 @@
+<!-- data/website_data.xml -->
+<odoo>
+    <record id="lang_th" model="res.lang">
+        <field name="active" eval="True" />
+        <field name="code">th_TH</field>
+    </record>
+
+    <record id="website_hr_career" model="website">
+        <field name="name">HR Career</field>
+        <!-- ระบุไม่ได้ เพราะจะถูกบังคับ redirect เข้า domain -->
+        <field name="domain"></field>
+        <field name="sequence">20</field>
+        <field name="logo" type="base64"
+            file="website_recruitment_kmitl/static/src/img/kmitl_careers_logo.png" />
+        <field name="language_ids"
+            eval="[
+                (4, ref('base.lang_en')),
+                (4, ref('base.lang_th')),
+            ]" />
+        <field name="default_lang_id" ref="base.lang_en" />
+    </record>
+
+    <record id="main_menu" model="website.menu">
+        <field name="name">Default Main Menu</field>
+        <field name="url">/default-main-menu</field>
+    </record>
+
+    <record id="page_jobs" model="website.menu">
+        <field name="name">Jobs</field>
+        <field name="url">/jobs</field>
+        <field name="website_id" ref="website_recruitment_kmitl.website_hr_career" />
+        <field name="parent_id" ref="website_recruitment_kmitl.main_menu" />
+    </record>
+
+</odoo>

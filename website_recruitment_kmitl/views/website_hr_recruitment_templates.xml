@@ -7,7 +7,7 @@
         </xpath>
 
         <xpath expr="//div[hasclass('js_hr_recruitment')]" position="replace">
-            <div id="wrap" class="js_hr_recruitment bg-light pb-5">
+            <div id="wrap" class="js_hr_recruitment o_website_hr_recruitment_job_detail bg-light pb-5">
                 <!-- Header (Previous: Breadcrumb) -->
                 <div class="bg-white border-bottom py-3 shadow-sm">
                     <div class="container">
@@ -22,7 +22,7 @@
 
                 <div class="container py-4 py-lg-5">
                     <div class="row g-5">
-                        <div class="col-lg-8">
+                        <div class="col-lg-9">
                             <section class="mb-4">
                                 <div class="card border-0 rounded-4">
                                     <div class="card-body p-4">
@@ -54,7 +54,7 @@
 
                             <div t-field="job.website_description" />
                         </div>
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                             <div
                                 class="card border-0 rounded-5 sticky-top"
                                 style="top: 100px; z-index: 10"

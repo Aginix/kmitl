@@ -3,149 +3,6 @@
  * Orange primary, cyan-blue (navy) secondary.
  */
 
-:root {
-//     /* ── Grey ───────────────────────────────────────────────── */
-//     --grey-50:  #FAFAFA;
-//     --grey-100: #F5F5F5;
-//     --grey-200: #EEEEEE;
-//     --grey-300: #E0E0E0;
-//     --grey-400: #BDBDBD;
-//     --grey-500: #9E9E9E;
-//     --grey-600: #757575;
-//     --grey-700: #616161;
-//     --grey-800: #424242;
-//     --grey-900: #212121;
-
-//     /* ── Red ────────────────────────────────────────────────── */
-//     --red-50:  #FFF5F5;
-//     --red-100: #FFE3E3;
-//     --red-200: #FFC9C9;
-//     --red-300: #FFA8A8;
-//     --red-400: #FF8787;
-//     --red-500: #FF6B6B;
-//     --red-600: #FA5252;
-//     --red-700: #F03E3E;
-//     --red-800: #E03131;
-//     --red-900: #C92A2A;
-
-//     /* ── Orange ─────────────────────────────────────────────── */
-//     --orange-50:  #FFF4EE;
-//     --orange-100: #FFE8D5;
-//     --orange-200: #FFD0AD;
-//     --orange-300: #FFB37A;
-//     --orange-400: #FF9A52;
-//     --orange-500: #FF7A30;
-//     --orange-600: #F06020;
-//     --orange-700: #CC4D10;
-//     --orange-800: #A33D0D;
-//     --orange-900: #7A2D0A;
-
-//     /* ── Blue ───────────────────────────────────────────────── */
-//     --blue-50:  #EEF5FF;
-//     --blue-100: #DBEAFE;
-//     --blue-200: #BFDBFE;
-//     --blue-300: #93C5FD;
-//     --blue-400: #60A5FA;
-//     --blue-500: #3B82F6;
-//     --blue-600: #2563EB;
-//     --blue-700: #1D4ED8;
-//     --blue-800: #1E40AF;
-//     --blue-900: #1E3A8A;
-
-//     /* ── Green ──────────────────────────────────────────────── */
-//     --green-50:  #F0FFF4;
-//     --green-100: #DCFCE7;
-//     --green-200: #BBF7D0;
-//     --green-300: #86EFAC;
-//     --green-400: #4ADE80;
-//     --green-500: #22C55E;
-//     --green-600: #16A34A;
-//     --green-700: #15803D;
-//     --green-800: #166534;
-//     --green-900: #14532D;
-
-//     /* ── Dark Blue ──────────────────────────────────────────── */
-//     --dark-blue-50:  #EEF2FF;
-//     --dark-blue-100: #E0E7FF;
-//     --dark-blue-200: #C7D2FE;
-//     --dark-blue-300: #A5B4FC;
-//     --dark-blue-400: #818CF8;
-//     --dark-blue-500: #6366F1;
-//     --dark-blue-600: #4F46E5;
-//     --dark-blue-700: #4338CA;
-//     --dark-blue-800: #3730A3;
-//     --dark-blue-900: #312E81;
-
-//     /* ── Cyan-Blue (Navy) ───────────────────────────────────── */
-//     --cyan-blue-50:  #EFF6FF;
-//     --cyan-blue-100: #DBEAFE;
-//     --cyan-blue-200: #BAD5F8;
-//     --cyan-blue-300: #7EB8F7;
-//     --cyan-blue-400: #3D9AF5;
-//     --cyan-blue-500: #1A6FC4;
-//     --cyan-blue-600: #1558A0;
-//     --cyan-blue-700: #10437C;
-//     --cyan-blue-800: #0C3260;
-//     --cyan-blue-900: #072044;
-
-//     /* ── Yellow ─────────────────────────────────────────────── */
-//     --yellow-50:  #FFFDE7;
-//     --yellow-100: #FFF9C4;
-//     --yellow-200: #FFF59D;
-//     --yellow-300: #FFF176;
-//     --yellow-400: #FFEE58;
-//     --yellow-500: #FFFF00;
-//     --yellow-600: #FDD835;
-//     --yellow-700: #F9A825;
-//     --yellow-800: #F57F17;
-//     --yellow-900: #E65100;
-
-    /* Thai-D */
-    --thai-d-50: #E6E6ED;
-    --thai-d-100: #B1B2C8;
-    --thai-d-200: #8B8CAD;
-    --thai-d-300: #565888;
-    --thai-d-400: #353871;
-    --thai-d-500: #03064D;
-    --thai-d-600: #030546;
-    --thai-d-700: #020437;
-    --thai-d-800: #02032A;
-    --thai-d-900: #010320;
-
-//     /* ── Semantic Mapping ───────────────────────────────────── */
-//     --primary:          var(--orange-500);
-//     --primary-light:    var(--orange-100);
-//     --primary-hover:    var(--orange-600);
-
-//     --secondary:        var(--cyan-blue-500);
-//     --secondary-light:  var(--cyan-blue-100);
-//     --secondary-hover:  var(--cyan-blue-600);
-
-//     --success:          var(--green-500);
-//     --danger:           var(--red-500);
-//     --warning:          var(--yellow-600);
-//     --info:             var(--blue-500);
-
-//     --text-primary:     var(--grey-900);
-//     --text-secondary:   var(--grey-600);
-//     --text-muted:       var(--grey-500);
-
-//     --bg-page:          var(--grey-50);
-//     --bg-card:          #FFFFFF;
-//     --border-color:     var(--grey-200);
-}
-
-// scss-docs-start theme-color-variables
-// $primary:       $blue !default;
-// $secondary:     $gray-600 !default;
-// $success:       $green !default;
-// $info:          $cyan !default;
-// $warning:       $yellow !default;
-// $danger:        $red !default;
-// $light:         $gray-100 !default;
-// $dark:          $gray-900 !default;
-// scss-docs-end theme-color-variables
-
 .bg-pattern-dots {
     background-image: radial-gradient($primary 1px, transparent 1px);
     background-size: 24px 24px;
@@ -153,18 +10,25 @@
 
 .o_website_hr_recruitment_jobs_list {
     .card {
-        @extend .shadow-sm;
+        box-shadow: $box-shadow-sm;
 
         &:hover {
             transition: box-shadow 0.3s cubic-bezier(0.55, 0, 0.1, 1);
-            box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.1), 0 2px 2px 0 rgba(0, 0, 0, 0.05);
+            box-shadow: $box-shadow-lg;
         }
+    }
+}
+
+.o_website_hr_recruitment_job_detail {
+    .card {
+        box-shadow: $box-shadow-sm;
     }
 }
 
 .accordion {
     .card-header {
-        background-color: $primary;
+        background-color: $thai-d-700;
         color: #fff;
+        padding: 0.975rem 1rem;
     }
 }

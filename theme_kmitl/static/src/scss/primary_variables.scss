@@ -75,3 +75,29 @@ $o-color-palettes-compatibility-indexes: (
     19: 'generic-16',
     20: 'generic-17',
 );
+
+/* Thai-D */
+$thai-d-50: #E6E6ED;
+$thai-d-100: #B1B2C8;
+$thai-d-200: #8B8CAD;
+$thai-d-300: #565888;
+$thai-d-400: #353871;
+$thai-d-500: #03064D;
+$thai-d-600: #030546;
+$thai-d-700: #020437;
+$thai-d-800: #02032A;
+$thai-d-900: #010320;
+
+:root {
+        /* Thai-D */
+    --thai-d-50: #{$thai-d-50};
+    --thai-d-100: #{$thai-d-100};
+    --thai-d-200: #{$thai-d-200};
+    --thai-d-300: #{$thai-d-300};
+    --thai-d-400: #{$thai-d-400};
+    --thai-d-500: #{$thai-d-500};
+    --thai-d-600: #{$thai-d-600};
+    --thai-d-700: #{$thai-d-700};
+    --thai-d-800: #{$thai-d-800};
+    --thai-d-900: #{$thai-d-900};
+}
