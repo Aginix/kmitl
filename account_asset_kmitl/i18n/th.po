@@ -598,7 +598,7 @@ msgstr ""
 #. module: account_asset_management
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 msgid "Confirm Asset"
-msgstr ""
+msgstr "ยืนยันครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_management
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
