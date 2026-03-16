@@ -486,7 +486,7 @@ msgstr ""
 #. module: account_asset_batch
 #: model:ir.model.fields,field_description:account_asset_batch.field_account_asset_batch__source_of_asset
 msgid "Source of asset"
-msgstr "ที่มาของครุภัณฑ์"
+msgstr "ที่มาของครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_batch
 #: model:ir.model.fields,field_description:account_asset_batch.field_account_asset_batch__state
