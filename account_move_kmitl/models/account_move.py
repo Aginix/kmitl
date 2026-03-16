@@ -153,3 +153,9 @@ class AccountMove(models.Model):
                 self.source_analytic_id = commitment.source_analytic_id
             if analytic_accounts:
                 self.analytic_distribution = analytic_accounts
+
+    @api.onchange("analytic_distribution")
+    def _onchange_analytic_distribution(self):
+        """When analytic_distribution changes, propagate to all move lines."""
+        if self.analytic_distribution:
+            self.line_ids.update({"analytic_distribution": self.analytic_distribution})
