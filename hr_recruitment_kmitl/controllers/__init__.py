@@ -1,2 +1,2 @@
-from . import web
+from . import profile
 

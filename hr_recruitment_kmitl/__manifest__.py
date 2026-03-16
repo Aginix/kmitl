@@ -22,6 +22,7 @@
         "views/website_templates.xml",
         "views/portal_profile_views.xml",
         "views/res_partner_views.xml",
+        "views/profile_templates.xml"
     ],
     "assets": {
         "web.assets_frontend": [
