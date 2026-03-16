@@ -5,13 +5,23 @@
     "summary": "Custom theme and pages for KMITL recruitment website",
     "author": "KMITL",
     "category": "Website",
-    "depends": ["website", "website_hr_recruitment", "theme_kmitl"],
+    "depends": [
+        "website",
+        "website_hr_recruitment",
+        "theme_kmitl",
+        "base_location",
+        "partner_firstname",
+        "partner_middlename",
+    ],
     "data": [
+        "security/ir.model.access.csv",
         "data/website_data.xml",
         "views/website_hr_recruitment_templates.xml",
         "views/snippets/s_benefit_card.xml",
         "views/snippets/snippets.xml",
         "views/website_templates.xml",
+        "views/portal_profile_views.xml",
+        "views/res_partner_views.xml",
     ],
     "assets": {
         "web.assets_frontend": [

@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_portal_profile_user,portal.profile user,model_portal_profile,base.group_user,1,1,1,1
+access_portal_profile_portal,portal.profile portal,model_portal_profile,base.group_portal,1,1,1,0
+access_portal_work_history_user,portal.work.history user,model_portal_work_history,base.group_user,1,1,1,1
+access_portal_work_history_portal,portal.work.history portal,model_portal_work_history,base.group_portal,1,1,1,0
+access_portal_education_history_user,portal.education.history user,model_portal_education_history,base.group_user,1,1,1,1
+access_portal_education_history_portal,portal.education.history portal,model_portal_education_history,base.group_portal,1,1,1,0
