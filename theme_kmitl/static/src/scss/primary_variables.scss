@@ -1,30 +1,38 @@
 //------------------------------------------------------------------------------
+// Contrast
+//------------------------------------------------------------------------------
+
+// Lower threshold so Bootstrap picks white text on the orange primary (#FF7A30).
+// Default is 2.9; orange vs white scores ~2.65, so anything below 2.7 works.
+$o-frontend-min-contrast-ratio: 2.5;
+
+//------------------------------------------------------------------------------
 // Colors
 //------------------------------------------------------------------------------
 
 // KMITL Theme color palettes
-$o-theme-color-palettes: map-merge($o-theme-color-palettes,
+$o-color-palettes: map-merge($o-color-palettes,
     (
         'kmitl-1': (
-            'alpha': #001D4A,
-            'beta': #03064D,
-            'gamma': #FF7A30,
-            'delta': #FFFF00,
-            'epsilon': #111827,
+            'o-color-1': #FF7A30,
+            'o-color-2': #001D4A,
+            'o-color-3': #03064D,
+            'o-color-4': #FFF8F5,
+            'o-color-5': #111827,
         ),
         'kmitl-2': (
-            'alpha': #3B82F6,
-            'beta': #001D4A,
-            'gamma': #FF7A30,
-            'delta': #F8F6F5,
-            'epsilon': #111827,
+            'o-color-1': #3B82F6,
+            'o-color-2': #001D4A,
+            'o-color-3': #FF7A30,
+            'o-color-4': #F8F6F5,
+            'o-color-5': #111827,
         ),
         'kmitl-3': (
-            'alpha': #22C55E,
-            'beta': #3B82F6,
-            'gamma': #001D4A,
-            'delta': #F5F2F0,
-            'epsilon': #111827,
+            'o-color-1': #22C55E,
+            'o-color-2': #3B82F6,
+            'o-color-3': #001D4A,
+            'o-color-4': #F5F2F0,
+            'o-color-5': #111827,
         ),
     )
 );
@@ -36,6 +44,8 @@ $o-theme-color-palettes: map-merge($o-theme-color-palettes,
 $o-website-values-palettes: (
     (
         'color-palettes-name': 'kmitl-1',
+        'header-template': 'default',
+        'footer-template': 'centered',
     ),
 );
 
@@ -47,9 +57,21 @@ $o-color-palettes-compatibility-indexes: (
     1: 'kmitl-1',
     2: 'kmitl-2',
     3: 'kmitl-3',
-);
-$o-theme-color-palettes-compatibility-indexes: (
-    1: 'kmitl-1',
-    2: 'kmitl-2',
-    3: 'kmitl-3',
+    4: 'generic-1',
+    5: 'generic-2',
+    6: 'generic-3',
+    7: 'generic-4',
+    8: 'generic-5',
+    9: 'generic-6',
+    10: 'generic-7',
+    11: 'generic-8',
+    12: 'generic-9',
+    13: 'generic-10',
+    14: 'generic-11',
+    15: 'generic-12',
+    16: 'generic-13',
+    17: 'generic-14',
+    18: 'generic-15',
+    19: 'generic-16',
+    20: 'generic-17',
 );

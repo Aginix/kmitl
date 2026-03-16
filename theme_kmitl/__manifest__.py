@@ -11,5 +11,8 @@
     'data': [
         'data/ir_asset.xml',
     ],
+    'snippet_lists': {
+        'homepage': ['s_cover', 's_text_image', 's_numbers', 's_picture', 's_comparisons'],
+    },
     'license': 'LGPL-3',
 }

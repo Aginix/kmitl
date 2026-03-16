@@ -5,6 +5,7 @@
     <field name="key">theme_kmitl.primary_variables_scss</field>
     <field name="name">Primary variables SCSS</field>
     <field name="bundle">web._assets_primary_variables</field>
+    <field name="directive">append</field>
     <field name="path">theme_kmitl/static/src/scss/primary_variables.scss</field>
 </record>
 
