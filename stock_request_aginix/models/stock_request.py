@@ -138,6 +138,11 @@ class StockRequest(models.Model):
         for vals in vals_list:
             if vals.get('name') in (False, _('New')):
                 vals['name'] = _('New')
+
+            if vals.get('operating_unit_id'):
+                location = self._get_location_for_ou(vals['operating_unit_id'])
+                if location:
+                    vals['location_id'] = location.id
         return super().create(vals_list)
     
     def write(self, vals):
