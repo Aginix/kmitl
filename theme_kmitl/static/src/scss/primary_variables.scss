@@ -1,0 +1,55 @@
+//------------------------------------------------------------------------------
+// Colors
+//------------------------------------------------------------------------------
+
+// KMITL Theme color palettes
+$o-theme-color-palettes: map-merge($o-theme-color-palettes,
+    (
+        'kmitl-1': (
+            'alpha': #001D4A,
+            'beta': #03064D,
+            'gamma': #FF7A30,
+            'delta': #FFFF00,
+            'epsilon': #111827,
+        ),
+        'kmitl-2': (
+            'alpha': #3B82F6,
+            'beta': #001D4A,
+            'gamma': #FF7A30,
+            'delta': #F8F6F5,
+            'epsilon': #111827,
+        ),
+        'kmitl-3': (
+            'alpha': #22C55E,
+            'beta': #3B82F6,
+            'gamma': #001D4A,
+            'delta': #F5F2F0,
+            'epsilon': #111827,
+        ),
+    )
+);
+
+//------------------------------------------------------------------------------
+// Website customizations
+//------------------------------------------------------------------------------
+
+$o-website-values-palettes: (
+    (
+        'color-palettes-name': 'kmitl-1',
+    ),
+);
+
+$o-selected-color-palettes-names: append($o-selected-color-palettes-names, 'kmitl-1');
+$o-selected-color-palettes-names: append($o-selected-color-palettes-names, 'kmitl-2');
+$o-selected-color-palettes-names: append($o-selected-color-palettes-names, 'kmitl-3');
+
+$o-color-palettes-compatibility-indexes: (
+    1: 'kmitl-1',
+    2: 'kmitl-2',
+    3: 'kmitl-3',
+);
+$o-theme-color-palettes-compatibility-indexes: (
+    1: 'kmitl-1',
+    2: 'kmitl-2',
+    3: 'kmitl-3',
+);
