@@ -96,7 +96,7 @@ msgstr "สินทรัพย์"
 #: model:ir.ui.menu,name:account_asset_batch.menu_assets_batch
 #: model_terms:ir.ui.view,arch_db:account_asset_batch.view_purchase_order_form
 msgid "Asset Batch"
-msgstr "ชุดทะเบียนครุภัณฑ์"
+msgstr "แบบลงทะเบียนครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_batch
 #: model:ir.model.fields,field_description:account_asset_batch.field_account_asset__batch_line_id
