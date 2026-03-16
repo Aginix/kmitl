@@ -10,6 +10,14 @@
             <field name="invoice_type" position="attributes">
                 <attribute name="invisible">1</attribute>
             </field>
+            <field name="installment" position="after">
+                <field name="duration_days"
+                    attrs="{'readonly': [('no_edit', '=', True)]}"
+                />
+            </field>
+            <field name="plan_date" position="attributes">
+                <attribute name="attrs">{"readonly": 1}</attribute>
+            </field>
         </field>
     </record>
 

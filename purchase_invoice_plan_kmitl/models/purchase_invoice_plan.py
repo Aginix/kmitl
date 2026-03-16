@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from datetime import timedelta
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
@@ -9,6 +10,13 @@ _logger = logging.getLogger(__name__)
 
 class PurchaseInvoicePlan(models.Model):
     _inherit = 'purchase.invoice.plan'
+
+    duration_days = fields.Integer(string="ระยะเวลา(วัน)", default=0)
+
+    @api.onchange("duration_days")
+    def _onchange_duration_days(self):
+        if self.duration_days and self.purchase_id.work_start:
+            self.plan_date = self.purchase_id.work_start + timedelta(days=self.duration_days)
 
     @api.depends("percent")
     def _compute_amount(self):
