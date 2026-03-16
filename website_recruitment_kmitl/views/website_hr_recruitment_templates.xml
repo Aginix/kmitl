@@ -6,14 +6,6 @@
             </t>
         </xpath>
 
-        <!-- <xpath
-            expr="//div[hasclass('js_hr_recruitment')]"
-            position="attributes"
-        >
-            <attribute name="class" add="bg-light" separator=" " />
-            <attribute name="class" add="pb-5" separator=" " />
-        </xpath> -->
-
         <xpath expr="//div[hasclass('js_hr_recruitment')]" position="replace">
             <div id="wrap" class="js_hr_recruitment bg-light pb-5">
                 <!-- Header (Previous: Breadcrumb) -->
@@ -223,7 +215,82 @@
                             คุณสมบัติ (Qualifications)
                         </h5>
                     </div>
-
+                    <div id="qualifications" class="accordion" role="tablist">
+                        <div class="card bg-white" data-name="Item">
+                            <a href="#" t-attf-data-bs-target="#qualificationsTabInitial_1" role="tab" data-bs-toggle="collapse" aria-expanded="true" class="card-header">คุณสมบัติทั่วไป (General Qualifications)</a>
+                            <div t-attf-id="qualificationsTabInitial_1" class="collapse show" data-bs-parent="#qualifications" role="tabpanel">
+                                <div class="card-body">
+                                    <p>
+                                        <ul>
+                                            <li>ทุกสัญชาติ</li>
+                                            <li>มีอายุไม่ต่ำกว่าสิบแปดปีบริบูรณ์ และไม่เกินหกสิบปี</li>
+                                            <li>เป็นผู้เลื่อมใสในการปกครองระบอบประชาธิปไตยอันมีพระมหากษัตริย์ทรงเป็นประมุขด้วยความบริสุทธิ์ใจ</li>
+                                            <li>อื่น ๆ ตามที่ ก.บ. สถล. กำหนด</li>
+                                        </ul>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card bg-white" data-name="Item">
+                            <a href="#" t-attf-data-bs-target="#qualificationsTabInitial_2" role="tab" data-bs-toggle="collapse" aria-expanded="false" class="collapsed card-header">คุณสมบัติเฉพาะตำแหน่ง (Specific Qualifications)</a>
+                            <div t-attf-id="qualificationsTabInitial_2" class="collapse" data-bs-parent="#qualifications" role="tabpanel">
+                                <div class="card-body">
+                                    <p class="card-text">
+                                        <ul>
+                                            <li>สาขาวิชาที่เกี่ยวข้องสถิติ, คณิตศาสตร์, วิทยาการคอมพิวเตอร์, ระบบสารสนเทศเพื่อการจัดการ หรือสาขาที่เกี่ยวข้องกับการวิเคราะห์ข้อมูล</li>
+                                            <li>ทักษะการใช้โปรแกรมพื้นฐาน (Microsoft Office หรือเทียบเท่า) ระดับดีขึ้นไป
+                                                <ul>
+                                                    <li>Microsoft Word
+                                                        <ul>
+                                                            <li>จัดรูปแบบเอกสารตามหนังสือราชการ</li>
+                                                            <li>สร้างสารบัญอัตโนมัติ</li>
+                                                            <li>จัดการเชิงอรรถ</li>
+                                                            <li>ใช้ Styles เพื่อจัดเอกสารให้เป็นระเบียบ</li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                                <ul>
+                                                    <li>Microsoft Excel
+                                                        <ul>
+                                                            <li>ใช้ฟังก์ชันพื้นฐานและขั้นสูง เช่น VLOOKUP, PivotTable, SUMIFS, IF, Conditional Formatting</li>
+                                                            <li>สร้างตารางและแผนภูมิ เพื่อวิเคราะห์และนำเสนอข้อมูลสถิติที่เกี่ยวข้องกับตัวชี้วัดได้อย่างถูกต้องและน่าสนใจ</li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                                <ul>
+                                                    <li>Microsoft Powerpoint
+                                                        <ul>
+                                                            <li>สร้างสไลด์เพื่อนำเสนอข้อมูลและผลการประเมินได้อย่างชัดเจนและมีประสิทธิภาพ</li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card bg-white" data-name="Item">
+                            <a href="#" t-attf-data-bs-target="#qualificationsTabInitial_3" role="tab" data-bs-toggle="collapse" aria-expanded="false" class="collapsed card-header">ลักษณะต้องห้าม (Disqualifications)</a>
+                            <div t-attf-id="qualificationsTabInitial_3" class="collapse" data-bs-parent="#qualifications" role="tabpanel">
+                                <div class="card-body">
+                                    <p class="card-text">
+                                        <ul>
+                                            <li>เป็นผู้ดำรงตำแหน่งทางการเมือง</li>
+                                            <li>เป็นคนวิกลจริต หรือจิตฟั่นเฟือนไม่สมประกอบ หรือเป็นคนเสมือนไร้ความสามารถ หรือเป็นโรคตามที่กำหนดในกฎ ก.พ.อ. หรือเป็นโรคตามที่กำหนดในประกาศของ ก.บ. สถล.</li>
+                                            <li>เป็นผู้อยู่ในระหว่างถูกสั่งพักราชการ หรือถูกสั่งให้ออกจากราชการไว้ก่อนตามข้อบังคับนี้หรือกฎหมายอื่น</li>
+                                            <li>เป็นผู้บกพร่องในศีลธรรมอันดี จนเป็นที่รังเกียจของสังคม</li>
+                                            <li>เป็นกรรมการ หรือผู้ดำรงตำแหน่งที่รับผิดชอบในการบริหารพรรคการเมืองหรือเจ้าหน้าที่ในพรรคการเมือง</li>
+                                            <li>เป็นบุคคลล้มละลาย</li>
+                                            <li>เคยถูกจำคุกโดยคำพิพากษาถึงที่สุดให้จำคุก เว้นแต่เป็นโทษสำหรับความผิดที่ได้กระทำโดยประมาทหรือความผิดลหุโทษ</li>
+                                            <li>เคยถูกลงโทษให้ออก ปลดออก หรือไล่ออกจากรัฐวิสาหกิจ องค์กรมหาชน หรือหน่วยงานอื่นของรัฐ</li>
+                                            <li>เคยถูกลงโทษให้ออก ปลดออก หรือไล่ออกเพราะกระทำผิดวินัยตามข้อบังคับนี้หรือกฎหมายอื่น</li>
+                                        </ul>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
