@@ -41,7 +41,7 @@
 <record id="s_benefit_card_000_scss" model="ir.asset">
     <field name="name">Benefit Card 000 SCSS</field>
     <field name="bundle">web.assets_frontend</field>
-    <field name="path">website_recruitment_kmitl/static/src/snippets/s_benefit_card/000.scss</field>
+    <field name="path">hr_recruitment_kmitl/static/src/snippets/s_benefit_card/000.scss</field>
 </record>
 
 </odoo>

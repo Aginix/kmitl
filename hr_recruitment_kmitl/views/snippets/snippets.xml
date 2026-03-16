@@ -2,7 +2,7 @@
     <!-- เพิ่มเข้า snippet list -->
     <template id="s_benefit_card_snippet" inherit_id="website.snippets" name="Benefit Card Snippet">
         <xpath expr="//div[@id='snippet_content']/div[hasclass('o_panel_body')]" position="inside">
-            <t t-snippet="website_recruitment_kmitl.s_benefit_card" string="Benefit Card" t-thumbnail="/website_recruitment_kmitl/static/src/img/snippets/s_benefit_card.svg" t-forbid-sanitize="form" />
+            <t t-snippet="hr_recruitment_kmitl.s_benefit_card" string="Benefit Card" t-thumbnail="/hr_recruitment_kmitl/static/src/img/snippets/s_benefit_card.svg" t-forbid-sanitize="form" />
         </xpath>
     </template>
 </odoo>

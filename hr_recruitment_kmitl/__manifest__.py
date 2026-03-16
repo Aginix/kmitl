@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 {
-    "name": "Website Recruitment KMITL",
+    "name": "HR Recruitment KMITL",
     "version": "16.0.1.0.0",
     "summary": "Custom theme and pages for KMITL recruitment website",
     "author": "KMITL",
     "category": "Website",
-    "depends": ["website", "website_hr_recruitment"],
+    "depends": ["website", "website_hr_recruitment", "theme_kmitl"],
     "data": [
         "data/website_data.xml",
         "views/website_hr_recruitment_templates.xml",
@@ -15,12 +15,12 @@
     ],
     "assets": {
         "web.assets_frontend": [
-            "website_recruitment_kmitl/static/src/scss/theme.scss",
+            "hr_recruitment_kmitl/static/src/scss/theme.scss",
         ],
         "web._assets_frontend_helpers": [
             (
                 "prepend",
-                "website_recruitment_kmitl/static/src/scss/bootstrap_overridden.scss",
+                "hr_recruitment_kmitl/static/src/scss/bootstrap_overridden.scss",
             ),
         ],
     },

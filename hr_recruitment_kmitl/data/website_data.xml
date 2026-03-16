@@ -1,0 +1,21 @@
+<!-- data/website_data.xml -->
+<odoo>
+
+    <data noupdate="1">
+        <record id="hr_recruitment_kmitl.website_hr_career" model="website">
+            <field name="name">HR Career</field>
+            <!-- ระบุไม่ได้ เพราะจะถูกบังคับ redirect เข้า domain -->
+            <field name="domain"></field>
+            <field name="sequence">20</field>
+            <field name="logo" type="base64" file="hr_recruitment_kmitl/static/src/img/kmitl_careers_logo.png" />
+        </record>
+
+        <record id="page_jobs" model="website.menu">
+            <field name="name">Jobs</field>
+            <field name="url">/jobs</field>
+            <field name="website_id" ref="hr_recruitment_kmitl.website_hr_career" />
+            <field name="sequence">20</field>
+        </record>
+
+    </data>
+</odoo>
