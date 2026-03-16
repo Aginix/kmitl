@@ -3,7 +3,7 @@
  * Orange primary, cyan-blue (navy) secondary.
  */
 
-// :root {
+:root {
 //     /* ── Grey ───────────────────────────────────────────────── */
 //     --grey-50:  #FAFAFA;
 //     --grey-100: #F5F5F5;
@@ -100,17 +100,17 @@
 //     --yellow-800: #F57F17;
 //     --yellow-900: #E65100;
 
-//     /* Thai-D */
-//     --thai-d-50: #E6E6ED;
-//     --thai-d-100: #B1B2C8;
-//     --thai-d-200: #8B8CAD;
-//     --thai-d-300: #565888;
-//     --thai-d-400: #353871;
-//     --thai-d-500: #03064D;
-//     --thai-d-600: #030546;
-//     --thai-d-700: #020437;
-//     --thai-d-800: #02032A;
-//     --thai-d-900: #010320;
+    /* Thai-D */
+    --thai-d-50: #E6E6ED;
+    --thai-d-100: #B1B2C8;
+    --thai-d-200: #8B8CAD;
+    --thai-d-300: #565888;
+    --thai-d-400: #353871;
+    --thai-d-500: #03064D;
+    --thai-d-600: #030546;
+    --thai-d-700: #020437;
+    --thai-d-800: #02032A;
+    --thai-d-900: #010320;
 
 //     /* ── Semantic Mapping ───────────────────────────────────── */
 //     --primary:          var(--orange-500);
@@ -133,7 +133,7 @@
 //     --bg-page:          var(--grey-50);
 //     --bg-card:          #FFFFFF;
 //     --border-color:     var(--grey-200);
-// }
+}
 
 // scss-docs-start theme-color-variables
 // $primary:       $blue !default;
@@ -147,7 +147,7 @@
 // scss-docs-end theme-color-variables
 
 .bg-pattern-dots {
-    background-image: radial-gradient(var(--orange-500) 1px, transparent 1px);
+    background-image: radial-gradient($primary 1px, transparent 1px);
     background-size: 24px 24px;
 }
 

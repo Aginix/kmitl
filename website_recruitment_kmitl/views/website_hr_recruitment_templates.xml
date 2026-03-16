@@ -145,10 +145,12 @@
                                                 <span class="text-muted d-block small"
                                                     >สถานะ</span
                                                 >
-                                                <strong
-                                                    class="text-success text-uppercase"
-                                                    >เปิดรับสมัคร</strong
-                                                >
+                                                <t t-if="job.website_published">
+                                                    <div class="badge text-bg-success">เปิดรับสมัคร</div>
+                                                </t>
+                                                <t t-else="">
+                                                    <div class="badge text-bg-danger">ปิดรับสมัคร</div>
+                                                </t>
                                             </div>
                                         </div>
                                     </div>
