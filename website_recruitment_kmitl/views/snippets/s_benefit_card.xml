@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<template id="s_benefit_card" name="BenefitCard">
+    <!-- <div class="s_benefit_card s_benefit_card_md alert-info w-100 clearfix">
+        <i class="fa fa-2x fa-info-circle s_benefit_card_icon"/>
+        <div class="s_benefit_card_content">
+            <p>Explain the benefits you offer. <br/>Don't write about products or services here, write about solutions.</p>
+        </div>
+    </div> -->
+    <!-- <div class="s_benefit_card bg-primary-light rounded-5 p-3 d-flex align-items-center h-100 clearfix"> -->
+    <div class="s_benefit_card o_colored_level o_cc o_cc3 my-3 text-center w-100">
+        <div
+            class="bg-white rounded-circle p-2 shadow-sm me-3 d-flex align-items-center justify-content-center s_benefit_card_icon_container"
+            style="width: 40px; height: 40px"
+        >
+            <i class="fa fa-shield fa-fw text-primary fa-2x s_benefit_card_icon" />
+        </div>
+        <div class="small fw-bold text-dark lh-sm s_benefit_card_content">
+            <div>ประกันสังคม</div>
+            <div class="text-muted fw-normal small">Social Security</div>
+        </div>
+    </div>
+</template>
+
+<!-- <template id="s_benefit_card_options" inherit_id="website.snippet_options">
+    <xpath expr="//div[@id='so_width']" position="before">
+        <div data-selector=".s_benefit_card" data-js="BenefitCard">
+            <we-select string="Type" data-apply-to=".fa.s_benefit_card_icon" data-trigger="alert_colorpicker_opt">
+                <we-button data-select-class="fa-user-circle" data-trigger-value="primary">Primary</we-button>
+                <we-button data-select-class="fa-user-circle-o" data-trigger-value="secondary">Secondary</we-button>
+                <we-button data-select-class="fa-info-circle" data-trigger-value="info">Info</we-button>
+                <we-button data-select-class="fa-check-circle" data-trigger-value="success">Success</we-button>
+                <we-button data-select-class="fa-exclamation-triangle" data-trigger-value="warning">Warning</we-button>
+                <we-button data-select-class="fa-exclamation-circle" data-trigger-value="danger">Danger</we-button>
+            </we-select>
+        </div>
+    </xpath>
+</template> -->
+
+<record id="s_benefit_card_000_scss" model="ir.asset">
+    <field name="name">Benefit Card 000 SCSS</field>
+    <field name="bundle">web.assets_frontend</field>
+    <field name="path">website_recruitment_kmitl/static/src/snippets/s_benefit_card/000.scss</field>
+</record>
+
+</odoo>

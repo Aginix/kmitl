@@ -1,0 +1,434 @@
+<odoo>
+    <template id="kmitl_detail" inherit_id="website_hr_recruitment.detail">
+        <xpath expr="//t[@t-set='additional_title']" position="replace">
+            <t t-set="additional_title">
+                <t t-esc="job.name" />
+            </t>
+        </xpath>
+
+        <!-- <xpath
+            expr="//div[hasclass('js_hr_recruitment')]"
+            position="attributes"
+        >
+            <attribute name="class" add="bg-light" separator=" " />
+            <attribute name="class" add="pb-5" separator=" " />
+        </xpath> -->
+
+        <xpath expr="//div[hasclass('js_hr_recruitment')]" position="replace">
+            <div id="wrap" class="js_hr_recruitment bg-light pb-5">
+                <!-- Header (Previous: Breadcrumb) -->
+                <div class="bg-white border-bottom py-3 shadow-sm">
+                    <div class="container">
+                        <a
+                            href="/jobs"
+                            class="btn btn-link text-decoration-none text-secondary p-0 fw-bold d-inline-flex align-items-center"
+                        >
+                            <i class="fa fa-arrow-left me-2" /> กลับไปหน้าตำแหน่งงาน
+                        </a>
+                    </div>
+                </div>
+
+                <div class="container py-4 py-lg-5">
+                    <div class="row g-5">
+                        <div class="col-lg-8">
+                            <section class="mb-4">
+                                <div class="card border-0 rounded-4">
+                                    <div class="card-body p-4">
+                                        <t t-if="job.website_published">
+                                            <div class="badge text-bg-success">เปิดรับสมัคร</div>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="badge text-bg-danger">ปิดรับสมัคร</div>
+                                        </t>
+                                        <h2
+                                            class="fw-bold mb-3 text-dark lh-base"
+                                            t-field="job.name"
+                                        />
+                                        <div
+                                            t-if="job.department_id"
+                                            class="d-flex align-items-center text-muted"
+                                        >
+                                            <span
+                                                class="fa fa-lg fa-building-o text-secondary"
+                                            />
+                                            <div
+                                                class="ms-2 fs-6"
+                                                t-field="job.department_id.complete_name"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <div t-field="job.website_description" />
+                        </div>
+                        <div class="col-lg-4">
+                            <div
+                                class="card border-0 rounded-5 sticky-top"
+                                style="top: 100px; z-index: 10"
+                            >
+                                <div class="card-body p-4 text-center">
+                                    <div
+                                        class="bg-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 shadow-sm border overflow-hidden"
+                                        style="width: 80px; height: 80px"
+                                    >
+                                        <t t-if="job.company_id.logo">
+                                            <img
+                                                t-attf-src="/web/image/res.company/#{job.company_id.id}/logo"
+                                                alt="Company Logo"
+                                                class="w-100 h-100 object-fit-contain"
+                                            />
+                                        </t>
+                                        <t t-else="">
+                                            <img
+                                                src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/KMITL_Emblem.png/240px-KMITL_Emblem.png"
+                                                alt="KMITL"
+                                                class="w-75 opacity-75"
+                                            />
+                                        </t>
+                                    </div>
+                                    <h6 class="fw-bold mb-2 text-dark">
+                                        <span t-field="job.name" />
+                                    </h6>
+                                    <span
+                                        class="text-muted small fw-normal d-block mt-1"
+                                    >
+                                        <t t-if="job.department_id"
+                                            >(<span
+                                                t-esc="job.department_id.complete_name"
+                                            />)</t
+                                        >
+                                    </span>
+                                    <div
+                                        class="d-flex flex-column gap-3 text-start small border-top border-bottom py-4 my-4"
+                                    >
+                                        <div class="d-flex align-items-center">
+                                            <i
+                                                class="fa fa-map-marker fa-fw text-muted me-3 fs-5"
+                                            />
+                                            <div>
+                                                <span class="text-muted d-block small"
+                                                    >สถานที่</span
+                                                >
+                                                <strong class="text-dark">
+                                                    <t t-if="job.address_id">
+                                                        <span
+                                                            t-field="job.address_id"
+                                                            t-options='{"widget": "contact", "fields": ["city"], "no_tag_br": True}'
+                                                        />
+                                                    </t>
+                                                    <t t-else="">กรุงเทพมหานคร</t>
+                                                </strong>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <i
+                                                class="fa fa-calendar fa-fw text-muted me-3 fs-5"
+                                            />
+                                            <div>
+                                                <span class="text-muted d-block small"
+                                                    >อัปเดตเมื่อ</span
+                                                >
+                                                <strong class="text-dark">
+                                                    <span
+                                                        t-field="job.write_date"
+                                                        t-options='{"widget": "date"}'
+                                                    />
+                                                </strong>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <i
+                                                class="fa fa-check-circle fa-fw text-success me-3 fs-5"
+                                            />
+                                            <div>
+                                                <span class="text-muted d-block small"
+                                                    >สถานะ</span
+                                                >
+                                                <strong
+                                                    class="text-success text-uppercase"
+                                                    >เปิดรับสมัคร</strong
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <a
+                                        t-attf-href="/jobs/apply/#{slug(job)}"
+                                        class="btn btn-primary w-100 py-3 fs-6 rounded-3 shadow-sm fw-bold"
+                                    >
+                                        ยื่นใบสมัครสำหรับตำแหน่งนี้
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="website_hr_recruitment.default_website_description">
+        <!-- Job Description -->
+        <div class="oe_structure">
+            <div class="card border-0 rounded-12 mb-4">
+                <div class="card-body p-4 reset-snippet">
+                    <div class="d-flex align-items-center mb-4">
+                        <div
+                            class="rounded-3 d-flex align-items-center justify-content-center me-3"
+                            style="
+                                width: 36px;
+                                height: 36px;
+                                background-color: #fff2e8;
+                                color: #ff7a30;
+                            "
+                        >
+                            <i class="fa fa-file-text-o fs-6" />
+                        </div>
+                        <h5 class="fw-bold text-dark mb-0">
+                            รายละเอียดงาน (Job Description)
+                        </h5>
+                    </div>
+                    <p>
+                        <ul>
+                            <li>ปฏิบัติงานในฐานะผู้ปฏิบัติการที่ต้องใช้ความรู้ ความสามารถทางวิชาการในการทำงาน ปฏิบัติงานเกี่ยวกับสิ่งแวดล้อม ภายใต้การกำกับแนะนำ ตรวจสอบและปฏิบัติงานอื่นตามที่ได้รับมอบหมาย ลักษณะงานที่ปฏิบัติในด้านต่าง ๆ</li>
+                            <li>ปฏิบัติการเกี่ยวกับการสำรวจ รวบรวมข้อมูล ศึกษา วิเคราะห์ วิจัย ประเมินผล และสรุปผลข้อมูลและการดำเนินงาน รวมทั้งสามารถติดตามตรวจสอบข้อมูลและการดำเนินงานที่เกี่ยวข้องกับงานและระบบการจัดการด้านสิ่งแวดล้อม เพื่อเป็นแนวทางในการกำหนด พัฒนาและปรับปรุงนโยบาย แผนการดำเนินงาน ตัวชี้วัดและมาตรการในการพัฒนาระบบการจัดการสิ่งแวดล้อมและความยั่งยืนของสถาบัน</li>
+                            <li>จัดเก็บข้อมูลเบื้องต้น หรือฐานข้อมูลระบบสารสนเทศ จัดทำสถิติและจัดทำรายงานที่เกี่ยวข้องกับงานและระบบการจัดการด้านสิ่งแวดล้อมเพื่อติดตาม ประเมินและพัฒนาระบบบริหารจัดการทรัพยากรในพื้นที่สถาบัน</li>
+                            <li>ร่วมวางแผนและพัฒนาระบบฐานข้อมูลด้านสิ่งแวดล้อมที่เชื่อมต่อกับฐานข้อมูลระบบสารสนเทศเพื่อใช้ในการรายงานและคาดการณ์ผลกระทบในอนาคต</li>
+                            <li>ร่วมพัฒนาและถ่ายทอดองค์ความรู้ในการปฏิบัติงานด้านสิ่งแวดล้อม</li>
+                            <li>ประสานการทำงานร่วมกันทั้งภายในและภายนอกสถาบันหรือหน่วยงาน เพื่อให้เกิดความร่วมมือและผลสัมฤทธิ์ตามที่กำหนดไว้</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!-- คุณสมบัติ (Qualifications) -->
+        <div class="oe_structure">
+            <div class="card border-0 rounded-12 mb-4">
+                <div class="card-body p-4 reset-snippet">
+                    <div class="d-flex align-items-center mb-4">
+                        <div
+                            class="rounded-3 d-flex align-items-center justify-content-center me-3"
+                            style="
+                                width: 36px;
+                                height: 36px;
+                                background-color: #fff2e8;
+                                color: #ff7a30;
+                            "
+                        >
+                            <i class="fa fa-star fs-6" />
+                        </div>
+                        <h5 class="fw-bold text-dark mb-0">
+                            คุณสมบัติ (Qualifications)
+                        </h5>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- Benefits -->
+        <div class="oe_structure">
+            <div class="card border-0 rounded-5 mb-4">
+                <div class="card-body p-4 reset-snippet">
+                    <div class="d-flex align-items-center mb-4">
+                        <div
+                            class="rounded-3 d-flex align-items-center justify-content-center me-3"
+                            style="
+                                width: 36px;
+                                height: 36px;
+                                background-color: #fff2e8;
+                                color: #ff7a30;
+                            "
+                        >
+                            <i class="fa fa-shield fs-6" />
+                        </div>
+                        <h5 class="fw-bold text-dark mb-0">
+                            สวัสดิการและสิทธิประโยชน์ (Benefits and Welfare)
+                        </h5>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div
+                                class="bg-primary-light rounded-5 p-3 d-flex align-items-center h-100"
+                            >
+                                <div
+                                    class="bg-white rounded-circle p-2 shadow-sm me-3 d-flex align-items-center justify-content-center"
+                                    style="width: 40px; height: 40px"
+                                >
+                                    <i class="fa fa-shield fa-fw text-primary fs-5" />
+                                </div>
+                                <span class="small fw-bold text-dark lh-sm"
+                                    >ประกันสังคม
+
+                                    <br />
+                                    <span class="text-muted fw-normal small"
+                                        >Social Security</span
+                                    >
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div
+                                class="bg-primary-light rounded-5 p-3 d-flex align-items-center h-100"
+                            >
+                                <div
+                                    class="bg-white rounded-circle p-2 shadow-sm me-3 d-flex align-items-center justify-content-center"
+                                    style="width: 40px; height: 40px"
+                                >
+                                    <i class="fa fa-database fa-fw text-primary fs-5" />
+                                </div>
+                                <span class="small fw-bold text-dark lh-sm"
+                                    >กองทุนสำรองเลี้ยงชีพ
+
+                                    <br />
+                                    <span class="text-muted fw-normal small"
+                                        >Provident Fund</span
+                                    >
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div
+                                class="bg-primary-light rounded-5 p-3 d-flex align-items-center h-100"
+                            >
+                                <div
+                                    class="bg-white rounded-circle p-2 shadow-sm me-3 d-flex align-items-center justify-content-center"
+                                    style="width: 40px; height: 40px"
+                                >
+                                    <i
+                                        class="fa fa-stethoscope fa-fw text-primary fs-5"
+                                    />
+                                </div>
+                                <span class="small fw-bold text-dark lh-sm"
+                                    >สวัสดิการค่ารักษาพยาบาล
+
+                                    <br />
+                                    <span class="text-muted fw-normal small"
+                                        >รวมครอบครัว</span
+                                    >
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- Documents -->
+        <div class="card border-0 rounded-12 mb-4">
+            <div class="card-body p-4 reset-snippet">
+                <div class="d-flex align-items-center mb-4">
+                    <div
+                        class="rounded-3 d-flex align-items-center justify-content-center me-3"
+                        style="
+                            width: 36px;
+                            height: 36px;
+                            background-color: #fff2e8;
+                            color: #ff7a30;
+                        "
+                    >
+                        <i class="fa fa-paperclip fs-6" />
+                    </div>
+                    <h5 class="fw-bold text-dark mb-0">
+                        เอกสารที่ใช้สมัคร (Required Documents)
+                    </h5>
+                </div>
+                <p>
+                    <ol>
+                        <li>ใบสมัครสอบคัดเลือกเพื่อบรรจุเป็นพนักงานสถาบัน โดยกรอกรายละเอียดครบถ้วน พร้อมแนบรูปถ่ายหน้าตรงไม่สวมหมวก ไม่สวมแว่นตาดำ ขนาด 1 นิ้ว จำนวน 1 รูป (ถ่ายไว้ไม่เกิน 6 เดือน)</li>
+                        <li>สําเนาใบปริญญาบัตร หรือสํา เนาหนังสือรับรองที่สภามหาวิทยาลัยอนุมัติผลการศึกษา</li>
+                        <li>สำเนาใบรายงานผลการศึกษาเป็นรายวิชา</li>
+                        <li>สำเนาบัตรประจำตัวประชาชน</li>
+                        <li>สำเนาทะเบียนบ้าน</li>
+                        <li>สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร หรือได้รับการยกเว้นการเกณฑ์ทหาร ใบ สด.8 สด.9 หรือ สด.43 หรือหลักฐานทางการอื่น ๆ (เฉพาะเพศชาย)</li>
+                        <li>ประวัติส่วนตัว (Resume หรือ CV) และผลงานทางวิชาการ/งานวิจัย (Publication/Research)</li>
+                        <li>สำเนาเอกสารอื่น ๆ เช่น หนังสือเปลี่ยนชื่อ นามสกุล และอื่น ๆ (ถ้ามี)</li>
+                        <li>ใบรับรองแพทย์ใช้สำหรับสมัครงาน จากโรงพยาบาลรัฐ หรือโรงพยาบาลเอกชน หรือคลินิกเวชกรรม สอจอ ซึ่งมีอายุไม่เกิน 1 เดือน</li>
+                        <li>หลักฐานการชำระค่าธรรมเนียมการสมัครสอบ</li>
+                    </ol>
+                </p>
+                <t t-snippet-call="website.s_hr"/>
+                <p>
+                    <b>หมายเหตุ:</b> <br/>
+                    <ul>
+                        <li>การสมัครทางอีเมลให้ใช้เอกสารสำหรับการสมัคร พร้อมลงลายมือชื่อสำเนาถูกต้อง ในเอกสารส่วนตัว ให้รวมเอกสารไฟล์ .pdf เป็นไฟล์เดียว พร้อมติดรูปถ่ายในใบสมัครให้เรียบร้อย</li>
+                        <li>หากเอกสารอย่างใดอย่างหนึ่งไม่ครบถ้วน ไม่เรียบร้อย ตรงตามประกาศ หรือไม่สามารถส่งได้ภายในระยะเวลาที่กำหนด ให้ถือว่าการสมัครสอบคัดเลือกครั้งนี้เป็นโมฆะ</li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+
+    </template>
+
+    <template id="kmitl_index" inherit_id="website_hr_recruitment.index">
+        <xpath expr="//div[hasclass('oe_structure')]" position="replace">
+            <div id="jobs_hero" class="oe_structure page-view active pb-4">
+                <div
+                    class="banner-header py-5 overflow-hidden position-relative"
+                    style="
+                        background-color: var(--thai-d-900);
+                        border-bottom: 4px solid var(--orange-500);
+                    "
+                >
+                    <div
+                        class="position-absolute top-0 start-0 w-100 h-100 bg-pattern-dots opacity-25"
+                    />
+                    <div class="container kmitl-nav-spacing position-relative z-1 py-4">
+                        <div class="row align-items-center">
+                            <div class="col-lg-8 text-white">
+                                <h1 class="display-4 fw-bold mb-3">
+                                    ร่วมขับเคลื่อนนวัตกรรม
+
+                                    <br />ไปกับ
+
+                                    <span class="text-primary">KMITL</span>
+                                </h1>
+                                <p class="lead text-white-50 mb-4 fs-6">
+                                    ค้นหาโอกาสในการทำงานและเติบโตไปพร้อมกับสถาบันเทคโนโลยีชั้นนำของประเทศ
+                                </p>
+                                <form
+                                    action="/jobs"
+                                    method="get"
+                                    class="w-100"
+                                    style="max-width: 600px"
+                                >
+                                    <div class="input-group input-group-lg shadow-sm">
+                                        <span
+                                            class="input-group-text bg-white border-end-0 text-muted"
+                                        >
+                                            <i class="fa fa-search" />
+                                        </span>
+                                        <input
+                                            type="text"
+                                            name="search"
+                                            class="form-control border-start-0 ps-0"
+                                            placeholder="ค้นหาตำแหน่งงาน, คีย์เวิร์ด..."
+                                            t-att-value="search"
+                                        />
+                                        <button
+                                            class="btn bg-primary px-4 fw-bold text-white"
+                                            type="submit"
+                                        >
+                                            ค้นหา
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+
+        <xpath expr="//span[@t-field='job.name']/.." position="after">
+            <div t-if="job.department_id" class="mt0 mb4 d-flex align-items-center">
+                <span class="fa fa-building-o" />
+                <div class="ms-2" t-field="job.department_id.complete_name" />
+            </div>
+        </xpath>
+
+        <!-- Remove open positions -->
+        <xpath expr="//h5[@t-if='job.no_of_recruitment &gt;= 1']" position="replace" />
+
+
+    </template>
+</odoo>
