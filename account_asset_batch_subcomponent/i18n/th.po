@@ -53,7 +53,7 @@ msgstr "เพิ่มส่วนประกอบครุภัณฑ์/�
 #: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_account_asset_batch_subcomponent__batch_line_id
 #: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard__batch_line_id
 msgid "Batch Line"
-msgstr "ชุดทะเบียนครุภัณฑ์"
+msgstr "ชุดทะเบียนครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_batch_subcomponent
 #. odoo-python
