@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="excep_loan_amount_too_low" model="exception.rule">
+        <field name="name">จำนวนเงินยืมต่ำกว่าขั้นต่ำ</field>
+        <field name="description">จำนวนเงินยืมต้องมากกว่า 100 บาท</field>
+        <field name="sequence">10</field>
+        <field name="model">advance.payment</field>
+        <field name="exception_type">by_domain</field>
+        <field name="domain">[('loan_amount', '&lt;=', 100)]</field>
+        <field name="is_blocking" eval="True"/>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="excep_loan_amount_too_high" model="exception.rule">
+        <field name="name">จำนวนเงินยืมเกินวงเงิน</field>
+        <field name="description">จำนวนเงินยืมต้องไม่เกิน 50,000 บาท</field>
+        <field name="sequence">20</field>
+        <field name="model">advance.payment</field>
+        <field name="exception_type">by_domain</field>
+        <field name="domain">[('loan_amount', '&gt;', 50000)]</field>
+        <field name="is_blocking" eval="True"/>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

@@ -7,3 +7,4 @@ access_advance_payment_user,advance.payment user,model_advance_payment,base.grou
 access_advance_payment_usage_line_user,advance.payment.usage.line user,model_advance_payment_usage_line,base.group_user,1,1,1,1
 access_advance_payment_usage_wizard,advance.payment.usage.wizard,model_advance_payment_usage_wizard,base.group_user,1,1,1,1
 access_advance_payment_return_wizard,advance.payment.return.wizard,model_advance_payment_return_wizard,base.group_user,1,1,1,1
+access_advance_payment_exception_confirm,advance.payment.exception.confirm,model_advance_payment_exception_confirm,base.group_user,1,1,1,1

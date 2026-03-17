@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <tree string="สัญญายืมเงิน">
                 <field name="name"/>
+                <field name="main_exception_id"/>
                 <field name="requested_by"/>
                 <field name="loan_type_id"/>
                 <field name="loan_amount"/>
@@ -25,6 +26,19 @@
         <field name="model">advance.payment</field>
         <field name="arch" type="xml">
             <form string="สัญญายืมเงิน">
+                <div class="alert alert-danger" role="alert" style="margin-bottom:0px;"
+                     attrs="{'invisible': [('exceptions_summary','=',False)]}">
+                    <p>
+                        <strong>มีข้อผิดพลาดที่ต้องแก้ไข:</strong>
+                    </p>
+                    <field name="exceptions_summary"/>
+                    <button name="action_ignore_exceptions"
+                        type="object"
+                        class="btn-danger"
+                        string="ข้ามการตรวจสอบ"
+                        help="คลิกเพื่อข้ามการตรวจสอบข้อผิดพลาดและดำเนินการต่อ"
+                        groups="base_exception.group_exception_rule_manager"/>
+                </div>
                 <header>
                     <button name="action_submit"
                         string="ส่งเพื่อขออนุมัติ"
@@ -114,6 +128,9 @@
             <search string="สัญญายืมเงิน">
                 <field name="name"/>
                 <field name="requested_by"/>
+                <separator/>
+                <filter icon="fa-exclamation-circle" name="tofix" string="Exceptions"
+                    domain="[('main_exception_id','!=',False)]"/>
                 <separator/>
                 <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
                 <filter string="Submitted" name="submitted" domain="[('state','=','submitted')]"/>

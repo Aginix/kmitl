@@ -12,8 +12,8 @@ class AdvancePayment(models.Model):
 
     _name = "advance.payment"
     _description = "Advance Payment"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
-    _order = "name desc, id desc"
+    _inherit = ["mail.thread", "mail.activity.mixin", "base.exception"]
+    _order = "main_exception_id asc, name desc, id desc"
 
     READONLY_STATES = {
         "submitted": [("readonly", True)],
@@ -166,6 +166,30 @@ class AdvancePayment(models.Model):
             vals["journal_id"] = payment_type.journal_id.id
         return vals
 
+    @api.model
+    def _reverse_field(self):
+        return "advance_payment_ids"
+
+    @api.model
+    def _get_popup_action(self):
+        return self.env.ref(
+            "advance_payment.action_advance_payment_exception_confirm"
+        )
+
+    @api.constrains("ignore_exception", "loan_amount", "state")
+    def advance_payment_check_exception(self):
+        records = self.filtered(lambda s: s.state == "submitted")
+        if records:
+            records._check_exception()
+
+    @api.onchange("loan_amount")
+    def onchange_ignore_exception(self):
+        if self.state == "submitted":
+            self.ignore_exception = False
+
+    def button_draft(self):
+        self.write({"state": "draft"})
+
     def action_start(self, payment=None):
         """Transition approved agreements to in_progress (triggered by payment posting)."""
         self.write({"state": "in_progress"})
@@ -190,6 +214,8 @@ class AdvancePayment(models.Model):
         for rec in self:
             if rec.state != "draft":
                 raise UserError(_("Only draft agreements can be submitted."))
+            if rec.detect_exceptions() and not rec.ignore_exception:
+                return rec._popup_exceptions()
             if rec.name == _("New"):
                 rec.name = self.env["ir.sequence"].next_by_code("advance.payment")
             rec.state = "submitted"
