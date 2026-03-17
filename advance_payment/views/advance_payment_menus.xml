@@ -35,10 +35,4 @@
         parent="menu_advance_payment_config"
         action="action_advance_payment_bank"
         sequence="20"/>
-
-    <menuitem id="menu_advance_payment_method"
-        name="วิธีการจ่ายเงินยืม"
-        parent="menu_advance_payment_config"
-        action="action_advance_payment_method"
-        sequence="30"/>
 </odoo>

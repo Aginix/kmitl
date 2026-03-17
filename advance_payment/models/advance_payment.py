@@ -68,20 +68,6 @@ class AdvancePayment(models.Model):
         states=READONLY_STATES,
     )
 
-    reference_model = fields.Char(
-        compute="_compute_reference",
-        store=True,
-    )
-
-    method_id = fields.Many2one(
-        comodel_name="advance.payment.method",
-        string="Payment Method",
-        compute="_compute_method_id",
-        store=True,
-        readonly=False,
-        states=READONLY_STATES,
-    )
-
     loan_reason = fields.Text(
         string="Loan Reason",
         states=READONLY_STATES,
@@ -166,23 +152,6 @@ class AdvancePayment(models.Model):
     def _compute_payment_count(self):
         for rec in self:
             rec.payment_count = len(rec.payment_ids)
-
-    @api.depends("reference")
-    def _compute_reference(self):
-        for rec in self:
-            rec.reference_model = rec.reference._name if rec.reference else False
-
-    @api.depends("reference_model")
-    def _compute_method_id(self):
-        models_needed = {rec.reference_model for rec in self if rec.reference_model}
-        method_by_model = {}
-        if models_needed:
-            methods = self.env["advance.payment.method"].search(
-                [("default_for_model", "in", list(models_needed))]
-            )
-            method_by_model = {m.default_for_model: m for m in methods}
-        for rec in self:
-            rec.method_id = method_by_model.get(rec.reference_model, False)
 
     def _prepare_account_payment_vals(self, payment_type):
         vals = {

@@ -23,7 +23,6 @@
         "views/advance_payment_bank_views.xml",
         "views/advance_payment_usage_line_views.xml",
         "views/advance_payment_views.xml",
-        "views/advance_payment_method_views.xml",
         "views/account_payment_views.xml",
         "views/advance_payment_menus.xml",
     ],
