@@ -14,5 +14,6 @@ class AccountPayment(models.Model):
     def action_post(self):
         res = super().action_post()
         for payment in self.filtered(lambda p: p.advance_payment_id.state == "approved"):
+            payment.advance_payment_id.write({"disbursement_state": "paid"})
             payment.advance_payment_id.action_start(payment=payment)
         return res

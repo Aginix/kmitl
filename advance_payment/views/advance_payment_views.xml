@@ -17,6 +17,9 @@
                     decoration-warning="state in ('submitted', 'in_progress')"
                     decoration-primary="state == 'approved'"
                     decoration-success="state == 'done'"/>
+                <field name="disbursement_state" optional="show" widget="badge"
+                    decoration-warning="disbursement_state == 'pending'"
+                    decoration-success="disbursement_state == 'paid'"/>
             </tree>
         </field>
     </record>

@@ -134,6 +134,17 @@ class AdvancePayment(models.Model):
         compute="_compute_payment_count",
     )
 
+    disbursement_state = fields.Selection(
+        selection=[
+            ("pending", "รอดำเนินการ"),
+            ("paid", "จ่ายเงินแล้ว"),
+        ],
+        string="สถานะการจ่ายเงิน",
+        readonly=True,
+        copy=False,
+        tracking=True,
+    )
+
     attachment_ids = fields.One2many(
         "ir.attachment",
         "res_id",
@@ -300,7 +311,7 @@ class AdvancePayment(models.Model):
         payment_type = self.env.ref("advance_payment.payment_type_advance_payment_outbound")
         vals_list = [rec._prepare_account_payment_vals(payment_type) for rec in self]
         payments = self.env["account.payment"].create(vals_list)
-        self.write({"state": "approved"})
+        self.write({"state": "approved", "disbursement_state": "pending"})
         payments.action_post()
         for rec, payment in zip(self, payments):
             rec.message_post(
