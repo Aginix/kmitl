@@ -301,6 +301,7 @@ class AdvancePayment(models.Model):
         vals_list = [rec._prepare_account_payment_vals(payment_type) for rec in self]
         payments = self.env["account.payment"].create(vals_list)
         self.write({"state": "approved"})
+        payments.action_post()
         for rec, payment in zip(self, payments):
             rec.message_post(
                 body=_(
@@ -309,7 +310,7 @@ class AdvancePayment(models.Model):
                     " created for <b>%(amount)s %(currency)s</b> to <b>%(partner)s</b>"
                     " via journal <b>%(journal)s</b>.",
                     id=payment.id,
-                    name=payment.name or _("(draft)"),
+                    name=payment.name,
                     amount=payment.amount,
                     currency=payment.currency_id.name,
                     partner=payment.partner_id.name,
