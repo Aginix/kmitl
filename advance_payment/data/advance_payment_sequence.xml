@@ -2,8 +2,8 @@
 <odoo>
     <data noupdate="1">
         <record id="seq_advance_payment_agreement" model="ir.sequence">
-            <field name="name">Advance Payment Agreement</field>
-            <field name="code">advance.payment.agreement</field>
+            <field name="name">Advance Payment</field>
+            <field name="code">advance.payment</field>
             <field name="prefix">ADV/%(y_be)s/</field>
             <field name="padding">4</field>
             <field name="number_next">1</field>

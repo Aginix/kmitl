@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="payment_type_advance_payment_outbound" model="kmitl.payment.type">
+            <field name="name">จ่ายเงินยืม</field>
+            <field name="direction">outbound</field>
+            <field name="sequence">10</field>
+        </record>
+    </data>
+</odoo>

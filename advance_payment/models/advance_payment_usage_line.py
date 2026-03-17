@@ -9,7 +9,7 @@ class AdvancePaymentUsageLine(models.Model):
     _order = "date desc, id desc"
 
     agreement_id = fields.Many2one(
-        comodel_name="advance.payment.agreement",
+        comodel_name="advance.payment",
         string="Agreement",
         required=True,
         ondelete="cascade",

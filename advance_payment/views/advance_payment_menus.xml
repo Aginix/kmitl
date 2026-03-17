@@ -9,7 +9,7 @@
     <menuitem id="menu_advance_payment_agreement"
         name="สัญญายืมเงิน"
         parent="menu_advance_payment_root"
-        action="action_advance_payment_agreement"
+        action="action_advance_payment"
         sequence="10"/>
 
     <menuitem id="menu_advance_payment_usage_line"
@@ -35,4 +35,10 @@
         parent="menu_advance_payment_config"
         action="action_advance_payment_bank"
         sequence="20"/>
+
+    <menuitem id="menu_advance_payment_method"
+        name="วิธีการจ่ายเงินยืม"
+        parent="menu_advance_payment_config"
+        action="action_advance_payment_method"
+        sequence="30"/>
 </odoo>

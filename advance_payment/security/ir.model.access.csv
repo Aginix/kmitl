@@ -3,7 +3,9 @@ access_advance_payment_loan_type_user,advance.payment.loan.type user,model_advan
 access_advance_payment_loan_type_admin,advance.payment.loan.type admin,model_advance_payment_loan_type,base.group_system,1,1,1,1
 access_advance_payment_bank_user,advance.payment.bank user,model_advance_payment_bank,base.group_user,1,0,0,0
 access_advance_payment_bank_admin,advance.payment.bank admin,model_advance_payment_bank,base.group_system,1,1,1,1
-access_advance_payment_agreement_user,advance.payment.agreement user,model_advance_payment_agreement,base.group_user,1,1,1,0
+access_advance_payment_user,advance.payment user,model_advance_payment,base.group_user,1,1,1,0
+access_advance_payment_method_user,advance.payment.method user,model_advance_payment_method,base.group_user,1,0,0,0
+access_advance_payment_method_admin,advance.payment.method admin,model_advance_payment_method,base.group_system,1,1,1,1
 access_advance_payment_usage_line_user,advance.payment.usage.line user,model_advance_payment_usage_line,base.group_user,1,1,1,1
 access_advance_payment_usage_wizard,advance.payment.usage.wizard,model_advance_payment_usage_wizard,base.group_user,1,1,1,1
 access_advance_payment_return_wizard,advance.payment.return.wizard,model_advance_payment_return_wizard,base.group_user,1,1,1,1

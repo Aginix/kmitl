@@ -1,15 +1,15 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 
 class AdvancePaymentUsageWizard(models.TransientModel):
-    """Wizard to create a usage record for an advance payment agreement."""
+    """Wizard to create a usage record for an advance payment."""
 
     _name = "advance.payment.usage.wizard"
     _description = "Advance Payment Usage Wizard"
 
     agreement_id = fields.Many2one(
-        comodel_name="advance.payment.agreement",
+        comodel_name="advance.payment",
         string="Agreement",
         required=True,
         readonly=True,
@@ -70,6 +70,8 @@ class AdvancePaymentUsageWizard(models.TransientModel):
     def action_create_usage(self):
         """Create usage line and re-link attachments."""
         self.ensure_one()
+        if self.agreement_id.state != "in_progress":
+            raise UserError(_("Usage can only be recorded for in-progress agreements."))
         line = self.env["advance.payment.usage.line"].create(
             {
                 "agreement_id": self.agreement_id.id,

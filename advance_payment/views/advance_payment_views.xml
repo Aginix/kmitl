@@ -1,42 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_advance_payment_agreement_list" model="ir.ui.view">
-        <field name="name">advance.payment.agreement.list</field>
-        <field name="model">advance.payment.agreement</field>
+    <record id="view_advance_payment_list" model="ir.ui.view">
+        <field name="name">advance.payment.list</field>
+        <field name="model">advance.payment</field>
         <field name="arch" type="xml">
             <tree string="สัญญายืมเงิน">
                 <field name="name"/>
-                <field name="borrower_name"/>
+                <field name="requested_by"/>
                 <field name="loan_type_id"/>
                 <field name="loan_amount"/>
                 <field name="amount_used"/>
                 <field name="amount_remaining"/>
                 <field name="state" widget="badge"
                     decoration-info="state == 'draft'"
-                    decoration-warning="state == 'in_progress'"
-                    decoration-primary="state == 'in_review'"
-                    decoration-success="state == 'done'"
-                    decoration-danger="state == 'cancelled'"/>
+                    decoration-warning="state in ('submitted', 'in_progress')"
+                    decoration-primary="state == 'approved'"
+                    decoration-success="state == 'done'"/>
             </tree>
         </field>
     </record>
 
-    <record id="view_advance_payment_agreement_form" model="ir.ui.view">
-        <field name="name">advance.payment.agreement.form</field>
-        <field name="model">advance.payment.agreement</field>
+    <record id="view_advance_payment_form" model="ir.ui.view">
+        <field name="name">advance.payment.form</field>
+        <field name="model">advance.payment</field>
         <field name="arch" type="xml">
             <form string="สัญญายืมเงิน">
                 <header>
-                    <button name="action_confirm"
-                        string="ยืนยันส่งข้อมูล"
+                    <button name="action_submit"
+                        string="ส่งเพื่อขออนุมัติ"
                         type="object"
                         class="btn-primary"
-                        attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('confirmed', '=', True)]}"/>
+                        attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     <button name="action_approve"
                         string="อนุมัติ"
                         type="object"
                         class="btn-primary"
-                        attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('confirmed', '=', False)]}"/>
+                        attrs="{'invisible': [('state', '!=', 'submitted')]}"/>
                     <button name="action_open_usage_wizard"
                         string="บันทึกการใช้เงิน"
                         type="object"
@@ -45,24 +44,19 @@
                         string="คืนเงิน"
                         type="object"
                         attrs="{'invisible': [('state', '!=', 'in_progress')]}"/>
-                    <button name="action_close"
-                        string="ปิดสัญญา"
-                        type="object"
-                        class="btn-primary"
-                        attrs="{'invisible': [('state', '!=', 'in_review')]}"/>
-                    <button name="action_cancel"
-                        string="ยกเลิก"
-                        type="object"
-                        attrs="{'invisible': [('state', '!=', 'draft')]}"/>
-                    <button name="action_reset_to_draft"
-                        string="Reset to Draft"
-                        type="object"
-                        attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
                     <field name="state" widget="statusbar"
-                        statusbar_visible="draft,in_progress,in_review,done"/>
-                    <field name="confirmed" invisible="1"/>
+                        statusbar_visible="draft,submitted,approved,in_progress,done"/>
                 </header>
                 <sheet>
+                    <div name="button_box" class="oe_button_box">
+                        <button name="action_view_payments"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-credit-card"
+                            attrs="{'invisible': [('payment_count', '=', 0)]}">
+                            <field name="payment_count" string="Payments" widget="statinfo"/>
+                        </button>
+                    </div>
                     <div class="oe_title">
                         <h1>
                             <field name="name" readonly="1"/>
@@ -70,13 +64,12 @@
                     </div>
                     <group>
                         <group string="ข้อมูลผู้ยืม">
-                            <field name="borrower_name"/>
-                            <field name="academic_position"/>
-                            <field name="department"/>
-                            <field name="sub_department"/>
+                            <field name="requested_by"/>
+                            <field name="department_id"/>
                         </group>
                         <group string="ข้อมูลการยืม">
-                            <field name="origin_reference" placeholder="เลขที่ใบขอซื้อ/จ้าง"/>
+                            <field name="reference"/>
+                            <field name="method_id"/>
                             <field name="loan_type_id"/>
                             <field name="loan_reason"/>
                             <field name="currency_id" invisible="1"/>
@@ -115,30 +108,31 @@
         </field>
     </record>
 
-    <record id="view_advance_payment_agreement_search" model="ir.ui.view">
-        <field name="name">advance.payment.agreement.search</field>
-        <field name="model">advance.payment.agreement</field>
+    <record id="view_advance_payment_search" model="ir.ui.view">
+        <field name="name">advance.payment.search</field>
+        <field name="model">advance.payment</field>
         <field name="arch" type="xml">
             <search string="สัญญายืมเงิน">
                 <field name="name"/>
-                <field name="borrower_name"/>
+                <field name="requested_by"/>
                 <separator/>
                 <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
+                <filter string="Submitted" name="submitted" domain="[('state','=','submitted')]"/>
+                <filter string="Approved" name="approved" domain="[('state','=','approved')]"/>
                 <filter string="In Progress" name="in_progress" domain="[('state','=','in_progress')]"/>
-                <filter string="In Review" name="in_review" domain="[('state','=','in_review')]"/>
                 <filter string="Done" name="done" domain="[('state','=','done')]"/>
-                <filter string="Cancelled" name="cancelled" domain="[('state','=','cancelled')]"/>
                 <group expand="0" string="Group By">
                     <filter string="State" name="group_state" context="{'group_by':'state'}"/>
                     <filter string="Loan Type" name="group_loan_type" context="{'group_by':'loan_type_id'}"/>
+                    <filter string="Requested By" name="group_requested_by" context="{'group_by':'requested_by'}"/>
                 </group>
             </search>
         </field>
     </record>
 
-    <record id="action_advance_payment_agreement" model="ir.actions.act_window">
+    <record id="action_advance_payment" model="ir.actions.act_window">
         <field name="name">สัญญายืมเงิน</field>
-        <field name="res_model">advance.payment.agreement</field>
+        <field name="res_model">advance.payment</field>
         <field name="view_mode">tree,form</field>
     </record>
 </odoo>

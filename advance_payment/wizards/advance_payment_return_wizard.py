@@ -9,7 +9,7 @@ class AdvancePaymentReturnWizard(models.TransientModel):
     _description = "Advance Payment Return Wizard"
 
     agreement_id = fields.Many2one(
-        comodel_name="advance.payment.agreement",
+        comodel_name="advance.payment",
         string="Agreement",
         required=True,
         readonly=True,
@@ -39,11 +39,11 @@ class AdvancePaymentReturnWizard(models.TransientModel):
     )
 
     def action_confirm_return(self):
-        """Set agreement state to in_review."""
+        """Close the agreement (in_progress → done)."""
         self.ensure_one()
         if self.agreement_id.state != "in_progress":
             raise UserError(
-                _("Only in-progress agreements can be moved to review.")
+                _("Only in-progress agreements can be closed.")
             )
-        self.agreement_id.state = "in_review"
+        self.agreement_id.action_close()
         return {"type": "ir.actions.act_window_close"}
