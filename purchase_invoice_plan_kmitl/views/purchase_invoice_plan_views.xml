@@ -19,9 +19,6 @@
                     attrs="{'readonly': [('no_edit', '=', True)]}"
                 />
             </field>
-            <field name="plan_date" position="attributes">
-                <attribute name="attrs">{"readonly": 1}</attribute>
-            </field>
         </field>
     </record>
 
