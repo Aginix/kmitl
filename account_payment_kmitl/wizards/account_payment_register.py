@@ -6,16 +6,28 @@ from odoo import models
 class AccountPaymentRegister(models.TransientModel):
     _inherit = "account.payment.register"
 
-    def _post_payments(self, to_process, edit_mode=False):
-        """Submit payments instead of posting them.
+    def _create_payments(self):
+        """Propagate analytic distribution from source invoices to payments."""
+        payments = super()._create_payments()
+        active_model = self._context.get("active_model")
+        active_ids = self._context.get("active_ids", [])
+        if active_model == "account.move" and active_ids:
+            source_moves = self.env["account.move"].browse(active_ids)
+            dist = source_moves[:1].analytic_distribution
+            if dist:
+                for payment in payments:
+                    payment.write({"analytic_distribution": dist})
+                    payment.move_id.line_ids.write(
+                        {"analytic_distribution": dist}
+                    )
+        return payments
 
-        KMITL requires payments to go through an approval workflow
-        (draft -> submitted -> posted) rather than being posted immediately.
+    def _post_payments(self, to_process, edit_mode=False):
+        """Skip posting — payment stays in draft for user review.
+
+        KMITL pipeline: draft → submit → bank export → tier validate → post.
         """
-        payments = self.env["account.payment"]
-        for vals in to_process:
-            payments |= vals["payment"]
-        payments.action_submit()
+        return
 
     def _reconcile_payments(self, to_process, edit_mode=False):
         """Defer reconciliation until the payment is posted.

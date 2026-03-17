@@ -1,6 +1,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class AccountPayment(models.Model):
@@ -20,7 +21,15 @@ class AccountPayment(models.Model):
     )
 
     def action_post(self):
-        """Reconcile with source invoice lines after posting."""
+        """Validate bank export for outbound, then reconcile after posting."""
+        for payment in self:
+            if (
+                payment.payment_type == "outbound"
+                and payment.export_status == "draft"
+            ):
+                raise UserError(
+                    _("Payment must be exported to bank before posting.")
+                )
         res = super().action_post()
         self._reconcile_source_invoice_lines()
         return res
@@ -42,8 +51,14 @@ class AccountPayment(models.Model):
             payment.to_reconcile_payment_line_ids = False
 
     def action_submit(self):
-        """Submit payment for approval. Delegates to account.move."""
-        self.move_id.action_submit()
+        """Submit payment without triggering tier validation.
+
+        Validation is triggered after bank export, not on submit.
+        """
+        for payment in self:
+            if payment.move_id.state != "draft":
+                raise UserError(_("Only draft payments can be submitted."))
+            payment.move_id.state = "submitted"
 
     @api.onchange("kmitl_payment_type_id")
     def _onchange_kmitl_payment_type_id(self):

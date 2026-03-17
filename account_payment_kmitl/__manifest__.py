@@ -22,6 +22,7 @@
     "data": [
         "security/ir.model.access.csv",
         "data/kmitl_payment_type_data.xml",
+        "data/tier_definition.xml",
         "views/kmitl_payment_type_views.xml",
         "views/account_payment_views.xml",
         "views/bank_payment_export_views.xml",

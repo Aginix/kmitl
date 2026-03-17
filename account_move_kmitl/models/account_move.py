@@ -40,11 +40,18 @@ class AccountMove(models.Model):
     # --- Compute ---
     @api.depends("date", "auto_post", "state", "validation_status")
     def _compute_hide_post_button(self):
-        """Show Post button only when submitted AND validated."""
+        """Show Post button only when submitted AND validated.
+
+        For outbound payment moves, also require bank export to be done.
+        """
         super()._compute_hide_post_button()
         for move in self:
             if move.validation_status == "validated" and move.state == "submitted":
-                move.hide_post_button = False
+                payment = move.payment_id
+                if payment and payment.payment_type == "outbound":
+                    move.hide_post_button = payment.export_status == "draft"
+                else:
+                    move.hide_post_button = False
             else:
                 move.hide_post_button = True
 
