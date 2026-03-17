@@ -301,7 +301,7 @@ class AdvancePayment(models.Model):
         vals_list = [rec._prepare_account_payment_vals(payment_type) for rec in self]
         payments = self.env["account.payment"].create(vals_list)
         self.write({"state": "approved"})
-        payments.action_post()
+        payments.action_submit()
         for rec, payment in zip(self, payments):
             rec.message_post(
                 body=_(
