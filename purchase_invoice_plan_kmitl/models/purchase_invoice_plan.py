@@ -11,7 +11,8 @@ _logger = logging.getLogger(__name__)
 class PurchaseInvoicePlan(models.Model):
     _inherit = 'purchase.invoice.plan'
 
-    duration_days = fields.Integer(string="ระยะเวลา(วัน)", default=30)
+    duration_days = fields.Integer(string="Duration (Days)")
+    plan_date = fields.Date(required=False)
 
     @api.onchange("duration_days")
     def _onchange_duration_days(self):

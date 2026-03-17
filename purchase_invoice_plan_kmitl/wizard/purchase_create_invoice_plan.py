@@ -1,8 +1,10 @@
-from odoo import api, models
+from odoo import api, fields, models
 
 
 class PurchaseCreateInvoicePlan(models.TransientModel):
     _inherit = "purchase.create.invoice.plan"
+
+    interval = fields.Integer(default=0)
 
     @api.model
     def default_get(self, fields_list):
