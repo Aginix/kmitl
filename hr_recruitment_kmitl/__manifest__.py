@@ -36,6 +36,9 @@
                 "hr_recruitment_kmitl/static/src/scss/bootstrap_overridden.scss",
             ),
         ],
+        "website.assets_editor": [
+            "hr_recruitment_kmitl/static/src/js/form_editor.js",
+        ],
     },
     "application": False,
     "installable": True,
