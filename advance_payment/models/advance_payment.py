@@ -182,11 +182,6 @@ class AdvancePayment(models.Model):
         if records:
             records._check_exception()
 
-    @api.onchange("loan_amount")
-    def onchange_ignore_exception(self):
-        if self.state == "submitted":
-            self.ignore_exception = False
-
     def button_draft(self):
         self.write({"state": "draft"})
 
