@@ -174,20 +174,17 @@ class AdvancePayment(models.Model):
 
     @api.depends("reference_model")
     def _compute_method_id(self):
-        Method = self.env["advance.payment.method"]
+        models_needed = {rec.reference_model for rec in self if rec.reference_model}
+        method_by_model = {}
+        if models_needed:
+            methods = self.env["advance.payment.method"].search(
+                [("default_for_model", "in", list(models_needed))]
+            )
+            method_by_model = {m.default_for_model: m for m in methods}
         for rec in self:
-            if rec.reference_model:
-                rec.method_id = Method.search(
-                    [("default_for_model", "=", rec.reference_model)], limit=1
-                )
-            else:
-                rec.method_id = False
+            rec.method_id = method_by_model.get(rec.reference_model, False)
 
-    def _prepare_account_payment_vals(self):
-        self.ensure_one()
-        payment_type = self.env.ref(
-            "advance_payment.payment_type_advance_payment_outbound"
-        )
+    def _prepare_account_payment_vals(self, payment_type):
         vals = {
             "partner_id": self.requested_by.partner_id.id,
             "amount": self.loan_amount,
@@ -199,6 +196,10 @@ class AdvancePayment(models.Model):
         if payment_type.journal_id:
             vals["journal_id"] = payment_type.journal_id.id
         return vals
+
+    def action_start(self):
+        """Transition approved agreements to in_progress (triggered by payment posting)."""
+        self.write({"state": "in_progress"})
 
     def action_submit(self):
         """Submit the agreement for approval (ส่งเพื่อขออนุมัติ)."""
@@ -214,9 +215,10 @@ class AdvancePayment(models.Model):
         for rec in self:
             if rec.state != "submitted":
                 raise UserError(_("Only submitted agreements can be approved."))
-            payment_vals = rec._prepare_account_payment_vals()
-            self.env["account.payment"].create(payment_vals)
-            rec.state = "approved"
+        payment_type = self.env.ref("advance_payment.payment_type_advance_payment_outbound")
+        vals_list = [rec._prepare_account_payment_vals(payment_type) for rec in self]
+        self.env["account.payment"].create(vals_list)
+        self.write({"state": "approved"})
 
     def action_close(self):
         """Close the agreement (ปิดสัญญา)."""

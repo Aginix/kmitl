@@ -13,7 +13,9 @@ class AccountPayment(models.Model):
 
     def action_post(self):
         res = super().action_post()
-        for rec in self.filtered("advance_payment_id"):
-            if rec.advance_payment_id.state == "approved":
-                rec.advance_payment_id.state = "in_progress"
+        to_start = self.filtered(
+            lambda p: p.advance_payment_id.state == "approved"
+        ).mapped("advance_payment_id")
+        if to_start:
+            to_start.action_start()
         return res
