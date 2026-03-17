@@ -24,6 +24,7 @@
         "views/res_partner_views.xml",
         "views/profile_templates.xml",
         "views/portal_templates.xml",
+        "views/hr_applicant_views.xml",
     ],
     "assets": {
         "web.assets_frontend": [

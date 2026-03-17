@@ -3,3 +3,6 @@ from . import portal_profile
 from . import portal_work_history
 from . import res_partner
 from . import hr_job
+from . import hr_applicant
+from . import hr_applicant_education
+from . import hr_applicant_work
