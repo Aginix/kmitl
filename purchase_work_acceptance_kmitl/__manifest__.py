@@ -15,6 +15,7 @@
     "data": [
         "data/server_action.xml",
         "data/tier.definition.csv",
+        "data/settings.xml",
         "security/ir.model.access.csv",
         "views/purchase_order_views.xml",
         "views/work_acceptance_views.xml",
