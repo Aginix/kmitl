@@ -1,0 +1,49 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* hr_recruitment_kmitl
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-10 11:10+0000\n"
+"PO-Revision-Date: 2026-03-10 11:10+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: hr_recruitment_kmitl
+#: model:ir.model.fields.selection,name:hr_recruitment_kmitl.selection__hr_job__role__academic
+#: model:ir.model.fields.selection,name:hr_recruitment_kmitl.selection__hr_job__type__academic
+msgid "Academic"
+msgstr "สายวิชาการ"
+
+#. module: hr_recruitment_kmitl
+#: model:ir.model,name:hr_recruitment_kmitl.model_hr_job
+msgid "Job Position"
+msgstr "ตำแหน่งงาน"
+
+#. module: hr_recruitment_kmitl
+#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job__role
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.view_hr_job_search
+msgid "Role"
+msgstr "สายงาน"
+
+#. module: hr_recruitment_kmitl
+#: model:ir.model.fields.selection,name:hr_recruitment_kmitl.selection__hr_job__type__special
+msgid "Special"
+msgstr "ประเภทพิเศษ"
+
+#. module: hr_recruitment_kmitl
+#: model:ir.model.fields.selection,name:hr_recruitment_kmitl.selection__hr_job__role__support
+msgid "Support"
+msgstr "สายสนับสนุนวิชาการ"
+
+#. module: hr_recruitment_kmitl
+#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job__type
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.view_hr_job_search
+msgid "Type"
+msgstr "ประเภท"

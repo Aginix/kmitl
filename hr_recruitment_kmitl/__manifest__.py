@@ -19,6 +19,7 @@
         "views/website_hr_recruitment_templates.xml",
         "views/snippets/s_benefit_card.xml",
         "views/snippets/snippets.xml",
+        "views/hr_job_views.xml",
         "views/website_templates.xml",
         "views/portal_profile_views.xml",
         "views/res_partner_views.xml",

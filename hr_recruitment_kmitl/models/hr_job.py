@@ -8,5 +8,5 @@ class HrJob(models.Model):
         [("academic", "Academic"), ("support", "Support")],
     )
     type = fields.Selection(
-        [("special", "Special"), ("academic", "Academic")], required=True
+        [("special", "Special"), ("academic", "Academic")], default="special"
     )
