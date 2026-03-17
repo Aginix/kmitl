@@ -142,7 +142,7 @@ class AdvancePayment(models.Model):
     )
 
     # Analytic dimension fields — computed from analytic_distribution, not stored
-    _ANALYTIC_PLAN_TO_FIELD = {
+    _analytic_keys = {
         "activities": "activity_analytic_id",
         "departments": "department_analytic_id",
         "funds": "fund_analytic_id",
@@ -185,38 +185,26 @@ class AdvancePayment(models.Model):
     @api.depends("analytic_distribution")
     def _compute_analytic_ids(self):
         for rec in self:
-            values = {f: False for f in self._ANALYTIC_PLAN_TO_FIELD.values()}
+            values = {f: False for f in self._analytic_keys.values()}
             account_ids = [int(k) for k in (rec.analytic_distribution or {})]
             for account in self.env["account.analytic.account"].browse(account_ids):
-                field = self._ANALYTIC_PLAN_TO_FIELD.get(account.plan_id.code)
+                field = self._analytic_keys.get(account.plan_id.code)
                 if field:
                     values[field] = account.id
             for field, val in values.items():
                 rec[field] = val
 
-    def _inverse_analytic_id(self, plan_code):
-        for rec in self:
-            distribution = {}
-            account_ids = [int(k) for k in (rec.analytic_distribution or {})]
-            for account in self.env["account.analytic.account"].browse(account_ids):
-                if account.plan_id.code != plan_code:
-                    distribution[str(account.id)] = 100
-            analytic = rec[self._ANALYTIC_PLAN_TO_FIELD[plan_code]]
-            if analytic:
-                distribution[str(analytic.id)] = 100
-            rec.analytic_distribution = distribution or False
-
     def _inverse_activity_analytic_id(self):
-        self._inverse_analytic_id("activities")
+        self._update_analytic_distribution("activities")
 
     def _inverse_department_analytic_id(self):
-        self._inverse_analytic_id("departments")
+        self._update_analytic_distribution("departments")
 
     def _inverse_fund_analytic_id(self):
-        self._inverse_analytic_id("funds")
+        self._update_analytic_distribution("funds")
 
     def _inverse_source_analytic_id(self):
-        self._inverse_analytic_id("sources")
+        self._update_analytic_distribution("sources")
 
     @api.depends("loan_amount", "usage_line_ids.amount")
     def _compute_amounts(self):
@@ -236,6 +224,7 @@ class AdvancePayment(models.Model):
             "amount": self.loan_amount,
             "currency_id": self.currency_id.id,
             "advance_payment_id": self.id,
+            "analytic_distribution": self.analytic_distribution,
             "kmitl_payment_type_id": payment_type.id,
             "payment_type": payment_type.direction,
         }
