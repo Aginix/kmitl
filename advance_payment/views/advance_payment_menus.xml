@@ -4,7 +4,7 @@
         name="สัญญายืมเงิน"
         sequence="50"
         web_icon="advance_payment,static/description/icon.png"
-        groups="base.group_user"/>
+        groups="advance_payment.group_advance_payment_user"/>
 
     <menuitem id="menu_advance_payment_agreement"
         name="สัญญายืมเงิน"

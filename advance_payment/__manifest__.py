@@ -14,6 +14,7 @@
         "account_analytic_kmitl",
     ],
     "data": [
+        "security/security.xml",
         "security/ir.model.access.csv",
         "data/advance_payment_exception_data.xml",
         "data/advance_payment_sequence.xml",

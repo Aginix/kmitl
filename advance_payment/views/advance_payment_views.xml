@@ -46,7 +46,8 @@
                         string="อนุมัติ"
                         type="object"
                         class="btn-primary"
-                        attrs="{'invisible': [('state', '!=', 'submitted')]}"/>
+                        attrs="{'invisible': [('state', '!=', 'submitted')]}"
+                        groups="advance_payment.group_advance_payment_manager"/>
                     <button name="action_open_usage_wizard"
                         string="บันทึกการใช้เงิน"
                         type="object"
