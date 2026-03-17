@@ -166,9 +166,24 @@ class AdvancePayment(models.Model):
             vals["journal_id"] = payment_type.journal_id.id
         return vals
 
-    def action_start(self):
+    def action_start(self, payment=None):
         """Transition approved agreements to in_progress (triggered by payment posting)."""
         self.write({"state": "in_progress"})
+        for rec in self:
+            if payment:
+                body = _(
+                    "Payment <a href='/web#id=%(id)s&amp;model=account.payment'><b>%(name)s</b></a>"
+                    " has been confirmed. Funds of <b>%(amount)s %(currency)s</b> have been disbursed"
+                    " to <b>%(partner)s</b>.",
+                    id=payment.id,
+                    name=payment.name,
+                    amount=payment.amount,
+                    currency=payment.currency_id.name,
+                    partner=payment.partner_id.name,
+                )
+            else:
+                body = _("Payment confirmed. Funds have been disbursed.")
+            rec.message_post(body=body, subtype_xmlid="mail.mt_note")
 
     def action_submit(self):
         """Submit the agreement for approval (ส่งเพื่อขออนุมัติ)."""
@@ -178,6 +193,17 @@ class AdvancePayment(models.Model):
             if rec.name == _("New"):
                 rec.name = self.env["ir.sequence"].next_by_code("advance.payment")
             rec.state = "submitted"
+            rec.message_post(
+                body=_(
+                    "Agreement submitted for approval by <b>%(user)s</b>."
+                    " Loan amount: <b>%(amount)s %(currency)s</b>.%(reason)s",
+                    user=rec.requested_by.name,
+                    amount=rec.loan_amount,
+                    currency=rec.currency_id.name,
+                    reason=_(" Reason: %(r)s", r=rec.loan_reason) if rec.loan_reason else "",
+                ),
+                subtype_xmlid="mail.mt_note",
+            )
 
     def action_approve(self):
         """Approve and auto-create outbound account.payment (อนุมัติ)."""
@@ -186,8 +212,24 @@ class AdvancePayment(models.Model):
                 raise UserError(_("Only submitted agreements can be approved."))
         payment_type = self.env.ref("advance_payment.payment_type_advance_payment_outbound")
         vals_list = [rec._prepare_account_payment_vals(payment_type) for rec in self]
-        self.env["account.payment"].create(vals_list)
+        payments = self.env["account.payment"].create(vals_list)
         self.write({"state": "approved"})
+        for rec, payment in zip(self, payments):
+            rec.message_post(
+                body=_(
+                    "Agreement approved. Payment"
+                    " <a href='/web#id=%(id)s&amp;model=account.payment'><b>%(name)s</b></a>"
+                    " created for <b>%(amount)s %(currency)s</b> to <b>%(partner)s</b>"
+                    " via journal <b>%(journal)s</b>.",
+                    id=payment.id,
+                    name=payment.name or _("(draft)"),
+                    amount=payment.amount,
+                    currency=payment.currency_id.name,
+                    partner=payment.partner_id.name,
+                    journal=payment.journal_id.name,
+                ),
+                subtype_xmlid="mail.mt_note",
+            )
 
     def action_close(self):
         """Close the agreement (ปิดสัญญา)."""
@@ -195,6 +237,17 @@ class AdvancePayment(models.Model):
             if rec.state != "in_progress":
                 raise UserError(_("Only in-progress agreements can be closed."))
             rec.state = "done"
+            rec.message_post(
+                body=_(
+                    "Agreement closed."
+                    " Amount used: <b>%(used)s %(currency)s</b>."
+                    " Amount remaining: <b>%(remaining)s %(currency)s</b>.",
+                    used=rec.amount_used,
+                    currency=rec.currency_id.name,
+                    remaining=rec.amount_remaining,
+                ),
+                subtype_xmlid="mail.mt_note",
+            )
 
     def action_view_payments(self):
         """Open linked account.payments."""
