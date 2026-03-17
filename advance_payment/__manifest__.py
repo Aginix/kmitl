@@ -11,6 +11,7 @@
         "purchase_request",
         "account_payment_kmitl",
         "base_exception",
+        "account_analytic_kmitl",
     ],
     "data": [
         "security/ir.model.access.csv",

@@ -87,6 +87,16 @@
                         <field name="bank_id"/>
                         <field name="bank_account_number"/>
                     </group>
+                    <group string="มิติทางบัญชี">
+                        <field name="department_analytic_id"
+                            attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        <field name="source_analytic_id"
+                            attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        <field name="fund_analytic_id"
+                            attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        <field name="activity_analytic_id"
+                            attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                    </group>
                     <group string="สรุปยอดเงิน" attrs="{'invisible': [('state', '=', 'draft')]}">
                         <field name="amount_used"/>
                         <field name="amount_remaining"/>

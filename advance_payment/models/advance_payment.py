@@ -12,7 +12,7 @@ class AdvancePayment(models.Model):
 
     _name = "advance.payment"
     _description = "Advance Payment"
-    _inherit = ["mail.thread", "mail.activity.mixin", "base.exception"]
+    _inherit = ["mail.thread", "mail.activity.mixin", "base.exception", "analytic.mixin"]
     _order = "main_exception_id asc, name desc, id desc"
 
     READONLY_STATES = {
@@ -140,6 +140,83 @@ class AdvancePayment(models.Model):
         string="Attachments",
         domain=[("res_model", "=", "advance.payment")],
     )
+
+    # Analytic dimension fields — computed from analytic_distribution, not stored
+    _ANALYTIC_PLAN_TO_FIELD = {
+        "activities": "activity_analytic_id",
+        "departments": "department_analytic_id",
+        "funds": "fund_analytic_id",
+        "sources": "source_analytic_id",
+    }
+
+    activity_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="ด้าน/แผนงาน/กิจกรรม",
+        compute="_compute_analytic_ids",
+        inverse="_inverse_activity_analytic_id",
+        domain=[("root_plan_id.code", "=", "activities")],
+        store=False,
+    )
+    department_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="ส่วนงาน",
+        compute="_compute_analytic_ids",
+        inverse="_inverse_department_analytic_id",
+        domain=[("root_plan_id.code", "=", "departments")],
+        store=False,
+    )
+    fund_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="กองทุน",
+        compute="_compute_analytic_ids",
+        inverse="_inverse_fund_analytic_id",
+        domain=[("root_plan_id.code", "=", "funds")],
+        store=False,
+    )
+    source_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="แหล่งเงิน",
+        compute="_compute_analytic_ids",
+        inverse="_inverse_source_analytic_id",
+        domain=[("root_plan_id.code", "=", "sources")],
+        store=False,
+    )
+
+    @api.depends("analytic_distribution")
+    def _compute_analytic_ids(self):
+        for rec in self:
+            values = {f: False for f in self._ANALYTIC_PLAN_TO_FIELD.values()}
+            account_ids = [int(k) for k in (rec.analytic_distribution or {})]
+            for account in self.env["account.analytic.account"].browse(account_ids):
+                field = self._ANALYTIC_PLAN_TO_FIELD.get(account.plan_id.code)
+                if field:
+                    values[field] = account.id
+            for field, val in values.items():
+                rec[field] = val
+
+    def _inverse_analytic_id(self, plan_code):
+        for rec in self:
+            distribution = {}
+            account_ids = [int(k) for k in (rec.analytic_distribution or {})]
+            for account in self.env["account.analytic.account"].browse(account_ids):
+                if account.plan_id.code != plan_code:
+                    distribution[str(account.id)] = 100
+            analytic = rec[self._ANALYTIC_PLAN_TO_FIELD[plan_code]]
+            if analytic:
+                distribution[str(analytic.id)] = 100
+            rec.analytic_distribution = distribution or False
+
+    def _inverse_activity_analytic_id(self):
+        self._inverse_analytic_id("activities")
+
+    def _inverse_department_analytic_id(self):
+        self._inverse_analytic_id("departments")
+
+    def _inverse_fund_analytic_id(self):
+        self._inverse_analytic_id("funds")
+
+    def _inverse_source_analytic_id(self):
+        self._inverse_analytic_id("sources")
 
     @api.depends("loan_amount", "usage_line_ids.amount")
     def _compute_amounts(self):
