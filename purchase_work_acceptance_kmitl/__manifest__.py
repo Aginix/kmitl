@@ -15,12 +15,12 @@
     "data": [
         "data/server_action.xml",
         "data/tier.definition.csv",
-        "data/settings.xml",
         "security/ir.model.access.csv",
         "views/purchase_order_views.xml",
         "views/work_acceptance_views.xml",
         "wizards/work_acceptance_committee_wizard.xml",
     ],
+    "post_init_hook": "post_init_hook",
     'installable': True,
     'auto_install': False,
     'license': 'LGPL-3',
