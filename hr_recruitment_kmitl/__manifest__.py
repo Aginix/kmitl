@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 {
     "name": "HR Recruitment KMITL",
     "version": "16.0.1.0.0",
     "summary": "Custom theme and pages for KMITL recruitment website",
-    "author": "KMITL",
+    "author": "Aginix Technologies, KMITL",
     "category": "Website",
     "depends": [
         "website",
@@ -23,7 +22,8 @@
         "views/website_templates.xml",
         "views/portal_profile_views.xml",
         "views/res_partner_views.xml",
-        "views/profile_templates.xml"
+        "views/profile_templates.xml",
+        "views/portal_templates.xml",
     ],
     "assets": {
         "web.assets_frontend": [

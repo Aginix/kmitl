@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Portal Home Entry -->
+    <template
+        id="portal_my_home_recruitment"
+        name="Portal My Home: Recruitment Applications"
+        inherit_id="portal.portal_my_home"
+        priority="40"
+    >
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">My Applications</t>
+                <t t-set="url" t-value="'/my/applications'" />
+                <t t-set="placeholder_count" t-value="'application_count'" />
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Application List Page -->
+    <template id="portal_my_applications" name="My Recruitment Applications">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True" />
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">My Applications</t>
+            </t>
+
+            <t t-if="not applications">
+                <div class="alert alert-info mt-3" role="alert">
+                    You have no recruitment applications on record.
+                </div>
+            </t>
+
+            <t t-if="applications" t-call="portal.portal_table">
+                <thead>
+                    <tr class="active">
+                        <th>Job Position</th>
+                        <th>Department</th>
+                        <th>Current Stage</th>
+                        <th>Status</th>
+                        <th>Date Applied</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="applications" t-as="app">
+                        <tr>
+                            <td>
+                                <a t-attf-href="/my/application/#{app.id}">
+                                    <t t-out="app.job_id.name or app.name" />
+                                </a>
+                            </td>
+                            <td>
+                                <t t-out="app.department_id.name or '-'" />
+                            </td>
+                            <td>
+                                <t t-out="app.stage_id.name or '-'" />
+                            </td>
+                            <td>
+                                <t t-if="app.application_status == 'hired'">
+                                    <span class="badge text-bg-success">Hired</span>
+                                </t>
+                                <t t-elif="app.application_status == 'refused'">
+                                    <span
+                                        class="badge text-bg-danger"
+                                    >Not Progressed</span>
+                                </t>
+                                <t t-else="">
+                                    <span
+                                        class="badge text-bg-primary"
+                                    >In Progress</span>
+                                </t>
+                            </td>
+                            <td>
+                                <span
+                                    t-field="app.create_date"
+                                    t-options='{"widget": "date"}'
+                                />
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </t>
+        </t>
+    </template>
+
+    <!-- Application Detail Page -->
+    <template
+        id="portal_application_detail"
+        name="My Application Detail"
+        inherit_id="portal.portal_sidebar"
+        primary="True"
+    >
+        <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">
+            <div class="row mt16 o_portal_recruitment_sidebar">
+                <!-- Sidebar -->
+                <t t-call="portal.portal_record_sidebar">
+                    <t t-set="classes" t-value="'col-lg-auto d-print-none'" />
+                    <t t-set="title">
+                        <h3 class="mb-0">
+                            <t t-out="application.job_id.name or application.name" />
+                        </h3>
+                        <t t-if="application.application_status == 'hired'">
+                            <span class="badge text-bg-success mt-2">Hired</span>
+                        </t>
+                        <t t-elif="application.application_status == 'refused'">
+                            <span
+                                class="badge text-bg-danger mt-2"
+                            >Not Progressed</span>
+                        </t>
+                        <t t-else="">
+                            <span class="badge text-bg-primary mt-2">In Progress</span>
+                        </t>
+                    </t>
+                    <t t-set="entries">
+                        <ul
+                            class="list-group list-group-flush flex-wrap flex-row flex-lg-column"
+                        >
+                            <li class="list-group-item flex-grow-1">
+                                <div class="small text-muted">Applied</div>
+                                <div>
+                                    <span
+                                        t-field="application.create_date"
+                                        t-options='{"widget": "date"}'
+                                    />
+                                </div>
+                            </li>
+                            <li
+                                t-if="application.date_closed"
+                                class="list-group-item flex-grow-1"
+                            >
+                                <div class="small text-muted">Hire Date</div>
+                                <div>
+                                    <span
+                                        t-field="application.date_closed"
+                                        t-options='{"widget": "date"}'
+                                    />
+                                </div>
+                            </li>
+                            <li
+                                t-if="application.department_id"
+                                class="list-group-item flex-grow-1"
+                            >
+                                <div class="small text-muted">Department</div>
+                                <div><t t-out="application.department_id.name" /></div>
+                            </li>
+                        </ul>
+                    </t>
+                </t>
+
+                <!-- Main Content -->
+                <div id="recruitment_portal_content" class="col-12 col-lg">
+
+                    <!-- Stage Progression Bar -->
+                    <div class="card mb-3">
+                        <div class="card-header fw-bold">Application Progress</div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center flex-wrap gap-2">
+                                <t t-foreach="all_stages" t-as="stage">
+                                    <t
+                                        t-if="stage.sequence &lt;= application.stage_id.sequence"
+                                    >
+                                        <t t-if="stage.id == application.stage_id.id">
+                                            <t
+                                                t-if="application.application_status == 'hired'"
+                                            >
+                                                <span
+                                                    class="badge text-bg-success fs-6 px-3 py-2"
+                                                >
+                                                    <t t-out="stage.name" />
+                                                </span>
+                                            </t>
+                                            <t t-else="">
+                                                <span
+                                                    class="badge text-bg-primary fs-6 px-3 py-2"
+                                                >
+                                                    <t t-out="stage.name" />
+                                                </span>
+                                            </t>
+                                        </t>
+                                        <t t-else="">
+                                            <span
+                                                class="badge text-bg-secondary px-3 py-2"
+                                            >
+                                                <t t-out="stage.name" />
+                                            </span>
+                                        </t>
+                                    </t>
+                                    <t t-else="">
+                                        <span
+                                            class="badge border border-secondary text-secondary px-3 py-2"
+                                        >
+                                            <t t-out="stage.name" />
+                                        </span>
+                                    </t>
+                                    <t t-if="not stage_last">
+                                        <span class="text-muted">&#8594;</span>
+                                    </t>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Application Details -->
+                    <div class="card mb-3">
+                        <div class="card-header fw-bold">Application Details</div>
+                        <div class="card-body p-0">
+                            <table class="table table-sm mb-0">
+                                <tbody>
+                                    <tr>
+                                        <th
+                                            style="width: 200px"
+                                            class="text-muted fw-normal ps-3"
+                                        >Job Position</th>
+                                        <td><t
+                                                t-out="application.job_id.name or '-'"
+                                            /></td>
+                                    </tr>
+                                    <tr>
+                                        <th
+                                            class="text-muted fw-normal ps-3"
+                                        >Department</th>
+                                        <td><t
+                                                t-out="application.department_id.name or '-'"
+                                            /></td>
+                                    </tr>
+                                    <tr>
+                                        <th
+                                            class="text-muted fw-normal ps-3"
+                                        >Application Subject</th>
+                                        <td><t t-out="application.name or '-'" /></td>
+                                    </tr>
+                                    <tr>
+                                        <th
+                                            class="text-muted fw-normal ps-3"
+                                        >Current Stage</th>
+                                        <td><t
+                                                t-out="application.stage_id.name or '-'"
+                                            /></td>
+                                    </tr>
+                                    <tr>
+                                        <th
+                                            class="text-muted fw-normal ps-3"
+                                        >Status</th>
+                                        <td>
+                                            <t
+                                                t-if="application.application_status == 'hired'"
+                                            >
+                                                <span
+                                                    class="text-success fw-bold"
+                                                >Hired</span>
+                                            </t>
+                                            <t
+                                                t-elif="application.application_status == 'refused'"
+                                            >
+                                                <span
+                                                    class="text-danger"
+                                                >Not Progressed</span>
+                                            </t>
+                                            <t t-else="">
+                                                <span
+                                                    class="text-primary"
+                                                >In Progress</span>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th
+                                            class="text-muted fw-normal ps-3"
+                                        >Date Applied</th>
+                                        <td>
+                                            <span
+                                                t-field="application.create_date"
+                                                t-options='{"widget": "date"}'
+                                            />
+                                        </td>
+                                    </tr>
+                                    <t t-if="application.date_closed">
+                                        <tr>
+                                            <th
+                                                class="text-muted fw-normal ps-3"
+                                            >Hire Date</th>
+                                            <td>
+                                                <span
+                                                    t-field="application.date_closed"
+                                                    t-options='{"widget": "date"}'
+                                                />
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>
