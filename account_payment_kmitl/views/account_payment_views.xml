@@ -47,7 +47,7 @@
             <!-- Add Budget tab -->
             <xpath expr="//sheet" position="inside">
                 <notebook>
-                    <page string="Budget" name="budget" attrs="{'invisible': [('payment_type', '!=', 'outbound')]}">
+                    <page string="Budget" name="budget">
                         <group string="Budget">
                             <group name="budget_info">
                                 <field name="budget_commitment_id" attrs="{'readonly': [('state', '!=', 'draft')]}" />
