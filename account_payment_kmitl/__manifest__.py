@@ -13,6 +13,7 @@
         "account_move_kmitl",
         "account_fiscal_year_enhance",
         "budget",
+        "l10n_th_account_tax",
         "l10n_th_bank_payment_export",
         "l10n_th_bank_payment_export_format",
         "thai_date_utils",
