@@ -83,7 +83,7 @@
                     <group>
                         <field name="late_days" />
                         <field name="fines_rate" />
-                        <field name="fines_late" />
+                        <field name="fines_late" readonly="1"/>
                     </group>
                 </group>
             </xpath>
@@ -98,7 +98,7 @@
                     <div>
                         <label for="fines_late"/>
                     </div>
-                    <field name="fines_late" nolabel="1"/>
+                    <field name="fines_late" nolabel="1" readonly="1"/>
 
                     <div>
                         <label for="fines_total"/>

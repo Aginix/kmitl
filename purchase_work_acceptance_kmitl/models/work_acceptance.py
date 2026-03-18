@@ -37,6 +37,16 @@ class WorkAcceptance(models.Model):
         store=True,
     )
 
+    fines_late = fields.Monetary(
+        compute="_compute_fines_late",
+        store=True
+    )
+    
+    @api.depends("late_days", "fines_rate")
+    def _compute_fines_late(self):
+        for rec in self:
+            rec.fines_late = rec.late_days * rec.fines_rate
+
     @api.depends("price_subtotal", "fines_late")
     def _compute_fines_total(self):
         for rec in self:
