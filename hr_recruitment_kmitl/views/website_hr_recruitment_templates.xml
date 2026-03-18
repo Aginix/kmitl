@@ -918,7 +918,72 @@
                                     <div class="tab-pane fade show" id="nav-documents"
                                         role="tabpanel" aria-labelledby="nav-documents-tab"
                                         tabindex="0">
-                                        Document
+                                        <div class="mb-4">
+                                            <h5 class="fw-bold m-0 text-dark d-flex align-items-center mb-1">
+                                            <span class="me-2 bg-primary" style="display: inline-block; width: 6px; height: 24px; border-radius: 2px;"/>
+                                            ยืนยันและส่งใบสมัคร (Confirmation)
+                                            </h5>
+                                            <p class="text-secondary ms-3 ps-2 small mb-0">กรุณาตรวจสอบข้อมูลทั้งหมดให้ถูกต้องก่อนส่งใบสมัคร และยอมรับข้อตกลงด้านล่าง</p>
+                                        </div>
+
+                                        <div class="mb-4 card shadow-sm border-danger bg-danger">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center mb-2 fw-bold text-danger" style="font-size: 0.95rem;">
+                                                    <i class="fa fa-exclamation-triangle me-2"/> คำเตือน: ไม่อนุญาตให้แก้ไขใบสมัครหลังส่ง
+                                                </div>
+                                                <ul class="text-dark mb-0" style="font-size: 0.85rem; padding-left: 24px;">
+                                                <li class="mb-2">เมื่อกดยืนยันส่งใบสมัครแล้ว ท่านจะไม่สามารถแก้ไขข้อมูลใดๆ ในใบสมัครนี้ได้อีก</li>
+                                                <li class="mb-2">หากต้องการแก้ไขข้อมูลหลังส่งใบสมัคร กรุณาติดต่อฝ่ายทรัพยากรบุคคล (HR) โดยตรง</li>
+                                                <li>ค่าธรรมเนียมการสมัครจะมีผลสมบูรณ์เมื่อชำระเรียบร้อยแล้ว และจะไม่จ่ายคืนในทุกกรณี</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-5 card shadow-sm border-warning bg-warning">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center mb-3 fw-bold text-dark" style="font-size: 0.95rem;">
+                                                    <i class="fa fa-check-square-o me-2 text-success fs-5"/> การรับรองข้อมูล
+                                                </div>
+                                                <div class="form-check d-flex align-items-start">
+                                                    <input class="form-check-input me-3 mt-1 shadow-sm border-secondary" type="checkbox" id="certifyCheck" required="required" style="transform: scale(1.3); cursor: pointer;"/>
+                                                    <label class="form-check-label text-dark" for="certifyCheck" style="font-size: 0.85rem; cursor: pointer;">
+                                                        <strong class="d-block mb-1">ข้าพเจ้าขอรับรองว่า ข้อมูลดังกล่าวทั้งหมดในใบสมัครนี้เป็นความจริงทุกประการ</strong>
+                                                        หากปรากฏภายหลังว่าข้อมูลไม่เป็นความจริง ข้าพเจ้ายินยอมสละสิทธิ์การสมัครงานโดยไม่มีเงื่อนไข<br/>
+                                                        <span class="text-secondary mt-2 d-inline-block" style="font-size: 0.8rem;">I certify that all information in this application is true. If it appears later to be false, I agree to waive the right to apply without compensation.</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-5 card shadow-sm border-secondary bg-secondary">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center mb-3 fw-bold text-dark" style="font-size: 0.95rem;">
+                                                <i class="fa fa-shield me-2 text-info fs-5"/> ข้อตกลง PDPA (พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล)
+                                                </div>
+                                                <div class="text-dark mb-4" style="font-size: 0.85rem;">
+                                                    <strong class="d-block mb-1">ข้าพเจ้ายินยอมให้สถาบันฯ เก็บรวบรวม ใช้ และเปิดเผยข้อมูลส่วนบุคคลสำหรับวัตถุประสงค์ในการสมัครงาน</strong>
+                                                    ทั้งนี้เป็นไปตามพระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 และระเบียบสถาบันฯ ที่เกี่ยวข้อง<br/>
+                                                    <span class="text-secondary mt-2 d-inline-block" style="font-size: 0.8rem;">I agree to the collection, use, and disclosure of personal information for job application purposes in accordance with the PDPA B.E. 2562.</span>
+                                                </div>
+
+                                                <div class="d-flex gap-4">
+                                                    <div class="form-check d-flex align-items-center">
+                                                        <input class="form-check-input me-2 shadow-sm border-secondary" type="radio" name="pdpaConsent" id="pdpaAgree" value="agreed" required="required" style="transform: scale(1.2); cursor: pointer;"/>
+                                                        <label class="form-check-label fw-bold text-primary mt-1" for="pdpaAgree" style="font-size: 0.9rem; cursor: pointer;">ยินยอม (Agreed)</label>
+                                                    </div>
+                                                    <div class="form-check d-flex align-items-center">
+                                                        <input class="form-check-input me-2 shadow-sm border-secondary" type="radio" name="pdpaConsent" id="pdpaDisagree" value="disagreed" required="required" style="transform: scale(1.2); cursor: pointer;"/>
+                                                        <label class="form-check-label text-secondary mt-1" for="pdpaDisagree" style="font-size: 0.9rem; cursor: pointer;">ไม่ยินยอม (Disagreed)</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex justify-content-end border-top pt-4 border-secondary">
+                                            <button type="submit" class="btn btn-solid-primary text-white px-5 py-3 fw-bold rounded-3 shadow-sm d-flex align-items-center border-0" style="font-size: 1.05rem;">
+                                            <i class="fa fa-paper-plane-o me-2"/> ส่งใบสมัคร
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
