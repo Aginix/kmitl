@@ -25,10 +25,26 @@
     }
 }
 
+#hr_recruitment_form {
+    .card {
+        box-shadow: $box-shadow-sm;
+    }
+}
+
 .accordion {
     .card-header {
         background-color: var(--thai-d-700);
         color: #fff;
         padding: 0.975rem 1rem;
     }
+}
+
+.nav.nav-pills {
+    border-radius: $border-radius;
+    padding: 8px;
+    background-color: $gray-200;
+}
+
+body {
+    background-color: $gray-50;
 }

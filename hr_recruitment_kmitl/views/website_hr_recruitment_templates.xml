@@ -7,10 +7,8 @@
         </xpath>
 
         <xpath expr="//div[hasclass('js_hr_recruitment')]" position="replace">
-            <div
-                id="wrap"
-                class="js_hr_recruitment o_website_hr_recruitment_job_detail bg-light pb-5"
-            >
+            <div id="wrap"
+                class="js_hr_recruitment o_website_hr_recruitment_job_detail bg-light pb-5">
                 <!-- Header (Previous: Breadcrumb) -->
                 <div class="bg-white border-bottom py-3 shadow-sm">
                     <div class="container">
@@ -18,8 +16,7 @@
                             href="/jobs"
                             class="btn btn-link text-decoration-none text-secondary p-0 fw-bold d-inline-flex align-items-center"
                         >
-                            <i class="fa fa-arrow-left me-2" /> กลับไปหน้าตำแหน่งงาน
-                        </a>
+                            <i class="fa fa-arrow-left me-2" /> กลับไปหน้าตำแหน่งงาน </a>
                     </div>
                 </div>
 
@@ -92,7 +89,8 @@
                                     <span
                                         class="text-muted small fw-normal d-block mt-1"
                                     >
-                                        <t t-if="job.department_id">(<span
+                                        <t t-if="job.department_id"
+                                        >(<span
                                                 t-esc="job.department_id.complete_name"
                                             />)</t>
                                     </span>
@@ -104,8 +102,7 @@
                                                 class="fa fa-map-marker fa-fw text-muted me-3 fs-5"
                                             />
                                             <div>
-                                                <span
-                                                    class="text-muted d-block small"
+                                                <span class="text-muted d-block small"
                                                 >สถานที่</span>
                                                 <strong class="text-dark">
                                                     <t t-if="job.address_id">
@@ -123,8 +120,7 @@
                                                 class="fa fa-calendar fa-fw text-muted me-3 fs-5"
                                             />
                                             <div>
-                                                <span
-                                                    class="text-muted d-block small"
+                                                <span class="text-muted d-block small"
                                                 >อัปเดตเมื่อ</span>
                                                 <strong class="text-dark">
                                                     <span
@@ -139,8 +135,7 @@
                                                 class="fa fa-check-circle fa-fw text-success me-3 fs-5"
                                             />
                                             <div>
-                                                <span
-                                                    class="text-muted d-block small"
+                                                <span class="text-muted d-block small"
                                                 >สถานะ</span>
                                                 <t t-if="job.website_published">
                                                     <div
@@ -193,18 +188,24 @@
                     </div>
                     <p>
                         <ul>
-                            <li
-                            >ปฏิบัติงานในฐานะผู้ปฏิบัติการที่ต้องใช้ความรู้ ความสามารถทางวิชาการในการทำงาน ปฏิบัติงานเกี่ยวกับสิ่งแวดล้อม ภายใต้การกำกับแนะนำ ตรวจสอบและปฏิบัติงานอื่นตามที่ได้รับมอบหมาย ลักษณะงานที่ปฏิบัติในด้านต่าง ๆ</li>
-                            <li
-                            >ปฏิบัติการเกี่ยวกับการสำรวจ รวบรวมข้อมูล ศึกษา วิเคราะห์ วิจัย ประเมินผล และสรุปผลข้อมูลและการดำเนินงาน รวมทั้งสามารถติดตามตรวจสอบข้อมูลและการดำเนินงานที่เกี่ยวข้องกับงานและระบบการจัดการด้านสิ่งแวดล้อม เพื่อเป็นแนวทางในการกำหนด พัฒนาและปรับปรุงนโยบาย แผนการดำเนินงาน ตัวชี้วัดและมาตรการในการพัฒนาระบบการจัดการสิ่งแวดล้อมและความยั่งยืนของสถาบัน</li>
-                            <li
-                            >จัดเก็บข้อมูลเบื้องต้น หรือฐานข้อมูลระบบสารสนเทศ จัดทำสถิติและจัดทำรายงานที่เกี่ยวข้องกับงานและระบบการจัดการด้านสิ่งแวดล้อมเพื่อติดตาม ประเมินและพัฒนาระบบบริหารจัดการทรัพยากรในพื้นที่สถาบัน</li>
-                            <li
-                            >ร่วมวางแผนและพัฒนาระบบฐานข้อมูลด้านสิ่งแวดล้อมที่เชื่อมต่อกับฐานข้อมูลระบบสารสนเทศเพื่อใช้ในการรายงานและคาดการณ์ผลกระทบในอนาคต</li>
-                            <li
-                            >ร่วมพัฒนาและถ่ายทอดองค์ความรู้ในการปฏิบัติงานด้านสิ่งแวดล้อม</li>
-                            <li
-                            >ประสานการทำงานร่วมกันทั้งภายในและภายนอกสถาบันหรือหน่วยงาน เพื่อให้เกิดความร่วมมือและผลสัมฤทธิ์ตามที่กำหนดไว้</li>
+                            <li>ปฏิบัติงานในฐานะผู้ปฏิบัติการที่ต้องใช้ความรู้
+                                ความสามารถทางวิชาการในการทำงาน ปฏิบัติงานเกี่ยวกับสิ่งแวดล้อม
+                                ภายใต้การกำกับแนะนำ ตรวจสอบและปฏิบัติงานอื่นตามที่ได้รับมอบหมาย
+                                ลักษณะงานที่ปฏิบัติในด้านต่าง ๆ</li>
+                            <li>
+                                ปฏิบัติการเกี่ยวกับการสำรวจ รวบรวมข้อมูล ศึกษา วิเคราะห์ วิจัย
+                                ประเมินผล และสรุปผลข้อมูลและการดำเนินงาน
+                                รวมทั้งสามารถติดตามตรวจสอบข้อมูลและการดำเนินงานที่เกี่ยวข้องกับงานและระบบการจัดการด้านสิ่งแวดล้อม
+                                เพื่อเป็นแนวทางในการกำหนด พัฒนาและปรับปรุงนโยบาย แผนการดำเนินงาน
+                                ตัวชี้วัดและมาตรการในการพัฒนาระบบการจัดการสิ่งแวดล้อมและความยั่งยืนของสถาบัน</li>
+                            <li>จัดเก็บข้อมูลเบื้องต้น หรือฐานข้อมูลระบบสารสนเทศ
+                                จัดทำสถิติและจัดทำรายงานที่เกี่ยวข้องกับงานและระบบการจัดการด้านสิ่งแวดล้อมเพื่อติดตาม
+                                ประเมินและพัฒนาระบบบริหารจัดการทรัพยากรในพื้นที่สถาบัน</li>
+                            <li>
+                                ร่วมวางแผนและพัฒนาระบบฐานข้อมูลด้านสิ่งแวดล้อมที่เชื่อมต่อกับฐานข้อมูลระบบสารสนเทศเพื่อใช้ในการรายงานและคาดการณ์ผลกระทบในอนาคต</li>
+                            <li>ร่วมพัฒนาและถ่ายทอดองค์ความรู้ในการปฏิบัติงานด้านสิ่งแวดล้อม</li>
+                            <li>ประสานการทำงานร่วมกันทั้งภายในและภายนอกสถาบันหรือหน่วยงาน
+                                เพื่อให้เกิดความร่วมมือและผลสัมฤทธิ์ตามที่กำหนดไว้</li>
                         </ul>
                     </p>
                 </div>
@@ -232,28 +233,18 @@
                     </div>
                     <div id="qualifications" class="accordion" role="tablist">
                         <div class="card bg-white" data-name="Item">
-                            <a
-                                href="#"
-                                t-attf-data-bs-target="#qualificationsTabInitial_1"
-                                role="tab"
-                                data-bs-toggle="collapse"
-                                aria-expanded="true"
-                                class="card-header"
-                            >คุณสมบัติทั่วไป (General Qualifications)</a>
-                            <div
-                                t-attf-id="qualificationsTabInitial_1"
-                                class="collapse show"
-                                data-bs-parent="#qualifications"
-                                role="tabpanel"
-                            >
+                            <a href="#" t-attf-data-bs-target="#qualificationsTabInitial_1"
+                                role="tab" data-bs-toggle="collapse" aria-expanded="true"
+                                class="card-header">คุณสมบัติทั่วไป (General Qualifications)</a>
+                            <div t-attf-id="qualificationsTabInitial_1" class="collapse show"
+                                data-bs-parent="#qualifications" role="tabpanel">
                                 <div class="card-body">
                                     <p>
                                         <ul>
                                             <li>ทุกสัญชาติ</li>
-                                            <li
-                                            >มีอายุไม่ต่ำกว่าสิบแปดปีบริบูรณ์ และไม่เกินหกสิบปี</li>
-                                            <li
-                                            >เป็นผู้เลื่อมใสในการปกครองระบอบประชาธิปไตยอันมีพระมหากษัตริย์ทรงเป็นประมุขด้วยความบริสุทธิ์ใจ</li>
+                                            <li>มีอายุไม่ต่ำกว่าสิบแปดปีบริบูรณ์ และไม่เกินหกสิบปี</li>
+                                            <li>
+                                                เป็นผู้เลื่อมใสในการปกครองระบอบประชาธิปไตยอันมีพระมหากษัตริย์ทรงเป็นประมุขด้วยความบริสุทธิ์ใจ</li>
                                             <li>อื่น ๆ ตามที่ ก.บ. สถล. กำหนด</li>
                                         </ul>
                                     </p>
@@ -261,55 +252,44 @@
                             </div>
                         </div>
                         <div class="card bg-white" data-name="Item">
-                            <a
-                                href="#"
-                                t-attf-data-bs-target="#qualificationsTabInitial_2"
-                                role="tab"
-                                data-bs-toggle="collapse"
-                                aria-expanded="false"
-                                class="collapsed card-header"
-                            >คุณสมบัติเฉพาะตำแหน่ง (Specific Qualifications)</a>
-                            <div
-                                t-attf-id="qualificationsTabInitial_2"
-                                class="collapse"
-                                data-bs-parent="#qualifications"
-                                role="tabpanel"
-                            >
+                            <a href="#" t-attf-data-bs-target="#qualificationsTabInitial_2"
+                                role="tab" data-bs-toggle="collapse" aria-expanded="false"
+                                class="collapsed card-header">คุณสมบัติเฉพาะตำแหน่ง (Specific
+                                Qualifications)</a>
+                            <div t-attf-id="qualificationsTabInitial_2" class="collapse"
+                                data-bs-parent="#qualifications" role="tabpanel">
                                 <div class="card-body">
                                     <p class="card-text">
                                         <ul>
-                                            <li
-                                            >สาขาวิชาที่เกี่ยวข้องสถิติ, คณิตศาสตร์, วิทยาการคอมพิวเตอร์, ระบบสารสนเทศเพื่อการจัดการ หรือสาขาที่เกี่ยวข้องกับการวิเคราะห์ข้อมูล</li>
-                                            <li
-                                            >ทักษะการใช้โปรแกรมพื้นฐาน (Microsoft Office หรือเทียบเท่า) ระดับดีขึ้นไป
-                                                <ul>
-                                                    <li>Microsoft Word
-                                                        <ul>
-                                                            <li
-                                                            >จัดรูปแบบเอกสารตามหนังสือราชการ</li>
-                                                            <li
-                                                            >สร้างสารบัญอัตโนมัติ</li>
+                                            <li>สาขาวิชาที่เกี่ยวข้องสถิติ, คณิตศาสตร์,
+                                                วิทยาการคอมพิวเตอร์, ระบบสารสนเทศเพื่อการจัดการ
+                                                หรือสาขาที่เกี่ยวข้องกับการวิเคราะห์ข้อมูล</li>
+                                            <li>ทักษะการใช้โปรแกรมพื้นฐาน (Microsoft Office
+                                                หรือเทียบเท่า) ระดับดีขึ้นไป <ul>
+                                                    <li>Microsoft Word <ul>
+                                                            <li>จัดรูปแบบเอกสารตามหนังสือราชการ</li>
+                                                            <li>สร้างสารบัญอัตโนมัติ</li>
                                                             <li>จัดการเชิงอรรถ</li>
-                                                            <li
-                                                            >ใช้ Styles เพื่อจัดเอกสารให้เป็นระเบียบ</li>
+                                                            <li>ใช้ Styles
+                                                เพื่อจัดเอกสารให้เป็นระเบียบ</li>
                                                         </ul>
                                                     </li>
                                                 </ul>
                                                 <ul>
-                                                    <li>Microsoft Excel
-                                                        <ul>
-                                                            <li
-                                                            >ใช้ฟังก์ชันพื้นฐานและขั้นสูง เช่น VLOOKUP, PivotTable, SUMIFS, IF, Conditional Formatting</li>
-                                                            <li
-                                                            >สร้างตารางและแผนภูมิ เพื่อวิเคราะห์และนำเสนอข้อมูลสถิติที่เกี่ยวข้องกับตัวชี้วัดได้อย่างถูกต้องและน่าสนใจ</li>
+                                                    <li>Microsoft Excel <ul>
+                                                            <li>ใช้ฟังก์ชันพื้นฐานและขั้นสูง เช่น
+                                                VLOOKUP, PivotTable, SUMIFS, IF, Conditional
+                                                Formatting</li>
+                                                            <li>
+                                                                สร้างตารางและแผนภูมิ
+                                                เพื่อวิเคราะห์และนำเสนอข้อมูลสถิติที่เกี่ยวข้องกับตัวชี้วัดได้อย่างถูกต้องและน่าสนใจ</li>
                                                         </ul>
                                                     </li>
                                                 </ul>
                                                 <ul>
-                                                    <li>Microsoft Powerpoint
-                                                        <ul>
-                                                            <li
-                                                            >สร้างสไลด์เพื่อนำเสนอข้อมูลและผลการประเมินได้อย่างชัดเจนและมีประสิทธิภาพ</li>
+                                                    <li>Microsoft Powerpoint <ul>
+                                                            <li>
+                                                สร้างสไลด์เพื่อนำเสนอข้อมูลและผลการประเมินได้อย่างชัดเจนและมีประสิทธิภาพ</li>
                                                         </ul>
                                                     </li>
                                                 </ul>
@@ -320,39 +300,36 @@
                             </div>
                         </div>
                         <div class="card bg-white" data-name="Item">
-                            <a
-                                href="#"
-                                t-attf-data-bs-target="#qualificationsTabInitial_3"
-                                role="tab"
-                                data-bs-toggle="collapse"
-                                aria-expanded="false"
-                                class="collapsed card-header"
-                            >ลักษณะต้องห้าม (Disqualifications)</a>
-                            <div
-                                t-attf-id="qualificationsTabInitial_3"
-                                class="collapse"
-                                data-bs-parent="#qualifications"
-                                role="tabpanel"
-                            >
+                            <a href="#" t-attf-data-bs-target="#qualificationsTabInitial_3"
+                                role="tab" data-bs-toggle="collapse" aria-expanded="false"
+                                class="collapsed card-header">ลักษณะต้องห้าม (Disqualifications)</a>
+                            <div t-attf-id="qualificationsTabInitial_3" class="collapse"
+                                data-bs-parent="#qualifications" role="tabpanel">
                                 <div class="card-body">
                                     <p class="card-text">
                                         <ul>
                                             <li>เป็นผู้ดำรงตำแหน่งทางการเมือง</li>
-                                            <li
-                                            >เป็นคนวิกลจริต หรือจิตฟั่นเฟือนไม่สมประกอบ หรือเป็นคนเสมือนไร้ความสามารถ หรือเป็นโรคตามที่กำหนดในกฎ ก.พ.อ. หรือเป็นโรคตามที่กำหนดในประกาศของ ก.บ. สถล.</li>
-                                            <li
-                                            >เป็นผู้อยู่ในระหว่างถูกสั่งพักราชการ หรือถูกสั่งให้ออกจากราชการไว้ก่อนตามข้อบังคับนี้หรือกฎหมายอื่น</li>
-                                            <li
-                                            >เป็นผู้บกพร่องในศีลธรรมอันดี จนเป็นที่รังเกียจของสังคม</li>
-                                            <li
-                                            >เป็นกรรมการ หรือผู้ดำรงตำแหน่งที่รับผิดชอบในการบริหารพรรคการเมืองหรือเจ้าหน้าที่ในพรรคการเมือง</li>
+                                            <li>เป็นคนวิกลจริต หรือจิตฟั่นเฟือนไม่สมประกอบ
+                                                หรือเป็นคนเสมือนไร้ความสามารถ
+                                                หรือเป็นโรคตามที่กำหนดในกฎ ก.พ.อ.
+                                                หรือเป็นโรคตามที่กำหนดในประกาศของ ก.บ. สถล.</li>
+                                            <li>
+                                                เป็นผู้อยู่ในระหว่างถูกสั่งพักราชการ
+                                                หรือถูกสั่งให้ออกจากราชการไว้ก่อนตามข้อบังคับนี้หรือกฎหมายอื่น</li>
+                                            <li>เป็นผู้บกพร่องในศีลธรรมอันดี
+                                                จนเป็นที่รังเกียจของสังคม</li>
+                                            <li>
+                                                เป็นกรรมการ
+                                                หรือผู้ดำรงตำแหน่งที่รับผิดชอบในการบริหารพรรคการเมืองหรือเจ้าหน้าที่ในพรรคการเมือง</li>
                                             <li>เป็นบุคคลล้มละลาย</li>
-                                            <li
-                                            >เคยถูกจำคุกโดยคำพิพากษาถึงที่สุดให้จำคุก เว้นแต่เป็นโทษสำหรับความผิดที่ได้กระทำโดยประมาทหรือความผิดลหุโทษ</li>
-                                            <li
-                                            >เคยถูกลงโทษให้ออก ปลดออก หรือไล่ออกจากรัฐวิสาหกิจ องค์กรมหาชน หรือหน่วยงานอื่นของรัฐ</li>
-                                            <li
-                                            >เคยถูกลงโทษให้ออก ปลดออก หรือไล่ออกเพราะกระทำผิดวินัยตามข้อบังคับนี้หรือกฎหมายอื่น</li>
+                                            <li>
+                                                เคยถูกจำคุกโดยคำพิพากษาถึงที่สุดให้จำคุก
+                                                เว้นแต่เป็นโทษสำหรับความผิดที่ได้กระทำโดยประมาทหรือความผิดลหุโทษ</li>
+                                            <li>เคยถูกลงโทษให้ออก ปลดออก หรือไล่ออกจากรัฐวิสาหกิจ
+                                                องค์กรมหาชน หรือหน่วยงานอื่นของรัฐ</li>
+                                            <li>
+                                                เคยถูกลงโทษให้ออก ปลดออก
+                                                หรือไล่ออกเพราะกระทำผิดวินัยตามข้อบังคับนี้หรือกฎหมายอื่น</li>
                                         </ul>
                                     </p>
                                 </div>
@@ -393,9 +370,8 @@
                                 >
                                     <i class="fa fa-shield fa-fw text-primary fs-5" />
                                 </div>
-                                <span class="small fw-bold text-dark lh-sm">ประกันสังคม
-
-                                    <br />
+                                <span class="small fw-bold text-dark lh-sm"
+                                >ประกันสังคม <br />
                                     <span
                                         class="text-muted fw-normal small"
                                     >Social Security</span>
@@ -412,11 +388,8 @@
                                 >
                                     <i class="fa fa-database fa-fw text-primary fs-5" />
                                 </div>
-                                <span
-                                    class="small fw-bold text-dark lh-sm"
-                                >กองทุนสำรองเลี้ยงชีพ
-
-                                    <br />
+                                <span class="small fw-bold text-dark lh-sm"
+                                >กองทุนสำรองเลี้ยงชีพ <br />
                                     <span
                                         class="text-muted fw-normal small"
                                     >Provident Fund</span>
@@ -435,11 +408,8 @@
                                         class="fa fa-stethoscope fa-fw text-primary fs-5"
                                     />
                                 </div>
-                                <span
-                                    class="small fw-bold text-dark lh-sm"
-                                >สวัสดิการค่ารักษาพยาบาล
-
-                                    <br />
+                                <span class="small fw-bold text-dark lh-sm"
+                                >สวัสดิการค่ารักษาพยาบาล <br />
                                     <span
                                         class="text-muted fw-normal small"
                                     >รวมครอบครัว</span>
@@ -472,32 +442,35 @@
                 </div>
                 <p>
                     <ol>
-                        <li
-                        >ใบสมัครสอบคัดเลือกเพื่อบรรจุเป็นพนักงานสถาบัน โดยกรอกรายละเอียดครบถ้วน พร้อมแนบรูปถ่ายหน้าตรงไม่สวมหมวก ไม่สวมแว่นตาดำ ขนาด 1 นิ้ว จำนวน 1 รูป (ถ่ายไว้ไม่เกิน 6 เดือน)</li>
-                        <li
-                        >สําเนาใบปริญญาบัตร หรือสํา เนาหนังสือรับรองที่สภามหาวิทยาลัยอนุมัติผลการศึกษา</li>
+                        <li>ใบสมัครสอบคัดเลือกเพื่อบรรจุเป็นพนักงานสถาบัน โดยกรอกรายละเอียดครบถ้วน
+                            พร้อมแนบรูปถ่ายหน้าตรงไม่สวมหมวก ไม่สวมแว่นตาดำ ขนาด 1 นิ้ว จำนวน 1 รูป
+                            (ถ่ายไว้ไม่เกิน 6 เดือน)</li>
+                        <li>สําเนาใบปริญญาบัตร หรือสํา
+                            เนาหนังสือรับรองที่สภามหาวิทยาลัยอนุมัติผลการศึกษา</li>
                         <li>สำเนาใบรายงานผลการศึกษาเป็นรายวิชา</li>
                         <li>สำเนาบัตรประจำตัวประชาชน</li>
                         <li>สำเนาทะเบียนบ้าน</li>
-                        <li
-                        >สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร หรือได้รับการยกเว้นการเกณฑ์ทหาร ใบ สด.8 สด.9 หรือ สด.43 หรือหลักฐานทางการอื่น ๆ (เฉพาะเพศชาย)</li>
-                        <li
-                        >ประวัติส่วนตัว (Resume หรือ CV) และผลงานทางวิชาการ/งานวิจัย (Publication/Research)</li>
-                        <li
-                        >สำเนาเอกสารอื่น ๆ เช่น หนังสือเปลี่ยนชื่อ นามสกุล และอื่น ๆ (ถ้ามี)</li>
-                        <li
-                        >ใบรับรองแพทย์ใช้สำหรับสมัครงาน จากโรงพยาบาลรัฐ หรือโรงพยาบาลเอกชน หรือคลินิกเวชกรรม สอจอ ซึ่งมีอายุไม่เกิน 1 เดือน</li>
+                        <li>สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร หรือได้รับการยกเว้นการเกณฑ์ทหาร ใบ
+                            สด.8 สด.9 หรือ สด.43 หรือหลักฐานทางการอื่น ๆ (เฉพาะเพศชาย)</li>
+                        <li>ประวัติส่วนตัว (Resume หรือ CV) และผลงานทางวิชาการ/งานวิจัย
+                            (Publication/Research)</li>
+                        <li>สำเนาเอกสารอื่น ๆ เช่น หนังสือเปลี่ยนชื่อ นามสกุล และอื่น ๆ (ถ้ามี)</li>
+                        <li>ใบรับรองแพทย์ใช้สำหรับสมัครงาน จากโรงพยาบาลรัฐ หรือโรงพยาบาลเอกชน
+                            หรือคลินิกเวชกรรม สอจอ ซึ่งมีอายุไม่เกิน 1 เดือน</li>
                         <li>หลักฐานการชำระค่าธรรมเนียมการสมัครสอบ</li>
                     </ol>
                 </p>
                 <t t-snippet-call="website.s_hr" />
                 <p>
-                    <b>หมายเหตุ:</b> <br />
+                    <b>หมายเหตุ:</b>
+                    <br />
                     <ul>
-                        <li
-                        >การสมัครทางอีเมลให้ใช้เอกสารสำหรับการสมัคร พร้อมลงลายมือชื่อสำเนาถูกต้อง ในเอกสารส่วนตัว ให้รวมเอกสารไฟล์ .pdf เป็นไฟล์เดียว พร้อมติดรูปถ่ายในใบสมัครให้เรียบร้อย</li>
-                        <li
-                        >หากเอกสารอย่างใดอย่างหนึ่งไม่ครบถ้วน ไม่เรียบร้อย ตรงตามประกาศ หรือไม่สามารถส่งได้ภายในระยะเวลาที่กำหนด ให้ถือว่าการสมัครสอบคัดเลือกครั้งนี้เป็นโมฆะ</li>
+                        <li>การสมัครทางอีเมลให้ใช้เอกสารสำหรับการสมัคร พร้อมลงลายมือชื่อสำเนาถูกต้อง
+                            ในเอกสารส่วนตัว ให้รวมเอกสารไฟล์ .pdf เป็นไฟล์เดียว
+                            พร้อมติดรูปถ่ายในใบสมัครให้เรียบร้อย</li>
+                        <li>หากเอกสารอย่างใดอย่างหนึ่งไม่ครบถ้วน ไม่เรียบร้อย ตรงตามประกาศ
+                            หรือไม่สามารถส่งได้ภายในระยะเวลาที่กำหนด
+                            ให้ถือว่าการสมัครสอบคัดเลือกครั้งนี้เป็นโมฆะ</li>
                     </ul>
                 </p>
             </div>
@@ -521,12 +494,9 @@
                     <div class="container kmitl-nav-spacing position-relative z-1 py-4">
                         <div class="row align-items-center">
                             <div class="col-lg-8 text-white">
-                                <h1 class="display-4 fw-bold mb-3">
-                                    ร่วมขับเคลื่อนนวัตกรรม
-
-                                    <br />ไปกับ
-
-                                    <span class="text-primary">KMITL</span>
+                                <h1 class="display-4 fw-bold mb-3"> ร่วมขับเคลื่อนนวัตกรรม <br />
+                                    ไปกับ <span
+                                        class="text-primary">KMITL</span>
                                 </h1>
                                 <p class="lead text-white-50 mb-4 fs-6">
                                     ค้นหาโอกาสในการทำงานและเติบโตไปพร้อมกับสถาบันเทคโนโลยีชั้นนำของประเทศ
@@ -578,51 +548,339 @@
 
     </template>
 
+    <template id="profile_banner">
+        <div class="alert alert-warning d-flex" role="alert">
+            <div class="me-2">
+                <i class="fa fa-exclamation-triangle me-2"></i>
+            </div>
+            <div>
+                <div>
+                    ข้อมูลในขั้นตอนที่ 1-4 ดึงมาจากแฟ้มประวัติ (Master Profile)
+                    อัตโนมัติและไม่สามารถแก้ไขได้ในหน้านี้
+                </div>
+                <div>เพื่อป้องกันข้อมูลไม่ตรงกัน หากพบว่าข้อมูลไม่ถูกต้อง <a href="#">
+                    คลิกที่นี่เพื่อแก้ไขแฟ้มประวัติส่วนตัว</a></div>
+            </div>
+        </div>
+    </template>
+
     <template id="kmitl_apply" inherit_id="website_hr_recruitment.apply">
-        <xpath expr="//span[@data-for='hr_recruitment_form']" position="attributes">
-            <attribute name="t-att-data-values">{
-                'department_id': job and job.department_id.id or '',
-                'job_id': job and job.id or '',
-                'partner_name': default.get('partner_name', ''),
-                'email_from': default.get('email_from', ''),
-                'partner_phone': default.get('partner_phone', ''),
-                'applicant_title': default.get('applicant_title', ''),
-                'first_name': default.get('first_name', ''),
-                'middle_name': default.get('middle_name', ''),
-                'last_name': default.get('last_name', ''),
-                'first_name_en': default.get('first_name_en', ''),
-                'middle_name_en': default.get('middle_name_en', ''),
-                'last_name_en': default.get('last_name_en', ''),
-                'birthday': default.get('birthday', ''),
-                'nationality_id': default.get('nationality_id', ''),
-                'marital': default.get('marital', ''),
-                'spouse_prefix': default.get('spouse_prefix', ''),
-                'spouse_first_name': default.get('spouse_first_name', ''),
-                'spouse_middle_name': default.get('spouse_middle_name', ''),
-                'spouse_last_name': default.get('spouse_last_name', ''),
-                'street': default.get('street', ''),
-                'street2': default.get('street2', ''),
-                'city': default.get('city', ''),
-                'state_id': default.get('state_id', ''),
-                'zip': default.get('zip', ''),
-                'country_id': default.get('country_id', ''),
-                'emergency_contact_name': default.get('emergency_contact_name', ''),
-                'emergency_contact_relation': default.get('emergency_contact_relation', ''),
-                'emergency_contact_phone': default.get('emergency_contact_phone', ''),
-                'emergency_contact_email': default.get('emergency_contact_email', ''),
-                'chronic_disease': default.get('chronic_disease', ''),
-                'academic_position': default.get('academic_position', ''),
-                'academic_position_date': default.get('academic_position_date', ''),
-                'academic_position_institution': default.get('academic_position_institution', ''),
-                'has_ocsc_exam': default.get('has_ocsc_exam', ''),
-                'ocsc_exam_level': default.get('ocsc_exam_level', ''),
-                'ocsc_exam_date': default.get('ocsc_exam_date', ''),
-                'ocsc_exam_number': default.get('ocsc_exam_number', ''),
-                'foreign_language_skills': default.get('foreign_language_skills', ''),
-                'computer_skills': default.get('computer_skills', ''),
-                'other_abilities': default.get('other_abilities', ''),
-                'interests': default.get('interests', ''),
-            }</attribute>
+        <xpath expr="//h1" position="replace">
+            <div class="card w-100 border-primary" style="border-left-width: 6px;">
+                <div class="card-body">
+                    <div class="fw-bold text-primary">ตำแหน่งที่ต้องการสมัคร</div>
+                    <h4 class="fw-bold" t-field="job.name" />
+                    <div
+                        t-if="job.department_id"
+                        class="d-flex align-items-center text-muted"
+                    >
+                        <span
+                            class="fa fa-lg fa-building-o text-secondary"
+                        />
+                        <div
+                            class="ms-2 fs-6"
+                            t-field="job.department_id.complete_name"
+                        />
+                    </div>
+                </div>
+            </div>
         </xpath>
+
+        <xpath expr="//div[@id='jobs_section']" position="replace">
+            <div id="jobs_section" class="my-4">
+                <section id="forms" class="s_website_form" data-vcss="001"
+                    data-snippet="s_website_form">
+                    <form id="hr_recruitment_form" action="/website/form/" method="post"
+                        enctype="multipart/form-data" class="o_mark_required"
+                        data-mark="*" data-model_name="hr.applicant"
+                        data-success-mode="redirect" data-success-page="/job-thank-you"
+                        hide-change-model="true">
+                        <nav class="nav nav-pills nav-fill" id="form-tabs" role="tablist">
+                            <a class="nav-link active" aria-current="page" href="#nav-personnel"
+                                id="nav-personnel-tab"
+                                data-bs-toggle="tab" data-bs-target="#nav-personnel" type="button"
+                                role="tab"
+                                aria-controls="nav-personnel" aria-selected="true">ข้อมูลส่วนตัว</a>
+
+                            <a class="nav-link" href="#nav-educations" id="nav-educations-tab"
+                                data-bs-toggle="tab" data-bs-target="#nav-educations" type="button"
+                                role="tab"
+                                aria-controls="nav-educations">การศึกษา</a>
+
+                            <a class="nav-link" href="#nav-exp" id="nav-exp-tab"
+                                data-bs-toggle="tab" data-bs-target="#nav-exp" type="button"
+                                role="tab"
+                                aria-controls="nav-exp">ประสบการณ์</a>
+
+                            <a class="nav-link" href="#nav-academic" id="nav-academic-tab"
+                                data-bs-toggle="tab" data-bs-target="#nav-academic" type="button"
+                                role="tab"
+                                aria-controls="nav-academic">ข้อมูลทางวิชาการและราชการ</a>
+
+                            <a class="nav-link" href="#nav-skills" id="nav-skills-tab"
+                                data-bs-toggle="tab" data-bs-target="#nav-skills" type="button"
+                                role="tab"
+                                aria-controls="nav-skills">ทักษะและความสนใจ</a>
+
+                            <a class="nav-link" href="#nav-documents" id="nav-documents-tab"
+                                data-bs-toggle="tab" data-bs-target="#nav-documents" type="button"
+                                role="tab"
+                                aria-controls="nav-documents">เอกสาร</a>
+                        </nav>
+
+                        <div class="card mt-4">
+                            <div class="card-body">
+                                <div class="tab-content" id="nav-formTabContent">
+                                    <!-- Personnel -->
+                                    <div class="tab-pane fade show active" id="nav-personnel"
+                                        role="tabpanel" aria-labelledby="nav-personnel-tab"
+                                        tabindex="0">
+                                        <t t-call="hr_recruitment_kmitl.profile_banner"></t>
+                                        <div class="s_website_form_rows row s_col_no_bgcolor">
+                                            <div
+                                                class="col-12 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                                                data-type="char" data-name="Field">
+                                                <label
+                                                    class="col-4 col-sm-auto s_website_form_label"
+                                                    style="width: 200px" for="recruitment1">
+                                                    <span class="s_website_form_label_content">ชื่อ - นามสกุล</span>
+                                                    <span class="s_website_form_mark"> *</span>
+                                                </label>
+                                                <div class="col-sm">
+                                                    <input id="recruitment1" type="text"
+                                                        class="form-control s_website_form_input"
+                                                        name="partner_name" required="" readonly=""
+                                                        data-fill-with="name" />
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                                                data-type="char" data-name="Field">
+                                                <label
+                                                    class="col-form-label col-sm-auto s_website_form_label" for="birthday">
+                                                    <span class="s_website_form_label_content">วัน/เดือน/ปี เกิด</span>
+                                                    <span class="s_website_form_mark"> *</span>
+                                                </label>
+                                                <div class="col-sm">
+                                                    <input id="birthday" type="text"
+                                                        class="form-control s_website_form_input"
+                                                        name="birthday" required=""
+                                                        data-fill-with="birthday" />
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                                                data-type="char" data-name="Field">
+                                                <label
+                                                    class="col-form-label col-sm-auto s_website_form_label" for="nationality_id">
+                                                    <span class="s_website_form_label_content">สัญชาติ</span>
+                                                    <span class="s_website_form_mark"> *</span>
+                                                </label>
+                                                <div class="col-sm">
+                                                    <input id="nationality_id" type="text"
+                                                        class="form-control s_website_form_input"
+                                                        name="nationality_id" required=""
+                                                        data-fill-with="nationality_id" />
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                                                data-type="char" data-name="Field">
+                                                <label
+                                                    class="col-form-label col-sm-auto s_website_form_label" for="phone">
+                                                    <span class="s_website_form_label_content">โทรศัพท์</span>
+                                                    <span class="s_website_form_mark"> *</span>
+                                                </label>
+                                                <div class="col-sm">
+                                                    <input id="phone" type="text"
+                                                        class="form-control s_website_form_input"
+                                                        name="partner_mobile" required=""
+                                                        data-fill-with="phone" />
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                                                data-type="char" data-name="Field">
+                                                <label
+                                                    class="col-form-label col-sm-auto s_website_form_label" for="email">
+                                                    <span class="s_website_form_label_content">อีเมล</span>
+                                                    <span class="s_website_form_mark"> *</span>
+                                                </label>
+                                                <div class="col-sm">
+                                                    <input id="email" type="text"
+                                                        class="form-control s_website_form_input"
+                                                        name="email_from" required=""
+                                                            data-fill-with="email" />
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="col-12 mb-0 py-2 s_website_form_field"
+                                                data-type="text" data-name="Field">
+                                                <label
+                                                    class="col-form-label col-sm-auto s_website_form_label" for="address">
+                                                    <span class="s_website_form_label_content">ที่อยู่</span>
+                                                </label>
+                                                <div class="col-sm">
+                                                    <textarea id="address" type="text"
+                                                        class="form-control s_website_form_input"
+                                                        name="address_from" required=""
+                                                            data-fill-with="address" />
+                                                </div>
+                                            </div>
+                                            <h4>บุคคลที่ติดต่อได้ในกรณีเร่งด่วน</h4>
+                                            <div
+                                                class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                                                data-type="char" data-name="Field">
+                                                <label
+                                                    class="col-form-label col-sm-auto s_website_form_label" for="emergency_contact_name">
+                                                    <span class="s_website_form_label_content">ชื่อผู้ติดต่อ</span>
+                                                    <span class="s_website_form_mark"> *</span>
+                                                </label>
+                                                <div class="col-sm">
+                                                    <input id="emergency_contact_name" type="text"
+                                                        class="form-control s_website_form_input"
+                                                        name="emergency_contact_name_from" required=""
+                                                            data-fill-with="emergency_contact_name" />
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                                                data-type="char" data-name="Field">
+                                                <label
+                                                    class="col-form-label col-sm-auto s_website_form_label" for="emergency_contact_relation">
+                                                    <span class="s_website_form_label_content">ความสัมพันธ์</span>
+                                                    <span class="s_website_form_mark"> *</span>
+                                                </label>
+                                                <div class="col-sm">
+                                                    <input id="emergency_contact_relation" type="text"
+                                                        class="form-control s_website_form_input"
+                                                        name="emergency_contact_relation_from" required=""
+                                                            data-fill-with="emergency_contact_relation" />
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                                                data-type="char" data-name="Field">
+                                                <label
+                                                    class="col-form-label col-sm-auto s_website_form_label" for="emergency_contact_phone">
+                                                    <span class="s_website_form_label_content">เบอร์ติดต่อ</span>
+                                                    <span class="s_website_form_mark"> *</span>
+                                                </label>
+                                                <div class="col-sm">
+                                                    <input id="emergency_contact_phone" type="text"
+                                                        class="form-control s_website_form_input"
+                                                        name="emergency_contact_phone_from" required=""
+                                                            data-fill-with="emergency_contact_phone" />
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                                                data-type="char" data-name="Field">
+                                                <label
+                                                    class="col-form-label col-sm-auto s_website_form_label" for="emergency_contact_email">
+                                                    <span class="s_website_form_label_content">อีเมลติดต่อ</span>
+                                                    <span class="s_website_form_mark"> *</span>
+                                                </label>
+                                                <div class="col-sm">
+                                                    <input id="emergency_contact_email" type="text"
+                                                        class="form-control s_website_form_input"
+                                                        name="emergency_contact_email_from" required=""
+                                                            data-fill-with="emergency_contact_email" />
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="col-12 mb-0 py-2 s_website_form_field"
+                                                data-type="char" data-name="Field">
+                                                <label
+                                                    class="col-form-label col-sm-auto s_website_form_label" for="chronic_disease">
+                                                    <span class="s_website_form_label_content">โรคประจำตัว</span>
+                                                </label>
+                                                <div class="col-sm">
+                                                    <input id="chronic_disease" type="text"
+                                                        class="form-control s_website_form_input"
+                                                        name="chronic_disease_from" required=""
+                                                            data-fill-with="chronic_disease" />
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="col-12 mb-0 py-2 s_website_form_field s_website_form_dnone">
+                                                <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                    <label
+                                                        class="col-4 col-sm-auto s_website_form_label"
+                                                        style="width: 200px" for="recruitment7">
+                                                        <span class="s_website_form_label_content">
+                                                            Job</span>
+                                                    </label>
+                                                    <div class="col-sm">
+                                                        <input id="recruitment7" type="hidden"
+                                                            class="form-control s_website_form_input"
+                                                            name="job_id" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="col-12 mb-0 py-2 s_website_form_field s_website_form_dnone">
+                                                <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                    <label
+                                                        class="col-4 col-sm-auto s_website_form_label"
+                                                        style="width: 200px" for="recruitment8">
+                                                        <span class="s_website_form_label_content">
+                                                            Department</span>
+                                                    </label>
+                                                    <div class="col-sm">
+                                                        <input id="recruitment8" type="hidden"
+                                                            class="form-control s_website_form_input"
+                                                            name="department_id" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 s_website_form_submit mt-6 mb64 d-flex"
+                                                data-name="Submit Button">
+                                                <div style="margin-left: auto;"
+                                                    class="s_website_form_label" />
+                                                <a href="#" role="button"
+                                                    class="btn btn-primary btn-lg s_website_form_send">I'm
+                                                    feeling lucky</a>
+                                                <span id="s_website_form_result"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Educations -->
+                                    <div class="tab-pane fade show" id="nav-educations"
+                                        role="tabpanel" aria-labelledby="nav-educations-tab"
+                                        tabindex="0">
+                                        <t t-call="hr_recruitment_kmitl.profile_banner"></t>
+                                        Education </div>
+                                    <!-- Experience -->
+                                    <div class="tab-pane fade show" id="nav-exp"
+                                        role="tabpanel" aria-labelledby="nav-exp-tab" tabindex="0">
+                                        <t t-call="hr_recruitment_kmitl.profile_banner"></t>
+                                        Experience </div>
+                                    <!-- Academic -->
+                                    <div class="tab-pane fade show" id="nav-academic"
+                                        role="tabpanel" aria-labelledby="nav-academic-tab"
+                                        tabindex="0">
+                                        <t t-call="hr_recruitment_kmitl.profile_banner"></t>
+                                        Academic </div>
+                                    <!-- Skills -->
+                                    <div class="tab-pane fade show" id="nav-skills"
+                                        role="tabpanel" aria-labelledby="nav-skills-tab"
+                                        tabindex="0">
+                                        Skills
+                                    </div>
+                                    <!-- Document -->
+                                    <div class="tab-pane fade show" id="nav-documents"
+                                        role="tabpanel" aria-labelledby="nav-documents-tab"
+                                        tabindex="0">
+                                        Document
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </xpath>
+
     </template>
 </odoo>
