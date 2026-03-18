@@ -13,8 +13,14 @@ class WorkAcceptanceCommittee(models.Model):
     approve_role = fields.Selection(
         selection_add=[
             ("secretary", "Secretary"),
+            ("supervisor", "Supervisor"),
         ],
-        ondelete={'chairman': 'set default', 'committee': 'set default', 'secretary': 'set default'},
+        ondelete={
+            'chairman': 'set default',
+            'committee': 'set default',
+            'secretary': 'set default',
+            'supervisor': 'set default',
+        },
         default="committee",
     )
 
