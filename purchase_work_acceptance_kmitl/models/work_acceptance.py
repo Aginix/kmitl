@@ -40,7 +40,8 @@ class WorkAcceptance(models.Model):
     @api.depends("price_subtotal", "fines_late")
     def _compute_fines_total(self):
         for rec in self:
-            rec.fines_total = rec.price_subtotal + rec.fines_late
+            result = rec.price_subtotal - rec.fines_late
+            rec.fines_total = max(result, 0)
 
     @api.depends("wa_line_ids", "wa_line_ids.price_subtotal")
     def _compute_price_subtotal(self):
