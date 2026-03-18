@@ -6,7 +6,7 @@
     'author': 'Aginix Technologies',
     'website': 'https://github.com/aginix/kmitl',
     'category': 'KMITL',
-    'depends': ['account', 'purchase'],
+    'depends': ['account', 'purchase', 'l10n_th_account_tax'],
     "data": [
         "data/partner_type_data.xml",
         "security/ir.model.access.csv",

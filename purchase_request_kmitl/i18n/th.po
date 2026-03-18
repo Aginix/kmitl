@@ -1,21 +1,26 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* purchase_request_kmitl
-# 	* purchase_request
 # 	* l10n_th_gov_purchase_request
+# 	* purchase_request
+# 	* purchase_request_kmitl
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-30 03:32+0000\n"
-"PO-Revision-Date: 2025-10-30 03:32+0000\n"
+"POT-Creation-Date: 2026-03-05 10:05+0000\n"
+"PO-Revision-Date: 2026-03-05 10:05+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
+
+#. module: purchase_request
+#: model:ir.actions.report,print_report_name:purchase_request.action_report_purchase_requests
+msgid "'Purchase Request - %s' % (object.name)"
+msgstr "ขอซื้อขอจ้าง - %s' % (object.name)"
 
 #. module: purchase_request
 #. odoo-python
@@ -374,7 +379,12 @@ msgstr "ประเภทของคณะกรรมการ"
 #. module: l10n_th_gov_purchase_request
 #: model:ir.model.constraint,message:l10n_th_gov_purchase_request.constraint_procurement_committee_employee_request_uniq
 msgid "Committee has to be unique"
-msgstr ""
+msgstr "กรรมการต้องไม่ซ้ำกัน"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.constraint,message:purchase_request_kmitl.constraint_procurement_committee_employee_request_uniq
+msgid "Committee member has to be unique within the same committee type."
+msgstr "คณะกรรมการต้องไม่ซ้ำกันภายในประเภทเดียวกัน"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__company_id
@@ -496,11 +506,6 @@ msgid "Description"
 msgstr "ชื่อรายการ"
 
 #. module: purchase_request
-#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__name
-msgid "Description"
-msgstr "ชื่อรายการ"
-
-#. module: purchase_request
 #. odoo-python
 #: code:addons/purchase_request/models/purchase_request_line.py:0
 #, python-format
@@ -544,6 +549,18 @@ msgstr "ฉบับร่าง"
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_procurement_committee_tree
 msgid "Employee"
 msgstr "พนักงาน"
+
+#. module: purchase_request_kmitl
+#. odoo-python
+#: code:addons/purchase_request_kmitl/models/procurement_committee.py:0
+#, python-format
+msgid ""
+"Employee %s cannot appear in multiple committees except TOR and Evaluation "
+"committees."
+msgstr ""
+"คณะกรรมการ %s "
+"ไม่สามารถมีซ้ำกันในประเภทอื่นได้ยกเว้นคณะกรรมการพิจารณาผลและคณะกรรมการจัดทำ "
+"TOR"
 
 #. module: purchase_request
 #. odoo-python
@@ -1133,7 +1150,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_search
 msgid "Purchase Request"
-msgstr "คำขอซื้อขอจ้าง (พ.1)"
+msgstr "คำขอซื้อขอจ้าง"
 
 #. module: purchase_request
 #. odoo-python
@@ -1197,7 +1214,6 @@ msgstr ""
 #: model:ir.actions.act_window,name:purchase_request.purchase_request_line_form_action
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_order_line__purchase_request_lines
 #: model:ir.ui.menu,name:purchase_request.menu_purchase_request_line
-#: model:ir.ui.menu,name:purchase_request.menu_purchase_request_line_act
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_order_line_form2
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_order_line_form2_sub
 #, python-format
@@ -1207,12 +1223,12 @@ msgstr "รายการคำขอซื้อขอจ้าง"
 #. module: purchase_request
 #: model:res.groups,name:purchase_request.group_purchase_request_manager
 msgid "Purchase Request Manager"
-msgstr ""
+msgstr "ผู้ดูแลระบบ"
 
 #. module: purchase_request
 #: model:res.groups,name:purchase_request.group_purchase_request_user
 msgid "Purchase Request User : Own Documents Only"
-msgstr ""
+msgstr "ผู้ใช้ : เอกสารของตนเองเท่านั้น"
 
 #. module: purchase_request
 #: model:mail.message.subtype,description:purchase_request.mt_request_approved
@@ -1247,7 +1263,6 @@ msgstr ""
 #: model:ir.actions.act_window,name:purchase_request.purchase_request_form_action
 #: model:ir.model.fields,field_description:purchase_request.field_stock_move__purchase_request_ids
 #: model:ir.ui.menu,name:purchase_request.menu_purchase_request
-#: model:ir.ui.menu,name:purchase_request.menu_purchase_request_act
 #: model:ir.ui.menu,name:purchase_request.menu_purchase_request_pro_mgt
 #: model:ir.ui.menu,name:purchase_request.parent_menu_purchase_request
 msgid "Purchase Requests"
@@ -1657,11 +1672,6 @@ msgstr "คณะกรรมการกำหนดคุณลักษณะ
 msgid "TOR Committees"
 msgstr "คณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน"
 
-#. module: purchase_request_kmitl
-#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__title
-msgid "title"
-msgstr "ชื่อเรื่อง"
-
 #. module: purchase_request
 #. odoo-python
 #: code:addons/purchase_request/models/stock_move.py:0
@@ -1898,6 +1908,17 @@ msgstr "อีเมลที่ทำงาน"
 msgid "Work Phone"
 msgstr ""
 
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__procurement_committee__committee_type__work_supervisor
+msgid "Work Supervisor"
+msgstr "ผู้ควบคุมงาน"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__work_supervisor_ids
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form_l10n
+msgid "Work Supervisors"
+msgstr "รายชื่อผู้ควบคุมงาน"
+
 #. module: l10n_th_gov_purchase_request
 #. odoo-python
 #: code:addons/l10n_th_gov_purchase_request/models/purchase_request.py:0
@@ -1976,6 +1997,21 @@ msgstr ""
 #, python-format
 msgid "You have to select lines from the same company."
 msgstr ""
+
+#. module: purchase_request
+#: model:ir.ui.menu,name:purchase_request.menu_purchase_request_act
+msgid "purchase_request.menu_purchase_request_act"
+msgstr "คำขอซื้อขอจ้าง (พ.1)"
+
+#. module: purchase_request
+#: model:ir.ui.menu,name:purchase_request.menu_purchase_request_line_act
+msgid "purchase_request.menu_purchase_request_line_act"
+msgstr "รายการคำขอซื้อขอจ้าง"
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__title
+msgid "title"
+msgstr "ชื่อเรื่อง"
 
 #. module: l10n_th_gov_purchase_request
 #: model:exception.rule,description:l10n_th_gov_purchase_request.purchase_exception_amount_not_exceed_pr
@@ -2070,7 +2106,7 @@ msgstr ""
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,name:purchase_request_kmitl.kmitl_pr_exception_committee_1
-msgid "ต้องมีคณะกรรมการตรวจรับพัสดุ จำนวน 3 รายชื่อ"
+msgid "ต้องมีคณะกรรมการตรวจรับพัสดุ จำนวน 1 รายชื่อ"
 msgstr ""
 
 #. module: purchase_request_kmitl
