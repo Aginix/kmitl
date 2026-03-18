@@ -565,6 +565,52 @@
     </template>
 
     <template id="kmitl_apply" inherit_id="website_hr_recruitment.apply">
+        <xpath expr="//span[@data-for='hr_recruitment_form']" position="attributes">
+            <attribute name="t-att-data-values">{
+                'department_id': job and job.department_id.id or '',
+                'job_id': job and job.id or '',
+                'partner_name': default.get('partner_name', ''),
+                'email_from': default.get('email_from', ''),
+                'partner_phone': default.get('partner_phone', ''),
+                'applicant_title': default.get('applicant_title', ''),
+                'first_name': default.get('first_name', ''),
+                'middle_name': default.get('middle_name', ''),
+                'last_name': default.get('last_name', ''),
+                'first_name_en': default.get('first_name_en', ''),
+                'middle_name_en': default.get('middle_name_en', ''),
+                'last_name_en': default.get('last_name_en', ''),
+                'birthday': default.get('birthday', ''),
+                'nationality_id': default.get('nationality_id', ''),
+                'marital': default.get('marital', ''),
+                'spouse_prefix': default.get('spouse_prefix', ''),
+                'spouse_first_name': default.get('spouse_first_name', ''),
+                'spouse_middle_name': default.get('spouse_middle_name', ''),
+                'spouse_last_name': default.get('spouse_last_name', ''),
+                'street': default.get('street', ''),
+                'street2': default.get('street2', ''),
+                'city': default.get('city', ''),
+                'state_id': default.get('state_id', ''),
+                'zip': default.get('zip', ''),
+                'country_id': default.get('country_id', ''),
+                'emergency_contact_name': default.get('emergency_contact_name', ''),
+                'emergency_contact_relation': default.get('emergency_contact_relation', ''),
+                'emergency_contact_phone': default.get('emergency_contact_phone', ''),
+                'emergency_contact_email': default.get('emergency_contact_email', ''),
+                'chronic_disease': default.get('chronic_disease', ''),
+                'academic_position': default.get('academic_position', ''),
+                'academic_position_date': default.get('academic_position_date', ''),
+                'academic_position_institution': default.get('academic_position_institution', ''),
+                'has_ocsc_exam': default.get('has_ocsc_exam', ''),
+                'ocsc_exam_level': default.get('ocsc_exam_level', ''),
+                'ocsc_exam_date': default.get('ocsc_exam_date', ''),
+                'ocsc_exam_number': default.get('ocsc_exam_number', ''),
+                'foreign_language_skills': default.get('foreign_language_skills', ''),
+                'computer_skills': default.get('computer_skills', ''),
+                'other_abilities': default.get('other_abilities', ''),
+                'interests': default.get('interests', ''),
+            }</attribute>
+        </xpath>
+
         <xpath expr="//h1" position="replace">
             <div class="card w-100 border-primary" style="border-left-width: 6px;">
                 <div class="card-body">
@@ -664,7 +710,7 @@
                                                 <div class="col-sm">
                                                     <input id="birthday" type="text"
                                                         class="form-control s_website_form_input"
-                                                        name="birthday" required=""
+                                                        name="birthday" required="" readonly=""
                                                         data-fill-with="birthday" />
                                                 </div>
                                             </div>
@@ -679,7 +725,7 @@
                                                 <div class="col-sm">
                                                     <input id="nationality_id" type="text"
                                                         class="form-control s_website_form_input"
-                                                        name="nationality_id" required=""
+                                                        name="nationality_id" required="" readonly=""
                                                         data-fill-with="nationality_id" />
                                                 </div>
                                             </div>
@@ -694,7 +740,7 @@
                                                 <div class="col-sm">
                                                     <input id="phone" type="text"
                                                         class="form-control s_website_form_input"
-                                                        name="partner_mobile" required=""
+                                                        name="partner_mobile" required="" readonly=""
                                                         data-fill-with="phone" />
                                                 </div>
                                             </div>
@@ -709,7 +755,7 @@
                                                 <div class="col-sm">
                                                     <input id="email" type="text"
                                                         class="form-control s_website_form_input"
-                                                        name="email_from" required=""
+                                                        name="email_from" required="" readonly=""
                                                             data-fill-with="email" />
                                                 </div>
                                             </div>
@@ -723,7 +769,7 @@
                                                 <div class="col-sm">
                                                     <textarea id="address" type="text"
                                                         class="form-control s_website_form_input"
-                                                        name="address_from" required=""
+                                                        name="address_from" required="" readonly=""
                                                             data-fill-with="address" />
                                                 </div>
                                             </div>
@@ -739,7 +785,7 @@
                                                 <div class="col-sm">
                                                     <input id="emergency_contact_name" type="text"
                                                         class="form-control s_website_form_input"
-                                                        name="emergency_contact_name_from" required=""
+                                                        name="emergency_contact_name" required="" readonly=""
                                                             data-fill-with="emergency_contact_name" />
                                                 </div>
                                             </div>
@@ -754,7 +800,7 @@
                                                 <div class="col-sm">
                                                     <input id="emergency_contact_relation" type="text"
                                                         class="form-control s_website_form_input"
-                                                        name="emergency_contact_relation_from" required=""
+                                                        name="emergency_contact_relation" required="" readonly=""
                                                             data-fill-with="emergency_contact_relation" />
                                                 </div>
                                             </div>
@@ -769,7 +815,7 @@
                                                 <div class="col-sm">
                                                     <input id="emergency_contact_phone" type="text"
                                                         class="form-control s_website_form_input"
-                                                        name="emergency_contact_phone_from" required=""
+                                                        name="emergency_contact_phone" required="" readonly=""
                                                             data-fill-with="emergency_contact_phone" />
                                                 </div>
                                             </div>
@@ -784,7 +830,7 @@
                                                 <div class="col-sm">
                                                     <input id="emergency_contact_email" type="text"
                                                         class="form-control s_website_form_input"
-                                                        name="emergency_contact_email_from" required=""
+                                                        name="emergency_contact_email" required="" readonly=""
                                                             data-fill-with="emergency_contact_email" />
                                                 </div>
                                             </div>
@@ -798,7 +844,7 @@
                                                 <div class="col-sm">
                                                     <input id="chronic_disease" type="text"
                                                         class="form-control s_website_form_input"
-                                                        name="chronic_disease_from" required=""
+                                                        name="chronic_disease" required="" readonly=""
                                                             data-fill-with="chronic_disease" />
                                                 </div>
                                             </div>
