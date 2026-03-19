@@ -1,7 +1,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class AccountMove(models.Model):
@@ -85,6 +85,32 @@ class AccountMove(models.Model):
             "view_mode": "form",
             "target": "current",
         }
+
+    # --- Budget validation ---
+    def _check_analytic_distribution_complete(self):
+        """Validate that all required analytic dimensions are present."""
+        required_plan_codes = {"activities", "departments", "funds", "sources"}
+        if not self.analytic_distribution:
+            raise ValidationError(_("Analytic distribution is required."))
+        account_ids = [int(k) for k in self.analytic_distribution.keys()]
+        accounts = self.env["account.analytic.account"].browse(account_ids)
+        present_codes = set(accounts.mapped("root_plan_id.code"))
+        missing = required_plan_codes - present_codes
+        if missing:
+            raise ValidationError(
+                _("Missing required analytic dimensions: %s")
+                % ", ".join(missing)
+            )
+
+    def _post(self, soft=True):
+        """Validate budget and consume commitment before posting."""
+        for move in self:
+            payment = move.payment_id
+            if payment and payment.payment_type == "outbound":
+                move._check_analytic_distribution_complete()
+                if move.budget_commitment_id:
+                    move._consume_commitment(amount=payment.amount)
+        return super()._post(soft=soft)
 
     # --- Onchange ---
     @api.onchange("budget_commitment_id")

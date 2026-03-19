@@ -8,7 +8,8 @@ _logger = logging.getLogger(__name__)
 
 
 class WorkAcceptance(models.Model):
-    _inherit = 'work.acceptance'
+    _name = 'work.acceptance'
+    _inherit = ['work.acceptance', 'thai.date.mixin']
 
     evaluation_result_ids = fields.One2many(
         groups="purchase_work_acceptance_evaluation.group_enable_eval_on_wa"
