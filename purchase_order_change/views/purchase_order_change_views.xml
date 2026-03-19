@@ -48,8 +48,7 @@
                                 name="attachment_ids"
                                 context="{'default_res_model': 'purchase.order.change'}"
                             >
-                                <tree default_order="sequence">
-                                    <field name="sequence" widget="handle" />
+                                <tree>
                                     <field
                                         name="name"
                                         string="File Name"
