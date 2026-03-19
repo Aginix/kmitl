@@ -54,11 +54,11 @@ msgstr "พัสดุตรวจสอบ"
 
 #. module: purchase_request_supplier_state
 #: model:ir.model.fields,field_description:purchase_request_supplier_state.field_res_config_settings__purchase_request_allow_supplier_state
-msgid "เปิดใช้งานขั้นตอนการตรวจสอบของเจ้าหน้าที่พัสดุ"
-msgstr ""
+msgid "Activate verification step for procurement officer"
+msgstr "เปิดใช้งานขั้นตอนการตรวจสอบของเจ้าหน้าที่พัสดุ"
 
 #. module: purchase_request_supplier_state
 #: model:ir.model.fields,help:purchase_request_supplier_state.field_res_config_settings__purchase_request_allow_supplier_state
 #: model_terms:ir.ui.view,arch_db:purchase_request_supplier_state.view_res_config_settings_form
-msgid "เพิ่มขั้นตอนการตรวจสอบของเจ้าหน้าที่พัสดุก่อนเข้าสู่ขั้นตอนของการเงิน"
-msgstr ""
+msgid "Add a verification step for procurement officers before proceeding to the payment stage"
+msgstr "เพิ่มขั้นตอนการตรวจสอบของเจ้าหน้าที่พัสดุก่อนเข้าสู่ขั้นตอนของการเงิน"

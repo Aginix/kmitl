@@ -11,7 +11,7 @@ class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
     purchase_request_allow_supplier_state = fields.Boolean(
-        string='เปิดใช้งานขั้นตอนการตรวจสอบของเจ้าหน้าที่พัสดุ',
+        string='Activate verification step for procurement officer',
         config_parameter='purchase_request_verification.enable_verification',
-        help="เพิ่มขั้นตอนการตรวจสอบของเจ้าหน้าที่พัสดุก่อนเข้าสู่ขั้นตอนของการเงิน",
+        help="Add a verification step for procurement officers before proceeding to the payment stage",
     )

@@ -28,7 +28,7 @@
                                 string="Allow Purchase Request Verification"
                             />
                             <div class="text-muted">
-                                เพิ่มขั้นตอนการตรวจสอบของเจ้าหน้าที่พัสดุก่อนเข้าสู่ขั้นตอนของการเงิน
+                                Add a verification step for procurement officers before proceeding to the payment stage.
                             </div>
                         </div>
                     </div>
