@@ -61,6 +61,17 @@ class PurchaseGuarantee(models.Model):
 
         payment = self.env["account.payment"].create(vals)
 
+        # Re-apply analytic distribution after creation.
+        # During _inherits creation, AnalyticDistributionMixin's compute
+        # resets analytic_distribution before lines are generated.
+        if self.analytic_distribution:
+            payment.move_id.write(
+                {"analytic_distribution": self.analytic_distribution}
+            )
+            payment.move_id.line_ids.write(
+                {"analytic_distribution": self.analytic_distribution}
+            )
+
         return {
             "type": "ir.actions.act_window",
             "res_model": "account.payment",
