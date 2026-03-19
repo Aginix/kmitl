@@ -17,14 +17,6 @@ class WorkAcceptance(models.Model):
         states={"draft": [("readonly", False)]},
     )
 
-    late_days = fields.Integer(
-        default=0,
-    )
-
-    fines_rate = fields.Monetary(
-        default=0,
-    )
-
     price_subtotal = fields.Monetary(
         compute="_compute_price_subtotal",
         string="Subtotal",
