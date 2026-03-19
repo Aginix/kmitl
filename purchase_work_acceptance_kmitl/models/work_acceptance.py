@@ -19,7 +19,7 @@ class WorkAcceptance(models.Model):
 
     price_subtotal = fields.Monetary(
         compute="_compute_price_subtotal",
-        string="Subtotal",
+        string="Project value",
         store=True,
     )
 
