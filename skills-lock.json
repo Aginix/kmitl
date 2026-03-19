@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "skills": {
+    "odoo-development": {
+      "source": "mindrally/skills",
+      "sourceType": "github",
+      "computedHash": "614ede59903cdd3e438ab902e8761353a420f99e3065fc590915f8bd58a18e0f"
+    },
+    "odoo-development-skill": {
+      "source": "fhidalgodev/odoo-development-skill",
+      "sourceType": "github",
+      "computedHash": "7603054800aa90cb965badf92ba091e567c5151d78c0eb45df8b684e17ef2ffc"
+    }
+  }
+}

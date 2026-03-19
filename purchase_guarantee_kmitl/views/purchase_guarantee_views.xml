@@ -23,6 +23,7 @@
         sequence="20"
     />
 
+    <!-- Form view -->
     <record id="view_purchase_guarantee_form" model="ir.ui.view">
         <field name="name">view.purchase.guarantee.form</field>
         <field name="model">purchase.guarantee</field>
@@ -31,14 +32,174 @@
             ref="l10n_th_gov_purchase_guarantee.view_purchase_guarantee_form"
         />
         <field name="arch" type="xml">
+            <!-- Lock: header with state buttons -->
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button
+                        name="button_draft"
+                        states="lock"
+                        string="Draft"
+                        type="object"
+                    />
+                    <button
+                        name="button_lock"
+                        states="draft"
+                        string="Lock"
+                        type="object"
+                        class="oe_highlight"
+                    />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,lock"
+                    />
+                </header>
+            </xpath>
+
+            <!-- Hidden fields before button_box -->
+            <xpath expr="//div[@name='button_box']" position="before">
+                <field name="is_editable" invisible="1"/>
+                <field name="is_purchase_order" invisible="1"/>
+                <field name="purchase_id" invisible="1"/>
+            </xpath>
+
+            <!-- PO stat button -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_view_purchase_order"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-file-text-o"
+                    attrs="{'invisible': ['|', ('is_purchase_order', '=', False), ('purchase_id', '=', False)]}"
+                >
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Purchase Order</span>
+                    </div>
+                </button>
+            </xpath>
+
+            <!-- No invoice/bill: hide stat buttons -->
             <xpath
-                expr="//field[@name='domain_analytic_account_ids']"
+                expr="//div[@name='button_box']/button[@icon='fa-list-alt'][1]"
                 position="attributes"
             >
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath
+                expr="//div[@name='button_box']/button[@icon='fa-list-alt'][2]"
+                position="attributes"
+            >
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Lock: readonly attrs on fields -->
+            <xpath expr="//field[@name='reference']" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': [('is_editable', '=', False)]}
+                </attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': [('is_editable', '=', False)]}
+                </attribute>
+            </xpath>
+            <xpath expr="//field[@name='guarantee_type_id']" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': [('is_editable', '=', False)]}
+                </attribute>
+            </xpath>
+            <xpath expr="//field[@name='amount']" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': [('is_editable', '=', False)]}
+                </attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_guarantee_receive']" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': [('is_editable', '=', False)]}
+                </attribute>
+            </xpath>
+            <xpath expr="//field[@name='document_ref']" position="attributes">
+                <attribute name="attrs">
+                    {'readonly': [('is_editable', '=', False)]}
+                </attribute>
+            </xpath>
+
+            <!-- Hide analytic field -->
+            <xpath expr="//field[@name='analytic_distribution']" position="attributes">
                 <attribute name="groups">base.group_no_one</attribute>
             </xpath>
-            <xpath expr="//field[@name='analytic_account_id']" position="attributes">
-                <attribute name="groups">base.group_no_one</attribute>
+
+            <!-- No invoice/bill: hide invoice/bill fields -->
+            <xpath expr="//field[@name='invoice_ids']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='bill_ids']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Attachment tab -->
+            <xpath expr="//sheet" position="inside">
+                <notebook>
+                    <page name="document" string="Attachment">
+                        <field
+                            name="attachment_ids"
+                            context="{'default_res_model': 'purchase.guarantee'}"
+                        >
+                            <tree>
+                                <field name="name" string="File Name" required="1"/>
+                                <field name="description"/>
+                            </tree>
+                            <form>
+                                <sheet>
+                                    <group>
+                                        <field
+                                            name="res_model"
+                                            invisible="1"
+                                            readonly="0"
+                                        />
+                                        <field
+                                            name="res_id"
+                                            invisible="1"
+                                            readonly="0"
+                                        />
+                                        <field
+                                            name="name"
+                                            required="1"
+                                            invisible="1"
+                                        />
+                                        <field
+                                            name="datas"
+                                            filename="name"
+                                            required="1"
+                                        />
+                                        <field
+                                            name="description"
+                                            placeholder="Description"
+                                        />
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                    </page>
+                </notebook>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- No invoice/bill: tree view -->
+    <record id="view_purchase_guarantee_inherit_view_tree" model="ir.ui.view">
+        <field name="name">view.purchase.guarantee.inherit.view.tree</field>
+        <field name="model">purchase.guarantee</field>
+        <field
+            name="inherit_id"
+            ref="l10n_th_gov_purchase_guarantee.view_purchase_guarantee_tree"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_ids']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='bill_ids']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
         </field>
     </record>
