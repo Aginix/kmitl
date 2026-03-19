@@ -71,6 +71,8 @@
                             <field name="exception_ids" widget="many2many_tags" readonly="True" />
                         </group>
                         <group id="header_right_group" string="ข้อมูลการเบิก">
+                            <field name="reference_model_name" readonly="1"
+                                attrs="{'invisible': ['|', ('id', '=', False), ('reference_model_name', '=', False)]}" />
                             <field name="reference"
                                 attrs="{'readonly': ['|', '|', ('id', '!=', False), ('state', '!=', 'draft'), ('reference_model', '!=', False)]}"
                                 force_save="1" />

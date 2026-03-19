@@ -59,6 +59,11 @@ class DisbursementRequest(models.Model):
         compute="_compute_reference_fields",
         store=True,
     )
+    reference_model_name = fields.Char(
+        string="ประเภทเอกสารอ้างอิง",
+        compute="_compute_reference_fields",
+        store=True,
+    )
 
     partner_id = fields.Many2one(
         comodel_name="res.partner",
@@ -459,7 +464,15 @@ class DisbursementRequest(models.Model):
     @api.depends("reference")
     def _compute_reference_fields(self):
         for rec in self:
-            rec.reference_model = rec.reference._name if rec.reference else False
+            if rec.reference:
+                rec.reference_model = rec.reference._name
+                ir_model = self.env["ir.model"].sudo().search(
+                    [("model", "=", rec.reference._name)], limit=1
+                )
+                rec.reference_model_name = ir_model.name if ir_model else rec.reference._name
+            else:
+                rec.reference_model = False
+                rec.reference_model_name = False
 
     @api.depends("reference")
     def _compute_partner_id(self):
