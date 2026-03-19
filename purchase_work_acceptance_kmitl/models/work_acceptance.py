@@ -34,13 +34,6 @@ class WorkAcceptance(models.Model):
         store=True
     )
 
-    @api.onchange("late_days", 'date_receive', 'date_due')
-    def _onchange_late_days(self):
-        res = super()._onchange_late_days()
-        if self.late_days < 0:
-            self.late_days = 0
-        return res
-
     @api.onchange("fines_rate")
     def _onchange_fines_rate(self):
         if self.fines_rate < 0:

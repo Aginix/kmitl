@@ -81,7 +81,7 @@
             <xpath expr="/form/sheet/notebook" position="before">
                 <group string="รายละเอียดค่าปรับ" name="fines_section">
                     <group>
-                        <field name="late_days" />
+                        <field name="late_days" min="0"/>
                         <field name="fines_rate" />
                         <field name="fines_late" readonly="1"/>
                     </group>

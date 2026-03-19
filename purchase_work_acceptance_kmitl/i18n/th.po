@@ -1156,6 +1156,13 @@ msgid "Invoice Reference"
 msgstr "อ้างอิงใบแจ้งหนี้"
 
 #. module: purchase_work_acceptance
+#: model:ir.model,name:purchase_work_acceptance.model_purchase_order
+#: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__purchase_id
+#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
+msgid "Purchase Order"
+msgstr "คำสั่งซื้อ"
+
+#. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__state
 msgid "Status"
 msgstr "สถานะการตรวจรับ"
