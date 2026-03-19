@@ -5,10 +5,11 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
-    "depends": ["purchase_invoice_plan"],
+    "depends": ["purchase_invoice_plan", "purchase_contract_kmitl"],
     "data": [
         "data/decimal.xml",
-        "views/purchase_invoice_plan_views.xml"
+        "views/purchase_invoice_plan_views.xml",
+        "wizard/purchase_create_invoice_plan_views.xml",
     ],
     "application": False,
     "installable": True,
