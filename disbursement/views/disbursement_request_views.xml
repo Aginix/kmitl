@@ -83,6 +83,7 @@
                             <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ['submitted', 'validated', 'cancel'])]}" />
                             <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ['submitted', 'validated', 'cancel'])]}" />
                             <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ['submitted', 'validated', 'cancel'])]}" />
+                            <field name="budget_account_id" invisible="1" />
                             <field name="analytic_distribution" invisible="1"/>
                         </group>
                     </group>
@@ -109,7 +110,9 @@
                             <group class="oe_subtotal_footer oe_right">
                                 <field name="amount_untaxed" />
                                 <field name="amount_tax" />
-                                <field name="amount_total" class="oe_subtotal_footer_separator" />
+                                <field name="amount_total" />
+                                <field name="amount_wht" />
+                                <field name="amount_net" class="oe_subtotal_footer_separator" />
                             </group>
                             <div class="oe_clear" />
                         </page>

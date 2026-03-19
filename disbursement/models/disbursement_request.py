@@ -161,6 +161,21 @@ class DisbursementRequest(models.Model):
         tracking=True,
     )
 
+    amount_wht = fields.Monetary(
+        string="Withholding Tax",
+        compute="_compute_amount_all",
+        store=True,
+        currency_field="currency_id",
+    )
+
+    amount_net = fields.Monetary(
+        string="Net Total",
+        compute="_compute_amount_all",
+        store=True,
+        currency_field="currency_id",
+        tracking=True,
+    )
+
     tax_totals = fields.Json(
         compute="_compute_tax_totals",
         exportable=False,
@@ -489,7 +504,12 @@ class DisbursementRequest(models.Model):
 
         return res
 
-    @api.depends("line_ids.price_subtotal", "line_ids.price_tax", "line_ids.price_total")
+    @api.depends(
+        "line_ids.price_subtotal",
+        "line_ids.price_tax",
+        "line_ids.price_total",
+        "line_ids.amount_wht",
+    )
     def _compute_amount_all(self):
         """Aggregate amounts from lines with tax calculation (mirrors PO logic)"""
         for request in self:
@@ -515,9 +535,14 @@ class DisbursementRequest(models.Model):
                 amount_untaxed = sum(request_lines.mapped("price_subtotal"))
                 amount_tax = sum(request_lines.mapped("price_tax"))
 
+            amount_wht = sum(request_lines.mapped("amount_wht"))
+            amount_total = amount_untaxed + amount_tax
+
             request.amount_untaxed = amount_untaxed
             request.amount_tax = amount_tax
-            request.amount_total = amount_untaxed + amount_tax
+            request.amount_total = amount_total
+            request.amount_wht = amount_wht
+            request.amount_net = amount_total - amount_wht
 
     @api.depends_context("lang")
     @api.depends(
