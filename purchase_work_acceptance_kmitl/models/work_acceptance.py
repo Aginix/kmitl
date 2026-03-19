@@ -33,6 +33,16 @@ class WorkAcceptance(models.Model):
         compute="_compute_fines_late",
         store=True
     )
+
+    @api.onchange("late_days")
+    def _onchange_late_days(self):
+        if self.late_days < 0:
+            self.late_days = 0
+
+    @api.onchange("fines_rate")
+    def _onchange_fines_rate(self):
+        if self.fines_rate < 0:
+            self.fines_rate = 0
     
     @api.depends("late_days", "fines_rate")
     def _compute_fines_late(self):
