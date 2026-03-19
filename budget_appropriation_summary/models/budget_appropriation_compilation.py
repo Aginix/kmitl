@@ -7,6 +7,13 @@ class BudgetAppropriationCompilation(models.Model):
     _description = "Budget Appropriation Compilation"
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "sequence, id"
+    _sql_constraints = [
+        (
+            "unique_department_source_fiscal_year",
+            "UNIQUE(department_analytic_id, source_analytic_id, account_fiscal_year_id)",
+            "มีข้อมูลรวมเล่มงบประมาณของหน่วยงาน แหล่งเงิน และปีงบประมาณนี้อยู่แล้ว",
+        ),
+    ]
 
     READONLY_STATES = {
         "confirmed": [("readonly", True)],

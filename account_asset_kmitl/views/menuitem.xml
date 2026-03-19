@@ -20,6 +20,7 @@
         name="Asset"
         parent="menu_assets"
         action="account_asset_management.account_asset_action"
+        sequence="10"
     />
 
     <menuitem
@@ -27,6 +28,7 @@
         name="Parent Asset"
         parent="menu_assets"
         action="l10n_th_account_asset_management.action_account_asset_parent"
+        sequence="20"
     />
 
     <menuitem
@@ -34,39 +36,48 @@
         name="Computed Asset"
         parent="menu_assets"
         action="account_asset_management.account_asset_compute_action"
+        sequence="30"
     />
 
-    <menuitem 
-        id="menu_asset_configuration" 
-        name="Configuration" 
+    <menuitem
+        id="menu_asset_registration_root"
+        name="Create Asset"
+        parent="menu_assets_management"
+        sequence="25"
+    />
+
+    <menuitem
+        id="menu_asset_configuration"
+        name="Configuration"
         parent="menu_assets_management"
         groups="account.group_account_manager"
+        sequence="50"
     />
 
-    <menuitem 
-        id="menu_asset_profile" 
-        name="Asset Profiles" 
+    <menuitem
+        id="menu_asset_profile"
+        name="Asset Profiles"
         parent="menu_asset_configuration"
         action="account_asset_management.account_asset_profile_action"
     />
 
-    <menuitem 
-        id="menu_asset_group" 
-        name="Asset Groups" 
+    <menuitem
+        id="menu_asset_group"
+        name="Asset Groups"
         parent="menu_asset_configuration"
         action="account_asset_management.account_asset_group_action"
     />
 
-    <menuitem 
-        id="menu_asset_sub_status" 
-        name="Asset Sub-Status" 
+    <menuitem
+        id="menu_asset_sub_status"
+        name="Asset Sub-Status"
         parent="menu_asset_configuration"
         action="l10n_th_account_asset_management.action_account_asset_sub_state"
     />
 
-    <menuitem 
-        id="menu_asset_location" 
-        name="Asset Locations" 
+    <menuitem
+        id="menu_asset_location"
+        name="Asset Locations"
         parent="menu_asset_configuration"
         action="l10n_th_gov_account_asset_management.action_account_asset_location"
     />

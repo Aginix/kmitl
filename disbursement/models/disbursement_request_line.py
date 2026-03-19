@@ -172,17 +172,10 @@ class DisbursementRequestLine(models.Model):
     # -------------------------------------------------------------------------
     # WHT methods
     # -------------------------------------------------------------------------
-    @api.depends("product_id", "request_id.partner_id")
+    @api.depends("request_id.partner_id.partner_type_id.wht_tax_id")
     def _compute_wht_tax_id(self):
         for line in self:
-            if line.product_id:
-                partner = line.request_id.partner_id
-                if partner and partner.company_type == "company":
-                    line.wht_tax_id = line.product_id.supplier_company_wht_tax_id
-                else:
-                    line.wht_tax_id = line.product_id.supplier_wht_tax_id
-            else:
-                line.wht_tax_id = False
+            line.wht_tax_id = line.request_id.partner_id.partner_type_id.wht_tax_id
 
     # -------------------------------------------------------------------------
     # Exception methods
