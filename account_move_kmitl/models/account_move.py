@@ -110,14 +110,27 @@ class AccountMove(models.Model):
             )
 
     def _post(self, soft=True):
-        """Validate budget and consume commitment before posting."""
+        """Validate budget, consume commitment, and auto-fill tax invoices."""
         for move in self:
             payment = move.payment_id
             if payment and payment.payment_type == "outbound":
                 move._check_analytic_distribution_complete()
                 if move.budget_commitment_id:
                     move._consume_commitment(amount=payment.amount)
-        return super()._post(soft=soft)
+        res = super()._post(soft=soft)
+        self._auto_fill_tax_invoice()
+        return res
+
+    def _auto_fill_tax_invoice(self):
+        """Auto-fill tax_invoice_number and tax_invoice_date from the bill."""
+        for move in self:
+            if not hasattr(move, "tax_invoice_ids"):
+                continue
+            for tax_inv in move.tax_invoice_ids:
+                if not tax_inv.tax_invoice_number:
+                    tax_inv.tax_invoice_number = move.ref or move.name
+                if not tax_inv.tax_invoice_date:
+                    tax_inv.tax_invoice_date = move.date
 
     # --- Onchange ---
     @api.onchange("budget_commitment_id")
