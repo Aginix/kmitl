@@ -74,6 +74,23 @@ class PurchaseOrder(models.Model):
         disbursement_request = self.env["disbursement.request"].create(
             self._prepare_disbursement_request_vals()
         )
+        # Log in PO chatter
+        dr_link = "/web#id=%d&model=disbursement.request&view_type=form" % disbursement_request.id
+        self.message_post(
+            body=_(
+                'Disbursement Request <a href="%(link)s" target="_blank">%(name)s</a>'
+                " has been created from this purchase order."
+            ) % {"link": dr_link, "name": disbursement_request.name},
+            subtype_xmlid="mail.mt_note",
+        )
+        # Log in Disbursement chatter
+        po_link = "/web#id=%d&model=purchase.order&view_type=form" % self.id
+        disbursement_request.message_post(
+            body=_(
+                'Created from Purchase Order <a href="%(link)s" target="_blank">%(name)s</a>.'
+            ) % {"link": po_link, "name": self.name},
+            subtype_xmlid="mail.mt_note",
+        )
         return disbursement_request
 
     def action_view_disbursement_request(self):

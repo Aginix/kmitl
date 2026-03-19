@@ -645,6 +645,16 @@ class DisbursementRequest(models.Model):
         # Link the bill to this request
         self.bill_id = bill.id
 
+        # Log in Disbursement chatter
+        bill_link = "/web#id=%d&model=account.move&view_type=form" % bill.id
+        self.message_post(
+            body=_(
+                'Vendor Bill <a href="%(link)s" target="_blank">%(name)s</a>'
+                " has been created."
+            ) % {"link": bill_link, "name": bill.name},
+            subtype_xmlid="mail.mt_note",
+        )
+
         return bill
 
     def action_submit(self):
