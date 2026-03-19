@@ -96,7 +96,7 @@ msgstr "สินทรัพย์"
 #: model:ir.ui.menu,name:account_asset_batch.menu_assets_batch
 #: model_terms:ir.ui.view,arch_db:account_asset_batch.view_purchase_order_form
 msgid "Asset Batch"
-msgstr "ชุดทะเบียนครุภัณฑ์"
+msgstr "ชุดทะเบียนครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_batch
 #: model:ir.model.fields,field_description:account_asset_batch.field_account_asset__batch_line_id
@@ -106,7 +106,7 @@ msgstr ""
 #. module: account_asset_batch
 #: model:ir.model.fields,field_description:account_asset_batch.field_account_asset_batch_line__profile_id
 msgid "Asset Profile"
-msgstr "ประเภทครุภัณฑ์"
+msgstr "ประเภทครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_batch
 #: model_terms:ir.ui.view,arch_db:account_asset_batch.view_account_asset_batch_form
@@ -360,7 +360,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_asset_batch.view_account_asset_batch_line_search
 #: model_terms:ir.ui.view,arch_db:account_asset_batch.view_account_asset_batch_search
 msgid "Name"
-msgstr "ชื่อรายการ"
+msgstr "ชื่อครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_batch
 #: model_terms:ir.ui.view,arch_db:account_asset_batch.view_account_asset_batch_line_form
@@ -457,7 +457,7 @@ msgstr "คำสั่งซื้อ"
 #. module: account_asset_batch
 #: model_terms:ir.ui.view,arch_db:account_asset_batch.view_account_asset_batch_form
 msgid "Register Asset"
-msgstr "สร้างรายการครุภัณฑ์"
+msgstr "สร้างรายการครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_batch
 #: model:ir.model.fields,field_description:account_asset_batch.field_account_asset_batch__activity_user_id
@@ -486,7 +486,7 @@ msgstr ""
 #. module: account_asset_batch
 #: model:ir.model.fields,field_description:account_asset_batch.field_account_asset_batch__source_of_asset
 msgid "Source of asset"
-msgstr "ที่มาของครุภัณฑ์"
+msgstr "ที่มาของครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_batch
 #: model:ir.model.fields,field_description:account_asset_batch.field_account_asset_batch__state
