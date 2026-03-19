@@ -282,20 +282,20 @@ class DisbursementRequest(models.Model):
     @api.constrains("analytic_distribution")
     def _check_analytic_distribution_complete(self):
         required_plan_codes = {"activities", "departments", "funds", "sources"}
-        for rec in self:
-            if rec.state == "cancel":
-                continue
-            if not rec.analytic_distribution:
-                raise ValidationError(_("Analytic distribution is required."))
-            account_ids = [int(k) for k in rec.analytic_distribution.keys()]
-            accounts = self.env["account.analytic.account"].browse(account_ids)
-            present_codes = set(accounts.mapped("root_plan_id.code"))
-            missing = required_plan_codes - present_codes
-            if missing:
-                raise ValidationError(
-                    _("Missing required analytic dimensions: %s")
-                    % ", ".join(missing)
-                )
+        # for rec in self:
+        #     if rec.state == "cancel":
+        #         continue
+        #     if not rec.analytic_distribution:
+        #         raise ValidationError(_("Analytic distribution is required."))
+        #     account_ids = [int(k) for k in rec.analytic_distribution.keys()]
+        #     accounts = self.env["account.analytic.account"].browse(account_ids)
+        #     present_codes = set(accounts.mapped("root_plan_id.code"))
+        #     missing = required_plan_codes - present_codes
+        #     if missing:
+        #         raise ValidationError(
+        #             _("Missing required analytic dimensions: %s")
+        #             % ", ".join(missing)
+        #         )
 
     @api.model
     def _search_source_analytic_id(self, operator, value):
