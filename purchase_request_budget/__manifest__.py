@@ -10,7 +10,7 @@
         "l10n_th_gov_purchase_request",
         "budget",
         "budget_product",
-        "purchase_request_account_fiscal_year",
+        "purchase_request_kmitl",
     ],
     "data": [
         "data/purchase_request_exception.xml",
