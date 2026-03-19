@@ -72,7 +72,7 @@
                         </group>
                         <group id="header_right_group" string="ข้อมูลการเบิก">
                             <field name="reference"
-                                readonly="context.get('default_reference')"
+                                attrs="{'readonly': ['|', '|', ('id', '!=', False), ('state', '!=', 'draft'), ('reference_model', '!=', False)]}"
                                 force_save="1" />
                             <field name="reference_model" invisible="1" />
                             <field name="date" />
