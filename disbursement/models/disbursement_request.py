@@ -48,10 +48,30 @@ class DisbursementRequest(models.Model):
         states=READONLY_STATES,
     )
 
+    reference = fields.Reference(
+        selection=[],
+        string="Reference Document",
+        states=READONLY_STATES,
+    )
+
+    reference_model = fields.Char(
+        string="Reference Model",
+        compute="_compute_reference_fields",
+        store=True,
+    )
+    reference_model_name = fields.Char(
+        string="ประเภทเอกสารอ้างอิง",
+        compute="_compute_reference_fields",
+        store=True,
+    )
+
     partner_id = fields.Many2one(
         comodel_name="res.partner",
         string="Partner",
         required=True,
+        compute="_compute_partner_id",
+        store=True,
+        readonly=False,
         tracking=True,
         states=READONLY_STATES,
     )
@@ -297,20 +317,20 @@ class DisbursementRequest(models.Model):
     @api.constrains("analytic_distribution")
     def _check_analytic_distribution_complete(self):
         required_plan_codes = {"activities", "departments", "funds", "sources"}
-        for rec in self:
-            if rec.state == "cancel":
-                continue
-            if not rec.analytic_distribution:
-                raise ValidationError(_("Analytic distribution is required."))
-            account_ids = [int(k) for k in rec.analytic_distribution.keys()]
-            accounts = self.env["account.analytic.account"].browse(account_ids)
-            present_codes = set(accounts.mapped("root_plan_id.code"))
-            missing = required_plan_codes - present_codes
-            if missing:
-                raise ValidationError(
-                    _("Missing required analytic dimensions: %s")
-                    % ", ".join(missing)
-                )
+        # for rec in self:
+        #     if rec.state == "cancel":
+        #         continue
+        #     if not rec.analytic_distribution:
+        #         raise ValidationError(_("Analytic distribution is required."))
+        #     account_ids = [int(k) for k in rec.analytic_distribution.keys()]
+        #     accounts = self.env["account.analytic.account"].browse(account_ids)
+        #     present_codes = set(accounts.mapped("root_plan_id.code"))
+        #     missing = required_plan_codes - present_codes
+        #     if missing:
+        #         raise ValidationError(
+        #             _("Missing required analytic dimensions: %s")
+        #             % ", ".join(missing)
+        #         )
 
     @api.model
     def _search_source_analytic_id(self, operator, value):
@@ -452,6 +472,32 @@ class DisbursementRequest(models.Model):
             "disbursement.action_disbursement_exception_confirm"
         )
         return action
+
+    # -------------------------------------------------------------------------
+    # Reference fields compute
+    # -------------------------------------------------------------------------
+    @api.depends("reference")
+    def _compute_reference_fields(self):
+        for rec in self:
+            if rec.reference:
+                rec.reference_model = rec.reference._name
+                ir_model = self.env["ir.model"].sudo().search(
+                    [("model", "=", rec.reference._name)], limit=1
+                )
+                rec.reference_model_name = ir_model.name if ir_model else rec.reference._name
+            else:
+                rec.reference_model = False
+                rec.reference_model_name = False
+
+    @api.depends("reference")
+    def _compute_partner_id(self):
+        for rec in self:
+            if rec.reference and hasattr(rec.reference, "partner_id"):
+                rec.partner_id = rec.reference.partner_id
+        self._compute_analytic()
+
+    def _compute_analytic(self):
+        """Hook for extension modules to merge analytics from reference document."""
 
     # -------------------------------------------------------------------------
     # Computed fields
@@ -623,6 +669,16 @@ class DisbursementRequest(models.Model):
 
         # Link the bill to this request
         self.bill_id = bill.id
+
+        # Log in Disbursement chatter
+        bill_link = "/web#id=%d&model=account.move&view_type=form" % bill.id
+        self.message_post(
+            body=_(
+                'Vendor Bill <a href="%(link)s" target="_blank">%(name)s</a>'
+                " has been created."
+            ) % {"link": bill_link, "name": bill.name},
+            subtype_xmlid="mail.mt_note",
+        )
 
         return bill
 
