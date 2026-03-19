@@ -50,12 +50,6 @@ class WorkAcceptance(models.Model):
         for rec in self:
             rec.price_subtotal = sum(rec.wa_line_ids.mapped("price_subtotal"))
 
-    @api.onchange('purchase_id')
-    def _onchange_purchase_id_fines(self):
-        if self.purchase_id:
-            self.late_days = self.purchase_id.late_days
-            self.fines_rate = self.purchase_id.fines_rate
-
     def action_view_purchase_order(self):
         self.ensure_one()
         if not self.purchase_id:
