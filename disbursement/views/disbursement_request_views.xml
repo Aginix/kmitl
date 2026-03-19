@@ -64,18 +64,20 @@
                     <group>
                         <group id="header_left_group" string="ข้อมูลคู่ค้า">
                             <field name="partner_id" widget="res_partner_many2one" context="{'show_address': 1, 'default_is_company': True, 'show_vat': True}" options='{"always_reload": True}' />
-                            <field name="ref" />
-                            <field name="partner_bank_id" context="{'default_partner_id': partner_id}" />
-                            <field name="user_id" groups="disbursement.group_disbursement_manager" />
-                            <field name="user_id" readonly="1" groups="!disbursement.group_disbursement_manager" />
+                            <field name="partner_bank_id" context="{'default_partner_id': partner_id}" domain="[('partner_id', '=', partner_id)]" />
                             <field name="company_id" groups="base.group_multi_company" />
                             <field name="is_company" readonly="1" invisible="1" />
                             <field name="ignore_exception" states="to_approve" groups='base_exception.group_exception_rule_manager' />
                             <field name="exception_ids" widget="many2many_tags" readonly="True" />
                         </group>
                         <group id="header_right_group" string="ข้อมูลการเบิก">
+                            <field name="reference" />
+                            <field name="reference_model" invisible="1" />
                             <field name="date" />
+                            <field name="ref" />
                             <field name="payment_type" required="1" />
+                            <field name="user_id" groups="disbursement.group_disbursement_manager" />
+                            <field name="user_id" readonly="1" groups="!disbursement.group_disbursement_manager" />
                         </group>
                         <group id="budget" string="มิติทางบัญชี">
                             <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}" />

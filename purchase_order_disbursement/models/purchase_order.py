@@ -10,6 +10,7 @@ class PurchaseOrder(models.Model):
         comodel_name='disbursement.request',
         inverse_name='purchase_id',
         string='Disbursement Requests',
+        copy=False,
     )
     disbursement_request_count = fields.Integer(
         string='Disbursement Request Count',
@@ -48,8 +49,7 @@ class PurchaseOrder(models.Model):
 
     def _prepare_disbursement_request_vals(self):
         return {
-            "purchase_id": self.id,
-            "partner_id": self.partner_id.id,
+            "reference": "purchase.order,%d" % self.id,
             "line_ids": [
                 Command.create(line._prepare_disbursement_request_line_vals())
                 for line in self.order_line
@@ -80,6 +80,7 @@ class PurchaseOrder(models.Model):
         disbursement_requests = self.env['disbursement.request'].search(
             [('purchase_id', '=', self.id)]
         )
+        default_reference = "purchase.order,%d" % self.id
 
         if len(disbursement_requests) == 1:
             return {
@@ -88,7 +89,7 @@ class PurchaseOrder(models.Model):
                 'res_model': 'disbursement.request',
                 'res_id': disbursement_requests.id,
                 'view_mode': 'form',
-                'context': {'default_purchase_id': self.id},
+                'context': {'default_reference': default_reference},
             }
 
         return {
@@ -97,5 +98,5 @@ class PurchaseOrder(models.Model):
             'res_model': 'disbursement.request',
             'view_mode': 'tree,form',
             'domain': [('purchase_id', '=', self.id)],
-            'context': {'default_purchase_id': self.id},
+            'context': {'default_reference': default_reference},
         }

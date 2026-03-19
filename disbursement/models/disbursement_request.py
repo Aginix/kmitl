@@ -48,10 +48,25 @@ class DisbursementRequest(models.Model):
         states=READONLY_STATES,
     )
 
+    reference = fields.Reference(
+        selection=[],
+        string="Reference Document",
+        states=READONLY_STATES,
+    )
+
+    reference_model = fields.Char(
+        string="Reference Model",
+        compute="_compute_reference_fields",
+        store=True,
+    )
+
     partner_id = fields.Many2one(
         comodel_name="res.partner",
         string="Partner",
         required=True,
+        compute="_compute_partner_id",
+        store=True,
+        readonly=False,
         tracking=True,
         states=READONLY_STATES,
     )
@@ -437,6 +452,24 @@ class DisbursementRequest(models.Model):
             "disbursement.action_disbursement_exception_confirm"
         )
         return action
+
+    # -------------------------------------------------------------------------
+    # Reference fields compute
+    # -------------------------------------------------------------------------
+    @api.depends("reference")
+    def _compute_reference_fields(self):
+        for rec in self:
+            rec.reference_model = rec.reference._name if rec.reference else False
+
+    @api.depends("reference")
+    def _compute_partner_id(self):
+        for rec in self:
+            if rec.reference and hasattr(rec.reference, "partner_id"):
+                rec.partner_id = rec.reference.partner_id
+        self._compute_analytic()
+
+    def _compute_analytic(self):
+        """Hook for extension modules to merge analytics from reference document."""
 
     # -------------------------------------------------------------------------
     # Computed fields
