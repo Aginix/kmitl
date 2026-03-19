@@ -13,3 +13,10 @@ class PurchaseOrder(models.Model):
         domain=[("committee_type", "=", "work_acceptance")],
         copy=True,
     )
+    work_supervisor_ids = fields.One2many(
+        comodel_name="procurement.committee",
+        inverse_name="purchase_order_id",
+        string="Work Supervisors",
+        domain=[("committee_type", "=", "work_supervisor")],
+        copy=True,
+    )

@@ -12,6 +12,28 @@ class PurchaseRequest(models.Model):
 
     title = fields.Char(string="title", tracking=True)
 
+    account_fiscal_year_id = fields.Many2one(
+        comodel_name="account.fiscal.year",
+        string="ปีงบประมาณ",
+        tracking=True,
+        readonly=False,
+    )
+
+    attachment_ids = fields.One2many(
+        "ir.attachment",
+        "res_id",
+        string="Document Attachments",
+        tracking=True,
+    )
+
+    user_id = fields.Many2one(
+        comodel_name="res.users",
+        string="Responsible",
+        copy=False,
+        default=lambda self: self.env.user,
+        index=True,
+    )
+
     tor_committee_ids = fields.One2many(
         comodel_name="procurement.committee",
         inverse_name="request_id",

@@ -15,8 +15,12 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         active_id = self.env.context.get("active_id", False)
         purchase_request = self.env['purchase.request'].browse(active_id)
         res['work_acceptance_committee_ids'] = [
-            Command.create(self._prepare_committee(committee)) 
+            Command.create(self._prepare_committee(committee))
             for committee in purchase_request.work_acceptance_committee_ids
+        ]
+        res['work_supervisor_ids'] = [
+            Command.create(self._prepare_committee(committee))
+            for committee in purchase_request.work_supervisor_ids
         ]
 
         return res
