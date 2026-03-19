@@ -71,7 +71,9 @@
                             <field name="exception_ids" widget="many2many_tags" readonly="True" />
                         </group>
                         <group id="header_right_group" string="ข้อมูลการเบิก">
-                            <field name="reference" />
+                            <field name="reference"
+                                readonly="context.get('default_reference')"
+                                force_save="1" />
                             <field name="reference_model" invisible="1" />
                             <field name="date" />
                             <field name="ref" />
