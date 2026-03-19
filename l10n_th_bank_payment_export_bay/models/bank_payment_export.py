@@ -1,0 +1,68 @@
+# Copyright 2024 Ecosoft Co., Ltd. (http://ecosoft.co.th)
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
+
+
+class BankPaymentExport(models.Model):
+    _inherit = "bank.payment.export"
+
+    bank = fields.Selection(
+        selection_add=[("AYUDTHBK", "BAY")],
+        ondelete={"AYUDTHBK": "cascade"},
+    )
+    # Configuration
+    bay_company_id = fields.Char(
+        string="BAY Company ID",
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+    )
+    bay_sender_name = fields.Char(
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+    )
+    # filter
+    bay_is_editable = fields.Boolean(
+        compute="_compute_bay_editable",
+        string="BAY Editable",
+    )
+    bay_service_type = fields.Selection(
+        selection=[
+            ("01", "01 - เงินเดือน ค่าจ้าง บำเหน็จ บำนาญ"),
+            ("02", "02 - เงินปันผล"),
+            ("03", "03 - ดอกเบี้ย"),
+            ("04", "04 - ค่าสินค้า บริการ"),
+            ("05", "05 - ขายหลักทรัพย์"),
+            ("06", "06 - คืนภาษี"),
+            ("07", "07 - เงินกู้"),
+            ("59", "59 - อื่น ๆ"),
+        ],
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+    )
+
+    @api.depends("bank")
+    def _compute_required_effective_date(self):
+        res = super()._compute_required_effective_date()
+        for rec in self.filtered(lambda l: l.bank == "AYUDTHBK"):
+            rec.is_required_effective_date = True
+        return res
+
+    @api.depends("bank")
+    def _compute_bay_editable(self):
+        for export in self:
+            export.bay_is_editable = True if export.bank == "AYUDTHBK" else False
+
+    def _check_constraint_line(self):
+        res = super()._check_constraint_line()
+        self.ensure_one()
+        if self.bank == "AYUDTHBK":
+            for line in self.export_line_ids:
+                if not line.payment_partner_bank_id:
+                    raise UserError(
+                        _("Recipient Bank with {} is not selected.").format(
+                            line.payment_id.name
+                        )
+                    )
+        return res

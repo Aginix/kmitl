@@ -276,10 +276,16 @@ class BudgetAppropriation(models.Model):
                     "budget.appropriation"
                 ) or _("New")
 
-    @api.depends("date", "state")
+    @api.depends("date", "state", "appropriation_type")
     def _compute_hide_post_button(self):
+        is_manager = self.env.user.has_group("budget.group_budget_manager")
         for record in self:
-            record.hide_post_button = record.state != "review"
+            if record.state != "review":
+                record.hide_post_button = True
+            elif not is_manager and record.appropriation_type == "initial":
+                record.hide_post_button = True
+            else:
+                record.hide_post_button = False
 
     @api.depends("state")
     def _compute_hide_review_button(self):
@@ -299,6 +305,15 @@ class BudgetAppropriation(models.Model):
 
     def action_post(self):
         """Post appropriation and create budget move"""
+        is_manager = self.env.user.has_group("budget.group_budget_manager")
+        if not is_manager:
+            initial = self.filtered(lambda r: r.appropriation_type == "initial")
+            if initial:
+                raise UserError(
+                    _(
+                        "เฉพาะผู้จัดการงบประมาณเท่านั้นที่สามารถอนุมัติการจัดสรรงบประมาณต้นปีได้"
+                    )
+                )
         self._create_budget_move()
         self.write({"state": "posted"})
 

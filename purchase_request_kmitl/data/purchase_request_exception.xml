@@ -36,7 +36,7 @@ if len(self.work_acceptance_committee_ids) &lt; 1:
         <field name="exception_type">by_py_code</field>
         <field name="code">
 if self.estimated_cost &gt; 100000:
-   if len(self.tor_committee_ids) &lt; 3:
+   if len(self.tor_committee_ids) &lt; 1:
         failed = True
         </field>
     </record>
@@ -50,7 +50,7 @@ if self.estimated_cost &gt; 100000:
         <field name="exception_type">by_py_code</field>
         <field name="code">
 if self.estimated_cost &gt; 100000:
-   if len(self.price_determine_committee_ids) &lt; 3:
+   if len(self.price_determine_committee_ids) &lt; 1:
         failed = True
         </field>
     </record>
@@ -64,7 +64,7 @@ if self.estimated_cost &gt; 100000:
         <field name="exception_type">by_py_code</field>
         <field name="code">
 if self.estimated_cost &gt; 100000:
-   if len(self.evaluation_committee_ids) &lt; 3:
+   if len(self.evaluation_committee_ids) &lt; 1:
         failed = True
         </field>
     </record>
