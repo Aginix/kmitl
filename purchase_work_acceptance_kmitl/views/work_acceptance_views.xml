@@ -81,7 +81,7 @@
             <xpath expr="/form/sheet/notebook" position="before">
                 <group string="รายละเอียดค่าปรับ" name="fines_section">
                     <group>
-                        <field name="late_days" min="0"/>
+                        <field name="late_days" />
                         <field name="fines_rate" />
                         <field name="fines_late" readonly="1"/>
                     </group>
@@ -194,6 +194,17 @@
                 position="attributes"
             >
                 <attribute name="attrs">{'invisible': True}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_work_acceptance_form_fines" model="ir.ui.view">
+        <field name="name">view.work.acceptance.form.fines</field>
+        <field name="model">work.acceptance</field>
+        <field name="inherit_id" ref="purchase_work_acceptance_late_fines.view_work_acceptance_fines_late_tab_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@type='action']" position="attributes">
+                <attribute name="groups">base.group_no_one</attribute>
             </xpath>
         </field>
     </record>
