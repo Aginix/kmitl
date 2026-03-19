@@ -33,5 +33,6 @@ class PurchaseRequest(models.Model):
         action["domain"] = [("request_id", "=", self.id)]
         action["context"] = {
             "default_reference": "purchase.request,%s" % (str(self.id),),
+            "default_analytic_distribution": self.analytic_distribution
         }
         return action
