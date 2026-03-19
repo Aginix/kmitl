@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api, _
+from odoo import fields, models
 
 
 class IrAttachment(models.Model):
-    _inherit = 'ir.attachment'
+    _inherit = "ir.attachment"
 
     attachment_type = fields.Selection(
         [
             ("tor", "Specification (TOR)"),
-            ("rfq", "Quotation"), 
+            ("rfq", "Quotation"),
             ("etc", "Etc"),
         ],
-        string="Attachment Type"
+        string="Attachment Type",
     )
     sequence = fields.Integer(string="Sequence")
