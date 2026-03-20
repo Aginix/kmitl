@@ -44,6 +44,13 @@ class ResPartnerType(models.Model):
         help='This account will be used instead of the default one as the payable account for the partner',
     )
 
+    wht_tax_id = fields.Many2one(
+        comodel_name="account.withholding.tax",
+        string="WHT",
+        company_dependent=True,
+        tracking=True,
+    )
+
     partner_ids = fields.One2many(
         comodel_name='res.partner',
         inverse_name='partner_type_id',

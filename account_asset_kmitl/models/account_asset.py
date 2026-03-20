@@ -16,19 +16,17 @@ class AccountAsset(models.Model):
     _inherit = ["account.asset", "portal.mixin", "analytic.mixin"]
 
     _analytic_keys = {
-        "activities": "activity_analytic_id",
+        "sources": "source_analytic_id",
         "departments": "department_analytic_id",
         "funds": "fund_analytic_id",
-        "sources": "source_analytic_id",
+        "activities": "activity_analytic_id",
     }
-
+    
     name = fields.Char(tracking=True)
 
     state = fields.Selection(tracking=True)
 
     number = fields.Char(tracking=True)
-
-    gpsc_id = fields.Many2one(tracking=True)
 
     code = fields.Char(tracking=True)
 
@@ -48,83 +46,61 @@ class AccountAsset(models.Model):
 
     account_fiscal_year_id = fields.Many2one(
         "account.fiscal.year",
-        string = "Fiscal year",
+        string="Fiscal year",
         tracking=True
     )
 
     gpsc_id = fields.Many2one(
         "procurement.gpsc",
-        string="GPSC Id"
+        string="GPSC Id",
+        tracking=True
     )
 
     department_id = fields.Many2one(
         "hr.department",
-        string="Department"
+        string="Department",
+        tracking=True
     )
-
-    activity_analytic_id = fields.Many2one(
+    
+    source_analytic_id = fields.Many2one(
         "account.analytic.account",
-        string="กิจกรรม",
+        string="แหล่งเงิน",
         compute="_compute_analytic_id",
-        inverse="_inverse_activity_analytic",
-        domain=[("root_plan_id.code", "=", "activities")],
+        inverse=lambda self: self._update_analytic_distribution("sources"),
         store=True,
-        tracking=True,
-        copy=True,
         readonly=False,
+        domain=[("root_plan_id.code", "=", "sources")],
     )
-
+    
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="ส่วนงาน",
         compute="_compute_analytic_id",
-        inverse="_inverse_department_analytic",
-        domain=[("root_plan_id.code", "=", "departments")],
+        inverse=lambda self: self._update_analytic_distribution("departments"),
         store=True,
-        tracking=True,
-        copy=True,
         readonly=False,
+        domain=[("root_plan_id.code", "=", "departments")],
     )
 
     fund_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="กองทุน",
         compute="_compute_analytic_id",
-        inverse="_inverse_fund_analytic",
+        inverse=lambda self: self._update_analytic_distribution("funds"),
         domain=[("root_plan_id.code", "=", "funds")],
         store=True,
-        tracking=True,
-        copy=True,
         readonly=False,
     )
 
-    source_analytic_id = fields.Many2one(
+    activity_analytic_id = fields.Many2one(
         "account.analytic.account",
-        string="แหล่งเงิน",
+        string="ด้าน/แผนงาน/กิจกรรม",
         compute="_compute_analytic_id",
-        inverse="_inverse_source_analytic",
-        domain=[("root_plan_id.code", "=", "sources")],
+        inverse=lambda self: self._update_analytic_distribution("activities"),
         store=True,
-        tracking=True,
-        copy=True,
         readonly=False,
+        domain=[("root_plan_id.code", "=", "activities")],
     )
-
-    def _inverse_activity_analytic(self):
-        for line in self:
-            line._update_analytic_distribution("activities")
-
-    def _inverse_department_analytic(self):
-        for line in self:
-            line._update_analytic_distribution("departments")
-
-    def _inverse_fund_analytic(self):
-        for line in self:
-            line._update_analytic_distribution("funds")
-
-    def _inverse_source_analytic(self):
-        for line in self:
-            line._update_analytic_distribution("sources")
 
     def _default_access_uid(self):
         return _generate_random_code(8)

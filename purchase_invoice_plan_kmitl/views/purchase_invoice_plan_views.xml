@@ -7,8 +7,17 @@
         <field name="model">purchase.invoice.plan</field>
         <field name="inherit_id" ref="purchase_invoice_plan.view_purchase_invoice_plan_tree"/>
         <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="create">0</attribute>
+                <attribute name="delete">0</attribute>
+            </xpath>
             <field name="invoice_type" position="attributes">
                 <attribute name="invisible">1</attribute>
+            </field>
+            <field name="installment" position="after">
+                <field name="duration_days"
+                    attrs="{'readonly': [('no_edit', '=', True)]}"
+                />
             </field>
         </field>
     </record>

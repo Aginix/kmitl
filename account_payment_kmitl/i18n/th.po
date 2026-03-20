@@ -100,19 +100,14 @@ msgid "KMITL Payment Type"
 msgstr "ประเภทการจ่ายเงิน (KMITL)"
 
 #. module: account_payment_kmitl
-#: model:ir.model.fields,help:account_payment_kmitl.field_kmitl_payment_type__payable_account_id
-msgid "Override the payable account. Leave empty to use partner's default."
-msgstr "แทนที่บัญชีเจ้าหนี้ เว้นว่างไว้เพื่อใช้ค่าเริ่มต้นของคู่ค้า"
+#: model:ir.model.fields,field_description:account_payment_kmitl.field_kmitl_payment_type__override_account_id
+msgid "Override Account"
+msgstr "บัญชีที่กำหนดเอง"
 
 #. module: account_payment_kmitl
-#: model:ir.model.fields,help:account_payment_kmitl.field_kmitl_payment_type__receivable_account_id
-msgid "Override the receivable account. Leave empty to use partner's default."
-msgstr "แทนที่บัญชีลูกหนี้ เว้นว่างไว้เพื่อใช้ค่าเริ่มต้นของคู่ค้า"
-
-#. module: account_payment_kmitl
-#: model:ir.model.fields,field_description:account_payment_kmitl.field_kmitl_payment_type__payable_account_id
-msgid "Payable Account"
-msgstr "บัญชีเจ้าหนี้"
+#: model:ir.model.fields,help:account_payment_kmitl.field_kmitl_payment_type__override_account_id
+msgid "Override the destination account. Leave empty to use partner's default."
+msgstr "แทนที่บัญชีปลายทาง เว้นว่างไว้เพื่อใช้ค่าเริ่มต้นของคู่ค้า"
 
 #. module: account_payment_kmitl
 #: model:ir.model,name:account_payment_kmitl.model_account_payment
@@ -141,11 +136,6 @@ msgstr "รายการจ่ายเงินถูกส่งออกแ
 #: model:ir.model.fields.selection,name:account_payment_kmitl.selection__bank_payment_export_line__epayment_status__pending
 msgid "Pending"
 msgstr "รอดำเนินการ"
-
-#. module: account_payment_kmitl
-#: model:ir.model.fields,field_description:account_payment_kmitl.field_kmitl_payment_type__receivable_account_id
-msgid "Receivable Account"
-msgstr "บัญชีลูกหนี้"
 
 #. module: account_payment_kmitl
 #: model:ir.ui.menu,name:account_payment_kmitl.menu_payment_settings

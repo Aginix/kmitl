@@ -433,3 +433,8 @@ msgstr "สร้างงวดงาน"
 #: model_terms:ir.ui.view,arch_db:purchase_invoice_plan.purchase_order_form
 msgid "⇒ Remove Invoice Plan"
 msgstr "ลบงวดงานทั้งหมด"
+
+#. module: purchase_invoice_plan_kmitl
+#: model:ir.model.fields,field_description:purchase_invoice_plan_kmitl.field_purchase_invoice_plan__duration_days
+msgid "Duration (Days)"
+msgstr "ระยะเวลา(วัน)"
