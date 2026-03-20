@@ -309,7 +309,7 @@ msgstr ""
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_line_make_purchase_order
 msgid "Cancel"
-msgstr ""
+msgstr "ยกเลิก"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__cancelled
@@ -490,11 +490,15 @@ msgstr "หน่วยงาน"
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__description
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__description
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__description
-#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__name
-#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__name
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.purchase_type_view_form
 msgid "Description"
 msgstr "เหตุผล/ความจำเป็น"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__name
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__name
+msgid "Description"
+msgstr "ชื่อรายการ"
 
 #. module: purchase_request
 #. odoo-python
@@ -845,7 +849,7 @@ msgstr ""
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_line_make_purchase_order
 msgid "New PO details:"
-msgstr ""
+msgstr "รายละเอียดใบสัญญาซื้อ/จ้าง"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__activity_calendar_event_id
@@ -1352,7 +1356,7 @@ msgstr ""
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__product_qty
 msgid "Quantity to purchase"
-msgstr ""
+msgstr "จำนวนที่จะจัดซื้อ"
 
 #. module: purchase_request
 #. odoo-python
@@ -1650,7 +1654,7 @@ msgstr ""
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order__supplier_id
 msgid "Supplier"
-msgstr ""
+msgstr "ผู้ขาย"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__procurement_committee__committee_type__tor_committee
