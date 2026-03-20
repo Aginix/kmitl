@@ -9,7 +9,6 @@
     'depends': ['purchase_work_acceptance', 'purchase_order_disbursement'],
     "data": [
         "views/disbursement_request_views.xml",
-        "views/purchase_order_views.xml",
         "views/work_acceptance_views.xml"
     ],
     'installable': True,
