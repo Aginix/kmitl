@@ -36,6 +36,7 @@
                             name="use_procurement_plan"
                             attrs="{'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}"
                         />
+                        <field name="account_fiscal_year_id" invisible="1" />
                         <field
                             name="procurement_plan_id"
                             options="{'no_create_edit': True, 'no_open': True}"
