@@ -92,7 +92,28 @@ class PurchaseOrder(models.Model):
             subtype_xmlid="mail.mt_note",
         )
         self._post_message_to_purchase_requests(disbursement_request)
+        self._copy_attachments_to_disbursement_request(disbursement_request)
         return disbursement_request
+
+    def _copy_attachments_to_disbursement_request(self, disbursement_request):
+        """Copy all attachments from this PO to the given disbursement request."""
+        attachments = self.env["ir.attachment"].search([
+            ("res_model", "=", "purchase.order"),
+            ("res_id", "=", self.id),
+        ])
+        if attachments:
+            self.env["ir.attachment"].create([
+                {
+                    "name": att.name,
+                    "datas": att.datas,
+                    "res_model": "disbursement.request",
+                    "res_id": disbursement_request.id,
+                    "type": att.type,
+                    "mimetype": att.mimetype,
+                    "description": _("From PO: %s", self.name),
+                }
+                for att in attachments
+            ])
 
     def _post_message_to_purchase_requests(self, disbursement_request):
         """Post to related purchase.request(s) if PO was created from PR."""
