@@ -29,7 +29,7 @@
                 >
             </field>
             <button name="action_to_substate" position="attributes">
-                <attribute name="groups">purchase_request_security.group_purchase_request_user_all</attribute
+                <attribute name="groups">purchase_request_kmitl.group_purchase_request_user_all</attribute
                 >
                 <attribute name="context">{'to_substate_sequence': 30}</attribute>
                 <attribute name="attrs">{'invisible': ['|', ('substate_sequence', '!=', 20), ('state', '!=', 'to_verify')]}</attribute

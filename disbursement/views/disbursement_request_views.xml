@@ -62,29 +62,39 @@
                         </h1>
                     </div>
                     <group>
-                        <group>
-                            <field name="partner_id" />
+                        <group id="header_left_group" string="ข้อมูลคู่ค้า">
+                            <field name="partner_id" widget="res_partner_many2one" context="{'show_address': 1, 'default_is_company': True, 'show_vat': True}" options='{"always_reload": True}' />
+                            <field name="partner_bank_id" context="{'default_partner_id': partner_id}" domain="[('partner_id', '=', partner_id)]" />
+                            <field name="company_id" groups="base.group_multi_company" />
+                            <field name="is_company" readonly="1" invisible="1" />
+                            <field name="ignore_exception" states="to_approve" groups='base_exception.group_exception_rule_manager' />
+                            <field name="exception_ids" widget="many2many_tags" readonly="True" groups='base.group_no_one' />
+                        </group>
+                        <group id="header_right_group" string="ข้อมูลการเบิก">
+                            <field name="date" />
+                            <field name="reference_model_name" readonly="1"
+                                attrs="{'invisible': ['|', ('id', '=', False), ('reference_model_name', '=', False)]}" />
+                            <field name="reference"
+                                attrs="{'readonly': ['|', '|', ('id', '!=', False), ('state', '!=', 'draft'), ('reference_model', '!=', False)]}"
+                                force_save="1" />
+                            <field name="reference_model" invisible="1" />
+                            <field name="ref" />
+                            <field name="payment_type" required="1" />
+                        </group>
+                        <group id="budget" string="มิติทางบัญชี">
+                            <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}" />
+                            <field name="budget_commitment_id" />
+                            <field name="source_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ['submitted', 'validated', 'cancel'])]}" />
+                            <field name="department_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ['submitted', 'validated', 'cancel'])]}" />
+                            <field name="fund_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ['submitted', 'validated', 'cancel'])]}" />
+                            <field name="activity_analytic_id" required="1" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ['submitted', 'validated', 'cancel'])]}" />
+                            <field name="budget_account_id" options="{'no_create': True, 'no_open': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', 'in', ['submitted', 'validated', 'cancel'])]}" />
+                            <field name="budget_account_id" invisible="1" />
+                            <field name="analytic_distribution" invisible="1"/>
+                        </group>
+                        <group id="other_information" string="ข้อมูลอื่น ๆ">
                             <field name="user_id" groups="disbursement.group_disbursement_manager" />
                             <field name="user_id" readonly="1" groups="!disbursement.group_disbursement_manager" />
-                            <field name="is_company" readonly="1" />
-                            <field name="partner_bank_id" context="{'default_partner_id': partner_id}" />
-                            <field name="date" />
-                            <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}" />
-                            <field name="payment_type" required="1" />
-                            <field name="ref" />
-                            <field name="ignore_exception" states="to_approve" groups='base_exception.group_exception_rule_manager' />
-                            <field name="exception_ids" widget="many2many_tags" readonly="True" />
-                        </group>
-                        <group>
-                            <field name="company_id" groups="base.group_multi_company" />
-                            <field name="budget_commitment_id" required="1" />
-                            <field name="source_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
-                            <field name="department_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
-                            <field name="fund_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
-                            <field name="activity_analytic_id" readonly="1" options="{'no_create': True, 'no_open': True}" />
-                            <field name="budget_account_id" readonly="1" required="1" options="{'no_create': True, 'no_open': True}" />
-                            <field name="budget_account_id" readonly="0" invisible="1"/>
-                            <field name="analytic_distribution" invisible="1"/>
                         </group>
                     </group>
                     <notebook>
@@ -99,7 +109,7 @@
                                     <field name="tax_ids" widget="many2many_tags" />
                                     <field name="wht_tax_id" optional="show"/>
                                     <field name="account_id" />
-                                    <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting" />
+                                    <field name="analytic_distribution" widget="analytic_distribution" groups="analytic.group_analytic_accounting" readonly="1" />
                                     <field name="price_subtotal" />
                                     <field name="price_tax" optional="hide" />
                                     <field name="price_total" />
@@ -110,7 +120,9 @@
                             <group class="oe_subtotal_footer oe_right">
                                 <field name="amount_untaxed" />
                                 <field name="amount_tax" />
-                                <field name="amount_total" class="oe_subtotal_footer_separator" />
+                                <field name="amount_total" />
+                                <field name="amount_wht" />
+                                <field name="amount_net" class="oe_subtotal_footer_separator" />
                             </group>
                             <div class="oe_clear" />
                         </page>

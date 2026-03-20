@@ -10,6 +10,7 @@ class PurchaseOrder(models.Model):
         comodel_name='disbursement.request',
         inverse_name='purchase_id',
         string='Disbursement Requests',
+        copy=False,
     )
     disbursement_request_count = fields.Integer(
         string='Disbursement Request Count',
@@ -48,7 +49,7 @@ class PurchaseOrder(models.Model):
 
     def _prepare_disbursement_request_vals(self):
         return {
-            "purchase_id": self.id,
+            "reference": "purchase.order,%d" % self.id,
             "partner_id": self.partner_id.id,
             "line_ids": [
                 Command.create(line._prepare_disbursement_request_line_vals())
@@ -73,6 +74,23 @@ class PurchaseOrder(models.Model):
         disbursement_request = self.env["disbursement.request"].create(
             self._prepare_disbursement_request_vals()
         )
+        # Log in PO chatter
+        dr_link = "/web#id=%d&model=disbursement.request&view_type=form" % disbursement_request.id
+        self.message_post(
+            body=_(
+                'Disbursement Request <a href="%(link)s" target="_blank">%(name)s</a>'
+                " has been created from this purchase order."
+            ) % {"link": dr_link, "name": disbursement_request.name},
+            subtype_xmlid="mail.mt_note",
+        )
+        # Log in Disbursement chatter
+        po_link = "/web#id=%d&model=purchase.order&view_type=form" % self.id
+        disbursement_request.message_post(
+            body=_(
+                'Created from Purchase Order <a href="%(link)s" target="_blank">%(name)s</a>.'
+            ) % {"link": po_link, "name": self.name},
+            subtype_xmlid="mail.mt_note",
+        )
         return disbursement_request
 
     def action_view_disbursement_request(self):
@@ -80,6 +98,7 @@ class PurchaseOrder(models.Model):
         disbursement_requests = self.env['disbursement.request'].search(
             [('purchase_id', '=', self.id)]
         )
+        default_reference = "purchase.order,%d" % self.id
 
         if len(disbursement_requests) == 1:
             return {
@@ -88,7 +107,7 @@ class PurchaseOrder(models.Model):
                 'res_model': 'disbursement.request',
                 'res_id': disbursement_requests.id,
                 'view_mode': 'form',
-                'context': {'default_purchase_id': self.id},
+                'context': {'default_reference': default_reference},
             }
 
         return {
@@ -97,5 +116,5 @@ class PurchaseOrder(models.Model):
             'res_model': 'disbursement.request',
             'view_mode': 'tree,form',
             'domain': [('purchase_id', '=', self.id)],
-            'context': {'default_purchase_id': self.id},
+            'context': {'default_reference': default_reference},
         }
