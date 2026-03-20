@@ -69,3 +69,26 @@ class PurchaseOrder(models.Model):
             order.hide_create_disbursement_request_button = (
                 order.state != "purchase" or not order._get_pending_wa()
             )
+
+    @api.depends(
+        "state",
+        "is_disbursement_request_allowed",
+        "disbursement_request_ids.state",
+        "wa_ids.is_disbursed",
+        "wa_ids.state",
+    )
+    def _compute_hide_create_disbursement_request_button(self):
+        for order in self:
+            has_pending_wa = bool(order.wa_ids.filtered(
+                lambda w: w.state == "accept" and not w.is_disbursed
+            ))
+            has_unfinished_disbursement = bool(order.disbursement_request_ids.filtered(
+                lambda d: d.state not in ("validated", "cancel")
+            ))
+
+            order.hide_create_disbursement_request_button = (
+                order.state != "purchase"
+                or not order.is_disbursement_request_allowed
+                or not has_pending_wa
+                or has_unfinished_disbursement
+            )
