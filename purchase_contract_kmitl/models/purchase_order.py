@@ -89,6 +89,7 @@ class PurchaseOrder(models.Model):
 
     supervision_cost = fields.Monetary(
         string="Supervision Cost",
+        help="ถ้าไม่มีไม่ต้องกรอก",
         tracking=True,
         states=READONLY_STATES,
     )
