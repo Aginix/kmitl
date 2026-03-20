@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <odoo>
+      <record id="view_work_acceptance_form_inherit_disbursement" model="ir.ui.view">
+          <field name="name">work.acceptance.form.inherit.disbursement</field>
+          <field name="model">work.acceptance</field>
+          <field name="inherit_id" ref="purchase_work_acceptance.view_work_acceptance_form"/>
+          <field name="arch" type="xml">
+              <xpath expr="//field[@name='partner_id']" position="after">
+                  <field name="is_disbursed" readonly="1"/>
+                  <field name="disbursement_request_id"
+                      readonly="1"
+                      attrs="{'invisible': [('disbursement_request_id', '=', False)]}"/>
+              </xpath>
+          </field>
+      </record>
+
+      <record id="view_work_acceptance_tree_inherit_disbursement" model="ir.ui.view">
+          <field name="name">work.acceptance.tree.inherit.disbursement</field>
+          <field name="model">work.acceptance</field>
+          <field name="inherit_id" ref="purchase_work_acceptance.view_work_acceptance_tree"/>
+          <field name="arch" type="xml">
+              <xpath expr="//tree" position="inside">
+                  <field name="is_disbursed" optional="show"/>
+                  <field name="disbursement_request_id" optional="hide"/>
+              </xpath>
+          </field>
+      </record>
+  </odoo>
