@@ -17,7 +17,6 @@
         'purchase_work_acceptance_tier_validation',
         'l10n_th_gov_purchase_request',
         'thai_date_utils',
-        'purchase_contract_kmitl',
         'l10n_th_amount_to_text',
         'purchase_kmitl',
     ],
