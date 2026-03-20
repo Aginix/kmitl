@@ -1,31 +1,48 @@
 # -*- coding: utf-8 -*-
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError
 
 
 class DisbursementRequest(models.Model):
-    _inherit = 'disbursement.request'
+    _inherit = "disbursement.request"
+
+    reference = fields.Reference(
+        selection_add=[("purchase.request.approval", "Purchase Request Approval")],
+        ondelete={"purchase.request.approval": "set null"},
+    )
 
     purchase_request_approval_id = fields.Many2one(
         comodel_name="purchase.request.approval",
         string="Purchase Request Approval",
-        ondelete="set null",
+        compute="_compute_reference_fields",
+        store=True,
         index=True,
         tracking=True,
     )
 
+    @api.depends("reference")
+    def _compute_reference_fields(self):
+        super()._compute_reference_fields()
+        for rec in self:
+            if rec.reference and rec.reference._name == "purchase.request.approval":
+                rec.purchase_request_approval_id = rec.reference
+            else:
+                rec.purchase_request_approval_id = False
+
     def action_view_purchase_approval(self):
         self.ensure_one()
         if not self.purchase_request_approval_id:
-            raise UserError(_('No Purchase Request Approval linked to this request.'))
+            raise UserError(
+                _("No Purchase Request Approval linked to this request.")
+            )
 
         return {
-            'type': 'ir.actions.act_window',
-            'name': _('Purchase Request Approval'),
-            'res_model': 'purchase.request.approval',
-            'res_id': self.purchase_request_approval_id.id,
-            'view_mode': 'form',
-            'target': 'current',
+            "type": "ir.actions.act_window",
+            "name": _("Purchase Request Approval"),
+            "res_model": "purchase.request.approval",
+            "res_id": self.purchase_request_approval_id.id,
+            "view_mode": "form",
+            "target": "current",
         }
 
     def _message_link_back_to_request(self):
@@ -33,7 +50,8 @@ class DisbursementRequest(models.Model):
         link = self.purchase_request_approval_id._get_record_url()
 
         return _(
-            'This record has been created from: <a href="%(link)s" target="_blank">%(name)s</a>',
+            'This record has been created from:'
+            ' <a href="%(link)s" target="_blank">%(name)s</a>',
             link=link,
             name=name,
         )

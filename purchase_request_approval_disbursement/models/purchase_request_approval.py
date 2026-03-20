@@ -84,8 +84,7 @@ class PurchaseRequestApproval(models.Model):
 
     def _prepare_disbursement_request_vals(self):
         return {
-            "purchase_request_approval_id": self.id,
-            "partner_id": self.request_id.partner_id.id,
+            "reference": "purchase.request.approval,%d" % self.id,
             "line_ids": [
                 Command.create(line._prepare_disbursement_request_line_vals())
                 for line in self.request_id.line_ids
@@ -121,11 +120,45 @@ class PurchaseRequestApproval(models.Model):
         )
         link_back_message = disbursement_request._message_link_back_to_request()
         disbursement_request.message_post(
-            body=link_back_message, message_type="comment")
+            body=link_back_message, message_type="comment"
+        )
         message = self._purchase_request_approval_create_bill_message_content(
-            disbursement_request)
+            disbursement_request
+        )
         self.message_post(body=message, message_type="comment")
+        self._post_message_to_purchase_request(disbursement_request)
+        self._post_message_to_purchase_order(disbursement_request)
         return disbursement_request
+
+    def _post_message_to_purchase_request(self, disbursement_request):
+        dr_link = (
+            "/web#id=%d&model=disbursement.request&view_type=form"
+            % disbursement_request.id
+        )
+        self.request_id.message_post(
+            body=_(
+                'Disbursement Request <a href="%(link)s" target="_blank">'
+                "%(name)s</a> has been created."
+            )
+            % {"link": dr_link, "name": disbursement_request.name},
+            subtype_xmlid="mail.mt_note",
+        )
+
+    def _post_message_to_purchase_order(self, disbursement_request):
+        if not self.purchase_order_id:
+            return
+        dr_link = (
+            "/web#id=%d&model=disbursement.request&view_type=form"
+            % disbursement_request.id
+        )
+        self.purchase_order_id.message_post(
+            body=_(
+                'Disbursement Request <a href="%(link)s" target="_blank">'
+                "%(name)s</a> has been created."
+            )
+            % {"link": dr_link, "name": disbursement_request.name},
+            subtype_xmlid="mail.mt_note",
+        )
 
     def _purchase_request_approval_create_bill_message_content(self, disbursement_request):
         message = _(

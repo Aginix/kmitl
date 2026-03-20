@@ -91,7 +91,38 @@ class PurchaseOrder(models.Model):
             ) % {"link": po_link, "name": self.name},
             subtype_xmlid="mail.mt_note",
         )
+        self._post_message_to_purchase_requests(disbursement_request)
         return disbursement_request
+
+    def _post_message_to_purchase_requests(self, disbursement_request):
+        """Post to related purchase.request(s) if PO was created from PR."""
+        if "purchase.request" not in self.env:
+            return
+        purchase_requests = self.env["purchase.request"]
+        for line in self.order_line:
+            pr_lines = getattr(line, "purchase_request_lines", None)
+            if pr_lines:
+                purchase_requests |= pr_lines.mapped("request_id")
+        if not purchase_requests:
+            return
+        dr_link = (
+            "/web#id=%d&model=disbursement.request&view_type=form"
+            % disbursement_request.id
+        )
+        for pr in purchase_requests:
+            pr.message_post(
+                body=_(
+                    'Disbursement Request <a href="%(link)s" target="_blank">'
+                    "%(name)s</a> has been created from Purchase Order"
+                    " %(po_name)s."
+                )
+                % {
+                    "link": dr_link,
+                    "name": disbursement_request.name,
+                    "po_name": self.name,
+                },
+                subtype_xmlid="mail.mt_note",
+            )
 
     def action_view_disbursement_request(self):
         self.ensure_one()
