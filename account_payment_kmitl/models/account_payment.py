@@ -1,6 +1,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class AccountPayment(models.Model):
@@ -10,10 +11,54 @@ class AccountPayment(models.Model):
         comodel_name="kmitl.payment.type",
         string="Payment Type (KMITL)",
     )
+    to_reconcile_payment_line_ids = fields.Many2many(
+        comodel_name="account.move.line",
+        relation="account_payment_to_reconcile_line_rel",
+        column1="payment_id",
+        column2="move_line_id",
+        string="Lines to Reconcile",
+        copy=False,
+    )
+
+    def action_post(self):
+        """Validate bank export for outbound, then reconcile after posting."""
+        for payment in self:
+            if (
+                payment.payment_type == "outbound"
+                and payment.export_status == "draft"
+            ):
+                raise UserError(
+                    _("Payment must be exported to bank before posting.")
+                )
+        res = super().action_post()
+        self._reconcile_source_invoice_lines()
+        return res
+
+    def _reconcile_source_invoice_lines(self):
+        """Reconcile payment lines with stored source invoice lines."""
+        domain = [
+            ("parent_state", "=", "posted"),
+            ("account_type", "in", ("asset_receivable", "liability_payable")),
+            ("reconciled", "=", False),
+        ]
+        for payment in self.filtered("to_reconcile_payment_line_ids"):
+            payment_lines = payment.line_ids.filtered_domain(domain)
+            source_lines = payment.to_reconcile_payment_line_ids
+            for account in payment_lines.account_id:
+                (payment_lines + source_lines).filtered_domain(
+                    [("account_id", "=", account.id), ("reconciled", "=", False)]
+                ).reconcile()
+            payment.to_reconcile_payment_line_ids = False
 
     def action_submit(self):
-        """Submit payment for approval. Delegates to account.move."""
-        self.move_id.action_submit()
+        """Submit payment without triggering tier validation.
+
+        Validation is triggered after bank export, not on submit.
+        """
+        for payment in self:
+            if payment.move_id.state != "draft":
+                raise UserError(_("Only draft payments can be submitted."))
+            payment.move_id.state = "submitted"
 
     @api.onchange("kmitl_payment_type_id")
     def _onchange_kmitl_payment_type_id(self):
@@ -78,3 +123,33 @@ class AccountPayment(models.Model):
             *super()._get_trigger_fields_to_synchronize(),
             "kmitl_payment_type_id",
         )
+
+    # --- Budget commitment (delegates to account.move via _inherits) ---
+
+    @api.onchange("budget_commitment_id")
+    def _onchange_budget_commitment_id(self):
+        """Auto-populate budget account and analytic distribution
+        from budget commitment.
+
+        Note: budget fields live on account.move and are accessed here
+        via _inherits delegation. The onchange must be defined on
+        account.payment because _inherits does not cascade onchange handlers.
+        """
+        if self.budget_commitment_id:
+            self.budget_account_id = self.budget_commitment_id.account_id
+            commitment = self.budget_commitment_id
+            analytic_accounts = {}
+            if commitment.activity_analytic_id:
+                analytic_accounts[commitment.activity_analytic_id.id] = 100
+                self.activity_analytic_id = commitment.activity_analytic_id
+            if commitment.department_analytic_id:
+                analytic_accounts[commitment.department_analytic_id.id] = 100
+                self.department_analytic_id = commitment.department_analytic_id
+            if commitment.fund_analytic_id:
+                analytic_accounts[commitment.fund_analytic_id.id] = 100
+                self.fund_analytic_id = commitment.fund_analytic_id
+            if commitment.source_analytic_id:
+                analytic_accounts[commitment.source_analytic_id.id] = 100
+                self.source_analytic_id = commitment.source_analytic_id
+            if analytic_accounts:
+                self.analytic_distribution = analytic_accounts

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_report_purchase_work_acceptance" model="ir.actions.report">
+        <field name="name">Purchase Work Acceptance</field>
+        <field name="binding_model_id" ref="model_work_acceptance" />
+        <field name="model">work.acceptance</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">purchase_work_acceptance_kmitl.report_purchase_work_acceptance</field>
+        <field name="paperformat_id" ref="paperformat_purchase_work_acceptance_report"/>
+        <field name="report_file">purchase_work_acceptance_kmitl.report_purchase_work_acceptance</field>
+    </record>
+</odoo>

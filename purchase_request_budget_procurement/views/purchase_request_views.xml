@@ -24,7 +24,7 @@
     <record id="view_purchase_request_form_inherit_account_fiscal_year_procurement_plan" model="ir.ui.view">
         <field name="name">view.purchase.request.form (Procurement Plan)</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request_account_fiscal_year.view_purchase_request_form"/>
+        <field name="inherit_id" ref="l10n_th_gov_purchase_request.view_purchase_request_form"/>
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('oe_edit_only')]" position="before">
                 <group string="แผนจัดซื้อจัดจ้าง">

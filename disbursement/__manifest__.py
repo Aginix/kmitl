@@ -13,6 +13,7 @@
         "base_exception",
         "l10n_th_account_tax",
         "base_fontawesome",
+        "partner_type_aginix",
     ],
     "data": [
         "security/security.xml",

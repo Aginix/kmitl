@@ -118,6 +118,23 @@ class DisbursementRequestLine(models.Model):
         string="Ignore Exceptions",
     )
 
+    amount_wht = fields.Monetary(
+        string="WHT Amount",
+        compute="_compute_amount_wht",
+        store=True,
+        currency_field="currency_id",
+    )
+
+    @api.depends("price_subtotal", "wht_tax_id", "wht_tax_id.amount")
+    def _compute_amount_wht(self):
+        for line in self:
+            if line.wht_tax_id and line.price_subtotal:
+                line.amount_wht = line.currency_id.round(
+                    line.price_subtotal * line.wht_tax_id.amount / 100
+                )
+            else:
+                line.amount_wht = 0.0
+
     @api.depends("quantity", "price_unit", "tax_ids")
     def _compute_amount(self):
         """Compute line amounts with tax calculation (mirrors PO logic)"""
@@ -172,17 +189,10 @@ class DisbursementRequestLine(models.Model):
     # -------------------------------------------------------------------------
     # WHT methods
     # -------------------------------------------------------------------------
-    @api.depends("product_id", "request_id.partner_id")
+    @api.depends("request_id.partner_id.partner_type_id.wht_tax_id")
     def _compute_wht_tax_id(self):
         for line in self:
-            if line.product_id:
-                partner = line.request_id.partner_id
-                if partner and partner.company_type == "company":
-                    line.wht_tax_id = line.product_id.supplier_company_wht_tax_id
-                else:
-                    line.wht_tax_id = line.product_id.supplier_wht_tax_id
-            else:
-                line.wht_tax_id = False
+            line.wht_tax_id = line.request_id.partner_id.partner_type_id.wht_tax_id
 
     # -------------------------------------------------------------------------
     # Exception methods
