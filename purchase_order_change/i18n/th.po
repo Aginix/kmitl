@@ -185,7 +185,7 @@ msgstr "ค่าปรับล่าช้า"
 #. module: purchase_order_change
 #: model:ir.model.fields,field_description:purchase_order_change.field_purchase_order_change_wizard__fines_rate
 msgid "Fines Rate"
-msgstr "ค่าปรับรายวัน"
+msgstr "ค่าปรับรายวัน(บาท)"
 
 #. module: purchase_order_change
 #: model_terms:ir.ui.view,arch_db:purchase_order_change.view_purchase_change_section_search
@@ -398,7 +398,7 @@ msgstr "สถานะ"
 #. module: purchase_order_change
 #: model:ir.model.fields,field_description:purchase_order_change.field_purchase_order_change_wizard__supervision_cost
 msgid "Supervision Cost"
-msgstr "ค่าใข้จ่ายควบคุมงาน"
+msgstr "ค่าใช้จ่ายควบคุมงาน(บาท)(ถ้ามี)"
 
 #. module: purchase_order_change
 #: model_terms:ir.actions.act_window,help:purchase_order_change.action_purchase_change_section
