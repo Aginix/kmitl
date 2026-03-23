@@ -31,6 +31,7 @@
         "views/work_acceptance_views.xml",
         "views/purchase_work_acceptance_report.xml",
     ],
+    "post_init_hook": "post_init_hook",
     'installable': True,
     'auto_install': False,
     'license': 'LGPL-3',
