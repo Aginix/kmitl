@@ -127,7 +127,6 @@ class PurchaseRequestApproval(models.Model):
         )
         self.message_post(body=message, message_type="comment")
         self._post_message_to_purchase_request(disbursement_request)
-        self._post_message_to_purchase_order(disbursement_request)
         return disbursement_request
 
     def _post_message_to_purchase_request(self, disbursement_request):
@@ -135,28 +134,19 @@ class PurchaseRequestApproval(models.Model):
             "/web#id=%d&model=disbursement.request&view_type=form"
             % disbursement_request.id
         )
+        pa_link = "/web#id=%d&model=purchase.request.approval&view_type=form" % self.id
         self.request_id.message_post(
             body=_(
-                'Disbursement Request <a href="%(link)s" target="_blank">'
-                "%(name)s</a> has been created."
+                'Disbursement Request <a href="%(dr_link)s" target="_blank">'
+                "%(dr_name)s</a> has been created from Purchase Request Approval"
+                ' <a href="%(pa_link)s" target="_blank">%(pa_name)s</a>.'
             )
-            % {"link": dr_link, "name": disbursement_request.name},
-            subtype_xmlid="mail.mt_note",
-        )
-
-    def _post_message_to_purchase_order(self, disbursement_request):
-        if not self.purchase_order_id:
-            return
-        dr_link = (
-            "/web#id=%d&model=disbursement.request&view_type=form"
-            % disbursement_request.id
-        )
-        self.purchase_order_id.message_post(
-            body=_(
-                'Disbursement Request <a href="%(link)s" target="_blank">'
-                "%(name)s</a> has been created."
-            )
-            % {"link": dr_link, "name": disbursement_request.name},
+            % {
+                "dr_link": dr_link,
+                "dr_name": disbursement_request.name,
+                "pa_link": pa_link,
+                "pa_name": self.name,
+            },
             subtype_xmlid="mail.mt_note",
         )
 

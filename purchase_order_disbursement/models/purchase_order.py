@@ -83,15 +83,34 @@ class PurchaseOrder(models.Model):
             ) % {"link": dr_link, "name": disbursement_request.name},
             subtype_xmlid="mail.mt_note",
         )
-        # Log in Disbursement chatter
+        # Log in Disbursement chatter with full upstream chain
         po_link = "/web#id=%d&model=purchase.order&view_type=form" % self.id
-        disbursement_request.message_post(
-            body=_(
-                'Created from Purchase Order <a href="%(link)s" target="_blank">%(name)s</a>.'
-            ) % {"link": po_link, "name": self.name},
-            subtype_xmlid="mail.mt_note",
-        )
+        body = _(
+            'Created from Purchase Order <a href="%(link)s" target="_blank">%(name)s</a>.'
+        ) % {"link": po_link, "name": self.name}
+        purchase_requests = self._get_related_purchase_requests()
+        if purchase_requests and "request_approval_ids" in purchase_requests._fields:
+            purchase_approvals = purchase_requests.mapped("request_approval_ids")
+        else:
+            purchase_approvals = []
+        items = []
+        for pa in purchase_approvals:
+            pa_link = "/web#id=%d&model=purchase.request.approval&view_type=form" % pa.id
+            items.append(
+                _('Purchase Request Approval: <a href="%(link)s" target="_blank">%(name)s</a>')
+                % {"link": pa_link, "name": pa.name}
+            )
+        for pr in purchase_requests:
+            pr_link = "/web#id=%d&model=purchase.request&view_type=form" % pr.id
+            items.append(
+                _('Purchase Request: <a href="%(link)s" target="_blank">%(name)s</a>')
+                % {"link": pr_link, "name": pr.name}
+            )
+        if items:
+            body += "<ul>" + "".join("<li>%s</li>" % item for item in items) + "</ul>"
+        disbursement_request.message_post(body=body, subtype_xmlid="mail.mt_note")
         self._post_message_to_purchase_requests(disbursement_request)
+        self._post_message_to_purchase_request_approvals(disbursement_request, purchase_approvals)
         self._copy_attachments_to_disbursement_request(disbursement_request)
         return disbursement_request
 
@@ -115,15 +134,20 @@ class PurchaseOrder(models.Model):
                 for att in attachments
             ])
 
-    def _post_message_to_purchase_requests(self, disbursement_request):
-        """Post to related purchase.request(s) if PO was created from PR."""
+    def _get_related_purchase_requests(self):
+        """Return purchase.request records linked to this PO via order lines."""
         if "purchase.request" not in self.env:
-            return
+            return []
         purchase_requests = self.env["purchase.request"]
         for line in self.order_line:
             pr_lines = getattr(line, "purchase_request_lines", None)
             if pr_lines:
                 purchase_requests |= pr_lines.mapped("request_id")
+        return purchase_requests
+
+    def _post_message_to_purchase_requests(self, disbursement_request):
+        """Post to related purchase.request(s) if PO was created from PR."""
+        purchase_requests = self._get_related_purchase_requests()
         if not purchase_requests:
             return
         dr_link = (
@@ -140,6 +164,31 @@ class PurchaseOrder(models.Model):
                 % {
                     "link": dr_link,
                     "name": disbursement_request.name,
+                    "po_name": self.name,
+                },
+                subtype_xmlid="mail.mt_note",
+            )
+
+    def _post_message_to_purchase_request_approvals(self, disbursement_request, purchase_approvals):
+        """Post to related purchase.request.approval(s) with DR and PO references."""
+        if not purchase_approvals:
+            return
+        dr_link = (
+            "/web#id=%d&model=disbursement.request&view_type=form"
+            % disbursement_request.id
+        )
+        po_link = "/web#id=%d&model=purchase.order&view_type=form" % self.id
+        for pa in purchase_approvals:
+            pa.message_post(
+                body=_(
+                    'Disbursement Request <a href="%(dr_link)s" target="_blank">%(dr_name)s</a>'
+                    ' has been created from Purchase Order'
+                    ' <a href="%(po_link)s" target="_blank">%(po_name)s</a>.'
+                )
+                % {
+                    "dr_link": dr_link,
+                    "dr_name": disbursement_request.name,
+                    "po_link": po_link,
                     "po_name": self.name,
                 },
                 subtype_xmlid="mail.mt_note",
