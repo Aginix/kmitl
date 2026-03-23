@@ -35,15 +35,15 @@
                     <field name="is_budget_editable" invisible="1" />
                     <field name="analytic_distribution" invisible="1" />
 
-                    <field name="budget_account_id" required="1" attrs="{'readonly': [('is_budget_editable', '=', False)]}" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}" />
+                    <field name="budget_account_id" attrs="{'readonly': [('is_budget_editable', '=', False)], 'required': [('state', '=', 'to_verify')]}" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}" />
                     <field name="budget_account_id" invisible="1" />
-                    <field name="activity_analytic_id" required="1" attrs="{'readonly': [('is_budget_editable', '=', False)]}" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}" />
+                    <field name="activity_analytic_id" attrs="{'readonly': [('is_budget_editable', '=', False)], 'required': [('state', '=', 'to_verify')]}" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}" />
                     <field name="activity_analytic_id" invisible="1" />
-                    <field name="department_analytic_id" required="1" attrs="{'readonly': [('is_budget_editable', '=', False)]}" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}" />
+                    <field name="department_analytic_id" attrs="{'readonly': [('is_budget_editable', '=', False)], 'required': [('state', '=', 'to_verify')]}" options="{'no_create_edit': True, 'no_open': True, 'no_create': True}" />
                     <field name="department_analytic_id" invisible="1" />
-                    <field name="fund_analytic_id" widget="selection" required="1" attrs="{'readonly': [('is_budget_editable', '=', False)]}" />
+                    <field name="fund_analytic_id" widget="selection" attrs="{'readonly': [('is_budget_editable', '=', False)], 'required': [('state', '=', 'to_verify')]}" />
                     <field name="fund_analytic_id" widget="selection" invisible="1" />
-                    <field name="source_analytic_id" widget="selection" required="1" attrs="{'readonly': [('is_budget_editable', '=', False)]}" />
+                    <field name="source_analytic_id" widget="selection" attrs="{'readonly': [('is_budget_editable', '=', False)], 'required': [('state', '=', 'to_verify')]}" />
                     <field name="source_analytic_id" widget="selection" invisible="1" />
                     <field name="product_id" invisible="1" />
                 </group>
