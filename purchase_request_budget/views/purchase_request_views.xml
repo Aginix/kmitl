@@ -62,6 +62,22 @@
                 <field name="source_analytic_id" optional="show"/>
                 <field name="activity_analytic_id" optional="hide"/>
                 <field name="fund_analytic_id" optional="show"/>
+                <button
+                    name="action_select_budget"
+                    type="object"
+                    string="เลือก"
+                    icon="fa-plus"
+                    attrs="{'invisible': [('budget_account_id', '!=', False)]}"
+                    groups="budget.group_budget_commitment"
+                />
+                <button
+                    name="action_select_budget"
+                    type="object"
+                    string="แก้ไข"
+                    icon="fa-pencil"
+                    attrs="{'invisible': [('budget_account_id', '=', False)]}"
+                    groups="budget.group_budget_commitment"
+                />
             </xpath>
         </field>
     </record>
