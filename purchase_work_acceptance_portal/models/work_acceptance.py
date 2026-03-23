@@ -21,8 +21,8 @@ class WorkAcceptance(models.Model):
         odoobot = self.env.ref("base.partner_root")
         for wa in self:
             purchase = wa.purchase_id
-            order_url = purchase.get_portal_link()
-            if wa.work_acceptance_committee_ids:
+            if wa.work_acceptance_committee_ids and purchase:
+                order_url = purchase.get_portal_link()
                 for committee in wa.work_acceptance_committee_ids:
                     committee.get_portal_link()
                     wa_url = wa.get_portal_link()
