@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_work_acceptance_form" model="ir.ui.view">
+        <field name="name">view.work.acceptance.form</field>
+        <field name="model">work.acceptance</field>
+        <field name="inherit_id" ref="purchase_work_acceptance.view_work_acceptance_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button type="object" name="action_view_approval" class="oe_stat_button" icon="fa-clipboard" attrs="{'invisible':[('approval_id','=',False)]}" groups="purchase.group_purchase_user">
+                    <field name="approval_count" widget="statinfo" string="Approval"/>
+                    <field name="approval_id" invisible="1"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>
