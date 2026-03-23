@@ -16,6 +16,13 @@ class PurchaseOrder(models.Model):
         'cancel': [('readonly', True)],
     }
 
+    attachment_ids = fields.One2many(
+        'ir.attachment',
+        'res_id',
+        string='Document Attachments',
+        tracking=True,
+    )
+
     account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
         string="Fiscal year",
