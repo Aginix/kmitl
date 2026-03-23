@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-06 10:03+0000\n"
-"PO-Revision-Date: 2026-02-06 17:10+0700\n"
+"POT-Creation-Date: 2026-03-19 10:37+0000\n"
+"PO-Revision-Date: 2026-03-19 17:56+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -512,11 +512,6 @@ msgid "Name"
 msgstr "ชื่อ"
 
 #. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__activity_calendar_event_id
-msgid "Next Activity Calendar Event"
-msgstr ""
-
-#. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__activity_date_deadline
 msgid "Next Activity Deadline"
 msgstr ""
@@ -631,6 +626,16 @@ msgstr "ธนาคารผู้รับ"
 #: model_terms:ir.ui.view,arch_db:disbursement.portal_my_disbursement_requests
 msgid "Reference"
 msgstr "อ้างอิง"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__reference
+msgid "Reference Document"
+msgstr "รหัสเอกสาร"
+
+#. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__reference_model
+msgid "Reference Model"
+msgstr ""
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__line_ids
@@ -820,6 +825,16 @@ msgid "กิจกรรม"
 msgstr ""
 
 #. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "ข้อมูลการเบิก"
+msgstr ""
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "ข้อมูลคู่ค้า"
+msgstr ""
+
+#. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.report_disbursement_request
 msgid "จำนวน"
 msgstr ""
@@ -845,6 +860,11 @@ msgid "ประเภทการจ่าย"
 msgstr ""
 
 #. module: disbursement
+#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__reference_model_name
+msgid "ประเภทเอกสารอ้างอิง"
+msgstr ""
+
+#. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.report_disbursement_request_signature
 msgid "ผู้ขอเบิก"
 msgstr ""
@@ -862,6 +882,11 @@ msgstr ""
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.report_disbursement_request
 msgid "ภาษีมูลค่าเพิ่ม (VAT 7%)"
+msgstr ""
+
+#. module: disbursement
+#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_form
+msgid "มิติทางบัญชี"
 msgstr ""
 
 #. module: disbursement

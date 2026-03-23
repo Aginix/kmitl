@@ -98,6 +98,15 @@ msgid ""
 "                                <br/>"
 msgstr ""
 
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_line_make_purchase_order_form
+msgid ""
+"If vendor name not found, contact procurement staff to add the\n"
+"                    information"
+msgstr ""
+"ถ้าหากไม่พบชื่อผู้ขายที่ต้องการ ให้แจ้งเจ้าหน้าที่พัสดุ/ผู้รับผิดชอบงาน\n"
+"                    เพื่อเพิ่มข้อมูล"
+
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.report_purchase_request
 msgid "<strong>Product UoM</strong>"
@@ -309,7 +318,7 @@ msgstr ""
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_line_make_purchase_order
 msgid "Cancel"
-msgstr ""
+msgstr "ยกเลิก"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__cancelled
@@ -490,11 +499,15 @@ msgstr "หน่วยงาน"
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__description
 #: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__description
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__description
-#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__name
-#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__name
 #: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.purchase_type_view_form
 msgid "Description"
-msgstr "เหตุผล/ความจำเป็น"
+msgstr "ชื่อรายการ"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__name
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__name
+msgid "Description"
+msgstr "ชื่อรายการ"
 
 #. module: purchase_request
 #. odoo-python
@@ -546,12 +559,12 @@ msgstr "พนักงาน"
 #: code:addons/purchase_request_kmitl/models/procurement_committee.py:0
 #, python-format
 msgid ""
-"Employee %s cannot appear in multiple committees except TOR and Evaluation "
+"Employee %s cannot appear in multiple committees except TOR and Price Determine "
 "committees."
 msgstr ""
 "คณะกรรมการ %s "
-"ไม่สามารถมีซ้ำกันในประเภทอื่นได้ยกเว้นคณะกรรมการพิจารณาผลและคณะกรรมการจัดทำ "
-"TOR"
+"ไม่สามารถมีซ้ำกันในประเภทอื่นได้ยกเว้นคณะกรรมการกำหนดราคากลางและคณะกรรมการกำหนดคุณลักษณะเฉพาะร่าง "
+"ขอบเขตงาน"
 
 #. module: purchase_request
 #. odoo-python
@@ -845,7 +858,7 @@ msgstr ""
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_line_make_purchase_order
 msgid "New PO details:"
-msgstr ""
+msgstr "รายละเอียดสัญญา/ใบสั่งซื้อ/จ้าง"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__activity_calendar_event_id
@@ -1352,7 +1365,7 @@ msgstr ""
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__product_qty
 msgid "Quantity to purchase"
-msgstr ""
+msgstr "ปริมาณ"
 
 #. module: purchase_request
 #. odoo-python
@@ -1650,7 +1663,7 @@ msgstr ""
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order__supplier_id
 msgid "Supplier"
-msgstr ""
+msgstr "ผู้ขาย/คู่ค้า"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__procurement_committee__committee_type__tor_committee
