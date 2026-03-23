@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <!-- View purchase.order form -->
-    <record id="view_purchase_order_form" model="ir.ui.view">
-        <field name="name">view.purchase.order.form</field>
+    <record model="ir.ui.view" id="purchase_order_form_inherit">
+        <field name="name">purchase.order.form.inherit</field>
         <field name="model">purchase.order</field>
-        <field name="inherit_id" ref="l10n_th_gov_work_acceptance.purchase_order_form_inherit"/>
+        <field name="inherit_id" ref="purchase.purchase_order_form" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='wa_tier_validation']" position="attributes">
-              <attribute name="invisible">1</attribute>
+            <xpath expr="//field[@name='date_order']/.." position="inside">
+                <field name="wa_tier_validation" invisible="1" />
             </xpath>
         </field>
     </record>
-
 </odoo>

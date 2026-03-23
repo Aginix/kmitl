@@ -21,7 +21,7 @@
                 'procurement_method_no_security', 'purchase_order_hide_create_bill_button', 'purchase_order_procurement_committee',
                 'purchase_order_received_qty_percent', 'purchase_order_report_kmitl', 'purchase_request_activity_kmitl',
                 'purchase_request_approval_disbursement', 'purchase_request_approval_attach_existing_attachments',
-                'purchase_request_attachment', 'purchase_request_hide_create_po_button', 'purchase_request_operating_unit_access_all',
+                'purchase_request_hide_create_po_button', 'purchase_request_operating_unit_access_all',
                 'purchase_sequence_kmitl', 'purchase_request_sarabun', 'purchase_request_sequence_kmitl',
                 'purchase_request_ux_kmitl', 'purchase_work_acceptance_invoice_plan_deliverables', 'purchase_work_acceptance_invoice_plan_usability',
                 'purchase_work_acceptance_kmitl', 'purchase_work_acceptance_portal',
@@ -31,7 +31,7 @@
                 'purchase_guarantee_account_payment', 'purchase_guarantee_bid_guarantee_kmitl',
                 'purchase_guarantee_kmitl',
                 'purchase_manual_delivery_security', 'purchase_manual_delivery_work_acceptance',
-                'purchase_operating_unit_access_all', 'purchase_order_disbursement', 'purchase_order_disbursement_attach_existing_attachments',
+                'purchase_operating_unit_access_all', 'purchase_order_disbursement',
                 'purchase_order_disbursement_budget'],
     'data': [
 

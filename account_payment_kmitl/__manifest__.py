@@ -18,13 +18,16 @@
         "thai_date_utils",
         "l10n_th_fonts",
         "l10n_th_amount_to_text",
+        "l10n_th_account_wht_cert_form"
     ],
     "data": [
         "security/ir.model.access.csv",
         "data/kmitl_payment_type_data.xml",
+        "data/tier_definition.xml",
         "views/kmitl_payment_type_views.xml",
         "views/account_payment_views.xml",
         "views/bank_payment_export_views.xml",
+        "views/menuitem.xml",
         "report/paperformat.xml",
         "report/report_bank_payment_export_action.xml",
         "report/report_bank_payment_export.xml",

@@ -47,13 +47,13 @@ msgstr "เพิ่ม"
 #: model:ir.actions.act_window,name:account_asset_batch_subcomponent.action_batch_subcomponent_wizard
 #: model_terms:ir.ui.view,arch_db:account_asset_batch_subcomponent.view_batch_subcomponent_wizard_form
 msgid "Add Subcomponents"
-msgstr "เพิ่มส่วนประกอบครุภัณฑ์"
+msgstr "เพิ่มส่วนประกอบครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_batch_subcomponent
 #: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_account_asset_batch_subcomponent__batch_line_id
 #: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard__batch_line_id
 msgid "Batch Line"
-msgstr "ชุดทะเบียนครุภัณฑ์"
+msgstr "ชุดทะเบียนครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_batch_subcomponent
 #. odoo-python
@@ -134,7 +134,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard_line__name
 #: model_terms:ir.ui.view,arch_db:account_asset_batch_subcomponent.view_account_asset_batch_subcomponent_search
 msgid "Name"
-msgstr "ชื่อรายการ"
+msgstr "ชื่อครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_batch_subcomponent
 #: model_terms:ir.ui.view,arch_db:account_asset_batch_subcomponent.view_account_asset_batch_subcomponent_form
@@ -144,7 +144,7 @@ msgstr ""
 #. module: account_asset_batch_subcomponent
 #: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard_line__number
 msgid "Number"
-msgstr "รหัสส่วนประกอบครุภัณฑ์"
+msgstr "รหัสส่วนประกอบครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_batch_subcomponent
 #: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_account_asset_batch_subcomponent__sequence
@@ -162,7 +162,7 @@ msgstr ""
 #. module: account_asset_batch_subcomponent
 #: model_terms:ir.ui.view,arch_db:account_asset_batch_subcomponent.view_account_asset_batch_form
 msgid "Subcomponent"
-msgstr "ส่วนประกอบครุภัณฑ์"
+msgstr "ส่วนประกอบครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_batch_subcomponent
 #: model:ir.model,name:account_asset_batch_subcomponent.model_batch_subcomponent_wizard_line
@@ -174,7 +174,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_asset_batch_subcomponent.field_batch_subcomponent_wizard__line_ids
 #: model_terms:ir.ui.view,arch_db:account_asset_batch_subcomponent.view_batch_subcomponent_wizard_form
 msgid "Subcomponents"
-msgstr "ส่วนประกอบครุภัณฑ์"
+msgstr "ส่วนประกอบครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_batch_subcomponent
 #: model_terms:ir.actions.act_window,help:account_asset_batch_subcomponent.action_account_asset_batch_subcomponent

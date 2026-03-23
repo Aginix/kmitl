@@ -10,6 +10,23 @@
                     <separator string="Work Acceptance Committee" />
                     <field name="work_acceptance_committee_ids" readonly="1" nolabel="1" context="{'default_committee_type': 'work_acceptance'}" />
                 </page>
+                <page string="Work Supervisors" name="work_supervisor">
+                    <field
+                        name="work_supervisor_ids"
+                        readonly="1"
+                        nolabel="1"
+                        context="{'default_committee_type': 'work_supervisor'}"
+                    >
+                        <tree>
+                            <field name="committee_type" invisible="1" />
+                            <field name="employee_id" />
+                            <field name="name" />
+                            <field name="department_id" />
+                            <field name="email" />
+                            <field name="mobile_phone" />
+                        </tree>
+                    </field>
+                </page>
             </xpath>
             <field name="requesting_operating_unit_id" position="attributes">
                 <attribute name="invisible">1</attribute>
