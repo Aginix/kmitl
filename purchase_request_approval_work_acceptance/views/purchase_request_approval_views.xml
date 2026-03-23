@@ -43,4 +43,20 @@
             </xpath>
         </field>
     </record>
+
+    <record id="view_purchase_request_approval_form" model="ir.ui.view">
+        <field name="name">view.form(Approval Disbursement) Inherit</field>
+        <field name="model">purchase.request.approval</field>
+        <field
+            name="inherit_id"
+            ref="purchase_request_approval_disbursement.view_purchase_request_approval_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_disbursement_request']" position="attributes">
+                <attribute name="attrs">
+                    {'invisible': ['|', '|', '|', ('use_purchase_order', '=', True), ('disbursement_request_count', '&gt;', 0), ('state', 'not in', ['approved']), ('wa_accepted', '=', False)]}
+                </attribute>
+            </xpath>
+        </field>
+    </record>
 </odoo>

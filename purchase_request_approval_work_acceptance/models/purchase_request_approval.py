@@ -127,3 +127,27 @@ class PurchaseRequestApproval(models.Model):
         invoice_vals = super()._prepare_invoice()
         invoice_vals["wa_id"] = self.env.context.get("wa_id")
         return invoice_vals
+
+    def _create_disbursement_request(self):
+        """Override: link WA หลังสร้าง disbursement"""
+        wa = self._get_pending_wa()
+        if not wa:
+            raise UserError(
+                _("No accepted Work Acceptance pending disbursement for PA '%s'.")
+                % self.name
+            )
+
+        disbursement = super()._create_disbursement_request()
+
+        wa.write({"disbursement_request_id": disbursement.id})
+
+        # Log cross-links
+        dr_link = "/web#id=%d&model=disbursement.request&view_type=form" % disbursement.id
+        wa.message_post(
+            body=_(
+                'Disbursement Request <a href="%(link)s">%(name)s</a> created.'
+            ) % {"link": dr_link, "name": disbursement.name},
+            subtype_xmlid="mail.mt_note",
+        )
+
+        return disbursement
