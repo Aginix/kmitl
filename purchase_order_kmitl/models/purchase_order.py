@@ -24,6 +24,11 @@ class PurchaseOrder(models.Model):
 
     use_invoice_plan = fields.Boolean(
         states=READONLY_STATES,
+    attachment_ids = fields.One2many(
+        'ir.attachment',
+        'res_id',
+        string='Document Attachments',
+        tracking=True,
     )
 
     account_fiscal_year_id = fields.Many2one(
