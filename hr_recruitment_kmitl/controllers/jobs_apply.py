@@ -8,6 +8,9 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
     def jobs_apply(self, job, **kwargs):
         error = {}
         default = {}
+        education_by_level = {}
+        work_history_ids = request.env["portal.work.history"]
+        
         if "website_hr_recruitment_error" in request.session:
             error = request.session.pop("website_hr_recruitment_error")
             default = request.session.pop("website_hr_recruitment_default")
@@ -115,6 +118,16 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                 d("computer_skills", profile.computer_skills or "")
                 d("other_abilities", profile.other_abilities or "")
                 d("interests", profile.interests or "")
+                
+                # Education
+                education_by_level = {
+                    rec.level: rec for rec in profile.education_history_ids
+                }
+                
+                # Work Experience
+                work_history_ids = profile.work_history_ids.sorted(
+                    key=lambda r: (r.date_start or "", r.id), reverse=True
+                )
 
         return request.render(
             "website_hr_recruitment.apply",
@@ -122,5 +135,7 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                 "job": job,
                 "error": error,
                 "default": default,
+                "education_by_level": education_by_level,
+                "work_history_ids": work_history_ids
             },
         )

@@ -1,0 +1,47 @@
+<odoo>
+    <template id="kmitl_index" inherit_id="website_hr_recruitment.index">
+        <xpath expr="//div[hasclass('oe_structure')]" position="replace">
+            <div id="jobs_hero" class="oe_structure page-view active pb-4">
+                <div class="banner-header bg-thai-d-dark py-5 overflow-hidden position-relative" style="
+                        border-bottom: 4px solid var(--orange-500);
+                    ">
+                    <div class="position-absolute top-0 start-0 w-100 h-100 bg-pattern-dots opacity-25" />
+                    <div class="container kmitl-nav-spacing position-relative z-1 py-4">
+                        <div class="row align-items-center">
+                            <div class="col-lg-8 text-white">
+                                <h1 class="display-4 fw-bold mb-3"> ร่วมขับเคลื่อนนวัตกรรม
+                                    <br />
+                                    ไปกับ
+                                    <span class="text-primary">KMITL</span>
+                                </h1>
+                                <p class="lead text-white-50 mb-4 fs-6">
+                                    ค้นหาโอกาสในการทำงานและเติบโตไปพร้อมกับสถาบันเทคโนโลยีชั้นนำของประเทศ
+                                </p>
+                                <form action="/jobs" method="get" class="w-100" style="max-width: 600px">
+                                    <div class="input-group input-group-lg shadow-sm">
+                                        <span class="input-group-text bg-white border-end-0 text-muted">
+                                            <i class="fa fa-search" />
+                                        </span>
+                                        <input type="text" name="search" class="form-control border-start-0 ps-0"
+                                            placeholder="ค้นหาตำแหน่งงาน, คีย์เวิร์ด..." t-att-value="search" />
+                                        <button class="btn bg-primary px-4 fw-bold text-white" type="submit">
+                                            ค้นหา
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+        <xpath expr="//span[@t-field='job.name']/.." position="after">
+            <div t-if="job.department_id" class="mt0 mb4 d-flex align-items-center">
+                <span class="fa fa-building-o" />
+                <div class="ms-2" t-field="job.department_id.complete_name" />
+            </div>
+        </xpath>
+        <!-- Remove open positions -->
+        <xpath expr="//h5[@t-if='job.no_of_recruitment &gt;= 1']" position="replace" />
+    </template>
+</odoo>

@@ -1,0 +1,652 @@
+<odoo>
+    <template id="apply_tab_personal">
+        <t t-call="hr_recruitment_kmitl.profile_banner" />
+        <div class="s_website_form_rows row s_col_no_bgcolor">
+            <h5 class="fw-bold text-dark d-flex align-items-center gap-2 mb-3">
+                <span class="section-indicator bg-primary"></span>
+                1. ข้อมูลส่วนบุคคล (Personal Information)
+            </h5>
+            <div class="col-12 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                data-type="char" data-name="Field">
+                <label class="col-4 col-sm-auto s_website_form_label mb-2" style="width: 200px" for="recruitment1">
+                    <span class="s_website_form_label_content">ชื่อ - นามสกุล</span>
+                    <span class="s_website_form_mark"> *</span>
+                </label>
+                <div class="col-sm">
+                    <input id="recruitment1" type="text" class="form-control s_website_form_input" name="partner_name"
+                        required="" readonly="" data-fill-with="name" />
+                </div>
+            </div>
+            <div class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                data-type="char" data-name="Field">
+                <label class="col-form-label col-sm-auto s_website_form_label mb-2" for="birthday">
+                    <span class="s_website_form_label_content">วัน/เดือน/ปี เกิด</span>
+                    <span class="s_website_form_mark"> *</span>
+                </label>
+                <div class="col-sm">
+                    <input id="birthday" type="text" class="form-control s_website_form_input" name="birthday"
+                        required="" readonly="" data-fill-with="birthday" />
+                </div>
+            </div>
+            <div class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                data-type="char" data-name="Field">
+                <label class="col-form-label col-sm-auto s_website_form_label mb-2" for="nationality_id">
+                    <span class="s_website_form_label_content">สัญชาติ</span>
+                    <span class="s_website_form_mark"> *</span>
+                </label>
+                <div class="col-sm">
+                    <input id="nationality_id" type="text" class="form-control s_website_form_input"
+                        name="nationality_id" required="" readonly="" data-fill-with="nationality_id" />
+                </div>
+            </div>
+            <div class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                data-type="char" data-name="Field">
+                <label class="col-form-label col-sm-auto s_website_form_label mb-2" for="email">
+                    <span class="s_website_form_label_content">อีเมล</span>
+                    <span class="s_website_form_mark"> *</span>
+                </label>
+                <div class="col-sm">
+                    <input id="email" type="text" class="form-control s_website_form_input" name="email_from"
+                        required="" readonly="" data-fill-with="email" />
+                </div>
+            </div>
+            <div class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                data-type="char" data-name="Field">
+                <label class="col-form-label col-sm-auto s_website_form_label mb-2" for="phone">
+                    <span class="s_website_form_label_content">โทรศัพท์</span>
+                    <span class="s_website_form_mark"> *</span>
+                </label>
+                <div class="col-sm">
+                    <input id="phone" type="text" class="form-control s_website_form_input" name="partner_mobile"
+                        required="" readonly="" data-fill-with="phone" />
+                </div>
+            </div>
+            <div class="col-12 mb-0 py-2 s_website_form_field" data-type="text" data-name="Field">
+                <label class="col-form-label col-sm-auto s_website_form_label mb-2" for="address">
+                    <span class="s_website_form_label_content">ที่อยู่ปัจจุบัน</span>
+                </label>
+                <div class="col-sm">
+                    <textarea id="address" type="text" class="form-control s_website_form_input" name="address_from"
+                        required="" readonly="" data-fill-with="address" />
+                </div>
+            </div>
+            <hr class="my-4"/>
+            <h5 class="fw-bold text-dark d-flex align-items-center gap-2 my-3">
+                <span class="section-indicator bg-primary"></span>
+                บุคคลที่ติดต่อได้ในกรณีเร่งด่วน
+            </h5>
+            <div class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                data-type="char" data-name="Field">
+                <label class="col-form-label col-sm-auto s_website_form_label mb-2" for="emergency_contact_name">
+                    <span class="s_website_form_label_content">ชื่อผู้ติดต่อ</span>
+                    <span class="s_website_form_mark"> *</span>
+                </label>
+                <div class="col-sm">
+                    <input id="emergency_contact_name" type="text" class="form-control s_website_form_input"
+                        name="emergency_contact_name" required="" readonly="" data-fill-with="emergency_contact_name" />
+                </div>
+            </div>
+            <div class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                data-type="char" data-name="Field">
+                <label class="col-form-label col-sm-auto s_website_form_label mb-2" for="emergency_contact_relation">
+                    <span class="s_website_form_label_content">ความสัมพันธ์</span>
+                    <span class="s_website_form_mark"> *</span>
+                </label>
+                <div class="col-sm">
+                    <input id="emergency_contact_relation" type="text" class="form-control s_website_form_input"
+                        name="emergency_contact_relation" required="" readonly=""
+                        data-fill-with="emergency_contact_relation" />
+                </div>
+            </div>
+            <div class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                data-type="char" data-name="Field">
+                <label class="col-form-label col-sm-auto s_website_form_label mb-2" for="emergency_contact_phone">
+                    <span class="s_website_form_label_content">เบอร์ติดต่อ</span>
+                    <span class="s_website_form_mark"> *</span>
+                </label>
+                <div class="col-sm">
+                    <input id="emergency_contact_phone" type="text" class="form-control s_website_form_input"
+                        name="emergency_contact_phone" required="" readonly=""
+                        data-fill-with="emergency_contact_phone" />
+                </div>
+            </div>
+            <div class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                data-type="char" data-name="Field">
+                <label class="col-form-label col-sm-auto s_website_form_label mb-2" for="emergency_contact_email">
+                    <span class="s_website_form_label_content">อีเมลติดต่อ</span>
+                    <span class="s_website_form_mark"> *</span>
+                </label>
+                <div class="col-sm">
+                    <input id="emergency_contact_email" type="text" class="form-control s_website_form_input"
+                        name="emergency_contact_email" required="" readonly=""
+                        data-fill-with="emergency_contact_email" />
+                </div>
+            </div>
+            <hr class="my-4"/>
+            <h5 class="fw-bold text-dark d-flex align-items-center gap-2 my-3">
+                <span class="section-indicator bg-primary"></span>
+                ข้อมูลสุขภาพ
+            </h5>
+            <div class="col-12 mb-0 py-2 s_website_form_field" data-type="char" data-name="Field">
+                <label class="col-form-label col-sm-auto s_website_form_label mb-2" for="chronic_disease">
+                    <span class="s_website_form_label_content">โรคประจำตัว</span>
+                </label>
+                <div class="col-sm">
+                    <textarea id="chronic_diseas" type="text" class="form-control s_website_form_input" name="chronic_diseas"
+                        required="" readonly="" data-fill-with="chronic_diseas" />
+                </div>
+            </div>
+            <div class="col-12 mb-0 py-2 s_website_form_field s_website_form_dnone">
+                <div class="row s_col_no_resize s_col_no_bgcolor">
+                    <label class="col-4 col-sm-auto s_website_form_label" style="width: 200px" for="recruitment7">
+                        <span class="s_website_form_label_content">
+                            Job</span>
+                    </label>
+                    <div class="col-sm">
+                        <input id="recruitment7" type="hidden" class="form-control s_website_form_input"
+                            name="job_id" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 mb-0 py-2 s_website_form_field s_website_form_dnone">
+                <div class="row s_col_no_resize s_col_no_bgcolor">
+                    <label class="col-4 col-sm-auto s_website_form_label" style="width: 200px" for="recruitment8">
+                        <span class="s_website_form_label_content">
+                            Department</span>
+                    </label>
+                    <div class="col-sm">
+                        <input id="recruitment8" type="hidden" class="form-control s_website_form_input"
+                            name="department_id" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template id="apply_tab_education">
+        <t t-call="hr_recruitment_kmitl.profile_banner" />
+        <h5 class="fw-bold text-dark d-flex align-items-center gap-2 mb-3">
+            <span class="section-indicator bg-primary"></span>
+                2. ประวัติการศึกษา (Education History)
+        </h5>
+        <p class="text-secondary small ms-4 mb-4">
+                แสดงวุฒิการศึกษาที่ใช้ในการสมัครงาน
+            </p>
+        <!-- หา selected degree อัตโนมัติ: สูงสุดก่อน -->
+        <t t-set="selected_education_level" t-value="
+                'doctor' if education_by_level and education_by_level.get('doctor') else
+                'master' if education_by_level and education_by_level.get('master') else
+                'bachelor' if education_by_level and education_by_level.get('bachelor') else
+                'under_bachelor' if education_by_level and education_by_level.get('under_bachelor') else
+                False
+            " />
+        <t t-if="selected_education_level">
+            <t t-set="edu_rec" t-value="education_by_level.get(selected_education_level)" />
+            <t t-set="edu_label" t-value="
+                    'ปริญญาเอก' if selected_education_level == 'doctor' else
+                    'ปริญญาโท' if selected_education_level == 'master' else
+                    'ปริญญาตรี' if selected_education_level == 'bachelor' else
+                    'ต่ำกว่าปริญญาตรี'
+                " />
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-dark small">วุฒิการศึกษา *</label>
+                    <input type="text"
+                               class="form-control bg-light border-0 py-2"
+                               t-att-value="edu_label"
+                               readonly="readonly" />
+                    <input type="hidden"
+                               name="selected_education_level"
+                               t-att-value="selected_education_level" />
+                    <input type="hidden"
+                               name="edu_level"
+                               t-att-value="selected_education_level" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-dark small">หลักสูตร *</label>
+                    <input type="text"
+                               class="form-control bg-light border-0 py-2"
+                               t-att-value="edu_rec and edu_rec.program or ''"
+                               readonly="readonly" />
+                    <input type="hidden"
+                               name="edu_program"
+                               t-att-value="edu_rec and edu_rec.program or ''" />
+                </div>
+            </div>
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-dark small">สาขา/วิชาเอก</label>
+                    <input type="text"
+                               class="form-control bg-light border-0 py-2"
+                               t-att-value="edu_rec and edu_rec.major or ''"
+                               readonly="readonly" />
+                    <input type="hidden"
+                               name="edu_major"
+                               t-att-value="edu_rec and edu_rec.major or ''" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-dark small">สถาบัน/มหาวิทยาลัย *</label>
+                    <input type="text"
+                               class="form-control bg-light border-0 py-2"
+                               t-att-value="edu_rec and edu_rec.institution or ''"
+                               readonly="readonly" />
+                    <input type="hidden"
+                               name="edu_institution"
+                               t-att-value="edu_rec and edu_rec.institution or ''" />
+                </div>
+            </div>
+            <div class="row g-4 mb-2">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-dark small">สำเร็จการศึกษาเมื่อ *</label>
+                    <div class="input-group">
+                        <input type="text"
+                                   class="form-control bg-light border-0 py-2"
+                                   t-att-value="edu_rec and edu_rec.graduation_date or ''"
+                                   readonly="readonly" />
+                        <span class="input-group-text bg-light border-0">
+                            <i class="fa fa-calendar-o text-secondary" />
+                        </span>
+                    </div>
+                    <input type="hidden"
+                               name="edu_graduation_date"
+                               t-att-value="edu_rec and edu_rec.graduation_date or ''" />
+                    <input type="hidden"
+                               name="edu_country_id"
+                               t-att-value="edu_rec and edu_rec.country_id and edu_rec.country_id.id or ''" />
+                </div>
+            </div>
+        </t>
+        <t t-else="">
+            <div class="d-flex align-items-start gap-3 p-4 rounded-4 bg-light border">
+                <i class="fa fa-exclamation-triangle text-danger fs-4 mt-1"></i>
+                <div>
+                    <h6 class="fw-bold text-dark mb-1">ไม่พบข้อมูลประวัติการศึกษา</h6>
+                    <p class="text-secondary small mb-0">
+                            กรุณากลับไปอัปเดตแฟ้มประวัติ (Master Profile)
+                            ให้ครบถ้วนก่อนส่งใบสมัคร
+                        </p>
+                </div>
+            </div>
+        </t>
+    </template>
+    <template id="apply_tab_work_history">
+        <t t-call="hr_recruitment_kmitl.profile_banner" />
+        <h5 class="fw-bold text-dark d-flex align-items-center gap-2 mb-3">
+            <span class="section-indicator bg-primary"></span>
+            3. ประสบการณ์การทำงาน (Work History)
+        </h5>
+        <t t-if="work_history_ids and len(work_history_ids) > 0">
+            <t t-foreach="work_history_ids" t-as="work">
+                <div class="card border-secondary rounded-4 mb-3 shadow-none">
+                    <div class="card-body p-4">
+                        <h6 class="fw-bold text-dark mb-4">
+                            ประสบการณ์การทำงานที่
+                            <t t-esc="work_index + 1" />
+                        </h6>
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-dark small">บริษัท/หน่วยงาน
+                                    *</label>
+                                <input type="text" class="form-control bg-secondary-light text-secondary border-0 py-2"
+                                    t-att-value="work.company_name or ''" readonly="readonly" />
+                                <input type="hidden" name="wh_id" t-att-value="work.id or ''" />
+                                <input type="hidden" name="wh_company_name" t-att-value="work.company_name or ''" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-dark small">ตำแหน่งงาน
+                                    / ลักษณะงาน *</label>
+                                <input type="text" class="form-control bg-secondary-light text-secondary border-0 py-2"
+                                    t-att-value="work.job_title or ''" readonly="readonly" />
+                                <input type="hidden" name="wh_job_title" t-att-value="work.job_title or ''" />
+                            </div>
+                        </div>
+                        <div class="row g-4 mb-2">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold text-dark small">เงินเดือนล่าสุด
+                                    *</label>
+                                <input type="text" class="form-control bg-secondary-light text-secondary border-0 py-2"
+                                    t-att-value="work.salary or ''" readonly="readonly" />
+                                <input type="hidden" name="wh_salary" t-att-value="work.salary or ''" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold text-dark small">วันที่เริ่มงาน
+                                    *</label>
+                                <div class="input-group">
+                                    <input type="text"
+                                        class="form-control bg-secondary-light text-secondary border-0 py-2"
+                                        t-att-value="work.date_start or ''" readonly="readonly" />
+                                    <span class="input-group-text bg-secondary-light border-0">
+                                        <i class="fa fa-calendar-o text-secondary" />
+                                    </span>
+                                </div>
+                                <input type="hidden" name="wh_date_start" t-att-value="work.date_start or ''" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold text-dark small">วันที่สิ้นสุดงาน</label>
+                                <div class="input-group">
+                                    <input type="text"
+                                        class="form-control bg-secondary-light text-secondary border-0 py-2"
+                                        t-att-value="work.date_end or ''" readonly="readonly" />
+                                    <span class="input-group-text bg-secondary-light border-0">
+                                        <i class="fa fa-calendar-o text-secondary" />
+                                    </span>
+                                </div>
+                                <input type="hidden" name="wh_date_end" t-att-value="work.date_end or ''" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+        <t t-else="">
+            <div class="alert d-flex align-items-start gap-3 p-4 mb-4 rounded-4 bg-danger-light">
+                <i class="fa fa-exclamation-triangle text-danger fs-4 mt-1"></i>
+                <div>
+                    <h6 class="fw-bold text-dark mb-1">ไม่พบข้อมูลประสบการณ์การทำงาน
+                    </h6>
+                    <p class="text-secondary small mb-0">
+                        หากท่านมีประสบการณ์การทำงาน กรุณากลับไปอัปเดตแฟ้มประวัติ (Master
+                        Profile) ให้ครบถ้วน
+                    </p>
+                </div>
+            </div>
+        </t>
+    </template>
+    <template id="apply_tab_academic">
+        <t t-call="hr_recruitment_kmitl.profile_banner" />
+        <t t-set="academic_position_value" t-value="default and default.get('academic_position') or ''" />
+        <t t-set="academic_position_date_value" t-value="default and default.get('academic_position_date') or ''" />
+        <t t-set="academic_position_institution_value"
+            t-value="default and default.get('academic_position_institution') or ''" />
+        <t t-set="has_ocsc_exam_value" t-value="default and default.get('has_ocsc_exam') or ''" />
+        <t t-set="ocsc_exam_level_value" t-value="default and default.get('ocsc_exam_level') or ''" />
+        <t t-set="ocsc_exam_date_value" t-value="default and default.get('ocsc_exam_date') or ''" />
+        <t t-set="ocsc_exam_number_value" t-value="default and default.get('ocsc_exam_number') or ''" />
+        <h5 class="fw-bold text-dark d-flex align-items-center gap-2 mb-3">
+            <span class="section-indicator bg-primary"></span>
+            4. ข้อมูลทางวิชาการและราชการ (Academic &amp; Civil Service Information)
+        </h5>
+        <div class="card border-secondary rounded-4 mb-3 shadow-none">
+            <div class="card-body p-4">
+                <h6 class="fw-bold text-dark d-flex align-items-center gap-2 mb-4">
+                    <i class="fa fa-university text-primary"></i>
+                    ตำแหน่งทางวิชาการ (Academic Position)
+                </h6>
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-dark small">ตำแหน่งทางวิชาการ</label>
+                        <input type="text" class="form-control bg-secondary-light text-secondary border-0 py-2"
+                            t-att-value="academic_position_value" readonly="readonly" />
+                        <input type="hidden" name="academic_position" t-att-value="academic_position_value" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-dark small">สถาบันที่ได้รับแต่งตั้ง</label>
+                        <input type="text" class="form-control bg-secondary-light text-secondary border-0 py-2"
+                            t-att-value="academic_position_institution_value" readonly="readonly" />
+                        <input type="hidden" name="academic_position_institution"
+                            t-att-value="academic_position_institution_value" />
+                    </div>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-dark small">วันที่ได้รับแต่งตั้ง</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control bg-secondary-light text-secondary border-0 py-2"
+                                t-att-value="academic_position_date_value" readonly="readonly" />
+                            <span class="input-group-text bg-secondary-light border-0">
+                                <i class="fa fa-calendar-o text-secondary"></i>
+                            </span>
+                        </div>
+                        <input type="hidden" name="academic_position_date" t-att-value="academic_position_date_value" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card border-secondary rounded-4 mb-3 shadow-none">
+            <div class="card-body p-4">
+                <h6 class="fw-bold text-dark d-flex align-items-center gap-2 mb-4">
+                    <i class="fa fa-certificate text-primary"></i>
+                    การสอบ ก.พ. (OCSC Exam)
+                </h6>
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-dark small">สถานะการสอบ
+                            ก.พ.</label>
+                        <input type="text" class="form-control bg-secondary-light text-secondary border-0 py-2"
+                            t-att-value="'ผ่าน' if has_ocsc_exam_value == 'true' else 'ไม่ผ่าน / ไม่มีข้อมูล'"
+                            readonly="readonly" />
+                        <input type="hidden" name="has_ocsc_exam" t-att-value="has_ocsc_exam_value" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-dark small">ระดับการสอบ</label>
+                        <input type="text" class="form-control bg-secondary-light text-secondary border-0 py-2"
+                            t-att-value="ocsc_exam_level_value" readonly="readonly" />
+                        <input type="hidden" name="ocsc_exam_level" t-att-value="ocsc_exam_level_value" />
+                    </div>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-dark small">วันที่สอบผ่าน</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control bg-secondary-light text-secondary border-0 py-2"
+                                t-att-value="ocsc_exam_date_value" readonly="readonly" />
+                            <span class="input-group-text bg-secondary-light border-0">
+                                <i class="fa fa-calendar-o text-secondary"></i>
+                            </span>
+                        </div>
+                        <input type="hidden" name="ocsc_exam_date" t-att-value="ocsc_exam_date_value" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-dark small">เลขที่ใบรับรอง</label>
+                        <input type="text" class="form-control bg-secondary-light text-secondary border-0 py-2"
+                            t-att-value="ocsc_exam_number_value" readonly="readonly" />
+                        <input type="hidden" name="ocsc_exam_number" t-att-value="ocsc_exam_number_value" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template id="apply_tab_skills">
+        <t t-call="hr_recruitment_kmitl.profile_banner" />
+        <h5 class="fw-bold text-dark d-flex align-items-center gap-2 mb-3">
+            <span class="section-indicator bg-primary"></span>
+            5. ทักษะและความสนใจ (Skills &amp; Interests)
+        </h5>
+        <div class="d-flex flex-column gap-3">
+            <div class="col-12">
+                <label class="form-label fw-semibold text-dark small">
+                    ทักษะภาษาต่างประเทศ (Foreign Language Skills)
+                </label>
+                <textarea class="form-control bg-secondary-light text-secondary border-0 py-2"
+                    name="foreign_language_skills" rows="4" readonly="readonly"
+                    data-fill-with="foreign_language_skills"></textarea>
+            </div>
+            <div class="col-12">
+                <label class="form-label fw-semibold text-dark small">
+                    ทักษะทางคอมพิวเตอร์ (Computer Skills)
+                </label>
+                <textarea class="form-control bg-secondary-light text-secondary border-0 py-2" name="computer_skills"
+                    rows="4" readonly="readonly" data-fill-with="computer_skills"></textarea>
+            </div>
+            <div class="col-12">
+                <label class="form-label fw-semibold text-dark small">
+                    ความสามารถพิเศษอื่น ๆ (Other Abilities)
+                </label>
+                <textarea class="form-control bg-secondary-light text-secondary border-0 py-2" name="other_abilities"
+                    rows="4" readonly="readonly" data-fill-with="other_abilities"></textarea>
+            </div>
+            <div class="col-12">
+                <label class="form-label fw-semibold text-dark small">
+                    ความสนใจ (Interests)
+                </label>
+                <textarea class="form-control bg-secondary-light text-secondary border-0 py-2" name="interests" rows="4"
+                    readonly="readonly" data-fill-with="interests"></textarea>
+            </div>
+        </div>
+    </template>
+    <template id="apply_tab_documents">
+        <div
+            class="alert d-flex align-items-start gap-3 p-3 mb-4 rounded-4 bg-primary-light border border-primary shadow-none">
+            <i class="fa fa-exclamation-circle text-primary fs-4 mt-1"></i>
+            <div>
+                <h6 class="fw-bold text-dark mb-1">ข้อกำหนดการอัปโหลดเอกสาร</h6>
+                <p class="text-secondary small mb-0">
+                    กรุณาตรวจสอบว่าเอกสารที่อัปโหลดเป็นไฟล์ที่ถูกต้อง ชัดเจน
+                    และครบถ้วนตามประกาศรับสมัคร
+                    หากเอกสารไม่ครบถ้วนหรือไม่ถูกต้อง อาจส่งผลต่อการพิจารณาใบสมัคร
+                </p>
+            </div>
+        </div>
+        <h5 class="fw-bold text-dark d-flex align-items-center gap-2 mb-3">
+            <span class="section-indicator bg-primary"></span>
+            6. เอกสารประกอบ (Supporting Documents)
+        </h5>
+        <div class="d-flex flex-column gap-3">
+            <!-- Photo -->
+            <t t-call="hr_recruitment_kmitl.document_upload_item">
+                <t t-set="name">doc_photo</t>
+                <t t-set="label">รูปถ่ายหน้าตรง (1 นิ้ว)</t>
+                <t t-set="description">ถ่ายไม่เกิน 6 เดือน ไม่สวมหมวก</t>
+                <t t-set="required">True</t>
+            </t>
+            <!-- ID Card -->
+            <t t-call="hr_recruitment_kmitl.document_upload_item">
+                <t t-set="name">doc_id_card</t>
+                <t t-set="label">สำเนาบัตรประชาชน</t>
+                <t t-set="description">ลงลายมือชื่อสำเนาถูกต้อง</t>
+                <t t-set="required">True</t>
+            </t>
+            <!-- House -->
+            <t t-call="hr_recruitment_kmitl.document_upload_item">
+                <t t-set="name">doc_house</t>
+                <t t-set="label">สำเนาทะเบียนบ้าน</t>
+                <t t-set="description">ลงลายมือชื่อสำเนาถูกต้อง</t>
+                <t t-set="required">True</t>
+            </t>
+            <!-- Transcript -->
+            <t t-call="hr_recruitment_kmitl.document_upload_item">
+                <t t-set="name">doc_transcript</t>
+                <t t-set="label">Transcript</t>
+                <t t-set="description">ใบรายงานผลการศึกษา</t>
+                <t t-set="required">True</t>
+            </t>
+            <!-- Resume -->
+            <t t-call="hr_recruitment_kmitl.document_upload_item">
+                <t t-set="name">doc_resume</t>
+                <t t-set="label">Resume / CV</t>
+                <t t-set="description">ประวัติส่วนตัว</t>
+                <t t-set="required">False</t>
+            </t>
+        </div>
+    </template>
+    <template id="apply_tab_submit">
+        <div class="mb-3">
+            <h5 class="fw-bold text-dark d-flex align-items-center gap-2 mb-1">
+                <span class="section-indicator bg-primary"></span>
+                7. ยืนยันและส่งใบสมัคร (Confirmation)
+            </h5>
+            <p class="text-secondary small ms-4 mb-0">
+                กรุณาตรวจสอบข้อมูลทั้งหมดให้ถูกต้องก่อนส่งใบสมัคร
+                และยอมรับข้อตกลงด้านล่าง
+            </p>
+        </div>
+        <!-- Warning -->
+        <div class="card border-danger bg-danger-light shadow-sm rounded-4 mb-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center fw-bold text-danger mb-2 submit-section-title">
+                    <i class="fa fa-exclamation-triangle me-2"></i>
+                    คำเตือน: ไม่อนุญาตให้แก้ไขใบสมัครหลังส่ง
+                </div>
+                <ul class="text-dark mb-0 submit-section-list">
+                    <li class="mb-2">
+                        เมื่อกดยืนยันส่งใบสมัครแล้ว ท่านจะไม่สามารถแก้ไขข้อมูลใด ๆ
+                        ในใบสมัครนี้ได้อีก
+                    </li>
+                    <li class="mb-2">
+                        หากต้องการแก้ไขข้อมูลหลังส่งใบสมัคร กรุณาติดต่อฝ่ายทรัพยากรบุคคล
+                        (HR) โดยตรง
+                    </li>
+                    <li>
+                        ค่าธรรมเนียมการสมัครจะมีผลสมบูรณ์เมื่อชำระเรียบร้อยแล้ว
+                        และจะไม่จ่ายคืนในทุกกรณี
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- Certification -->
+        <div class="card border-warning bg-warning-light shadow-sm rounded-4 mb-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center fw-bold text-dark mb-3 submit-section-title">
+                    <i class="fa fa-check-square-o me-2 text-success fs-5"></i>
+                    การรับรองข้อมูล
+                </div>
+                <div class="form-check d-flex align-items-start">
+                    <input class="form-check-input me-3 mt-1 submit-check-input" type="checkbox" id="certifyCheck"
+                        required="required" />
+                    <label class="form-check-label text-dark submit-check-label" for="certifyCheck">
+                        <strong class="d-block mb-1">
+                            ข้าพเจ้าขอรับรองว่า
+                            ข้อมูลดังกล่าวทั้งหมดในใบสมัครนี้เป็นความจริงทุกประการ
+                        </strong>
+                        หากปรากฏภายหลังว่าข้อมูลไม่เป็นความจริง
+                        ข้าพเจ้ายินยอมสละสิทธิ์การสมัครงานโดยไม่มีเงื่อนไข
+                        <br />
+                        <span class="text-secondary d-inline-block mt-2 submit-check-note">
+                            I certify that all information in this application is true.
+                            If it appears later to be false, I agree to waive the right
+                            to apply without compensation.
+                        </span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <!-- PDPA -->
+        <div class="card border-secondary bg-secondary-light shadow-sm rounded-4 mb-5">
+            <div class="card-body">
+                <div class="d-flex align-items-center fw-bold text-dark mb-3 submit-section-title">
+                    <i class="fa fa-shield me-2 text-info fs-5"></i>
+                    ข้อตกลง PDPA (พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล)
+                </div>
+                <div class="text-dark mb-4 submit-check-label">
+                    <strong class="d-block mb-1">
+                        ข้าพเจ้ายินยอมให้สถาบันฯ เก็บรวบรวม ใช้
+                        และเปิดเผยข้อมูลส่วนบุคคลสำหรับวัตถุประสงค์ในการสมัครงาน
+                    </strong>
+                    ทั้งนี้เป็นไปตามพระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562
+                    และระเบียบสถาบันฯ ที่เกี่ยวข้อง
+                    <br />
+                    <span class="text-secondary d-inline-block mt-2 submit-check-note">
+                        I agree to the collection, use, and disclosure of personal
+                        information
+                        for job application purposes in accordance with the PDPA B.E.
+                        2562.
+                    </span>
+                </div>
+                <div class="d-flex flex-wrap gap-4">
+                    <div class="form-check d-flex align-items-center">
+                        <input class="form-check-input me-2 submit-radio-input" type="radio" name="pdpaConsent"
+                            id="pdpaAgree" value="agreed" required="required" />
+                        <label class="form-check-label fw-bold text-primary mt-1 submit-radio-label" for="pdpaAgree">
+                            ยินยอม (Agreed)
+                        </label>
+                    </div>
+                    <div class="form-check d-flex align-items-center">
+                        <input class="form-check-input me-2 submit-radio-input" type="radio" name="pdpaConsent"
+                            id="pdpaDisagree" value="disagreed" required="required" />
+                        <label class="form-check-label text-secondary mt-1 submit-radio-label" for="pdpaDisagree">
+                            ไม่ยินยอม (Disagreed)
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Submit -->
+        <div class="d-flex justify-content-end border-top border-secondary pt-4 s_website_form_submit"
+            data-name="Submit Button">
+            <button type="submit"
+                class="btn btn-primary px-5 py-3 fw-bold rounded-3 shadow-sm d-flex align-items-center s_website_form_send">
+                <i class="fa fa-paper-plane-o me-2"></i>
+                ส่งใบสมัคร
+            </button>
+        </div>
+    </template>
+</odoo>

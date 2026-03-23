@@ -1,0 +1,58 @@
+<odoo>
+    <!-- Alert หน้าฟอร์มที่บอกวาขั้นตอน 1-4 แก้ไขไม่ได้ -->
+    <template id="profile_banner">
+        <div
+            class="alert d-flex align-items-start gap-3 p-3 mb-4 rounded-4 bg-primary-light border border-primary">
+            <i class="fa fa-exclamation-circle fs-4 text-primary mt-1"></i>
+            <div>
+                <h6 class="fw-bold text-dark mb-1">
+                    ข้อมูลในขั้นตอนที่ 1–5 ดึงมาจากแฟ้มประวัติ (Master Profile)
+                    และไม่สามารถแก้ไขได้ในหน้านี้
+                </h6>
+                <p class="text-secondary small mb-0">
+                    เพื่อป้องกันข้อมูลไม่ตรงกัน หากพบว่าข้อมูลไม่ถูกต้อง
+                    <a href="/my/profile" class="fw-bold text-primary text-decoration-underline">
+                        คลิกที่นี่เพื่อแก้ไขแฟ้มประวัติส่วนตัว
+                    </a>
+                </p>
+            </div>
+        </div>
+    </template>
+
+    <!-- สำหรับอัปโหลดเอกสาร -->
+    <template id="document_upload_item">
+        <div class="d-flex align-items-center justify-content-between p-3 border border-secondary rounded-4 bg-white">
+            <div class="d-flex align-items-start align-items-sm-center flex-grow-1 me-3">
+                <div class="bg-secondary-light rounded-2 d-flex align-items-center justify-content-center me-3 p-3">
+                    <i class="fa fa-file-text-o text-secondary"></i>
+                </div>
+                <div>
+                    <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
+                        <span class="fw-semibold text-dark small">
+                            <t t-esc="label" />
+                        </span>
+                        <t t-if="required">
+                            <span class="badge rounded-pill px-2 py-1 text-danger bg-danger-light">
+                                จำเป็น
+                            </span>
+                        </t>
+                    </div>
+                    <div class="text-secondary small mb-2">
+                        <t t-esc="description" />
+                    </div>
+                    <!-- UI placeholder only -->
+                    <div class="small text-muted">
+                        ยังไม่ได้เลือกไฟล์
+                    </div>
+                </div>
+            </div>
+            <div class="flex-shrink-0">
+                <label class="btn btn-secondary border-secondary text-white btn-sm px-3 py-2 fw-medium m-0 rounded-3">
+                    <i class="fa fa-upload me-1"></i>
+                    อัปโหลด
+                    <input type="file" class="d-none" t-att-name="name" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" />
+                </label>
+            </div>
+        </div>
+    </template>
+</odoo>
