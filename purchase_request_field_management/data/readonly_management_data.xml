@@ -47,16 +47,6 @@
         </record>
 
         <record
-            id="readonly_management_fields_purchase_request_user_id"
-            model="readonly.management.fields"
-        >
-            <field name="management_id" ref="readonly_management_purchase_request_test"/>
-            <field name="field_id" ref="purchase_request_responsible_user.field_purchase_request__user_id"/>
-            <field name="domain">[('is_editable', '=', False)]</field>
-            <field name="force_readonly" eval="False"/>
-        </record>
-
-        <record
             id="readonly_management_fields_purchase_request_account_fiscal_year_id"
             model="readonly.management.fields"
         >
