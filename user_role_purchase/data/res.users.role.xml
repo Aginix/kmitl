@@ -13,7 +13,7 @@
                 ref('procurement_plan.group_procurement_plan_user'),
                 ref('agx_sarabun.group_sarabun_user'),
                 ref('purchase.group_purchase_user'),
-                ref('purchase_request_security.group_purchase_request_user_all'),
+                ref('purchase_request_kmitl.group_purchase_request_user_all'),
             ])]"
             />
         </record>
@@ -29,7 +29,7 @@
                 ref('procurement_plan.group_procurement_plan_user'),
                 ref('agx_sarabun.group_sarabun_user'),
                 ref('purchase.group_purchase_user'),
-                ref('purchase_request_security.group_purchase_request_user_all'),
+                ref('purchase_request_kmitl.group_purchase_request_user_all'),
                 ref('operating_unit_access_all.group_all_operating_unit')])
                 ]"
             />
@@ -46,7 +46,7 @@
                 ref('procurement_plan.group_procurement_plan_user'),
                 ref('agx_sarabun.group_sarabun_user'),
                 ref('purchase.group_purchase_manager'),
-                ref('purchase_request_security.group_purchase_request_user_all'),
+                ref('purchase_request_kmitl.group_purchase_request_user_all'),
                 ref('operating_unit_access_all.group_all_operating_unit')])
                 ]"
             />
