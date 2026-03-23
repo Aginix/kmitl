@@ -34,6 +34,12 @@
                     <button name="action_validate" string="Validate" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'submitted')]}" confirm="Are you sure you want to validate this request?" groups="disbursement.group_disbursement_officer" />
                     <button name="action_draft" string="Reset to draft" type="object" class="btn btn-secondary" attrs="{'invisible': [('state', '!=', 'submitted')]}" groups="disbursement.group_disbursement_manager" />
                     <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', '!=', 'validated')]}" groups="disbursement.group_disbursement_officer" />
+                    <button name="action_register_payment"
+                            string="Register Payment"
+                            type="object"
+                            class="oe_highlight"
+                            attrs="{'invisible': [('hide_register_payment_button', '=', True)]}"
+                            groups="account.group_account_invoice"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,submitted,validated" />
 
                 </header>
@@ -46,9 +52,17 @@
                     <button name="action_ignore_exceptions" type="object" class="btn-danger" string="Ignore Exceptions" help="Click here to be able to confirm this Disbursement Request regardless of the exceptions." groups="base_exception.group_exception_rule_manager" />
                 </div>
                 <sheet>
+                    <field name="hide_register_payment_button" invisible="1"/>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_bill" type="object" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible': [('bill_count', '=', 0)]}">
                             <field name="bill_count" widget="statinfo" string="Bill" />
+                        </button>
+                        <button name="action_view_payments"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-money"
+                                attrs="{'invisible': [('payment_count', '=', 0)]}">
+                            <field name="payment_count" widget="statinfo" string="Payments"/>
                         </button>
                         <button name="open_preview" type="object" class="oe_stat_button" icon="fa-globe">
                             <div class="o_field_widget o_stat_info">
@@ -125,6 +139,24 @@
                                 <field name="amount_net" class="oe_subtotal_footer_separator" />
                             </group>
                             <div class="oe_clear" />
+                        </page>
+                        <page string="Pipeline" name="pipeline">
+                            <group>
+                                <group string="Vendor Bill">
+                                    <field name="bill_id" readonly="1"/>
+                                    <field name="bill_payment_state" widget="badge"
+                                        decoration-danger="bill_payment_state == 'not_paid'"
+                                        decoration-warning="bill_payment_state == 'partial'"
+                                        decoration-success="bill_payment_state == 'paid'"
+                                        attrs="{'invisible': [('bill_id', '=', False)]}"/>
+                                    <field name="bill_amount_residual"
+                                        attrs="{'invisible': [('bill_id', '=', False)]}"/>
+                                </group>
+                                <group string="Payments">
+                                    <field name="payment_ids" widget="many2many_tags"
+                                        attrs="{'invisible': [('payment_count', '=', 0)]}"/>
+                                </group>
+                            </group>
                         </page>
                     </notebook>
                 </sheet>
