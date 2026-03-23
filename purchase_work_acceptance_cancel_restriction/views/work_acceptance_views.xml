@@ -36,7 +36,7 @@
     <record id="view_l10n_work_acceptance_form" model="ir.ui.view">
         <field name="name">view.work.acceptance.form l10n inherit</field>
         <field name="model">work.acceptance</field>
-        <field name="inherit_id" ref="l10n_th_gov_work_acceptance.view_work_acceptance_form_tier_validation"/>
+        <field name="inherit_id" ref="purchase_work_acceptance_kmitl.view_work_acceptance_form_tier_validation"/>
         <field name="arch" type="xml">
             <xpath expr="//button[@name='request_validation']" position="attributes">
                 <attribute name="states">draft</attribute>
