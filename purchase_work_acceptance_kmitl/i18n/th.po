@@ -207,7 +207,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__date_accept
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_accepted_date_wizard__date_accept
 msgid "Accepted Date"
-msgstr ""
+msgstr "วันที่ตอบรับ"
 
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_purchase_order_line__qty_accepted
@@ -740,7 +740,7 @@ msgstr "วันที่ตรวจรับ"
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__date_receive
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__date_receive
 msgid "Received Date"
-msgstr ""
+msgstr "วันที่ตรวจรับ"
 
 #. module: purchase_work_acceptance
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
@@ -842,7 +842,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__state
 #: model:ir.model.fields,field_description:purchase_work_acceptance_kmitl.field_work_acceptance_committee__status
 msgid "Status"
-msgstr "สถานะการตรวจรับ"
+msgstr "ผลการตรวจรับ"
 
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,help:purchase_work_acceptance.field_work_acceptance__activity_state
