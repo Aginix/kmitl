@@ -55,3 +55,9 @@ msgstr "คณะกรรมการตรวจรับพัสดุ"
 #: model:ir.model.fields,field_description:purchase_order_procurement_committee.field_purchase_order__work_acceptance_committee_ids
 msgid "Work Acceptance Committees"
 msgstr "คณะกรรมการตรวจรับพัสดุ"
+
+#. module: purchase_order_procurement_committee
+#: model_terms:ir.ui.view,arch_db:purchase_order_procurement_committee.view_purchase_order_form
+#: model:ir.model.fields,field_description:purchase_order_procurement_committee.field_purchase_order__work_supervisor_ids
+msgid "Work Supervisors"
+msgstr "รายชื่อผู้ควบคุมงาน"

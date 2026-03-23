@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Form view: add operating_unit_id after analytic_distribution -->
+    <record id="view_purchase_guarantee_form_operating_unit" model="ir.ui.view">
+        <field name="name">view.purchase.guarantee.form.operating_unit</field>
+        <field name="model">purchase.guarantee</field>
+        <field name="inherit_id" ref="l10n_th_gov_purchase_guarantee.view_purchase_guarantee_form"/>
+        <field name="arch" type="xml">
+            <field name="date_return" position="before">
+                <field
+                    name="operating_unit_id"
+                    widget="selection"
+                    groups="operating_unit.group_multi_operating_unit"
+                />
+            </field>
+        </field>
+    </record>
+
+    <!-- Tree view: add optional operating_unit_id column -->
+    <record id="view_purchase_guarantee_tree_operating_unit" model="ir.ui.view">
+        <field name="name">view.purchase.guarantee.tree.operating_unit</field>
+        <field name="model">purchase.guarantee</field>
+        <field name="inherit_id" ref="l10n_th_gov_purchase_guarantee.view_purchase_guarantee_tree"/>
+        <field name="arch" type="xml">
+            <field name="document_ref" position="after">
+                <field
+                    name="operating_unit_id"
+                    groups="operating_unit.group_multi_operating_unit"
+                    optional="hide"
+                />
+            </field>
+        </field>
+    </record>
+
+    <!-- Search view: add group by operating unit -->
+    <record id="purchase_guarantee_group_by_ou" model="ir.ui.view">
+        <field name="name">purchase.guarantee.group.by.ou</field>
+        <field name="model">purchase.guarantee</field>
+        <field name="inherit_id" ref="l10n_th_gov_purchase_guarantee.purchase_guarantee_search_view"/>
+        <field name="arch" type="xml">
+            <filter name="inactive" position="after">
+                <separator/>
+                <filter
+                    string="Operating Unit"
+                    name="operating_unit_grouped"
+                    domain="[]"
+                    context="{'group_by':'operating_unit_id'}"
+                    groups="operating_unit.group_multi_operating_unit"
+                />
+            </filter>
+        </field>
+    </record>
+
+</odoo>

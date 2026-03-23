@@ -42,7 +42,7 @@
         <field name="model_id" ref="model_purchase_request_approval" />
         <field
             name="groups"
-            eval="[(6,0, [ref('purchase_request_security.group_purchase_request_user_all')])]"
+            eval="[(6,0, [ref('purchase_request_kmitl.group_purchase_request_user_all')])]"
         />
         <field name="perm_read" eval="True" />
         <field name="perm_write" eval="True" />

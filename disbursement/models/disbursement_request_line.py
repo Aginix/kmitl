@@ -118,6 +118,23 @@ class DisbursementRequestLine(models.Model):
         string="Ignore Exceptions",
     )
 
+    amount_wht = fields.Monetary(
+        string="WHT Amount",
+        compute="_compute_amount_wht",
+        store=True,
+        currency_field="currency_id",
+    )
+
+    @api.depends("price_subtotal", "wht_tax_id", "wht_tax_id.amount")
+    def _compute_amount_wht(self):
+        for line in self:
+            if line.wht_tax_id and line.price_subtotal:
+                line.amount_wht = line.currency_id.round(
+                    line.price_subtotal * line.wht_tax_id.amount / 100
+                )
+            else:
+                line.amount_wht = 0.0
+
     @api.depends("quantity", "price_unit", "tax_ids")
     def _compute_amount(self):
         """Compute line amounts with tax calculation (mirrors PO logic)"""

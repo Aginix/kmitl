@@ -14,7 +14,7 @@
                     string="Create approval"
                     type="object"
                     class="oe_highlight"
-                    groups="purchase_request_security.group_purchase_request_user_all"
+                    groups="purchase_request_kmitl.group_purchase_request_user_all"
                     attrs="{'invisible': [('hide_create_approval_button', '=', True)]}"
                 />
                 <button
@@ -22,7 +22,7 @@
                     string="Create Purchase Order"
                     type="object"
                     class="oe_highlight"
-                    groups="purchase_request_security.group_purchase_request_user_all"
+                    groups="purchase_request_kmitl.group_purchase_request_user_all"
                     attrs="{'invisible':[('need_make_purchase_order', '!=', True)]}"
                 />
             </xpath>
