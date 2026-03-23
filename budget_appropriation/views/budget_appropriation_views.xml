@@ -120,6 +120,14 @@
                                     <field style="text-decoration-line: underline;" name="amount_deduct" string="หัก" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}" />
                                     <field style="text-decoration-line: underline; text-decoration-style: double;" name="amount_net" string="รายรับสุทธิ" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}" />
                                 </group>
+                                <group string="สรุปตามประเภทงบ" attrs="{'invisible': [('budget_type', '!=', 'expense')]}">
+                                    <field name="reserve_fund_amount" />
+                                    <field name="personnel_expense_amount" />
+                                    <field name="operating_expense_amount" />
+                                    <field name="capital_expenditure_amount" />
+                                    <field name="subsidy_amount" />
+                                    <field name="other_expenditure_amount" />
+                                </group>
                             </group>
                         </page>
                         <page string="Preview" name="preview" invisible="1" attrs="{'invisible': [('id', '=', False)]}">

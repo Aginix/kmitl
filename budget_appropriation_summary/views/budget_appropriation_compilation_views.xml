@@ -104,6 +104,13 @@
                             <field name="master_summary_id" />
                             <field name="amount_revenue_total" />
                             <field name="amount_expense_total" />
+                            <separator string="สรุปตามประเภทงบ" colspan="2" />
+                            <field name="reserve_fund_amount" />
+                            <field name="personnel_expense_amount" />
+                            <field name="operating_expense_amount" />
+                            <field name="capital_expenditure_amount" />
+                            <field name="subsidy_amount" />
+                            <field name="other_expenditure_amount" />
                         </group>
                     </group>
                     <notebook>

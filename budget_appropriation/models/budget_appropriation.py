@@ -2,6 +2,7 @@ import logging
 
 from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
 
@@ -301,17 +302,25 @@ class BudgetAppropriation(models.Model):
 
     @api.depends("line_ids.balance", "line_ids.account_id")
     def _compute_budget_summary_amounts(self):
-        # Build account_id -> field_name mapping (shared across all records)
-        account_field_map = {}
+        # Build account_id -> field_name mapping in 2 queries instead of 12
         BudgetAccount = self.env["budget.account"]
-        for field_name, code in self.BUDGET_SUMMARY_CODES.items():
-            parent = BudgetAccount.search([("code", "=", code)], limit=1)
-            if parent:
-                descendants = BudgetAccount.search(
-                    [("parent_path", "like", f"{parent.parent_path}%")]
-                )
-                for acc_id in descendants.ids:
-                    account_field_map[acc_id] = field_name
+        code_to_field = {v: k for k, v in self.BUDGET_SUMMARY_CODES.items()}
+        parents = BudgetAccount.search(
+            [("code", "in", list(code_to_field.keys()))]
+        )
+        account_field_map = {}
+        if parents:
+            domain = expression.OR(
+                [("parent_path", "=like", f"{p.parent_path}%")]
+                for p in parents
+            )
+            descendants = BudgetAccount.search(domain)
+            # Map each descendant back to the parent code's field name
+            for desc in descendants:
+                for parent in parents:
+                    if desc.parent_path.startswith(parent.parent_path):
+                        account_field_map[desc.id] = code_to_field[parent.code]
+                        break
 
         for record in self:
             totals = dict.fromkeys(self.BUDGET_SUMMARY_CODES, 0.0)
