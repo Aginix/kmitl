@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from odoo import models, fields, api, _
+
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -15,7 +16,13 @@ class CreateManualStockPicking(models.TransientModel):
         string="Operation Type",
         readonly=True
         )
-    
+
+    contract_number = fields.Char(
+        related='purchase_id.contract_number',
+        string="Contract Number",
+        readonly=True
+    )
+
     def default_get(self, fields_list):
         res = super().default_get(fields_list)
         if 'line_ids' in res:
@@ -30,9 +37,10 @@ class CreateManualStockPicking(models.TransientModel):
 
         if picking_id.id not in purchase_order.picking_ids.ids:
             purchase_order.write({
-                'picking_ids': [(4, picking_id.id)]
+                'picking_ids': [(4, picking_id.id)],
             })
         return res
+
 
 class CreateManualStockPickingWizardLine(models.TransientModel):
     _inherit = 'create.stock.picking.wizard.line'
@@ -64,7 +72,7 @@ class CreateManualStockPickingWizardLine(models.TransientModel):
         self.ensure_one()
 
         location_dest_id = (
-            self.wizard_id.location_dest_id.id or 
+            self.wizard_id.location_dest_id.id or
             picking.location_dest_id.id
         )
         location_id = picking.location_id.id

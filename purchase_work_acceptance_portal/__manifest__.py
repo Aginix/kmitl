@@ -6,7 +6,7 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['l10n_th_gov_work_acceptance', 'purchase_order_kmitl', 'portal', 'bus', 'hr'],
+    'depends': ['purchase_work_acceptance_kmitl', 'purchase_order_kmitl', 'portal'],
     "data": [
         "security/ir.model.access.csv",
         "security/ir_rule.xml",

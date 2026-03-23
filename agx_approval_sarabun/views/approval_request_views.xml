@@ -6,8 +6,7 @@
         <field name="inherit_id" ref="agx_approval.approval_request_view_form" />
         <field name="arch" type="xml">
             <!-- Add button_box before oe_title -->
-            <xpath expr="//div[hasclass('oe_title')]" position="before">
-                <div name="button_box" class="oe_button_box">
+            <xpath expr="//div[@name='button_box']" position="inside">
                     <field name="sarabun_document_count" invisible="1" />
                     <button
                         type="object"
@@ -17,11 +16,10 @@
                         attrs="{'invisible': [('sarabun_document_count', '=', 0)]}"
                         string="หนังสือ"
                     />
-                </div>
             </xpath>
 
-            <!-- Add Submit to Sarabun button after Submit button -->
-            <xpath expr="//button[@name='action_submit']" position="after">
+            <!-- Add Submit to Sarabun button after To Verify button -->
+            <xpath expr="//button[@name='action_to_verify']" position="after">
                 <button
                     name="action_submit_to_sarabun"
                     string="สร้างเอกสาร"

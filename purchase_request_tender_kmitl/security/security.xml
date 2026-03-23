@@ -34,7 +34,7 @@
     <record id="purchase_request_all_user_followers_rule" model="ir.rule">
         <field name="name">Follow Purchase Request All user</field>
         <field name="model_id" ref="model_purchase_request_tender" />
-        <field name="groups" eval="[(6,0, [ref('purchase_request_security.group_purchase_request_user_all')])]" />
+        <field name="groups" eval="[(6,0, [ref('purchase_request_kmitl.group_purchase_request_user_all')])]" />
         <field name="perm_read" eval="True" />
         <field name="perm_write" eval="True" />
         <field name="perm_create" eval="True" />
@@ -44,7 +44,7 @@
     <record id="purchase_request_all_user_rule" model="ir.rule">
         <field name="name">Purchase Request All User</field>
         <field name="model_id" ref="model_purchase_request_tender" />
-        <field name="groups" eval="[(6,0, [ref('purchase_request_security.group_purchase_request_user_all')])]" />
+        <field name="groups" eval="[(6,0, [ref('purchase_request_kmitl.group_purchase_request_user_all')])]" />
         <field name="perm_read" eval="True" />
         <field name="perm_write" eval="True" />
         <field name="perm_create" eval="True" />
