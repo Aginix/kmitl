@@ -55,9 +55,8 @@ class DisbursementRequest(models.Model):
         )
         pr = pa.request_id
         if pr:
-            pr_link = "/web#id=%d&model=purchase.request&view_type=form" % pr.id
             body += "<ul><li>%s</li></ul>" % (
                 _('Purchase Request: <a href="%(link)s" target="_blank">%(name)s</a>')
-                % {"link": pr_link, "name": pr.name}
+                % {"link": pr._get_record_url(), "name": pr.name}
             )
         return body

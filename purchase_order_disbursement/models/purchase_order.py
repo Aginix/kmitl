@@ -95,21 +95,19 @@ class PurchaseOrder(models.Model):
             purchase_approvals = []
         items = []
         for pa in purchase_approvals:
-            pa_link = "/web#id=%d&model=purchase.request.approval&view_type=form" % pa.id
             items.append(
                 _('Purchase Request Approval: <a href="%(link)s" target="_blank">%(name)s</a>')
-                % {"link": pa_link, "name": pa.name}
+                % {"link": pa._get_record_url(), "name": pa.name}
             )
         for pr in purchase_requests:
-            pr_link = "/web#id=%d&model=purchase.request&view_type=form" % pr.id
             items.append(
                 _('Purchase Request: <a href="%(link)s" target="_blank">%(name)s</a>')
-                % {"link": pr_link, "name": pr.name}
+                % {"link": pr._get_record_url(), "name": pr.name}
             )
         if items:
             body += "<ul>" + "".join("<li>%s</li>" % item for item in items) + "</ul>"
         disbursement_request.message_post(body=body, subtype_xmlid="mail.mt_note")
-        self._post_message_to_purchase_requests(disbursement_request)
+        self._post_message_to_purchase_requests(disbursement_request, purchase_requests)
         self._post_message_to_purchase_request_approvals(disbursement_request, purchase_approvals)
         self._copy_attachments_to_disbursement_request(disbursement_request)
         return disbursement_request
@@ -137,17 +135,17 @@ class PurchaseOrder(models.Model):
     def _get_related_purchase_requests(self):
         """Return purchase.request records linked to this PO via order lines."""
         if "purchase.request" not in self.env:
-            return []
+            return self.env["purchase.request"]
         purchase_requests = self.env["purchase.request"]
         for line in self.order_line:
-            pr_lines = getattr(line, "purchase_request_lines", None)
-            if pr_lines:
-                purchase_requests |= pr_lines.mapped("request_id")
+            if hasattr(line, "purchase_request_lines"):
+                purchase_requests |= line.purchase_request_lines.mapped("request_id")
         return purchase_requests
 
-    def _post_message_to_purchase_requests(self, disbursement_request):
+    def _post_message_to_purchase_requests(self, disbursement_request, purchase_requests=None):
         """Post to related purchase.request(s) if PO was created from PR."""
-        purchase_requests = self._get_related_purchase_requests()
+        if purchase_requests is None:
+            purchase_requests = self._get_related_purchase_requests()
         if not purchase_requests:
             return
         dr_link = (
