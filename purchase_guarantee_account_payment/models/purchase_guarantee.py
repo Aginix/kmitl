@@ -46,6 +46,7 @@ class PurchaseGuarantee(models.Model):
             "amount": self.amount,
             "currency_id": self.currency_id.id,
             "purchase_guarantee_id": self.id,
+            "analytic_distribution": self.analytic_distribution,
             "kmitl_payment_type_id": payment_type.id,
             "payment_type": payment_type.direction,
         }
@@ -59,6 +60,17 @@ class PurchaseGuarantee(models.Model):
         vals = self._prepare_account_payment_vals()
 
         payment = self.env["account.payment"].create(vals)
+
+        # Re-apply analytic distribution after creation.
+        # During _inherits creation, AnalyticDistributionMixin's compute
+        # resets analytic_distribution before lines are generated.
+        if self.analytic_distribution:
+            payment.move_id.write(
+                {"analytic_distribution": self.analytic_distribution}
+            )
+            payment.move_id.line_ids.write(
+                {"analytic_distribution": self.analytic_distribution}
+            )
 
         return {
             "type": "ir.actions.act_window",

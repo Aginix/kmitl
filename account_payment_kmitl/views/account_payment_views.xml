@@ -15,14 +15,7 @@
 
             <!-- Add Submit button before the hidden Confirm -->
             <xpath expr="//button[@name='action_post']" position="before">
-                <button
-                    name="action_submit"
-                    string="Submit"
-                    type="object"
-                    class="oe_highlight"
-                    attrs="{'invisible': [('state', '!=', 'draft')]}"
-                    data-hotkey="v"
-                />
+                <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}" data-hotkey="v" />
             </xpath>
 
             <!-- Update Reset to Draft to also work from submitted -->
@@ -42,7 +35,30 @@
 
             <!-- Add KMITL payment type where payment_type was -->
             <xpath expr="//field[@name='payment_type']" position="after">
-                <field name="kmitl_payment_type_id" domain="[('direction', '=', payment_type)]"/></xpath>
+                <field name="kmitl_payment_type_id" domain="[('direction', '=', payment_type)]"/>
+            </xpath>
+
+            <!-- Add Budget tab -->
+            <xpath expr="//sheet" position="inside">
+                <notebook>
+                    <page string="Budget" name="budget">
+                        <group string="Budget">
+                            <group name="budget_info">
+                                <field name="budget_commitment_id" attrs="{'readonly': [('state', '!=', 'draft')]}" />
+                                <field name="analytic_distribution" widget="analytic_distribution" readonly="1"/>
+                            </group>
+                            <group name="analytic_dimensions">
+                                <field name="activity_analytic_id" domain="[('plan_id.code', '=', 'activities')]" options="{'no_create': True}" required="1" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}"/>
+                                <field name="department_analytic_id" domain="[('plan_id.code', '=', 'departments')]" options="{'no_create': True}" required="1" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}"/>
+                                <field name="fund_analytic_id" domain="[('plan_id.code', '=', 'funds')]" options="{'no_create': True}" required="1" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}"/>
+                                <field name="source_analytic_id" domain="[('plan_id.code', '=', 'sources')]" options="{'no_create': True}" required="1" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}"/>
+                                <field name="budget_account_id" options="{'no_create': True}" attrs="{'readonly': ['|', ('budget_commitment_id', '!=', False), ('state', '!=', 'draft')]}"/>
+                                <field name="budget_account_id" invisible="1"/>
+                            </group>
+                        </group>
+                    </page>
+                </notebook>
+            </xpath>
 
         </field>
     </record>

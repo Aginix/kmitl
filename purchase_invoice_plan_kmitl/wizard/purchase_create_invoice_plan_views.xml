@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_create_invoice_plan_kmitl" model="ir.ui.view">
+        <field name="name">purchase.create.invoice.plan.kmitl.form</field>
+        <field name="model">purchase.create.invoice.plan</field>
+        <field name="inherit_id" ref="purchase_invoice_plan.view_purchase_create_invoice_plan"/>
+        <field name="arch" type="xml">
+            <xpath expr="//label[@for='interval']" position="attributes">
+                <attribute name="groups">base.group_system</attribute>
+            </xpath>
+            <xpath expr="//div[field[@name='interval']]" position="attributes">
+                <attribute name="groups">base.group_system</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

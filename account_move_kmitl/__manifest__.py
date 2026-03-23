@@ -10,6 +10,7 @@
     "depends": [
         "account_move_tier_validation",
         "budget",
+        "l10n_th_account_tax",
     ],
     "data": [
         "views/account_move_views.xml",

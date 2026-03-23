@@ -100,7 +100,7 @@ class PurchaseRequest(models.Model):
     def _compute_is_budget_editable(self):
         can_edit = self.env.user.has_group("budget.group_budget_commitment")
         for rec in self:
-            if rec.state in ("to_approve") and (
+            if rec.state in ("to_verify", "to_approve") and (
                 not rec.budget_commitment_id
                 or rec.budget_commitment_id.state == "cancel"
             ):
