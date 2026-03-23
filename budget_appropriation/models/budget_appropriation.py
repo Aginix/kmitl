@@ -209,6 +209,47 @@ class BudgetAppropriation(models.Model):
         digits="Budget Precision",
     )
 
+    # Budget summary by expense type
+    BUDGET_SUMMARY_CODES = {
+        "reserve_fund_amount": "07020",
+        "personnel_expense_amount": "51000",
+        "operating_expense_amount": "52000",
+        "capital_expenditure_amount": "53000",
+        "subsidy_amount": "54000",
+        "other_expenditure_amount": "55000",
+    }
+
+    reserve_fund_amount = fields.Float(
+        string="งบกองทุนสำรอง",
+        compute="_compute_budget_summary_amounts",
+        digits="Budget Precision",
+    )
+    personnel_expense_amount = fields.Float(
+        string="งบบุคลากร",
+        compute="_compute_budget_summary_amounts",
+        digits="Budget Precision",
+    )
+    operating_expense_amount = fields.Float(
+        string="งบดำเนินงาน",
+        compute="_compute_budget_summary_amounts",
+        digits="Budget Precision",
+    )
+    capital_expenditure_amount = fields.Float(
+        string="งบลงทุน",
+        compute="_compute_budget_summary_amounts",
+        digits="Budget Precision",
+    )
+    subsidy_amount = fields.Float(
+        string="งบเงินอุดหนุน",
+        compute="_compute_budget_summary_amounts",
+        digits="Budget Precision",
+    )
+    other_expenditure_amount = fields.Float(
+        string="งบรายจ่ายอื่น",
+        compute="_compute_budget_summary_amounts",
+        digits="Budget Precision",
+    )
+
     # Link to created budget move
     budget_move_id = fields.Many2one(
         comodel_name="budget.move",
@@ -257,6 +298,29 @@ class BudgetAppropriation(models.Model):
             appropriation.amount_total = amount_total
             appropriation.amount_deduct = amount_deduct
             appropriation.amount_net = amount_total - amount_deduct
+
+    @api.depends("line_ids.balance", "line_ids.account_id")
+    def _compute_budget_summary_amounts(self):
+        # Build account_id -> field_name mapping (shared across all records)
+        account_field_map = {}
+        BudgetAccount = self.env["budget.account"]
+        for field_name, code in self.BUDGET_SUMMARY_CODES.items():
+            parent = BudgetAccount.search([("code", "=", code)], limit=1)
+            if parent:
+                descendants = BudgetAccount.search(
+                    [("parent_path", "like", f"{parent.parent_path}%")]
+                )
+                for acc_id in descendants.ids:
+                    account_field_map[acc_id] = field_name
+
+        for record in self:
+            totals = dict.fromkeys(self.BUDGET_SUMMARY_CODES, 0.0)
+            for line in record.line_ids:
+                field_name = account_field_map.get(line.account_id.id)
+                if field_name:
+                    totals[field_name] += line.balance
+            for field_name, amount in totals.items():
+                record[field_name] = amount
 
     @api.depends("state", "date")
     def _compute_name(self):
