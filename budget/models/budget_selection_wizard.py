@@ -4,7 +4,7 @@ from odoo.exceptions import ValidationError
 
 class BudgetSelectionWizard(models.TransientModel):
     _name = "budget.selection.wizard"
-    _inherit = ["base.exception"]
+    _inherit = ["base.exception", "budget.exception.mixin"]
     _description = "Budget Selection Wizard"
 
     res_model = fields.Char(required=True)
