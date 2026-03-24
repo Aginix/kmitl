@@ -55,99 +55,166 @@
                 </div>
             </div>
         </xpath>
-        <xpath expr="//span[@t-field='job.name']/.." position="after">
-            <div t-if="job.department_id" class="mt0 mb4 d-flex align-items-center">
-                <span class="fa fa-building-o" />
-                <div class="ms-2" t-field="job.department_id.complete_name" />
-            </div>
-        </xpath>
-        <!-- Remove open positions -->
-        <xpath expr="//h5[@t-if='job.no_of_recruitment &gt;= 1']" position="replace" />
-
-        <!-- Add extra info to job card -->
-        <xpath expr="//div[hasclass('o_job_infos')]" position="inside">
-            <div t-if="job.no_of_recruitment >= 1">
-                <i
-                    class="fa fa-fw fa-users"
-                    title="Positions"
-                    role="img"
-                    aria-label="Positions"
-                />
-                <span t-out="job.no_of_recruitment" />
-                <span>positions</span>
-            </div>
-            <div t-if="job.role">
-                <i
-                    class="fa fa-fw fa-briefcase"
-                    title="Role"
-                    role="img"
-                    aria-label="Role"
-                />
-                <span
-                    t-esc="dict(job.fields_get(['role'])['role']['selection']).get(job.role)"
-                />
-            </div>
-            <div t-if="job.kmitl_employee_type">
-                <i
-                    class="fa fa-fw fa-id-badge"
-                    title="Employee Type"
-                    role="img"
-                    aria-label="Employee Type"
-                />
-                <span
-                    t-esc="dict(job.fields_get(['kmitl_employee_type'])['kmitl_employee_type']['selection']).get(job.kmitl_employee_type)"
-                />
-            </div>
-            <div t-if="job.education_level_ids">
-                <i
-                    class="fa fa-fw fa-graduation-cap"
-                    title="Education Levels"
-                    role="img"
-                    aria-label="Education Levels"
-                />
-                <t t-foreach="job.education_level_ids" t-as="edu">
-                    <span class="badge text-bg-secondary me-1" t-esc="edu.name" />
-                </t>
-            </div>
-            <div t-if="job.salary_min or job.salary_max">
-                <i
-                    class="fa fa-fw fa-money"
-                    title="Salary"
-                    role="img"
-                    aria-label="Salary"
-                />
-                <span t-if="job.salary_min and job.salary_max">
-                    <t t-esc="'{:,.0f}'.format(job.salary_min)" /> - <t
-                        t-esc="'{:,.0f}'.format(job.salary_max)"
-                    />
-                </span>
-                <span t-elif="job.salary_min">
-                    <t t-esc="'{:,.0f}'.format(job.salary_min)" />
-                </span>
-                <span t-elif="job.salary_max">
-                    <t t-esc="'{:,.0f}'.format(job.salary_max)" />
-                </span>
-                <span t-esc="job.currency_id.symbol" />
-            </div>
-            <div t-if="job.date_close">
-                <i
-                    class="fa fa-fw fa-calendar-times-o"
-                    title="Closing Date"
-                    role="img"
-                    aria-label="Closing Date"
-                />
-                <span>Closing Date:</span>
-                <span
-                    t-field="job.date_close"
-                    t-options="{'widget': 'datetime', 'format': 'dd/MM/yyyy HH:mm'}"
-                />
-            </div>
-            <div t-if="job.category_ids">
-                <i class="fa fa-fw fa-tags" title="Tags" role="img" aria-label="Tags" />
-                <t t-foreach="job.category_ids" t-as="cat">
-                    <span class="badge text-bg-info me-1" t-esc="cat.name" />
-                </t>
-            </div>
+        <!-- Replace entire job card -->
+        <xpath expr="//a[@t-foreach='jobs']" position="replace">
+            <a
+                t-foreach="jobs"
+                t-as="job"
+                t-attf-href="/jobs/detail/#{ slug(job) }"
+                t-attf-class="text-decoration-none#{' mt-3' if job_index else ''}"
+            >
+                <div class="card card-default mb32">
+                    <div
+                        class="card-body"
+                        t-att-data-publish="job.website_published and 'on' or 'off'"
+                    >
+                        <span
+                            t-if="not job.website_published"
+                            class="badge text-bg-danger mb8 p-2"
+                        >unpublished</span>
+                        <h3 class="text-secondary mt0 mb4">
+                            <span t-field="job.name" />
+                        </h3>
+                        <div
+                            t-if="job.department_id"
+                            class="mt0 mb4 d-flex align-items-center"
+                        >
+                            <span class="fa fa-building-o" />
+                            <div
+                                class="ms-2"
+                                t-field="job.department_id.complete_name"
+                            />
+                        </div>
+                        <div
+                            t-if="editable"
+                            t-field="job.description"
+                            class="mt16 mb0 css_non_editable_mode_hidden"
+                        />
+                        <div
+                            t-esc="job.description or ''"
+                            class="mt16 mb0 css_editable_mode_hidden o_website_hr_recruitment_job_description"
+                        />
+                        <div class="o_job_infos mt16">
+                            <span
+                                t-field="job.address_id"
+                                t-options='{
+                                "widget": "contact",
+                                "fields": ["address"],
+                                "no_tag_br": True
+                                }'
+                            />
+                            <div t-if="job.contract_type_id">
+                                <i
+                                    class="fa fa-fw fa-suitcase"
+                                    title="Employment type"
+                                    role="img"
+                                    aria-label="Employment type"
+                                /><span t-field="job.contract_type_id" />
+                            </div>
+                            <div t-if="job.no_of_recruitment &gt;= 1">
+                                <i
+                                    class="fa fa-fw fa-users"
+                                    title="Positions"
+                                    role="img"
+                                    aria-label="Positions"
+                                />
+                                <span t-out="job.no_of_recruitment" /> positions
+                            </div>
+                            <div t-if="job.role">
+                                <i
+                                    class="fa fa-fw fa-briefcase"
+                                    title="Role"
+                                    role="img"
+                                    aria-label="Role"
+                                />
+                                <span
+                                    t-esc="dict(job.fields_get(['role'])['role']['selection']).get(job.role)"
+                                />
+                            </div>
+                            <div t-if="job.kmitl_employee_type">
+                                <i
+                                    class="fa fa-fw fa-id-badge"
+                                    title="Employee Type"
+                                    role="img"
+                                    aria-label="Employee Type"
+                                />
+                                <span
+                                    t-esc="dict(job.fields_get(['kmitl_employee_type'])['kmitl_employee_type']['selection']).get(job.kmitl_employee_type)"
+                                />
+                            </div>
+                            <div t-if="job.education_level_ids">
+                                <i
+                                    class="fa fa-fw fa-graduation-cap"
+                                    title="Education Levels"
+                                    role="img"
+                                    aria-label="Education Levels"
+                                />
+                                <t t-foreach="job.education_level_ids" t-as="edu">
+                                    <span
+                                        class="badge text-bg-secondary me-1"
+                                        t-esc="edu.name"
+                                    />
+                                </t>
+                            </div>
+                            <div t-if="job.salary_min or job.salary_max">
+                                <i
+                                    class="fa fa-fw fa-money"
+                                    title="Salary"
+                                    role="img"
+                                    aria-label="Salary"
+                                />
+                                <span t-if="job.salary_min and job.salary_max">
+                                    <t t-esc="'{:,.0f}'.format(job.salary_min)" /> - <t
+                                        t-esc="'{:,.0f}'.format(job.salary_max)"
+                                    />
+                                </span>
+                                <span t-elif="job.salary_min"><t
+                                        t-esc="'{:,.0f}'.format(job.salary_min)"
+                                    /></span>
+                                <span t-elif="job.salary_max"><t
+                                        t-esc="'{:,.0f}'.format(job.salary_max)"
+                                    /></span>
+                                <span t-esc="job.currency_id.symbol" />
+                            </div>
+                            <div t-if="job.date_close">
+                                <i
+                                    class="fa fa-fw fa-calendar-times-o"
+                                    title="Closing Date"
+                                    role="img"
+                                    aria-label="Closing Date"
+                                />
+                                <span>Closing Date:</span>
+                                <span
+                                    t-field="job.date_close"
+                                    t-options="{'widget': 'datetime', 'format': 'dd/MM/yyyy HH:mm'}"
+                                />
+                            </div>
+                            <div t-if="job.category_ids">
+                                <i
+                                    class="fa fa-fw fa-tags"
+                                    title="Tags"
+                                    role="img"
+                                    aria-label="Tags"
+                                />
+                                <t t-foreach="job.category_ids" t-as="cat">
+                                    <span
+                                        class="badge text-bg-info me-1"
+                                        t-esc="cat.name"
+                                    />
+                                </t>
+                            </div>
+                            <div>
+                                <i
+                                    class="fa fa-fw fa-clock-o"
+                                    title="Publication date"
+                                    role="img"
+                                    aria-label="Publication date"
+                                /><span t-field="job.write_date" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
         </xpath>
     </template>
 
