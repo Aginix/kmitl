@@ -11,7 +11,6 @@
                 <field name="user_id" optional="show" />
                 <field name="date" />
                 <field name="account_fiscal_year_id" options="{'no_open': True}" />
-                <field name="payment_type" />
                 <field name="ref" />
                 <field name="amount_total" />
                 <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'submitted'" decoration-success="state in ('approved', 'done')" />
@@ -79,7 +78,6 @@
                                 force_save="1" />
                             <field name="reference_model" invisible="1" />
                             <field name="ref" />
-                            <field name="payment_type" required="1" />
                         </group>
                         <group id="budget" string="มิติทางบัญชี">
                             <field name="account_fiscal_year_id" readonly="1" options="{'no_open': True}" />
@@ -159,8 +157,6 @@
                     <filter string="Partner" name="partner" context="{'group_by': 'partner_id'}" />
                     <filter string="Date" name="date" context="{'group_by': 'date'}" />
                     <filter string="State" name="state" context="{'group_by': 'state'}" />
-                    <filter string="Payment Type" name="payment_type" context="{'group_by': 'payment_type'}" />
-
                 </group>
             </search>
         </field>

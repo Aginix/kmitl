@@ -91,7 +91,6 @@ class PurchaseRequestApproval(models.Model):
                 for line in self.request_id.line_ids
             ],
             "ref": self.request_id.name,
-            "payment_type": self.request_id.payment_type,
         }
 
     def action_view_disbursement_request(self):

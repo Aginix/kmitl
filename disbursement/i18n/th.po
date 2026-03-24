@@ -241,10 +241,6 @@ msgstr "วันที่"
 msgid "Description"
 msgstr "คำอธิบาย"
 
-#. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__direct
-msgid "Direct paid"
-msgstr "จ่ายตรง"
 
 #. module: disbursement
 #: model:ir.module.category,name:disbursement.module_category_disbursement
@@ -471,10 +467,6 @@ msgstr ""
 msgid "Link to the created vendor bill"
 msgstr ""
 
-#. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__loan
-msgid "Loan"
-msgstr "เงินยืม"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.report_disbursement_request
@@ -585,21 +577,12 @@ msgstr ""
 msgid "Partner"
 msgstr "คู่ค้า"
 
-#. module: disbursement
-#: model:ir.model.fields,field_description:disbursement.field_disbursement_request__payment_type
-#: model_terms:ir.ui.view,arch_db:disbursement.view_disbursement_request_search
-msgid "Payment Type"
-msgstr "วิธีเบิกจ่าย"
 
 #. module: disbursement
 #: model:ir.model.fields,field_description:disbursement.field_disbursement_request__access_url
 msgid "Portal Access URL"
 msgstr ""
 
-#. module: disbursement
-#: model:ir.model.fields.selection,name:disbursement.selection__disbursement_request__payment_type__prepaid
-msgid "Prepaid"
-msgstr "สำรองจ่าย"
 
 #. module: disbursement
 #: model_terms:ir.ui.view,arch_db:disbursement.portal_disbursement_request_page
