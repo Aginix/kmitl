@@ -365,7 +365,7 @@ class BudgetAppropriationCompilation(models.Model):
                 + record.recurrent_budget_amount
                 + record.external_funding_amount
             )
-            record.fixed_expense_percentage = (record.fixed_expense_total * 100) / record.revenue_net
+            record.fixed_expense_percentage = (record.fixed_expense_total * 100) / record.revenue_net if record.revenue_net else 0.0
 
     BUDGET_SUMMARY_FIELDS = [
         "reserve_fund_amount",
