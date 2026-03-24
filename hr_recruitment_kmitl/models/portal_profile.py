@@ -1,4 +1,6 @@
-from odoo import fields, models
+from dateutil.relativedelta import relativedelta
+
+from odoo import api, fields, models
 
 
 class PortalProfile(models.Model):
@@ -62,6 +64,10 @@ class PortalProfile(models.Model):
         readonly=False,
     )
 
+    # Computed fields
+    age = fields.Integer(compute="_compute_age")
+    address = fields.Char(compute="_compute_address")
+
     # Personal info
     birthday = fields.Date()
     nationality_id = fields.Many2one("res.country")
@@ -123,6 +129,28 @@ class PortalProfile(models.Model):
 
     # Work history
     work_history_ids = fields.One2many("portal.work.history", "profile_id")
+
+    @api.depends("birthday")
+    def _compute_age(self):
+        today = fields.Date.today()
+        for rec in self:
+            if rec.birthday:
+                rec.age = relativedelta(today, rec.birthday).years
+            else:
+                rec.age = 0
+
+    @api.depends("street", "street2", "city", "state_id", "zip", "country_id")
+    def _compute_address(self):
+        for rec in self:
+            parts = [
+                rec.street,
+                rec.street2,
+                rec.city,
+                rec.state_id.name if rec.state_id else False,
+                rec.zip,
+                rec.country_id.name if rec.country_id else False,
+            ]
+            rec.address = " ".join(filter(None, parts)) or False
 
     _sql_constraints = [
         (

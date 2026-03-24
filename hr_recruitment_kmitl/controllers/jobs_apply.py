@@ -35,7 +35,7 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                 d("partner_phone", profile.phone or "")
 
                 # Thai name
-                d("applicant_title", profile.title.name if profile.title else "")
+                d("applicant_title", profile.title.id if profile.title else "")
                 d("first_name", profile.first_name or "")
                 d("middle_name", profile.middle_name or "")
                 d("last_name", profile.last_name or "")
@@ -46,10 +46,12 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                 d("last_name_en", profile.last_name_en or "")
 
                 # Personal
+                d("age", str(profile.age) if profile.age else "")
+                d("address", profile.address or "")
                 d("birthday", str(profile.birthday) if profile.birthday else "")
                 d(
                     "nationality_id",
-                    profile.nationality_id.name if profile.nationality_id else "",
+                    profile.nationality_id.id if profile.nationality_id else "",
                 )
                 d("marital", profile.marital or "")
 
@@ -66,11 +68,11 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                 d("street", profile.street or "")
                 d("street2", profile.street2 or "")
                 d("city", profile.city or "")
-                d("state_id", profile.state_id.name if profile.state_id else "")
+                d("state_id", profile.state_id.id if profile.state_id else "")
                 d("zip", profile.zip or "")
                 d(
                     "country_id",
-                    profile.country_id.name if profile.country_id else "",
+                    profile.country_id.id if profile.country_id else "",
                 )
 
                 # Emergency contact

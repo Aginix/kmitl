@@ -22,6 +22,11 @@ msgid "Academic"
 msgstr "สายวิชาการ"
 
 #. module: hr_recruitment_kmitl
+#: model:hr.recruitment.degree,name:hr_recruitment_kmitl.degree_under_bachelor
+msgid "Below Bachelor's Degree"
+msgstr "ต่ำกว่าปริญญาตรี"
+
+#. module: hr_recruitment_kmitl
 #: model:ir.model,name:hr_recruitment_kmitl.model_hr_job
 msgid "Job Position"
 msgstr "ตำแหน่งงาน"

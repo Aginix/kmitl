@@ -552,9 +552,9 @@
                                             name="chronic_disease"
                                             class="form-control"
                                             rows="3"
-                                        >
-                                            <t t-esc="profile.chronic_disease or ''" />
-                                        </textarea>
+                                        ><t
+                                                t-esc="profile.chronic_disease or ''"
+                                            /></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -1042,11 +1042,9 @@
                                             name="foreign_language_skills"
                                             class="form-control"
                                             rows="3"
-                                        >
-                                            <t
+                                        ><t
                                                 t-esc="profile.foreign_language_skills or ''"
-                                            />
-                                        </textarea>
+                                            /></textarea>
                                     </div>
                                     <div class="mb-3">
                                         <label
@@ -1057,9 +1055,9 @@
                                             name="computer_skills"
                                             class="form-control"
                                             rows="3"
-                                        >
-                                            <t t-esc="profile.computer_skills or ''" />
-                                        </textarea>
+                                        ><t
+                                                t-esc="profile.computer_skills or ''"
+                                            /></textarea>
                                     </div>
                                     <div class="mb-3">
                                         <label
@@ -1070,9 +1068,9 @@
                                             name="other_abilities"
                                             class="form-control"
                                             rows="3"
-                                        >
-                                            <t t-esc="profile.other_abilities or ''" />
-                                        </textarea>
+                                        ><t
+                                                t-esc="profile.other_abilities or ''"
+                                            /></textarea>
                                     </div>
                                     <div class="mb-3">
                                         <label
@@ -1083,9 +1081,9 @@
                                             name="interests"
                                             class="form-control"
                                             rows="3"
-                                        >
-                                            <t t-esc="profile.interests or ''" />
-                                        </textarea>
+                                        ><t
+                                                t-esc="profile.interests or ''"
+                                            /></textarea>
                                     </div>
                                 </div>
                             </div>

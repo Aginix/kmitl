@@ -7,7 +7,10 @@
         <field name="arch" type="xml">
             <field name="department_id" position="after">
                 <field name="role" />
-                <field name="type" />
+                <field name="kmitl_employee_type" />
+                <field name="date_close" />
+                <field name="education_level_ids" widget="many2many_checkboxes" />
+                <field name="category_ids" widget="many2many_tags" />
             </field>
         </field>
     </record>
@@ -19,7 +22,8 @@
         <field name="arch" type="xml">
             <field name="department_id" position="after">
                 <field name="role" optional="show" />
-                <field name="type" optional="show" />
+                <field name="kmitl_employee_type" optional="show" />
+                <field name="date_close" optional="show" />
             </field>
         </field>
     </record>
@@ -37,10 +41,10 @@
                     context="{'group_by': 'role'}"
                 />
                 <filter
-                    string="Type"
-                    name="type"
+                    string="Employee Type"
+                    name="kmitl_employee_type"
                     domain="[]"
-                    context="{'group_by': 'type'}"
+                    context="{'group_by': 'kmitl_employee_type'}"
                 />
             </filter>
         </field>

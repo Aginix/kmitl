@@ -7,6 +7,28 @@ class HrJob(models.Model):
     role = fields.Selection(
         [("academic", "Academic"), ("support", "Support")],
     )
-    type = fields.Selection(
-        [("special", "Special"), ("academic", "Academic")], default="special"
+    education_level_ids = fields.Many2many(
+        "hr.recruitment.degree",
+        string="Education Levels",
     )
+    category_ids = fields.Many2many(
+        "hr.job.category",
+        string="Tags",
+    )
+    date_close = fields.Datetime(string="Closing Date")
+    kmitl_employee_type = fields.Selection(
+        selection=[
+            ("B", "พนักงานสถาบันเงินงบประมาณ"),
+            ("N", "พนักงานสถาบันเงินรายได้"),
+            ("E", "พนักงานสถาบันประเภทพิเศษ"),
+        ],
+        string="Employee Type",
+    )
+
+
+class HrJobCategory(models.Model):
+    _name = "hr.job.category"
+    _description = "Job Category"
+
+    name = fields.Char(required=True, translate=True)
+    color = fields.Integer()
