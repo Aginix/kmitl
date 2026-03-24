@@ -4,18 +4,30 @@ from odoo.http import request
 
 
 class WebsiteJobsApply(WebsiteHrRecruitment):
+    def _build_address_text(self, profile):
+        if not profile:
+            return ""
+        parts = [
+            profile.street or "",
+            profile.street2 or "",
+            profile.city or "",
+            profile.state_id.name if profile.state_id else "",
+            profile.zip or "",
+            profile.country_id.name if profile.country_id else "",
+        ]
+        return ", ".join([p for p in parts if p])
+
     @http.route()
     def jobs_apply(self, job, **kwargs):
         error = {}
         default = {}
         education_by_level = {}
         work_history_ids = request.env["portal.work.history"]
-        
+
         if "website_hr_recruitment_error" in request.session:
             error = request.session.pop("website_hr_recruitment_error")
             default = request.session.pop("website_hr_recruitment_default")
 
-        # Pre-fill from portal profile if user is logged in
         if not request.env.user._is_public():
             partner = request.env.user.partner_id
             profile = (
@@ -25,7 +37,7 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
             )
             if profile:
                 d = default.setdefault
-                # Full name for standard partner_name field
+
                 name_parts = filter(
                     None,
                     [profile.first_name, profile.middle_name, profile.last_name],
@@ -70,25 +82,14 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                 d("city", profile.city or "")
                 d("state_id", profile.state_id.id if profile.state_id else "")
                 d("zip", profile.zip or "")
-                d(
-                    "country_id",
-                    profile.country_id.id if profile.country_id else "",
-                )
+                d("country_id", profile.country_id.name if profile.country_id else "")
+                d("address", self._build_address_text(profile))
 
                 # Emergency contact
                 d("emergency_contact_name", profile.emergency_contact_name or "")
-                d(
-                    "emergency_contact_relation",
-                    profile.emergency_contact_relation or "",
-                )
-                d(
-                    "emergency_contact_phone",
-                    profile.emergency_contact_phone or "",
-                )
-                d(
-                    "emergency_contact_email",
-                    profile.emergency_contact_email or "",
-                )
+                d("emergency_contact_relation", profile.emergency_contact_relation or "")
+                d("emergency_contact_phone", profile.emergency_contact_phone or "")
+                d("emergency_contact_email", profile.emergency_contact_email or "")
 
                 # Health
                 d("chronic_disease", profile.chronic_disease or "")
@@ -120,12 +121,12 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                 d("computer_skills", profile.computer_skills or "")
                 d("other_abilities", profile.other_abilities or "")
                 d("interests", profile.interests or "")
-                
+
                 # Education
                 education_by_level = {
                     rec.level: rec for rec in profile.education_history_ids
                 }
-                
+
                 # Work Experience
                 work_history_ids = profile.work_history_ids.sorted(
                     key=lambda r: (r.date_start or "", r.id), reverse=True
@@ -138,6 +139,6 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                 "error": error,
                 "default": default,
                 "education_by_level": education_by_level,
-                "work_history_ids": work_history_ids
+                "work_history_ids": work_history_ids,
             },
         )

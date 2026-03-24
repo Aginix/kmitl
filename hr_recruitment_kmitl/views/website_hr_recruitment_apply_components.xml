@@ -1,4 +1,34 @@
 <odoo>
+    <template id="section_tab_intro">
+        <div class="mb-4">
+            <h5 class="fw-bold text-dark d-flex align-items-center gap-2 mb-1">
+                <span class="section-indicator bg-primary"></span>
+                <t t-esc="title" />
+            </h5>
+            <p t-if="description" class="text-secondary small ms-4 mb-0">
+                <t t-esc="description" />
+            </p>
+        </div>
+    </template>
+    <template id="input_readonly_field">
+        <label class="form-label fw-semibold text-dark">
+            <t t-esc="label"/>
+        </label>
+        <input type="text"
+               class="form-control text-muted border-0 py-2"
+               t-att-value="value or '-'"
+               readonly="readonly"/>
+    </template>
+    <template id="input_readonly_textarea">
+        <label class="form-label fw-semibold text-dark">
+            <t t-esc="label"/>
+        </label>
+        <textarea class="form-control text-muted border-0 py-2"
+                  t-att-rows="rows or 4"
+                  readonly="readonly">
+            <t t-esc="value or '-'"/>
+        </textarea>
+    </template>
     <!-- Alert หน้าฟอร์มที่บอกวาขั้นตอน 1-4 แก้ไขไม่ได้ -->
     <template id="profile_banner">
         <div
@@ -18,7 +48,6 @@
             </div>
         </div>
     </template>
-
     <!-- สำหรับอัปโหลดเอกสาร -->
     <template id="document_upload_item">
         <div class="d-flex align-items-center justify-content-between p-3 border border-secondary rounded-4 bg-white">

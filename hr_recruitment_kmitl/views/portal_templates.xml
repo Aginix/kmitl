@@ -17,8 +17,7 @@
         <t t-call="website.layout">
             <div id="wrap" class="pb-5">
 
-                <div class="py-5 overflow-hidden position-relative text-white"
-                    style="background-color: var(--thai-d-900);">
+                <div class="py-5 overflow-hidden position-relative text-white bg-thai-d-dark">
                     <div class="position-absolute top-0 start-0 w-100 h-100 opacity-25" />
                     <div class="container position-relative z-1 py-4">
                         <h1 class="display-5 fw-bold mb-2">ติดตามสถานะการสมัครงาน</h1>

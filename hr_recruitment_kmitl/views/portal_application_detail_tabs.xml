@@ -1,6 +1,6 @@
 <odoo>
     <template id="application_view_tab_personal">
-        <t t-set="tab" t-value="view_data['tabs']['personal']"/>
+        <t t-set="tab" t-value="view_data['tabs']['personal']" />
         <div class="card shadow-sm border-0 rounded-4">
             <div class="card-body p-4 p-md-5">
                 <t t-call="hr_recruitment_kmitl.application_tab_intro">
@@ -10,42 +10,42 @@
                     <div class="col-12">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">ชื่อ - นามสกุล</t>
-                            <t t-set="value" t-value="tab['full_name']"/>
-                    </t>
+                            <t t-set="value" t-value="tab['full_name']" />
+                        </t>
                     </div>
                     <div class="col-md-6">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">วัน/เดือน/ปีเกิด</t>
-                            <t t-set="value" t-value="tab['birthday']"/>
-                    </t>
+                            <t t-set="value" t-value="tab['birthday']" />
+                        </t>
                     </div>
                     <div class="col-md-6">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">สัญชาติ</t>
-                            <t t-set="value" t-value="tab['nationality']"/>
-                    </t>
+                            <t t-set="value" t-value="tab['nationality']" />
+                        </t>
                     </div>
                     <div class="col-md-6">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">อีเมล</t>
-                            <t t-set="value" t-value="tab['email']"/>
-                    </t>
+                            <t t-set="value" t-value="tab['email']" />
+                        </t>
                     </div>
                     <div class="col-md-6">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">เบอร์โทรศัพท์</t>
-                            <t t-set="value" t-value="tab['phone']"/>
-                    </t>
+                            <t t-set="value" t-value="tab['phone']" />
+                        </t>
                     </div>
                     <div class="col-12">
                         <t t-call="hr_recruitment_kmitl.application_readonly_textarea">
                             <t t-set="label">ที่อยู่ปัจจุบัน</t>
-                            <t t-set="value" t-value="tab['address']"/>
+                            <t t-set="value" t-value="tab['address']" />
                             <t t-set="rows">3</t>
                         </t>
                     </div>
                 </div>
-                <hr class="my-4"/>
+                <hr class="my-4" />
                 <t t-call="hr_recruitment_kmitl.application_tab_intro">
                     <t t-set="title">ผู้ติดต่อกรณีฉุกเฉิน</t>
                 </t>
@@ -53,29 +53,29 @@
                     <div class="col-md-6">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">ชื่อผู้ติดต่อ</t>
-                            <t t-set="value" t-value="tab['emergency_contact_name']"/>
-                    </t>
+                            <t t-set="value" t-value="tab['emergency_contact_name']" />
+                        </t>
                     </div>
                     <div class="col-md-6">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">ความสัมพันธ์</t>
-                            <t t-set="value" t-value="tab['emergency_contact_relation']"/>
-                    </t>
+                            <t t-set="value" t-value="tab['emergency_contact_relation']" />
+                        </t>
                     </div>
                     <div class="col-md-6">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">เบอร์โทรศัพท์</t>
-                            <t t-set="value" t-value="tab['emergency_contact_phone']"/>
-                    </t>
+                            <t t-set="value" t-value="tab['emergency_contact_phone']" />
+                        </t>
                     </div>
                     <div class="col-md-6">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">อีเมล</t>
-                            <t t-set="value" t-value="tab['emergency_contact_email']"/>
-                    </t>
+                            <t t-set="value" t-value="tab['emergency_contact_email']" />
+                        </t>
                     </div>
                 </div>
-                <hr class="my-4"/>
+                <hr class="my-4" />
                 <t t-call="hr_recruitment_kmitl.application_tab_intro">
                     <t t-set="title">ข้อมูลสุขภาพ</t>
                 </t>
@@ -83,7 +83,7 @@
                     <div class="col-12">
                         <t t-call="hr_recruitment_kmitl.application_readonly_textarea">
                             <t t-set="label">โรคประจำตัว</t>
-                            <t t-set="value" t-value="tab['chronic_disease']"/>
+                            <t t-set="value" t-value="tab['chronic_disease']" />
                             <t t-set="rows">4</t>
                         </t>
                     </div>
@@ -92,7 +92,7 @@
         </div>
     </template>
     <template id="application_view_tab_education">
-        <t t-set="tab" t-value="view_data['tabs']['education']"/>
+        <t t-set="tab" t-value="view_data['tabs']['education']" />
         <t t-if="tab">
             <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-body p-4 p-md-5">
@@ -101,38 +101,38 @@
                         <t t-set="description">แสดงวุฒิการศึกษาที่ใช้ในการสมัครงาน</t>
                     </t>
                     <h6 class="fw-bold text-dark mb-4">
-                        <t t-esc="tab.get('level') or tab.get('level_label') or '-'"/>
+                        <t t-esc="tab.get('level') or tab.get('level_label') or '-'" />
                     </h6>
                     <div class="row g-4">
                         <div class="col-md-6">
                             <t t-call="hr_recruitment_kmitl.application_readonly_field">
                                 <t t-set="label">หลักสูตร</t>
-                                <t t-set="value" t-value="tab.get('program')"/>
-                        </t>
+                                <t t-set="value" t-value="tab.get('program')" />
+                            </t>
                         </div>
                         <div class="col-md-6">
                             <t t-call="hr_recruitment_kmitl.application_readonly_field">
                                 <t t-set="label">สาขา/วิชาเอก</t>
-                                <t t-set="value" t-value="tab.get('major')"/>
-                        </t>
+                                <t t-set="value" t-value="tab.get('major')" />
+                            </t>
                         </div>
                         <div class="col-md-6">
                             <t t-call="hr_recruitment_kmitl.application_readonly_field">
                                 <t t-set="label">สถาบัน/มหาวิทยาลัย</t>
-                                <t t-set="value" t-value="tab.get('institution')"/>
-                        </t>
+                                <t t-set="value" t-value="tab.get('institution')" />
+                            </t>
                         </div>
                         <div class="col-md-6">
                             <t t-call="hr_recruitment_kmitl.application_readonly_field">
                                 <t t-set="label">ประเทศ</t>
-                                <t t-set="value" t-value="tab.get('country')"/>
-                        </t>
+                                <t t-set="value" t-value="tab.get('country')" />
+                            </t>
                         </div>
                         <div class="col-md-6">
                             <t t-call="hr_recruitment_kmitl.application_readonly_field">
                                 <t t-set="label">สำเร็จการศึกษาเมื่อ</t>
-                                <t t-set="value" t-value="tab.get('graduation_date')"/>
-                        </t>
+                                <t t-set="value" t-value="tab.get('graduation_date')" />
+                            </t>
                         </div>
                     </div>
                 </div>
@@ -141,13 +141,13 @@
         <t t-else="">
             <div class="card border rounded-4 shadow-none">
                 <div class="card-body p-4 text-secondary">
-                ไม่มีข้อมูลการศึกษา
-            </div>
+                    ไม่มีข้อมูลการศึกษา
+                </div>
             </div>
         </t>
     </template>
     <template id="application_view_tab_work_history">
-        <t t-set="tab" t-value="view_data['tabs']['work_history']"/>
+        <t t-set="tab" t-value="view_data['tabs']['work_history']" />
         <div class="card shadow-sm border-0 rounded-4">
             <div class="card-body p-4 p-md-5">
                 <t t-call="hr_recruitment_kmitl.application_tab_intro">
@@ -161,32 +161,32 @@
                                 <div class="col-md-6">
                                     <t t-call="hr_recruitment_kmitl.application_readonly_field">
                                         <t t-set="label">บริษัท/หน่วยงาน</t>
-                                        <t t-set="value" t-value="work.get('company_name')"/>
-                                </t>
+                                        <t t-set="value" t-value="work.get('company_name')" />
+                                    </t>
                                 </div>
                                 <div class="col-md-6">
                                     <t t-call="hr_recruitment_kmitl.application_readonly_field">
                                         <t t-set="label">ตำแหน่งงาน</t>
-                                        <t t-set="value" t-value="work.get('job_title')"/>
-                                </t>
+                                        <t t-set="value" t-value="work.get('job_title')" />
+                                    </t>
                                 </div>
                                 <div class="col-md-4">
                                     <t t-call="hr_recruitment_kmitl.application_readonly_field">
                                         <t t-set="label">วันที่เริ่มงาน</t>
-                                        <t t-set="value" t-value="work.get('date_start')"/>
-                                </t>
+                                        <t t-set="value" t-value="work.get('date_start')" />
+                                    </t>
                                 </div>
                                 <div class="col-md-4">
                                     <t t-call="hr_recruitment_kmitl.application_readonly_field">
                                         <t t-set="label">วันที่สิ้นสุดงาน</t>
-                                        <t t-set="value" t-value="work.get('date_end')"/>
-                                </t>
+                                        <t t-set="value" t-value="work.get('date_end')" />
+                                    </t>
                                 </div>
                                 <div class="col-md-4">
                                     <t t-call="hr_recruitment_kmitl.application_readonly_field">
                                         <t t-set="label">เงินเดือน</t>
-                                        <t t-set="value" t-value="work.get('salary')"/>
-                                </t>
+                                        <t t-set="value" t-value="work.get('salary')" />
+                                    </t>
                                 </div>
                             </div>
                         </div>
@@ -194,14 +194,14 @@
                 </t>
                 <t t-else="">
                     <div class="text-secondary">
-                    ไม่มีข้อมูลประสบการณ์ทำงาน
-                </div>
+                        ไม่มีข้อมูลประสบการณ์ทำงาน
+                    </div>
                 </t>
             </div>
         </div>
     </template>
     <template id="application_view_tab_academic">
-        <t t-set="tab" t-value="view_data['tabs']['academic']"/>
+        <t t-set="tab" t-value="view_data['tabs']['academic']" />
         <div class="card shadow-sm border-0 rounded-4">
             <div class="card-body p-4 p-md-5">
                 <t t-call="hr_recruitment_kmitl.application_tab_intro">
@@ -213,19 +213,19 @@
                     <div class="col-md-4">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">ตำแหน่งทางวิชาการ</t>
-                            <t t-set="value" t-value="tab['academic_position']"/>
+                            <t t-set="value" t-value="tab['academic_position']" />
                         </t>
                     </div>
                     <div class="col-md-4">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">วันที่ได้รับแต่งตั้ง</t>
-                            <t t-set="value" t-value="tab['academic_position_date']"/>
+                            <t t-set="value" t-value="tab['academic_position_date']" />
                         </t>
                     </div>
                     <div class="col-md-4">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">สถาบันที่ได้รับแต่งตั้ง</t>
-                            <t t-set="value" t-value="tab['academic_position_institution']"/>
+                            <t t-set="value" t-value="tab['academic_position_institution']" />
                         </t>
                     </div>
                 </div>
@@ -241,25 +241,25 @@
                     <div class="col-md-3">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">สอบผ่าน ก.พ.</t>
-                            <t t-set="value" t-value="tab['has_ocsc_exam']"/>
+                            <t t-set="value" t-value="tab['has_ocsc_exam']" />
                         </t>
                     </div>
                     <div class="col-md-3">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">ระดับการสอบ</t>
-                            <t t-set="value" t-value="tab['ocsc_exam_level']"/>
+                            <t t-set="value" t-value="tab['ocsc_exam_level']" />
                         </t>
                     </div>
                     <div class="col-md-3">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">วันที่สอบผ่าน</t>
-                            <t t-set="value" t-value="tab['ocsc_exam_date']"/>
+                            <t t-set="value" t-value="tab['ocsc_exam_date']" />
                         </t>
                     </div>
                     <div class="col-md-3">
                         <t t-call="hr_recruitment_kmitl.application_readonly_field">
                             <t t-set="label">เลขที่ใบรับรอง</t>
-                            <t t-set="value" t-value="tab['ocsc_exam_number']"/>
+                            <t t-set="value" t-value="tab['ocsc_exam_number']" />
                         </t>
                     </div>
                 </div>
@@ -267,7 +267,7 @@
         </div>
     </template>
     <template id="application_view_tab_skills">
-        <t t-set="tab" t-value="view_data['tabs']['skills']"/>
+        <t t-set="tab" t-value="view_data['tabs']['skills']" />
         <div class="card shadow-sm border-0 rounded-4">
             <div class="card-body p-4 p-md-5">
                 <t t-call="hr_recruitment_kmitl.application_tab_intro">
@@ -278,28 +278,28 @@
                     <div class="col-12">
                         <t t-call="hr_recruitment_kmitl.application_readonly_textarea">
                             <t t-set="label">ทักษะภาษาต่างประเทศ</t>
-                            <t t-set="value" t-value="tab['foreign_language_skills']"/>
+                            <t t-set="value" t-value="tab['foreign_language_skills']" />
                             <t t-set="rows">3</t>
                         </t>
                     </div>
                     <div class="col-12">
                         <t t-call="hr_recruitment_kmitl.application_readonly_textarea">
                             <t t-set="label">ทักษะทางคอมพิวเตอร์</t>
-                            <t t-set="value" t-value="tab['computer_skills']"/>
+                            <t t-set="value" t-value="tab['computer_skills']" />
                             <t t-set="rows">3</t>
                         </t>
                     </div>
                     <div class="col-12">
                         <t t-call="hr_recruitment_kmitl.application_readonly_textarea">
                             <t t-set="label">ความสามารถพิเศษอื่น ๆ</t>
-                            <t t-set="value" t-value="tab['other_abilities']"/>
+                            <t t-set="value" t-value="tab['other_abilities']" />
                             <t t-set="rows">3</t>
                         </t>
                     </div>
                     <div class="col-12">
                         <t t-call="hr_recruitment_kmitl.application_readonly_textarea">
                             <t t-set="label">ความสนใจ</t>
-                            <t t-set="value" t-value="tab['interests']"/>
+                            <t t-set="value" t-value="tab['interests']" />
                             <t t-set="rows">3</t>
                         </t>
                     </div>
@@ -308,7 +308,7 @@
         </div>
     </template>
     <template id="application_view_tab_documents">
-        <t t-set="tab" t-value="view_data['tabs']['documents']"/>
+        <t t-set="tab" t-value="view_data['tabs']['documents']" />
         <t t-if="tab">
             <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-body p-4 p-md-5">
@@ -319,11 +319,11 @@
                     <div class="d-flex flex-column gap-3">
                         <t t-foreach="tab" t-as="doc">
                             <t t-call="hr_recruitment_kmitl.application_document_item">
-                                <t t-set="label" t-value="doc.get('label')"/>
-                                <t t-set="filename" t-value="doc.get('filename')"/>
-                                <t t-set="status" t-value="doc.get('status')"/>
-                                <t t-set="download_url" t-value="doc.get('download_url')"/>
-                    </t>
+                                <t t-set="label" t-value="doc.get('label')" />
+                                <t t-set="filename" t-value="doc.get('filename')" />
+                                <t t-set="status" t-value="doc.get('status')" />
+                                <t t-set="download_url" t-value="doc.get('download_url')" />
+                            </t>
                         </t>
                     </div>
                 </div>

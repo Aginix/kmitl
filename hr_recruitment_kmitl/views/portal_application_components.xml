@@ -15,7 +15,7 @@
             <t t-esc="label"/>
         </label>
         <input type="text"
-               class="form-control bg-light border-0 py-2"
+               class="form-control text-muted border-0 py-2"
                t-att-value="value or '-'"
                readonly="readonly"/>
     </template>
@@ -23,7 +23,7 @@
         <label class="form-label fw-semibold text-dark">
             <t t-esc="label"/>
         </label>
-        <textarea class="form-control bg-light border-0 py-2"
+        <textarea class="form-control text-muted border-0 py-2"
                   t-att-rows="rows or 4"
                   readonly="readonly">
             <t t-esc="value or '-'"/>
