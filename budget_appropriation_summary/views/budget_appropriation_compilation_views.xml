@@ -154,7 +154,7 @@
                                     <field name="amount_net" sum="รวม" />
                                 </tree>
                             </field>
-                            <group string="สรุปตามประเภทงบ">
+                            <group class="oe_subtotal_footer oe_right" string="สรุปตามประเภทงบ">
                               <field name="reserve_fund_amount" />
                               <field name="personnel_expense_amount" />
                               <field name="operating_expense_amount" />
