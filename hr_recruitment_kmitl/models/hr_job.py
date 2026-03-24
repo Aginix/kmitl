@@ -26,6 +26,13 @@ class HrJob(models.Model):
         "hr.job.category",
         string="Tags",
     )
+    salary_min = fields.Monetary(string="Minimum Salary", currency_field="currency_id")
+    salary_max = fields.Monetary(string="Maximum Salary", currency_field="currency_id")
+    currency_id = fields.Many2one(
+        "res.currency",
+        string="Currency",
+        default=lambda self: self.env.ref("base.THB"),
+    )
     date_close = fields.Datetime(string="Closing Date")
     kmitl_employee_type = fields.Selection(
         selection=[

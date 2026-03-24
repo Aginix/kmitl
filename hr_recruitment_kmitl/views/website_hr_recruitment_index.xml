@@ -16,10 +16,8 @@
                             <div class="col-lg-8 text-white">
                                 <h1
                                     class="display-4 fw-bold mb-3"
-                                > ร่วมขับเคลื่อนนวัตกรรม
-                                    <br />
-                                    ไปกับ
-                                    <span class="text-primary">KMITL</span>
+                                > ร่วมขับเคลื่อนนวัตกรรม <br />
+                                    ไปกับ <span class="text-primary">KMITL</span>
                                 </h1>
                                 <p class="lead text-white-50 mb-4 fs-6">
                                     ค้นหาโอกาสในการทำงานและเติบโตไปพร้อมกับสถาบันเทคโนโลยีชั้นนำของประเทศ
@@ -110,6 +108,26 @@
                 <t t-foreach="job.education_level_ids" t-as="edu">
                     <span class="badge text-bg-secondary me-1" t-esc="edu.name" />
                 </t>
+            </div>
+            <div t-if="job.salary_min or job.salary_max">
+                <i
+                    class="fa fa-fw fa-money"
+                    title="Salary"
+                    role="img"
+                    aria-label="Salary"
+                />
+                <span t-if="job.salary_min and job.salary_max">
+                    <t t-esc="'{:,.0f}'.format(job.salary_min)" /> - <t
+                        t-esc="'{:,.0f}'.format(job.salary_max)"
+                    />
+                </span>
+                <span t-elif="job.salary_min">
+                    <t t-esc="'{:,.0f}'.format(job.salary_min)" />
+                </span>
+                <span t-elif="job.salary_max">
+                    <t t-esc="'{:,.0f}'.format(job.salary_max)" />
+                </span>
+                <span t-esc="job.currency_id.symbol" />
             </div>
             <div t-if="job.date_close">
                 <i

@@ -9,6 +9,9 @@
                 <field name="role" />
                 <field name="kmitl_employee_type" />
                 <field name="date_close" />
+                <field name="currency_id" invisible="1" />
+                <field name="salary_min" />
+                <field name="salary_max" />
                 <field name="education_level_ids" widget="many2many_checkboxes" />
                 <field name="category_ids" widget="many2many_tags" />
             </field>
