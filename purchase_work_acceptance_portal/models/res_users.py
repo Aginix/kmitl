@@ -52,6 +52,12 @@ class ResUsers(models.Model):
         return {"items": items, "total_count": len(items)}
 
     @api.model
+    def review_user_count(self):
+        """Exclude work.acceptance from tier validation systray — use custom WaSystray instead."""
+        result = super().review_user_count()
+        return [r for r in result if r.get("model") != "work.acceptance"]
+
+    @api.model
     def mark_all_wa_read(self):
         """Mark all unread inbox entries as read for the current user."""
         self.env["work.acceptance.inbox"].search([
