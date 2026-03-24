@@ -127,6 +127,15 @@ class PurchaseRequestApproval(models.Model):
         invoice_vals = super()._prepare_invoice()
         invoice_vals["wa_id"] = self.env.context.get("wa_id")
         return invoice_vals
+    
+    def _get_pending_wa(self):
+        """คืน WA ใบเดียวที่ accept แล้วและยังไม่ถูก disburse"""
+        self.ensure_one()
+        return self.env["work.acceptance"].search([
+            ("approval_id", "=", self.id),
+            ("state", "=", "accept"),
+            ("is_disbursed", "=", False),
+        ], order="date_accept asc", limit=1)
 
     def _create_disbursement_request(self):
         """Override: link WA หลังสร้าง disbursement"""
