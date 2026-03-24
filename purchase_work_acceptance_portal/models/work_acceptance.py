@@ -11,6 +11,10 @@ class WorkAcceptance(models.Model):
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
         return f"{base_url}/wa/view/{self.id}?access_token={self.access_token}"
 
+    def _notify_review_requested(self, tier_reviews):
+        """Suppress tier validation mail notifications — use custom WaSystray inbox instead."""
+        return
+
     def request_validation(self):
         res = super().request_validation()
         for wa in self:
