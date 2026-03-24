@@ -79,7 +79,7 @@
                             <group attrs="{'invisible': [('state', 'not in', ['draft'])]}">
                                 <separator string="โอนออก (ต้นทาง)"/>
                                 <field name="from_line_ids" nolabel="1" colspan="2">
-                                    <tree editable="bottom" decoration-danger="budget_sufficient == False">
+                                    <tree decoration-danger="budget_sufficient == False">
                                         <field name="sequence" widget="handle"/>
                                         <field name="budget_account_id" required="1" options="{'no_create': True, 'no_create_edit': True}"/>
                                         <field name="activity_analytic_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
@@ -95,7 +95,7 @@
                                 </field>
                                 <separator string="โอนเข้า (ปลายทาง)"/>
                                 <field name="to_line_ids" nolabel="1" colspan="2">
-                                    <tree editable="bottom">
+                                    <tree>
                                         <field name="sequence" widget="handle"/>
                                         <field name="budget_account_id" required="1" options="{'no_create': True, 'no_create_edit': True}"/>
                                         <field name="activity_analytic_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
