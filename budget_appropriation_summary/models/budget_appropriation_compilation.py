@@ -229,6 +229,38 @@ class BudgetAppropriationCompilation(models.Model):
         compute="_compute_totals",
     )
 
+    # Budget summary by expense type (aggregated from appropriations)
+    reserve_fund_amount = fields.Monetary(
+        string="งบกองทุนสำรอง",
+        compute="_compute_budget_summary_amounts",
+        currency_field="currency_id",
+    )
+    personnel_expense_amount = fields.Monetary(
+        string="งบบุคลากร",
+        compute="_compute_budget_summary_amounts",
+        currency_field="currency_id",
+    )
+    operating_expense_amount = fields.Monetary(
+        string="งบดำเนินงาน",
+        compute="_compute_budget_summary_amounts",
+        currency_field="currency_id",
+    )
+    capital_expenditure_amount = fields.Monetary(
+        string="งบลงทุน",
+        compute="_compute_budget_summary_amounts",
+        currency_field="currency_id",
+    )
+    subsidy_amount = fields.Monetary(
+        string="งบเงินอุดหนุน",
+        compute="_compute_budget_summary_amounts",
+        currency_field="currency_id",
+    )
+    other_expenditure_amount = fields.Monetary(
+        string="งบรายจ่ายอื่น",
+        compute="_compute_budget_summary_amounts",
+        currency_field="currency_id",
+    )
+
     education_impact_line_ids = fields.One2many(
         "budget.appropriation.compilation.impact",
         "compilation_id",
@@ -333,7 +365,31 @@ class BudgetAppropriationCompilation(models.Model):
                 + record.recurrent_budget_amount
                 + record.external_funding_amount
             )
-            record.fixed_expense_percentage = (record.fixed_expense_total * 100) / record.revenue_net
+            record.fixed_expense_percentage = (record.fixed_expense_total * 100) / record.revenue_net if record.revenue_net else 0.0
+
+    BUDGET_SUMMARY_FIELDS = [
+        "reserve_fund_amount",
+        "personnel_expense_amount",
+        "operating_expense_amount",
+        "capital_expenditure_amount",
+        "subsidy_amount",
+        "other_expenditure_amount",
+    ]
+
+    @api.depends(
+        "expense_appropriation_ids.reserve_fund_amount",
+        "expense_appropriation_ids.personnel_expense_amount",
+        "expense_appropriation_ids.operating_expense_amount",
+        "expense_appropriation_ids.capital_expenditure_amount",
+        "expense_appropriation_ids.subsidy_amount",
+        "expense_appropriation_ids.other_expenditure_amount",
+    )
+    def _compute_budget_summary_amounts(self):
+        for record in self:
+            for field_name in self.BUDGET_SUMMARY_FIELDS:
+                record[field_name] = sum(
+                    record.expense_appropriation_ids.mapped(field_name)
+                )
 
     @api.depends(
         "education_impact_line_ids.project_okr_amount",
