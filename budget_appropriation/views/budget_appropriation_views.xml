@@ -113,20 +113,20 @@
                                 </field>
                             </group>
                             <group>
-                                <group class="oe_subtotal_footer oe_right">
-                                    <label for="amount_total" string="รายรับรวม" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}" />
-                                    <label for="amount_total" string="รายจ่ายรวม" attrs="{'invisible': [('budget_type', '!=', 'expense')]}" />
-                                    <field nolabel="1" name="amount_total" />
-                                    <field style="text-decoration-line: underline;" name="amount_deduct" string="หัก" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}" />
-                                    <field style="text-decoration-line: underline; text-decoration-style: double;" name="amount_net" string="รายรับสุทธิ" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}" />
-                                </group>
-                                <group string="สรุปตามประเภทงบ" attrs="{'invisible': [('budget_type', '!=', 'expense')]}">
+                                <group attrs="{'invisible': [('budget_type', '!=', 'expense')]}">
                                     <field name="reserve_fund_amount" />
                                     <field name="personnel_expense_amount" />
                                     <field name="operating_expense_amount" />
                                     <field name="capital_expenditure_amount" />
                                     <field name="subsidy_amount" />
                                     <field name="other_expenditure_amount" />
+                                </group>
+                                <group class="oe_subtotal_footer oe_right">
+                                    <label for="amount_total" string="รายรับรวม" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}" />
+                                    <label for="amount_total" string="รายจ่ายรวม" attrs="{'invisible': [('budget_type', '!=', 'expense')]}" />
+                                    <field nolabel="1" name="amount_total" />
+                                    <field style="text-decoration-line: underline;" name="amount_deduct" string="หัก" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}" />
+                                    <field style="text-decoration-line: underline; text-decoration-style: double;" name="amount_net" string="รายรับสุทธิ" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}" />
                                 </group>
                             </group>
                         </page>
