@@ -6,13 +6,20 @@
             </t>
         </xpath>
         <xpath expr="//div[hasclass('js_hr_recruitment')]" position="replace">
-            <div id="wrap" class="js_hr_recruitment o_website_hr_recruitment_job_detail bg-light pb-5">
+            <div
+                id="wrap"
+                class="js_hr_recruitment o_website_hr_recruitment_job_detail bg-light pb-5"
+            >
                 <!-- Header (Previous: Breadcrumb) -->
                 <div class="bg-white border-bottom py-3 shadow-sm">
                     <div class="container">
-                        <a href="/jobs"
-                            class="btn btn-link text-decoration-none text-secondary p-0 fw-bold d-inline-flex align-items-center">
-                            <i class="fa fa-arrow-left me-2" /> กลับไปหน้าตำแหน่งงาน
+                        <a
+                            href="/jobs"
+                            class="btn btn-link text-decoration-none text-secondary p-0 fw-bold d-inline-flex align-items-center"
+                        >
+                            <i
+                                class="fa fa-arrow-left me-2"
+                            /> Return to job position page
                         </a>
                     </div>
                 </div>
@@ -23,44 +30,124 @@
                                 <div class="card rounded-4">
                                     <div class="card-body p-4">
                                         <t t-if="job.website_published">
-                                            <div class="badge text-bg-success text-white mb-2">เปิดรับสมัคร</div>
+                                            <div
+                                                class="badge text-bg-success text-white mb-2"
+                                            >Open for Applications</div>
                                         </t>
                                         <t t-else="">
-                                            <div class="badge text-bg-danger text-white mb-2">ปิดรับสมัคร</div>
+                                            <div
+                                                class="badge text-bg-danger text-white mb-2"
+                                            >Closed for Applications</div>
                                         </t>
-                                        <h2 class="fw-bold text-dark lh-base mb-3" t-field="job.name" />
-                                        <div t-if="job.department_id" class="d-flex align-items-center text-muted mb-4">
-                                            <span class="fa fa-lg fa-building-o text-secondary" />
-                                            <span class="ms-2 fs-6" t-field="job.department_id.complete_name" />
+                                        <h2
+                                            class="fw-bold text-dark lh-base mb-3"
+                                            t-field="job.name"
+                                        />
+                                        <div
+                                            t-if="job.department_id"
+                                            class="d-flex align-items-center text-muted mb-4"
+                                        >
+                                            <span
+                                                class="fa fa-lg fa-building-o text-secondary"
+                                            />
+                                            <span
+                                                class="ms-2 fs-6"
+                                                t-field="job.department_id.complete_name"
+                                            />
                                         </div>
                                         <div class="bg-secondary-light rounded-4 p-4">
                                             <div class="row g-3">
                                                 <div class="col-12 col-md-4">
-                                                    <div class="d-flex align-items-center gap-3 h-100">
-                                                        <i class="fa fa-money fs-5 text-primary"></i>
+                                                    <div
+                                                        class="d-flex align-items-center gap-3 h-100"
+                                                    >
+                                                        <i
+                                                            class="fa fa-money fs-5 text-primary"
+                                                        />
                                                         <div>
-                                                            <div class="small text-secondary fw-bold">อัตราค่าจ้าง</div>
-                                                            <div class="h6 text-dark fw-semibold mt-1 mb-0">20,280 บาท
+                                                            <div
+                                                                class="small text-secondary fw-bold"
+                                                            >Salary</div>
+                                                            <div
+                                                                class="h6 text-dark fw-semibold mt-1 mb-0"
+                                                            >
+                                                                <div
+                                                                    t-if="job.salary_min or job.salary_max"
+                                                                >
+                                                                    <span
+                                                                        t-if="job.salary_min and job.salary_max"
+                                                                    >
+                                                                        <t
+                                                                            t-esc="'{:,.0f}'.format(job.salary_min)"
+                                                                        /> - <t
+                                                                            t-esc="'{:,.0f}'.format(job.salary_max)"
+                                                                        />
+                                                                    </span>
+                                                                    <span
+                                                                        t-elif="job.salary_min"
+                                                                    ><t
+                                                                            t-esc="'{:,.0f}'.format(job.salary_min)"
+                                                                        /></span>
+                                                                    <span
+                                                                        t-elif="job.salary_max"
+                                                                    ><t
+                                                                            t-esc="'{:,.0f}'.format(job.salary_max)"
+                                                                        /></span>
+                                                                    <span
+                                                                        t-esc="job.currency_id.symbol"
+                                                                    />
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-12 col-md-4">
-                                                    <div class="d-flex align-items-center gap-3 h-100">
-                                                        <i class="fa fa-users fs-5 text-primary"></i>
+                                                    <div
+                                                        class="d-flex align-items-center gap-3 h-100"
+                                                    >
+                                                        <i
+                                                            class="fa fa-users fs-5 text-primary"
+                                                        />
                                                         <div>
-                                                            <div class="small text-secondary fw-bold">รับสมัคร</div>
-                                                            <div class="h6 text-dark fw-semibold mt-1 mb-0">1 อัตรา
+                                                            <div
+                                                                class="small text-secondary fw-bold"
+                                                            >Now hiring</div>
+                                                            <div
+                                                                class="h6 text-dark fw-semibold mt-1 mb-0"
+                                                            >
+                                                                <div
+                                                                    t-if="job.no_of_recruitment &gt;= 1"
+                                                                >
+                                                                    <span
+                                                                        t-out="job.no_of_recruitment"
+                                                                    /> positions</div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-12 col-md-4">
-                                                    <div class="d-flex align-items-center gap-3 h-100">
-                                                        <i class="fa fa-graduation-cap fs-5 text-primary"></i>
+                                                    <div
+                                                        class="d-flex align-items-center gap-3 h-100"
+                                                    >
+                                                        <i
+                                                            class="fa fa-graduation-cap fs-5 text-primary"
+                                                        />
                                                         <div>
-                                                            <div class="small text-secondary fw-bold">วุฒิการศึกษา</div>
-                                                            <div class="h6 text-dark fw-semibold mt-1 mb-0">ปริญญาตรี
+                                                            <div
+                                                                class="small text-secondary fw-bold"
+                                                            >Education Level</div>
+                                                            <div
+                                                                t-if="job.education_level_ids"
+                                                            >
+                                                                <t
+                                                                    t-foreach="job.education_level_ids"
+                                                                    t-as="edu"
+                                                                >
+                                                                    <div
+                                                                        class="h6 text-dark fw-semibold mt-1 mb-0"
+                                                                        t-esc="edu.name"
+                                                                    />
+                                                                </t>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -73,70 +160,108 @@
                             <div t-field="job.website_description" />
                         </div>
                         <div class="col-lg-3">
-                            <div class="card  rounded-5 sticky-top" style="top: 100px; z-index: 10">
+                            <div
+                                class="card  rounded-5 sticky-top"
+                                style="top: 100px; z-index: 10"
+                            >
                                 <div class="card-body p-4 text-center">
-                                    <div class="bg-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 shadow-sm border overflow-hidden"
-                                        style="width: 80px; height: 80px">
+                                    <div
+                                        class="bg-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 shadow-sm border overflow-hidden"
+                                        style="width: 80px; height: 80px"
+                                    >
                                         <t t-if="job.company_id.logo">
-                                            <img t-attf-src="/web/image/res.company/#{job.company_id.id}/logo"
-                                                alt="Company Logo" class="w-100 h-100 object-fit-contain" />
+                                            <img
+                                                t-attf-src="/web/image/res.company/#{job.company_id.id}/logo"
+                                                alt="Company Logo"
+                                                class="w-100 h-100 object-fit-contain"
+                                            />
                                         </t>
                                         <t t-else="">
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/KMITL_Emblem.png/240px-KMITL_Emblem.png"
-                                                alt="KMITL" class="w-75 opacity-75" />
+                                            <img
+                                                src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/KMITL_Emblem.png/240px-KMITL_Emblem.png"
+                                                alt="KMITL"
+                                                class="w-75 opacity-75"
+                                            />
                                         </t>
                                     </div>
                                     <span class="h6 text-secondary fw-normal ms-2">
                                         <t t-if="job.department_id">
                                             (
-                                            <span t-esc="job.department_id.complete_name" />)
+                                            <span
+                                                t-esc="job.department_id.complete_name"
+                                            />)
                                         </t>
                                     </span>
                                     <h5 class="fw-bold mt-2 text-dark">
                                         <span t-field="job.name" />
                                     </h5>
                                     <div
-                                        class="d-flex flex-column gap-3 text-start small border-top border-bottom py-4 my-4">
+                                        class="d-flex flex-column gap-3 text-start small border-top border-bottom py-4 my-4"
+                                    >
                                         <div class="d-flex align-items-center">
-                                            <i class="fa fa-map-marker fa-fw text-muted me-3 fs-5" />
+                                            <i
+                                                class="fa fa-map-marker fa-fw text-muted me-3 fs-5"
+                                            />
                                             <div>
-                                                <span class="text-muted d-block small">สถานที่</span>
+                                                <span
+                                                    class="text-muted d-block small"
+                                                >Location</span>
                                                 <strong class="text-dark">
                                                     <t t-if="job.address_id">
-                                                        <span t-field="job.address_id"
-                                                            t-options='{"widget": "contact", "fields": ["city"], "no_tag_br": True}' />
+                                                        <span
+                                                            t-field="job.address_id"
+                                                            t-options='{"widget": "contact", "fields": ["city"], "no_tag_br": True}'
+                                                        />
                                                     </t>
-                                                    <t t-else="">กรุงเทพมหานคร</t>
+                                                    <t t-else="">Bangkok</t>
                                                 </strong>
                                             </div>
                                         </div>
                                         <div class="d-flex align-items-center">
-                                            <i class="fa fa-calendar fa-fw text-muted me-3 fs-5" />
+                                            <i
+                                                class="fa fa-calendar fa-fw text-muted me-3 fs-5"
+                                            />
                                             <div>
-                                                <span class="text-muted d-block small">อัปเดตเมื่อ</span>
+                                                <span
+                                                    class="text-muted d-block small"
+                                                >Updated On</span>
                                                 <strong class="text-dark">
-                                                    <span t-field="job.write_date" t-options='{"widget": "date"}' />
+                                                    <span
+                                                        t-field="job.write_date"
+                                                        t-options='{"widget": "date"}'
+                                                    />
                                                 </strong>
                                             </div>
                                         </div>
                                         <div class="d-flex align-items-center">
-                                            <i class="fa fa-check-circle fa-fw text-success me-3 fs-5" />
+                                            <i
+                                                class="fa fa-check-circle fa-fw text-success me-3 fs-5"
+                                            />
                                             <div>
-                                                <span class="text-muted d-block small">สถานะ</span>
+                                                <span
+                                                    class="text-muted d-block small"
+                                                >Status</span>
                                                 <t t-if="job.website_published">
-                                                    <div class="badge text-bg-success text-white mb-2">เปิดรับสมัคร
-                                                    </div>
+                                                    <div
+                                                        class="badge text-bg-success text-white mb-2"
+                                                    >Open for Applications</div>
                                                 </t>
                                                 <t t-else="">
-                                                    <div class="badge text-bg-danger text-white mb-2">ปิดรับสมัคร</div>
+                                                    <div
+                                                        class="badge text-bg-danger text-white mb-2"
+                                                    >Closed for Applications</div>
                                                 </t>
                                             </div>
                                         </div>
                                     </div>
-                                    <a t-attf-href="/jobs/apply/#{slug(job)}"
-                                        class="btn btn-primary w-100 py-3 fs-6 rounded-3 shadow-sm fw-bold">
-                                        ยื่นใบสมัครสำหรับตำแหน่งนี้
-                                    </a>
+                                    <t t-if="job.website_published">
+                                        <a
+                                            t-attf-href="/jobs/apply/#{slug(job)}"
+                                            class="btn btn-primary w-100 py-3 fs-6 rounded-3 shadow-sm fw-bold"
+                                        >
+                                            Submit Application for this Position
+                                        </a>
+                                    </t>
                                 </div>
                             </div>
                         </div>
