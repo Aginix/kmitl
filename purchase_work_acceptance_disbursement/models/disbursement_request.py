@@ -28,11 +28,6 @@ class DisbursementRequest(models.Model):
         for rec in self:
             if rec.wa_ids:
                 rec.wa_ids.write({"is_disbursed": True})
-                rec.message_post(
-                    body=_("Work Acceptance <b>%s</b> marked as disbursed.")
-                    % ", ".join(rec.wa_ids.mapped("name")),
-                    subtype_xmlid="mail.mt_note",
-                )
         return res
 
     def action_draft(self):
@@ -41,10 +36,6 @@ class DisbursementRequest(models.Model):
         for rec in self:
             if rec.wa_ids:
                 rec.wa_ids.write({"is_disbursed": False})
-                rec.message_post(
-                    body=_("Work Acceptance disbursed flag reset."),
-                    subtype_xmlid="mail.mt_note",
-                )
         return res
 
     def action_view_work_acceptances(self):

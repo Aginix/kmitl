@@ -47,20 +47,8 @@ class PurchaseOrder(models.Model):
                 _("No accepted Work Acceptance pending disbursement for PO '%s'.")
                 % self.name
             )
-
         disbursement = super()._create_disbursement_request()
-
         wa.write({"disbursement_request_id": disbursement.id})
-
-        # Log cross-links
-        dr_link = "/web#id=%d&model=disbursement.request&view_type=form" % disbursement.id
-        wa.message_post(
-            body=_(
-                'Disbursement Request <a href="%(link)s">%(name)s</a> created.'
-            ) % {"link": dr_link, "name": disbursement.name},
-            subtype_xmlid="mail.mt_note",
-        )
-
         return disbursement
 
     @api.depends(
