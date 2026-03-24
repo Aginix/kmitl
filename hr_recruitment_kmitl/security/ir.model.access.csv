@@ -13,3 +13,4 @@ access_hr_applicant_education_history,access_hr_applicant_education_history,mode
 access_hr_applicant_work_history,access_hr_applicant_work_history,model_hr_applicant_work_history,base.group_user,1,0,0,0
 access_hr_job_category_user,hr.job.category user,model_hr_job_category,base.group_user,1,0,0,0
 access_hr_job_category_hr,hr.job.category hr,model_hr_job_category,hr.group_hr_manager,1,1,1,1
+access_hr_recruitment_degree_public,hr.recruitment.degree.public,hr_recruitment.model_hr_recruitment_degree,,1,0,0,0
