@@ -34,7 +34,7 @@ class BudgetTransfer(models.Model):
     """
 
     _name = "budget.transfer"
-    _description = "Budget Transfer"
+    _description = "โอนเปลี่ยนแปลงงบประมาณ"
     _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "date desc, name desc, id desc"
     _rec_names_search = ["name", "ref"]
@@ -49,7 +49,7 @@ class BudgetTransfer(models.Model):
 
     # Basic Information
     name = fields.Char(
-        string="Transfer Number",
+        string="เลขที่เอกสาร",
         compute="_compute_name",
         readonly=False,
         store=True,
@@ -60,7 +60,7 @@ class BudgetTransfer(models.Model):
     )
 
     ref = fields.Char(
-        string="Reference",
+        string="อ้างอิง",
         copy=False,
         tracking=True,
         readonly=False,
@@ -68,7 +68,7 @@ class BudgetTransfer(models.Model):
     )
 
     date = fields.Date(
-        string="Transfer Date",
+        string="วันที่",
         index=True,
         default=lambda self: fields.Date.context_today(self),
         required=True,
@@ -80,14 +80,14 @@ class BudgetTransfer(models.Model):
 
     state = fields.Selection(
         selection=[
-            ("draft", "Draft"),
-            ("submitted", "Submitted"),
-            ("approved", "Approved"),
-            ("posted", "Posted"),
-            ("rejected", "Rejected"),
-            ("cancelled", "Cancelled"),
+            ("draft", "ฉบับร่าง"),
+            ("submitted", "ส่งขออนุมัติ"),
+            ("approved", "อนุมัติแล้ว"),
+            ("posted", "ประกาศแล้ว"),
+            ("rejected", "ไม่อนุมัติ"),
+            ("cancelled", "ยกเลิก"),
         ],
-        string="Status",
+        string="สถานะ",
         required=True,
         readonly=True,
         copy=False,
@@ -100,7 +100,7 @@ class BudgetTransfer(models.Model):
         selection=[
             ("entry", "ทั่วไป"),
         ],
-        string="Transfer Type",
+        string="ประเภทการโอน",
         required=True,
         default="entry",
         readonly=True,
@@ -108,7 +108,7 @@ class BudgetTransfer(models.Model):
     )
 
     amount = fields.Float(
-        string="Transfer Amount",
+        string="จำนวนเงินรวม",
         compute="_compute_amount",
         store=True,
         digits="Budget Precision",
@@ -117,18 +117,18 @@ class BudgetTransfer(models.Model):
     )
 
     reason = fields.Text(
-        string="Transfer Reason",
+        string="เหตุผลในการโอน",
         required=True,
         readonly=False,
         states=READONLY_STATES,
         tracking=True,
-        help="Please provide detailed justification for this budget transfer",
+        help="กรุณาระบุเหตุผลในการโอนเปลี่ยนแปลงงบประมาณ",
     )
 
     # Company and Currency
     company_id = fields.Many2one(
         comodel_name="res.company",
-        string="Company",
+        string="หน่วยงาน",
         default=lambda self: self.env.company,
         required=True,
         tracking=True,
@@ -136,7 +136,7 @@ class BudgetTransfer(models.Model):
 
     currency_id = fields.Many2one(
         "res.currency",
-        string="Currency",
+        string="สกุลเงิน",
         default=lambda self: self.env.company.currency_id,
         tracking=True,
         store=True,
@@ -146,7 +146,7 @@ class BudgetTransfer(models.Model):
     # Fiscal Year
     account_fiscal_year_id = fields.Many2one(
         comodel_name="account.fiscal.year",
-        string="Fiscal Year",
+        string="ปีงบประมาณ",
         required=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
@@ -178,7 +178,7 @@ class BudgetTransfer(models.Model):
 
     # User Management
     user_id = fields.Many2one(
-        string="Requested by",
+        string="ผู้ขอโอน",
         comodel_name="res.users",
         copy=False,
         tracking=True,
@@ -190,7 +190,7 @@ class BudgetTransfer(models.Model):
 
     # Approval Fields
     approver_id = fields.Many2one(
-        string="Approved by",
+        string="ผู้อนุมัติ",
         comodel_name="res.users",
         copy=False,
         tracking=True,
@@ -198,14 +198,14 @@ class BudgetTransfer(models.Model):
     )
 
     approval_date = fields.Datetime(
-        string="Approval Date",
+        string="วันที่อนุมัติ",
         copy=False,
         tracking=True,
         readonly=True,
     )
 
     rejection_reason = fields.Text(
-        string="Rejection Reason",
+        string="เหตุผลที่ไม่อนุมัติ",
         readonly=True,
         tracking=True,
     )
@@ -214,7 +214,7 @@ class BudgetTransfer(models.Model):
     line_ids = fields.One2many(
         comodel_name="budget.transfer.line",
         inverse_name="transfer_id",
-        string="Transfer Lines",
+        string="รายการโอน",
         copy=True,
         tracking=True,
         readonly=False,
@@ -225,7 +225,7 @@ class BudgetTransfer(models.Model):
     from_line_ids = fields.One2many(
         comodel_name="budget.transfer.line",
         inverse_name="transfer_id",
-        string="Transfer FROM Lines",
+        string="รายการโอนออก",
         domain=[("transfer_direction", "=", "from")],
         context={"default_transfer_direction": "from"},
         copy=False,
@@ -236,7 +236,7 @@ class BudgetTransfer(models.Model):
     to_line_ids = fields.One2many(
         comodel_name="budget.transfer.line",
         inverse_name="transfer_id",
-        string="Transfer TO Lines",
+        string="รายการโอนเข้า",
         domain=[("transfer_direction", "=", "to")],
         context={"default_transfer_direction": "to"},
         copy=False,
@@ -248,9 +248,9 @@ class BudgetTransfer(models.Model):
     budget_move_ids = fields.One2many(
         comodel_name="budget.move",
         inverse_name="transfer_id",
-        string="Generated Budget Moves",
+        string="รายการเคลื่อนไหวงบประมาณ",
         readonly=True,
-        help="Budget moves created when this transfer is posted",
+        help="รายการเคลื่อนไหวงบประมาณที่สร้างเมื่อโอนสำเร็จ",
     )
 
     # Button Visibility
@@ -774,7 +774,7 @@ class BudgetTransfer(models.Model):
     def _open_rejection_wizard(self):
         """Open wizard for rejection reason"""
         return {
-            "name": _("Reject Budget Transfer"),
+            "name": _("ไม่อนุมัติการโอนเปลี่ยนแปลง"),
             "type": "ir.actions.act_window",
             "res_model": "budget.transfer.reject.wizard",
             "view_mode": "form",

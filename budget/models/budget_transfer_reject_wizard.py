@@ -8,19 +8,19 @@ class BudgetTransferRejectWizard(models.TransientModel):
     """
     
     _name = "budget.transfer.reject.wizard"
-    _description = "Budget Transfer Rejection Wizard"
-    
+    _description = "ไม่อนุมัติการโอนเปลี่ยนแปลงงบประมาณ"
+
     transfer_id = fields.Many2one(
         comodel_name="budget.transfer",
-        string="Budget Transfer",
+        string="รายการโอน",
         required=True,
         readonly=True,
     )
-    
+
     rejection_reason = fields.Text(
-        string="Rejection Reason",
+        string="เหตุผลที่ไม่อนุมัติ",
         required=True,
-        help="Please provide detailed reason for rejecting this budget transfer"
+        help="กรุณาระบุเหตุผลในการไม่อนุมัติรายการโอนเปลี่ยนแปลงนี้"
     )
     
     def action_reject(self):

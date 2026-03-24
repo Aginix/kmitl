@@ -11,7 +11,7 @@ class BudgetTransferLine(models.Model):
     """
 
     _name = "budget.transfer.line"
-    _description = "Budget Transfer Line"
+    _description = "รายการโอนเปลี่ยนแปลงงบประมาณ"
     _order = "transfer_id, sequence, id"
 
     # Basic Fields
@@ -30,10 +30,10 @@ class BudgetTransferLine(models.Model):
 
     transfer_direction = fields.Selection(
         selection=[
-            ("from", "Transfer From (Source)"),
-            ("to", "Transfer To (Destination)"),
+            ("from", "โอนออก (ต้นทาง)"),
+            ("to", "โอนเข้า (ปลายทาง)"),
         ],
-        string="Direction",
+        string="ประเภท",
         required=True,
         default="from",
         help="Direction of this transfer line"
@@ -100,8 +100,8 @@ class BudgetTransferLine(models.Model):
 
     # Description
     description = fields.Char(
-        string="Description",
-        help="Description for this transfer line"
+        string="หมายเหตุ",
+        help="หมายเหตุเพิ่มเติมสำหรับรายการนี้"
     )
 
     # Company and Currency (inherited from transfer)
@@ -125,7 +125,7 @@ class BudgetTransferLine(models.Model):
     )
 
     budget_sufficient = fields.Boolean(
-        string="Budget Sufficient",
+        string="งบเพียงพอ",
         compute="_compute_available_budget",
         help="True if available budget is sufficient for this transfer"
     )
