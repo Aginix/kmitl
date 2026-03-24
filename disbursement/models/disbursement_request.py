@@ -27,7 +27,11 @@ class DisbursementRequest(models.Model):
 
     READONLY_STATES = {
         "submitted": [("readonly", True)],
+        "sent": [("readonly", True)],
         "validated": [("readonly", True)],
+        "approved": [("readonly", True)],
+        "in_progress": [("readonly", True)],
+        "done": [("readonly", True)],
         "cancel": [("readonly", True)],
     }
 
@@ -228,7 +232,11 @@ class DisbursementRequest(models.Model):
         selection=[
             ("draft", "Draft"),
             ("submitted", "Submitted"),
+            ("sent", "Sent"),
             ("validated", "Validated"),
+            ("approved", "Approved"),
+            ("in_progress", "In Progress"),
+            ("done", "Done"),
             ("cancel", "Cancelled"),
         ],
         string="Status",
@@ -671,9 +679,8 @@ class DisbursementRequest(models.Model):
         """Create vendor bill from disbursement request"""
         self.ensure_one()
 
-        # Only allow creating bill from validated requests
-        if self.state != "validated":
-            raise UserError(_("Only validated requests can be used to create bills."))
+        if self.state != "approved":
+            raise UserError(_("Only approved requests can be used to create bills."))
 
         # Prepare invoice lines from request lines
         invoice_lines = []
@@ -714,8 +721,9 @@ class DisbursementRequest(models.Model):
             if request_line.wht_tax_id:
                 invoice_line.wht_tax_id = request_line.wht_tax_id
 
-        # Link the bill to this request
+        # Link the bill to this request and advance state
         self.bill_id = bill.id
+        self.state = "in_progress"
 
         # Log in Disbursement chatter
         bill_link = "/web#id=%d&model=account.move&view_type=form" % bill.id
@@ -734,33 +742,121 @@ class DisbursementRequest(models.Model):
         for record in self:
             if record.state != "draft":
                 raise UserError(_("Only draft requests can be submitted."))
-            # Check for exceptions before submitting
             if record.detect_exceptions() and not record.ignore_exception:
                 return record._popup_exceptions()
             record.state = "submitted"
         return True
 
-    def action_validate(self):
-        """Validate the request"""
+    def action_send(self):
+        """Head of department signs and sends to inspector"""
         for record in self:
             if record.state != "submitted":
-                raise UserError(_("Only submitted requests can be validated."))
+                raise UserError(_("Only submitted requests can be sent."))
+            record.state = "sent"
+        return True
+
+    def action_validate(self):
+        """Inspector validates the request"""
+        for record in self:
+            if record.state != "sent":
+                raise UserError(_("Only sent requests can be validated."))
             record.state = "validated"
+        return True
+
+    def action_approve(self):
+        """Director approves and commits budget"""
+        for record in self:
+            if record.state != "validated":
+                raise UserError(
+                    _("Only validated requests can be approved.")
+                )
+            record._action_approve_budget()
+            record.state = "approved"
+        return True
+
+    def _action_approve_budget(self):
+        """Reserve budget commitment on approval"""
+        self.ensure_one()
+        if self.budget_commitment_id:
+            return
+        if not self.budget_account_id:
+            return
+        check = self._check_budget_availability(
+            amount=self.amount_total,
+            activity_analytic_id=self.activity_analytic_id.id,
+            department_analytic_id=self.department_analytic_id.id,
+            fund_analytic_id=self.fund_analytic_id.id,
+            source_analytic_id=self.source_analytic_id.id,
+        )
+        if not check["is_sufficient"]:
+            raise UserError(
+                _(
+                    "Insufficient budget. Available: %(available)s, "
+                    "Required: %(required)s"
+                )
+                % {
+                    "available": check["available"],
+                    "required": self.amount_total,
+                }
+            )
+        commitment = self._create_budget_commitment(
+            amount=self.amount_total,
+            activity_analytic_id=self.activity_analytic_id.id,
+            department_analytic_id=self.department_analytic_id.id,
+            fund_analytic_id=self.fund_analytic_id.id,
+            source_analytic_id=self.source_analytic_id.id,
+            ref=self.name,
+            description=_("Disbursement Request: %s") % self.name,
+            auto_reserve=True,
+        )
+        self.message_post(
+            body=_("Budget committed: %s") % commitment.name,
+            subtype_xmlid="mail.mt_note",
+        )
+
+    def action_done(self):
+        """Mark as done when bill is fully paid"""
+        for record in self:
+            if record.state != "in_progress":
+                continue
+            record.state = "done"
+            record.message_post(
+                body=_("Payment complete. Disbursement done."),
+                subtype_xmlid="mail.mt_note",
+            )
         return True
 
     def action_cancel(self):
         """Cancel the request"""
         for record in self:
-            if record.state == "cancel":
-                raise UserError(_("Request is already cancelled."))
+            if record.state in ("cancel", "done"):
+                raise UserError(_("Cannot cancel a done or already cancelled request."))
+            if record.budget_commitment_id:
+                try:
+                    record._cancel_budget_commitment()
+                    record.message_post(
+                        body=_("Budget commitment %s cancelled.")
+                        % record.budget_commitment_id.name,
+                        subtype_xmlid="mail.mt_note",
+                    )
+                except UserError as e:
+                    record.message_post(
+                        body=_("Warning: %s") % str(e),
+                        subtype_xmlid="mail.mt_note",
+                    )
+            if record.bill_id and record.bill_id.state == "draft":
+                record.bill_id.button_cancel()
             record.state = "cancel"
         return True
 
     def action_draft(self):
-        """Draft the request"""
+        """Reset to draft"""
         for record in self:
+            if record.state not in ("submitted", "sent", "cancel"):
+                raise UserError(
+                    _("Only submitted, sent, or cancelled requests can be reset to draft.")
+                )
             record.state = "draft"
-            # Reset exception fields when returning to draft
             record.exception_ids = False
             record.main_exception_id = False
             record.ignore_exception = False
