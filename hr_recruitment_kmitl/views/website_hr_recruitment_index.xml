@@ -2,14 +2,21 @@
     <template id="kmitl_index" inherit_id="website_hr_recruitment.index">
         <xpath expr="//div[hasclass('oe_structure')]" position="replace">
             <div id="jobs_hero" class="oe_structure page-view active pb-4">
-                <div class="banner-header bg-thai-d-dark py-5 overflow-hidden position-relative" style="
-                        border-bottom: 4px solid var(--orange-500);
-                    ">
-                    <div class="position-absolute top-0 start-0 w-100 h-100 bg-pattern-dots opacity-25" />
+                <div
+                    class="banner-header bg-thai-d-dark py-5 overflow-hidden position-relative"
+                    style="
+                    border-bottom: 4px solid var(--orange-500);
+                "
+                >
+                    <div
+                        class="position-absolute top-0 start-0 w-100 h-100 bg-pattern-dots opacity-25"
+                    />
                     <div class="container kmitl-nav-spacing position-relative z-1 py-4">
                         <div class="row align-items-center">
                             <div class="col-lg-8 text-white">
-                                <h1 class="display-4 fw-bold mb-3"> ร่วมขับเคลื่อนนวัตกรรม
+                                <h1
+                                    class="display-4 fw-bold mb-3"
+                                > ร่วมขับเคลื่อนนวัตกรรม
                                     <br />
                                     ไปกับ
                                     <span class="text-primary">KMITL</span>
@@ -17,14 +24,29 @@
                                 <p class="lead text-white-50 mb-4 fs-6">
                                     ค้นหาโอกาสในการทำงานและเติบโตไปพร้อมกับสถาบันเทคโนโลยีชั้นนำของประเทศ
                                 </p>
-                                <form action="/jobs" method="get" class="w-100" style="max-width: 600px">
+                                <form
+                                    action="/jobs"
+                                    method="get"
+                                    class="w-100"
+                                    style="max-width: 600px"
+                                >
                                     <div class="input-group input-group-lg shadow-sm">
-                                        <span class="input-group-text bg-white border-end-0 text-muted">
+                                        <span
+                                            class="input-group-text bg-white border-end-0 text-muted"
+                                        >
                                             <i class="fa fa-search" />
                                         </span>
-                                        <input type="text" name="search" class="form-control border-start-0 ps-0"
-                                            placeholder="ค้นหาตำแหน่งงาน, คีย์เวิร์ด..." t-att-value="search" />
-                                        <button class="btn bg-primary px-4 fw-bold text-white" type="submit">
+                                        <input
+                                            type="text"
+                                            name="search"
+                                            class="form-control border-start-0 ps-0"
+                                            placeholder="ค้นหาตำแหน่งงาน, คีย์เวิร์ด..."
+                                            t-att-value="search"
+                                        />
+                                        <button
+                                            class="btn bg-primary px-4 fw-bold text-white"
+                                            type="submit"
+                                        >
                                             ค้นหา
                                         </button>
                                     </div>
@@ -43,5 +65,229 @@
         </xpath>
         <!-- Remove open positions -->
         <xpath expr="//h5[@t-if='job.no_of_recruitment &gt;= 1']" position="replace" />
+
+        <!-- Add extra info to job card -->
+        <xpath expr="//div[hasclass('o_job_infos')]" position="inside">
+            <div t-if="job.no_of_recruitment >= 1">
+                <i
+                    class="fa fa-fw fa-users"
+                    title="Positions"
+                    role="img"
+                    aria-label="Positions"
+                />
+                <span t-out="job.no_of_recruitment" />
+                <span>positions</span>
+            </div>
+            <div t-if="job.role">
+                <i
+                    class="fa fa-fw fa-briefcase"
+                    title="Role"
+                    role="img"
+                    aria-label="Role"
+                />
+                <span
+                    t-esc="dict(job.fields_get(['role'])['role']['selection']).get(job.role)"
+                />
+            </div>
+            <div t-if="job.kmitl_employee_type">
+                <i
+                    class="fa fa-fw fa-id-badge"
+                    title="Employee Type"
+                    role="img"
+                    aria-label="Employee Type"
+                />
+                <span
+                    t-esc="dict(job.fields_get(['kmitl_employee_type'])['kmitl_employee_type']['selection']).get(job.kmitl_employee_type)"
+                />
+            </div>
+            <div t-if="job.education_level_ids">
+                <i
+                    class="fa fa-fw fa-graduation-cap"
+                    title="Education Levels"
+                    role="img"
+                    aria-label="Education Levels"
+                />
+                <t t-foreach="job.education_level_ids" t-as="edu">
+                    <span class="badge text-bg-secondary me-1" t-esc="edu.name" />
+                </t>
+            </div>
+            <div t-if="job.date_close">
+                <i
+                    class="fa fa-fw fa-calendar-times-o"
+                    title="Closing Date"
+                    role="img"
+                    aria-label="Closing Date"
+                />
+                <span>Closing Date:</span>
+                <span
+                    t-field="job.date_close"
+                    t-options="{'widget': 'datetime', 'format': 'dd/MM/yyyy HH:mm'}"
+                />
+            </div>
+            <div t-if="job.category_ids">
+                <i class="fa fa-fw fa-tags" title="Tags" role="img" aria-label="Tags" />
+                <t t-foreach="job.category_ids" t-as="cat">
+                    <span class="badge text-bg-info me-1" t-esc="cat.name" />
+                </t>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- Filter by Role -->
+    <template
+        id="job_filter_by_roles"
+        inherit_id="website_hr_recruitment.index"
+        active="False"
+        name="Filter by Role"
+    >
+        <xpath expr="//div[@id='jobs_grid_left']" position="inside">
+            <t
+                t-set="qs_no_role"
+                t-value="'&amp;'.join([p for p in ['employee_type=%s' % employee_type if employee_type else '', 'education_level=%s' % education_level if education_level else '', 'category_id=%s' % category_id if category_id else ''] if p])"
+            />
+            <ul class="nav nav-pills flex-column mb32">
+                <li class="nav-item">
+                    <a
+                        t-attf-href="#{kmitl_base_url}#{ '?' + qs_no_role if qs_no_role else '' }"
+                        t-attf-class="nav-link#{'' if role else ' active'}"
+                    >All Roles</a>
+                </li>
+                <li class="nav-item">
+                    <a
+                        t-attf-href="#{kmitl_base_url}?role=academic#{ '&amp;' + qs_no_role if qs_no_role else '' }"
+                        t-attf-class="nav-link#{' active' if role == 'academic' else ''}"
+                    >Academic</a>
+                </li>
+                <li class="nav-item">
+                    <a
+                        t-attf-href="#{kmitl_base_url}?role=support#{ '&amp;' + qs_no_role if qs_no_role else '' }"
+                        t-attf-class="nav-link#{' active' if role == 'support' else ''}"
+                    >Support</a>
+                </li>
+            </ul>
+        </xpath>
+        <xpath expr="//div[@id='jobs_grid_left']" position="attributes">
+            <attribute name="class">col-lg-3</attribute>
+        </xpath>
+    </template>
+
+    <!-- Filter by Employee Type -->
+    <template
+        id="job_filter_by_employee_types"
+        inherit_id="website_hr_recruitment.index"
+        active="False"
+        name="Filter by Employee Type"
+    >
+        <xpath expr="//div[@id='jobs_grid_left']" position="inside">
+            <t
+                t-set="qs_no_et"
+                t-value="'&amp;'.join([p for p in ['role=%s' % role if role else '', 'education_level=%s' % education_level if education_level else '', 'category_id=%s' % category_id if category_id else ''] if p])"
+            />
+            <ul class="nav nav-pills flex-column mb32">
+                <li class="nav-item">
+                    <a
+                        t-attf-href="#{kmitl_base_url}#{ '?' + qs_no_et if qs_no_et else '' }"
+                        t-attf-class="nav-link#{'' if employee_type else ' active'}"
+                    >
+                        All Employee Types</a>
+                </li>
+                <li class="nav-item">
+                    <a
+                        t-attf-href="#{kmitl_base_url}?employee_type=B#{ '&amp;' + qs_no_et if qs_no_et else '' }"
+                        t-attf-class="nav-link#{' active' if employee_type == 'B' else ''}"
+                    >
+                        เงินงบประมาณ</a>
+                </li>
+                <li class="nav-item">
+                    <a
+                        t-attf-href="#{kmitl_base_url}?employee_type=N#{ '&amp;' + qs_no_et if qs_no_et else '' }"
+                        t-attf-class="nav-link#{' active' if employee_type == 'N' else ''}"
+                    >
+                        เงินรายได้</a>
+                </li>
+                <li class="nav-item">
+                    <a
+                        t-attf-href="#{kmitl_base_url}?employee_type=E#{ '&amp;' + qs_no_et if qs_no_et else '' }"
+                        t-attf-class="nav-link#{' active' if employee_type == 'E' else ''}"
+                    >พิเศษ</a>
+                </li>
+            </ul>
+        </xpath>
+        <xpath expr="//div[@id='jobs_grid_left']" position="attributes">
+            <attribute name="class">col-lg-3</attribute>
+        </xpath>
+    </template>
+
+    <!-- Filter by Education Level -->
+    <template
+        id="job_filter_by_education_levels"
+        inherit_id="website_hr_recruitment.index"
+        active="False"
+        name="Filter by Education Level"
+    >
+        <xpath expr="//div[@id='jobs_grid_left']" position="inside">
+            <t
+                t-set="qs_no_edu"
+                t-value="'&amp;'.join([p for p in ['role=%s' % role if role else '', 'employee_type=%s' % employee_type if employee_type else '', 'category_id=%s' % category_id if category_id else ''] if p])"
+            />
+            <ul class="nav nav-pills flex-column mb32">
+                <li class="nav-item">
+                    <a
+                        t-attf-href="#{kmitl_base_url}#{ '?' + qs_no_edu if qs_no_edu else '' }"
+                        t-attf-class="nav-link#{'' if education_level else ' active'}"
+                    >All Education
+                        Levels</a>
+                </li>
+                <t t-foreach="education_levels or []" t-as="edu">
+                    <li class="nav-item">
+                        <a
+                            t-attf-href="#{kmitl_base_url}?education_level=#{edu.id}#{ '&amp;' + qs_no_edu if qs_no_edu else '' }"
+                            t-attf-class="nav-link#{' active' if education_level == edu.id else ''}"
+                        >
+                            <span t-esc="edu.name" />
+                        </a>
+                    </li>
+                </t>
+            </ul>
+        </xpath>
+        <xpath expr="//div[@id='jobs_grid_left']" position="attributes">
+            <attribute name="class">col-lg-3</attribute>
+        </xpath>
+    </template>
+
+    <!-- Filter by Tags -->
+    <template
+        id="job_filter_by_tags"
+        inherit_id="website_hr_recruitment.index"
+        active="False"
+        name="Filter by Tags"
+    >
+        <xpath expr="//div[@id='jobs_grid_left']" position="inside">
+            <t
+                t-set="qs_no_cat"
+                t-value="'&amp;'.join([p for p in ['role=%s' % role if role else '', 'employee_type=%s' % employee_type if employee_type else '', 'education_level=%s' % education_level if education_level else ''] if p])"
+            />
+            <ul class="nav nav-pills flex-column mb32">
+                <li class="nav-item">
+                    <a
+                        t-attf-href="#{kmitl_base_url}#{ '?' + qs_no_cat if qs_no_cat else '' }"
+                        t-attf-class="nav-link#{'' if category_id else ' active'}"
+                    >All Categories</a>
+                </li>
+                <t t-foreach="categories or []" t-as="cat">
+                    <li class="nav-item">
+                        <a
+                            t-attf-href="#{kmitl_base_url}?category_id=#{cat.id}#{ '&amp;' + qs_no_cat if qs_no_cat else '' }"
+                            t-attf-class="nav-link#{' active' if category_id == cat.id else ''}"
+                        >
+                            <span t-esc="cat.name" />
+                        </a>
+                    </li>
+                </t>
+            </ul>
+        </xpath>
+        <xpath expr="//div[@id='jobs_grid_left']" position="attributes">
+            <attribute name="class">col-lg-3</attribute>
+        </xpath>
     </template>
 </odoo>

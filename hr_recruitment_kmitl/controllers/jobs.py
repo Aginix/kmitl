@@ -1,3 +1,4 @@
+from odoo import fields as odoo_fields
 from odoo.addons.website_hr_recruitment.controllers.main import WebsiteHrRecruitment
 from odoo.http import request
 
@@ -60,6 +61,10 @@ class WebsiteJobsKmitl(WebsiteHrRecruitment):
             jobs = [j for j in jobs if education_level in j.education_level_ids.ids]
         if category_id:
             jobs = [j for j in jobs if category_id in j.category_ids.ids]
+
+        # Hide expired jobs in real-time
+        now = odoo_fields.Datetime.now()
+        jobs = [j for j in jobs if not j.date_close or j.date_close > now]
 
         degrees = request.env["hr.recruitment.degree"].sudo().search([])
         categories = request.env["hr.job.category"].sudo().search([])

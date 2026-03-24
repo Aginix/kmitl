@@ -27,4 +27,14 @@
         </record>
 
     </data>
+
+    <record id="ir_cron_close_expired_jobs" model="ir.cron">
+        <field name="name">Close Expired Job Postings</field>
+        <field name="model_id" ref="hr.model_hr_job" />
+        <field name="state">code</field>
+        <field name="code">model._cron_close_expired_jobs()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+    </record>
 </odoo>

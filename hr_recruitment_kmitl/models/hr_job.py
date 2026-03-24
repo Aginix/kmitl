@@ -1,8 +1,19 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class HrJob(models.Model):
     _inherit = "hr.job"
+
+    @api.model
+    def _cron_close_expired_jobs(self):
+        expired = self.search(
+            [
+                ("date_close", "<=", fields.Datetime.now()),
+                ("date_close", "!=", False),
+                ("website_published", "=", True),
+            ]
+        )
+        expired.write({"website_published": False})
 
     role = fields.Selection(
         [("academic", "Academic"), ("support", "Support")],
