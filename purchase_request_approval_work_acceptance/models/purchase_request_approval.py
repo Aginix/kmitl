@@ -11,6 +11,19 @@ class PurchaseRequestApproval(models.Model):
     wa_line_ids = fields.One2many(comodel_name="work.acceptance.line", inverse_name="approval_line_id", string="WA Lines", readonly=True)
     wa_accepted = fields.Boolean(string="WA Accepted", compute="_compute_wa_accepted", search="_search_wa_accepted")
 
+    pending_wa_count = fields.Integer(
+        compute="_compute_pending_wa_count",
+    )
+
+    @api.depends("wa_ids.state", "wa_ids.is_disbursed")
+    def _compute_pending_wa_count(self):
+        for approval in self:
+            approval.pending_wa_count = self.env["work.acceptance"].search_count([
+                ("approval_id", "=", approval.id),
+                ("is_disbursed", "=", False),
+                ("state", "=", "accept"),
+            ])
+
     @api.depends("wa_line_ids")
     def _compute_wa_ids(self):
         for request in self:
