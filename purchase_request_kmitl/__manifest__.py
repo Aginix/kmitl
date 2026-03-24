@@ -15,7 +15,6 @@
         "account_fiscal_year",
         "purchase_order_kmitl",
         "purchase_operating_unit",
-        "purchase_request_payment_type",
     ],
     "data": [
         "security/ir.model.access.csv",
