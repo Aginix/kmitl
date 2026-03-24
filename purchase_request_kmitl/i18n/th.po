@@ -1,15 +1,14 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* l10n_th_gov_purchase_request
-# 	* purchase_request
 # 	* purchase_request_kmitl
+# 	* purchase_request
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-05 10:05+0000\n"
-"PO-Revision-Date: 2026-03-05 10:05+0000\n"
+"POT-Creation-Date: 2026-03-24 08:58+0000\n"
+"PO-Revision-Date: 2026-03-24 08:58+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -98,15 +97,6 @@ msgid ""
 "                                <br/>"
 msgstr ""
 
-#. module: purchase_request_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_line_make_purchase_order_form
-msgid ""
-"If vendor name not found, contact procurement staff to add the\n"
-"                    information"
-msgstr ""
-"ถ้าหากไม่พบชื่อผู้ขายที่ต้องการ ให้แจ้งเจ้าหน้าที่พัสดุ/ผู้รับผิดชอบงาน\n"
-"                    เพื่อเพิ่มข้อมูล"
-
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.report_purchase_request
 msgid "<strong>Product UoM</strong>"
@@ -175,10 +165,10 @@ msgstr ""
 msgid "Action Needed"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_method__active
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__active
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__active
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_method__active
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_type__active
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_type__active
 msgid "Active"
 msgstr ""
 
@@ -221,9 +211,9 @@ msgstr ""
 msgid "Allocations"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_request__procurement_method_ids
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__procurement_method_ids
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__procurement_method_ids
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_type__procurement_method_ids
 msgid "Allowed Procurement Method"
 msgstr ""
 
@@ -235,7 +225,7 @@ msgstr ""
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 msgid "Analytic Distribution"
-msgstr ""
+msgstr "การกระจายบัญชีวิเคราะห์"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__analytic_distribution_search
@@ -250,7 +240,7 @@ msgstr ""
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
 msgid "Approve"
-msgstr ""
+msgstr "อนุมัติ"
 
 #. module: purchase_request
 #: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__approved
@@ -259,22 +249,22 @@ msgstr ""
 msgid "Approved"
 msgstr "คำขอได้รับอนุมัติแล้ว"
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_request__approved_by
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__approved_by
 msgid "Approved By"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_request__date_approved
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__date_approved
 msgid "Approved Date"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.procurement_method_view_form
-#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.procurement_type_view_form
-#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.purchase_type_view_form
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.procurement_method_view_form
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.procurement_type_view_form
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.purchase_type_view_form
 msgid "Archived"
-msgstr ""
+msgstr "เก็บถาวร"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__assigned_to
@@ -304,14 +294,25 @@ msgstr ""
 msgid "At least a PO has been confirmed"
 msgstr ""
 
+#. module: purchase_request_kmitl
+#: model:ir.model,name:purchase_request_kmitl.model_ir_attachment
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form_kmitl
+msgid "Attachment"
+msgstr "เอกสารแนบ"
+
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__message_attachment_count
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__message_attachment_count
 msgid "Attachment Count"
-msgstr ""
+msgstr "จำนวนเอกสารแนบ"
 
-#. module: l10n_th_gov_purchase_request
-#: model:res.groups,name:l10n_th_gov_purchase_request.group_purchase_request_verify
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_ir_attachment__attachment_type
+msgid "Attachment Type"
+msgstr "ประเภทเอกสารแนบ"
+
+#. module: purchase_request_kmitl
+#: model:res.groups,name:purchase_request_kmitl.group_purchase_request_verify
 msgid "Can verify purchase request"
 msgstr ""
 
@@ -323,7 +324,7 @@ msgstr "ยกเลิก"
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__cancelled
 msgid "Cancelled"
-msgstr ""
+msgstr "ยกเลิก"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
@@ -335,8 +336,8 @@ msgstr ""
 msgid "Category"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields.selection,name:l10n_th_gov_purchase_request.selection__procurement_committee__approve_role__chairman
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__procurement_committee__approve_role__chairman
 msgid "Chairman"
 msgstr "ประธาน"
 
@@ -353,20 +354,20 @@ msgstr ""
 msgid "Click to start a new purchase request process."
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__code
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_type__code
 msgid "Code"
 msgstr ""
 
-#. modules: l10n_th_gov_purchase_request, purchase_request_kmitl
-#: model:ir.model.fields.selection,name:l10n_th_gov_purchase_request.selection__procurement_committee__approve_role__committee
-#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.view_purchase_request_form
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__procurement_committee__approve_role__committee
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form_l10n
 msgid "Committee"
 msgstr "กรรมการ"
 
-#. modules: l10n_th_gov_purchase_request, purchase_request_kmitl
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__name
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_committee__name
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_procurement_committee_tree
 msgid "Committee Name"
 msgstr "ชื่อ"
@@ -375,11 +376,6 @@ msgstr "ชื่อ"
 #: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_committee__committee_type
 msgid "Committee Type"
 msgstr "ประเภทของคณะกรรมการ"
-
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.constraint,message:l10n_th_gov_purchase_request.constraint_procurement_committee_employee_request_uniq
-msgid "Committee has to be unique"
-msgstr "กรรมการต้องไม่ซ้ำกัน"
 
 #. module: purchase_request_kmitl
 #: model:ir.model.constraint,message:purchase_request_kmitl.constraint_procurement_committee_employee_request_uniq
@@ -417,9 +413,9 @@ msgstr ""
 msgid "Create RFQ"
 msgstr "สร้างโดย"
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,help:l10n_th_gov_purchase_request.field_purchase_request__to_create
-#: model:ir.model.fields,help:l10n_th_gov_purchase_request.field_purchase_type__to_create
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,help:purchase_request_kmitl.field_purchase_request__to_create
+#: model:ir.model.fields,help:purchase_request_kmitl.field_purchase_type__to_create
 msgid "Create purchase agreement or expense when pr is approved"
 msgstr ""
 
@@ -428,29 +424,34 @@ msgstr ""
 msgid "Created Purchase Request Line"
 msgstr ""
 
-#. modules: l10n_th_gov_purchase_request, purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__create_uid
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_method__create_uid
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__create_uid
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__create_uid
+#. modules: purchase_request, purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__create_uid
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_allocation__create_uid
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__create_uid
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order__create_uid
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__create_uid
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_committee__create_uid
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_method__create_uid
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_type__create_uid
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_type__create_uid
 msgid "Created by"
 msgstr "สร้างโดย"
 
-#. modules: l10n_th_gov_purchase_request, purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__create_date
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_method__create_date
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__create_date
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__create_date
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search_user
+msgid "Created by me"
+msgstr "สร้างโดยฉัน"
+
+#. modules: purchase_request, purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__create_date
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_allocation__create_date
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__create_date
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order__create_date
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__create_date
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_committee__create_date
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_method__create_date
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_type__create_date
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_type__create_date
 msgid "Created on"
 msgstr "สร้างเมื่อ"
 
@@ -473,39 +474,36 @@ msgstr ""
 msgid "Date when the user initiated the request."
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__is_default
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_type__is_default
 msgid "Default"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,help:l10n_th_gov_purchase_request.field_procurement_type__product_id
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,help:purchase_request_kmitl.field_procurement_type__product_id
 msgid "Default product for purchase request line"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,help:l10n_th_gov_purchase_request.field_purchase_type__is_default
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,help:purchase_request_kmitl.field_purchase_type__is_default
 msgid "Default purchase type on the purchase request"
 msgstr ""
 
-#. modules: l10n_th_gov_purchase_request, purchase_request_kmitl
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__department_id
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_committee__department_id
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_procurement_committee_tree
 msgid "Department"
 msgstr "หน่วยงาน"
 
-#. modules: l10n_th_gov_purchase_request, purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_method__description
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__description
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__description
+#. modules: purchase_request, purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__description
-#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.purchase_type_view_form
-msgid "Description"
-msgstr "ชื่อรายการ"
-
-#. module: purchase_request
-#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__name
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__name
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_method__description
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_type__description
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_line__name
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_type__description
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.purchase_type_view_form
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form_kmitl
 msgid "Description"
 msgstr "ชื่อรายการ"
 
@@ -516,18 +514,23 @@ msgstr "ชื่อรายการ"
 msgid "Detailed Line"
 msgstr ""
 
-#. modules: l10n_th_gov_purchase_request, purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__display_name
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_method__display_name
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__display_name
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__display_name
+#. modules: purchase_request, purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__display_name
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_allocation__display_name
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__display_name
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order__display_name
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__display_name
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_committee__display_name
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_method__display_name
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_type__display_name
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_type__display_name
 msgid "Display Name"
 msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__attachment_ids
+msgid "Document Attachments"
+msgstr "เอกสารแนบ"
 
 #. module: purchase_request
 #: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__done
@@ -548,8 +551,8 @@ msgstr ""
 msgid "Draft"
 msgstr "ฉบับร่าง"
 
-#. modules: l10n_th_gov_purchase_request, purchase_request_kmitl
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__employee_id
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_committee__employee_id
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_procurement_committee_tree
 msgid "Employee"
 msgstr "พนักงาน"
@@ -559,12 +562,12 @@ msgstr "พนักงาน"
 #: code:addons/purchase_request_kmitl/models/procurement_committee.py:0
 #, python-format
 msgid ""
-"Employee %s cannot appear in multiple committees except TOR and Price Determine "
-"committees."
+"Employee %s cannot appear in multiple committees except TOR and Price "
+"Determine committees."
 msgstr ""
 "คณะกรรมการ %s "
-"ไม่สามารถมีซ้ำกันในประเภทอื่นได้ยกเว้นคณะกรรมการกำหนดราคากลางและคณะกรรมการกำหนดคุณลักษณะเฉพาะร่าง "
-"ขอบเขตงาน"
+"ไม่สามารถมีซ้ำกันในประเภทอื่นได้ยกเว้นคณะกรรมการกำหนดราคากลางและคณะกรรมการกำหนดคุณลักษณะเฉพาะร่าง"
+" ขอบเขตงาน"
 
 #. module: purchase_request
 #. odoo-python
@@ -592,6 +595,11 @@ msgid "Estimated cost of Purchase Request Line, not propagated to PO."
 msgstr ""
 
 #. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__ir_attachment__attachment_type__etc
+msgid "Etc"
+msgstr ""
+
+#. module: purchase_request_kmitl
 #: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__procurement_committee__committee_type__evaluation
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form_l10n
 msgid "Evaluation Committee"
@@ -607,11 +615,16 @@ msgstr "คณะกรรมการพิจารณาผล"
 msgid "Existing RFQ to update:"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__visible_on_expense
-#: model:ir.model.fields.selection,name:l10n_th_gov_purchase_request.selection__purchase_type__to_create__expense
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_type__visible_on_expense
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_type__to_create__expense
 msgid "Expense"
-msgstr ""
+msgstr "ค่าใช้จ่าย"
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form_kmitl
+msgid "File Name"
+msgstr "ชื่อไฟล์"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__message_follower_ids
@@ -640,8 +653,8 @@ msgid ""
 "request"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,help:l10n_th_gov_purchase_request.field_purchase_request__substate_sequence
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,help:purchase_request_kmitl.field_purchase_request__substate_sequence
 msgid "Gives the sequence order when applying the default substate"
 msgstr ""
 
@@ -667,16 +680,16 @@ msgstr ""
 msgid "Hide cancelled lines"
 msgstr ""
 
-#. modules: l10n_th_gov_purchase_request, purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__id
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_method__id
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__id
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__id
+#. modules: purchase_request, purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_allocation__id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order__id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__id
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_committee__id
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_method__id
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_type__id
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_type__id
 msgid "ID"
 msgstr "รหัส"
 
@@ -705,6 +718,15 @@ msgstr ""
 #: model:ir.model.fields,help:purchase_request.field_purchase_request_line__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr ""
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_line_make_purchase_order_form
+msgid ""
+"If vendor name not found, contact procurement staff to add the\n"
+"                    information"
+msgstr ""
+"ถ้าหากไม่พบชื่อผู้ขายที่ต้องการ ให้แจ้งเจ้าหน้าที่พัสดุ/ผู้รับผิดชอบงาน\n"
+"                    เพื่อเพิ่มข้อมูล"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
@@ -744,42 +766,42 @@ msgstr "สามารถแก้ไขได้"
 msgid "Items"
 msgstr ""
 
-#. modules: l10n_th_gov_purchase_request, purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee____last_update
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_method____last_update
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type____last_update
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type____last_update
+#. modules: purchase_request, purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request____last_update
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_allocation____last_update
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line____last_update
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order____last_update
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item____last_update
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_committee____last_update
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_method____last_update
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_type____last_update
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_type____last_update
 msgid "Last Modified on"
 msgstr "แก้ไขครั้งสุดท้ายเมื่อ"
 
-#. modules: l10n_th_gov_purchase_request, purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__write_uid
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_method__write_uid
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__write_uid
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__write_uid
+#. modules: purchase_request, purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__write_uid
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_allocation__write_uid
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__write_uid
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order__write_uid
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__write_uid
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_committee__write_uid
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_method__write_uid
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_type__write_uid
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_type__write_uid
 msgid "Last Updated by"
 msgstr "อัพเดทครั้งสุดท้ายโดย"
 
-#. modules: l10n_th_gov_purchase_request, purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__write_date
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_method__write_date
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__write_date
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__write_date
+#. modules: purchase_request, purchase_request_kmitl
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__write_date
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_allocation__write_date
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__write_date
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order__write_date
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__write_date
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_committee__write_date
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_method__write_date
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_type__write_date
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_type__write_date
 msgid "Last Updated on"
 msgstr "อัพเดทครั้งสุดท้ายเมื่อ"
 
@@ -839,10 +861,10 @@ msgstr ""
 msgid "My requests"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_method__name
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__name
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__name
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_method__name
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_type__name
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_type__name
 msgid "Name"
 msgstr ""
 
@@ -889,10 +911,10 @@ msgstr ""
 msgid "No RFQ or Purchase has been created"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__note
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_committee__note
 msgid "Note"
-msgstr ""
+msgstr "หมายเหตุ"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__message_needaction_counter
@@ -918,9 +940,9 @@ msgstr ""
 msgid "Number of messages with delivery error"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
+#. module: purchase_request_kmitl
 #. odoo-python
-#: code:addons/l10n_th_gov_purchase_request/wizards/purchase_request_line_make_purchase_requisition.py:0
+#: code:addons/purchase_request_kmitl/wizards/purchase_request_line_make_purchase_requisition.py:0
 #, python-format
 msgid "Only approved document is allowed to create purchase agreement"
 msgstr ""
@@ -932,14 +954,14 @@ msgid "Open Quantity"
 msgstr ""
 
 #. module: purchase_request_kmitl
-#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form_kmitl
 msgid "Operation"
-msgstr "การดำเนินงาน"
+msgstr "การดำเนินการ"
 
 #. module: purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_order_line_search_sub
 msgid "Order Reference"
-msgstr ""
+msgstr "อ้างอิงคำสั่งซื้อ"
 
 #. module: purchase_request
 #. odoo-python
@@ -1007,58 +1029,58 @@ msgstr "คณะกรรมการกำหนดราคากลาง"
 msgid "Price Determine Committees"
 msgstr "คณะกรรมการกำหนดราคากลาง"
 
-#. modules: l10n_th_gov_purchase_request, purchase_request_kmitl
+#. module: purchase_request_kmitl
 #: model:ir.actions.act_window,name:purchase_request_kmitl.action_procurement_committee
 #: model:ir.model,name:purchase_request_kmitl.model_procurement_committee
-#: model:ir.model.fields.selection,name:l10n_th_gov_purchase_request.selection__procurement_committee__committee_type__procurement
-#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.view_purchase_request_form
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__procurement_committee__committee_type__procurement
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
 msgid "Procurement Committee"
 msgstr "ชื่อคณะกรรมการ"
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_request__procurement_committee_ids
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__procurement_committee_ids
 msgid "Procurement Committees"
-msgstr ""
+msgstr "ชื่อคณะกรรมการ"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__group_id
 msgid "Procurement Group"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model,name:l10n_th_gov_purchase_request.model_procurement_method
-#: model:ir.model,name:l10n_th_gov_purchase_request.model_procurement_type
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_request__procurement_method_id
-#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.view_purchase_request_search
+#. module: purchase_request_kmitl
+#: model:ir.model,name:purchase_request_kmitl.model_procurement_method
+#: model:ir.model,name:purchase_request_kmitl.model_procurement_type
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__procurement_method_id
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search_l10n
 msgid "Procurement Method"
 msgstr "วิธีการจัดซื้อจัดจ้าง"
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.actions.act_window,name:l10n_th_gov_purchase_request.procurement_method_action
-#: model:ir.ui.menu,name:l10n_th_gov_purchase_request.procurement_method_menu
-#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.procurement_method_view_form
+#. module: purchase_request_kmitl
+#: model:ir.actions.act_window,name:purchase_request_kmitl.procurement_method_action
+#: model:ir.ui.menu,name:purchase_request_kmitl.procurement_method_menu
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.procurement_method_view_form
 msgid "Procurement Methods"
 msgstr "วิธีการจัดซื้อจัดจ้าง"
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_request__procurement_type_id
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__procurement_type_id
 msgid "Procurement Type"
 msgstr "ประเภทการจัดซื้อ/จ้าง"
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.actions.act_window,name:l10n_th_gov_purchase_request.procurement_type_action
-#: model:ir.ui.menu,name:l10n_th_gov_purchase_request.procurement_type_menu
-#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.procurement_type_view_form
+#. module: purchase_request_kmitl
+#: model:ir.actions.act_window,name:purchase_request_kmitl.procurement_type_action
+#: model:ir.ui.menu,name:purchase_request_kmitl.procurement_type_menu
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.procurement_type_view_form
 msgid "Procurement Types"
 msgstr "ประเภทการจัดซื้อ/จ้าง"
 
-#. modules: l10n_th_gov_purchase_request, purchase_request
+#. modules: purchase_request, purchase_request_kmitl
 #: model:ir.model,name:purchase_request.model_product_template
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__product_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__product_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_allocation__product_id
-#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__product_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__product_id
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_type__product_id
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request_line__product_id
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_search
 msgid "Product"
 msgstr "สินค้า"
@@ -1079,8 +1101,8 @@ msgstr "สินค้า"
 msgid "Products to Purchase"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields.selection,name:l10n_th_gov_purchase_request.selection__purchase_type__to_create__purchase_agreement
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__purchase_type__to_create__purchase_agreement
 msgid "Purchase Agreement"
 msgstr ""
 
@@ -1134,21 +1156,20 @@ msgstr ""
 msgid "Purchase Orders"
 msgstr "สัญญา/ใบสั่งซื้อ/จ้าง"
 
-#. module: purchase_request
-#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__assigned_to
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__assigned_to
 msgid "Purchase Representative"
 msgstr ""
 
-#. modules: l10n_th_gov_purchase_request, purchase_request,
-#. purchase_request_kmitl
+#. modules: purchase_request, purchase_request_kmitl
 #: model:ir.actions.report,name:purchase_request.action_report_purchase_requests
 #: model:ir.model,name:purchase_request_kmitl.model_purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__request_id
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__visible_on_purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_product_product__purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_product_template__purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__request_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__request_id
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_committee__request_id
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_type__visible_on_purchase_request
 #: model:ir.module.category,name:purchase_request.module_category_purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.report_purchase_request
 #: model_terms:ir.ui.view,arch_db:purchase_request.view_purchase_request_form
@@ -1184,16 +1205,16 @@ msgstr ""
 msgid "Purchase Request Allocations"
 msgstr ""
 
-#. module: purchase_request
-#: model:ir.model,name:purchase_request.model_purchase_request_line
+#. modules: purchase_request, purchase_request_kmitl
+#: model:ir.model,name:purchase_request_kmitl.model_purchase_request_line
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_allocation__purchase_request_line_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line_make_purchase_order_item__line_id
 #: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_line_form
 msgid "Purchase Request Line"
 msgstr "คำขอซื้อขอจ้างไลน์"
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model,name:l10n_th_gov_purchase_request.model_purchase_request_line_make_purchase_requisition
+#. module: purchase_request_kmitl
+#: model:ir.model,name:purchase_request_kmitl.model_purchase_request_line_make_purchase_requisition
 msgid "Purchase Request Line Make Purchase Agreement"
 msgstr ""
 
@@ -1228,6 +1249,11 @@ msgstr "รายการคำขอซื้อขอจ้าง"
 #: model:res.groups,name:purchase_request.group_purchase_request_manager
 msgid "Purchase Request Manager"
 msgstr "ผู้ดูแลระบบ"
+
+#. module: purchase_request_kmitl
+#: model:res.groups,name:purchase_request_kmitl.group_purchase_request_user_all
+msgid "Purchase Request User : All Documents"
+msgstr ""
 
 #. module: purchase_request
 #: model:res.groups,name:purchase_request.group_purchase_request_user
@@ -1278,16 +1304,16 @@ msgstr "คำขอซื้อขอจ้าง (พ.1)"
 msgid "Purchase Status"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_request__purchase_type_id
-#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.view_purchase_request_search
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__purchase_type_id
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search_l10n
 msgid "Purchase Type"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.actions.act_window,name:l10n_th_gov_purchase_request.purchase_type_action
-#: model:ir.ui.menu,name:l10n_th_gov_purchase_request.purchase_type_menu
-#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.purchase_type_view_form
+#. module: purchase_request_kmitl
+#: model:ir.actions.act_window,name:purchase_request_kmitl.purchase_type_action
+#: model:ir.ui.menu,name:purchase_request_kmitl.purchase_type_menu
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.purchase_type_view_form
 msgid "Purchase Types"
 msgstr ""
 
@@ -1296,9 +1322,9 @@ msgstr ""
 msgid "Purchase receipt confirmation"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
+#. module: purchase_request_kmitl
 #. odoo-python
-#: code:addons/l10n_th_gov_purchase_request/models/purchase_type.py:0
+#: code:addons/purchase_request_kmitl/models/purchase_type.py:0
 #, python-format
 msgid "Purchase type must have only one default."
 msgstr ""
@@ -1367,6 +1393,11 @@ msgstr ""
 msgid "Quantity to purchase"
 msgstr "ปริมาณ"
 
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__ir_attachment__attachment_type__rfq
+msgid "Quotation"
+msgstr ""
+
 #. module: purchase_request
 #. odoo-python
 #: code:addons/purchase_request/wizard/purchase_request_line_make_purchase_order.py:0
@@ -1379,8 +1410,8 @@ msgstr ""
 msgid "RFQ/PO Qty"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_request__expense_reason
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__expense_reason
 msgid "Reason"
 msgstr ""
 
@@ -1508,6 +1539,11 @@ msgstr ""
 msgid "Reset"
 msgstr "เริ่มใหม่"
 
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__user_id
+msgid "Responsible"
+msgstr "ผู้รับผิดชอบ"
+
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__activity_user_id
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__activity_user_id
@@ -1542,20 +1578,21 @@ msgstr ""
 msgid "Secretary"
 msgstr "กรรมการและเลขานุการ"
 
-#. module: l10n_th_gov_purchase_request
+#. module: purchase_request_kmitl
 #. odoo-python
-#: code:addons/l10n_th_gov_purchase_request/wizards/purchase_request_line_make_purchase_requisition.py:0
+#: code:addons/purchase_request_kmitl/wizards/purchase_request_line_make_purchase_requisition.py:0
 #, python-format
 msgid ""
 "Selected document's purchase type is not allowed to create purchase "
 "agreement"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_method__sequence
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_type__sequence
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_request__substate_sequence
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__sequence
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_ir_attachment__sequence
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_method__sequence
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_type__sequence
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__substate_sequence
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_type__sequence
 msgid "Sequence"
 msgstr ""
 
@@ -1599,6 +1636,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__origin
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__origin
 msgid "Source Document"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__ir_attachment__attachment_type__tor
+msgid "Specification (TOR)"
 msgstr ""
 
 #. module: purchase_request
@@ -1650,13 +1692,13 @@ msgstr ""
 msgid "Stock Rule"
 msgstr "กฎสต๊อก"
 
-#. module: l10n_th_gov_purchase_request
-#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.view_purchase_request_search
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search_l10n
 msgid "Subsate = To Verify"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.view_purchase_request_search
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search_l10n
 msgid "Subsate = Verified"
 msgstr ""
 
@@ -1745,9 +1787,9 @@ msgstr ""
 msgid "There is some pending qty to buy"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,help:l10n_th_gov_purchase_request.field_purchase_request__procurement_method_ids
-#: model:ir.model.fields,help:l10n_th_gov_purchase_request.field_purchase_type__procurement_method_ids
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,help:purchase_request_kmitl.field_purchase_request__procurement_method_ids
+#: model:ir.model.fields,help:purchase_request_kmitl.field_purchase_type__procurement_method_ids
 msgid ""
 "This field will help to filter procurement method in each purchase type on "
 "the purchase request"
@@ -1764,19 +1806,19 @@ msgstr "รอการอนุมัติ"
 msgid "To Approve Allowed"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.view_purchase_request_search
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_search_l10n
 msgid "To Assign Representative"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_request__to_create
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_type__to_create
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__to_create
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_type__to_create
 msgid "To Create"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:base.substate,name:l10n_th_gov_purchase_request.base_substate_to_verify
+#. module: purchase_request_kmitl
+#: model:base.substate,name:purchase_request_kmitl.base_substate_to_verify
 msgid "To Verify"
 msgstr ""
 
@@ -1796,8 +1838,8 @@ msgstr "มูลค่าทั้งหมด"
 msgid "Tracking"
 msgstr "ติดตาม"
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model,name:l10n_th_gov_purchase_request.model_purchase_type
+#. module: purchase_request_kmitl
+#: model:ir.model,name:purchase_request_kmitl.model_purchase_type
 msgid "Type of purchase"
 msgstr ""
 
@@ -1840,28 +1882,28 @@ msgstr "หน่วยวัด"
 msgid "Vendor"
 msgstr "ผู้ขาย"
 
-#. module: l10n_th_gov_purchase_request
-#: model:base.substate,name:l10n_th_gov_purchase_request.base_substate_verified
+#. module: purchase_request_kmitl
+#: model:base.substate,name:purchase_request_kmitl.base_substate_verified
 msgid "Verified"
-msgstr "ตรวจสอบแล้ว"
+msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_request__verified_by
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__verified_by
 msgid "Verified By"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_request__date_verified
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__date_verified
 msgid "Verified Date"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.view_purchase_request_form_substate
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form_substate
 msgid "Verify"
-msgstr "ตรวจสอบ"
+msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.purchase_type_view_form
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.purchase_type_view_form
 msgid "Visible On"
 msgstr ""
 
@@ -1889,26 +1931,26 @@ msgstr ""
 msgid "Wizard"
 msgstr ""
 
-#. modules: l10n_th_gov_purchase_request, purchase_request_kmitl
-#: model:ir.model.fields.selection,name:l10n_th_gov_purchase_request.selection__procurement_committee__committee_type__work_acceptance
-#: model_terms:ir.ui.view,arch_db:l10n_th_gov_purchase_request.view_purchase_request_form
+#. module: purchase_request_kmitl
+#: model:ir.model.fields.selection,name:purchase_request_kmitl.selection__procurement_committee__committee_type__work_acceptance
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form_l10n
 msgid "Work Acceptance Committee"
 msgstr "คณะกรรมการตรวจรับพัสดุ"
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_purchase_request__work_acceptance_committee_ids
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__work_acceptance_committee_ids
 msgid "Work Acceptance Committees"
-msgstr ""
+msgstr "คณะกรรมการตรวจรับพัสดุ"
 
-#. modules: l10n_th_gov_purchase_request, purchase_request_kmitl
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__email
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_committee__email
 #: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_procurement_committee_tree
 msgid "Work Email"
 msgstr "อีเมลที่ทำงาน"
 
-#. module: l10n_th_gov_purchase_request
-#: model:ir.model.fields,field_description:l10n_th_gov_purchase_request.field_procurement_committee__phone
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_procurement_committee__phone
 msgid "Work Phone"
 msgstr ""
 
@@ -1923,18 +1965,18 @@ msgstr "ผู้ควบคุมงาน"
 msgid "Work Supervisors"
 msgstr "รายชื่อผู้ควบคุมงาน"
 
-#. module: l10n_th_gov_purchase_request
+#. module: purchase_request_kmitl
 #. odoo-python
-#: code:addons/l10n_th_gov_purchase_request/models/purchase_request.py:0
+#: code:addons/purchase_request_kmitl/models/purchase_request.py:0
 #, python-format
 msgid ""
 "You are not allowed to reject a document that has already been approved.\n"
 "Please contact the Procurement."
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
+#. module: purchase_request_kmitl
 #. odoo-python
-#: code:addons/l10n_th_gov_purchase_request/models/purchase_request.py:0
+#: code:addons/purchase_request_kmitl/models/purchase_request.py:0
 #, python-format
 msgid ""
 "You are not allowed to reset a document that has already been approved.\n"
@@ -2017,8 +2059,8 @@ msgstr "รายการคำขอซื้อขอจ้าง"
 msgid "title"
 msgstr "ชื่อเรื่อง"
 
-#. module: l10n_th_gov_purchase_request
-#: model:exception.rule,description:l10n_th_gov_purchase_request.purchase_exception_amount_not_exceed_pr
+#. module: purchase_request_kmitl
+#: model:exception.rule,description:purchase_request_kmitl.purchase_exception_amount_not_exceed_pr
 msgid "กรุณาเช็คยอดเงินใหม่อีกครั้ง"
 msgstr ""
 
@@ -2026,86 +2068,96 @@ msgstr ""
 #: model:exception.rule,name:purchase_request_kmitl.kmitl_pr_exception_committee_2
 msgid ""
 "การจัดซื้อจัดจ้าง เกิน 100,000 บาท ต้องมี "
-"ต้องมีคณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน จำนวน 3 รายชื่อ "
+"ต้องมีคณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน จำนวน 1 รายชื่อ "
 msgstr ""
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,name:purchase_request_kmitl.kmitl_pr_exception_committee_3
 msgid ""
 "การจัดซื้อจัดจ้าง เกิน 100,000 บาท ต้องมี ต้องมีคณะกรรมการกำหนดราคากลาง "
-"จำนวน 3 รายชื่อ "
+"จำนวน 1 รายชื่อ "
 msgstr ""
 
 #. module: purchase_request_kmitl
 #: model:exception.rule,name:purchase_request_kmitl.kmitl_pr_exception_committee_4
 msgid ""
-"การจัดซื้อจัดจ้าง เกิน 100,000 บาท ต้องมี ต้องมีคณะกรรมการพิจารณาผล จำนวน 3 "
+"การจัดซื้อจัดจ้าง เกิน 500,000 บาท ต้องมี ต้องมีคณะกรรมการพิจารณาผล จำนวน 1 "
 "รายชื่อ "
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:exception.rule,name:l10n_th_gov_purchase_request.pr_exception_committee_2
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.pr_exception_committee_2
 msgid "คณะกรรมการ 1 คนต้องไม่เป็นประธาน"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:exception.rule,name:l10n_th_gov_purchase_request.pr_exception_committee_1
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.pr_exception_committee_1
 msgid "คณะกรรมการมากกว่า 1 คน ต้องมีประธาน 1 คน"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:product.template,name:l10n_th_gov_purchase_request.product_type_002_product_template
+#. module: purchase_request_kmitl
+#: model:product.template,name:purchase_request_kmitl.product_type_002_product_template
 msgid "จ้างที่ปรึกษา"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:exception.rule,name:l10n_th_gov_purchase_request.pr_exception_6
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.pr_exception_6
 msgid "จ้างที่ปรึกษา ต้องมีกรรมการจัดซื้อจัดจ้างอย่างน้อย 5 คน"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:exception.rule,name:l10n_th_gov_purchase_request.pr_exception_6_1
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.pr_exception_6_1
 msgid "จ้างที่ปรึกษา ต้องมีกรรมการตรวจรับอย่างน้อย 5 คน"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:product.template,name:l10n_th_gov_purchase_request.product_type_003_product_template
+#. module: purchase_request_kmitl
+#: model:product.template,name:purchase_request_kmitl.product_type_003_product_template
 msgid "จ้างออกแบบและควบคุมงานก่อสร้าง"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:exception.rule,name:l10n_th_gov_purchase_request.pr_exception_7
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.pr_exception_7
 msgid ""
 "จ้างออกแบบและควบคุมงานก่อสร้าง ต้องมีกรรมการจัดซื้อจัดจ้างอย่างน้อย 3 คน"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:exception.rule,name:l10n_th_gov_purchase_request.pr_exception_7_1
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.pr_exception_7_1
 msgid "จ้างออกแบบและควบคุมงานก่อสร้าง ต้องมีกรรมการตรวจรับอย่างน้อย 3 คน"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:product.template,name:l10n_th_gov_purchase_request.product_type_001_product_template
+#. module: purchase_request_kmitl
+#: model:exception.rule,description:purchase_request_kmitl.pr_line_exception_name_required
+msgid "ชื่อรายการห้ามปล่อยว่าง"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:product.template,name:purchase_request_kmitl.product_type_001_product_template
 msgid "ซื้อ/จ้าง/เช่า"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:exception.rule,name:l10n_th_gov_purchase_request.pr_exception_5
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.pr_exception_5
 msgid ""
 "ซื้อ/จ้าง/เช่า เกิน 500,000 บาท วิธีการจัดซื้อจัดจ้าง เฉพาะเจาะจง "
 "ต้องมีกรรมการตรวจรับอย่างน้อย 3 คน"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:exception.rule,name:l10n_th_gov_purchase_request.pr_exception_5_1
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.pr_exception_5_1
 msgid ""
 "ซื้อ/จ้าง/เช่า เกิน 500,000 บาท วิธีการจัดซื้อจัดจ้าง ไม่เฉพาะเจาะจง "
 "ต้องมีกรรมการจัดซื้อจัดจ้างอย่างน้อย 3 คน และกรรมการตรวจรับอย่างน้อย 3 คน"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:exception.rule,name:l10n_th_gov_purchase_request.pr_exception_4
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.pr_exception_4
 msgid "ซื้อ/จ้าง/เช่า ไม่เกิน 500,000 บาท ต้องมีกรรมการตรวจรับอย่างน้อย 3 คน"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.pr_line_exception_name_required
+msgid "ต้องกรอกชื่อรายการ"
 msgstr ""
 
 #. module: purchase_request_kmitl
@@ -2118,61 +2170,76 @@ msgstr ""
 msgid "ต้องมีรายการสินค้าอย่างน้อย 1 อย่าง"
 msgstr ""
 
-#. modules: l10n_th_gov_purchase_request, purchase_request_kmitl
-#: model:exception.rule,description:l10n_th_gov_purchase_request.pr_exception_1
-#: model:exception.rule,description:l10n_th_gov_purchase_request.pr_exception_1_1
-#: model:exception.rule,description:l10n_th_gov_purchase_request.pr_exception_2
-#: model:exception.rule,description:l10n_th_gov_purchase_request.pr_exception_2_1
-#: model:exception.rule,description:l10n_th_gov_purchase_request.pr_exception_3
-#: model:exception.rule,description:l10n_th_gov_purchase_request.pr_exception_3_1
-#: model:exception.rule,description:l10n_th_gov_purchase_request.pr_exception_4
-#: model:exception.rule,description:l10n_th_gov_purchase_request.pr_exception_5
-#: model:exception.rule,description:l10n_th_gov_purchase_request.pr_exception_5_1
-#: model:exception.rule,description:l10n_th_gov_purchase_request.pr_exception_6
-#: model:exception.rule,description:l10n_th_gov_purchase_request.pr_exception_6_1
-#: model:exception.rule,description:l10n_th_gov_purchase_request.pr_exception_7
-#: model:exception.rule,description:l10n_th_gov_purchase_request.pr_exception_7_1
-#: model:exception.rule,description:l10n_th_gov_purchase_request.pr_exception_committee_1
-#: model:exception.rule,description:l10n_th_gov_purchase_request.pr_exception_committee_2
+#. module: purchase_request_kmitl
+#: model:ir.model.fields,field_description:purchase_request_kmitl.field_purchase_request__account_fiscal_year_id
+msgid "ปีงบประมาณ"
+msgstr ""
+
+#. module: purchase_request_kmitl
 #: model:exception.rule,description:purchase_request_kmitl.kmitl_pr_exception_committee_1
 #: model:exception.rule,description:purchase_request_kmitl.kmitl_pr_exception_committee_2
 #: model:exception.rule,description:purchase_request_kmitl.kmitl_pr_exception_committee_3
 #: model:exception.rule,description:purchase_request_kmitl.kmitl_pr_exception_committee_4
+#: model:exception.rule,description:purchase_request_kmitl.pr_exception_1
+#: model:exception.rule,description:purchase_request_kmitl.pr_exception_1_1
+#: model:exception.rule,description:purchase_request_kmitl.pr_exception_2
+#: model:exception.rule,description:purchase_request_kmitl.pr_exception_2_1
+#: model:exception.rule,description:purchase_request_kmitl.pr_exception_3
+#: model:exception.rule,description:purchase_request_kmitl.pr_exception_3_1
+#: model:exception.rule,description:purchase_request_kmitl.pr_exception_4
+#: model:exception.rule,description:purchase_request_kmitl.pr_exception_5
+#: model:exception.rule,description:purchase_request_kmitl.pr_exception_5_1
+#: model:exception.rule,description:purchase_request_kmitl.pr_exception_6
+#: model:exception.rule,description:purchase_request_kmitl.pr_exception_6_1
+#: model:exception.rule,description:purchase_request_kmitl.pr_exception_7
+#: model:exception.rule,description:purchase_request_kmitl.pr_exception_7_1
+#: model:exception.rule,description:purchase_request_kmitl.pr_exception_committee_1
+#: model:exception.rule,description:purchase_request_kmitl.pr_exception_committee_2
 #: model:exception.rule,description:purchase_request_kmitl.pr_exception_product_1
 msgid "พระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:exception.rule,name:l10n_th_gov_purchase_request.purchase_exception_amount_not_exceed_pr
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.purchase_exception_amount_not_exceed_pr
 msgid "ยอดเงินของเอกสารนี้ เกินยอดเงินในเอกสาร PR"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:exception.rule,name:l10n_th_gov_purchase_request.pr_exception_2_1
+#. module: purchase_request_kmitl
+#: model:exception.rule,description:purchase_request_kmitl.pr_line_exception_price_unit_min_0
+msgid "ระบบไม่อนุญาตให้ราคาต่อหน่วยเป็น 0 หรือค่าติดลบ"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.pr_exception_2_1
 msgid "ระเบียบ 79 วรรคสอง ต้องมีกรรมการตรวจรับอย่างน้อย 1 คน"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:exception.rule,name:l10n_th_gov_purchase_request.pr_exception_2
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.pr_exception_2
 msgid "ระเบียบ 79 วรรคสอง มูลค่าไม่เกิน 500,000 บาท"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:exception.rule,name:l10n_th_gov_purchase_request.pr_exception_3_1
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.pr_exception_3_1
 msgid "ระเบียบ ว.119 ต้องมีกรรมการตรวจรับอย่างน้อย 1 คน"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:exception.rule,name:l10n_th_gov_purchase_request.pr_exception_3
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.pr_exception_3
 msgid "ระเบียบ ว.119 มูลค่าไม่เกิน 10,000 บาท"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:exception.rule,name:l10n_th_gov_purchase_request.pr_exception_1_1
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.pr_exception_1_1
 msgid "ระเบียบ วงเงินเล็กน้อย ต้องมีกรรมการตรวจรับอย่างน้อย 1 คน"
 msgstr ""
 
-#. module: l10n_th_gov_purchase_request
-#: model:exception.rule,name:l10n_th_gov_purchase_request.pr_exception_1
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.pr_exception_1
 msgid "ระเบียบ วงเงินเล็กน้อย มูลค่าไม่เกิน 100,000 บาท"
+msgstr ""
+
+#. module: purchase_request_kmitl
+#: model:exception.rule,name:purchase_request_kmitl.pr_line_exception_price_unit_min_0
+msgid "ราคาต่อหน่วยต้องมากกว่า 0"
 msgstr ""
