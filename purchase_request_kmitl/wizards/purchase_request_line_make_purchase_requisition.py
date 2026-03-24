@@ -22,14 +22,14 @@ class PurchaseRequestLineMakePurchaseRequisition(models.TransientModel):
             if active_model == "purchase.request.line":
                 pr = records.mapped("request_id")
             # Some PRs is not approved
-            if pr.filtered(lambda l: l.state != "approved"):
+            if pr.filtered(lambda rec: rec.state != "approved"):
                 raise UserError(
                     _(
                         "Only approved document is allowed to "
                         "create purchase agreement"
                     )
                 )
-            if pr.filtered(lambda l: l.to_create != "purchase_agreement"):
+            if pr.filtered(lambda rec: rec.to_create != "purchase_agreement"):
                 raise UserError(
                     _(
                         "Selected document's purchase type is not "

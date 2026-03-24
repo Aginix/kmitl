@@ -1,16 +1,19 @@
 <odoo noupdate="1">
     <!-- disible -->
-    <record id="l10n_th_gov_purchase_request.base_substate_to_verify" model="base.substate">
-        <field name="active" eval="False"/>
+    <record id="purchase_request_kmitl.base_substate_to_verify" model="base.substate">
+        <field name="active" eval="False" />
     </record>
-    <record id="l10n_th_gov_purchase_request.base_substate_verified" model="base.substate">
-        <field name="active" eval="False"/>
+    <record id="purchase_request_kmitl.base_substate_verified" model="base.substate">
+        <field name="active" eval="False" />
     </record>
 
     <!-- new category substate -->
     <record id="target_state_value_approved" model="target.state.value">
         <field name="name">To be verified</field>
-        <field name="base_substate_type_id" ref="purchase_request_substate.base_substate_type_purchase_request" />
+        <field
+            name="base_substate_type_id"
+            ref="purchase_request_substate.base_substate_type_purchase_request"
+        />
         <field name="target_state_value">to_verify</field>
     </record>
 </odoo>

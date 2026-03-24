@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="view_purchase_request_form" model="ir.ui.view">
         <field name="name">view.purchase.request.form</field>
@@ -7,11 +7,18 @@
         <field name="arch" type="xml">
             <!-- state change -->
             <field name="state" position="attributes">
-                <attribute name="statusbar_visible">draft,to_verify,to_approve,approved,done,in_progress</attribute
-                >
+                <attribute
+                    name="statusbar_visible"
+                >draft,to_verify,to_approve,approved,done,in_progress</attribute>
             </field>
             <button name="button_to_approve" position="after">
-                <button name="button_to_verify" states="draft" string="Request approval" type="object" class="oe_highlight" />
+                <button
+                    name="button_to_verify"
+                    states="draft"
+                    string="Request approval"
+                    type="object"
+                    class="oe_highlight"
+                />
             </button>
             <button name="button_approved" position="attributes">
                 <attribute name="invisible">1</attribute>
@@ -22,18 +29,24 @@
     <record id="view_purchase_request_form_substate" model="ir.ui.view">
         <field name="name">view.purchase.request.form.substate</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="l10n_th_gov_purchase_request.view_purchase_request_form_substate" />
+        <field
+            name="inherit_id"
+            ref="purchase_request_kmitl.view_purchase_request_form_substate"
+        />
         <field name="arch" type="xml">
             <field name="substate_id" position="attributes">
-                <attribute name="attrs">{'invisible':[('state','!=','to_verify')]}</attribute
-                >
+                <attribute
+                    name="attrs"
+                >{'invisible':[('state','!=','to_verify')]}</attribute>
             </field>
             <button name="action_to_substate" position="attributes">
-                <attribute name="groups">purchase_request_kmitl.group_purchase_request_user_all</attribute
-                >
+                <attribute
+                    name="groups"
+                >purchase_request_kmitl.group_purchase_request_user_all</attribute>
                 <attribute name="context">{'to_substate_sequence': 30}</attribute>
-                <attribute name="attrs">{'invisible': ['|', ('substate_sequence', '!=', 20), ('state', '!=', 'to_verify')]}</attribute
-                >
+                <attribute
+                    name="attrs"
+                >{'invisible': ['|', ('substate_sequence', '!=', 20), ('state', '!=', 'to_verify')]}</attribute>
             </button>
         </field>
     </record>

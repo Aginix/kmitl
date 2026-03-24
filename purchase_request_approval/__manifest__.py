@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 {
     "name": "Purchase Request Approval",
     "version": "16.0.1.0.0",
@@ -6,7 +5,6 @@
     "website": "https://github.com/aginix/kmitl",
     "category": "KMITL",
     "depends": [
-        "l10n_th_gov_purchase_request",
         "purchase_request_kmitl",
         "purchase_request_sarabun",
         "purchase_request_activity_kmitl",
@@ -28,7 +26,7 @@
         "views/purchase_request_approval_report.xml",
         "views/purchase_request_approval_views.xml",
         "views/purchase_request_views.xml",
-        "report/report_purchase_request_approval.xml"
+        "report/report_purchase_request_approval.xml",
     ],
     "assets": {
         "web.assets_backend": ["purchase_request_approval/static/src/**/*"],
