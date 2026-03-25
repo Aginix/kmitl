@@ -158,6 +158,38 @@
                                 </div>
                             </section>
                             <div t-field="job.website_description" />
+                            <!-- Attachments -->
+                            <div t-if="attachments" class="card rounded-4 mb-4">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-4">
+                                        <div
+                                            class="rounded-3 d-flex align-items-center justify-content-center me-3 bg-primary-light text-primary p-3"
+                                        >
+                                            <i class="fa fa-paperclip fs-6" />
+                                        </div>
+                                        <h5 class="fw-bold text-dark mb-0">
+                                            เอกสารแนบ (Attachments)
+                                        </h5>
+                                    </div>
+                                    <ul class="list-unstyled mb-0">
+                                        <t t-foreach="attachments" t-as="att">
+                                            <li
+                                                class="d-flex align-items-center py-2 border-bottom"
+                                            >
+                                                <i
+                                                    class="fa fa-file-o me-2 text-muted"
+                                                />
+                                                <a
+                                                    t-attf-href="/web/content/#{att.id}?download=true"
+                                                    class="text-primary fw-semibold text-decoration-none"
+                                                >
+                                                    <span t-esc="att.name" />
+                                                </a>
+                                            </li>
+                                        </t>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-lg-3">
                             <div

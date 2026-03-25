@@ -91,3 +91,16 @@ class WebsiteJobsKmitl(WebsiteHrRecruitment):
             }
         )
         return response
+
+    def jobs_detail(self, job, **kwargs):
+        attachment_ids = job.attachment_ids.sudo().search(
+            [("id", "in", job.attachment_ids.ids)]
+        )
+        return request.render(
+            "website_hr_recruitment.detail",
+            {
+                "job": job,
+                "attachments": attachment_ids,
+                "main_object": job,
+            },
+        )

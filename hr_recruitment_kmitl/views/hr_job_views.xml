@@ -14,6 +14,7 @@
                 <field name="salary_max" />
                 <field name="education_level_ids" widget="many2many_checkboxes" />
                 <field name="category_ids" widget="many2many_tags" />
+                <field name="attachment_ids" widget="many2many_binary" />
             </field>
         </field>
     </record>

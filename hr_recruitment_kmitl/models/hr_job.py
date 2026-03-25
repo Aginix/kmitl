@@ -34,6 +34,7 @@ class HrJob(models.Model):
         default=lambda self: self.env.ref("base.THB"),
     )
     date_close = fields.Datetime(string="Closing Date")
+    attachment_ids = fields.Many2many("ir.attachment", string="Attachments")
     kmitl_employee_type = fields.Selection(
         selection=[
             ("B", "พนักงานสถาบันเงินงบประมาณ"),
@@ -42,6 +43,22 @@ class HrJob(models.Model):
         ],
         string="Employee Type",
     )
+
+    @api.model_create_multi
+    def create(self, vals):
+        record = super().create(vals)
+        record._make_attachments_public(vals)
+        return record
+
+    def write(self, vals):
+        res = super().write(vals)
+        self._make_attachments_public(vals)
+        return res
+
+    def _make_attachments_public(self, vals):
+        if "attachment_ids" in vals:
+            for record in self:
+                record.attachment_ids.write({"public": True})
 
 
 class HrJobCategory(models.Model):
