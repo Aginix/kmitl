@@ -93,9 +93,19 @@ class DisbursementRequest(models.Model):
         "line_ids.price_tax",
         "line_ids.price_total",
         "line_ids.amount_wht",
+        "line_ids.account_id.code",
     )
     def _compute_amount_all(self):
         super()._compute_amount_all()
         for request in self:
-            request.amount_total = request.fines_total - request.amount_tax
-            request.amount_net = request.amount_total - request.amount_wht
+            fine_lines = request.line_ids.filtered(
+                lambda l: l.account_id.code == "4310000003"
+            )
+            fines_amount = abs(sum(fine_lines.mapped("price_subtotal")))
+
+            request.amount_untaxed = request.amount_untaxed + fines_amount
+
+            fines_total = request.amount_untaxed - fines_amount
+            amount_total = fines_total + request.amount_tax
+            request.amount_total = amount_total
+            request.amount_net = amount_total - request.amount_wht

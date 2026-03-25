@@ -163,6 +163,32 @@ class PurchaseRequestApproval(models.Model):
 
         wa.write({"disbursement_request_id": disbursement.id})
 
+        if wa.fines_late > 0:
+            analytic_distribution = self.analytic_distribution or False
+            fine_account = self.env["account.account"].search(
+                [
+                    ("code", "=", "4310000003"),
+                    ("company_id", "=", self.company_id.id),
+                ],
+                limit=1,
+            )
+            if not fine_account:
+                raise UserError(
+                    _("Account with code '4310000003' not found. Please check your chart of accounts.")
+                )
+
+            disbursement.write({
+                "line_ids": [
+                    Command.create({
+                        "name": _("ค่าปรับ"),
+                        "quantity": 1,
+                        "price_unit": -wa.fines_late,
+                        "account_id": fine_account.id,
+                        "analytic_distribution": analytic_distribution or False,
+                    })
+                ]
+            })
+
         # Log cross-links
         dr_link = "/web#id=%d&model=disbursement.request&view_type=form" % disbursement.id
         wa.message_post(

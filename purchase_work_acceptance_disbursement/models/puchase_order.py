@@ -37,7 +37,6 @@ class PurchaseOrder(models.Model):
             Command.create(line._prepare_disbursement_line_vals())
             for line in wa.wa_line_ids
         ]
-        vals["fines_late"] = self.wa_ids.fines_late
         return vals
 
     def _create_disbursement_request(self):
@@ -53,7 +52,7 @@ class PurchaseOrder(models.Model):
         wa.write({"disbursement_request_id": disbursement.id})
 
         if wa.fines_late > 0:
-            analytic_distribution = self.order_line[:1].analytic_distribution or False
+            analytic_distribution = self.analytic_distribution or False
 
             fine_account = self.env["account.account"].search(
                 [
