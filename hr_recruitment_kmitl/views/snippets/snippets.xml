@@ -57,5 +57,29 @@
                 />
             </div>
         </xpath>
+
+        <xpath
+            expr="//we-checkbox[@data-customize-website-views='website_hr_recruitment.job_filter_by_departments']"
+            position="attributes"
+        >
+            <attribute name="data-customize-website-views">
+                hr_recruitment_kmitl.job_filter_by_departments</attribute>
+        </xpath>
+
+        <xpath
+            expr="//we-checkbox[@data-customize-website-views='website_hr_recruitment.job_filter_by_offices']"
+            position="attributes"
+        >
+            <attribute name="data-customize-website-views">
+                hr_recruitment_kmitl.job_filter_by_offices</attribute>
+        </xpath>
+
+        <xpath
+            expr="//we-checkbox[@data-customize-website-views='website_hr_recruitment.job_filter_by_employment_type']"
+            position="attributes"
+        >
+            <attribute name="data-customize-website-views">
+                hr_recruitment_kmitl.job_filter_by_employment_type</attribute>
+        </xpath>
     </template>
 </odoo>
