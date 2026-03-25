@@ -34,9 +34,6 @@ class WorkAcceptance(models.Model):
         compute="_compute_completeness",
         store=True,
     )
-    evaluation_result_ids = fields.One2many(
-        groups="purchase_work_acceptance_evaluation.group_enable_eval_on_wa"
-    )
     requested_delivery_date = fields.Date(
         string="Requested Delivery Date",
         tracking=True,
@@ -141,6 +138,54 @@ class WorkAcceptance(models.Model):
 
         return super().button_accept(force=force)
 
+    # Late Fines
+    late_days = fields.Integer(
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+        tracking=True,
+        help="Late day(s) from Received Date - Due Date",
+    )
+
+    fines_rate = fields.Monetary(
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+        tracking=True,
+        help="Default fines per day. Can be overwritten",
+    )
+
+    fines_late = fields.Monetary(
+        string="Fines Amount",
+        tracking=True,
+        compute="_compute_fines_late",
+        store=True
+    )
+
+    price_subtotal = fields.Monetary(
+        compute="_compute_price_subtotal",
+        string="Project value",
+        store=True,
+    )
+
+    fines_total = fields.Monetary(
+        string="Total",
+        compute="_compute_fines_total",
+        store=True,
+    )
+
+    _sql_constraints = [
+        ("late_days", "CHECK (late_days>=0)", "Wrong Late Days, it must be positive!"),
+        (
+            "fines_rate",
+            "CHECK (fines_rate>=0)",
+            "Wrong Fines Rate, it must be positive!",
+        ),
+        (
+            "fines_late",
+            "CHECK (fines_late>=0)",
+            "Wrong Fines Amount, it must be positive!",
+        ),
+    ]
+    
     @api.depends("work_acceptance_committee_ids.status")
     def _compute_completeness(self):
         for rec in self:
@@ -197,3 +242,37 @@ class WorkAcceptance(models.Model):
                 'default_wa_id': self.id,
             },
         }
+    
+    # Late Fines
+    @api.onchange("late_days")
+    def _onchange_late_days_negative(self):
+        if self.late_days < 0:
+            self.late_days = 0
+
+    @api.onchange("date_receive", "date_due")
+    def _onchange_late_days(self):
+        late_days = 0
+        if self.date_receive and self.date_due:
+            late_days = (self.date_receive - self.date_due).days
+        self.late_days = late_days > 0 and late_days or 0
+
+    @api.onchange("fines_rate")
+    def _onchange_fines_rate(self):
+        if self.fines_rate < 0:
+            self.fines_rate = 0
+    
+    @api.depends("late_days", "fines_rate")
+    def _compute_fines_late(self):
+        for rec in self:
+            rec.fines_late = rec.late_days * rec.fines_rate
+
+    @api.depends("price_subtotal", "fines_late")
+    def _compute_fines_total(self):
+        for rec in self:
+            result = rec.price_subtotal - rec.fines_late
+            rec.fines_total = max(result, 0)
+
+    @api.depends("wa_line_ids", "wa_line_ids.price_subtotal")
+    def _compute_price_subtotal(self):
+        for rec in self:
+            rec.price_subtotal = sum(rec.wa_line_ids.mapped("price_subtotal"))

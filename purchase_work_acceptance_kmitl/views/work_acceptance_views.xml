@@ -237,50 +237,6 @@
         </field>
     </record>
 
-    <record id="view_work_acceptance_evaluation_result_tree" model="ir.ui.view">
-        <field name="name">view.work.acceptance.evaluation.result.tree</field>
-        <field name="model">work.acceptance.evaluation.result</field>
-        <field name="arch" type="xml">
-            <tree editable="bottom">
-                <field name="wa_id" invisible="1" />
-                <field name="case_id" readonly="1" />
-                <field name="score_id" />
-                <field name="note" />
-            </tree>
-        </field>
-    </record>
-
-    <record id="action_view_wa_evaluation_result" model="ir.actions.act_window">
-        <field name="name">Evaluation Results</field>
-        <field name="res_model">work.acceptance.evaluation.result</field>
-        <field name="view_mode">tree</field>
-        <field name="view_id" ref="view_work_acceptance_evaluation_result_tree" />
-        <field name="domain">[('wa_id', '=', active_id)]</field>
-    </record>
-
-    <record id="view_work_acceptance_form_evaluation" model="ir.ui.view">
-        <field name="name">view.work.acceptance.form.evaluation</field>
-        <field name="model">work.acceptance</field>
-        <field
-            name="inherit_id"
-            ref="purchase_work_acceptance_late_fines.view_work_acceptance_fines_late_tab_form"
-        />
-        <field name="arch" type="xml">
-            <div name="button_box" position="inside">
-                <field name="evaluation_result_ids" invisible="1"/>
-                <button
-                    type="action"
-                    name="%(purchase_work_acceptance_kmitl.action_view_wa_evaluation_result)d"
-                    string="Evaluation"
-                    class="oe_stat_button"
-                    icon="fa-pencil-square-o"
-                    attrs="{'invisible': ['|', ('validated', '=', False), ('evaluation_result_ids', '=', [])]}"
-                    groups="purchase_work_acceptance_evaluation.group_enable_eval_on_wa"
-                />
-            </div>
-        </field>
-    </record>
-
     <!-- Add ribbon widget and purchase order button to work acceptance form -->
     <record id="view_work_acceptance_form_kmitl" model="ir.ui.view">
         <field name="name">view.work.acceptance.form.kmitl</field>
@@ -288,23 +244,24 @@
         <field name="inherit_id" ref="purchase_work_acceptance.view_work_acceptance_form"/>
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <div class="oe_button_box" name="button_box">
+                    <button name="action_view_purchase_order"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-file-text-o"
+                            attrs="{'invisible': [('purchase_id', '=', False)]}">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_text">Purchase Order</span>
+                        </div>
+                    </button>
+                </div>
+
                 <widget
                     name="web_ribbon"
                     title="Accepted"
                     bg_color="bg-success"
                     attrs="{'invisible': [('state', '!=', 'accept')]}"
                 />
-            </xpath>
-            <xpath expr="//div[@name='button_box']" position="inside">
-              <button name="action_view_purchase_order"
-                        type="object"
-                        class="oe_stat_button"
-                        icon="fa-file-text-o"
-                        attrs="{'invisible': [('purchase_id', '=', False)]}">
-                    <div class="o_field_widget o_stat_info">
-                        <span class="o_stat_text">Purchase Order</span>
-                    </div>
-              </button>
             </xpath>
         </field>
     </record>
@@ -328,6 +285,10 @@
 
             <xpath expr="//field[@name='currency_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='price_subtotal']" position="attributes">
+                <attribute name="sum"></attribute>
             </xpath>
 
             <xpath expr="//field[@name='company_id']" position="attributes">
@@ -357,6 +318,35 @@
                 <attribute name="attrs">
                     {'readonly': [('state', '!=', 'draft')]}
                 </attribute>
+            </xpath>
+
+            <xpath expr="/form/sheet/notebook" position="before">
+                <group string="รายละเอียดค่าปรับ" name="fines_section">
+                    <group>
+                        <field name="late_days" />
+                        <field name="fines_rate" />
+                        <field name="fines_late" readonly="1"/>
+                    </group>
+                </group>
+            </xpath>
+
+            <xpath expr="//field[@name='wa_line_ids']" position="after">
+                <group class="oe_subtotal_footer oe_right">
+                    <div>
+                        <label for="price_subtotal"/>
+                    </div>
+                    <field name="price_subtotal" nolabel="1"/>
+
+                    <div>
+                        <label for="fines_late"/>
+                    </div>
+                    <field name="fines_late" nolabel="1" readonly="1"/>
+
+                    <div>
+                        <label for="fines_total"/>
+                    </div>
+                    <field name="fines_total" nolabel="1"/>
+                </group>
             </xpath>
         </field>
     </record>
