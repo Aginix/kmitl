@@ -73,7 +73,6 @@ class WorkAcceptance(models.Model):
     # Construction contract dates
     is_construction_contract = fields.Boolean(
         compute="_compute_is_construction_contract",
-        store=True,
     )
     date_committee_received = fields.Date(
         string="วันที่คณะกรรมการได้รับเอกสาร",
@@ -108,11 +107,11 @@ class WorkAcceptance(models.Model):
         ),
     ]
     
-    @api.depends("purchase_id.contract_type_id.is_construction")
+    @api.depends("purchase_id")
     def _compute_is_construction_contract(self):
         for rec in self:
-            rec.is_construction_contract = (
-                rec.purchase_id.contract_type_id.is_construction
+            rec.is_construction_contract = bool(
+                getattr(rec.purchase_id.contract_type_id, "is_construction", False)
             )
 
     @api.depends("work_acceptance_committee_ids.status")
