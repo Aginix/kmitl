@@ -113,6 +113,14 @@
                                 </field>
                             </group>
                             <group>
+                                <group attrs="{'invisible': [('budget_type', '!=', 'expense')]}">
+                                    <field name="reserve_fund_amount" />
+                                    <field name="personnel_expense_amount" />
+                                    <field name="operating_expense_amount" />
+                                    <field name="capital_expenditure_amount" />
+                                    <field name="subsidy_amount" />
+                                    <field name="other_expenditure_amount" />
+                                </group>
                                 <group class="oe_subtotal_footer oe_right">
                                     <label for="amount_total" string="รายรับรวม" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}" />
                                     <label for="amount_total" string="รายจ่ายรวม" attrs="{'invisible': [('budget_type', '!=', 'expense')]}" />

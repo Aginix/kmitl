@@ -126,7 +126,7 @@ msgstr ""
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_order__fines_late
 msgid "Fines Amount"
-msgstr "ค่าปรับล่าช้า"
+msgstr "ค่าปรับล่าช้า(บาท)"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_order__fines_rate

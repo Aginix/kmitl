@@ -30,7 +30,7 @@ msgstr "ยกเลิก"
 #. module: purchase_work_acceptance_cancel_restriction
 #: model:ir.model.fields.selection,name:purchase_work_acceptance_cancel_restriction.selection__work_acceptance__state__in_review
 msgid "In Review"
-msgstr "อยู่ระหว่างการขออนุมัติ"
+msgstr "อยู่ระหว่างการตรวจรับ"
 
 #. module: purchase_work_acceptance_cancel_restriction
 #: model:ir.model.fields,field_description:purchase_work_acceptance_cancel_restriction.field_work_acceptance__state

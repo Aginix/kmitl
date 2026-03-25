@@ -12,8 +12,6 @@
         'base_tier_validation_forward',
         'base_tier_validation_server_action',
         'base_tier_validation_comment',
-        'purchase_work_acceptance_evaluation',
-        'purchase_work_acceptance_late_fines',
         'purchase_work_acceptance_tier_validation',
         'l10n_th_gov_purchase_request',
         'thai_date_utils',
@@ -22,7 +20,6 @@
     ],
     "data": [
         "security/ir.model.access.csv",
-        "data/evaluation_data.xml",
         "data/server_action.xml",
         "data/tier.definition.csv",
         "report/paperformat.xml",
