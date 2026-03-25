@@ -202,7 +202,14 @@ class BudgetCommitmentMixin(models.AbstractModel):
             "name": _("Initial reservation"),
         }
 
+        # Build header analytic_distribution with all 4 dimensions
+        if activity_val:
+            header_analytic[str(activity_val)] = 100.0
+        if fund_val:
+            header_analytic[str(fund_val)] = 100.0
+
         commitment_vals = {
+            "account_id": account_id_val,
             "amount": amount,
             "analytic_distribution": header_analytic or False,
             "ref": ref,
