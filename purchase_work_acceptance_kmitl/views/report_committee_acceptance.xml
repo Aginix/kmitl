@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="action_report_committee_acceptance" model="ir.actions.report">
-        <field name="name">ใบตรวจการรับพัสดุ</field>
+        <field name="name">ใบตรวจรับงานก่อสร้าง</field>
         <field name="binding_model_id" ref="model_work_acceptance" />
         <field name="model">work.acceptance</field>
         <field name="report_type">qweb-pdf</field>
