@@ -261,7 +261,7 @@
                         </t>
 
                         <!-- Signatures: supervisor -->
-                        <t t-foreach="o.work_supervisor_ids" t-as="member">
+                        <t t-foreach="o.purchase_id.work_supervisor_ids" t-as="member">
                             <div class="row mt-4">
                                 <div class="col-10 offset-1">
                                     (<span t-out="member.name" />) ผู้ควบคุมงาน
