@@ -38,6 +38,12 @@
                     <button name="action_reserve" string="Reserve Budget" type="object"
                         class="oe_highlight"
                         attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_obligate" string="ผูกพัน" type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', 'not in', ['reserved', 'partial'])]}"/>
+                    <button name="action_consume" string="ตัดงบ" type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', 'not in', ['reserved', 'partial'])]}"/>
                     <button name="action_done" string="Mark as Done" type="object"
                         attrs="{'invisible': [('state', 'not in', ['reserved', 'partial'])]}"/>
                     <button name="action_cancel" string="Cancel" type="object"
@@ -104,22 +110,16 @@
 
                     <notebook>
                         <page name="lines" string="Ledger Lines">
-                            <field name="line_ids"
-                                attrs="{'readonly': [('state', 'in', ['done', 'cancel'])]}"
-                                context="{'default_commitment_id': active_id}">
-                                <tree editable="bottom" decoration-muted="state == 'cancel'">
-                                    <field name="sequence" widget="handle"/>
+                            <field name="line_ids" readonly="1">
+                                <tree decoration-muted="state == 'cancel'" create="false">
                                     <field name="date"/>
                                     <field name="move_type"/>
-                                    <field name="account_id"
-                                        options="{'no_create': True, 'no_open': True}"/>
-                                    <field name="activity_analytic_id"
-                                        options="{'no_create': True, 'no_open': True}"/>
-                                    <field name="fund_analytic_id"
-                                        options="{'no_create': True, 'no_open': True}"/>
-                                    <field name="analytic_distribution" optional="hide"/>
+                                    <field name="account_id"/>
+                                    <field name="activity_analytic_id"/>
+                                    <field name="fund_analytic_id"/>
                                     <field name="amount"/>
                                     <field name="name" optional="show"/>
+                                    <field name="budget_move_id" optional="hide"/>
                                     <field name="state" widget="badge"
                                         decoration-success="state == 'posted'"
                                         decoration-danger="state == 'cancel'"/>

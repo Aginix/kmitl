@@ -343,6 +343,48 @@ class BudgetCommitment(models.Model):
                 )
             record.state = "draft"
 
+    def action_obligate(self):
+        """Open wizard to add an obligate line."""
+        self.ensure_one()
+        if self.state not in ("reserved", "partial"):
+            raise UserError(
+                _("Can only obligate in reserved or in-progress state.")
+            )
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ผูกพันงบประมาณ"),
+            "res_model": "budget.commitment.line.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "default_commitment_id": self.id,
+                "default_move_type": "obligate",
+            },
+        }
+
+    def action_consume(self):
+        """Open wizard to add a consume line."""
+        self.ensure_one()
+        if self.state not in ("reserved", "partial"):
+            raise UserError(
+                _("Can only consume in reserved or in-progress state.")
+            )
+        if self.available_to_consume <= 0:
+            raise UserError(
+                _("No obligated amount available to consume.")
+            )
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("ตัดงบประมาณ"),
+            "res_model": "budget.commitment.line.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "default_commitment_id": self.id,
+                "default_move_type": "consume",
+            },
+        }
+
     def action_view_budget_moves(self):
         """View related budget moves"""
         self.ensure_one()
