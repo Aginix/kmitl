@@ -70,6 +70,30 @@ class WorkAcceptance(models.Model):
         store=True,
     )
 
+    # Construction contract dates
+    is_construction_contract = fields.Boolean(
+        compute="_compute_is_construction_contract",
+        store=True,
+    )
+    date_committee_received = fields.Date(
+        string="วันที่คณะกรรมการได้รับเอกสาร",
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+        tracking=True,
+    )
+    date_contract_complete = fields.Date(
+        string="วันที่เสร็จถูกต้องตามสัญญา",
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+        tracking=True,
+    )
+    date_work_handover = fields.Date(
+        string="วันที่รับมอบงานแล้ว",
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+        tracking=True,
+    )
+
     _sql_constraints = [
         ("late_days", "CHECK (late_days>=0)", "Wrong Late Days, it must be positive!"),
         (
@@ -84,6 +108,13 @@ class WorkAcceptance(models.Model):
         ),
     ]
     
+    @api.depends("purchase_id.contract_type_id.is_construction")
+    def _compute_is_construction_contract(self):
+        for rec in self:
+            rec.is_construction_contract = (
+                rec.purchase_id.contract_type_id.is_construction
+            )
+
     @api.depends("work_acceptance_committee_ids.status")
     def _compute_completeness(self):
         for rec in self:

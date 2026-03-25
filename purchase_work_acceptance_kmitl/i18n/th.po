@@ -724,7 +724,7 @@ msgstr "ไลน์คำสั่งซื้อ"
 #. module: purchase_work_acceptance_kmitl
 #: model:ir.actions.report,name:purchase_work_acceptance_kmitl.action_report_purchase_work_acceptance
 msgid "Purchase Work Acceptance"
-msgstr ""
+msgstr "ใบตรวจรับทั่วไป"
 
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance_line__product_qty

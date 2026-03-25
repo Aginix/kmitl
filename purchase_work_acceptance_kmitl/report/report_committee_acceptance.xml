@@ -83,40 +83,45 @@
                         </div>
 
                         <!-- Installment & amount -->
-                        <div class="ms-5" style="text-align: justify">
-                            งวดที่
-                            <span
-                                class="ub"
-                                t-out="o.installment_id.installment or ''"
-                            />
-                            เป็นเงินจำนวน
-                            <span class="ub" t-esc="'{0:,.0f}'.format(total_amount)" />
-                            บาท (<span
-                                class="ub"
-                                t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(total_amount)"
-                            />) เมื่อผู้รับจ้างได้ปฏิบัติงาน ดังนี้
-                        </div>
+                        <div t-if="o.installment_id">
+                            <div class="ms-5" style="text-align: justify">
+                                งวดที่
+                                <span
+                                    class="ub"
+                                    t-out="o.installment_id.installment or ''"
+                                />
+                                เป็นเงินจำนวน
+                                <span
+                                    class="ub"
+                                    t-esc="'{0:,.0f}'.format(total_amount)"
+                                />
+                                บาท (<span
+                                    class="ub"
+                                    t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(total_amount)"
+                                />) เมื่อผู้รับจ้างได้ปฏิบัติงาน ดังนี้
+                            </div>
 
-                        <!-- Work items -->
-                        <div class="ms-5">
-                            <div>รายละเอียดงวดงาน</div>
-                            <t t-if="o.installment_id.deliverables">
-                                <t
-                                    t-foreach="(o.installment_id.deliverables or '').split('\n')"
-                                    t-as="item"
-                                >
-                                    <div class="ms-5" t-if="item.strip()">
-                                        เนื้องาน <span t-out="item.strip()" />
-                                    </div>
+                            <!-- Work items -->
+                            <div class="ms-5">
+                                <div>รายละเอียดงวดงาน</div>
+                                <t t-if="o.installment_id.deliverables">
+                                    <t
+                                        t-foreach="(o.installment_id.deliverables or '').split('\n')"
+                                        t-as="item"
+                                    >
+                                        <div class="ms-5" t-if="item.strip()">
+                                            เนื้องาน <span t-out="item.strip()" />
+                                        </div>
+                                    </t>
                                 </t>
-                            </t>
-                            <t t-else="">
-                                <t t-foreach="o.wa_line_ids" t-as="line">
-                                    <div class="ms-5">
-                                        เนื้องาน <span t-out="line.name" />
-                                    </div>
+                                <t t-else="">
+                                    <t t-foreach="o.wa_line_ids" t-as="line">
+                                        <div class="ms-5">
+                                            เนื้องาน <span t-out="line.name" />
+                                        </div>
+                                    </t>
                                 </t>
-                            </t>
+                            </div>
                         </div>
 
                         <!-- Date section -->
@@ -164,7 +169,7 @@
                                 class="ub"
                                 t-esc="currency.with_context({'lang': 'th_TH'}).amount_to_text(total_amount)"
                             />)
-                            <div t-if="o.purchase_id.late_days">
+                            <div t-if="o.late_days">
                                 ในการนี้ผู้รับจ้างทำงานเกินกำหนดสัญญา ตั้งแต่วันที่
                                 <span
                                     class="ub"
@@ -226,15 +231,7 @@
                         >
                             <div class="row mt-5">
                                 <div class="col-10 offset-1">
-                                    (<span t-out="member.name" />)
-                                    <span class="sig-line" />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div
-                                    class="col-10 offset-1 fw-bolder text-decoration-underline"
-                                >
-                                    ประธานกรรมการ
+                                    (<span t-out="member.name" />) ประธานกรรมการ
                                 </div>
                             </div>
                         </t>
@@ -246,15 +243,7 @@
                         >
                             <div class="row mt-4">
                                 <div class="col-10 offset-1">
-                                    (<span t-out="member.name" />)
-                                    <span class="sig-line" />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div
-                                    class="col-10 offset-1 fw-bolder text-decoration-underline"
-                                >
-                                    กรรมการ
+                                    (<span t-out="member.name" />) กรรมการ
                                 </div>
                             </div>
                         </t>
@@ -266,36 +255,16 @@
                         >
                             <div class="row mt-4">
                                 <div class="col-10 offset-1">
-                                    (<span t-out="member.name" />)
-                                    <span class="sig-line" />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div
-                                    class="col-10 offset-1 fw-bolder text-decoration-underline"
-                                >
-                                    กรรมการและเลขานุการ
+                                    (<span t-out="member.name" />) กรรมการและเลขานุการ
                                 </div>
                             </div>
                         </t>
 
                         <!-- Signatures: supervisor -->
-                        <t
-                            t-foreach="o.work_acceptance_committee_ids.filtered(lambda c: c.approve_role == 'supervisor')"
-                            t-as="member"
-                        >
+                        <t t-foreach="o.work_supervisor_ids" t-as="member">
                             <div class="row mt-4">
                                 <div class="col-10 offset-1">
-                                    (<span t-out="member.name" />)
-                                    <span class="sig-line" />
-                                    ผู้
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div
-                                    class="col-10 offset-1 fw-bolder text-decoration-underline"
-                                >
-                                    ควบคุมงาน
+                                    (<span t-out="member.name" />) ผู้ควบคุมงาน
                                 </div>
                             </div>
                         </t>
