@@ -1,11 +1,5 @@
 # -*- coding: utf-8 -*-
-import logging
-import secrets
-
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
-
-_logger = logging.getLogger(__name__)
+from odoo import models
 
 
 class PurchaseOrder(models.Model):
