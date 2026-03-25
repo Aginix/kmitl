@@ -20,6 +20,7 @@ class DisbursementRequest(models.Model):
 
     fines_late = fields.Monetary(
         string="Fines Amount",
+        compute="_compute_fines_late",
         tracking=True,
         store=True,
         readonly=True
@@ -30,6 +31,14 @@ class DisbursementRequest(models.Model):
         compute="_compute_fines_total",
         store=True,
     )
+
+    @api.depends("line_ids.account_id.code", "line_ids.price_subtotal")
+    def _compute_fines_late(self):
+        for rec in self:
+            fine_lines = rec.line_ids.filtered(
+                lambda l: l.account_id.code == "4310000003"
+            )
+            rec.fines_late = abs(sum(fine_lines.mapped("price_subtotal")))
 
     @api.depends("amount_untaxed", "fines_late")
     def _compute_fines_total(self):
