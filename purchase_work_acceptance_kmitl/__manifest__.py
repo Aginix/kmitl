@@ -21,7 +21,6 @@
     ],
     "data": [
         "security/ir.model.access.csv",
-        "data/evaluation_data.xml",
         "data/server_action.xml",
         "data/tier.definition.csv",
         "report/paperformat.xml",
