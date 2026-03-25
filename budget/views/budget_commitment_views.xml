@@ -12,7 +12,7 @@
                 <field name="account_fiscal_year_id" optional="show" />
                 <field name="source_analytic_id" optional="show" />
                 <field name="department_analytic_id" optional="hide" />
-                <field name="amount" string="วงเงิน" sum="Total Cap"/>
+                <field name="amount" string="วงเงิน"/>
                 <field name="total_reserved" sum="Total Reserved" optional="show" />
                 <field name="total_obligated" sum="Total Obligated" optional="show" />
                 <field name="total_consumed" sum="Total Consumed" optional="show" />
@@ -111,7 +111,7 @@
                                     <field name="fund_analytic_id"
                                         options="{'no_create': True, 'no_open': True}"/>
                                     <field name="analytic_distribution" optional="hide"/>
-                                    <field name="amount" sum="Total"/>
+                                    <field name="amount"/>
                                     <field name="name" optional="show"/>
                                     <field name="state" widget="badge"
                                         decoration-success="state == 'posted'"
