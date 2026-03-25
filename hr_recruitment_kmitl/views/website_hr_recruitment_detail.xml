@@ -158,36 +158,26 @@
                                 </div>
                             </section>
                             <div t-field="job.website_description" />
-                            <!-- Attachments -->
-                            <div t-if="attachments" class="card rounded-4 mb-4">
+                            <!-- เอกสารแนบ -->
+                            <div class="card shadow-sm border-0 rounded-4 mb-4">
                                 <div class="card-body p-4">
-                                    <div class="d-flex align-items-center mb-4">
-                                        <div
-                                            class="rounded-3 d-flex align-items-center justify-content-center me-3 bg-primary-light text-primary p-3"
-                                        >
-                                            <i class="fa fa-paperclip fs-6" />
-                                        </div>
-                                        <h5 class="fw-bold text-dark mb-0">
-                                            เอกสารแนบ (Attachments)
-                                        </h5>
-                                    </div>
-                                    <ul class="list-unstyled mb-0">
-                                        <t t-foreach="attachments" t-as="att">
-                                            <li
-                                                class="d-flex align-items-center py-2 border-bottom"
-                                            >
-                                                <i
-                                                    class="fa fa-file-o me-2 text-muted"
-                                                />
-                                                <a
-                                                    t-attf-href="/web/content/#{att.id}?download=true"
-                                                    class="text-primary fw-semibold text-decoration-none"
-                                                >
-                                                    <span t-esc="att.name" />
-                                                </a>
-                                            </li>
-                                        </t>
-                                    </ul>
+                                    <h5 class="fw-bold text-dark mb-4 d-flex align-items-center">
+                                        <span
+                                            class="rounded-3 d-flex align-items-center justify-content-center me-3 bg-primary-light text-primary p-3">
+                                            <i class="fa fa-file"></i>
+                                        </span>
+                                        ไฟล์เอกสารที่เกี่ยวข้อง (Attachments)
+                                    </h5>
+                                    <t t-foreach="attachments" t-as="att">
+                                        <a t-attf-href="/web/content/#{att.id}?download=true"
+                                            class="d-flex justify-content-between align-items-center p-3 border rounded-3 text-decoration-none text-dark bg-white shadow-sm">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fa fa-file text-primary me-2"></i>
+                                                <span class="small fw-semibold" t-esc="att.name" />
+                                            </div>
+                                            <i class="fa fa-download text-secondary"></i>
+                                        </a>
+                                    </t>
                                 </div>
                             </div>
                         </div>
