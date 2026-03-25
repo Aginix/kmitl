@@ -1,4 +1,5 @@
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class HrJob(models.Model):
@@ -35,6 +36,7 @@ class HrJob(models.Model):
     )
     date_close = fields.Datetime(string="Closing Date")
     attachment_ids = fields.Many2many("ir.attachment", string="Attachments")
+    old_code_ids = fields.One2many("hr.job.old.code", "job_id", string="Old Codes")
     kmitl_employee_type = fields.Selection(
         selection=[
             ("B", "พนักงานสถาบันเงินงบประมาณ"),
@@ -53,7 +55,24 @@ class HrJob(models.Model):
     def write(self, vals):
         res = super().write(vals)
         self._make_attachments_public(vals)
+        if vals.get("website_published") or "old_code_ids" in vals:
+            self._check_old_codes_on_publish()
         return res
+
+    def _check_old_codes_on_publish(self):
+        for record in self:
+            if not record.website_published:
+                continue
+            if len(record.old_code_ids) != record.no_of_recruitment:
+                raise ValidationError(
+                    _(
+                        "Cannot publish '%(name)s': number of old codes (%(codes)d) "
+                        "must equal number of recruitments (%(recruitment)d).",
+                        name=record.name,
+                        codes=len(record.old_code_ids),
+                        recruitment=record.no_of_recruitment,
+                    )
+                )
 
     def _make_attachments_public(self, vals):
         if "attachment_ids" in vals:

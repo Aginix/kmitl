@@ -16,6 +16,14 @@
                 <field name="category_ids" widget="many2many_tags" />
                 <field name="attachment_ids" widget="many2many_binary" />
             </field>
+
+            <field name="website_published" position="before">
+                <field name="old_code_ids">
+                    <tree editable="bottom">
+                        <field name="name" />
+                    </tree>
+                </field>
+            </field>
         </field>
     </record>
 

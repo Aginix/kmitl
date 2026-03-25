@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-24 18:08+0000\n"
-"PO-Revision-Date: 2026-03-25 01:10+0700\n"
+"POT-Creation-Date: 2026-03-25 18:23+0000\n"
+"PO-Revision-Date: 2026-03-26 01:34+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -24,12 +24,19 @@ msgstr ""
 
 #. module: hr_recruitment_kmitl
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.application_view_tab_personal
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.apply_tab_personal
 msgid "1. ข้อมูลส่วนบุคคล (Personal Information)"
 msgstr ""
 
 #. module: hr_recruitment_kmitl
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.application_view_tab_education
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.apply_tab_education
 msgid "2. ประวัติการศึกษา (Education History)"
+msgstr ""
+
+#. module: hr_recruitment_kmitl
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.apply_tab_work_history
+msgid "3. ประสบการณ์การทำงาน (Work History)"
 msgstr ""
 
 #. module: hr_recruitment_kmitl
@@ -43,14 +50,36 @@ msgid "4. ข้อมูลทางวิชาการและราชก�
 msgstr ""
 
 #. module: hr_recruitment_kmitl
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.apply_tab_academic
+msgid ""
+"4. ข้อมูลทางวิชาการและราชการ (Academic &amp; Civil Service Information)"
+msgstr ""
+
+#. module: hr_recruitment_kmitl
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.application_view_tab_skills
 msgid "5. ความสามารถพิเศษ (Skills &amp; Interests)"
 msgstr ""
 
 #. module: hr_recruitment_kmitl
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.apply_tab_skills
+msgid "5. ทักษะและความสนใจ (Skills &amp; Interests)"
+msgstr ""
+
+#. module: hr_recruitment_kmitl
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.application_view_tab_documents
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.apply_tab_documents
 msgid "6. เอกสารประกอบ (Supporting Documents)"
 msgstr ""
+
+#. module: hr_recruitment_kmitl
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.apply_tab_submit
+msgid "7. ยืนยันและส่งใบสมัคร (Confirmation)"
+msgstr ""
+
+#. module: hr_recruitment_kmitl
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_detail
+msgid "<i class=\"fa fa-archive me-2\"/>Position Codes"
+msgstr "<i class=\"fa fa-archive me-2\"/>เลขที่อัตรา"
 
 #. module: hr_recruitment_kmitl
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_detail
@@ -79,6 +108,13 @@ msgstr ""
 msgid ""
 "<i class=\"fa fa-briefcase\"/>\n"
 "                                <span>ประสบการณ์</span>"
+msgstr ""
+
+#. module: hr_recruitment_kmitl
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_index
+msgid ""
+"<i class=\"fa fa-calendar-times-o me-2 text-primary\"/>\n"
+"                                        <span>ปิดรับ:</span>"
 msgstr ""
 
 #. module: hr_recruitment_kmitl
@@ -147,63 +183,6 @@ msgstr ""
 #. module: hr_recruitment_kmitl
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.portal_my_application_detail
 msgid "<i class=\"fa fa-folder-open-o me-2\"/> เอกสารประกอบ"
-msgstr ""
-
-#. module: hr_recruitment_kmitl
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_index
-msgid "<i class=\"fa fa-fw fa-briefcase\" title=\"Role\" role=\"img\" aria-label=\"Role\"/>"
-msgstr ""
-
-#. module: hr_recruitment_kmitl
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_index
-msgid ""
-"<i class=\"fa fa-fw fa-calendar-times-o\" title=\"Closing Date\" role=\"img\" aria-label=\"Closing Date\"/>\n"
-"                                <span>Closing Date:</span>"
-msgstr ""
-
-#. module: hr_recruitment_kmitl
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_index
-msgid ""
-"<i class=\"fa fa-fw fa-clock-o\" title=\"Publication date\" role=\"img\" "
-"aria-label=\"Publication date\"/>"
-msgstr ""
-
-#. module: hr_recruitment_kmitl
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_index
-msgid ""
-"<i class=\"fa fa-fw fa-graduation-cap\" title=\"Education Levels\" "
-"role=\"img\" aria-label=\"Education Levels\"/>"
-msgstr ""
-
-#. module: hr_recruitment_kmitl
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_index
-msgid ""
-"<i class=\"fa fa-fw fa-id-badge\" title=\"Employee Type\" role=\"img\" aria-"
-"label=\"Employee Type\"/>"
-msgstr ""
-
-#. module: hr_recruitment_kmitl
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_index
-msgid "<i class=\"fa fa-fw fa-money\" title=\"Salary\" role=\"img\" aria-label=\"Salary\"/>"
-msgstr ""
-
-#. module: hr_recruitment_kmitl
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_index
-msgid ""
-"<i class=\"fa fa-fw fa-suitcase\" title=\"Employment type\" role=\"img\" "
-"aria-label=\"Employment type\"/>"
-msgstr ""
-
-#. module: hr_recruitment_kmitl
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_index
-msgid "<i class=\"fa fa-fw fa-tags\" title=\"Tags\" role=\"img\" aria-label=\"Tags\"/>"
-msgstr ""
-
-#. module: hr_recruitment_kmitl
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_index
-msgid ""
-"<i class=\"fa fa-fw fa-users\" title=\"Positions\" role=\"img\" aria-"
-"label=\"Positions\"/>"
 msgstr ""
 
 #. module: hr_recruitment_kmitl
@@ -395,6 +374,15 @@ msgid "<span class=\"o_stat_text\">Profile</span>"
 msgstr "<span class=\"o_stat_text\">โปรไฟล์</span>"
 
 #. module: hr_recruitment_kmitl
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_detail
+msgid ""
+"<span class=\"rounded-3 d-flex align-items-center justify-content-center me-3 bg-primary-light text-primary p-3\">\n"
+"                                            <i class=\"fa fa-file\"/>\n"
+"                                        </span>\n"
+"                                        ไฟล์เอกสารที่เกี่ยวข้อง (Attachments)"
+msgstr ""
+
+#. module: hr_recruitment_kmitl
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.apply_tab_personal
 msgid ""
 "<span class=\"s_website_form_label_content\">\n"
@@ -485,27 +473,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.apply_tab_personal
 msgid ""
 "<span class=\"section-indicator bg-primary\"/>\n"
-"                1. ข้อมูลส่วนบุคคล (Personal Information)"
-msgstr ""
-
-#. module: hr_recruitment_kmitl
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.apply_tab_education
-msgid ""
-"<span class=\"section-indicator bg-primary\"/>\n"
-"                2. ประวัติการศึกษา (Education History)"
-msgstr ""
-
-#. module: hr_recruitment_kmitl
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.apply_tab_submit
-msgid ""
-"<span class=\"section-indicator bg-primary\"/>\n"
-"                7. ยืนยันและส่งใบสมัคร (Confirmation)"
-msgstr ""
-
-#. module: hr_recruitment_kmitl
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.apply_tab_personal
-msgid ""
-"<span class=\"section-indicator bg-primary\"/>\n"
 "                ข้อมูลสุขภาพ"
 msgstr ""
 
@@ -517,31 +484,13 @@ msgid ""
 msgstr ""
 
 #. module: hr_recruitment_kmitl
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.apply_tab_work_history
-msgid ""
-"<span class=\"section-indicator bg-primary\"/>\n"
-"            3. ประสบการณ์การทำงาน (Work History)"
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_index
+msgid "<span class=\"small text-secondary\">วุฒิที่รับ:</span>"
 msgstr ""
 
 #. module: hr_recruitment_kmitl
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.apply_tab_academic
-msgid ""
-"<span class=\"section-indicator bg-primary\"/>\n"
-"            4. ข้อมูลทางวิชาการและราชการ (Academic &amp; Civil Service Information)"
-msgstr ""
-
-#. module: hr_recruitment_kmitl
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.apply_tab_skills
-msgid ""
-"<span class=\"section-indicator bg-primary\"/>\n"
-"            5. ทักษะและความสนใจ (Skills &amp; Interests)"
-msgstr ""
-
-#. module: hr_recruitment_kmitl
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.apply_tab_documents
-msgid ""
-"<span class=\"section-indicator bg-primary\"/>\n"
-"            6. เอกสารประกอบ (Supporting Documents)"
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_index
+msgid "<span class=\"small text-secondary\">หมวดหมู่:</span>"
 msgstr ""
 
 #. module: hr_recruitment_kmitl
@@ -558,6 +507,42 @@ msgstr "<span class=\"text-muted d-block small\">สถานะ</span>"
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_detail
 msgid "<span class=\"text-muted d-block small\">Updated On</span>"
 msgstr "<span class=\"text-muted d-block small\">อัปเดตเมื่อ</span>"
+
+#. module: hr_recruitment_kmitl
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.job_filter_by_employee_types
+msgid ""
+"<span class=\"text-primary me-2\">\n"
+"                            <i class=\"fa fa-filter\"/>\n"
+"                        </span>\n"
+"                        ประเภทการจ้างงาน"
+msgstr ""
+
+#. module: hr_recruitment_kmitl
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.job_filter_by_education_levels
+msgid ""
+"<span class=\"text-primary me-2\">\n"
+"                            <i class=\"fa fa-filter\"/>\n"
+"                        </span>\n"
+"                        วุฒิการศึกษา"
+msgstr ""
+
+#. module: hr_recruitment_kmitl
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.job_filter_by_roles
+msgid ""
+"<span class=\"text-primary me-2\">\n"
+"                            <i class=\"fa fa-filter\"/>\n"
+"                        </span>\n"
+"                        สายงาน"
+msgstr ""
+
+#. module: hr_recruitment_kmitl
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.job_filter_by_tags
+msgid ""
+"<span class=\"text-primary me-2\">\n"
+"                            <i class=\"fa fa-filter\"/>\n"
+"                        </span>\n"
+"                        หมวดหมู่"
+msgstr ""
 
 #. module: hr_recruitment_kmitl
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.apply_tab_submit
@@ -651,16 +636,29 @@ msgid "All Categories"
 msgstr "กลุ่มงานทั้งหมด"
 
 #. module: hr_recruitment_kmitl
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.job_filter_by_departments
+msgid "All Departmentsssss"
+msgstr ""
+
+#. module: hr_recruitment_kmitl
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.job_filter_by_education_levels
-msgid ""
-"All Education\n"
-"                        Levels"
+msgid "All Education Levels"
 msgstr "ระดับการศึกษาทั้งหมด"
 
 #. module: hr_recruitment_kmitl
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.job_filter_by_employee_types
 msgid "All Employee Types"
 msgstr "ประเภทของพนักงานทั้งหมด"
+
+#. module: hr_recruitment_kmitl
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.job_filter_by_employment_type
+msgid "All Employment Types"
+msgstr ""
+
+#. module: hr_recruitment_kmitl
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.job_filter_by_offices
+msgid "All Offices"
+msgstr ""
 
 #. module: hr_recruitment_kmitl
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.job_filter_by_roles
@@ -704,6 +702,11 @@ msgid "Associate Professor"
 msgstr "รองศาสตราจารย์"
 
 #. module: hr_recruitment_kmitl
+#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job__attachment_ids
+msgid "Attachments"
+msgstr "ไฟล์เอกสารที่เกี่ยวข้อง"
+
+#. module: hr_recruitment_kmitl
 #: model:ir.model.fields.selection,name:hr_recruitment_kmitl.selection__hr_applicant__ocsc_exam_level__bachelor
 #: model:ir.model.fields.selection,name:hr_recruitment_kmitl.selection__portal_profile__ocsc_exam_level__bachelor
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.portal_my_profile
@@ -739,6 +742,17 @@ msgstr ""
 #, python-format
 msgid "Birthday"
 msgstr "วันเกิด"
+
+#. module: hr_recruitment_kmitl
+#. odoo-python
+#: code:addons/hr_recruitment_kmitl/models/hr_job.py:0
+#, python-format
+msgid ""
+"Cannot publish '%(name)s': number of old codes (%(codes)d) must equal number"
+" of recruitments (%(recruitment)d)."
+msgstr ""
+"ไม่สามารถเผยแพร่ '%(name)s': จำนวนของเลขที่อัตรา (%(codes)d) "
+"จำเป็นที่จะต้องมีค่าเท่ากับจำนวนที่รับสมัคร (%(recruitment)d)."
 
 #. module: hr_recruitment_kmitl
 #. odoo-javascript
@@ -778,6 +792,11 @@ msgstr "ปิดรับสมัคร"
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job__date_close
 msgid "Closing Date"
 msgstr "ปิดวันที่"
+
+#. module: hr_recruitment_kmitl
+#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job_old_code__name
+msgid "Code"
+msgstr "เลขที่อัตรา"
 
 #. module: hr_recruitment_kmitl
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job_category__color
@@ -841,6 +860,7 @@ msgstr "ประเทศ"
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant_education_history__create_uid
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant_work_history__create_uid
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job_category__create_uid
+#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job_old_code__create_uid
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_education_history__create_uid
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_profile__create_uid
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_work_history__create_uid
@@ -851,6 +871,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant_education_history__create_date
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant_work_history__create_date
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job_category__create_date
+#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job_old_code__create_date
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_education_history__create_date
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_profile__create_date
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_work_history__create_date
@@ -866,6 +887,7 @@ msgstr "สกุลเงิน"
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant_education_history__display_name
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant_work_history__display_name
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job_category__display_name
+#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job_old_code__display_name
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_education_history__display_name
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_profile__display_name
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_work_history__display_name
@@ -1100,6 +1122,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant_education_history__id
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant_work_history__id
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job_category__id
+#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job_old_code__id
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_education_history__id
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_profile__id
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_work_history__id
@@ -1128,9 +1151,19 @@ msgid "Interests / ความสนใจ"
 msgstr ""
 
 #. module: hr_recruitment_kmitl
+#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job_old_code__job_id
+msgid "Job"
+msgstr ""
+
+#. module: hr_recruitment_kmitl
 #: model:ir.model,name:hr_recruitment_kmitl.model_hr_job_category
 msgid "Job Category"
 msgstr "กลุ่มงาน"
+
+#. module: hr_recruitment_kmitl
+#: model:ir.model,name:hr_recruitment_kmitl.model_hr_job_old_code
+msgid "Job Old Code"
+msgstr "เลขที่อัตราของงาน"
 
 #. module: hr_recruitment_kmitl
 #: model:ir.model,name:hr_recruitment_kmitl.model_hr_job
@@ -1142,6 +1175,11 @@ msgstr "ตำแหน่งงาน"
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_work_history__job_title
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.portal_my_profile
 msgid "Job Title / Description"
+msgstr ""
+
+#. module: hr_recruitment_kmitl
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_index
+msgid "Job logo"
 msgstr ""
 
 #. module: hr_recruitment_kmitl
@@ -1163,6 +1201,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant_education_history____last_update
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant_work_history____last_update
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job_category____last_update
+#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job_old_code____last_update
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_education_history____last_update
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_profile____last_update
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_work_history____last_update
@@ -1192,6 +1231,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant_education_history__write_uid
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant_work_history__write_uid
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job_category__write_uid
+#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job_old_code__write_uid
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_education_history__write_uid
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_profile__write_uid
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_work_history__write_uid
@@ -1202,6 +1242,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant_education_history__write_date
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant_work_history__write_date
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job_category__write_date
+#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job_old_code__write_date
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_education_history__write_date
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_profile__write_date
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_work_history__write_date
@@ -1259,7 +1300,7 @@ msgstr "ปริญญาโท"
 #. module: hr_recruitment_kmitl
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job__salary_max
 msgid "Maximum Salary"
-msgstr "เงินเดือนสูงสุด"
+msgstr "อัตราค่าจ้างสูงสุด"
 
 #. module: hr_recruitment_kmitl
 #. odoo-javascript
@@ -1283,7 +1324,7 @@ msgstr ""
 #. module: hr_recruitment_kmitl
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job__salary_min
 msgid "Minimum Salary"
-msgstr "เงินเดือนต่ำสุด"
+msgstr "อัตราค่าจ้างต่ำสุด"
 
 #. module: hr_recruitment_kmitl
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.portal_my_home_recruitment
@@ -1361,6 +1402,11 @@ msgstr ""
 #, python-format
 msgid "OCSC Exam Number"
 msgstr ""
+
+#. module: hr_recruitment_kmitl
+#: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job__old_code_ids
+msgid "Old Codes"
+msgstr "เลขที่อัตรา"
 
 #. module: hr_recruitment_kmitl
 #: model:ir.model.constraint,message:hr_recruitment_kmitl.constraint_portal_education_history_profile_level_unique
@@ -1694,7 +1740,6 @@ msgstr ""
 
 #. module: hr_recruitment_kmitl
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_detail
-#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_index
 msgid "positions"
 msgstr "อัตรา"
 
@@ -1707,7 +1752,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.apply_tab_education
 msgid ""
 "กรุณากลับไปอัปเดตแฟ้มประวัติ (Master Profile)\n"
-"                            ให้ครบถ้วนก่อนส่งใบสมัคร"
+"                        ให้ครบถ้วนก่อนส่งใบสมัคร"
 msgstr ""
 
 #. module: hr_recruitment_kmitl
@@ -2038,9 +2083,13 @@ msgstr ""
 #. module: hr_recruitment_kmitl
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_index
 msgid ""
+"ร่วมขับเคลื่อนนวัตกรรม\n"
+"                                    <br/>\n"
+"                                    ไปกับ\n"
+"                                    <span class=\"text-primary\">KMITL</span>"
+msgstr ""
 "ร่วมขับเคลื่อนนวัตกรรม <br/>\n"
 "                                    ไปกับ <span class=\"text-primary\">KMITL</span>"
-msgstr ""
 
 #. module: hr_recruitment_kmitl
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.apply_tab_documents
@@ -2241,6 +2290,11 @@ msgstr ""
 msgid ""
 "หากท่านมีประสบการณ์การทำงาน กรุณากลับไปอัปเดตแฟ้มประวัติ (Master\n"
 "                        Profile) ให้ครบถ้วน"
+msgstr ""
+
+#. module: hr_recruitment_kmitl
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_index
+msgid "อัตรา"
 msgstr ""
 
 #. module: hr_recruitment_kmitl

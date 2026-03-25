@@ -157,6 +157,25 @@
                                     </div>
                                 </div>
                             </section>
+                            <section t-if="job.old_code_ids" class="mb-4">
+                                <div class="card rounded-4">
+                                    <div class="card-body p-4">
+                                        <h5 class="fw-bold mb-3">
+                                            <i
+                                                class="fa fa-archive me-2"
+                                            />Position Codes
+                                        </h5>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <t t-foreach="job.old_code_ids" t-as="code">
+                                                <span
+                                                    class="badge text-bg-warning text-dark fs-6 px-3 py-2"
+                                                    t-esc="code.name"
+                                                />
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
                             <div t-field="job.website_description" />
                             <!-- เอกสารแนบ -->
                             <div class="card shadow-sm border-0 rounded-4 mb-4">
