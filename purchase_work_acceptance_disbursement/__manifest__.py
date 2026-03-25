@@ -6,7 +6,7 @@
     "category": "KMITL",
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
-    'depends': ['purchase_work_acceptance', 'purchase_order_disbursement'],
+    'depends': ['purchase_work_acceptance_kmitl', 'purchase_order_disbursement'],
     "data": [
         "views/disbursement_request_views.xml",
         "views/work_acceptance_views.xml"

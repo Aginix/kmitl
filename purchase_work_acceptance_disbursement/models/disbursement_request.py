@@ -1,5 +1,5 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -17,6 +17,25 @@ class DisbursementRequest(models.Model):
         compute="_compute_wa_count",
         store=True,
     )
+
+    fines_late = fields.Monetary(
+        string="Fines Amount",
+        tracking=True,
+        store=True,
+        readonly=True
+    )
+
+    fines_total = fields.Monetary(
+        string="Fined Total",
+        compute="_compute_fines_total",
+        store=True,
+    )
+
+    @api.depends("amount_untaxed", "fines_late")
+    def _compute_fines_total(self):
+        for rec in self:
+            result = rec.amount_untaxed - rec.fines_late
+            rec.fines_total = max(result, 0)
 
     def _compute_wa_count(self):
         for rec in self:
@@ -59,3 +78,15 @@ class DisbursementRequest(models.Model):
             "domain": [("id", "in", self.wa_ids.ids)],
             "target": "current",
         }
+
+    @api.depends(
+        "line_ids.price_subtotal",
+        "line_ids.price_tax",
+        "line_ids.price_total",
+        "line_ids.amount_wht",
+    )
+    def _compute_amount_all(self):
+        super()._compute_amount_all()
+        for request in self:
+            request.amount_total = request.fines_total - request.amount_tax
+            request.amount_net = request.amount_total - request.amount_wht

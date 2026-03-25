@@ -37,6 +37,7 @@ class PurchaseOrder(models.Model):
             Command.create(line._prepare_disbursement_line_vals())
             for line in wa.wa_line_ids
         ]
+        vals["fines_late"] = self.wa_ids.fines_late
         return vals
 
     def _create_disbursement_request(self):

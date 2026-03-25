@@ -17,6 +17,10 @@
                       attrs="{'invisible': [('wa_ids', '=', False)]}">
                   </button>
               </xpath>
+              <xpath expr="//field[@name='amount_untaxed']" position="after">
+                  <field name="fines_late" />
+                  <field name="fines_total" />
+              </xpath>
           </field>
       </record>
   </odoo>
