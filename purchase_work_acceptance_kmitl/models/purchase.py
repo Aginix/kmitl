@@ -35,4 +35,6 @@ class PurchaseOrder(models.Model):
         lines = self._get_committee_line(purchase_requests)
         result["context"]["default_work_acceptance_committee_ids"] = lines
         result["context"]["default_wa_tier_validation"] = self.wa_tier_validation
+        result["context"]["default_late_days"] = self.late_days
+        result["context"]["default_fines_rate"] = self.fines_rate
         return result
