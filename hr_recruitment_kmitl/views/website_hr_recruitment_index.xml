@@ -55,7 +55,6 @@
                 </div>
             </div>
         </xpath>
-
         <!-- Hide right column safely -->
         <xpath
             expr="//div[@id='jobs_grid_left']/following-sibling::div[last()]"
@@ -63,7 +62,6 @@
         >
             <attribute name="class" add="d-none" separator=" " />
         </xpath>
-
         <!-- Expand main jobs column safely -->
         <xpath
             expr="//div[@id='jobs_grid_left']/following-sibling::div[1]"
@@ -71,7 +69,6 @@
         >
             <attribute name="class">col-lg-9</attribute>
         </xpath>
-
         <!-- Replace entire job card -->
         <xpath expr="//a[@t-foreach='jobs']" position="replace">
             <a
@@ -87,14 +84,12 @@
                         class="card-body p-4"
                         t-att-data-publish="job.website_published and 'on' or 'off'"
                     >
-
                         <span
                             t-if="not job.website_published"
                             class="badge text-bg-danger mb-3 p-2"
                         >
                             unpublished
                         </span>
-
                         <div
                             class="d-flex flex-column flex-md-row gap-4 align-items-start"
                         >
@@ -110,12 +105,10 @@
                                     />
                                 </div>
                             </div>
-
                             <div class="flex-grow-1 w-100">
                                 <h4 class="fw-bold text-dark mb-3">
                                     <span t-field="job.name" />
                                 </h4>
-
                                 <div
                                     t-if="job.department_id or job.address_id"
                                     class="text-secondary mb-3 d-flex align-items-center"
@@ -131,12 +124,10 @@
                                         t-options="{'widget': 'contact', 'fields': ['name'], 'no_tag_br': True}"
                                     />
                                 </div>
-
                                 <!-- key facts -->
                                 <div
                                     class="d-flex flex-wrap gap-3 mb-3 small text-secondary"
                                 >
-
                                     <span
                                         t-if="job.no_of_recruitment &gt;= 1"
                                         class="d-flex align-items-center"
@@ -144,7 +135,6 @@
                                         <i class="fa fa-user-o me-2 text-primary" />
                                         <t t-esc="job.no_of_recruitment" /> อัตรา
                                     </span>
-
                                     <span
                                         t-if="job.role"
                                         class="d-flex align-items-center"
@@ -154,7 +144,6 @@
                                             t-esc="dict(job.fields_get(['role'])['role']['selection']).get(job.role)"
                                         />
                                     </span>
-
                                     <span
                                         t-if="job.kmitl_employee_type"
                                         class="d-flex align-items-center"
@@ -164,7 +153,6 @@
                                             t-esc="dict(job.fields_get(['kmitl_employee_type'])['kmitl_employee_type']['selection']).get(job.kmitl_employee_type)"
                                         />
                                     </span>
-
                                     <span
                                         t-if="job.date_close"
                                         class="d-flex align-items-center"
@@ -179,7 +167,6 @@
                                             t-options="{'widget': 'datetime', 'format': 'dd/MM/yyyy HH:mm'}"
                                         />
                                     </span>
-
                                     <span
                                         t-if="'salary_min' in job._fields and 'salary_max' in job._fields and (job.salary_min or job.salary_max)"
                                         class="d-flex align-items-center"
@@ -210,7 +197,6 @@
                                         />
                                     </span>
                                 </div>
-
                                 <!-- qualification -->
                                 <div t-if="job.education_level_ids" class="mb-2">
                                     <div
@@ -230,7 +216,6 @@
                                         </t>
                                     </div>
                                 </div>
-
                                 <div t-if="job.category_ids" class="mb-3">
                                     <div
                                         class="d-flex flex-wrap gap-2 align-items-center"
@@ -246,7 +231,6 @@
                                         </t>
                                     </div>
                                 </div>
-
                                 <div
                                     t-if="job.description"
                                     t-out="job.description or ''"
@@ -259,7 +243,6 @@
             </a>
         </xpath>
     </template>
-
     <!-- Filter by Role -->
     <template
         id="job_filter_by_roles"
@@ -272,16 +255,14 @@
                 t-set="qs_no_role"
                 t-value="'&amp;'.join([p for p in ['employee_type=%s' % employee_type if employee_type else '', 'education_level=%s' % education_level if education_level else '', 'category_id=%s' % category_id if category_id else ''] if p])"
             />
-
             <div class="card shadow-sm border-0 rounded-4 mb-3">
                 <div class="card-body p-2">
                     <h6 class="fw-bold text-dark mb-4 d-flex align-items-center">
                         <span class="text-primary me-2">
                             <i class="fa fa-filter" />
                         </span>
-                        สายงาน
+                        Role
                     </h6>
-
                     <ul class="nav flex-column gap-1">
                         <li class="nav-item">
                             <a
@@ -311,12 +292,10 @@
                 </div>
             </div>
         </xpath>
-
         <xpath expr="//div[@id='jobs_grid_left']" position="attributes">
             <attribute name="class">col-lg-3</attribute>
         </xpath>
     </template>
-
     <!-- Filter by Employee Type -->
     <template
         id="job_filter_by_employee_types"
@@ -329,16 +308,14 @@
                 t-set="qs_no_et"
                 t-value="'&amp;'.join([p for p in ['role=%s' % role if role else '', 'education_level=%s' % education_level if education_level else '', 'category_id=%s' % category_id if category_id else ''] if p])"
             />
-
             <div class="card shadow-sm border-0 rounded-4 mb-3">
                 <div class="card-body p-2">
                     <h6 class="fw-bold text-dark mb-3 d-flex align-items-center">
                         <span class="text-primary me-2">
                             <i class="fa fa-filter" />
                         </span>
-                        ประเภทการจ้างงาน
+                        Employee Type
                     </h6>
-
                     <ul class="nav flex-column gap-1">
                         <li class="nav-item">
                             <a
@@ -376,12 +353,10 @@
                 </div>
             </div>
         </xpath>
-
         <xpath expr="//div[@id='jobs_grid_left']" position="attributes">
             <attribute name="class">col-lg-3</attribute>
         </xpath>
     </template>
-
     <!-- Filter by Education Level -->
     <template
         id="job_filter_by_education_levels"
@@ -394,16 +369,14 @@
                 t-set="qs_no_edu"
                 t-value="'&amp;'.join([p for p in ['role=%s' % role if role else '', 'employee_type=%s' % employee_type if employee_type else '', 'category_id=%s' % category_id if category_id else ''] if p])"
             />
-
             <div class="card shadow-sm border-0 rounded-4 mb-3">
                 <div class="card-body p-2">
                     <h6 class="fw-bold text-dark mb-3 d-flex align-items-center">
                         <span class="text-primary me-2">
                             <i class="fa fa-filter" />
                         </span>
-                        วุฒิการศึกษา
+                        Education Level
                     </h6>
-
                     <ul class="nav flex-column gap-1">
                         <li class="nav-item">
                             <a
@@ -413,7 +386,6 @@
                                 All Education Levels
                             </a>
                         </li>
-
                         <t t-foreach="education_levels or []" t-as="edu">
                             <li class="nav-item">
                                 <a
@@ -428,12 +400,10 @@
                 </div>
             </div>
         </xpath>
-
         <xpath expr="//div[@id='jobs_grid_left']" position="attributes">
             <attribute name="class">col-lg-3</attribute>
         </xpath>
     </template>
-
     <!-- Filter by Tags -->
     <template
         id="job_filter_by_tags"
@@ -446,16 +416,14 @@
                 t-set="qs_no_cat"
                 t-value="'&amp;'.join([p for p in ['role=%s' % role if role else '', 'employee_type=%s' % employee_type if employee_type else '', 'education_level=%s' % education_level if education_level else ''] if p])"
             />
-
             <div class="card shadow-sm border-0 rounded-4 mb-3">
                 <div class="card-body p-2">
                     <h6 class="fw-bold text-dark mb-3 d-flex align-items-center">
                         <span class="text-primary me-2">
                             <i class="fa fa-filter" />
                         </span>
-                        หมวดหมู่
+                        Categories
                     </h6>
-
                     <ul class="nav flex-column gap-1">
                         <li class="nav-item">
                             <a
@@ -465,7 +433,6 @@
                                 All Categories
                             </a>
                         </li>
-
                         <t t-foreach="categories or []" t-as="cat">
                             <li class="nav-item">
                                 <a
@@ -480,94 +447,135 @@
                 </div>
             </div>
         </xpath>
-
         <xpath expr="//div[@id='jobs_grid_left']" position="attributes">
             <attribute name="class">col-lg-3</attribute>
         </xpath>
     </template>
-
     <template
-        id="job_filter_by_departments"
-        inherit_id="website_hr_recruitment.index"
-        active="False"
-        name="Filter by Departments"
-    >
+    id="job_filter_by_departments"
+    inherit_id="website_hr_recruitment.index"
+    active="False"
+    name="Filter by Departments"
+>
         <xpath expr="//div[@id='jobs_grid_left']" position="inside">
-            <ul class="nav nav-pills flex-column mb32">
-                <li class="nav-item"><a
-                        t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/office/%s' % office_id if office_id else ''}#{ '/employment_type/%s' % contract_type_id if contract_type_id else '' }"
-                        t-attf-class="nav-link#{'' if department_id else ' active'}"
-                    >All Departmentsssss</a></li>
-                <t t-foreach="departments" t-as="department">
-                    <li class="nav-item">
-                        <a
-                            t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }/department/#{ slug(department) }#{ '/office/%s' % office_id if office_id else '' }#{ '/employment_type/%s' % contract_type_id if contract_type_id else '' }"
-                            t-attf-class="nav-link#{' active' if department_id and department_id.id == department.id else ''}"
-                        ><span t-field="department.name" /></a>
-                    </li>
-                </t>
-            </ul>
-        </xpath>
-        <xpath expr="//div[@id='jobs_grid_left']" position="attributes">
-            <attribute name="class">col-lg-3</attribute>
-        </xpath>
-    </template>
-
-    <template
-        id="job_filter_by_offices"
-        inherit_id="website_hr_recruitment.index"
-        active="False"
-        name="Filter by Offices"
-    >
-        <xpath expr="//div[@id='jobs_grid_left']" position="inside">
-            <ul class="nav nav-pills flex-column mb32">
-                <li class="nav-item"><a
-                        t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/department/%s' % slug(department_id) if department_id else '' }#{ '/employment_type/%s' % contract_type_id if contract_type_id else '' }"
-                        t-attf-class="nav-link#{'' if office_id else ' active'}"
-                    >All Offices</a></li>
-                <t t-foreach="offices" t-as="thisoffice">
-                    <li class="nav-item">
-                        <a
-                            t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/department/%s' % slug(department_id) if department_id else '' }/office/#{ thisoffice.id }#{ '/employment_type/%s' % contract_type_id if contract_type_id else '' }"
-                            t-attf-class="nav-link#{' active' if office_id and office_id == thisoffice.id else ''}"
+            <div class="card shadow-sm border-0 rounded-4 mb-3">
+                <div class="card-body p-3">
+                    <h6 class="fw-bold text-dark mb-3 d-flex align-items-center">
+                        <span class="text-primary me-2">
+                            <i class="fa fa-filter"></i>
+                        </span>
+                    Departments
+                    </h6>
+                    <ul class="nav flex-column gap-1">
+                        <li class="nav-item">
+                            <a
+                            t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/office/%s' % office_id if office_id else ''}#{ '/employment_type/%s' % contract_type_id if contract_type_id else '' }"
+                            t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if not department_id else ' text-secondary'}"
                         >
-                            <span t-field="thisoffice.city" />
-                            <t t-if="thisoffice.country_id">,
-                                <span t-field="thisoffice.country_id.name" />
-                            </t>
+                            All Departments
                         </a>
-                    </li>
-                </t>
-            </ul>
+                        </li>
+                        <t t-foreach="departments" t-as="department">
+                            <li class="nav-item">
+                                <a
+                                t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }/department/#{ slug(department) }#{ '/office/%s' % office_id if office_id else '' }#{ '/employment_type/%s' % contract_type_id if contract_type_id else '' }"
+                                t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if department_id and department_id.id == department.id else ' text-secondary'}"
+                            >
+                                    <span t-field="department.name"/>
+                                </a>
+                            </li>
+                        </t>
+                    </ul>
+                </div>
+            </div>
         </xpath>
         <xpath expr="//div[@id='jobs_grid_left']" position="attributes">
             <attribute name="class">col-lg-3</attribute>
         </xpath>
     </template>
-
     <template
-        id="job_filter_by_employment_type"
-        inherit_id="website_hr_recruitment.index"
-        active="False"
-        name="Filter by Employment Type"
-    >
+    id="job_filter_by_offices"
+    inherit_id="website_hr_recruitment.index"
+    active="False"
+    name="Filter by Offices"
+>
         <xpath expr="//div[@id='jobs_grid_left']" position="inside">
-            <ul class="nav nav-pills flex-column mb32">
-                <li class="nav-item"><a
-                        t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/department/%s' % slug(department_id) if department_id else '' }#{ '/office/%s' % office_id if office_id else '' }"
-                        t-attf-class="nav-link#{'' if contract_type_id else ' active'}"
-                    >All Employment Types</a></li>
-                <t t-foreach="employment_types" t-as="employment_type">
-                    <li class="nav-item">
-                        <a
-                            t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/department/%s' % slug(department_id) if department_id else '' }#{ '/office/%s' % office_id if office_id else '' }/employment_type/#{ employment_type.id }"
-                            t-attf-class="nav-link#{' active' if contract_type_id and contract_type_id == employment_type.id else ''}"
+            <div class="card shadow-sm border-0 rounded-4 mb-3">
+                <div class="card-body p-3">
+                    <h6 class="fw-bold text-dark mb-3 d-flex align-items-center">
+                        <span class="text-primary me-2">
+                            <i class="fa fa-map-marker"></i>
+                        </span>
+                    Office Location
+                    </h6>
+                    <ul class="nav flex-column gap-1">
+                        <li class="nav-item">
+                            <a
+                            t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/department/%s' % slug(department_id) if department_id else '' }#{ '/employment_type/%s' % contract_type_id if contract_type_id else '' }"
+                            t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if not office_id else ' text-secondary'}"
                         >
-                            <span t-field="employment_type.name" />
+                            All Offices
                         </a>
-                    </li>
-                </t>
-            </ul>
+                        </li>
+                        <t t-foreach="offices" t-as="thisoffice">
+                            <li class="nav-item">
+                                <a
+                                t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/department/%s' % slug(department_id) if department_id else '' }/office/#{ thisoffice.id }#{ '/employment_type/%s' % contract_type_id if contract_type_id else '' }"
+                                t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if office_id and office_id == thisoffice.id else ' text-secondary'}"
+                            >
+                                    <span t-field="thisoffice.city"/>
+                                    <t t-if="thisoffice.country_id">
+                                    ,
+                                        <span t-field="thisoffice.country_id.name"/>
+                                    </t>
+                                </a>
+                            </li>
+                        </t>
+                    </ul>
+                </div>
+            </div>
+        </xpath>
+        <xpath expr="//div[@id='jobs_grid_left']" position="attributes">
+            <attribute name="class">col-lg-3</attribute>
+        </xpath>
+    </template>
+    <template
+    id="job_filter_by_employment_type"
+    inherit_id="website_hr_recruitment.index"
+    active="False"
+    name="Filter by Employment Type"
+>
+        <xpath expr="//div[@id='jobs_grid_left']" position="inside">
+            <div class="card shadow-sm border-0 rounded-4 mb-3">
+                <div class="card-body p-3">
+                    <h6 class="fw-bold text-dark mb-3 d-flex align-items-center">
+                        <span class="text-primary me-2">
+                            <i class="fa fa-briefcase"></i>
+                        </span>
+                    Employment Type
+                    </h6>
+                    <ul class="nav flex-column gap-1">
+                        <li class="nav-item">
+                            <a
+                            t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/department/%s' % slug(department_id) if department_id else '' }#{ '/office/%s' % office_id if office_id else '' }"
+                            t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if not contract_type_id else ' text-secondary'}"
+                        >
+                            All Types
+                        </a>
+                        </li>
+                        <t t-foreach="employment_types" t-as="employment_type">
+                            <li class="nav-item">
+                                <a
+                                t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/department/%s' % slug(department_id) if department_id else '' }#{ '/office/%s' % office_id if office_id else '' }/employment_type/#{ employment_type.id }"
+                                t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if contract_type_id and contract_type_id == employment_type.id else ' text-secondary'}"
+                            >
+                                    <span t-field="employment_type.name"/>
+                                </a>
+                            </li>
+                        </t>
+                    </ul>
+                </div>
+            </div>
         </xpath>
         <xpath expr="//div[@id='jobs_grid_left']" position="attributes">
             <attribute name="class">col-lg-3</attribute>
