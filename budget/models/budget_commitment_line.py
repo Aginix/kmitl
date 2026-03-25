@@ -1,9 +1,18 @@
 import logging
 
-from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+from odoo import Command, api, fields, models, _
+from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
+
+PROTECTED_FIELDS = {
+    "amount",
+    "account_id",
+    "move_type",
+    "analytic_distribution",
+    "activity_analytic_id",
+    "fund_analytic_id",
+}
 
 
 class BudgetCommitmentLine(models.Model):
@@ -13,6 +22,9 @@ class BudgetCommitmentLine(models.Model):
     - reserve: จองงบประมาณ (positive = จอง, negative = คืนจอง)
     - obligate: ผูกพันงบประมาณ (positive = ผูกพัน, negative = คืนผูกพัน)
     - consume: ตัดงบประมาณ (positive = ตัดงบ, negative = คืนเงิน)
+
+    Posted lines are immutable — cancel instead of edit/delete.
+    Consume lines auto-create a budget.move for accounting integration.
     """
 
     _name = "budget.commitment.line"
@@ -69,6 +81,15 @@ class BudgetCommitmentLine(models.Model):
         tracking=True,
     )
 
+    # Link to auto-created budget.move (for consume lines)
+    budget_move_id = fields.Many2one(
+        comodel_name="budget.move",
+        string="Budget Move",
+        readonly=True,
+        index=True,
+        ondelete="set null",
+    )
+
     # Analytic convenience fields (line-level: activity + fund only)
     activity_analytic_id = fields.Many2one(
         "account.analytic.account",
@@ -122,6 +143,8 @@ class BudgetCommitmentLine(models.Model):
         string="ปีงบประมาณ",
     )
 
+    # --- Constraints ---
+
     @api.constrains("amount", "move_type", "state")
     def _check_commitment_limits(self):
         """Enforce cascade constraints: reserved <= cap, obligated <= reserved, consumed <= obligated"""
@@ -160,23 +183,111 @@ class BudgetCommitmentLine(models.Model):
                     % {"consumed": total_consumed, "obligated": total_obligated}
                 )
 
+    # --- Immutability ---
+
+    def write(self, vals):
+        if PROTECTED_FIELDS & set(vals):
+            posted = self.filtered(lambda l: l.state == "posted")
+            if posted:
+                raise UserError(
+                    _("Cannot edit posted ledger lines. Cancel and create a new entry instead.")
+                )
+        return super().write(vals)
+
+    def unlink(self):
+        posted = self.filtered(lambda l: l.state == "posted")
+        if posted:
+            raise UserError(
+                _("Cannot delete posted ledger lines. Cancel them instead.")
+            )
+        return super().unlink()
+
+    # --- Actions ---
+
     def action_cancel(self):
         for line in self:
-            if line.state != "cancel":
-                line.state = "cancel"
+            if line.state == "cancel":
+                continue
+            line.state = "cancel"
+            # Cascade cancel to linked budget.move
+            if line.budget_move_id and line.budget_move_id.state != "cancel":
+                line.budget_move_id.button_cancel()
 
     def action_post(self):
         for line in self:
             if line.state != "posted":
                 line.state = "posted"
 
+    # --- Budget Move Creation ---
+
+    def _prepare_budget_move_vals(self):
+        """Prepare budget.move values for a consume line."""
+        self.ensure_one()
+        commitment = self.commitment_id
+        return {
+            "name": _("New"),
+            "date": self.date,
+            "move_type": "consume",
+            "budget_type": "expense",
+            "account_fiscal_year_id": commitment.account_fiscal_year_id.id,
+            "department_analytic_id": (
+                self.department_analytic_id.id
+                if self.department_analytic_id
+                else False
+            ),
+            "source_analytic_id": (
+                self.source_analytic_id.id
+                if self.source_analytic_id
+                else False
+            ),
+            "company_id": commitment.company_id.id,
+            "currency_id": commitment.currency_id.id,
+            "commitment_id": commitment.id,
+            "commitment_line_id": self.id,
+            "line_ids": [Command.create(self._prepare_budget_move_line_vals())],
+        }
+
+    def _prepare_budget_move_line_vals(self):
+        """Prepare budget.move.line values for consumption."""
+        self.ensure_one()
+        return {
+            "account_id": self.account_id.id,
+            "balance": -self.amount,
+            "analytic_distribution": self.analytic_distribution,
+        }
+
+    def _create_budget_move(self):
+        """Create and post a budget.move for a consume line."""
+        self.ensure_one()
+        move_vals = self._prepare_budget_move_vals()
+        budget_move = self.env["budget.move"].create(move_vals)
+        budget_move.action_review()
+        budget_move.action_post()
+        self.budget_move_id = budget_move
+        _logger.info(
+            "Created budget move %s for consume line %s",
+            budget_move.name,
+            self.id,
+        )
+        return budget_move
+
+    # --- CRUD ---
+
     @api.model_create_multi
     def create(self, vals_list):
         lines = super().create(vals_list)
+
+        # Auto-create budget.move for consume lines
+        for line in lines.filtered(
+            lambda l: l.state == "posted" and l.move_type == "consume"
+        ):
+            line._create_budget_move()
+
         # Auto-advance header state when obligate/consume lines are added
         for line in lines.filtered(
             lambda l: l.state == "posted" and l.move_type in ("obligate", "consume")
         ):
             if line.commitment_id.state == "reserved":
                 line.commitment_id.state = "partial"
+
         return lines
