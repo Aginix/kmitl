@@ -69,7 +69,7 @@ class BudgetReportSummary(models.AbstractModel):
         )
         # Build domain for commitment_lines with department filter
         commitment_domain = [
-            ("state", "in", ["reserved", "obligated"]),
+            ("state", "in", ["reserved", "partial"]),
             ("account_fiscal_year_id", "=", fiscal_year.id),
             ("source_analytic_id", "=", source_analytic.id),
         ]
@@ -302,7 +302,7 @@ class BudgetReportSummary(models.AbstractModel):
 
         has_commitments = self.env["budget.commitment"].search_count([
             ("department_analytic_id", "=", department.id),
-            ("state", "in", ["reserved", "obligated"]),
+            ("state", "in", ["reserved", "partial"]),
         ], limit=1)
 
         return bool(has_moves or has_commitments)
@@ -358,7 +358,7 @@ class BudgetReportSummary(models.AbstractModel):
         ])
         commitments = self.env["budget.commitment"].search([
             ('activity_analytic_id', 'in', activity_children),
-            ('state', 'in', ['reserved', 'obligated']),
+            ('state', 'in', ['reserved', 'partial']),
         ])
 
         account_ids = set()
@@ -379,7 +379,7 @@ class BudgetReportSummary(models.AbstractModel):
         ]
         domain_commitment = [
             ('fund_analytic_id', 'in', fund_children),
-            ('state', 'in', ['reserved', 'obligated']),
+            ('state', 'in', ['reserved', 'partial']),
         ]
 
         # If parent activity is specified, also filter by activity

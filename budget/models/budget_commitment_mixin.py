@@ -1,268 +1,286 @@
 import logging
+
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError, UserError
-from datetime import date
 
 _logger = logging.getLogger(__name__)
 
 
 class BudgetCommitmentMixin(models.AbstractModel):
-    """
-    Budget Commitment Mixin - API Interface for Budget Commitment Integration
+    """Budget Commitment Mixin - API Interface for Budget Commitment Integration.
 
-    Purpose:
-        Provides a standardized interface for other modules to integrate with the budget
-        commitment system. This mixin allows any model to create, validate, and manage
-        budget commitments without directly depending on the budget.commitment model.
+    Provides a standardized interface for other modules to create and manage
+    budget commitments. Supports both the new multi-line ledger API and
+    backward-compatible single-line API.
 
-    Features:
-        • Dynamic field configuration for maximum flexibility
-        • Parameter-based API for analytic dimensions
-        • Budget availability checking with detailed feedback
-        • Commitment lifecycle management
-
-    Key Features:
-        • Standard API methods for commitment operations
-        • Automatic validation and error handling
-        • Budget availability checking with detailed feedback
-        • Direct integration with 4D analytic dimensions
-        • Commitment lifecycle management
-        • Consumption tracking interface
-
-    Usage Example:
+    Usage:
         class PurchaseOrder(models.Model):
             _inherit = ['purchase.order', 'budget.commitment.mixin']
 
-            # Define field names for dynamic access
             _commitment_id_field = 'budget_commitment_id'
             _commitment_account_id_field = 'budget_account_id'
-
-            budget_commitment_id = fields.Many2one('budget.commitment')
-            budget_account_id = fields.Many2one('budget.account')
 
             def action_reserve_budget(self):
                 commitment = self._create_budget_commitment(
                     amount=self.amount_total,
-                    activity_analytic_id=self.project_activity_id,
-                    fund_analytic_id=self.funding_source_id
+                    activity_analytic_id=self.activity_id,
+                    fund_analytic_id=self.fund_id,
                 )
                 return commitment
-
-    Integration Points:
-        • Purchase Orders: Reserve budget when PO is confirmed
-        • Expense Claims: Reserve budget for employee expenses
-        • Payment Requests: Reserve budget for pending payments
-        • Project Tasks: Reserve budget for project activities
-        • Any custom module requiring budget control
     """
-    _name = 'budget.commitment.mixin'
-    _description = 'Budget Commitment Mixin'
 
-    # Configuration fields - override these in inheriting models
-    _commitment_id_field = 'budget_commitment_id'  # Name of the field linking to budget.commitment
-    _commitment_account_id_field = 'budget_account_id'  # Name of the field linking to budget.account
+    _name = "budget.commitment.mixin"
+    _description = "Budget Commitment Mixin"
+
+    _commitment_id_field = "budget_commitment_id"
+    _commitment_account_id_field = "budget_account_id"
 
     def _get_commitment_field_value(self, field_name):
-        """
-        Get the value of a dynamic commitment field.
-
-        Args:
-            field_name (str): The name of the field to get ('commitment_id' or 'account_id')
-
-        Returns:
-            The field value or False if field doesn't exist or is empty
-        """
+        """Get the value of a dynamic commitment field."""
         self.ensure_one()
-
-        if field_name == 'commitment_id':
-            actual_field_name = getattr(self.__class__, '_commitment_id_field', 'budget_commitment_id')
-        elif field_name == 'account_id':
-            actual_field_name = getattr(self.__class__, '_commitment_account_id_field', 'budget_account_id')
+        if field_name == "commitment_id":
+            actual = getattr(
+                self.__class__, "_commitment_id_field", "budget_commitment_id"
+            )
+        elif field_name == "account_id":
+            actual = getattr(
+                self.__class__, "_commitment_account_id_field", "budget_account_id"
+            )
         else:
-            raise ValueError(f"Unknown field_name: {field_name}")
+            raise ValueError("Unknown field_name: %s" % field_name)
 
-        if hasattr(self, actual_field_name):
-            return getattr(self, actual_field_name)
+        if hasattr(self, actual):
+            return getattr(self, actual)
         return False
 
     def _set_commitment_field_value(self, field_name, value):
-        """
-        Set the value of a dynamic commitment field.
+        """Set the value of a dynamic commitment field."""
+        self.ensure_one()
+        if field_name == "commitment_id":
+            actual = getattr(
+                self.__class__, "_commitment_id_field", "budget_commitment_id"
+            )
+        else:
+            raise ValueError("Unknown field_name: %s" % field_name)
 
-        Args:
-            field_name (str): The name of the field to set ('commitment_id')
-            value: The value to set
+        if hasattr(self, actual):
+            setattr(self, actual, value)
+        else:
+            _logger.warning("Field %s not found on model %s", actual, self._name)
+
+    def _create_budget_commitment(
+        self,
+        amount,
+        activity_analytic_id,
+        fund_analytic_id,
+        department_analytic_id=None,
+        source_analytic_id=None,
+        ref=None,
+        description=None,
+        auto_reserve=True,
+        **kwargs,
+    ):
+        """Create a budget commitment with a reserve line.
+
+        Backward-compatible API: creates a commitment with one reserve line
+        from the individual analytic parameters.
         """
         self.ensure_one()
 
-        if field_name == 'commitment_id':
-            actual_field_name = getattr(self.__class__, '_commitment_id_field', 'budget_commitment_id')
-        else:
-            raise ValueError(f"Unknown field_name: {field_name}")
-
-        if hasattr(self, actual_field_name):
-            setattr(self, actual_field_name, value)
-        else:
-            _logger.warning(f"Field {actual_field_name} not found on model {self._name}")
-
-    def _create_budget_commitment(self, amount, activity_analytic_id, fund_analytic_id,
-                                 department_analytic_id=None, source_analytic_id=None,
-                                 ref=None, description=None, auto_reserve=True, **kwargs):
-        """
-        Create or reuse a budget commitment using the record's dynamic budget account field.
-
-        If a cancelled commitment exists for this record, it will be reused by resetting
-        it to draft and updating its values. Otherwise, a new commitment will be created.
-
-        Args:
-            amount (float): Amount to commit
-            activity_analytic_id: Activity dimension (record or ID) - Required
-            fund_analytic_id: Fund dimension (record or ID) - Required
-            department_analytic_id: Department dimension (record or ID) - Optional
-            source_analytic_id: Source dimension (record or ID) - Optional
-            ref (str): Optional reference (defaults to record name if available)
-            description (str): Optional description
-            auto_reserve (bool): Automatically reserve the commitment
-            **kwargs: Additional optional fields
-
-        Returns:
-            budget.commitment: Created or reused commitment record
-        """
-        self.ensure_one()
-
-        # Get budget account from dynamic field
-        budget_account_id = self._get_commitment_field_value('account_id')
+        budget_account_id = self._get_commitment_field_value("account_id")
         if not budget_account_id:
-            raise ValidationError(_(
-                "Budget account field '%s' is not set on this record"
-            ) % getattr(self.__class__, '_commitment_account_id_field', 'budget_account_id'))
+            raise ValidationError(
+                _("Budget account field '%s' is not set on this record")
+                % getattr(
+                    self.__class__,
+                    "_commitment_account_id_field",
+                    "budget_account_id",
+                )
+            )
 
-        # Check if there's an existing cancelled commitment to reuse
-        existing_commitment = self._get_commitment_field_value('commitment_id')
-        if existing_commitment and existing_commitment.state in ['cancel', 'draft']:
+        # Check for existing cancelled commitment to reuse
+        existing = self._get_commitment_field_value("commitment_id")
+        if existing and existing.state in ["cancel", "draft"]:
             commitment = self._reuse_cancelled_commitment(
-                existing_commitment, amount, activity_analytic_id, fund_analytic_id,
-                department_analytic_id, source_analytic_id, ref, description,
-                budget_account_id, **kwargs
+                existing,
+                amount,
+                activity_analytic_id,
+                fund_analytic_id,
+                department_analytic_id,
+                source_analytic_id,
+                ref,
+                description,
+                budget_account_id,
+                **kwargs,
             )
         else:
-            # No cancelled commitment exists, create a new one
             commitment = self._create_new_commitment(
-                amount, activity_analytic_id, fund_analytic_id,
-                department_analytic_id, source_analytic_id, ref, description,
-                budget_account_id, **kwargs
+                amount,
+                activity_analytic_id,
+                fund_analytic_id,
+                department_analytic_id,
+                source_analytic_id,
+                ref,
+                description,
+                budget_account_id,
+                **kwargs,
             )
 
-        # Auto reserve if requested
         if auto_reserve:
             try:
                 commitment.action_reserve()
             except UserError as e:
-                # If we were reusing, don't delete it, just keep it in draft
-                if not (existing_commitment and existing_commitment == commitment):
+                if not (existing and existing == commitment):
                     commitment.unlink()
-                raise UserError(_(
-                    "Failed to reserve budget commitment: %s"
-                ) % str(e))
+                raise UserError(
+                    _("Failed to reserve budget commitment: %s") % str(e)
+                )
 
-        # Store commitment in dynamic field (in case it's a new one)
-        self._set_commitment_field_value('commitment_id', commitment)
-
+        self._set_commitment_field_value("commitment_id", commitment)
         return commitment
 
-    def _prepare_commitment_vals(self, amount, activity_analytic_id, fund_analytic_id,
-                                department_analytic_id, source_analytic_id, ref, description,
-                                budget_account_id, include_company=True, **kwargs):
-        """
-        Prepare commitment values dictionary.
+    def _prepare_commitment_vals(
+        self,
+        amount,
+        activity_analytic_id,
+        fund_analytic_id,
+        department_analytic_id,
+        source_analytic_id,
+        ref,
+        description,
+        budget_account_id,
+        include_company=True,
+        **kwargs,
+    ):
+        """Prepare commitment values with a reserve line."""
+        # Resolve IDs
+        account_id_val = (
+            budget_account_id.id
+            if hasattr(budget_account_id, "id")
+            else budget_account_id
+        )
+        activity_val = (
+            activity_analytic_id.id
+            if hasattr(activity_analytic_id, "id")
+            else activity_analytic_id
+        )
+        fund_val = (
+            fund_analytic_id.id
+            if hasattr(fund_analytic_id, "id")
+            else fund_analytic_id
+        )
+        dept_val = (
+            department_analytic_id.id
+            if department_analytic_id and hasattr(department_analytic_id, "id")
+            else (department_analytic_id or False)
+        )
+        source_val = (
+            source_analytic_id.id
+            if source_analytic_id and hasattr(source_analytic_id, "id")
+            else (source_analytic_id or False)
+        )
 
-        Args:
-            amount (float): Commitment amount
-            activity_analytic_id: Activity dimension
-            fund_analytic_id: Fund dimension
-            department_analytic_id: Department dimension
-            source_analytic_id: Source dimension
-            ref (str): Reference
-            description (str): Description
-            budget_account_id: Budget account
-            include_company (bool): Whether to include company_id
-            **kwargs: Additional fields
+        # Build line analytic_distribution (activity + fund)
+        line_analytic = {}
+        if activity_val:
+            line_analytic[str(activity_val)] = 100.0
+        if fund_val:
+            line_analytic[str(fund_val)] = 100.0
 
-        Returns:
-            dict: Commitment values dictionary
-        """
+        # Build header analytic_distribution (department + source)
+        header_analytic = {}
+        if dept_val:
+            header_analytic[str(dept_val)] = 100.0
+        if source_val:
+            header_analytic[str(source_val)] = 100.0
+
+        line_vals = {
+            "move_type": "reserve",
+            "account_id": account_id_val,
+            "analytic_distribution": line_analytic or False,
+            "amount": amount,
+            "name": _("Initial reservation"),
+        }
+
         commitment_vals = {
-            'amount': amount,
-            'account_id': budget_account_id.id if hasattr(budget_account_id, 'id') else budget_account_id,
-            'activity_analytic_id': activity_analytic_id.id if hasattr(activity_analytic_id, 'id') else activity_analytic_id,
-            'fund_analytic_id': fund_analytic_id.id if hasattr(fund_analytic_id, 'id') else fund_analytic_id,
-            'department_analytic_id': department_analytic_id.id if hasattr(department_analytic_id, 'id') else department_analytic_id,
-            'source_analytic_id': source_analytic_id.id if hasattr(source_analytic_id, 'id') else source_analytic_id,
-            'ref': ref,
-            'description': description or '',
-            'user_id': self.env.user.id,
+            "amount": amount,
+            "analytic_distribution": header_analytic or False,
+            "ref": ref,
+            "description": description or "",
+            "user_id": self.env.user.id,
+            "line_ids": [(0, 0, line_vals)],
         }
 
         if include_company:
-            commitment_vals['company_id'] = self.env.company.id
+            commitment_vals["company_id"] = self.env.company.id
 
         # Handle date and fiscal year
         commitment_date = fields.Date.today()
-        commitment_vals['date'] = commitment_date
+        commitment_vals["date"] = commitment_date
 
-        if not kwargs.get('account_fiscal_year_id'):
-            company_id = kwargs.get('company_id',
-                                  self.company_id.id if hasattr(self, 'company_id') and self.company_id else self.env.company.id)
-            fiscal_year = self.env['account.fiscal.year'].search([
-                ('date_from', '<=', commitment_date),
-                ('date_to', '>=', commitment_date),
-                ('company_id', '=', company_id)
-            ], limit=1)
+        if not kwargs.get("account_fiscal_year_id"):
+            company_id = kwargs.get(
+                "company_id",
+                self.company_id.id
+                if hasattr(self, "company_id") and self.company_id
+                else self.env.company.id,
+            )
+            fiscal_year = self.env["account.fiscal.year"].search(
+                [
+                    ("date_from", "<=", commitment_date),
+                    ("date_to", ">=", commitment_date),
+                    ("company_id", "=", company_id),
+                ],
+                limit=1,
+            )
             if not fiscal_year:
-                raise ValidationError(_(
-                    "No fiscal year found for date %s"
-                ) % commitment_date)
-            commitment_vals['account_fiscal_year_id'] = fiscal_year.id
+                raise ValidationError(
+                    _("No fiscal year found for date %s") % commitment_date
+                )
+            commitment_vals["account_fiscal_year_id"] = fiscal_year.id
         else:
-            commitment_vals['account_fiscal_year_id'] = kwargs['account_fiscal_year_id']
+            commitment_vals["account_fiscal_year_id"] = kwargs[
+                "account_fiscal_year_id"
+            ]
 
         return commitment_vals
 
-    def _reuse_cancelled_commitment(self, existing_commitment, amount, activity_analytic_id, fund_analytic_id,
-                                   department_analytic_id, source_analytic_id, ref, description,
-                                   budget_account_id, **kwargs):
-        """
-        Reuse an existing cancelled commitment by resetting and updating it.
-
-        Args:
-            existing_commitment: The cancelled commitment to reuse
-            amount (float): New commitment amount
-            activity_analytic_id: Activity dimension
-            fund_analytic_id: Fund dimension
-            department_analytic_id: Department dimension
-            source_analytic_id: Source dimension
-            ref (str): Reference
-            description (str): Description
-            budget_account_id: Budget account
-            **kwargs: Additional fields
-
-        Returns:
-            budget.commitment: Updated commitment
-        """
+    def _reuse_cancelled_commitment(
+        self,
+        existing_commitment,
+        amount,
+        activity_analytic_id,
+        fund_analytic_id,
+        department_analytic_id,
+        source_analytic_id,
+        ref,
+        description,
+        budget_account_id,
+        **kwargs,
+    ):
+        """Reuse an existing cancelled commitment by resetting and updating."""
         _logger.info(
             "Reusing cancelled budget commitment %s for %s",
             existing_commitment.name,
-            self._name
+            self._name,
         )
 
-        # Reset the cancelled commitment to draft
         existing_commitment.action_reset_to_draft()
 
-        # Prepare and apply update values
+        # Remove old lines
+        existing_commitment.line_ids.unlink()
+
         commitment_vals = self._prepare_commitment_vals(
-            amount, activity_analytic_id, fund_analytic_id,
-            department_analytic_id, source_analytic_id, ref, description,
-            budget_account_id, include_company=False, **kwargs
+            amount,
+            activity_analytic_id,
+            fund_analytic_id,
+            department_analytic_id,
+            source_analytic_id,
+            ref,
+            description,
+            budget_account_id,
+            include_company=False,
+            **kwargs,
         )
 
         existing_commitment.write(commitment_vals)
@@ -271,273 +289,270 @@ class BudgetCommitmentMixin(models.AbstractModel):
             "Updated reused commitment %s with new values for %s amount %s",
             existing_commitment.name,
             self._name,
-            existing_commitment.amount
+            existing_commitment.amount,
         )
 
         return existing_commitment
 
-    def _create_new_commitment(self, amount, activity_analytic_id, fund_analytic_id,
-                              department_analytic_id, source_analytic_id, ref, description,
-                              budget_account_id, **kwargs):
-        """
-        Create a new budget commitment.
-
-        Args:
-            amount (float): Commitment amount
-            activity_analytic_id: Activity dimension
-            fund_analytic_id: Fund dimension
-            department_analytic_id: Department dimension
-            source_analytic_id: Source dimension
-            ref (str): Reference
-            description (str): Description
-            budget_account_id: Budget account
-            **kwargs: Additional fields
-
-        Returns:
-            budget.commitment: New commitment
-        """
+    def _create_new_commitment(
+        self,
+        amount,
+        activity_analytic_id,
+        fund_analytic_id,
+        department_analytic_id,
+        source_analytic_id,
+        ref,
+        description,
+        budget_account_id,
+        **kwargs,
+    ):
+        """Create a new budget commitment with a reserve line."""
         commitment_vals = self._prepare_commitment_vals(
-            amount, activity_analytic_id, fund_analytic_id,
-            department_analytic_id, source_analytic_id, ref, description,
-            budget_account_id, include_company=True, **kwargs
+            amount,
+            activity_analytic_id,
+            fund_analytic_id,
+            department_analytic_id,
+            source_analytic_id,
+            ref,
+            description,
+            budget_account_id,
+            include_company=True,
+            **kwargs,
         )
 
-        commitment = self.env['budget.commitment'].create(commitment_vals)
+        commitment = self.env["budget.commitment"].create(commitment_vals)
 
         _logger.info(
             "Created new budget commitment %s for %s amount %s",
             commitment.name,
             self._name,
-            commitment.amount
+            commitment.amount,
         )
 
         return commitment
 
-    def _check_budget_availability(self, amount, activity_analytic_id, fund_analytic_id,
-                                  department_analytic_id=None, source_analytic_id=None,
-                                  **kwargs):
-        """
-        Check budget availability using the record's dynamic budget account field.
-
-        Args:
-            amount (float): Amount to check
-            activity_analytic_id: Activity dimension (record or ID) - Required
-            fund_analytic_id: Fund dimension (record or ID) - Required
-            department_analytic_id: Department dimension (record or ID) - Optional
-            source_analytic_id: Source dimension (record or ID) - Optional
-            **kwargs: Optional overrides for account_fiscal_year_id, company_id
-
-        Returns:
-            dict: Budget availability information
-        """
+    def _check_budget_availability(
+        self,
+        amount,
+        activity_analytic_id,
+        fund_analytic_id,
+        department_analytic_id=None,
+        source_analytic_id=None,
+        **kwargs,
+    ):
+        """Check budget availability for the given analytic combination."""
         self.ensure_one()
 
-        # Get budget account from dynamic field
-        budget_account_id = self._get_commitment_field_value('account_id')
+        budget_account_id = self._get_commitment_field_value("account_id")
         if not budget_account_id:
-            raise ValidationError(_(
-                "Budget account field '%s' is not set on this record"
-            ) % getattr(self.__class__, '_commitment_account_id_field', 'budget_account_id'))
+            raise ValidationError(
+                _("Budget account field '%s' is not set on this record")
+                % getattr(
+                    self.__class__,
+                    "_commitment_account_id_field",
+                    "budget_account_id",
+                )
+            )
 
-        account_id = budget_account_id.id if hasattr(budget_account_id, 'id') else budget_account_id
+        account_id = (
+            budget_account_id.id
+            if hasattr(budget_account_id, "id")
+            else budget_account_id
+        )
 
-        # Get budget controller
-        budget_controller = self.env['budget.controller']
+        budget_controller = self.env["budget.controller"]
 
-        # Prepare analytic data
         analytic_data = {
-            'account_id': account_id,
-            'activity_analytic_id': activity_analytic_id.id if hasattr(activity_analytic_id, 'id') else activity_analytic_id,
-            'fund_analytic_id': fund_analytic_id.id if hasattr(fund_analytic_id, 'id') else fund_analytic_id,
-            'department_analytic_id': department_analytic_id.id if department_analytic_id and hasattr(department_analytic_id, 'id') else (department_analytic_id or False),
-            'source_analytic_id': source_analytic_id.id if source_analytic_id and hasattr(source_analytic_id, 'id') else (source_analytic_id or False),
+            "account_id": account_id,
+            "activity_analytic_id": activity_analytic_id.id
+            if hasattr(activity_analytic_id, "id")
+            else activity_analytic_id,
+            "fund_analytic_id": fund_analytic_id.id
+            if hasattr(fund_analytic_id, "id")
+            else fund_analytic_id,
+            "department_analytic_id": department_analytic_id.id
+            if department_analytic_id and hasattr(department_analytic_id, "id")
+            else (department_analytic_id or False),
+            "source_analytic_id": source_analytic_id.id
+            if source_analytic_id and hasattr(source_analytic_id, "id")
+            else (source_analytic_id or False),
         }
 
-        # Determine fiscal year
-        if not kwargs.get('account_fiscal_year_id'):
-            check_date = kwargs.get('date', fields.Date.today())
-            company_id = kwargs.get('company_id',
-                                  self.company_id.id if hasattr(self, 'company_id') and self.company_id else self.env.company.id)
-            fiscal_year = self.env['account.fiscal.year'].search([
-                ('date_from', '<=', check_date),
-                ('date_to', '>=', check_date),
-                ('company_id', '=', company_id)
-            ], limit=1)
+        if not kwargs.get("account_fiscal_year_id"):
+            check_date = kwargs.get("date", fields.Date.today())
+            company_id = kwargs.get(
+                "company_id",
+                self.company_id.id
+                if hasattr(self, "company_id") and self.company_id
+                else self.env.company.id,
+            )
+            fiscal_year = self.env["account.fiscal.year"].search(
+                [
+                    ("date_from", "<=", check_date),
+                    ("date_to", ">=", check_date),
+                    ("company_id", "=", company_id),
+                ],
+                limit=1,
+            )
             if not fiscal_year:
-                raise ValidationError(_(
-                    "No fiscal year found for date %s"
-                ) % check_date)
+                raise ValidationError(
+                    _("No fiscal year found for date %s") % check_date
+                )
             fy_id = fiscal_year.id
         else:
-            fy_id = kwargs['account_fiscal_year_id']
+            fy_id = kwargs["account_fiscal_year_id"]
 
-        company_id = kwargs.get('company_id',
-                               self.company_id.id if hasattr(self, 'company_id') and self.company_id else self.env.company.id)
+        company_id = kwargs.get(
+            "company_id",
+            self.company_id.id
+            if hasattr(self, "company_id") and self.company_id
+            else self.env.company.id,
+        )
 
-        # Get available budget
         available = budget_controller.get_available_budget(
-            analytic_data,
-            fy_id,
-            company_id
+            analytic_data, fy_id, company_id
         )
 
-        # Check if negative budget is allowed
-        allow_negative = self.env['ir.config_parameter'].sudo().get_param(
-            'budget.allow_negative', False
+        allow_negative = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("budget.allow_negative", False)
         )
 
-        # Determine status
         if available >= amount:
-            status = 'sufficient'
+            status = "sufficient"
             is_sufficient = True
             message = _("Budget is sufficient for this commitment")
         elif available >= amount * 0.5 or (allow_negative and available >= 0):
-            status = 'warning'
+            status = "warning"
             is_sufficient = True if allow_negative else False
             message = _("Low budget warning - %.1f%% of available budget") % (
                 (amount / available * 100) if available > 0 else 999
             )
         elif allow_negative:
-            status = 'warning'
+            status = "warning"
             is_sufficient = True
             message = _("This will create a negative budget balance")
         else:
-            status = 'insufficient'
+            status = "insufficient"
             is_sufficient = False
             message = _("Insufficient budget - only %.2f available") % available
 
         return {
-            'available': available,
-            'requested': amount,
-            'is_sufficient': is_sufficient,
-            'status': status,
-            'message': message,
-            'percentage': (amount / available * 100) if available > 0 else 999.99
+            "available": available,
+            "requested": amount,
+            "is_sufficient": is_sufficient,
+            "status": status,
+            "message": message,
+            "percentage": (amount / available * 100) if available > 0 else 999.99,
         }
 
     def _cancel_budget_commitment(self):
-        """
-        Cancel a budget commitment and release the reserved budget.
-
-        Returns:
-            bool: True if successful
-
-        Raises:
-            UserError: If commitment cannot be cancelled
-        """
+        """Cancel the linked budget commitment."""
         self.ensure_one()
-
-        commitment = self._get_commitment_field_value('commitment_id')
-
+        commitment = self._get_commitment_field_value("commitment_id")
         if not commitment:
             return True
-
         commitment.action_cancel()
-
         return True
 
     def _obligate_budget_commitment(self):
-        """
-        Obligate a budget commitment (mark as obligated).
-        This transitions from reserved to obligated state for firm commitments.
-
-        Returns:
-            bool: True if successful
-
-        Raises:
-            UserError: If commitment cannot be obligated
-        """
+        """Add an obligate line to the linked commitment."""
         self.ensure_one()
-
-        commitment = self._get_commitment_field_value('commitment_id')
-
+        commitment = self._get_commitment_field_value("commitment_id")
         if not commitment:
             return True
 
-        commitment.action_obligate()
+        if commitment.state not in ["reserved", "partial"]:
+            raise UserError(
+                _("Commitment must be in reserved or partial state to obligate.")
+            )
 
+        # Get first reserve line for analytic info
+        first_reserve = commitment.line_ids.filtered(
+            lambda l: l.move_type == "reserve" and l.state == "posted"
+        )[:1]
+
+        if not first_reserve:
+            raise UserError(_("No active reserve lines found."))
+
+        self.env["budget.commitment.line"].create(
+            {
+                "commitment_id": commitment.id,
+                "move_type": "obligate",
+                "account_id": first_reserve.account_id.id,
+                "analytic_distribution": first_reserve.analytic_distribution,
+                "amount": commitment.total_reserved,
+                "name": _("Obligation from %s") % self.display_name,
+            }
+        )
         return True
 
     def _close_budget_commitment(self):
-        """
-        Close a budget commitment (mark as done).
-        This releases any unused budget back to the pool.
-
-        Returns:
-            bool: True if successful
-
-        Raises:
-            UserError: If commitment cannot be closed
-        """
+        """Close the linked budget commitment."""
         self.ensure_one()
-
-        commitment = self._get_commitment_field_value('commitment_id')
-
+        commitment = self._get_commitment_field_value("commitment_id")
         if not commitment:
             return True
-
-        commitment.close_commitment()
-
+        commitment.action_done()
         return True
 
-    def _update_commitment_amount(self, new_amount):
-        """
-        Update commitment amount with validation.
-
-        Args:
-            new_amount (float): New commitment amount
-
-        Returns:
-            bool: True if successful
-
-        Raises:
-            ValidationError: If new amount is invalid
-            UserError: If budget is insufficient for increase
-        """
+    def _consume_commitment(self, amount):
+        """Add a consume line to the linked commitment."""
         self.ensure_one()
+        commitment = self._get_commitment_field_value("commitment_id")
+        if not commitment:
+            raise ValidationError(_("No commitment to consume"))
 
-        commitment = self._get_commitment_field_value('commitment_id')
+        if commitment.state not in ["reserved", "partial"]:
+            raise UserError(
+                _("Can only consume from reserved or partial commitments")
+            )
 
+        first_reserve = commitment.line_ids.filtered(
+            lambda l: l.move_type == "reserve" and l.state == "posted"
+        )[:1]
+
+        if not first_reserve:
+            raise UserError(_("No active reserve lines found"))
+
+        consume_line = self.env["budget.commitment.line"].create(
+            {
+                "commitment_id": commitment.id,
+                "move_type": "consume",
+                "account_id": first_reserve.account_id.id,
+                "analytic_distribution": first_reserve.analytic_distribution,
+                "amount": amount,
+                "name": _("Consumption from %s") % self.display_name,
+            }
+        )
+
+        # Auto-close if fully consumed
+        if commitment.available_to_consume <= 0.01:
+            commitment.action_done()
+
+        return consume_line
+
+    def _update_commitment_amount(self, new_amount):
+        """Update commitment cap amount."""
+        self.ensure_one()
+        commitment = self._get_commitment_field_value("commitment_id")
         if not commitment:
             raise ValidationError(_("No commitment to update"))
 
-        if commitment.state not in ['reserved', 'obligated']:
-            raise UserError(_(
-                "Can only update amount for reserved or obligated commitments"
-            ))
+        if commitment.state in ["done", "cancel"]:
+            raise UserError(
+                _("Cannot update amount for done or cancelled commitments")
+            )
 
         if new_amount <= 0:
             raise ValidationError(_("Commitment amount must be positive"))
 
-        if new_amount < commitment.consumed_amount:
-            raise ValidationError(_(
-                "New amount (%.2f) cannot be less than consumed amount (%.2f)"
-            ) % (new_amount, commitment.consumed_amount))
-
-        # If increasing amount, check budget availability
-        if new_amount > commitment.amount:
-            increase = new_amount - commitment.amount
-
-            # Create a temporary context with the commitment's analytics to check availability
-            temp_self = self.env[self._name].new({
-                getattr(self.__class__, '_commitment_account_id_field', 'budget_account_id'): commitment.account_id.id
-            })
-
-            # Check availability for the increase using commitment's analytics
-            check_result = temp_self._check_budget_availability(
-                amount=increase,
-                activity_analytic_id=commitment.activity_analytic_id,
-                fund_analytic_id=commitment.fund_analytic_id,
-                department_analytic_id=commitment.department_analytic_id,
-                source_analytic_id=commitment.source_analytic_id,
-                account_fiscal_year_id=commitment.account_fiscal_year_id.id,
-                company_id=commitment.company_id.id
+        if new_amount < commitment.total_consumed:
+            raise ValidationError(
+                _("New amount (%.2f) cannot be less than consumed amount (%.2f)")
+                % (new_amount, commitment.total_consumed)
             )
-
-            if not check_result['is_sufficient']:
-                raise UserError(_(
-                    "Insufficient budget to increase commitment: %s"
-                ) % check_result['message'])
 
         old_amount = commitment.amount
         commitment.amount = new_amount
@@ -546,36 +561,7 @@ class BudgetCommitmentMixin(models.AbstractModel):
             "Updated commitment %s amount from %.2f to %.2f",
             commitment.name,
             old_amount,
-            new_amount
+            new_amount,
         )
 
         return True
-
-    def _consume_commitment(self, amount):
-        """
-        Record consumption against a commitment.
-        Creates a budget move to consume the committed amount.
-
-        Args:
-            amount (float): Amount to consume
-
-        Returns:
-            budget.move: Created budget move for consumption
-
-        Raises:
-            ValidationError: If amount exceeds remaining commitment
-        """
-        self.ensure_one()
-
-        commitment = self._get_commitment_field_value('commitment_id')
-
-        if not commitment:
-            raise ValidationError(_("No commitment to consume"))
-
-        budget_move = commitment.consume(amount)
-
-        # Auto-close commitment if fully consumed
-        if commitment.remaining_amount <= 0.01:  # Small tolerance for rounding
-            commitment.close_commitment()
-
-        return budget_move

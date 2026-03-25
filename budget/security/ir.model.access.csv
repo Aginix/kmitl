@@ -1,5 +1,7 @@
 id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
 access_budget_commitment_user,budget_commitment_user,model_budget_commitment,group_budget_user,1,1,1,1
+access_budget_commitment_line_user,budget_commitment_line_user,model_budget_commitment_line,group_budget_user,1,1,1,1
+access_budget_commitment_line_viewer,budget_commitment_line_viewer,model_budget_commitment_line,group_budget_viewer,1,0,0,0
 access_budget_move_user,budget_move_user,model_budget_move,group_budget_user,1,1,1,1
 access_budget_move_line_user,budget_move_line_user,model_budget_move_line,group_budget_user,1,1,1,1
 access_budget_account_user,budget_account_user,model_budget_account,,1,0,0,0

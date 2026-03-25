@@ -57,7 +57,7 @@ class BudgetNode:
         for record in self.children:
             total += record.obligation()  # Fix: use obligation() not commitment()
         for line in self.lines:
-            if line["model"] == "budget.commitment" and line["state"] == "obligated":
+            if line["model"] == "budget.commitment" and line["state"] in ("reserved", "partial"):
                 total += line["balance"]
         return total
 
