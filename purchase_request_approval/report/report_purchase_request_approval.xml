@@ -97,13 +97,6 @@
                                 />
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col"> โดยมีการเบิกจ่ายดังนี้ <span
-                                    class="fw-bolder text-decoration-underline"
-                                    t-esc="{'direct': 'จ่ายตรง', 'loan': 'เงินยืม', 'prepaid': 'สำรองจ่าย'}.get(o.payment_type, '')"
-                                />
-                            </div>
-                        </div>
 
                         <div class="my-4" />
 
@@ -131,7 +124,7 @@
                                             <span
                                                 t-out="'{0:,.0f}'.format(line.product_qty)"
                                             />
-                                            <span t-field="line.product_uom_id" />
+                                            <span t-out="line.product_uom_id.with_context(lang='th_TH').name" />
                                         </td>
                                         <td
                                             class="text-end"

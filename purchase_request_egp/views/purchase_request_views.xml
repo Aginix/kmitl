@@ -60,7 +60,7 @@
                 <button
                     name="action_egp_create_purchase_order"
                     type="object"
-                    string="สร้างใบจัดซื้อ/จ้าง"
+                    string="Create PO"
                     attrs="{'invisible': [('show_egp_create_purchase_order_button', '=', False)]}"
                     groups="purchase.group_purchase_user"
                     class="btn-primary"
