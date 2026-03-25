@@ -243,6 +243,97 @@
             </a>
         </xpath>
     </template>
+
+    <!-- Filter by Departments -->
+    <template
+        id="job_filter_by_departments"
+        inherit_id="website_hr_recruitment.index"
+        active="False"
+        name="Filter by Departments"
+    >
+        <xpath expr="//div[@id='jobs_grid_left']" position="inside">
+            <div class="card shadow-sm border-0 rounded-4 mb-3">
+                <div class="card-body p-3">
+                    <h6 class="fw-bold text-dark mb-3 d-flex align-items-center">
+                        <span class="text-primary me-2">
+                            <i class="fa fa-filter" />
+                        </span>
+                    Departments
+                    </h6>
+                    <ul class="nav flex-column gap-1">
+                        <li class="nav-item">
+                            <a
+                                t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/office/%s' % office_id if office_id else ''}#{ '/employment_type/%s' % contract_type_id if contract_type_id else '' }"
+                                t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if not department_id else ' text-secondary'}"
+                            >
+                            All Departments
+                        </a>
+                        </li>
+                        <t t-foreach="departments" t-as="department">
+                            <li class="nav-item">
+                                <a
+                                    t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }/department/#{ slug(department) }#{ '/office/%s' % office_id if office_id else '' }#{ '/employment_type/%s' % contract_type_id if contract_type_id else '' }"
+                                    t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if department_id and department_id.id == department.id else ' text-secondary'}"
+                                >
+                                    <span t-field="department.name" />
+                                </a>
+                            </li>
+                        </t>
+                    </ul>
+                </div>
+            </div>
+        </xpath>
+        <xpath expr="//div[@id='jobs_grid_left']" position="attributes">
+            <attribute name="class">col-lg-3</attribute>
+        </xpath>
+    </template>
+    <!-- Filter by Offices -->
+    <template
+        id="job_filter_by_offices"
+        inherit_id="website_hr_recruitment.index"
+        active="False"
+        name="Filter by Offices"
+    >
+        <xpath expr="//div[@id='jobs_grid_left']" position="inside">
+            <div class="card shadow-sm border-0 rounded-4 mb-3">
+                <div class="card-body p-3">
+                    <h6 class="fw-bold text-dark mb-3 d-flex align-items-center">
+                        <span class="text-primary me-2">
+                            <i class="fa fa-map-marker" />
+                        </span>
+                    Office Location
+                    </h6>
+                    <ul class="nav flex-column gap-1">
+                        <li class="nav-item">
+                            <a
+                                t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/department/%s' % slug(department_id) if department_id else '' }#{ '/employment_type/%s' % contract_type_id if contract_type_id else '' }"
+                                t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if not office_id else ' text-secondary'}"
+                            >
+                            All Offices
+                        </a>
+                        </li>
+                        <t t-foreach="offices" t-as="thisoffice">
+                            <li class="nav-item">
+                                <a
+                                    t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/department/%s' % slug(department_id) if department_id else '' }/office/#{ thisoffice.id }#{ '/employment_type/%s' % contract_type_id if contract_type_id else '' }"
+                                    t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if office_id and office_id == thisoffice.id else ' text-secondary'}"
+                                >
+                                    <span t-field="thisoffice.city" />
+                                    <t t-if="thisoffice.country_id">
+                                    ,
+                                        <span t-field="thisoffice.country_id.name" />
+                                    </t>
+                                </a>
+                            </li>
+                        </t>
+                    </ul>
+                </div>
+            </div>
+        </xpath>
+        <xpath expr="//div[@id='jobs_grid_left']" position="attributes">
+            <attribute name="class">col-lg-3</attribute>
+        </xpath>
+    </template>
     <!-- Filter by Role -->
     <template
         id="job_filter_by_roles"
@@ -286,67 +377,6 @@
                                 t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if role == 'support' else ' text-secondary'}"
                             >
                                 Support
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </xpath>
-        <xpath expr="//div[@id='jobs_grid_left']" position="attributes">
-            <attribute name="class">col-lg-3</attribute>
-        </xpath>
-    </template>
-    <!-- Filter by Employee Type -->
-    <template
-        id="job_filter_by_employee_types"
-        inherit_id="website_hr_recruitment.index"
-        active="False"
-        name="Filter by Employee Type"
-    >
-        <xpath expr="//div[@id='jobs_grid_left']" position="inside">
-            <t
-                t-set="qs_no_et"
-                t-value="'&amp;'.join([p for p in ['role=%s' % role if role else '', 'education_level=%s' % education_level if education_level else '', 'category_id=%s' % category_id if category_id else ''] if p])"
-            />
-            <div class="card shadow-sm border-0 rounded-4 mb-3">
-                <div class="card-body p-2">
-                    <h6 class="fw-bold text-dark mb-3 d-flex align-items-center">
-                        <span class="text-primary me-2">
-                            <i class="fa fa-filter" />
-                        </span>
-                        Employee Type
-                    </h6>
-                    <ul class="nav flex-column gap-1">
-                        <li class="nav-item">
-                            <a
-                                t-attf-href="#{kmitl_base_url}#{ '?' + qs_no_et if qs_no_et else '' }"
-                                t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if not employee_type else ' text-secondary'}"
-                            >
-                                All Employee Types
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a
-                                t-attf-href="#{kmitl_base_url}?employee_type=B#{ '&amp;' + qs_no_et if qs_no_et else '' }"
-                                t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if employee_type == 'B' else ' text-secondary'}"
-                            >
-                                เงินงบประมาณ
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a
-                                t-attf-href="#{kmitl_base_url}?employee_type=N#{ '&amp;' + qs_no_et if qs_no_et else '' }"
-                                t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if employee_type == 'N' else ' text-secondary'}"
-                            >
-                                เงินรายได้
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a
-                                t-attf-href="#{kmitl_base_url}?employee_type=E#{ '&amp;' + qs_no_et if qs_no_et else '' }"
-                                t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if employee_type == 'E' else ' text-secondary'}"
-                            >
-                                พิเศษ
                             </a>
                         </li>
                     </ul>
@@ -451,40 +481,59 @@
             <attribute name="class">col-lg-3</attribute>
         </xpath>
     </template>
+    <!-- Filter by Employee Type -->
     <template
-    id="job_filter_by_departments"
-    inherit_id="website_hr_recruitment.index"
-    active="False"
-    name="Filter by Departments"
->
+        id="job_filter_by_employee_types"
+        inherit_id="website_hr_recruitment.index"
+        active="False"
+        name="Filter by Employee Type"
+    >
         <xpath expr="//div[@id='jobs_grid_left']" position="inside">
+            <t
+                t-set="qs_no_et"
+                t-value="'&amp;'.join([p for p in ['role=%s' % role if role else '', 'education_level=%s' % education_level if education_level else '', 'category_id=%s' % category_id if category_id else ''] if p])"
+            />
             <div class="card shadow-sm border-0 rounded-4 mb-3">
-                <div class="card-body p-3">
+                <div class="card-body p-2">
                     <h6 class="fw-bold text-dark mb-3 d-flex align-items-center">
                         <span class="text-primary me-2">
-                            <i class="fa fa-filter"></i>
+                            <i class="fa fa-filter" />
                         </span>
-                    Departments
+                        Employee Type
                     </h6>
                     <ul class="nav flex-column gap-1">
                         <li class="nav-item">
                             <a
-                            t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/office/%s' % office_id if office_id else ''}#{ '/employment_type/%s' % contract_type_id if contract_type_id else '' }"
-                            t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if not department_id else ' text-secondary'}"
-                        >
-                            All Departments
-                        </a>
-                        </li>
-                        <t t-foreach="departments" t-as="department">
-                            <li class="nav-item">
-                                <a
-                                t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }/department/#{ slug(department) }#{ '/office/%s' % office_id if office_id else '' }#{ '/employment_type/%s' % contract_type_id if contract_type_id else '' }"
-                                t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if department_id and department_id.id == department.id else ' text-secondary'}"
+                                t-attf-href="#{kmitl_base_url}#{ '?' + qs_no_et if qs_no_et else '' }"
+                                t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if not employee_type else ' text-secondary'}"
                             >
-                                    <span t-field="department.name"/>
-                                </a>
-                            </li>
-                        </t>
+                                All Employee Types
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                t-attf-href="#{kmitl_base_url}?employee_type=B#{ '&amp;' + qs_no_et if qs_no_et else '' }"
+                                t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if employee_type == 'B' else ' text-secondary'}"
+                            >
+                                เงินงบประมาณ
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                t-attf-href="#{kmitl_base_url}?employee_type=N#{ '&amp;' + qs_no_et if qs_no_et else '' }"
+                                t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if employee_type == 'N' else ' text-secondary'}"
+                            >
+                                เงินรายได้
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                t-attf-href="#{kmitl_base_url}?employee_type=E#{ '&amp;' + qs_no_et if qs_no_et else '' }"
+                                t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if employee_type == 'E' else ' text-secondary'}"
+                            >
+                                พิเศษ
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -493,83 +542,38 @@
             <attribute name="class">col-lg-3</attribute>
         </xpath>
     </template>
+    <!-- Filter by Employment Types -->
     <template
-    id="job_filter_by_offices"
-    inherit_id="website_hr_recruitment.index"
-    active="False"
-    name="Filter by Offices"
->
+        id="job_filter_by_employment_type"
+        inherit_id="website_hr_recruitment.index"
+        active="False"
+        name="Filter by Employment Type"
+    >
         <xpath expr="//div[@id='jobs_grid_left']" position="inside">
             <div class="card shadow-sm border-0 rounded-4 mb-3">
                 <div class="card-body p-3">
                     <h6 class="fw-bold text-dark mb-3 d-flex align-items-center">
                         <span class="text-primary me-2">
-                            <i class="fa fa-map-marker"></i>
-                        </span>
-                    Office Location
-                    </h6>
-                    <ul class="nav flex-column gap-1">
-                        <li class="nav-item">
-                            <a
-                            t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/department/%s' % slug(department_id) if department_id else '' }#{ '/employment_type/%s' % contract_type_id if contract_type_id else '' }"
-                            t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if not office_id else ' text-secondary'}"
-                        >
-                            All Offices
-                        </a>
-                        </li>
-                        <t t-foreach="offices" t-as="thisoffice">
-                            <li class="nav-item">
-                                <a
-                                t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/department/%s' % slug(department_id) if department_id else '' }/office/#{ thisoffice.id }#{ '/employment_type/%s' % contract_type_id if contract_type_id else '' }"
-                                t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if office_id and office_id == thisoffice.id else ' text-secondary'}"
-                            >
-                                    <span t-field="thisoffice.city"/>
-                                    <t t-if="thisoffice.country_id">
-                                    ,
-                                        <span t-field="thisoffice.country_id.name"/>
-                                    </t>
-                                </a>
-                            </li>
-                        </t>
-                    </ul>
-                </div>
-            </div>
-        </xpath>
-        <xpath expr="//div[@id='jobs_grid_left']" position="attributes">
-            <attribute name="class">col-lg-3</attribute>
-        </xpath>
-    </template>
-    <template
-    id="job_filter_by_employment_type"
-    inherit_id="website_hr_recruitment.index"
-    active="False"
-    name="Filter by Employment Type"
->
-        <xpath expr="//div[@id='jobs_grid_left']" position="inside">
-            <div class="card shadow-sm border-0 rounded-4 mb-3">
-                <div class="card-body p-3">
-                    <h6 class="fw-bold text-dark mb-3 d-flex align-items-center">
-                        <span class="text-primary me-2">
-                            <i class="fa fa-briefcase"></i>
+                            <i class="fa fa-briefcase" />
                         </span>
                     Employment Type
                     </h6>
                     <ul class="nav flex-column gap-1">
                         <li class="nav-item">
                             <a
-                            t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/department/%s' % slug(department_id) if department_id else '' }#{ '/office/%s' % office_id if office_id else '' }"
-                            t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if not contract_type_id else ' text-secondary'}"
-                        >
+                                t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/department/%s' % slug(department_id) if department_id else '' }#{ '/office/%s' % office_id if office_id else '' }"
+                                t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if not contract_type_id else ' text-secondary'}"
+                            >
                             All Types
                         </a>
                         </li>
                         <t t-foreach="employment_types" t-as="employment_type">
                             <li class="nav-item">
                                 <a
-                                t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/department/%s' % slug(department_id) if department_id else '' }#{ '/office/%s' % office_id if office_id else '' }/employment_type/#{ employment_type.id }"
-                                t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if contract_type_id and contract_type_id == employment_type.id else ' text-secondary'}"
-                            >
-                                    <span t-field="employment_type.name"/>
+                                    t-attf-href="/jobs#{ '/country/%s' % slug(country_id) if country_id else '' }#{ '/department/%s' % slug(department_id) if department_id else '' }#{ '/office/%s' % office_id if office_id else '' }/employment_type/#{ employment_type.id }"
+                                    t-attf-class="nav-link px-3 py-2 rounded-3#{' active bg-primary text-white fw-semibold' if contract_type_id and contract_type_id == employment_type.id else ' text-secondary'}"
+                                >
+                                    <span t-field="employment_type.name" />
                                 </a>
                             </li>
                         </t>
@@ -581,4 +585,5 @@
             <attribute name="class">col-lg-3</attribute>
         </xpath>
     </template>
+
 </odoo>
