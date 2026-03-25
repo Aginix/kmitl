@@ -737,12 +737,6 @@ msgstr "จำนวน"
 msgid "Receive Date"
 msgstr "วันที่ตรวจรับ"
 
-#. modules: l10n_th_gov_work_acceptance, purchase_work_acceptance_evaluation
-#: model_terms:ir.ui.view,arch_db:l10n_th_gov_work_acceptance.view_work_acceptance_form_evaluation
-#: model_terms:ir.ui.view,arch_db:purchase_work_acceptance_evaluation.view_work_acceptance_evaluation_tab_form
-msgid "Evaluation"
-msgstr "การประเมิน"
-
 #. module: purchase_work_acceptance
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_search
 #: model_terms:ir.ui.view,arch_db:purchase_work_acceptance.view_work_acceptance_tree
@@ -767,25 +761,6 @@ msgstr "วันที่ขอส่งมอบ"
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_stock_picking__require_wa
 msgid "Require Wa"
 msgstr ""
-
-#. module: purchase_work_acceptance_late_fines
-#. odoo-python
-#: code:addons/purchase_work_acceptance_late_fines/models/work_acceptance.py:0
-#, python-format
-msgid "Fines Invoice/Refund"
-msgstr ""
-
-#. module: purchase_work_acceptance_late_fines
-#: model:ir.model.fields,field_description:purchase_work_acceptance_late_fines.field_work_acceptance__fines_invoice_ids
-msgid "Fines Invoices"
-msgstr ""
-
-#. module: purchase_work_acceptance_late_fines
-#: model:ir.model.fields,field_description:purchase_work_acceptance_late_fines.field_res_company__wa_fines_rate
-#: model:ir.model.fields,field_description:purchase_work_acceptance_late_fines.field_res_config_settings__wa_fines_rate
-#: model:ir.model.fields,field_description:purchase_work_acceptance_late_fines.field_work_acceptance__fines_rate
-msgid "Fines Rate"
-msgstr "ค่าปรับต่อวัน"
 
 #. module: purchase_work_acceptance
 #: model:ir.model.fields,field_description:purchase_work_acceptance.field_work_acceptance__message_follower_ids
