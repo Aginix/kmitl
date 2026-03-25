@@ -12,10 +12,11 @@
                 <field name="account_fiscal_year_id" optional="show" />
                 <field name="source_analytic_id" optional="show" />
                 <field name="department_analytic_id" optional="hide" />
+                <field name="account_id" optional="show" />
                 <field name="amount" string="วงเงิน"/>
-                <field name="total_reserved" sum="Total Reserved" optional="show" />
-                <field name="total_obligated" sum="Total Obligated" optional="show" />
-                <field name="total_consumed" sum="Total Consumed" optional="show" />
+                <field name="total_reserved" optional="show" />
+                <field name="total_obligated" optional="show" />
+                <field name="total_consumed" optional="show" />
                 <field name="state" widget="badge"
                     decoration-warning="state == 'draft'"
                     decoration-info="state == 'reserved'"
@@ -70,9 +71,15 @@
                                 attrs="{'readonly': [('id', '!=', False)]}"/>
                         </group>
                         <group string="Budget Details">
+                            <field name="account_id"
+                                options="{'no_create': True, 'no_open': True}" />
                             <field name="department_analytic_id" required="1"
                                 options="{'no_create': True, 'no_open': True}" />
                             <field name="source_analytic_id" required="1"
+                                options="{'no_create': True, 'no_open': True}" />
+                            <field name="activity_analytic_id"
+                                options="{'no_create': True, 'no_open': True}" />
+                            <field name="fund_analytic_id"
                                 options="{'no_create': True, 'no_open': True}" />
                             <field name="amount" widget="monetary"/>
                             <field name="currency_id" invisible="1"/>

@@ -104,7 +104,18 @@ class BudgetCommitment(models.Model):
         states=READONLY_STATES,
     )
 
-    # Header-level analytics: department + source (shared across all lines)
+    # Primary budget account (header-level default for lines)
+    account_id = fields.Many2one(
+        comodel_name="budget.account",
+        string="รหัสงบประมาณ",
+        required=True,
+        index=True,
+        domain="[('budgetable', '=', True), ('budget_type', '=', 'expense')]",
+        tracking=True,
+        states=READONLY_STATES,
+    )
+
+    # Header-level analytics: all 4 dimensions (shared default for lines)
     department_analytic_id = fields.Many2one(
         "account.analytic.account",
         string="ส่วนงาน",
@@ -125,10 +136,32 @@ class BudgetCommitment(models.Model):
         tracking=True,
         states=READONLY_STATES,
     )
+    activity_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="กิจกรรม",
+        compute="_compute_analytic_id",
+        inverse="_inverse_activity_analytic",
+        domain=[("root_plan_id.code", "=", "activities")],
+        store=False,
+        tracking=True,
+        states=READONLY_STATES,
+    )
+    fund_analytic_id = fields.Many2one(
+        "account.analytic.account",
+        string="กองทุน",
+        compute="_compute_analytic_id",
+        inverse="_inverse_fund_analytic",
+        domain=[("root_plan_id.code", "=", "funds")],
+        store=False,
+        tracking=True,
+        states=READONLY_STATES,
+    )
 
     _analytic_keys = {
         "departments": "department_analytic_id",
         "sources": "source_analytic_id",
+        "activities": "activity_analytic_id",
+        "funds": "fund_analytic_id",
     }
 
     def _inverse_department_analytic(self):
@@ -138,6 +171,14 @@ class BudgetCommitment(models.Model):
     def _inverse_source_analytic(self):
         for record in self:
             record._update_analytic_distribution("sources")
+
+    def _inverse_activity_analytic(self):
+        for record in self:
+            record._update_analytic_distribution("activities")
+
+    def _inverse_fund_analytic(self):
+        for record in self:
+            record._update_analytic_distribution("funds")
 
     company_id = fields.Many2one(
         comodel_name="res.company",
@@ -196,25 +237,6 @@ class BudgetCommitment(models.Model):
         currency_field="currency_id",
     )
 
-    # Backward-compat computed fields (from first reserve line)
-    account_id = fields.Many2one(
-        comodel_name="budget.account",
-        string="รหัสงบประมาณ",
-        compute="_compute_first_line_fields",
-    )
-    activity_analytic_id = fields.Many2one(
-        "account.analytic.account",
-        string="กิจกรรม",
-        compute="_compute_first_line_fields",
-        domain=[("root_plan_id.code", "=", "activities")],
-    )
-    fund_analytic_id = fields.Many2one(
-        "account.analytic.account",
-        string="กองทุน",
-        compute="_compute_first_line_fields",
-        domain=[("root_plan_id.code", "=", "funds")],
-    )
-
     # Legacy backward-compat fields
     consumed_amount = fields.Monetary(
         string="Consumed Amount",
@@ -263,16 +285,6 @@ class BudgetCommitment(models.Model):
             # Legacy compat
             record.consumed_amount = total_consumed
             record.remaining_amount = record.amount - total_consumed
-
-    @api.depends("line_ids")
-    def _compute_first_line_fields(self):
-        for record in self:
-            first_reserve = record.line_ids.filtered(
-                lambda l: l.move_type == "reserve" and l.state == "posted"
-            )[:1]
-            record.account_id = first_reserve.account_id
-            record.activity_analytic_id = first_reserve.activity_analytic_id
-            record.fund_analytic_id = first_reserve.fund_analytic_id
 
     @api.constrains("amount")
     def _check_positive_amount(self):
