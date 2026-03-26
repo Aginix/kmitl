@@ -2,7 +2,7 @@
     <template id="website_hr_recruitment.default_website_description">
         <!-- Job Description -->
         <div class="oe_structure">
-            <div class="card mb-4">
+            <div class="card mb-4 rounded-12 border-0">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center mb-4">
                         <div
@@ -41,7 +41,7 @@
         </div>
         <!-- Qualifications -->
         <div class="oe_structure">
-            <div class="card mb-4">
+            <div class="card mb-4 rounded-12 border-0">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center mb-4">
                         <div
@@ -194,7 +194,7 @@
         </div>
         <!-- Responsibilities -->
         <div class="oe_structure">
-            <div class="card shadow-sm border-0 rounded-4 mb-4">
+            <div class="card shadow-sm border-0 rounded-12 mb-4">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center mb-4">
                         <div
@@ -220,7 +220,7 @@
         </div>
         <!-- Benefits -->
         <div class="oe_structure">
-            <div class="card mb-4">
+            <div class="card mb-4 rounded-12 border-0">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center mb-4">
                         <div
@@ -297,7 +297,7 @@
             </div>
         </div>
         <!-- Documents -->
-        <div class="card mb-4">
+        <div class="card mb-4 rounded-12 border-0">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center mb-4">
                     <div
