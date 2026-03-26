@@ -151,6 +151,9 @@
             <xpath expr="//field[@name='assigned_to']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//field[@name='date_start']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
             <xpath expr="//field[@name='description']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
@@ -254,7 +257,6 @@
                         <field
                             name="procurement_method_id"
                             required="1"
-                            domain="[('id', 'in', procurement_method_ids)]"
                             attrs="{'readonly': [('is_editable','=', False)]}"
                         />
                         <field
@@ -359,6 +361,13 @@
                             </sheet>
                         </form>
                     </field>
+                </page>
+            </xpath>
+
+            <!-- === Notebook Operation pages === -->
+            <xpath expr="//form/sheet/notebook" position="inside">
+                <page name="operation" string="Operation">
+                    <field name="date_start" />
                 </page>
             </xpath>
         </field>
