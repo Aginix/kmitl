@@ -82,7 +82,6 @@ class PurchaseRequest(models.Model):
         string="Approved Date",
         copy=False,
     )
-    substate_sequence = fields.Integer(related="substate_id.sequence")
 
     # -- purchase_request_kmitl fields --
     title = fields.Char(string="title", tracking=True)
@@ -166,20 +165,6 @@ class PurchaseRequest(models.Model):
                 )
         return estimated_cost
 
-    def action_to_substate(self):
-        self.ensure_one()
-        sequence = self.env.context.get("to_substate_sequence", 0)
-        substate = self.env["base.substate"].search(
-            [("model", "=", "purchase.request"), ("sequence", "=", sequence)], limit=1
-        )
-        self.write(
-            {
-                "substate_id": substate.id,
-                "verified_by": self.env.user.id,
-                "date_verified": fields.Date.context_today(self),
-            }
-        )
-
     @api.onchange("purchase_type_id")
     def _onchange_purchase_type_id(self):
         procurement_methods = self.purchase_type_id.procurement_method_ids
@@ -199,18 +184,6 @@ class PurchaseRequest(models.Model):
             }
         )
         return super().button_approved()
-
-    def _get_condition_reset_reject(self):
-        po_manager = self.user_has_groups("purchase.group_purchase_user")
-        substate_verify = self.env.ref("purchase_request_kmitl.base_substate_verified")
-        return self.filtered(
-            lambda rec: (
-                rec.state in ["approved", "done"]
-                or (rec.state == "to_approve" and rec.substate_id == substate_verify)
-            )
-            and not po_manager
-            and not self._context.get("bypass_pr_reject")
-        )
 
     def button_rejected(self):
         """Allows the Procurement to reject documents after

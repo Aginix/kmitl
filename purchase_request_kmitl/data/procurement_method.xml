@@ -1,4 +1,4 @@
-<odoo noupdate="1">
+<odoo noupdate="0">
     <record id="procurement_specific" model="procurement.method">
         <field name="name">เฉพาะเจาะจง</field>
         <field name="sequence">10</field>
