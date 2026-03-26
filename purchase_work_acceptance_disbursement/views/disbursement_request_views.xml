@@ -17,9 +17,15 @@
                       attrs="{'invisible': [('wa_ids', '=', False)]}">
                   </button>
               </xpath>
+              <xpath expr="//field[@name='amount_untaxed']" position="attributes">
+                  <attribute name="invisible">1</attribute>
+              </xpath>
+              <xpath expr="//field[@name='amount_total']" position="attributes">
+                  <attribute name="invisible">1</attribute>
+              </xpath>
               <xpath expr="//field[@name='amount_untaxed']" position="after">
-                  <field name="fines_late" />
                   <field name="fines_total" />
+                  <field name="fines_total" string="Value Before Tax"/>
               </xpath>
           </field>
       </record>

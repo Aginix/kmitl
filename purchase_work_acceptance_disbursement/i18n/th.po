@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-20 12:04+0000\n"
-"PO-Revision-Date: 2026-03-20 19:06+0700\n"
+"POT-Creation-Date: 2026-03-26 07:28+0000\n"
+"PO-Revision-Date: 2026-03-26 14:30+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -16,6 +16,22 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 3.6\n"
+
+#. module: purchase_work_acceptance_disbursement
+#. odoo-python
+#: code:addons/purchase_work_acceptance_disbursement/models/puchase_order.py:0
+#, python-format
+msgid ""
+"Account with code '4310000003' not found. Please check your chart of "
+"accounts."
+msgstr ""
+
+#. module: purchase_work_acceptance_disbursement
+#. odoo-python
+#: code:addons/purchase_work_acceptance_disbursement/models/puchase_order.py:0
+#, python-format
+msgid "Added fine line: <b>%.2f</b> (from WA %s)"
+msgstr ""
 
 #. module: purchase_work_acceptance_disbursement
 #. odoo-python
@@ -43,6 +59,16 @@ msgstr "ใบขอเบิก"
 #, python-format
 msgid "Disbursement Request <a href=\"%(link)s\">%(name)s</a> created."
 msgstr ""
+
+#. module: purchase_work_acceptance_disbursement
+#: model:ir.model.fields,field_description:purchase_work_acceptance_disbursement.field_disbursement_request__fines_total
+msgid "Fined Total"
+msgstr "มูลค่าหลังหักค่าปรับ"
+
+#. module: purchase_work_acceptance_disbursement
+#: model:ir.model.fields,field_description:purchase_work_acceptance_disbursement.field_disbursement_request__fines_late
+msgid "Fines Amount"
+msgstr "ค่าปรับ"
 
 #. module: purchase_work_acceptance_disbursement
 #. odoo-python
@@ -87,22 +113,8 @@ msgid "Work Acceptance"
 msgstr "การตรวจรับ"
 
 #. module: purchase_work_acceptance_disbursement
-#. odoo-python
-#: code:addons/purchase_work_acceptance_disbursement/models/disbursement_request.py:0
-#, python-format
-msgid "Work Acceptance <b>%s</b> marked as disbursed."
-msgstr ""
-
-#. module: purchase_work_acceptance_disbursement
 #: model:ir.model,name:purchase_work_acceptance_disbursement.model_work_acceptance_line
 msgid "Work Acceptance Line"
-msgstr ""
-
-#. module: purchase_work_acceptance_disbursement
-#. odoo-python
-#: code:addons/purchase_work_acceptance_disbursement/models/disbursement_request.py:0
-#, python-format
-msgid "Work Acceptance disbursed flag reset."
 msgstr ""
 
 #. module: purchase_work_acceptance_disbursement
@@ -111,4 +123,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:purchase_work_acceptance_disbursement.field_disbursement_request__wa_ids
 #, python-format
 msgid "Work Acceptances"
+msgstr ""
+
+#. module: purchase_work_acceptance_disbursement
+#. odoo-python
+#: code:addons/purchase_work_acceptance_disbursement/models/puchase_order.py:0
+#, python-format
+msgid "ค่าปรับ"
 msgstr ""
