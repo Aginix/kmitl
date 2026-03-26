@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<odoo>
-    <record
-        id="purchase_request_to_requisition.action_purchase_request_make_purchase_requisition"
-        model="ir.actions.act_window"
-    >
-        <field name="binding_model_id" eval="False" />
-    </record>
-</odoo>

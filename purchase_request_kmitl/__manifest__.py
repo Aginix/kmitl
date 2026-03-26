@@ -21,7 +21,6 @@
         "data/purchase_exception.xml",
         "data/purchase_request_exception.xml",
         "data/purchase_request_line_exception.xml",
-        "data/purchase_request_rules.xml",
         "data/procurement_type.xml",
         "data/procurement_method.xml",
         "data/purchase_type.xml",
