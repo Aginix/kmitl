@@ -26,7 +26,6 @@
         "data/procurement_type.xml",
         "data/procurement_method.xml",
         "data/purchase_type.xml",
-        "data/purchase_request_substate.xml",
         "views/procurement_method_views.xml",
         "views/procurement_type_views.xml",
         "views/purchase_type_views.xml",
