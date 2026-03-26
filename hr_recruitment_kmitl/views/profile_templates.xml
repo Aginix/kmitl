@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <!-- Add "My Profile" link to portal home -->
     <template id="portal_my_home_profile" name="Portal My Home: Profile" inherit_id="portal.portal_my_home"
         priority="40">
@@ -12,19 +11,16 @@
             </t>
         </xpath>
     </template>
-
     <!-- Change Edit button to link to /my/profile -->
     <template id="portal_layout_inherit_profile" name="Portal Layout: Profile Edit" inherit_id="portal.portal_layout">
         <xpath expr="//div[hasclass('o_portal_my_details')]//a[@href='/my/account']" position="attributes">
             <attribute name="href">/my/profile</attribute>
         </xpath>
     </template>
-
     <!-- Profile form page -->
     <template id="portal_my_profile" name="My Profile">
         <t t-call="website.layout">
             <t t-set="no_breadcrumbs" t-value="1" />
-
             <div class="py-5 overflow-hidden position-relative text-white bg-thai-d-dark">
                 <div class="position-absolute top-0 start-0 w-100 h-100 bg-pattern-dots opacity-25" />
                 <div class="container position-relative z-1 py-4">
@@ -35,7 +31,6 @@
                     </p>
                 </div>
             </div>
-
             <div class="container mt-5">
                 <!-- Error messages -->
                 <div t-if="error_message" class="alert alert-danger" role="alert">
@@ -44,27 +39,25 @@
                         <br />
                     </t>
                 </div>
-
                 <div class="card border-secondary mb-4">
                     <div class="card-body p-4 d-flex align-items-center">
-
                         <t t-set="user_name" t-value="request.env.user.name or 'User'" />
                         <t t-set="initials" t-value="''.join([w[0].upper() for w in user_name.split()[:2]])" />
-
                         <div
                             class="rounded-circle d-flex align-items-center justify-content-center fw-bold fs-3 me-4 border border-primary p-3 flex-shrink-0 bg-primary-light text-primary">
                             <t t-esc="initials" />
                         </div>
-
                         <div>
                             <h5 class="fw-bold mb-1 text-dark">
                                 <t t-esc="request.env.user.name" />
                             </h5>
                             <div class="text-secondary small d-flex flex-wrap gap-3">
-                                <span class="d-flex align-items-center"><i class="fa fa-envelope-o me-2" />
+                                <span class="d-flex align-items-center">
+                                    <i class="fa fa-envelope-o me-2" />
                                     <t t-esc="request.env.user.email or 'ไม่มีข้อมูลอีเมล'" />
                                 </span>
-                                <span class="d-flex align-items-center"><i class="fa fa-phone me-2" />
+                                <span class="d-flex align-items-center">
+                                    <i class="fa fa-phone me-2" />
                                     <t
                                         t-esc="request.env.user.partner_id.phone or request.env.user.partner_id.mobile or 'ไม่มีข้อมูลเบอร์โทร'" />
                                 </span>
@@ -72,7 +65,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div
                     class="alert d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 p-4 mb-4 rounded-5 border border-thai-d bg-thai-d-light">
                     <div class="d-flex align-items-start align-items-md-center gap-3">
@@ -80,7 +72,6 @@
                             class="d-flex align-items-center justify-content-center rounded-circle bg-white flex-shrink-0" style="width: 48px; height: 48px;">
                             <i class="fa fa-id-badge fs-5 text-thai-d"></i>
                         </div>
-
                         <div>
                             <h6 class="mb-1 fw-bold text-thai-d">ยืนยันตัวตนด้วยแอปพลิเคชัน ThaiD</h6>
                             <p class="mb-0 small text-secondary">
@@ -88,20 +79,16 @@
                             </p>
                         </div>
                     </div>
-
                     <button type="button"
                         class="btn bg-thai-d text-white px-4 py-2 rounded-3 fw-medium shadow-sm flex-shrink-0">
                         <i class="fa fa-id-card-o me-2"></i>
                         เชื่อมต่อบัญชี
                     </button>
                 </div>
-
                 <form action="/my/profile" method="post">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
-
                     <nav class="nav nav-pills wizard-tabs nav-fill bg-secondary-light p-1 rounded-4 flex-column flex-lg-row gap-1 mb-4"
                         id="profileTabs" role="tablist">
-
                         <button
                             class="nav-link active py-2 rounded-4 d-flex justify-content-center align-items-center gap-2"
                             id="tab-personal-tab" data-bs-toggle="tab" data-bs-target="#tab-personal" type="button"
@@ -109,52 +96,47 @@
                             <i class="fa fa-user"></i>
                             <span>ข้อมูลส่วนตัว</span>
                         </button>
-
                         <button class="nav-link py-2 rounded-4 d-flex justify-content-center align-items-center gap-2"
                             id="tab-education-tab" data-bs-toggle="tab" data-bs-target="#tab-education" type="button"
                             role="tab" aria-controls="tab-education" aria-selected="false">
                             <i class="fa fa-graduation-cap"></i>
                             <span>การศึกษา</span>
                         </button>
-
                         <button class="nav-link py-2 rounded-4 d-flex justify-content-center align-items-center gap-2"
                             id="tab-work-tab" data-bs-toggle="tab" data-bs-target="#tab-work" type="button" role="tab"
                             aria-controls="tab-work" aria-selected="false">
                             <i class="fa fa-briefcase"></i>
                             <span>ประสบการณ์</span>
                         </button>
-
                         <button class="nav-link py-2 rounded-4 d-flex justify-content-center align-items-center gap-2"
                             id="tab-academic-tab" data-bs-toggle="tab" data-bs-target="#tab-academic" type="button"
                             role="tab" aria-controls="tab-academic" aria-selected="false">
                             <i class="fa fa-university"></i>
                             <span>ข้อมูลทางวิชาการและราชการ</span>
                         </button>
-
                         <button class="nav-link py-2 rounded-4 d-flex justify-content-center align-items-center gap-2"
                             id="tab-skills-tab" data-bs-toggle="tab" data-bs-target="#tab-skills" type="button"
                             role="tab" aria-controls="tab-skills" aria-selected="false">
                             <i class="fa fa-star"></i>
                             <span>ทักษะและความสนใจ</span>
                         </button>
-
                         <button class="nav-link py-2 rounded-4 d-flex justify-content-center align-items-center gap-2"
-                            id="tab-skills-tab" data-bs-toggle="tab" data-bs-target="#tab-skills" type="button"
-                            role="tab" aria-controls="tab-skills" aria-selected="false">
-                            <i class="fa fa-star"></i>
-                            <span>ทักษะและความสนใจ</span>
+                            id="tab-documents-tab" data-bs-toggle="tab" data-bs-target="#tab-documents" type="button"
+                            role="tab" aria-controls="tab-documents" aria-selected="false">
+                            <i class="fa fa-file-text-o"></i>
+                            <span>เอกสาร</span>
                         </button>
                     </nav>
-
                     <div class="tab-content" id="profileTabContent">
                         <!-- Tab 1: ข้อมูลส่วนตัว (Personal Info) -->
                         <div class="tab-pane fade show active" id="tab-personal" role="tabpanel">
-
                             <!-- ข้อมูลส่วนบุคคล (Personal Info) -->
                             <div class="card mb-3 shadow-sm">
                                 <div class="card-header bg-white">
-                                    <h5 class="mb-0"><i class="fa fa-id-card text-primary me-2" />ข้อมูลส่วนบุคคล
-                                        (Personal Info)</h5>
+                                    <h5 class="mb-0">
+                                        <i class="fa fa-id-card text-primary me-2" />ข้อมูลส่วนบุคคล
+                                        (Personal Info)
+                                    </h5>
                                 </div>
                                 <div class="card-body">
                                     <!-- Row: Title | First Name (TH) | Middle Name (TH) | Last Name
@@ -274,12 +256,13 @@
                                     </div>
                                 </div>
                             </div>
-
                             <!-- ข้อมูลครอบครัว (Family) -->
                             <div class="card mb-3 shadow-sm">
                                 <div class="card-header bg-white">
-                                    <h5 class="mb-0"><i class="fa fa-users text-primary me-2" />ข้อมูลครอบครัว
-                                        (Family)</h5>
+                                    <h5 class="mb-0">
+                                        <i class="fa fa-users text-primary me-2" />ข้อมูลครอบครัว
+                                        (Family)
+                                    </h5>
                                 </div>
                                 <div class="card-body">
                                     <!-- Row: Marital Status -->
@@ -340,13 +323,14 @@
                                     </div>
                                 </div>
                             </div>
-
                             <!-- Emergency Contact -->
                             <div class="card mb-3 shadow-sm">
                                 <div class="card-header bg-white">
-                                    <h5 class="mb-0"><i
+                                    <h5 class="mb-0">
+                                        <i
                                             class="fa fa-exclamation-triangle text-warning me-2" />ผู้ติดต่อฉุกเฉิน
-                                        (Emergency Contact)</h5>
+                                        (Emergency Contact)
+                                    </h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
@@ -376,32 +360,35 @@
                                     </div>
                                 </div>
                             </div>
-
                             <!-- Health -->
                             <div class="card mb-3 shadow-sm">
                                 <div class="card-header bg-white">
-                                    <h5 class="mb-0"><i class="fa fa-heartbeat text-danger me-2" />สุขภาพ (Health)</h5>
+                                    <h5 class="mb-0">
+                                        <i class="fa fa-heartbeat text-danger me-2" />สุขภาพ (Health)
+                                    </h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="mb-3">
                                         <label class="col-form-label" for="chronic_disease">Chronic Disease /
                                             โรคประจำตัว</label>
-                                        <textarea name="chronic_disease" class="form-control" rows="3"><t
+                                        <textarea name="chronic_disease" class="form-control" rows="3">
+                                            <t
                                                 t-esc="profile.chronic_disease or ''"
-                                            /></textarea>
+                                            />
+                                        </textarea>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                         <!-- Tab 2: การศึกษา (Education) -->
                         <div class="tab-pane fade" id="tab-education" role="tabpanel">
-
                             <!-- Education History -->
                             <div class="card mb-3 shadow-sm">
                                 <div class="card-header bg-white">
-                                    <h5 class="mb-0"><i class="fa fa-graduation-cap text-primary me-2" />ประวัติการศึกษา
-                                        (Education History)</h5>
+                                    <h5 class="mb-0">
+                                        <i class="fa fa-graduation-cap text-primary me-2" />ประวัติการศึกษา
+                                        (Education History)
+                                    </h5>
                                 </div>
                                 <div class="card-body">
                                     <t t-foreach="[('doctor', 'Doctoral Degree / ปริญญาเอก'), ('master', 'Master\'s Degree / ปริญญาโท'), ('bachelor', 'Bachelor\'s Degree / ปริญญาตรี'), ('under_bachelor', 'Under Bachelor\'s Degree / ต่ำกว่าปริญญาตรี')]"
@@ -475,16 +462,16 @@
                                     </t>
                                 </div>
                             </div>
-
                         </div>
                         <!-- Tab 3: ประสบการณ์ (Work History) -->
                         <div class="tab-pane fade" id="tab-work" role="tabpanel">
-
                             <!-- Work History -->
                             <div class="card mb-3 shadow-sm">
                                 <div class="card-header bg-white">
-                                    <h5 class="mb-0"><i class="fa fa-briefcase text-primary me-2" />ประวัติการทำงาน
-                                        (Work History)</h5>
+                                    <h5 class="mb-0">
+                                        <i class="fa fa-briefcase text-primary me-2" />ประวัติการทำงาน
+                                        (Work History)
+                                    </h5>
                                 </div>
                                 <div class="card-body">
                                     <table class="table table-sm" id="wh-table">
@@ -538,19 +525,20 @@
                                         </tbody>
                                     </table>
                                     <button type="button" class="btn btn-sm btn-outline-success" id="btn-wh-add">
-                                        <i class="fa fa-plus-circle me-1" /> Add Work History </button>
+                                        <i class="fa fa-plus-circle me-1" /> Add Work History
+                                    </button>
                                 </div>
                             </div>
-
                         </div>
                         <!-- Tab 4: ข้อมูลทางวิชาการและราชการ (Academic) -->
                         <div class="tab-pane fade" id="tab-academic" role="tabpanel">
-
                             <!-- OCSC -->
                             <div class="card mb-3 shadow-sm">
                                 <div class="card-header bg-white">
-                                    <h5 class="mb-0"><i class="fa fa-certificate text-success me-2" />การสอบ ก.พ.
-                                        (OCSC Exam)</h5>
+                                    <h5 class="mb-0">
+                                        <i class="fa fa-certificate text-success me-2" />การสอบ ก.พ.
+                                        (OCSC Exam)
+                                    </h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
@@ -600,12 +588,13 @@
                                     </div>
                                 </div>
                             </div>
-
                             <!-- Academic Position -->
                             <div class="card mb-3 shadow-sm">
                                 <div class="card-header bg-white">
-                                    <h5 class="mb-0"><i class="fa fa-university text-primary me-2" />ตำแหน่งทางวิชาการ
-                                        (Academic Position)</h5>
+                                    <h5 class="mb-0">
+                                        <i class="fa fa-university text-primary me-2" />ตำแหน่งทางวิชาการ
+                                        (Academic Position)
+                                    </h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
@@ -663,62 +652,116 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                         <!-- Tab 5: ทักษะและความสนใจ (Skills &amp; Interests) -->
                         <div class="tab-pane fade" id="tab-skills" role="tabpanel">
-
                             <!-- Skills &amp; Interests -->
                             <div class="card mb-3 shadow-sm">
                                 <div class="card-header bg-white">
-                                    <h5 class="mb-0"><i class="fa fa-star text-warning me-2" />ทักษะและความสนใจ
-                                        (Skills &amp; Interests)</h5>
+                                    <h5 class="mb-0">
+                                        <i class="fa fa-star text-warning me-2" />ทักษะและความสนใจ
+                                        (Skills &amp; Interests)
+                                    </h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="mb-3">
                                         <label class="col-form-label" for="foreign_language_skills">Foreign Language
                                             Skills /
                                             ทักษะภาษาต่างประเทศ</label>
-                                        <textarea name="foreign_language_skills" class="form-control" rows="3"><t
+                                        <textarea name="foreign_language_skills" class="form-control" rows="3">
+                                            <t
                                                 t-esc="profile.foreign_language_skills or ''"
-                                            /></textarea>
+                                            />
+                                        </textarea>
                                     </div>
                                     <div class="mb-3">
                                         <label class="col-form-label" for="computer_skills">Computer Skills /
                                             ทักษะคอมพิวเตอร์</label>
-                                        <textarea name="computer_skills" class="form-control" rows="3"><t
+                                        <textarea name="computer_skills" class="form-control" rows="3">
+                                            <t
                                                 t-esc="profile.computer_skills or ''"
-                                            /></textarea>
+                                            />
+                                        </textarea>
                                     </div>
                                     <div class="mb-3">
                                         <label class="col-form-label" for="other_abilities">Other Abilities /
                                             ความสามารถอื่นๆ</label>
-                                        <textarea name="other_abilities" class="form-control" rows="3"><t
+                                        <textarea name="other_abilities" class="form-control" rows="3">
+                                            <t
                                                 t-esc="profile.other_abilities or ''"
-                                            /></textarea>
+                                            />
+                                        </textarea>
                                     </div>
                                     <div class="mb-3">
                                         <label class="col-form-label" for="interests">Interests / ความสนใจ</label>
-                                        <textarea name="interests" class="form-control" rows="3"><t
+                                        <textarea name="interests" class="form-control" rows="3">
+                                            <t
                                                 t-esc="profile.interests or ''"
-                                            /></textarea>
+                                            />
+                                        </textarea>
                                     </div>
                                 </div>
                             </div>
-
+                        </div>
+                        <!-- Tab 6: เอกสาร (Documents) -->
+                        <div class="tab-pane fade" id="tab-documents" role="tabpanel">
+                            <!-- Documents -->
+                            <div class="card shadow-sm border-0 rounded-4">
+                                <div class="card-body p-4">
+                                    <div class="card-body">
+                                        <t t-call="hr_recruitment_kmitl.section_tab_intro">
+                                            <t t-set="title">เอกสารประกอบ (Supporting Documents)</t>
+                                        </t>
+                                        <div class="d-flex flex-column gap-3">
+                                            <!-- Photo -->
+                                            <t t-call="hr_recruitment_kmitl.document_upload_item">
+                                                <t t-set="name">doc_photo</t>
+                                                <t t-set="label">รูปถ่ายหน้าตรง (1 นิ้ว)</t>
+                                                <t t-set="description">ถ่ายไม่เกิน 6 เดือน ไม่สวมหมวก</t>
+                                            </t>
+                                            <!-- Resume -->
+                                            <t t-call="hr_recruitment_kmitl.document_upload_item">
+                                                <t t-set="name">doc_resume</t>
+                                                <t t-set="label">ประวัติการทำงาน (Resume)</t>
+                                            </t>
+                                            <!-- Military Certificate -->
+                                            <t t-call="hr_recruitment_kmitl.document_upload_item">
+                                                <t t-set="name">doc_military_certificate</t>
+                                                <t t-set="label">สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร หรือได้รับการยกเว้นการเกณฑ์ทหารใบ สด.8 สด.9 หรือ สด.43 หรือหลักฐานทาง ทหารอื่น ๆ</t>
+                                                <t t-set="description">เฉพาะเพศชาย</t>
+                                            </t>
+                                            <!-- Education Report -->
+                                            <t t-call="hr_recruitment_kmitl.document_upload_item">
+                                                <t t-set="name">doc_education_report</t>
+                                                <t t-set="label">สำเนาใบรายงานผลการศึกษาเป็นรายวิชา</t>
+                                            </t>
+                                            <!-- Work Certificate -->
+                                            <t t-call="hr_recruitment_kmitl.document_upload_item">
+                                                <t t-set="name">doc_work_certificate</t>
+                                                <t t-set="label">หนังสือรับรองการทำงาน กรณีบุคคลที่ปฏิบัติหน้าที่เป็นอาจารย์ประจำจากสถาบันอุดมศึกษาอื่น</t>
+                                                <t t-set="description">กรณีไม่มีผลคะแนน ภาษาอังกฤษ และจบการศึกษาจากสถาบันการศึกษาในประเทศ</t>
+                                            </t>
+                                            <!-- Other Documents -->
+                                            <t t-call="hr_recruitment_kmitl.document_upload_item">
+                                                <t t-set="name">doc_other_documents</t>
+                                                <t t-set="label">สำเนาเอกสารอื่น ๆ เช่น การเปลี่ยนชื่อ นามสกุล</t>
+                                                <t t-set="description">เอกสารเพิ่มเติม</t>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <!-- end tab-content -->
-
                     <!-- Submit button -->
                     <div class="d-flex justify-content-end mt-3 mb-5">
                         <button type="submit" class="btn btn-primary btn-lg px-5">
-                            <i class="fa fa-save me-2" />Save </button>
+                            <i class="fa fa-save me-2" />Save
+                        </button>
                     </div>
                 </form>
             </div>
         </t>
     </template>
-
-
 </odoo>

@@ -15,9 +15,9 @@
     "data": [
         "security/ir.model.access.csv",
         "data/website_data.xml",
-        # "views/website_hr_recruitment_templates.xml",
         "views/snippets/s_benefit_card.xml",
         "views/snippets/snippets.xml",
+        "views/shared_components.xml",
         "views/hr_job_views.xml",
         "views/website_templates.xml",
         "views/portal_profile_views.xml",
@@ -28,10 +28,8 @@
         "views/website_hr_recruitment_defaults.xml",
         "views/website_hr_recruitment_index.xml",
         "views/website_hr_recruitment_detail.xml",
-        "views/website_hr_recruitment_apply_components.xml",
         "views/website_hr_recruitment_apply_tabs.xml",
         "views/website_hr_recruitment_apply.xml",
-        "views/portal_application_components.xml",
         "views/portal_application_detail_tabs.xml",
     ],
     "assets": {

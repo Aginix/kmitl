@@ -50,36 +50,38 @@
     </template>
     <!-- สำหรับอัปโหลดเอกสาร -->
     <template id="document_upload_item">
-        <div class="d-flex align-items-center justify-content-between p-3 border border-secondary rounded-4 bg-white">
-            <div class="d-flex align-items-start align-items-sm-center flex-grow-1 me-3">
-                <div class="bg-secondary-light rounded-2 d-flex align-items-center justify-content-center me-3 p-3">
+        <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 p-3 border rounded-12 bg-white">
+            <div class="d-flex align-items-start gap-3 flex-grow-1">
+                <div class="d-flex align-items-center justify-content-center rounded-3 bg-light flex-shrink-0 upload-file-icon">
                     <i class="fa fa-file-text-o text-secondary"></i>
                 </div>
-                <div>
+                <div class="flex-grow-1">
                     <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
-                        <span class="fw-semibold text-dark small">
-                            <t t-esc="label" />
+                        <span class="fw-semibold text-dark">
+                            <t t-esc="label"/>
                         </span>
                         <t t-if="required">
-                            <span class="badge rounded-pill px-2 py-1 text-danger bg-danger-light">
-                                จำเป็น
-                            </span>
+                            <span class="badge rounded-pill text-danger bg-danger-subtle">
+                            จำเป็น
+                        </span>
                         </t>
                     </div>
-                    <div class="text-secondary small mb-2">
-                        <t t-esc="description" />
-                    </div>
-                    <!-- UI placeholder only -->
-                    <div class="small text-muted">
-                        ยังไม่ได้เลือกไฟล์
-                    </div>
+                    <p class="text-secondary small mb-2">
+                        <t t-esc="description"/>
+                    </p>
+                    <div class="small text-muted js-file-status">
+                    ยังไม่ได้เลือกไฟล์
+                </div>
                 </div>
             </div>
             <div class="flex-shrink-0">
-                <label class="btn btn-secondary border-secondary text-white btn-sm px-3 py-2 fw-medium m-0 rounded-3">
+                <label class="btn btn-outline-secondary btn-sm px-3 py-2 rounded-4 fw-medium mb-0">
                     <i class="fa fa-upload me-1"></i>
-                    อัปโหลด
-                    <input type="file" class="d-none" t-att-name="name" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" />
+                    <span class="js-upload-label">อัปโหลด</span>
+                    <input type="file"
+                       class="d-none js-file-input"
+                       t-att-name="name"
+                       accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"/>
                 </label>
             </div>
         </div>
