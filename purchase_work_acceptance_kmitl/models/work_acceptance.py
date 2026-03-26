@@ -41,103 +41,6 @@ class WorkAcceptance(models.Model):
         states={"draft": [("readonly", False)]},
     )
 
-    def _check_state_conditions(self, vals):
-        if self.env.context.get('skip_committee_wizard'):
-            return False
-        return super()._check_state_conditions(vals)
-
-    def _check_allow_write_under_validation(self, vals):
-        res = super()._check_allow_write_under_validation(vals)
-        return res
-
-    def _rejected_tier(self, tiers=False):
-        """
-        Override: แทนที่จะ set status = rejected
-        ให้ set status = approved เพื่อให้ WA ไม่ถูก rejected
-        แต่ยัง trigger rejected_server_action เพื่อ set committee status = other
-        """
-        self.ensure_one()
-        tier_reviews = tiers or self.review_ids
-        user_reviews = tier_reviews.filtered(
-            lambda r: r.status == "pending" and (self.env.user in r.reviewer_ids)
-        )
-        # Set approved แทน rejected เพื่อไม่ให้ WA ถูก set rejected = True
-        user_reviews.write({
-            'status': 'approved',
-            'done_by': self.env.user.id,
-            'reviewed_date': fields.Datetime.now(),
-        })
-        # Trigger rejected_server_action manually
-        # เพื่อให้ committee status = other + บันทึก comment
-        for review in user_reviews:
-            if review.definition_id.rejected_server_action_id:
-                review.definition_id.rejected_server_action_id\
-                    .with_context(
-                        active_id=self.id,
-                        active_model=self._name,
-                    ).sudo().run()
-        self._update_counter({'review_deleted': True})
-
-        if (
-            self.state == 'in_review'
-            and self.completeness == 100
-            and not self.env.context.get('skip_committee_wizard')
-            and (not self.is_external or self.has_attachment)
-        ):
-            self.with_context(skip_committee_wizard=True).button_accept()
-    
-    def _validate_tier(self, reviews):
-        """Override เพื่อเช็ค completeness หลัง validate tier"""
-        res = super()._validate_tier(reviews)
-        if (
-            self.state == 'in_review'
-            and self.completeness == 100
-            and not self.env.context.get('skip_committee_wizard')
-            and (not self.is_external or self.has_attachment)
-        ):
-            self.with_context(skip_committee_wizard=True).button_accept()
-        return res
-
-    def write(self, vals):
-        res = super().write(vals)
-        for rec in self:
-            if (
-                rec.state == 'in_review'
-                and rec.completeness == 100
-                and not self.env.context.get('skip_committee_wizard')
-                and (not rec.is_external or rec.has_attachment)
-            ):
-                rec.with_context(skip_committee_wizard=True).button_accept()
-        return res
-
-    def button_accept(self, force=False):
-        if self.env.context.get('skip_committee_wizard'):
-
-            for rec in self:
-                if rec.is_external and not rec.has_attachment:
-                    raise UserError(
-                        _("Please attach at least one supporting document file before clicking accept.")
-                    )
-
-            self.mapped('review_ids').unlink()
-            self._unlink_zero_quantity()
-            date_accept = force or fields.Datetime.now()
-
-            self.with_context(
-                skip_validation_check=True
-            ).write({
-                'state': 'accept',
-                'date_accept': date_accept,
-            })
-            return True
-
-        for rec in self:
-            committees = rec.work_acceptance_committee_ids
-            if committees and rec.completeness < 100:
-                return rec._action_open_committee_wizard()
-
-        return super().button_accept(force=force)
-
     # Late Fines
     late_days = fields.Integer(
         readonly=True,
@@ -185,6 +88,112 @@ class WorkAcceptance(models.Model):
             "Wrong Fines Amount, it must be positive!",
         ),
     ]
+
+    # Late Fines
+    @api.onchange("late_days")
+    def _onchange_late_days_negative(self):
+        if self.late_days < 0:
+            self.late_days = 0
+
+    @api.onchange("date_receive", "date_due")
+    def _onchange_late_days(self):
+        late_days = 0
+        if self.date_receive and self.date_due:
+            late_days = (self.date_receive - self.date_due).days
+        self.late_days = late_days > 0 and late_days or 0
+
+    @api.onchange("fines_rate")
+    def _onchange_fines_rate(self):
+        if self.fines_rate < 0:
+            self.fines_rate = 0
+    
+    @api.depends("late_days", "fines_rate")
+    def _compute_fines_late(self):
+        for rec in self:
+            rec.fines_late = rec.late_days * rec.fines_rate
+
+    @api.depends("price_subtotal", "fines_late")
+    def _compute_fines_total(self):
+        for rec in self:
+            result = rec.price_subtotal - rec.fines_late
+            rec.fines_total = max(result, 0)
+
+    @api.depends("wa_line_ids", "wa_line_ids.price_subtotal")
+    def _compute_price_subtotal(self):
+        for rec in self:
+            rec.price_subtotal = sum(rec.wa_line_ids.mapped("price_subtotal"))
+
+    def _can_auto_accept(self):
+        return True
+
+    def _check_state_conditions(self, vals):
+        if self.env.context.get('skip_committee_wizard'):
+            return False
+        return super()._check_state_conditions(vals)
+
+    def _check_allow_write_under_validation(self, vals):
+        res = super()._check_allow_write_under_validation(vals)
+        return res
+
+    def _rejected_tier(self, tiers=False):
+        self.ensure_one()
+        tier_reviews = tiers or self.review_ids
+        user_reviews = tier_reviews.filtered(
+            lambda r: r.status == "pending" and (self.env.user in r.reviewer_ids)
+        )
+        # Set approved แทน rejected เพื่อไม่ให้ WA ถูก set rejected = True
+        user_reviews.write({
+            'status': 'approved',
+            'done_by': self.env.user.id,
+            'reviewed_date': fields.Datetime.now(),
+        })
+        for review in user_reviews:
+            if review.definition_id.rejected_server_action_id:
+                review.definition_id.rejected_server_action_id\
+                    .with_context(
+                        active_id=self.id,
+                        active_model=self._name,
+                    ).sudo().run()
+        self._update_counter({'review_deleted': True})
+
+        if (
+            self.state == 'in_review'
+            and self.completeness == 100
+            and not self.env.context.get('skip_committee_wizard')
+            and self._can_auto_accept()
+        ):
+            self.with_context(skip_committee_wizard=True).button_accept()
+    
+    def _validate_tier(self, reviews):
+        res = super()._validate_tier(reviews)
+        if (
+            self.state == 'in_review'
+            and self.completeness == 100
+            and not self.env.context.get('skip_committee_wizard')
+            and self._can_auto_accept()
+        ):
+            self.with_context(skip_committee_wizard=True).button_accept()
+        return res
+
+    def button_accept(self, force=False):
+        if self.env.context.get('skip_committee_wizard'):
+            self.mapped('review_ids').unlink()
+            self._unlink_zero_quantity()
+            date_accept = force or fields.Datetime.now()
+            self.with_context(
+                skip_validation_check=True
+            ).write({
+                'state': 'accept',
+                'date_accept': date_accept,
+            })
+            return True
+
+        for rec in self:
+            committees = rec.work_acceptance_committee_ids
+            if committees and rec.completeness < 100:
+                return rec._action_open_committee_wizard()
+
+        return super().button_accept(force=force)
     
     @api.depends("work_acceptance_committee_ids.status")
     def _compute_completeness(self):
@@ -198,7 +207,7 @@ class WorkAcceptance(models.Model):
     @api.model
     def _get_under_validation_exceptions(self):
         res = super()._get_under_validation_exceptions()
-        res.extend(["evaluation_result_ids", "work_acceptance_committee_ids", 'state', 'date_accept'])
+        res.extend(["work_acceptance_committee_ids", 'state', 'date_accept'])
         return res
 
     def _clear_data_committee(self):
@@ -242,37 +251,3 @@ class WorkAcceptance(models.Model):
                 'default_wa_id': self.id,
             },
         }
-    
-    # Late Fines
-    @api.onchange("late_days")
-    def _onchange_late_days_negative(self):
-        if self.late_days < 0:
-            self.late_days = 0
-
-    @api.onchange("date_receive", "date_due")
-    def _onchange_late_days(self):
-        late_days = 0
-        if self.date_receive and self.date_due:
-            late_days = (self.date_receive - self.date_due).days
-        self.late_days = late_days > 0 and late_days or 0
-
-    @api.onchange("fines_rate")
-    def _onchange_fines_rate(self):
-        if self.fines_rate < 0:
-            self.fines_rate = 0
-    
-    @api.depends("late_days", "fines_rate")
-    def _compute_fines_late(self):
-        for rec in self:
-            rec.fines_late = rec.late_days * rec.fines_rate
-
-    @api.depends("price_subtotal", "fines_late")
-    def _compute_fines_total(self):
-        for rec in self:
-            result = rec.price_subtotal - rec.fines_late
-            rec.fines_total = max(result, 0)
-
-    @api.depends("wa_line_ids", "wa_line_ids.price_subtotal")
-    def _compute_price_subtotal(self):
-        for rec in self:
-            rec.price_subtotal = sum(rec.wa_line_ids.mapped("price_subtotal"))

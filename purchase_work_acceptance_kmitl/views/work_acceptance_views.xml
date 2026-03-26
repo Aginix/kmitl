@@ -183,19 +183,18 @@
                         <button
                             name="reject_tier"
                             string="Not Accept"
-                            attrs="{'invisible': [('can_review', '=', False)]}"
+                            attrs="{'invisible': True}"
                             type="object"
                             class="btn-icon btn-danger"
                             icon="fa-thumbs-down"
                         />
                         <button
-                            name="validate_tier"
+                            name="reject_tier"
                             string="Other"
-                            attrs="{'invisible': True}"
+                            attrs="{'invisible': [('can_review', '=', False)]}"
                             type="object"
                             class="btn-icon btn-warning"
                             icon="fa-arrow-circle-right"
-                            context="{'validate_as_other': True, 'default_comment': 'ไม่เข้าร่วมเพราะ...'}"
                         />
                     </p>
                 </div>

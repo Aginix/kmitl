@@ -27,7 +27,10 @@ class WorkAcceptance(models.Model):
     def _compute_has_attachment(self):
         for rec in self:
             rec.has_attachment = bool(rec.attachment_ids)
-    
+
+    def _can_auto_accept(self):
+        return not self.is_external or self.has_attachment
+
     def button_review(self):
         for rec in self:
             if rec.is_external and not rec.has_attachment:
@@ -35,3 +38,11 @@ class WorkAcceptance(models.Model):
                     _("Please attach at least one supporting document file before clicking accept.")
                 )
         return super().button_review()
+
+    def button_accept(self, force=False):
+        if self.env.context.get('skip_committee_wizard'):
+            if self.is_external and not self.has_attachment:
+                raise UserError(
+                    _("Please attach at least one supporting document file before clicking accept.")
+                )
+        return super().button_accept(force=force)
