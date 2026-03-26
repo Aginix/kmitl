@@ -16,7 +16,7 @@ class PurchaseRequestApproval(models.Model):
         comodel_name='purchase.order',
         compute='_compute_purchase_order_id',
         string='Purchase Order',
-        store=False,
+        store=True,
     )
 
     display_purchase_order = fields.Char(
@@ -84,8 +84,8 @@ class PurchaseRequestApproval(models.Model):
 
     def _prepare_disbursement_request_vals(self):
         return {
-            "purchase_request_approval_id": self.id,
-            "partner_id": self.request_id.partner_id.id,
+            "reference": "purchase.request.approval,%d" % self.id,
+            "partner_id": self.partner_id.id,
             "line_ids": [
                 Command.create(line._prepare_disbursement_request_line_vals())
                 for line in self.request_id.line_ids
@@ -121,11 +121,35 @@ class PurchaseRequestApproval(models.Model):
         )
         link_back_message = disbursement_request._message_link_back_to_request()
         disbursement_request.message_post(
-            body=link_back_message, message_type="comment")
+            body=link_back_message, message_type="comment"
+        )
         message = self._purchase_request_approval_create_bill_message_content(
-            disbursement_request)
+            disbursement_request
+        )
         self.message_post(body=message, message_type="comment")
+        self._post_message_to_purchase_request(disbursement_request)
         return disbursement_request
+
+    def _post_message_to_purchase_request(self, disbursement_request):
+        dr_link = (
+            "/web#id=%d&model=disbursement.request&view_type=form"
+            % disbursement_request.id
+        )
+        pa_link = "/web#id=%d&model=purchase.request.approval&view_type=form" % self.id
+        self.request_id.message_post(
+            body=_(
+                'Disbursement Request <a href="%(dr_link)s" target="_blank">'
+                "%(dr_name)s</a> has been created from Purchase Request Approval"
+                ' <a href="%(pa_link)s" target="_blank">%(pa_name)s</a>.'
+            )
+            % {
+                "dr_link": dr_link,
+                "dr_name": disbursement_request.name,
+                "pa_link": pa_link,
+                "pa_name": self.name,
+            },
+            subtype_xmlid="mail.mt_note",
+        )
 
     def _purchase_request_approval_create_bill_message_content(self, disbursement_request):
         message = _(

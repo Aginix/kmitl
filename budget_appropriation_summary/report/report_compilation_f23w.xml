@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Paper Format -->
+    <record id="paperformat_compilation_f23w" model="report.paperformat">
+        <field name="name">Budget Compilation F23W Portrait</field>
+        <field name="default" eval="False" />
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">8</field>
+        <field name="margin_bottom">8</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
+        <field name="dpi">90</field>
+    </record>
+    <!-- Report Action -->
+    <record id="action_report_compilation_f23w" model="ir.actions.report">
+        <field name="name">รายงาน F23W (รวมเล่ม)</field>
+        <field name="model">budget.appropriation.compilation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">budget_appropriation_summary.report_compilation_f23w</field>
+        <field name="report_file">budget_appropriation_summary.report_compilation_f23w</field>
+        <field name="paperformat_id" ref="paperformat_compilation_f23w" />
+        <field name="binding_type">report</field>
+    </record>
+    <!-- F23W Document Template -->
+    <template id="report_compilation_f23w_document">
+        <t t-call="web.basic_layout">
+            <t t-call="budget_appropriation_summary.report_compilation_f23w_styles" />
+            <div class="page budget-compilation-f23w-report">
+                <div class="report-header">
+                    <h4 class="pb-2">สรุปงบประมาณรายจ่าย</h4>
+                    <h4 class="pb-2">
+                        ประจำปีงบประมาณ พ.ศ.
+                        <t t-out="o.account_fiscal_year_id.name" />
+                    </h4>
+                    <h4 class="pb-2">
+                        <t t-out="o.department_analytic_id.name" />
+                    </h4>
+                </div>
+                <div class="report-body">
+                    <table class="table table-sm table-borderless">
+                        <thead>
+                            <tr>
+                                <th colspan="4">
+                                    <t t-out="o.department_analytic_id.name" />
+                                    มีรายได้ทุกประเภทรวมกัน (หลังจากหัก 35% แล้ว)
+                                </th>
+                                <th class="text-end" style="width: 100pt;">
+                                    <t t-out="'{:,.0f}'.format(o.revenue_net)" />
+                                    บาท
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fw-bold">
+                                <td colspan="5">(1) การจัดสรรตามประกาศสถาบันฯ</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">1. หักสำรองจ่าย</td>
+                                <td />
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <div class="ps-4">1.1 สำรองจ่ายร้อยละ 15</div>
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="'{:,.0f}'.format(o.code_0702000002)" />
+                                    บาท
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <div class="ps-4">1.2 สำรองจ่ายเกินกว่าร้อยละ 15 </div>
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="'{:,.0f}'.format(o.code_0702000003)" />
+                                    บาท
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">2. ชดใช้เงินคงคลัง (ถ้ามี)</td>
+                                <td class="text-end">
+                                    <t t-out="'{:,.0f}'.format(o.treasury_replenishment_amount)" />
+                                    บาท
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    3. ค่าดูแลและบำรุงรักษา
+                                    <br />
+                                    (Preventive Maintenance บำรุงรักษาเชิงป้องกัน)
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="'{:,.0f}'.format(o.maintenance_amount)" />
+                                    บาท
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">4. งบลงทุน</td>
+                                <td class="text-end">
+                                    <t t-out="'{:,.0f}'.format(o.capital_budget_amount)" />
+                                    บาท
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">5. งบประจำ</td>
+                                <td class="text-end">
+                                    <t t-out="'{:,.0f}'.format(o.recurrent_budget_amount)" />
+                                    บาท
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">6. เงินสนับสนุนจากหน่วยงานภายนอก</td>
+                                <td class="text-end">
+                                    <t t-out="'{:,.0f}'.format(o.external_funding_amount)" />
+                                    บาท
+                                </td>
+                            </tr>
+                            <tr class="fw-bold">
+                                <td>รวมประมาณการรายจ่ายคงที่</td>
+                                <td class="text-center">ร้อยละ <t t-out="'{:,.2f}'.format(o.fixed_expense_percentage)" /></td>
+                                <td />
+                                <td />
+                                <td class="text-end" style="border-bottom: 3px double #000; border-top: 1px solid #000;">
+                                    <t t-out="'{:,.0f}'.format(o.fixed_expense_total)" />
+                                    บาท
+                                </td>
+                            </tr>
+                            <!-- Compute impact data for all 4 types -->
+                            <t t-set="impact_types" t-value="[('education', '1) ด้านการศึกษา (Education)'),('academic', '2) ด้านการวิจัย (Academic)'),('industrial', '3) ด้านตอบโจทย์ภาคอุตสาหกรรม (Industrial)'),('social', '4) ด้านสังคม (Social)')]" />
+                            <t t-set="edu_data" t-value="o.get_impact_line_hierarchy('education')" />
+                            <t t-set="acad_data" t-value="o.get_impact_line_hierarchy('academic')" />
+                            <t t-set="ind_data" t-value="o.get_impact_line_hierarchy('industrial')" />
+                            <t t-set="soc_data" t-value="o.get_impact_line_hierarchy('social')" />
+                            <t t-set="all_impacts" t-value="[edu_data, acad_data, ind_data, soc_data]" />
+                            <t t-set="grand_okr" t-value="sum(d.get('total_project_okr', 0) for d in all_impacts)" />
+                            <t t-set="grand_mgmt" t-value="sum(d.get('total_management', 0) for d in all_impacts)" />
+                            <t t-set="grand_total" t-value="grand_okr + grand_mgmt" />
+                            <t t-set="variable_pct" t-value="(grand_total * 100 / o.revenue_net) if o.revenue_net else 0" />
+                            <tr><td colspan="5" class="pt-4" /></tr>
+                            <tr class="fw-bold">
+                                <td>(2) การจัดสรรด้านต่าง ๆ ดังนี้</td>
+                                <td class="text-center">ร้อยละ <t t-out="'{:,.2f}'.format(variable_pct)" /></td>
+                                <td />
+                                <td />
+                                <td class="text-end">
+                                    <t t-out="'{:,.0f} บาท'.format(grand_total)" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td />
+                                <td class="text-center fw-medium">จุดเน้น</td>
+                                <td class="text-center fw-medium">จัดสรรโครงการ OKR</td>
+                                <td class="text-center fw-medium">ค่าใช้จ่ายบริหาร</td>
+                                <td />
+                            </tr>
+                            <!-- Impact type summary rows -->
+                            <t t-foreach="[('education', '1) ด้านการศึกษา (Education)', edu_data),                                            ('academic', '2) ด้านการวิจัย (Academic)', acad_data),                                            ('industrial', '3) ด้านตอบโจทย์ภาคอุตสาหกรรม (Industrial)', ind_data),                                            ('social', '4) ด้านสังคม (Social)', soc_data)]" t-as="impact">
+                                <t t-set="itype" t-value="impact[0]" />
+                                <t t-set="ilabel" t-value="impact[1]" />
+                                <t t-set="idata" t-value="impact[2]" />
+                                <t t-set="i_okr" t-value="idata.get('total_project_okr', 0)" />
+                                <t t-set="i_mgmt" t-value="idata.get('total_management', 0)" />
+                                <t t-set="i_total" t-value="i_okr + i_mgmt" />
+                                <t t-set="i_pct" t-value="(i_total * 100 / grand_total) if grand_total else 0" />
+                                <t t-set="i_okr_pct" t-value="(i_okr * 100 / grand_total) if grand_total else 0" />
+                                <t t-set="i_mgmt_pct" t-value="(i_mgmt * 100 / grand_total) if grand_total else 0" />
+                                <tr class="fw-bold">
+                                    <td>
+                                        <t t-out="ilabel" />
+                                    </td>
+                                    <td class="text-center" style="width: 70pt;">
+                                        ร้อยละ
+                                        <t t-out="'{:,.2f}'.format(i_pct)" />
+                                    </td>
+                                    <td class="text-center">
+                                        ร้อยละ
+                                        <t t-out="'{:,.2f}'.format(i_okr_pct)" />
+                                    </td>
+                                    <td class="text-center">
+                                        ร้อยละ
+                                        <t t-out="'{:,.2f}'.format(i_mgmt_pct)" />
+                                    </td>
+                                    <td class="text-end">
+                                        <t t-out="'{:,.0f} บาท'.format(i_total)" />
+                                    </td>
+                                </tr>
+                                <!-- Hierarchy rows for this impact type -->
+                                <t t-foreach="idata.get('rows', [])" t-as="row">
+                                    <tr class="impact-hierarchy-row">
+                                        <td colspan="2">
+                                            <div t-att-style="'margin-left: ' + str(16 * (row.get('level', 0) + 1)) + 'px;'">
+                                                <t t-out="row.get('name', '')" />
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <t t-if="row.get('project_okr_amount', 0) != 0">
+                                                <t t-out="'{:,.0f}'.format(row['project_okr_amount'])" />
+                                            </t>
+                                        </td>
+                                        <td class="text-center">
+                                            <t t-if="row.get('management_amount', 0) != 0">
+                                                <t t-out="'{:,.0f}'.format(row['management_amount'])" />
+                                            </t>
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-set="row_total" t-value="row.get('project_okr_amount', 0) + row.get('management_amount', 0)" />
+                                            <t t-if="row_total != 0">
+                                                <t t-out="'{:,.0f} บาท'.format(row_total)" />
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <tr>
+                                    <td colspan="5" class="pt-4" />
+                                </tr>
+                            </t>
+                            <!-- Sub-totals row -->
+                            <tr>
+                                <td colspan="2" />
+                                <td class="text-center">
+                                    ร้อยละ <t t-out="'{:,.2f}'.format((grand_okr * 100 / grand_total) if grand_total else 0)" />
+                                </td>
+                                <td class="text-center">
+                                    ร้อยละ <t t-out="'{:,.2f}'.format((grand_mgmt * 100 / grand_total) if grand_total else 0)" />
+                                </td>
+                                <td class="text-end" />
+                            </tr>
+                            <tr class="fw-bold">
+                                <td colspan="2">รวมจัดสรรทุกด้านร้อยละ 100</td>
+                                <td class="text-center">
+                                    <t t-out="'{:,.0f}'.format(grand_okr)" />
+                                </td>
+                                <td class="text-center">
+                                    <t t-out="'{:,.0f}'.format(grand_mgmt)" />
+                                </td>
+                                <td class="text-end" style="border-bottom: 1px solid #000;">
+                                    <t t-out="'{:,.0f}'.format(grand_total)" />
+                                    บาท
+                                </td>
+                            </tr>
+                            <tr class="fw-bold">
+                                <td colspan="4">รวมประมาณการรายจ่ายทั้งสิ้น (1)+(2)</td>
+                                <td class="text-end" style="border-bottom: 3px double #000;">
+                                    <t t-out="'{:,.0f}'.format(o.fixed_expense_total + grand_total)" />
+                                    บาท
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </template>
+    <!-- Styles template -->
+    <template id="report_compilation_f23w_styles">
+        <t t-set="is_html_preview" t-value="o.env.context.get('html_preview', False)" />
+        <t t-if="is_html_preview">
+            <style>html, body {
+                    background: #e0e0e0 !important;
+                }
+
+                .page {
+                    width: 240mm;
+                    min-height: 297mm;
+                    background: white !important;
+                    margin: 20px auto;
+                    padding: 15mm !important;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+                    box-sizing: border-box;
+                }</style>
+        </t>
+        <t t-else="">
+            <style>
+                * {
+                    line-height: 1.4;
+                }
+            </style>
+        </t>
+        <style>.page {
+                page-break-after: always;
+            }
+            .page:last-child {
+                page-break-after: auto;
+            }
+
+            .budget-compilation-f23w-report {
+                font-family: 'TH SarabunPSK', 'Sarabun', Arial, sans-serif;
+                font-size: 10pt;
+            }
+
+            .budget-compilation-f23w-report h3 {
+                margin: 0;
+                font-size: 14pt;
+                font-weight: 600;
+            }
+
+            .budget-compilation-f23w-report h4 {
+                margin: 0;
+                font-size: 12pt;
+                font-weight: normal;
+            }
+
+            .report-header {
+                text-align: center;
+                padding: 5px 0;
+                margin-bottom: 20px;
+            }</style>
+    </template>
+    <!-- Main report template -->
+    <template id="report_compilation_f23w">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="budget_appropriation_summary.report_compilation_f23w_document" />
+            </t>
+        </t>
+    </template>
+</odoo>

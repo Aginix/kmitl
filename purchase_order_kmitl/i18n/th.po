@@ -37,6 +37,11 @@ msgstr "%(amount)s ถึงกำหนด %(date)s"
 msgid "%(product)s from %(original_receipt_date)s to %(new_receipt_date)s"
 msgstr "%(product)s จาก %(original_receipt_date)s เป็น %(new_receipt_date)s"
 
+#. module: purchase_order_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form
+msgid "Purchase Request"
+msgstr "คำขอซื้อขอจ้าง"
+
 #. module: purchase
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
@@ -3103,3 +3108,24 @@ msgstr "วันก่อนหน้า"
 #: model:mail.template,subject:purchase.email_template_edi_purchase_reminder
 msgid "{{ object.company_id.name }} Order (Ref {{ object.name or 'n/a' }})"
 msgstr "{{ object.company_id.name }} คำสั่งซื้อ (Ref {{ object.name or 'n/a' }})"
+
+#. module: purchase_order_kmitl
+#: model:ir.model,name:purchase_order_kmitl.model_ir_attachment
+#: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form
+msgid "Attachment"
+msgstr "เอกสารแนบ"
+
+#. module: purchase_order_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form
+msgid "Description"
+msgstr "คำอธิบาย"
+
+#. module: purchase_order_kmitl
+#: model:ir.model.fields,field_description:purchase_order_kmitl.field_purchase_order__attachment_ids
+msgid "Document Attachments"
+msgstr "เอกสารแนบ"
+
+#. module: purchase_order_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_order_kmitl.view_purchase_order_form
+msgid "File Name"
+msgstr "ชื่อไฟล์"

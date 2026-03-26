@@ -32,6 +32,14 @@ export const sarabunNotificationHandler = {
                         continue;
                     }
 
+                    // Only play sound/notification for new messages
+                    // New messages have subject or document_id in payload
+                    // Mark as read/unread only has {refresh: true}
+                    const isNewMessage = payload.subject || payload.document_id;
+                    if (!isNewMessage) {
+                        continue;
+                    }
+
                     // Show browser notification
                     if ("Notification" in window && Notification.permission === "granted") {
                         const notification = new Notification("เอกสารใหม่", {

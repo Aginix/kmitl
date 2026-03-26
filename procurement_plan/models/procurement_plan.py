@@ -2,6 +2,7 @@ import logging
 
 from odoo.tools.misc import format_amount
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -84,13 +85,13 @@ class ProcurementPlan(models.Model):
         string="Procurement Method",
         required=False,
         tracking=True,
-        states=READONLY_STATES,
     )
     state = fields.Selection(
         [
             ("draft", "Draft"),
-            ("new", "Not started yet"),
+            ("new", "New"),
             ("on_hold", "On Hold"),
+            ("ready", "Ready"),
             ("in_progress", "In progress"),
             ("done", "Done"),
             ("cancel", "Cancelled"),
@@ -150,6 +151,18 @@ class ProcurementPlan(models.Model):
         string="Currency",
         readonly=True,
     )
+
+    can_edit_description = fields.Boolean(
+        store=False, compute="_compute_can_edit_description"
+    )
+
+    @api.depends("state")
+    def _compute_can_edit_description(self):
+        for record in self:
+            if record.state in ("draft", "new"):
+                record.can_edit_description = True
+            else:
+                record.can_edit_description = False
 
     analytic_account_id = fields.Many2one(
         "account.analytic.account",
@@ -226,6 +239,20 @@ class ProcurementPlan(models.Model):
     def action_new(self):
         self.write({"state": "new"})
 
+    def action_ready(self):
+        if self.state not in ("new"):
+            raise UserError(_("Record must be in new state to be set to ready."))
+        if (
+            not self.purchase_request_eta
+            or not self.procurement_announcement_eta
+            or not self.approval_signing_eta
+            or not self.contract_order_signing_eta
+            or not self.acceptance_eta
+            or not self.procurement_method_id
+        ):
+            raise UserError(_("กรุณาระบุแผนการดำเนินงานให้เสร็จสิ้นทั้งหมด"))
+        self.write({"state": "ready"})
+
     def action_on_hold(self):
         self.write({"state": "on_hold"})
 
@@ -237,6 +264,7 @@ class ProcurementPlan(models.Model):
 
     can_edit = fields.Boolean(compute="_compute_can_edit")
 
+    @api.depends("state")
     def _compute_can_edit(self):
         for rec in self:
             if rec.state == "draft":
@@ -247,8 +275,17 @@ class ProcurementPlan(models.Model):
     def name_get(self):
         res = []
         for rec in self:
+            source_name = (
+                rec.source_analytic_id.name
+                if rec.source_analytic_id
+                else _("ไม่ระบุแหล่งเงิน")
+            )
             res.append(
-                (rec.id, _(f"[%s] %s งบประมาณ {rec.total_price:,.2f} บาท - %s") % (rec.name, rec.description, rec.source_analytic_id.name))
+                (
+                    rec.id,
+                    _(f"[%s] %s งบประมาณ {rec.total_price:,.2f} บาท - %s")
+                    % (rec.name, rec.description, source_name),
+                )
             )
         return res
 
@@ -273,9 +310,8 @@ class ProcurementPlan(models.Model):
         "account.analytic.account",
         string="กิจกรรม",
         compute="_compute_analytic_id",
-        inverse="_inverse_activity_analytic",
         domain=[("root_plan_id.code", "=", "activities")],
-        store=False,
+        store=True,
         tracking=True,
         states=READONLY_STATES,
     )
@@ -284,9 +320,8 @@ class ProcurementPlan(models.Model):
         "account.analytic.account",
         string="ส่วนงาน",
         compute="_compute_analytic_id",
-        inverse="_inverse_department_analytic",
         domain=[("root_plan_id.code", "=", "departments")],
-        store=False,
+        store=True,
         tracking=True,
         states=READONLY_STATES,
     )
@@ -295,9 +330,8 @@ class ProcurementPlan(models.Model):
         "account.analytic.account",
         string="กองทุน",
         compute="_compute_analytic_id",
-        inverse="_inverse_fund_analytic",
         domain=[("root_plan_id.code", "=", "funds")],
-        store=False,
+        store=True,
         tracking=True,
         states=READONLY_STATES,
     )
@@ -306,9 +340,8 @@ class ProcurementPlan(models.Model):
         "account.analytic.account",
         string="แหล่งเงิน",
         compute="_compute_analytic_id",
-        inverse="_inverse_source_analytic",
         domain=[("root_plan_id.code", "=", "sources")],
-        store=False,
+        store=True,
         tracking=True,
         states=READONLY_STATES,
     )
@@ -320,26 +353,6 @@ class ProcurementPlan(models.Model):
         "sources": "source_analytic_id",
         "procurement_plan": "analytic_account_id",
     }
-
-    def _inverse_activity_analytic(self):
-        """Update distribution when activity changes"""
-        for line in self:
-            line._update_analytic_distribution("activities")
-
-    def _inverse_department_analytic(self):
-        """Update distribution when department changes"""
-        for line in self:
-            line._update_analytic_distribution("departments")
-
-    def _inverse_fund_analytic(self):
-        """Update distribution when fund changes"""
-        for line in self:
-            line._update_analytic_distribution("funds")
-
-    def _inverse_source_analytic(self):
-        """Update distribution when fund changes"""
-        for line in self:
-            line._update_analytic_distribution("sources")
 
     def _inverse_analytic_account_id(self):
         """Update distribution when source changes"""

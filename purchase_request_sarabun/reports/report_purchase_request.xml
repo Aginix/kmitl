@@ -8,13 +8,15 @@
                 <t t-set="o" t-value="o.with_context({'lang': 'th_TH'})" />
                 <style>
                     * {
-                        font-family: 'THSarabunNew', Arial, sans-serif;
+                        font-family: "THSarabunNew", Arial, sans-serif;
                         --bs-body-font-size: 16pt;
                     }
                     table.budget tr td:first-child {
                         width: 30%;
                     }
-                    p, span, div {
+                    p,
+                    span,
+                    div {
                         font-size: 16pt;
                         line-height: 1.2;
                     }
@@ -30,19 +32,22 @@
                         />
                     </div>
                     <div style="position: absolute; top: 0px; right: 0px">
-                        <div>แทนพ.1</div>
+                        <div>พ.1</div>
                     </div>
                     <div class="oe_structure" />
                     <div style="height: 1px" />
                     <div class="page-header mt-5 mb-5">
-                        <h3 class="text-center fw-bolder" style="line-height: 1.575;">
+                        <h3 class="text-center fw-bolder" style="line-height: 1.575">
                             บันทึกขอซื้อขอจ้าง
                         </h3>
                     </div>
                     <div class="row">
                         <div class="col-8">
                             เลขที่เอกสาร
-                            <span class="ms-2 fw-normal" t-out="o.main_sarabun_document_id.name" />
+                            <span
+                                class="ms-2 fw-normal"
+                                t-out="o.main_sarabun_document_id.name"
+                            />
                         </div>
                         <div class="col">
                             วันที่
@@ -55,22 +60,33 @@
                     <div class="row">
                         <div class="col">
                             หน่วยงาน
-                            <span class="ms-2" t-out="o.main_sarabun_document_id.sender_display" />
+                            <span
+                                class="ms-2"
+                                t-out="o.main_sarabun_document_id.sender_display"
+                            />
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            เรื่อง <span class="ms-2" t-out="o.main_sarabun_document_id.subject" />
+                            เรื่อง
+                            <span
+                                class="ms-2"
+                                t-out="o.main_sarabun_document_id.subject"
+                            />
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            เรียน <span class="ms-2" t-out="o.main_sarabun_document_id.recipient" />
+                            เรียน
+                            <span
+                                class="ms-2"
+                                t-out="o.main_sarabun_document_id.recipient"
+                            />
                         </div>
                     </div>
 
                     <div class="my-4" />
-                    <p style="text-indent: 6em;">
+                    <p style="text-indent: 6em">
                         ข้าพเจ้า
                         <span
                             t-field="o.requested_by"
@@ -115,15 +131,6 @@
                             <span
                                 class="fw-bolder text-decoration-underline"
                                 t-field="o.account_fiscal_year_id"
-                            />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            โดยมีการเบิกจ่ายดังนี้
-                            <span
-                                class="fw-bolder text-decoration-underline"
-                                t-field="o.payment_type"
                             />
                         </div>
                     </div>
@@ -254,14 +261,6 @@
     </template>
 
     <template id="report_purchase_request_committee">
-        <li>
-            ขออนุมัติแต่งตั้งคณะกรรมการตรวจรับพัสดุ ดังต่อไปนี้
-            <ol>
-                <li t-foreach="o.work_acceptance_committee_ids" t-as="committee">
-                    <span t-field="committee.employee_id" />
-                </li>
-            </ol>
-        </li>
         <t t-if="o.estimated_cost > 100000">
             <li>
                 ขออนุมัติแต่งตั้งคณะกรรมการกำหนดคุณลักษณะเฉพาะร่างขอบเขตงาน ดังต่อไปนี้
@@ -289,6 +288,14 @@
             </li>
         </t>
         <t t-else=""></t>
+        <li>
+            ขออนุมัติแต่งตั้งคณะกรรมการตรวจรับพัสดุ ดังต่อไปนี้
+            <ol>
+                <li t-foreach="o.work_acceptance_committee_ids" t-as="committee">
+                    <span t-field="committee.employee_id" />
+                </li>
+            </ol>
+        </li>
     </template>
 
     <template id="report_purchase_request_budget">

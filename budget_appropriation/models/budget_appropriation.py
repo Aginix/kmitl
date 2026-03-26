@@ -2,6 +2,7 @@ import logging
 
 from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
 
@@ -158,6 +159,19 @@ class BudgetAppropriation(models.Model):
         default="expense",
         states=READONLY_STATES,
     )
+    appropriation_type = fields.Selection(
+        selection=[
+            ("initial", "งบประมาณต้นปี"),
+            ("supplementary", "งบประมาณเพิ่มเติม"),
+        ],
+        string="ประเภทการจัดสรร",
+        tracking=True,
+        copy=True,
+        default="initial",
+        readonly=False,
+        states=READONLY_STATES,
+        help="ใช้แยกประเภทการจัดสรรงบประมาณ ต้นปี vs ระหว่างปี",
+    )
     company_id = fields.Many2one(
         comodel_name="res.company",
         string="Company",
@@ -193,6 +207,47 @@ class BudgetAppropriation(models.Model):
         compute="_compute_amount",
         readonly=True,
         store=True,
+        digits="Budget Precision",
+    )
+
+    # Budget summary by expense type
+    BUDGET_SUMMARY_CODES = {
+        "reserve_fund_amount": "07020",
+        "personnel_expense_amount": "51000",
+        "operating_expense_amount": "52000",
+        "capital_expenditure_amount": "53000",
+        "subsidy_amount": "54000",
+        "other_expenditure_amount": "55000",
+    }
+
+    reserve_fund_amount = fields.Float(
+        string="งบกองทุนสำรอง",
+        compute="_compute_budget_summary_amounts",
+        digits="Budget Precision",
+    )
+    personnel_expense_amount = fields.Float(
+        string="งบบุคลากร",
+        compute="_compute_budget_summary_amounts",
+        digits="Budget Precision",
+    )
+    operating_expense_amount = fields.Float(
+        string="งบดำเนินงาน",
+        compute="_compute_budget_summary_amounts",
+        digits="Budget Precision",
+    )
+    capital_expenditure_amount = fields.Float(
+        string="งบลงทุน",
+        compute="_compute_budget_summary_amounts",
+        digits="Budget Precision",
+    )
+    subsidy_amount = fields.Float(
+        string="งบเงินอุดหนุน",
+        compute="_compute_budget_summary_amounts",
+        digits="Budget Precision",
+    )
+    other_expenditure_amount = fields.Float(
+        string="งบรายจ่ายอื่น",
+        compute="_compute_budget_summary_amounts",
         digits="Budget Precision",
     )
 
@@ -245,6 +300,37 @@ class BudgetAppropriation(models.Model):
             appropriation.amount_deduct = amount_deduct
             appropriation.amount_net = amount_total - amount_deduct
 
+    @api.depends("line_ids.balance", "line_ids.account_id")
+    def _compute_budget_summary_amounts(self):
+        # Build account_id -> field_name mapping in 2 queries instead of 12
+        BudgetAccount = self.env["budget.account"]
+        code_to_field = {v: k for k, v in self.BUDGET_SUMMARY_CODES.items()}
+        parents = BudgetAccount.search(
+            [("code", "in", list(code_to_field.keys()))]
+        )
+        account_field_map = {}
+        if parents:
+            domain = expression.OR(
+                [("parent_path", "=like", f"{p.parent_path}%")]
+                for p in parents
+            )
+            descendants = BudgetAccount.search(domain)
+            # Map each descendant back to the parent code's field name
+            for desc in descendants:
+                for parent in parents:
+                    if desc.parent_path.startswith(parent.parent_path):
+                        account_field_map[desc.id] = code_to_field[parent.code]
+                        break
+
+        for record in self:
+            totals = dict.fromkeys(self.BUDGET_SUMMARY_CODES, 0.0)
+            for line in record.line_ids:
+                field_name = account_field_map.get(line.account_id.id)
+                if field_name:
+                    totals[field_name] += line.balance
+            for field_name, amount in totals.items():
+                record[field_name] = amount
+
     @api.depends("state", "date")
     def _compute_name(self):
         self = self.sorted(lambda m: (m.date, m.ref or "", m.id))
@@ -263,10 +349,16 @@ class BudgetAppropriation(models.Model):
                     "budget.appropriation"
                 ) or _("New")
 
-    @api.depends("date", "state")
+    @api.depends("date", "state", "appropriation_type")
     def _compute_hide_post_button(self):
+        is_manager = self.env.user.has_group("budget.group_budget_manager")
         for record in self:
-            record.hide_post_button = record.state != "review"
+            if record.state != "review":
+                record.hide_post_button = True
+            elif not is_manager and record.appropriation_type == "initial":
+                record.hide_post_button = True
+            else:
+                record.hide_post_button = False
 
     @api.depends("state")
     def _compute_hide_review_button(self):
@@ -286,6 +378,15 @@ class BudgetAppropriation(models.Model):
 
     def action_post(self):
         """Post appropriation and create budget move"""
+        is_manager = self.env.user.has_group("budget.group_budget_manager")
+        if not is_manager:
+            initial = self.filtered(lambda r: r.appropriation_type == "initial")
+            if initial:
+                raise UserError(
+                    _(
+                        "เฉพาะผู้จัดการงบประมาณเท่านั้นที่สามารถอนุมัติการจัดสรรงบประมาณต้นปีได้"
+                    )
+                )
         self._create_budget_move()
         self.write({"state": "posted"})
 
@@ -320,6 +421,7 @@ class BudgetAppropriation(models.Model):
     def budget_move_vals(self):
         vals = {
             "move_type": "appropriation",
+            "appropriation_type": self.appropriation_type,
             "date": self.date,
             "ref": self.ref,
             "department_analytic_id": self.department_analytic_id.id,

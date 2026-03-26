@@ -1,24 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
     <!-- View purchase.request form -->
     <record id="view_purchase_request_form" model="ir.ui.view">
         <field name="name">view.purchase.request.form (Payment Type)</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="l10n_th_gov_purchase_request.view_purchase_request_form"/>
+        <field
+            name="inherit_id"
+            ref="l10n_th_gov_purchase_request.view_purchase_request_form"
+        />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='procurement_method_id']" position="after">
-                <field name="payment_type" required="1" attrs="{'readonly': [('is_editable','=', False)]}" widget="radio" options="{'horizontal': true}" />
+                <field
+                    name="payment_type"
+                    required="1"
+                    attrs="{'readonly': [('is_editable','=', False)]}"
+                    widget="radio"
+                    options="{'horizontal': true}"
+                />
+            </xpath>
+            <xpath expr="//field[@name='line_ids']" position="before">
+                <group name="warning_prepaid">
+                    <group>
+                        <div
+                            colspan="2"
+                            class="alert alert-warning show"
+                            role="alert"
+                            attrs="{'invisible': [('payment_type', '!=', 'prepaid')]}"
+                        >
+                            When payment type is Prepaid, please select the advance
+                            payer's name in the Vendor field.
+                        </div>
+                    </group>
+                </group>
+
+                <group name="warning_loan">
+                    <group>
+                        <div
+                            colspan="2"
+                            class="alert alert-warning show"
+                            role="alert"
+                            attrs="{'invisible': [('payment_type', '!=', 'loan')]}"
+                        >
+                            When payment type is Loan, please select the loan's
+                            name in the Vendor field.
+                        </div>
+                    </group>
+                </group>
             </xpath>
         </field>
     </record>
-
 
     <!-- View purchase.request tree -->
     <record id="view_purchase_request_tree" model="ir.ui.view">
         <field name="name">view.purchase.request.tree (Payment Type)</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="l10n_th_gov_purchase_request.view_purchase_request_tree"/>
+        <field
+            name="inherit_id"
+            ref="l10n_th_gov_purchase_request.view_purchase_request_tree"
+        />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='procurement_method_id']" position="after">
                 <field name="payment_type" optional="show" />
@@ -37,5 +76,4 @@
             </field>
         </field>
     </record>
-
 </odoo>

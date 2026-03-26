@@ -126,12 +126,12 @@ msgstr ""
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_order__fines_late
 msgid "Fines Amount"
-msgstr "ค่าปรับล่าช้า"
+msgstr "ค่าปรับล่าช้า(บาท)"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_order__fines_rate
 msgid "Fines Rate"
-msgstr "ค่าปรับรายวัน"
+msgstr "ค่าปรับรายวัน(บาท)"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_contract_type__message_follower_ids
@@ -329,7 +329,7 @@ msgstr "วันที่เริ่มงาน"
 #. module: purchase_contract_kmitl
 #: model:ir.model.fields,field_description:purchase_contract_kmitl.field_purchase_order__supervision_cost
 msgid "Supervision Cost"
-msgstr "ค่าใข้จ่ายควบคุมงาน"
+msgstr "ค่าใช้จ่ายควบคุมงาน(บาท)(ถ้ามี)"
 
 #. module: purchase_contract_kmitl
 #: model:ir.model.constraint,message:purchase_contract_kmitl.constraint_purchase_order_unique_contract_number

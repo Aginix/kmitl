@@ -1,18 +1,44 @@
 # -*- coding: utf-8 -*-
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError
 
 
 class DisbursementRequest(models.Model):
     _inherit = 'disbursement.request'
 
+    reference = fields.Reference(
+        selection_add=[('purchase.order', 'Purchase Order')],
+        ondelete={'purchase.order': 'set null'},
+    )
+
     purchase_id = fields.Many2one(
         comodel_name="purchase.order",
         string="Purchase Order",
-        ondelete="set null",
+        compute="_compute_reference_fields",
+        store=True,
         index=True,
         tracking=True,
     )
+
+    @api.depends("reference")
+    def _compute_reference_fields(self):
+        super()._compute_reference_fields()
+        for rec in self:
+            if rec.reference and rec.reference._name == 'purchase.order':
+                rec.purchase_id = rec.reference
+            else:
+                rec.purchase_id = False
+
+    def _compute_analytic(self):
+        """Merge analytic_distribution from first PO line when reference is a PO."""
+        super()._compute_analytic()
+        for rec in self:
+            if rec.reference and rec.reference._name == 'purchase.order':
+                po = rec.reference
+                for line in po.order_line:
+                    if line.analytic_distribution:
+                        rec.analytic_distribution = line.analytic_distribution
+                        break
 
     def action_view_purchase_order(self):
         self.ensure_one()

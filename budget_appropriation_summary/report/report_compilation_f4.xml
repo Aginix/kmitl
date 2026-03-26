@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Paper Format -->
+    <record id="paperformat_compilation_f4" model="report.paperformat">
+        <field name="name">Budget Compilation F4 Portrait</field>
+        <field name="default" eval="False" />
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">8</field>
+        <field name="margin_bottom">8</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <!-- Report Action -->
+    <record id="action_report_compilation_f4" model="ir.actions.report">
+        <field name="name">รายงาน F4 รายรับ (รวมเล่ม)</field>
+        <field name="model">budget.appropriation.compilation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field
+            name="report_name"
+        >budget_appropriation_summary.report_compilation_f4</field>
+        <field
+            name="report_file"
+        >budget_appropriation_summary.report_compilation_f4</field>
+        <field name="paperformat_id" ref="paperformat_compilation_f4" />
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- F4 Document Template -->
+    <template id="report_compilation_f4_document">
+        <t t-call="web.basic_layout">
+            <t t-call="budget_appropriation_summary.report_compilation_f4_styles" />
+
+            <t t-set="all_data" t-value="o.f4_revenue_data" />
+
+            <t t-if="all_data and not all_data.get('error')">
+                <!-- Overview report -->
+                <t t-set="data" t-value="all_data.get('overview', {})" />
+                <t t-if="data and not data.get('error')">
+                    <div class="page budget-compilation-f4-report">
+                        <t
+                            t-call="budget_appropriation_summary.report_compilation_f4_content"
+                        />
+                    </div>
+                </t>
+
+                <!-- Individual reports per appropriation -->
+                <t t-foreach="all_data.get('details', [])" t-as="data">
+                    <t t-if="data and not data.get('error')">
+                        <div class="page budget-compilation-f4-report">
+                            <t
+                                t-call="budget_appropriation_summary.report_compilation_f4_content"
+                            />
+                        </div>
+                    </t>
+                </t>
+            </t>
+
+            <t t-if="not all_data or all_data.get('error')">
+                <div class="page budget-compilation-f4-report">
+                    <div class="alert alert-warning">
+                        <t
+                            t-out="all_data.get('error', 'ไม่พบข้อมูลรายรับ') if all_data else 'ไม่พบข้อมูลรายรับ'"
+                        />
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- Reusable F4 content (renders a single data dict) -->
+    <template id="report_compilation_f4_content">
+        <div class="report-header">
+            <div class="document-ref">
+                <div>F4-P-วง-003</div>
+            </div>
+
+            <div class="institution-info">
+                <h3 t-out="data.get('source', '')" />
+                <h3>ประมาณการรายรับ <t t-out="data.get('fiscal_year', '')" /></h3>
+                <h3>สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</h3>
+                <h3 t-out="data.get('department', '')" />
+                <div style="margin: 0 auto;">
+                    <table class="table-borderless" border="0" style="margin: 0 auto;">
+                        <tbody>
+                            <tr>
+                                <td align="right">วงเงิน</td>
+                                <td align="right">
+                                    <t
+                                        t-out="'{:,}'.format(int(data.get('amount_net', 0)))"
+                                    />
+                                </td>
+                                <td>บาท</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue Lines Table -->
+        <table
+            class="report-table table table-sm table-borderless"
+            style="margin-top: 30px;"
+        >
+            <thead>
+                <tr>
+                    <th style="text-align: left;" class="items-column">รายการ</th>
+                    <th
+                        style="text-align: right; padding-right: 10px;"
+                        class="code-column"
+                    >รหัส</th>
+                    <th style="text-align: right;" class="amount-column">งบประมาณ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-if="data.get('hierarchy')">
+                    <t t-call="budget_appropriation_summary.report_compilation_f4_rows">
+                        <t t-set="nodes" t-value="data['hierarchy']" />
+                    </t>
+                </t>
+            </tbody>
+        </table>
+
+        <!-- Deduct Lines Table -->
+        <t t-if="data.get('deduct_hierarchy')">
+            <table
+                class="report-table table table-sm table-borderless"
+                style="margin-top: 30px;"
+            >
+                <tbody>
+                    <t t-call="budget_appropriation_summary.report_compilation_f4_rows">
+                        <t t-set="nodes" t-value="data['deduct_hierarchy']" />
+                    </t>
+                </tbody>
+            </table>
+        </t>
+
+        <!-- Totals -->
+        <table class="table table-sm table-borderless">
+            <tbody>
+                <tr>
+                    <td style="width: 60%" />
+                    <th style="text-align: right;">รายรับรวม</th>
+                    <td style="text-align: right;">
+                        <t t-out="'{:,}'.format(int(data.get('amount_total', 0)))" />
+                    </td>
+                </tr>
+                <tr t-if="data.get('amount_deduct', 0) != 0">
+                    <td style="width: 60%" />
+                    <th style="text-align: right;">หัก</th>
+                    <td style="text-align: right; text-decoration-line: underline;">
+                        <t t-out="'{:,}'.format(int(data.get('amount_deduct', 0)))" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 60%" />
+                    <th style="text-align: right;">รายรับสุทธิ</th>
+                    <td
+                        style="text-align: right; text-decoration-line: underline; text-decoration-style: double;"
+                    >
+                        <t t-out="'{:,}'.format(int(data.get('amount_net', 0)))" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </template>
+
+    <!-- Recursive template for F4 hierarchy rows -->
+    <template id="report_compilation_f4_rows">
+        <t t-foreach="nodes" t-as="node">
+            <tr class="hierarchy-row">
+                <td>
+                    <div
+                        t-att-style="'margin-left: ' + str(12 * (node.get('indent', 0) + 1)) + 'px;'"
+                    >
+                        <t t-if="node.get('type') == 'account'">
+                            <div class="account-content">
+                                <t t-out="node.get('name', '')" />
+                            </div>
+                            <!-- <div
+                                t-if="node.get('description')"
+                                class="account-description"
+                            >
+                                <t t-out="node.get('description', '')" />
+                            </div> -->
+                            <div
+                                t-if="node.get('note')"
+                                class="account-note"
+                            >
+                                <t t-out="node.get('note', '').strip()" />
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <span class="node-content" t-out="node.get('name', '')" />
+                        </t>
+                    </div>
+                </td>
+                <td class="code-cell">
+                    <span class="code-content" t-out="node.get('code', '')" />
+                </td>
+                <td class="amount-cell">
+                    <t t-if="node.get('amount_total', 0) != 0">
+                        <span t-out="'{:,}'.format(int(node.get('amount_total', 0)))" />
+                    </t>
+                </td>
+            </tr>
+
+            <!-- Recursive call for children -->
+            <t t-if="node.get('children')">
+                <t t-call="budget_appropriation_summary.report_compilation_f4_rows">
+                    <t t-set="nodes" t-value="node.get('children', [])" />
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Styles template -->
+    <template id="report_compilation_f4_styles">
+        <t t-set="is_html_preview" t-value="o.env.context.get('html_preview', False)" />
+        <t t-if="is_html_preview">
+            <style>
+                html, body {
+                    background: #e0e0e0 !important;
+                }
+                .page {
+                    width: 210mm;
+                    min-height: 297mm;
+                    background: white !important;
+                    margin: 20px auto;
+                    padding: 15mm !important;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+                    box-sizing: border-box;
+                }
+            </style>
+        </t>
+        <style>
+            .page {
+                page-break-after: always;
+            }
+            .page:last-child {
+                page-break-after: auto;
+            }
+
+            .budget-compilation-f4-report {
+                font-family: 'TH SarabunPSK', 'Sarabun', Arial, sans-serif;
+                font-size: 8pt;
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 0;
+                padding-top: 0;
+            }
+
+            .budget-compilation-f4-report h3 {
+                margin: 0;
+                font-size: 10pt;
+                font-weight: 600;
+                line-height: 1.875;
+            }
+
+            .report-header {
+                text-align: center;
+                padding: 5px 0;
+                margin-bottom: 10px;
+            }
+
+            .document-ref {
+                float: right;
+                font-size: 9pt;
+                text-align: right;
+                margin-bottom: 10px;
+            }
+
+            .institution-info {
+                clear: both;
+            }
+
+            .institution-info h4 {
+                margin: 0;
+                font-size: 11pt;
+                font-weight: normal;
+            }
+
+            .report-table {
+                width: 100%;
+                font-size: 9pt;
+            }
+
+            .report-table th {
+                text-align: center;
+                padding: 0px 6px;
+            }
+
+            .report-table .items-column {
+                width: 60%;
+            }
+
+            .report-table .code-column {
+                width: 20%;
+            }
+
+            .report-table .amount-column {
+                width: 20%;
+            }
+
+            .hierarchy-row td {
+                padding-left: 6px;
+                padding-right: 6px;
+                padding-top: 1px;
+                padding-bottom: 1px;
+            }
+
+            .account-content {
+                font-weight: 500;
+                line-height: 1.50;
+            }
+
+            .node-content {
+                font-weight: bold;
+            }
+
+            .account-description {
+                margin-left: 16px;
+                font-weight: 400;
+                font-size: 11px;
+                line-height: 1.50;
+            }
+
+            .account-note {
+                margin-left: 16px;
+                font-weight: 400;
+                font-size: 11px;
+                line-height: 1.50;
+                white-space: pre-wrap;
+            }
+
+            .amount-cell {
+                text-align: right;
+                font-variant-numeric: tabular-nums;
+            }
+
+            .code-cell {
+                text-align: right;
+            }
+
+            .code-content {
+                margin-right: 8px;
+            }
+        </style>
+    </template>
+
+    <!-- Main report template -->
+    <template id="report_compilation_f4">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t
+                    t-call="budget_appropriation_summary.report_compilation_f4_document"
+                />
+            </t>
+        </t>
+    </template>
+
+</odoo>

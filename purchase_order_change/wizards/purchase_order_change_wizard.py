@@ -20,7 +20,7 @@ class PurchaseOrderChangeWizard(models.TransientModel):
     )
     section_ids = fields.Many2many("purchase.change.section")
     fines_rate = fields.Monetary(string="Fines Rate")
-    supervision_cost = fields.Monetary(string="Supervision Cost")
+    supervision_cost = fields.Monetary(string="Supervision Cost", help="ถ้าไม่มีไม่ต้องกรอก")
     work_start = fields.Date(string="Work Start")
     date_order_date = fields.Date(string="Order Date")
     contract_period_days = fields.Integer(string="Contract Period Days")

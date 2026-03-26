@@ -7,9 +7,8 @@
     "category": "KMITL",
     "depends": [
         "l10n_th_gov_purchase_request",
-        "purchase_request_security",
-        "purchase_request_sarabun",
         "purchase_request_kmitl",
+        "purchase_request_sarabun",
         "purchase_request_activity_kmitl",
         "purchase_request_hide_create_po_button",
         "purchase_request_vendor_kmitl",
@@ -20,6 +19,7 @@
     "data": [
         "data/purchase_request_approval_sequence.xml",
         "data/activity.xml",
+        "data/sarabun_route_template_data.xml",
         "security/ir.model.access.csv",
         "security/purchase_request_approval.xml",
         "report/paperformat.xml",

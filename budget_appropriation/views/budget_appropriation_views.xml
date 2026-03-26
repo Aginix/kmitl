@@ -24,7 +24,7 @@
         <field name="name">view.budget.appropriation.form</field>
         <field name="model">budget.appropriation</field>
         <field name="arch" type="xml">
-            <form string="Budget Appropriation">
+            <form string="Budget Appropriation" edit="context.get('can_edit', True)">
                 <header>
                     <button name="action_review" string="Submit for review" class="oe_highlight" type="object" data-hotkey="r" attrs="{'invisible': [('hide_review_button', '=', True)]}" />
                     <button name="action_post" string="Post" class="oe_highlight" type="object" data-hotkey="v" attrs="{'invisible': [('hide_post_button', '=', True)]}" />
@@ -58,6 +58,7 @@
                             <field name="department_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                             <field name="source_analytic_id" options='{"no_create": True, "no_create_edit": True,"no_open": True}' required="1" />
                             <field name="budget_type" required="1" attrs="{'readonly': [('id', '!=', False)]}" />
+                            <field name="appropriation_type" />
                         </group>
                         <group string="ข้อมูลทั่วไป">
                             <field name="date" invisible="1" />
@@ -112,6 +113,14 @@
                                 </field>
                             </group>
                             <group>
+                                <group attrs="{'invisible': [('budget_type', '!=', 'expense')]}">
+                                    <field name="reserve_fund_amount" />
+                                    <field name="personnel_expense_amount" />
+                                    <field name="operating_expense_amount" />
+                                    <field name="capital_expenditure_amount" />
+                                    <field name="subsidy_amount" />
+                                    <field name="other_expenditure_amount" />
+                                </group>
                                 <group class="oe_subtotal_footer oe_right">
                                     <label for="amount_total" string="รายรับรวม" attrs="{'invisible': [('budget_type', '!=', 'revenue')]}" />
                                     <label for="amount_total" string="รายจ่ายรวม" attrs="{'invisible': [('budget_type', '!=', 'expense')]}" />

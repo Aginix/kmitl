@@ -9,6 +9,15 @@
             <field name="partner_id" position="before">
                 <field name="account_fiscal_year_id" widget="selection" required="1" />
             </field>
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <button
+                    name="action_view_purchase_request"
+                    type="object"
+                    icon="fa-shopping-cart"
+                    string="Purchase Request"
+                    class="oe_stat_button"
+                />
+            </xpath>
             <xpath expr="//field[@name='company_id']" position="after">
                 <field
                     name="department_id"
@@ -48,8 +57,13 @@
             <xpath expr="//field[@name='product_id']" position="attributes">
                 <attribute name="optional">show</attribute>
             </xpath>
-             <xpath expr="//field[@name='state']" position="replace">
-                <field name="state" widget="statusbar" statusbar_visible="draft,purchase,done,cancel" readonly="1"/>
+            <xpath expr="//field[@name='state']" position="replace">
+                <field
+                    name="state"
+                    widget="statusbar"
+                    statusbar_visible="draft,purchase,done,cancel"
+                    readonly="1"
+                />
             </xpath>
             <xpath expr="//button[@name='button_cancel']" position="attributes">
                 <attribute name="string">Cancel PO</attribute>
@@ -63,6 +77,38 @@
             </xpath>
             <xpath expr="//button[@name='button_unlock']" position="attributes">
                 <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_order_form" model="ir.ui.view">
+        <field name="name">view.purchase.order.form Attachment</field>
+        <field name="model">purchase.order</field>
+        <field name="priority">20</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page name="document" string="Attachment">
+                    <field name="attachment_ids" 
+                            context="{'default_res_model': 'purchase.order'}">
+                        <tree default_order="sequence">
+                            <field name="sequence" widget="handle"/>
+                            <field name="name" string="File Name" required="1"/>
+                            <field name="description"/>
+                        </tree>
+                        <form>
+                            <sheet>
+                                <group>
+                                    <field name="res_model" invisible="1" readonly="0"/>
+                                    <field name="res_id" invisible="1" readonly="0"/>
+                                    <field name="name" required="1" invisible="1"/>
+                                    <field name="datas" filename="name" required="1"/>
+                                    <field name="description" placeholder="Description"/>
+                                </group>
+                            </sheet>
+                        </form>
+                    </field>
+                </page>
             </xpath>
         </field>
     </record>

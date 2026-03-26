@@ -16,4 +16,4 @@ class BankPaymentExportLine(models.Model):
         Wrapper method to call sanitize_account_number function
         This allows the function to be called from safe_eval context
         """
-        return sanitize_account_number(acc_number)
+        return sanitize_account_number(acc_number) or ""

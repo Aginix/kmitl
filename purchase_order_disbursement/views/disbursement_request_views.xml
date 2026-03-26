@@ -1,25 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
   <odoo>
 
-    <!-- View disbursement.request tree -->
-    <record id="view_disbursement_request_tree" model="ir.ui.view">
-        <field name="name">view.disbursement.request.tree</field>
-        <field name="model">disbursement.request</field>
-        <field name="inherit_id" ref="disbursement.view_disbursement_request_tree"/>
-        <field name="arch" type="xml">
-            <xpath expr="//tree" position="attributes">
-                <attribute name="create">0</attribute>
-            </xpath>
-        </field>
-    </record>
-
     <!-- View disbursement.request form -->
     <record id="view_disbursement_request_form" model="ir.ui.view">
         <field name="name">view.disbursement.request.form</field>
         <field name="model">disbursement.request</field>
         <field name="inherit_id" ref="disbursement.view_disbursement_request_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='state']" position="after">
+            <xpath expr="//field[@name='reference_model']" position="after">
                 <field name="purchase_id" invisible="1"/>
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
@@ -28,7 +16,7 @@
                         class="oe_stat_button"
                         icon="fa-shopping-cart"
                         string="Purchase Order"
-                        attrs="{'invisible': [('purchase_id', '=', False)]}">
+                        attrs="{'invisible': [('reference_model', '!=', 'purchase.order')]}">
                 </button>
             </xpath>
         </field>

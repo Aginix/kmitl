@@ -7,7 +7,7 @@
     "website": "https://github.com/aginix/kmitl",
     "depends": [
         "disbursement",
-        "account_move_submitted_state",
+        "account_move_kmitl",
     ],
     "data": [],
     "installable": True,

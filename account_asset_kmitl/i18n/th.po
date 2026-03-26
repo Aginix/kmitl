@@ -44,7 +44,7 @@ msgstr ""
 #. module: account_asset_kmitl
 #: model_terms:ir.ui.view,arch_db:account_asset_kmitl.report_simple_asset_number_kmitl
 msgid "<b>ประเภทครุภัณฑ์:</b>"
-msgstr ""
+msgstr "<b>ประเภทครุภัณฑ์/สินทรัพย์:</b>"
 
 #. module: account_asset_kmitl
 #: model_terms:ir.ui.view,arch_db:account_asset_kmitl.report_simple_asset_number_kmitl
@@ -215,7 +215,20 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_asset_management.field_account_move_line__asset_id
 #: model:ir.model.fields,field_description:l10n_th_gov_account_asset_management.field_account_asset_maintenance__asset_id model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 msgid "Asset"
-msgstr "สินทรัพย์"
+msgstr "ครุภัณฑ์/สินทรัพย์"
+
+#. module: account_asset_kmitl
+#: model:ir.model,name:account_asset_kmitl.model_account_asset
+#: model:ir.ui.menu,name:account_asset_kmitl.menu_assets
+#: model:ir.ui.menu,name:account_asset_kmitl.menu_assets_action
+#: model:ir.ui.menu,name:account_asset_kmitl.menu_assets_management
+msgid "Asset"
+msgstr "ครุภัณฑ์/สินทรัพย์"
+
+#. module: account_asset_kmitl
+#: model:ir.ui.menu,name:account_asset_kmitl.menu_asset_configuration
+msgid "Configuration"
+msgstr "การตั้งค่า"
 
 #. module: account_asset_management
 #. odoo-python
@@ -250,7 +263,7 @@ msgstr "หมวดหมู่สินทรัพย์"
 #. module: l10n_th_account_asset_management
 #: model_terms:ir.ui.view,arch_db:l10n_th_account_asset_management.account_asset_view_tree
 msgid "Asset Image"
-msgstr "รูปครุภัณฑ์"
+msgstr "รูปครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_wiz_asset_move_reverse__line_id model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
@@ -280,12 +293,12 @@ msgstr ""
 #. module: account_asset_management
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset__name
 msgid "Asset Name"
-msgstr "ชื่อครุภัณฑ์"
+msgstr "ชื่อครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_number
 #: model:ir.model.fields,field_description:account_asset_number.field_account_asset__number
 msgid "Asset Number"
-msgstr "รหัสครุภัณฑ์"
+msgstr "รหัสครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_number
 #: model:ir.actions.report,name:account_asset_number.report_account_asset_number
@@ -389,7 +402,7 @@ msgstr ""
 #: model:ir.ui.menu,name:l10n_th_gov_account_asset_management.menu_purchase_assets model:ir.ui.menu,name:l10n_th_gov_account_asset_management.purchase_account_asset_menu
 #: model_terms:ir.ui.view,arch_db:l10n_th_account_asset_management.account_asset_parent_view_form
 msgid "Assets"
-msgstr "สินทรัพย์"
+msgstr "ครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_management
 #. odoo-python
@@ -585,7 +598,7 @@ msgstr ""
 #. module: account_asset_management
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 msgid "Confirm Asset"
-msgstr ""
+msgstr "ยืนยันครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_management
 #: model_terms:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
@@ -1462,7 +1475,7 @@ msgstr "ไลน์คำสั่งซื้อ"
 #: code:addons/account_asset_management/report/account_asset_report_xls.py:0 model:ir.model.fields,field_description:account_asset_management.field_account_asset__purchase_value
 #, python-format
 msgid "Purchase Value"
-msgstr "ราคาครุภัณฑ์"
+msgstr "ราคาครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_number
 #: model:ir.model.fields.selection,name:account_asset_number.selection__account_asset_profile__barcode_type__qr
@@ -2065,7 +2078,7 @@ msgstr ""
 #. module: account_asset_kmitl
 #: model_terms:ir.ui.view,arch_db:account_asset_kmitl.portal_account_asset
 msgid "ประเภทครุภัณฑ์"
-msgstr ""
+msgstr "ประเภทครุภัณฑ์/สินทรัพย์"
 
 #. module: account_asset_kmitl
 #: model_terms:ir.ui.view,arch_db:account_asset_kmitl.portal_account_asset
@@ -2096,3 +2109,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_asset_kmitl.portal_account_asset
 msgid "ไม่มีรูปภาพ"
 msgstr ""
+
+#. module: account_asset_kmitl
+#: model:ir.ui.menu,name:account_asset_kmitl.menu_purchase_assets
+msgid "Assets"
+msgstr "ครุภัณฑ์/สินทรัพย์"
+
+#. module: account_asset_kmitl
+#: model:ir.ui.menu,name:account_asset_kmitl.menu_asset_registration_root
+msgid "Create Asset"
+msgstr "แบบลงทะเบียนครุภัณฑ์"

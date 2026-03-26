@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="approve_category_group_outside" model="approval.category.group">
+            <field name="name">ขออนุมัติปฏิบัติงานนอกสถานที่</field>
+            <field name="sequence">1</field>
+        </record>
+        <record id="approve_category_group_abroad" model="approval.category.group">
+            <field name="name">ใบขออนุมัติเดินทางไปต่างประเทศ</field>
+            <field name="sequence">2</field>
+        </record>
+        <record id="approve_category_group_meeting" model="approval.category.group">
+            <field name="name">ใบขออนุมัติค่าใช้จ่ายในการประชุม</field>
+            <field name="sequence">3</field>
+        </record>
+        <record id="approve_category_group_support" model="approval.category.group">
+            <field name="name">ใบขออนุมัติค่าใช้จ่ายงบเงินอุดหนุน</field>
+            <field name="sequence">4</field>
+        </record>
+        <record id="approve_category_group_conference" model="approval.category.group">
+            <field name="name">ใบขออนุมัติฝึกอบรม/สัมมนา</field>
+            <field name="sequence">5</field>
+        </record>
+        <record id="approve_category_group_service" model="approval.category.group">
+            <field name="name">ขออนุมัติค่าใช้จ่ายจากงานบริการ</field>
+            <field name="sequence">6</field>
+        </record>
+        <record id="approve_category_group_utility" model="approval.category.group">
+            <field name="name">ขออนุมัติค่าใช้จ่ายสาธารณูปโภค</field>
+            <field name="sequence">7</field>
+        </record>
+        <record id="approve_category_group_compensation" model="approval.category.group">
+            <field name="name">ใบขออนุมัติค่าตอบแทน</field>
+            <field name="sequence">8</field>
+        </record>
+        <record id="approve_category_group_expense" model="approval.category.group">
+            <field name="name">ใบขออนุมัติค่าใช้สอย</field>
+            <field name="sequence">9</field>
+        </record>
+        <record id="approve_category_group_other" model="approval.category.group">
+            <field name="name">ขออนุมัติค่าใช้จ่ายงบรายจ่ายอื่น</field>
+            <field name="sequence">10</field>
+        </record>
+
+    </data>
+</odoo>
