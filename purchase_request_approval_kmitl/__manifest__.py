@@ -7,7 +7,6 @@
     "category": "KMITL",
     "depends": ["purchase_request_budget", "purchase_request_kmitl"],
     "data": [
-        "data/substate.xml",
         "views/purchase_request_views.xml",
     ],
     "installable": True,
