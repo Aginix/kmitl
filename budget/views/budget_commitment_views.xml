@@ -119,6 +119,12 @@
                                     <field name="fund_analytic_id"/>
                                     <field name="amount"/>
                                     <field name="name" optional="show"/>
+                                    <button name="action_open_source_document"
+                                        type="object" icon="fa-external-link"
+                                        title="Open Source Document"
+                                        attrs="{'invisible': [('res_model', '=', False)]}"/>
+                                    <field name="res_name" string="Source" optional="show"/>
+                                    <field name="res_model" invisible="1"/>
                                     <field name="budget_move_id" optional="hide"/>
                                     <field name="state" widget="badge"
                                         decoration-success="state == 'posted'"

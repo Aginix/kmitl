@@ -81,6 +81,23 @@ class BudgetCommitmentLine(models.Model):
         tracking=True,
     )
 
+    # Source document reference (e.g. purchase.request, purchase.order)
+    res_model = fields.Char(
+        string="Source Model",
+        index=True,
+        readonly=True,
+    )
+    res_id = fields.Many2oneReference(
+        string="Source Document",
+        model_field="res_model",
+        index=True,
+        readonly=True,
+    )
+    res_name = fields.Char(
+        string="Source Name",
+        compute="_compute_res_name",
+    )
+
     # Link to auto-created budget.move (for consume lines)
     budget_move_id = fields.Many2one(
         comodel_name="budget.move",
@@ -142,6 +159,28 @@ class BudgetCommitmentLine(models.Model):
         store=True,
         string="ปีงบประมาณ",
     )
+
+    @api.depends("res_model", "res_id")
+    def _compute_res_name(self):
+        for line in self:
+            if line.res_model and line.res_id:
+                record = self.env[line.res_model].browse(line.res_id).exists()
+                line.res_name = record.display_name if record else False
+            else:
+                line.res_name = False
+
+    def action_open_source_document(self):
+        """Open the source document that created this line."""
+        self.ensure_one()
+        if not self.res_model or not self.res_id:
+            return
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": self.res_model,
+            "res_id": self.res_id,
+            "view_mode": "form",
+            "target": "current",
+        }
 
     # --- Constraints ---
 
