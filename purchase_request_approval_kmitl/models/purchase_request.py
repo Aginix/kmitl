@@ -50,3 +50,16 @@ class PurchaseRequest(models.Model):
         for rec in self:
             own_by_me = rec.requested_by.id == current_user.id
             rec.can_request = own_by_me or is_manager or is_admin
+
+    def _compute_hide_reserve_budget_button(self):
+        super()._compute_hide_reserve_budget_button()
+        for rec in self:
+            if rec.state == "to_verify":
+                rec.hide_reserve_budget_button = False
+
+    def _compute_is_budget_editable(self):
+        super()._compute_is_budget_editable()
+        can_edit = self.env.user.has_group("budget.group_budget_commitment")
+        for rec in self:
+            if rec.substate_sequence == 10 and rec.state == "to_verify" and can_edit:
+                rec.is_budget_editable = True
