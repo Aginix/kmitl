@@ -1,7 +1,7 @@
 odoo.define("hr_recruitment_kmitl.profile_page", function (require) {
   "use strict";
 
-  document.addEventListener("DOMContentLoaded", function () {
+  function initProfilePage() {
     // Marital -> spouse fields
     var maritalEl = document.getElementById("marital");
     var spouseFieldsEl = document.getElementById("spouse_fields");
@@ -19,7 +19,7 @@ odoo.define("hr_recruitment_kmitl.profile_page", function (require) {
     var ocscExamDetailsEl = document.getElementById("ocsc_exam_details");
     if (hasOcscExamEl && ocscExamDetailsEl) {
       var toggleOcscFields = function () {
-        ocscExamDetailsEl.style.display = hasOcscExamEl.checked ? "" : "none";
+        ocscExamDetailsEl.classList.toggle("d-none", !hasOcscExamEl.checked);
       };
       hasOcscExamEl.addEventListener("change", toggleOcscFields);
       toggleOcscFields();
@@ -80,21 +80,23 @@ odoo.define("hr_recruitment_kmitl.profile_page", function (require) {
     var ageDisplay = document.getElementById("age-display");
 
     function computeAge() {
-      if (!birthdayInput || !ageDisplay) {
-        return;
-      }
+      if (!birthdayInput || !ageDisplay) return;
+
       var val = birthdayInput.value;
       if (!val) {
         ageDisplay.value = "";
         return;
       }
+
       var birth = new Date(val);
       var today = new Date();
       var age = today.getFullYear() - birth.getFullYear();
       var m = today.getMonth() - birth.getMonth();
+
       if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
         age--;
       }
+
       ageDisplay.value = age + " ปี";
     }
 
@@ -130,5 +132,11 @@ odoo.define("hr_recruitment_kmitl.profile_page", function (require) {
         new bootstrap.Tab(hashTabBtn).show();
       }
     }
-  });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initProfilePage);
+  } else {
+    initProfilePage();
+  }
 });

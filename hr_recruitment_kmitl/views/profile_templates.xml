@@ -68,8 +68,8 @@
                 <div
                     class="alert d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 p-4 mb-4 rounded-5 border border-thai-d bg-thai-d-light">
                     <div class="d-flex align-items-start align-items-md-center gap-3">
-                        <div
-                            class="d-flex align-items-center justify-content-center rounded-circle bg-white flex-shrink-0" style="width: 48px; height: 48px;">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle bg-white flex-shrink-0"
+                            style="width: 48px; height: 48px;">
                             <i class="fa fa-id-badge fs-5 text-thai-d"></i>
                         </div>
                         <div>
@@ -327,8 +327,7 @@
                             <div class="card mb-3 shadow-sm">
                                 <div class="card-header bg-white">
                                     <h5 class="mb-0">
-                                        <i
-                                            class="fa fa-exclamation-triangle text-warning me-2" />ผู้ติดต่อฉุกเฉิน
+                                        <i class="fa fa-exclamation-triangle text-warning me-2" />ผู้ติดต่อฉุกเฉิน
                                         (Emergency Contact)
                                     </h5>
                                 </div>
@@ -546,14 +545,14 @@
                                             <div class="form-check">
                                                 <input type="checkbox" name="has_ocsc_exam" class="form-check-input"
                                                     id="has_ocsc_exam" t-att-checked="profile.has_ocsc_exam or None" />
-                                                <label class="form-check-label" for="has_ocsc_exam">Has OCSC Exam /
-                                                    ผ่านการสอบ
-                                                    ก.พ.</label>
+                                                <label class="form-check-label" for="has_ocsc_exam">
+                                                    Has OCSC Exam / ผ่านการสอบ ก.พ.
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
                                     <div id="ocsc_exam_details"
-                                        t-attf-style="{{ '' if profile.has_ocsc_exam else 'display: none;' }}">
+                                        t-att-class="'d-none' if not profile.has_ocsc_exam else ''">
                                         <div class="row">
                                             <div class="mb-3 col-lg-12">
                                                 <label class="col-form-label d-block">Exam Level</label>
@@ -561,28 +560,30 @@
                                                     <input type="radio" name="ocsc_exam_level" value="bachelor"
                                                         class="form-check-input" id="ocsc_level_bachelor"
                                                         t-att-checked="profile.ocsc_exam_level == 'bachelor' or None" />
-                                                    <label class="form-check-label"
-                                                        for="ocsc_level_bachelor">Bachelor</label>
+                                                    <label class="form-check-label" for="ocsc_level_bachelor">
+                                                        Bachelor
+                                                    </label>
                                                 </div>
                                                 <div class="form-check form-check-inline">
                                                     <input type="radio" name="ocsc_exam_level" value="master"
                                                         class="form-check-input" id="ocsc_level_master"
                                                         t-att-checked="profile.ocsc_exam_level == 'master' or None" />
-                                                    <label class="form-check-label"
-                                                        for="ocsc_level_master">Master</label>
+                                                    <label class="form-check-label" for="ocsc_level_master">
+                                                        Master
+                                                    </label>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="mb-3 col-lg-6">
                                                 <label class="col-form-label" for="ocsc_exam_date">Exam Date</label>
-                                                <input type="date" name="ocsc_exam_date" class="form-control"
-                                                    t-att-value="profile.ocsc_exam_date or ''" />
+                                                <input type="date" id="ocsc_exam_date" name="ocsc_exam_date"
+                                                    class="form-control" t-att-value="profile.ocsc_exam_date or ''" />
                                             </div>
                                             <div class="mb-3 col-lg-6">
                                                 <label class="col-form-label" for="ocsc_exam_number">Exam Number</label>
-                                                <input type="text" name="ocsc_exam_number" class="form-control"
-                                                    t-att-value="profile.ocsc_exam_number or ''" />
+                                                <input type="text" id="ocsc_exam_number" name="ocsc_exam_number"
+                                                    class="form-control" t-att-value="profile.ocsc_exam_number or ''" />
                                             </div>
                                         </div>
                                     </div>
@@ -727,7 +728,9 @@
                                             <!-- Military Certificate -->
                                             <t t-call="hr_recruitment_kmitl.document_upload_item">
                                                 <t t-set="name">doc_military_certificate</t>
-                                                <t t-set="label">สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร หรือได้รับการยกเว้นการเกณฑ์ทหารใบ สด.8 สด.9 หรือ สด.43 หรือหลักฐานทาง ทหารอื่น ๆ</t>
+                                                <t t-set="label">สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร
+                                                    หรือได้รับการยกเว้นการเกณฑ์ทหารใบ สด.8 สด.9 หรือ สด.43
+                                                    หรือหลักฐานทาง ทหารอื่น ๆ</t>
                                                 <t t-set="description">เฉพาะเพศชาย</t>
                                             </t>
                                             <!-- Education Report -->
@@ -738,8 +741,10 @@
                                             <!-- Work Certificate -->
                                             <t t-call="hr_recruitment_kmitl.document_upload_item">
                                                 <t t-set="name">doc_work_certificate</t>
-                                                <t t-set="label">หนังสือรับรองการทำงาน กรณีบุคคลที่ปฏิบัติหน้าที่เป็นอาจารย์ประจำจากสถาบันอุดมศึกษาอื่น</t>
-                                                <t t-set="description">กรณีไม่มีผลคะแนน ภาษาอังกฤษ และจบการศึกษาจากสถาบันการศึกษาในประเทศ</t>
+                                                <t t-set="label">หนังสือรับรองการทำงาน
+                                                    กรณีบุคคลที่ปฏิบัติหน้าที่เป็นอาจารย์ประจำจากสถาบันอุดมศึกษาอื่น</t>
+                                                <t t-set="description">กรณีไม่มีผลคะแนน ภาษาอังกฤษ
+                                                    และจบการศึกษาจากสถาบันการศึกษาในประเทศ</t>
                                             </t>
                                             <!-- Other Documents -->
                                             <t t-call="hr_recruitment_kmitl.document_upload_item">
