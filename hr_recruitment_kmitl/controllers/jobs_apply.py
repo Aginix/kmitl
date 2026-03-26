@@ -17,7 +17,13 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
         ]
         return ", ".join([p for p in parts if p])
 
-    @http.route()
+    @http.route(
+        """/jobs/apply/<model("hr.job"):job>""",
+        type="http",
+        auth="user",
+        website=True,
+        sitemap=True,
+    )
     def jobs_apply(self, job, **kwargs):
         error = {}
         default = {}
@@ -87,7 +93,10 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
 
                 # Emergency contact
                 d("emergency_contact_name", profile.emergency_contact_name or "")
-                d("emergency_contact_relation", profile.emergency_contact_relation or "")
+                d(
+                    "emergency_contact_relation",
+                    profile.emergency_contact_relation or "",
+                )
                 d("emergency_contact_phone", profile.emergency_contact_phone or "")
                 d("emergency_contact_email", profile.emergency_contact_email or "")
 

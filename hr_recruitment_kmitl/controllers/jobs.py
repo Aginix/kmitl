@@ -1,6 +1,7 @@
 from odoo import fields as odoo_fields
 from odoo.addons.website_hr_recruitment.controllers.main import WebsiteHrRecruitment
 from odoo.http import request
+from odoo import http
 
 
 class WebsiteJobsKmitl(WebsiteHrRecruitment):
@@ -31,6 +32,34 @@ class WebsiteJobsKmitl(WebsiteHrRecruitment):
             url += "/employment_type/%s" % contract_type_id
         return url
 
+    def sitemap_jobs(env, rule, qs):
+        if not qs or qs.lower() in "/jobs":
+            yield {"loc": "/jobs"}
+
+    @http.route(
+        [
+            "/jobs",
+            '/jobs/country/<model("res.country"):country>',
+            '/jobs/department/<model("hr.department"):department>',
+            '/jobs/country/<model("res.country"):country>/department/<model("hr.department"):department>',
+            "/jobs/office/<int:office_id>",
+            '/jobs/country/<model("res.country"):country>/office/<int:office_id>',
+            '/jobs/department/<model("hr.department"):department>/office/<int:office_id>',
+            '/jobs/country/<model("res.country"):country>/department/<model("hr.department"):department>/office/<int:office_id>',
+            "/jobs/employment_type/<int:contract_type_id>",
+            '/jobs/country/<model("res.country"):country>/employment_type/<int:contract_type_id>',
+            '/jobs/department/<model("hr.department"):department>/employment_type/<int:contract_type_id>',
+            "/jobs/office/<int:office_id>/employment_type/<int:contract_type_id>",
+            '/jobs/country/<model("res.country"):country>/department/<model("hr.department"):department>/employment_type/<int:contract_type_id>',
+            '/jobs/country/<model("res.country"):country>/office/<int:office_id>/employment_type/<int:contract_type_id>',
+            '/jobs/department/<model("hr.department"):department>/office/<int:office_id>/employment_type/<int:contract_type_id>',
+            '/jobs/country/<model("res.country"):country>/department/<model("hr.department"):department>/office/<int:office_id>/employment_type/<int:contract_type_id>',
+        ],
+        type="http",
+        auth="public",
+        website=True,
+        sitemap=sitemap_jobs,
+    )
     def jobs(
         self,
         country=None,
@@ -92,6 +121,13 @@ class WebsiteJobsKmitl(WebsiteHrRecruitment):
         )
         return response
 
+    @http.route(
+        """/jobs/detail/<model("hr.job"):job>""",
+        type="http",
+        auth="public",
+        website=True,
+        sitemap=True,
+    )
     def jobs_detail(self, job, **kwargs):
         attachment_ids = job.attachment_ids.sudo().search(
             [("id", "in", job.attachment_ids.ids)]
