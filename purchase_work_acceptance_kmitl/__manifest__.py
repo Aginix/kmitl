@@ -7,7 +7,6 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     'depends': [
-        'purchase_work_acceptance_cancel_restriction',
         'purchase_work_acceptance_external',
         'hr',
         'base_tier_validation_formula',
