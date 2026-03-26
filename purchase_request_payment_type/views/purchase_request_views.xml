@@ -56,7 +56,7 @@
         <field name="model">purchase.request</field>
         <field
             name="inherit_id"
-            ref="purchase_request_kmitl.view_purchase_request_tree_l10n"
+            ref="purchase_request_kmitl.view_purchase_request_tree"
         />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='procurement_method_id']" position="after">
@@ -85,7 +85,7 @@
         <field name="model">purchase.request</field>
         <field
             name="inherit_id"
-            ref="purchase_request_kmitl.view_purchase_request_form_ux"
+            ref="purchase_request_kmitl.view_purchase_request_form"
         />
         <field name="arch" type="xml">
             <!-- Hide payment_type from its orphaned position -->

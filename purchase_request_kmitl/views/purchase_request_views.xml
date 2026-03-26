@@ -5,8 +5,8 @@
     <!-- Views from l10n_th_gov_purchase_request    -->
     <!-- ========================================= -->
 
-    <record id="view_purchase_request_tree_l10n" model="ir.ui.view">
-        <field name="name">purchase.request.tree (l10n)</field>
+    <record id="view_purchase_request_tree" model="ir.ui.view">
+        <field name="name">purchase.request.tree (KMITL)</field>
         <field name="model">purchase.request</field>
         <field name="priority">30</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_tree" />
@@ -18,8 +18,8 @@
                 <field name="user_id" widget="many2one_avatar_user" optional="hide" />
             </xpath>
             <field name="origin" position="after">
-                <field name="assigned_to" />
-                <field name="purchase_type_id" optional="hide" />
+                <field name="assigned_to" optional="hide" />
+                <field name="purchase_type_id" invisible="1" />
                 <field name="procurement_method_id" optional="hide" />
             </field>
             <xpath expr="//field[@name='requested_by']" position="after">
@@ -27,6 +27,9 @@
                 <field name="account_fiscal_year_id" optional="hide" />
             </xpath>
             <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='origin']" position="attributes">
                 <attribute name="optional">hide</attribute>
             </xpath>
             <xpath expr="//field[@name='department_id']" position="attributes">
@@ -55,8 +58,8 @@
         </field>
     </record>
 
-    <record id="view_purchase_request_search_l10n" model="ir.ui.view">
-        <field name="name">purchase.request.list.select (l10n)</field>
+    <record id="view_purchase_request_search" model="ir.ui.view">
+        <field name="name">purchase.request.list.select (KMITL)</field>
         <field name="model">purchase.request</field>
         <field name="priority">30</field>
         <field name="inherit_id" ref="purchase_request.view_purchase_request_search" />
@@ -64,6 +67,13 @@
             <field name="requested_by" position="before">
                 <field name="purchase_type_id" />
                 <field name="procurement_method_id" />
+                <searchpanel>
+                    <field
+                        name="procurement_type_id"
+                        icon="fa-money"
+                        enable_counters="1"
+                    />
+                </searchpanel>
             </field>
             <xpath expr="//filter[@name='my_requests']" position="after">
                 <filter
@@ -105,6 +115,37 @@
                     context="{'group_by': 'procurement_method_id'}"
                 />
             </group>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_form_substate" model="ir.ui.view">
+        <field name="name">view.purchase.request.form.substate (KMITL)</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request_substate.view_purchase_request_form" />
+        <field name="arch" type="xml">
+            <field name="substate_id" position="attributes">
+                <attribute name="options">{'clickable': False,}</attribute>
+            </field>
+            <!-- Action button for substate -->
+            <button name="button_draft" position="before">
+                <field name="substate_sequence" invisible="1" />
+                <button
+                    id="button_substate_verify"
+                    name="action_to_substate"
+                    type="object"
+                    string="Verify"
+                    context="{'to_substate_sequence': 20}"
+                    attrs="{'invisible': ['|', ('substate_sequence', '!=', 10), ('state', '!=', 'to_approve')]}"
+                    groups="purchase_request_kmitl.group_purchase_request_verify"
+                    class="oe_highlight"
+                />
+            </button>
+            <button name="button_approved" position="attributes">
+                <attribute name="states" />
+                <attribute
+                    name="attrs"
+                >{'invisible': ['|', ('substate_sequence', '!=', 20), ('state', '!=', 'to_approve')]}</attribute>
+            </button>
         </field>
     </record>
 
@@ -384,27 +425,6 @@
         </field>
     </record>
 
-    <record id="view_purchase_request_search" model="ir.ui.view">
-        <field name="name">purchase.request.list.select</field>
-        <field name="model">purchase.request</field>
-        <field name="priority">30</field>
-        <field
-            name="inherit_id"
-            ref="purchase_request_kmitl.view_purchase_request_search_l10n"
-        />
-        <field name="arch" type="xml">
-            <field name="requested_by" position="before">
-                <searchpanel>
-                    <field
-                        name="procurement_type_id"
-                        icon="fa-money"
-                        enable_counters="1"
-                    />
-                </searchpanel>
-            </field>
-        </field>
-    </record>
-
     <menuitem
         id="purchase_request.parent_menu_purchase_request"
         name="Purchase Requests"
@@ -427,26 +447,6 @@
         action="purchase_request.purchase_request_form_action"
         sequence="3"
     />
-
-    <record id="view_purchase_request_tree_ux" model="ir.ui.view">
-        <field name="name">view.purchase.request.tree (UX KMITL)</field>
-        <field name="model">purchase.request</field>
-        <field
-            name="inherit_id"
-            ref="purchase_request_kmitl.view_purchase_request_tree_l10n"
-        />
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='assigned_to']" position="attributes">
-                <attribute name="optional">hide</attribute>
-            </xpath>
-            <xpath expr="//field[@name='origin']" position="attributes">
-                <attribute name="optional">hide</attribute>
-            </xpath>
-            <xpath expr="//field[@name='purchase_type_id']" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
-        </field>
-    </record>
 
     <function name="write" model="ir.actions.act_window">
         <value
