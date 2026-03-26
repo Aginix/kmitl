@@ -23,9 +23,9 @@ class PurchaseOrder(models.Model):
             "approve_role": line.approve_role,
             "note": line.note,
         }
-
-    def _get_committee_line(self, purchase_requests):
-        committees = purchase_requests.mapped("work_acceptance_committee_ids")
+    
+    def _get_committee_line(self, purchase_requests=None):
+        committees = self.mapped("work_acceptance_committee_ids")
         lines = [(0, 0, self._prepare_committee_line(line)) for line in committees]
         return lines
 
