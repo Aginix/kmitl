@@ -15,6 +15,7 @@
         "account_fiscal_year",
         "purchase_order_kmitl",
         "purchase_operating_unit",
+        "web_m2x_options",
     ],
     "data": [
         "security/ir.model.access.csv",
@@ -32,6 +33,7 @@
         "views/purchase_type_views.xml",
         "views/procurement_committee_views.xml",
         "views/purchase_request_views.xml",
+        "views/purchase_order_line_views.xml",
         "wizards/purchase_request_line_make_purchase_order_views.xml",
     ],
     "installable": True,

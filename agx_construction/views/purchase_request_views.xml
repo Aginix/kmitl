@@ -45,14 +45,14 @@
     </record>
 
     <record
-        id="purchase_request_ux_kmitl_view_purchase_request_form"
+        id="view_purchase_request_form_ux_construction"
         model="ir.ui.view"
     >
         <field name="name">purchase.request.form.construction</field>
         <field name="model">purchase.request</field>
         <field
             name="inherit_id"
-            ref="purchase_request_ux_kmitl.view_purchase_request_form"
+            ref="purchase_request_kmitl.view_purchase_request_form_ux"
         />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='title']" position="before">

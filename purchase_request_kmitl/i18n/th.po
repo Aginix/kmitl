@@ -2243,3 +2243,8 @@ msgstr ""
 #: model:exception.rule,name:purchase_request_kmitl.pr_line_exception_price_unit_min_0
 msgid "ราคาต่อหน่วยต้องมากกว่า 0"
 msgstr ""
+
+#. module: purchase_request_kmitl
+#: model_terms:ir.ui.view,arch_db:purchase_request_kmitl.view_purchase_request_form_ux
+msgid "Department"
+msgstr "หน่วยงาน"
