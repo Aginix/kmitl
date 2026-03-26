@@ -6,16 +6,26 @@
         <field name="inherit_id" ref="hr.view_hr_job_form" />
         <field name="arch" type="xml">
             <field name="department_id" position="after">
-                <field name="role" />
-                <field name="kmitl_employee_type" />
-                <field name="date_close" />
+                <field name="role" widget="radio" />
+                <field name="kmitl_employee_type" widget="radio" />
                 <field name="currency_id" invisible="1" />
-                <field name="salary_min" />
-                <field name="salary_max" />
+                <label for="salary_min" string="Salary" />
+                <div class="o_row">
+                    <field name="salary_min" />
+                    <span class="text-muted">-</span>
+                    <field name="salary_max" />
+                </div>
                 <field name="education_level_ids" widget="many2many_checkboxes" />
-                <field name="category_ids" widget="many2many_tags" />
                 <field name="attachment_ids" widget="many2many_binary" />
             </field>
+
+            <field name="name" position="after">
+                <field name="category_ids" widget="many2many_tags" />
+            </field>
+
+            <xpath expr="//label[@for='no_of_recruitment']" position="before">
+                <field name="date_close" />
+            </xpath>
 
             <field name="website_published" position="before">
                 <field name="old_code_ids">

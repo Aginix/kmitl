@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-25 19:04+0000\n"
-"PO-Revision-Date: 2026-03-26 02:10+0700\n"
+"POT-Creation-Date: 2026-03-26 04:43+0000\n"
+"PO-Revision-Date: 2026-03-26 11:45+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: th\n"
@@ -524,6 +524,11 @@ msgstr "<span class=\"text-muted d-block small\">สถานะ</span>"
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_detail
 msgid "<span class=\"text-muted d-block small\">Updated On</span>"
 msgstr "<span class=\"text-muted d-block small\">อัปเดตเมื่อ</span>"
+
+#. module: hr_recruitment_kmitl
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.view_hr_job_form
+msgid "<span class=\"text-muted\">-</span>"
+msgstr ""
 
 #. module: hr_recruitment_kmitl
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.job_filter_by_employment_type
@@ -1394,7 +1399,7 @@ msgstr "ปริญญาโท"
 #. module: hr_recruitment_kmitl
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job__salary_max
 msgid "Maximum Salary"
-msgstr "เงินเดือนสูงสุด"
+msgstr "อัตราค่าจ้างสูงสุด"
 
 #. module: hr_recruitment_kmitl
 #. odoo-javascript
@@ -1416,9 +1421,16 @@ msgid "Middle Name (TH)"
 msgstr ""
 
 #. module: hr_recruitment_kmitl
+#. odoo-python
+#: code:addons/hr_recruitment_kmitl/models/hr_job.py:0
+#, python-format
+msgid "Min salary cannot exceed max salary"
+msgstr "อัตราค่าจ้างขั้นต่ำต้องไม่เกินอัตราค่าจ้างสูงสุด"
+
+#. module: hr_recruitment_kmitl
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_job__salary_min
 msgid "Minimum Salary"
-msgstr "เงินเดือนต่ำสุด"
+msgstr "อัตราค่าจ้างขั้นต่ำ"
 
 #. module: hr_recruitment_kmitl
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.portal_my_home_recruitment
@@ -1616,6 +1628,7 @@ msgstr "ตัวกรองสายงาน"
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_hr_applicant_work_history__salary
 #: model:ir.model.fields,field_description:hr_recruitment_kmitl.field_portal_work_history__salary
 #: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.kmitl_detail
+#: model_terms:ir.ui.view,arch_db:hr_recruitment_kmitl.view_hr_job_form
 msgid "Salary"
 msgstr "อัตราค่าจ้าง"
 

@@ -74,6 +74,12 @@ class HrJob(models.Model):
                     )
                 )
 
+    @api.constrains("salary_min", "salary_max")
+    def _check_range(self):
+        for record in self:
+            if record.salary_min > record.salary_max:
+                raise ValidationError(_("Min salary cannot exceed max salary"))
+
     def _make_attachments_public(self, vals):
         if "attachment_ids" in vals:
             for record in self:
