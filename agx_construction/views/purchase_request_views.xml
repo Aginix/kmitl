@@ -11,11 +11,8 @@
     <record id="view_purchase_request_form" model="ir.ui.view">
         <field name="name">purchase.request.form.construction</field>
         <field name="model">purchase.request</field>
-        <field name="inherit_id" ref="purchase_request.view_purchase_request_form" />
+        <field name="inherit_id" ref="purchase_request_kmitl.view_purchase_request_form" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='title']" position="before">
-                <field name="is_construction" invisible="1" />
-            </xpath>
             <xpath expr="//field[@name='payment_type']" position="attributes">
                 <attribute
                     name="attrs"
