@@ -131,14 +131,12 @@
                         <!-- Tab 1: ข้อมูลส่วนตัว (Personal Info) -->
                         <div class="tab-pane fade show active" id="tab-personal" role="tabpanel">
                             <!-- ข้อมูลส่วนบุคคล (Personal Info) -->
-                            <div class="card mb-3 shadow-sm">
-                                <div class="card-header bg-white">
-                                    <h5 class="mb-0">
-                                        <i class="fa fa-id-card text-primary me-2" />ข้อมูลส่วนบุคคล
-                                        (Personal Info)
-                                    </h5>
-                                </div>
-                                <div class="card-body">
+                            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                                <div class="card-body p-4 p-md-5">
+                                    <t t-call="hr_recruitment_kmitl.section_tab_intro">
+                                        <t t-set="title">ข้อมูลส่วนบุคคล
+                                            (Personal Info)</t>
+                                    </t>
                                     <!-- Row: Title | First Name (TH) | Middle Name (TH) | Last Name
                                     (TH) -->
                                     <div class="row">
@@ -257,14 +255,12 @@
                                 </div>
                             </div>
                             <!-- ข้อมูลครอบครัว (Family) -->
-                            <div class="card mb-3 shadow-sm">
-                                <div class="card-header bg-white">
-                                    <h5 class="mb-0">
-                                        <i class="fa fa-users text-primary me-2" />ข้อมูลครอบครัว
-                                        (Family)
-                                    </h5>
-                                </div>
-                                <div class="card-body">
+                            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                                <div class="card-body p-4 p-md-5">
+                                    <t t-call="hr_recruitment_kmitl.section_tab_intro">
+                                        <t t-set="title">ข้อมูลครอบครัว
+                                            (Family)</t>
+                                    </t>
                                     <!-- Row: Marital Status -->
                                     <div class="row">
                                         <div class="mb-3 col-lg-6">
@@ -324,14 +320,12 @@
                                 </div>
                             </div>
                             <!-- Emergency Contact -->
-                            <div class="card mb-3 shadow-sm">
-                                <div class="card-header bg-white">
-                                    <h5 class="mb-0">
-                                        <i class="fa fa-exclamation-triangle text-warning me-2" />ผู้ติดต่อฉุกเฉิน
-                                        (Emergency Contact)
-                                    </h5>
-                                </div>
-                                <div class="card-body">
+                            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                                <div class="card-body p-4 p-md-5">
+                                    <t t-call="hr_recruitment_kmitl.section_tab_intro">
+                                        <t t-set="title">ผู้ติดต่อฉุกเฉิน
+                                            (Emergency Contact)</t>
+                                    </t>
                                     <div class="row">
                                         <div class="mb-3 col-lg-6">
                                             <label class="col-form-label" for="emergency_contact_name">Name</label>
@@ -360,13 +354,11 @@
                                 </div>
                             </div>
                             <!-- Health -->
-                            <div class="card mb-3 shadow-sm">
-                                <div class="card-header bg-white">
-                                    <h5 class="mb-0">
-                                        <i class="fa fa-heartbeat text-danger me-2" />สุขภาพ (Health)
-                                    </h5>
-                                </div>
-                                <div class="card-body">
+                            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                                <div class="card-body p-4 p-md-5">
+                                    <t t-call="hr_recruitment_kmitl.section_tab_intro">
+                                        <t t-set="title">สุขภาพ (Health)</t>
+                                    </t>
                                     <div class="mb-3">
                                         <label class="col-form-label" for="chronic_disease">Chronic Disease /
                                             โรคประจำตัว</label>
@@ -382,20 +374,19 @@
                         <!-- Tab 2: การศึกษา (Education) -->
                         <div class="tab-pane fade" id="tab-education" role="tabpanel">
                             <!-- Education History -->
-                            <div class="card mb-3 shadow-sm">
-                                <div class="card-header bg-white">
-                                    <h5 class="mb-0">
-                                        <i class="fa fa-graduation-cap text-primary me-2" />ประวัติการศึกษา
-                                        (Education History)
-                                    </h5>
-                                </div>
-                                <div class="card-body">
+                            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                                <div class="card-body p-4 p-md-5">
+                                    <t t-call="hr_recruitment_kmitl.section_tab_intro">
+                                        <t t-set="title">ประวัติการศึกษา
+                                            (Education History)</t>
+                                    </t>
+
                                     <t t-foreach="[('doctor', 'Doctoral Degree / ปริญญาเอก'), ('master', 'Master\'s Degree / ปริญญาโท'), ('bachelor', 'Bachelor\'s Degree / ปริญญาตรี'), ('under_bachelor', 'Under Bachelor\'s Degree / ต่ำกว่าปริญญาตรี')]"
                                         t-as="edu_level">
                                         <t t-set="edu_key" t-value="edu_level[0]" />
                                         <t t-set="edu_label" t-value="edu_level[1]" />
                                         <t t-set="edu_rec" t-value="education_by_level.get(edu_key)" />
-                                        <div class="border rounded mb-3 shadow-sm overflow-hidden">
+                                        <div class="border rounded-12 mb-3 overflow-hidden">
                                             <div class="row g-0">
                                                 <!-- Left: Degree label -->
                                                 <div
@@ -455,6 +446,27 @@
                                                                 t-att-value="edu_rec.graduation_date if edu_rec else ''" />
                                                         </div>
                                                     </div>
+                                                    <div class="row">
+                                                        <label class="col-form-label">
+                                                            Upload Certificate / อัปโหลดใบรับรอง
+                                                        </label>
+
+                                                        <div
+                                                            class="d-flex flex-column flex-sm-row align-items-sm-center gap-2 mb-3">
+                                                            <label
+                                                                class="btn btn-outline-secondary btn-sm px-3 py-2 fw-medium rounded-3 mb-0">
+                                                                <i class="fa fa-upload me-2"></i>
+                                                                <span class="js-upload-text">Upload</span>
+                                                                <input type="file" class="d-none js-file-input"
+                                                                    name="doc_english_score"
+                                                                    accept=".pdf,.jpg,.jpeg,.png" />
+                                                            </label>
+
+                                                            <div class="small text-muted js-file-name">
+                                                                ยังไม่ได้เลือกไฟล์
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -465,14 +477,12 @@
                         <!-- Tab 3: ประสบการณ์ (Work History) -->
                         <div class="tab-pane fade" id="tab-work" role="tabpanel">
                             <!-- Work History -->
-                            <div class="card mb-3 shadow-sm">
-                                <div class="card-header bg-white">
-                                    <h5 class="mb-0">
-                                        <i class="fa fa-briefcase text-primary me-2" />ประวัติการทำงาน
-                                        (Work History)
-                                    </h5>
-                                </div>
-                                <div class="card-body">
+                            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                                <div class="card-body p-4 p-md-5">
+                                    <t t-call="hr_recruitment_kmitl.section_tab_intro">
+                                        <t t-set="title">ประวัติการทำงาน
+                                            (Work History)</t>
+                                    </t>
                                     <table class="table table-sm" id="wh-table">
                                         <thead>
                                             <tr>
@@ -532,14 +542,13 @@
                         <!-- Tab 4: ข้อมูลทางวิชาการและราชการ (Academic) -->
                         <div class="tab-pane fade" id="tab-academic" role="tabpanel">
                             <!-- OCSC -->
-                            <div class="card mb-3 shadow-sm">
-                                <div class="card-header bg-white">
-                                    <h5 class="mb-0">
-                                        <i class="fa fa-certificate text-success me-2" />การสอบ ก.พ.
-                                        (OCSC Exam)
-                                    </h5>
-                                </div>
-                                <div class="card-body">
+                            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                                <div class="card-body p-4 p-md-5">
+                                    <t t-call="hr_recruitment_kmitl.section_tab_intro">
+                                        <t t-set="title">การสอบ ก.พ.
+                                            (OCSC Exam)</t>
+                                    </t>
+
                                     <div class="row">
                                         <div class="mb-3 col-lg-6">
                                             <div class="form-check">
@@ -586,18 +595,37 @@
                                                     class="form-control" t-att-value="profile.ocsc_exam_number or ''" />
                                             </div>
                                         </div>
+                                        <div class="row">
+                                            <label class="col-form-label">
+                                                แนบหลักฐานการผ่าน (ก.พ.)
+                                            </label>
+
+                                            <div
+                                                class="d-flex flex-column flex-sm-row align-items-sm-center gap-2 mb-3">
+                                                <label
+                                                    class="btn btn-outline-secondary btn-sm px-3 py-2 fw-medium rounded-3 mb-0">
+                                                    <i class="fa fa-upload me-2"></i>
+                                                    <span class="js-upload-text">Upload</span>
+                                                    <input type="file" class="d-none js-file-input"
+                                                        name="doc_english_score" accept=".pdf,.jpg,.jpeg,.png" />
+                                                </label>
+
+                                                <div class="small text-muted js-file-name">
+                                                    ยังไม่ได้เลือกไฟล์
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <!-- Academic Position -->
-                            <div class="card mb-3 shadow-sm">
-                                <div class="card-header bg-white">
-                                    <h5 class="mb-0">
-                                        <i class="fa fa-university text-primary me-2" />ตำแหน่งทางวิชาการ
-                                        (Academic Position)
-                                    </h5>
-                                </div>
-                                <div class="card-body">
+                            <div class="card shadow-sm border-0 rounded-4">
+                                <div class="card-body p-4 p-md-5">
+                                    <t t-call="hr_recruitment_kmitl.section_tab_intro">
+                                        <t t-set="title">ตำแหน่งทางวิชาการ
+                                            (Academic Position)</t>
+                                    </t>
+
                                     <div class="row">
                                         <div class="mb-3 col-lg-12">
                                             <label class="col-form-label d-block">Position</label>
@@ -605,7 +633,8 @@
                                                 <input type="radio" name="academic_position" value=""
                                                     class="form-check-input" id="acad_none"
                                                     t-att-checked="not profile.academic_position or None" />
-                                                <label class="form-check-label" for="acad_none">-- ไม่ระบุ --</label>
+                                                <label class="form-check-label" for="acad_none">-- ไม่ระบุ
+                                                    --</label>
                                             </div>
                                             <div class="form-check form-check-inline">
                                                 <input type="radio" name="academic_position" value="professor"
@@ -651,32 +680,49 @@
                                                 t-att-value="profile.academic_position_institution or ''" />
                                         </div>
                                     </div>
+                                    <div class="row">
+                                        <label class="col-form-label">
+                                            แนบสำเนาคำสั่งแต่งตั้งตำแหน่งทางวิชาการ
+                                        </label>
+
+                                        <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2 mb-3">
+                                            <label
+                                                class="btn btn-outline-secondary btn-sm px-3 py-2 fw-medium rounded-3 mb-0">
+                                                <i class="fa fa-upload me-2"></i>
+                                                <span class="js-upload-text">Upload</span>
+                                                <input type="file" class="d-none js-file-input" name="doc_english_score"
+                                                    accept=".pdf,.jpg,.jpeg,.png" />
+                                            </label>
+
+                                            <div class="small text-muted js-file-name">
+                                                ยังไม่ได้เลือกไฟล์
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <!-- Tab 5: ทักษะและความสนใจ (Skills &amp; Interests) -->
                         <div class="tab-pane fade" id="tab-skills" role="tabpanel">
                             <!-- Skills &amp; Interests -->
-                            <div class="card mb-3 shadow-sm">
-                                <div class="card-header bg-white">
-                                    <h5 class="mb-0">
-                                        <i class="fa fa-star text-warning me-2" />ทักษะและความสนใจ
-                                        (Skills &amp; Interests)
-                                    </h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="mb-3">
-                                        <label class="col-form-label" for="foreign_language_skills">Foreign Language
-                                            Skills /
-                                            ทักษะภาษาต่างประเทศ</label>
-                                        <textarea name="foreign_language_skills" class="form-control" rows="3">
+                            <div class="card shadow-sm border-0 rounded-4">
+                                <div class="card-body p-4 p-md-5">
+                                    <t t-call="hr_recruitment_kmitl.section_tab_intro">
+                                        <t t-set="title">ทักษะและความสนใจ
+                                            (Skills &amp; Interests)</t>
+                                    </t>
+                                    <label class="col-form-label" for="foreign_language_skills">Foreign
+                                        Language
+                                        Skills /
+                                        ทักษะภาษาต่างประเทศ</label>
+                                    <textarea name="foreign_language_skills" class="form-control" rows="3">
                                             <t
                                                 t-esc="profile.foreign_language_skills or ''"
                                             />
                                         </textarea>
-                                    </div>
                                     <div class="mb-3">
-                                        <label class="col-form-label" for="computer_skills">Computer Skills /
+                                        <label class="col-form-label" for="computer_skills">Computer Skills
+                                            /
                                             ทักษะคอมพิวเตอร์</label>
                                         <textarea name="computer_skills" class="form-control" rows="3">
                                             <t
@@ -685,7 +731,8 @@
                                         </textarea>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="col-form-label" for="other_abilities">Other Abilities /
+                                        <label class="col-form-label" for="other_abilities">Other Abilities
+                                            /
                                             ความสามารถอื่นๆ</label>
                                         <textarea name="other_abilities" class="form-control" rows="3">
                                             <t
@@ -694,7 +741,8 @@
                                         </textarea>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="col-form-label" for="interests">Interests / ความสนใจ</label>
+                                        <label class="col-form-label" for="interests">Interests /
+                                            ความสนใจ</label>
                                         <textarea name="interests" class="form-control" rows="3">
                                             <t
                                                 t-esc="profile.interests or ''"
@@ -708,51 +756,51 @@
                         <div class="tab-pane fade" id="tab-documents" role="tabpanel">
                             <!-- Documents -->
                             <div class="card shadow-sm border-0 rounded-4">
-                                <div class="card-body p-4">
-                                    <div class="card-body">
-                                        <t t-call="hr_recruitment_kmitl.section_tab_intro">
-                                            <t t-set="title">เอกสารประกอบ (Supporting Documents)</t>
+                                <div class="card-body p-4 p-md-5">
+                                    <t t-call="hr_recruitment_kmitl.section_tab_intro">
+                                        <t t-set="title">เอกสารประกอบ (Supporting Documents)</t>
+                                    </t>
+                                    <div class="d-flex flex-column gap-3">
+                                        <!-- Photo -->
+                                        <t t-call="hr_recruitment_kmitl.document_upload_item">
+                                            <t t-set="name">doc_photo</t>
+                                            <t t-set="label">รูปถ่ายหน้าตรง (1 นิ้ว)</t>
+                                            <t t-set="description">ถ่ายไม่เกิน 6 เดือน ไม่สวมหมวก</t>
                                         </t>
-                                        <div class="d-flex flex-column gap-3">
-                                            <!-- Photo -->
-                                            <t t-call="hr_recruitment_kmitl.document_upload_item">
-                                                <t t-set="name">doc_photo</t>
-                                                <t t-set="label">รูปถ่ายหน้าตรง (1 นิ้ว)</t>
-                                                <t t-set="description">ถ่ายไม่เกิน 6 เดือน ไม่สวมหมวก</t>
+                                        <!-- Resume -->
+                                        <t t-call="hr_recruitment_kmitl.document_upload_item">
+                                            <t t-set="name">doc_resume</t>
+                                            <t t-set="label">ประวัติการทำงาน (Resume)</t>
+                                        </t>
+                                        <!-- Military Certificate -->
+                                        <t t-call="hr_recruitment_kmitl.document_upload_item">
+                                            <t t-set="name">doc_military_certificate</t>
+                                            <t t-set="label">สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร
+                                                หรือได้รับการยกเว้นการเกณฑ์ทหารใบ สด.8 สด.9 หรือ สด.43
+                                                หรือหลักฐานทาง ทหารอื่น ๆ</t>
+                                            <t t-set="description">เฉพาะเพศชาย</t>
+                                        </t>
+                                        <!-- Education Report -->
+                                        <t t-call="hr_recruitment_kmitl.document_upload_item">
+                                            <t t-set="name">doc_education_report</t>
+                                            <t t-set="label">สำเนาใบรายงานผลการศึกษาเป็นรายวิชา</t>
+                                        </t>
+                                        <!-- Work Certificate -->
+                                        <t t-call="hr_recruitment_kmitl.document_upload_item">
+                                            <t t-set="name">doc_work_certificate</t>
+                                            <t t-set="label">หนังสือรับรองการทำงาน
+                                                กรณีบุคคลที่ปฏิบัติหน้าที่เป็นอาจารย์ประจำจากสถาบันอุดมศึกษาอื่น
                                             </t>
-                                            <!-- Resume -->
-                                            <t t-call="hr_recruitment_kmitl.document_upload_item">
-                                                <t t-set="name">doc_resume</t>
-                                                <t t-set="label">ประวัติการทำงาน (Resume)</t>
-                                            </t>
-                                            <!-- Military Certificate -->
-                                            <t t-call="hr_recruitment_kmitl.document_upload_item">
-                                                <t t-set="name">doc_military_certificate</t>
-                                                <t t-set="label">สำเนาหนังสือรับรองผ่านการเกณฑ์ทหาร
-                                                    หรือได้รับการยกเว้นการเกณฑ์ทหารใบ สด.8 สด.9 หรือ สด.43
-                                                    หรือหลักฐานทาง ทหารอื่น ๆ</t>
-                                                <t t-set="description">เฉพาะเพศชาย</t>
-                                            </t>
-                                            <!-- Education Report -->
-                                            <t t-call="hr_recruitment_kmitl.document_upload_item">
-                                                <t t-set="name">doc_education_report</t>
-                                                <t t-set="label">สำเนาใบรายงานผลการศึกษาเป็นรายวิชา</t>
-                                            </t>
-                                            <!-- Work Certificate -->
-                                            <t t-call="hr_recruitment_kmitl.document_upload_item">
-                                                <t t-set="name">doc_work_certificate</t>
-                                                <t t-set="label">หนังสือรับรองการทำงาน
-                                                    กรณีบุคคลที่ปฏิบัติหน้าที่เป็นอาจารย์ประจำจากสถาบันอุดมศึกษาอื่น</t>
-                                                <t t-set="description">กรณีไม่มีผลคะแนน ภาษาอังกฤษ
-                                                    และจบการศึกษาจากสถาบันการศึกษาในประเทศ</t>
-                                            </t>
-                                            <!-- Other Documents -->
-                                            <t t-call="hr_recruitment_kmitl.document_upload_item">
-                                                <t t-set="name">doc_other_documents</t>
-                                                <t t-set="label">สำเนาเอกสารอื่น ๆ เช่น การเปลี่ยนชื่อ นามสกุล</t>
-                                                <t t-set="description">เอกสารเพิ่มเติม</t>
-                                            </t>
-                                        </div>
+                                            <t t-set="description">กรณีไม่มีผลคะแนน ภาษาอังกฤษ
+                                                และจบการศึกษาจากสถาบันการศึกษาในประเทศ</t>
+                                        </t>
+                                        <!-- Other Documents -->
+                                        <t t-call="hr_recruitment_kmitl.document_upload_item">
+                                            <t t-set="name">doc_other_documents</t>
+                                            <t t-set="label">สำเนาเอกสารอื่น ๆ เช่น การเปลี่ยนชื่อ
+                                                นามสกุล</t>
+                                            <t t-set="description">เอกสารเพิ่มเติม</t>
+                                        </t>
                                     </div>
                                 </div>
                             </div>

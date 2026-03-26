@@ -86,4 +86,9 @@
             </div>
         </div>
     </template>
+    <template id="application_status_badge">
+        <span t-attf-class="badge text-bg-#{badge_class or 'primary'} px-3 py-2 rounded-pill fw-semibold">
+            <t t-esc="label or '-'"/>
+        </span>
+    </template>
 </odoo>
