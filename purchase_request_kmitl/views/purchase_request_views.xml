@@ -367,7 +367,11 @@
             <!-- === Notebook Operation pages === -->
             <xpath expr="//form/sheet/notebook" position="inside">
                 <page name="operation" string="Operation">
-                    <field name="date_start" />
+                    <group>
+                        <group>
+                            <field name="date_start" attrs="{'readonly': [('is_editable','=', False)]}" />
+                        </group>
+                    </group>
                 </page>
             </xpath>
         </field>
