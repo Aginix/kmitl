@@ -10,7 +10,6 @@
         "purchase_exception",
         "purchase_request_exception",
         "purchase_request_substate",
-        "purchase_request_to_requisition",
         "purchase_request_operating_unit",
         "account_fiscal_year",
         "purchase_order_kmitl",
