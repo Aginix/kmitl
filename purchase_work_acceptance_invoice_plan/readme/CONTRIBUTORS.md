@@ -1,3 +1,0 @@
-- [Ecosoft](http://ecosoft.co.th):
-  - Niaisoh Nikaji \<niaisohn@ecosoft.co.th\>
-  - Saran Lim. \<saranl@ecosoft.co.th\>
