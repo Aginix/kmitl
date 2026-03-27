@@ -8,7 +8,7 @@
         <field name="review_type">group</field>
         <field
             name="reviewer_group_id"
-            ref='stock_request_aginix.group_stock_request_approver'
+            ref='stock_request_aginix.group_stock_request_dept_approver'
         />
         <field name="active">True</field>
     </record>

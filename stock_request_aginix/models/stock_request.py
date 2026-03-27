@@ -26,6 +26,7 @@ class StockRequest(models.Model):
             ('submitted', "Submitted"),
             ("approved", "Approved"),
             ("done", "Done"),
+            ("rejected", "Rejected"),
             ("cancel", "Cancelled"),
         ],
         string="Status",
@@ -88,6 +89,7 @@ class StockRequest(models.Model):
     operating_unit_id = fields.Many2one(
         "operating.unit",
         string="Operating Unit",
+        tracking=True,
         default=lambda self: self.env["res.users"].operating_unit_default_get(
             self.env.user.id
         ),
@@ -101,37 +103,29 @@ class StockRequest(models.Model):
         )
         picking_type = self.env['stock.picking.type'].search([
             ('code', '=', 'outgoing'),
-        ], limit=1)
-        location = self.env['stock.location'].search([
-            ('operating_unit_id', '=', operating_unit.id)
+            ('warehouse_id.operating_unit_id', '=', operating_unit.id),
         ], limit=1)
         if picking_type:
             res['picking_type_id'] = picking_type.id
-        if location:
-            res['location_id'] = location.id
-        return res
-
-    @api.onchange('operating_unit_id')
-    def _onchange_operating_unit_id(self):
-        if self.operating_unit_id:
+        if operating_unit:  # BUG FIX: เช็คก่อนว่ามี OU
             location = self.env['stock.location'].search([
-                ('operating_unit_id', '=', self.operating_unit_id.id)
-            ], limit=1)
-            self.location_id = location if location else False
-
-    @api.onchange('picking_type_id')
-    def _onchange_picking_type_id(self):
-        if self.picking_type_id and self.operating_unit_id:
-            location = self.env['stock.location'].search([
-                ('operating_unit_id', '=', self.operating_unit_id.id)
+                ('operating_unit_id', '=', operating_unit.id)
             ], limit=1)
             if location:
-                self.location_id = location
+                res['location_id'] = location.id
+        return res
     
     def _get_location_for_ou(self, operating_unit_id):
         return self.env['stock.location'].search([
             ('operating_unit_id', '=', operating_unit_id)
         ], limit=1)
+
+    @api.onchange('operating_unit_id')
+    def _onchange_operating_unit_id(self):
+        if self.operating_unit_id:
+            self.location_id = self._get_location_for_ou(self.operating_unit_id.id)
+        else:
+            self.location_id = False
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -169,6 +163,9 @@ class StockRequest(models.Model):
 
     def action_reset(self):
         self.state = 'draft'
+
+    def action_rejected(self):
+        self.state = 'rejected'
 
     def _prepare_picking_vals(self):
         self.ensure_one()
