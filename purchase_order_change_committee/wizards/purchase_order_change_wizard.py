@@ -179,4 +179,5 @@ class PurchaseOrderChangeWizard(models.TransientModel):
                 "employee_id": line.employee_id.id,
                 "approve_role": line.approve_role,
                 "committee_type": committee_type,
+                "name": line.employee_id.display_name,
             })
