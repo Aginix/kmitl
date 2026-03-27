@@ -20,6 +20,14 @@ class PurchaseRequest(models.Model):
     request_approval_ids = fields.One2many(
         "purchase.request.approval", inverse_name="request_id"
     )
+    hide_create_po_button = fields.Boolean(compute="_hide_create_po_button")
+
+    @api.depends('state')
+    def _hide_create_po_button(self):
+        for rec in self:
+            rec.hide_create_po_button = True
+            if rec.state in ('approved', 'in_progress') and rec.purchase_count == 0:
+                rec.hide_create_po_button = False
 
     def _prepare_approval_vals(self):
         return {

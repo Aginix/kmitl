@@ -12,7 +12,6 @@ _logger = logging.getLogger(__name__)
 class PurchaseRequest(models.Model):
     _inherit = "purchase.request"
 
-    # -- l10n_th_gov_purchase_request fields --
     procurement_type_id = fields.Many2one(
         comodel_name="procurement.type",
         string="Procurement Type",
@@ -57,6 +56,10 @@ class PurchaseRequest(models.Model):
         string="Work Acceptance Committees",
         domain=[("committee_type", "=", "work_acceptance")],
         copy=True,
+    )
+    payment_type = fields.Selection(
+        [("direct", "Direct paid"), ("loan", "Loan"), ("prepaid", "Prepaid")],
+        tracking=True,
     )
     assigned_to = fields.Many2one(
         string="Purchase Representative",
@@ -139,6 +142,14 @@ class PurchaseRequest(models.Model):
         domain=[("committee_type", "=", "work_supervisor")],
         copy=True,
     )
+    hide_create_po_button = fields.Boolean(compute="_hide_create_po_button")
+
+    @api.depends('state')
+    def _hide_create_po_button(self):
+        for rec in self:
+            rec.hide_create_po_button = True
+            if rec.state in ('approved', 'in_progress') and rec.purchase_count == 0:
+                rec.hide_create_po_button = False
 
     # -- l10n_th_gov_purchase_request methods --
     def _get_domain_purchase_type(self):
@@ -184,27 +195,3 @@ class PurchaseRequest(models.Model):
             }
         )
         return super().button_approved()
-
-    def button_rejected(self):
-        """Allows the Procurement to reject documents after
-        procurement approved by procurement only."""
-        if self._get_condition_reset_reject():
-            raise UserError(
-                _(
-                    "You are not allowed to reject a document that has already been approved.\n"
-                    "Please contact the Procurement."
-                )
-            )
-        return super().button_rejected()
-
-    def button_draft(self):
-        """Allows the Procurement to reset documents after
-        procurement approved by procurement only."""
-        if self._get_condition_reset_reject():
-            raise UserError(
-                _(
-                    "You are not allowed to reset a document that has already been approved.\n"
-                    "Please contact the Procurement."
-                )
-            )
-        return super().button_draft()

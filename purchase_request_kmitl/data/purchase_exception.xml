@@ -6,10 +6,21 @@
         <field name="model">purchase.order</field>
         <field name="exception_type">by_py_code</field>
         <field name="code">
-pr_total = sum(self.order_line.mapped("purchase_request_lines.estimated_cost"))
-if pr_total:
-    po_total = self.amount_total
-    failed = po_total &gt; pr_total
+            pr_total =
+            sum(self.order_line.mapped("purchase_request_lines.estimated_cost")) if
+            pr_total: po_total = self.amount_total failed = po_total &gt; pr_total
+        </field>
+    </record>
+    <record id="po_payment_type_should_be_the_same_as_pr" model="exception.rule">
+        <field name="name"
+            >ข้อมูลประเภทการเบิกจ่ายในใบสั่งซื้อ/จ้าง (PO) ต้องตรงกับในใบพ.1 (PR)</field
+        >
+        <field name="description">ข้อมูลใบสั่งซื้อ/จ้าง</field>
+        <field name="model">purchase.order</field>
+        <field name="exception_type">by_py_code</field>
+        <field name="code">
+            if self.request_id and self.request_id.payment_type != self.payment_type:
+            failed = True
         </field>
     </record>
 </odoo>
