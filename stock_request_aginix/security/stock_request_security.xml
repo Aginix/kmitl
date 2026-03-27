@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="category_stock_request_security" model="ir.module.category">
+    <record id="module_category_stock_request" model="ir.module.category">
         <field name="name">Stock Request</field>
         <field name="description">Security category for Stock Request Security</field>
         <field name="parent_id" ref="base.module_category_inventory_inventory"/>
