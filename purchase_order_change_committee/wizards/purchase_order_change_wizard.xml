@@ -19,6 +19,7 @@
                 <!-- WA Committee: Before -->
                 <group
                     string="คณะกรรมการตรวจรับพัสดุ (เดิม)"
+                    colspan="2"
                     attrs="{'invisible': [('show_wa_committee', '=', False)]}"
                 >
                     <field
@@ -35,6 +36,7 @@
                 <!-- WA Committee: After -->
                 <group
                     string="คณะกรรมการตรวจรับพัสดุ (ใหม่)"
+                    colspan="2"
                     attrs="{'invisible': [('show_wa_committee', '=', False)]}"
                 >
                     <field name="new_wa_committee_ids" nolabel="1">
@@ -50,6 +52,7 @@
                 <!-- Work Supervisor: Before -->
                 <group
                     string="ผู้ควบคุมงาน (เดิม)"
+                    colspan="2"
                     attrs="{'invisible': [('show_ws_committee', '=', False)]}"
                 >
                     <field
@@ -66,6 +69,7 @@
                 <!-- Work Supervisor: After -->
                 <group
                     string="ผู้ควบคุมงาน (ใหม่)"
+                    colspan="2"
                     attrs="{'invisible': [('show_ws_committee', '=', False)]}"
                 >
                     <field name="new_ws_committee_ids" nolabel="1">
