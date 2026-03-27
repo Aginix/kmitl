@@ -3,7 +3,7 @@
     <menuitem
         id="menu_stock_request_root"
         name="Stock Requests"
-        groups="stock_request_aginix.group_stock_request_user,stock_request_aginix.group_stock_request_approver"
+        groups="stock_request_aginix.group_stock_request_officer"
         web_icon="stock_request_aginix,static/description/logo.png"
         sequence="100"
     />

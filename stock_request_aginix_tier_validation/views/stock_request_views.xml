@@ -54,7 +54,7 @@
                     string="Cancel"
                     type="object"
                     states="submitted"
-                    groups="stock.group_stock_user"
+                    groups="stock_request_aginix.group_stock_request_approver"
                     attrs="{'invisible': [('state', '!=', 'submitted'), ('validation_status', '!=', 'rejected')]}"
                 />
             </xpath>
