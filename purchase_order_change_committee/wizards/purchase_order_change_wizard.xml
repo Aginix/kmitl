@@ -20,6 +20,7 @@
                 <group
                     string="คณะกรรมการตรวจรับพัสดุ (เดิม)"
                     colspan="2"
+                    col="1"
                     attrs="{'invisible': [('show_wa_committee', '=', False)]}"
                 >
                     <field
@@ -27,7 +28,7 @@
                         nolabel="1"
                         readonly="1"
                     >
-                        <tree>
+                        <tree no_open="1">
                             <field name="employee_id" />
                             <field name="approve_role" />
                         </tree>
@@ -37,6 +38,7 @@
                 <group
                     string="คณะกรรมการตรวจรับพัสดุ (ใหม่)"
                     colspan="2"
+                    col="1"
                     attrs="{'invisible': [('show_wa_committee', '=', False)]}"
                 >
                     <field name="new_wa_committee_ids" nolabel="1">
@@ -53,6 +55,7 @@
                 <group
                     string="ผู้ควบคุมงาน (เดิม)"
                     colspan="2"
+                    col="1"
                     attrs="{'invisible': [('show_ws_committee', '=', False)]}"
                 >
                     <field
@@ -60,7 +63,7 @@
                         nolabel="1"
                         readonly="1"
                     >
-                        <tree>
+                        <tree no_open="1">
                             <field name="employee_id" />
                             <field name="approve_role" />
                         </tree>
@@ -70,6 +73,7 @@
                 <group
                     string="ผู้ควบคุมงาน (ใหม่)"
                     colspan="2"
+                    col="1"
                     attrs="{'invisible': [('show_ws_committee', '=', False)]}"
                 >
                     <field name="new_ws_committee_ids" nolabel="1">
