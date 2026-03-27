@@ -132,6 +132,8 @@ class HrApplicant(models.Model):
     )
     ocsc_exam_date = fields.Date(string="OCSC Exam Date")
     ocsc_exam_number = fields.Char(string="OCSC Exam Number")
+    ocsc_exam_file = fields.Binary(string="OCSC Exam Proof", attachment=True)
+    ocsc_exam_filename = fields.Char(string="OCSC Exam Filename")
 
     # Skills
     foreign_language_skills = fields.Text()
@@ -231,6 +233,11 @@ class HrApplicant(models.Model):
 
         # Boolean
         vals["has_ocsc_exam"] = profile.has_ocsc_exam
+
+        # Binary fields (copy data, not link)
+        if profile.ocsc_exam_file:
+            vals["ocsc_exam_file"] = profile.ocsc_exam_file
+            vals["ocsc_exam_filename"] = profile.ocsc_exam_filename
 
         if vals:
             self.sudo().write(vals)

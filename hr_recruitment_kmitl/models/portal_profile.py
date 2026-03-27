@@ -127,6 +127,8 @@ class PortalProfile(models.Model):
     )
     ocsc_exam_date = fields.Date(string="OCSC Exam Date")
     ocsc_exam_number = fields.Char(string="OCSC Exam Number")
+    ocsc_exam_file = fields.Binary(string="OCSC Exam Proof", attachment=True)
+    ocsc_exam_filename = fields.Char(string="OCSC Exam Proof Filename")
 
     # Skills & interests
     foreign_language_skills = fields.Text()

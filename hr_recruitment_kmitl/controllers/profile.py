@@ -1,3 +1,5 @@
+import base64
+
 from odoo import http
 from odoo.addons.portal.controllers.portal import CustomerPortal
 from odoo.http import request
@@ -137,6 +139,19 @@ class PortalProfile(CustomerPortal):
             profile.sudo().write(vals)
             self._save_education_history(profile, post)
             self._save_work_history(profile, request.httprequest.form)
+            if post.get("delete_ocsc_file") == "1":
+                profile.sudo().write(
+                    {"ocsc_exam_file": False, "ocsc_exam_filename": False}
+                )
+            else:
+                ocsc_file = request.httprequest.files.get("doc_ocsc_proof")
+                if ocsc_file and ocsc_file.filename:
+                    profile.sudo().write(
+                        {
+                            "ocsc_exam_file": base64.b64encode(ocsc_file.read()),
+                            "ocsc_exam_filename": ocsc_file.filename,
+                        }
+                    )
             return request.redirect("/my/profile")
 
         values = self._prepare_profile_render_values(partner, profile)

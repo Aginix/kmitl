@@ -113,7 +113,7 @@ odoo.define("hr_recruitment_kmitl.profile_page", function () {
 
         // Cross-tab validation
         document
-            .querySelectorAll('form[action="/my/profile"] [required]')
+            .querySelectorAll('form[action*="/my/profile"] [required]')
             .forEach(function (field) {
                 field.addEventListener("invalid", function () {
                     var pane = this.closest(".tab-pane");
@@ -138,6 +138,63 @@ odoo.define("hr_recruitment_kmitl.profile_page", function () {
         }
     }
 
+    function setupFileInputs() {
+        document.querySelectorAll(".js-file-input").forEach(function (input) {
+            input.addEventListener("change", function () {
+                var wrapper = this.closest(".js-file-upload-wrapper");
+                if (!wrapper) return;
+                var status = wrapper.querySelector(".js-file-status");
+                var removeBtn = wrapper.querySelector(".js-file-remove");
+                var uploadBtn = wrapper.querySelector(".js-upload-btn");
+                var deleteFlag = wrapper.querySelector(".js-delete-flag");
+                if (!status) return;
+                if (this.files && this.files.length > 0) {
+                    status.innerHTML =
+                        '<i class="fa fa-paperclip me-1"></i>' + this.files[0].name;
+                    status.className = "small js-file-status text-success";
+                    if (removeBtn) removeBtn.style.display = "";
+                    if (uploadBtn) uploadBtn.style.display = "none";
+                    if (deleteFlag) deleteFlag.value = "0";
+                } else {
+                    status.textContent = "ยังไม่ได้เลือกไฟล์";
+                    status.className = "small js-file-status text-muted";
+                    if (removeBtn) removeBtn.style.display = "none";
+                    if (uploadBtn) uploadBtn.style.display = "";
+                }
+            });
+        });
+
+        document.querySelectorAll(".js-file-remove").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                var wrapper = this.closest(".js-file-upload-wrapper");
+                if (!wrapper) return;
+                var fileInput = wrapper.querySelector(".js-file-input");
+                var status = wrapper.querySelector(".js-file-status");
+                var uploadBtn = wrapper.querySelector(".js-upload-btn");
+                var deleteFlag = wrapper.querySelector(".js-delete-flag");
+                if (fileInput) fileInput.value = "";
+                if (status) {
+                    status.textContent = "ยังไม่ได้เลือกไฟล์";
+                    status.className = "small js-file-status text-muted";
+                }
+                if (deleteFlag) deleteFlag.value = "1";
+                if (uploadBtn) uploadBtn.style.display = "";
+                this.style.display = "none";
+            });
+        });
+    }
+
+    function setupSameAsRegisteredAddress() {
+        var cb = document.getElementById("same_as_registered_address");
+        var fields = document.getElementById("current_address_fields");
+        if (!cb || !fields) return;
+        var toggle = function () {
+            fields.style.display = cb.checked ? "none" : "";
+        };
+        cb.addEventListener("change", toggle);
+        toggle();
+    }
+
     function initProfilePage() {
         setupToggle("marital", "spouse_fields", function (el) {
             return el.value === "married";
@@ -151,6 +208,8 @@ odoo.define("hr_recruitment_kmitl.profile_page", function () {
         });
         setupWorkHistory();
         setupAgeCompute();
+        setupFileInputs();
+        setupSameAsRegisteredAddress();
         setupTabNavigation();
     }
 
