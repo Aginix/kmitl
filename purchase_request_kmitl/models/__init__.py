@@ -1,2 +1,9 @@
-# -*- coding: utf-8 -*-
-from . import ir_attachment, procurement_committee, purchase_request, purchase_request_line
+from . import (
+    ir_attachment,
+    procurement_committee,
+    procurement_method,
+    procurement_type,
+    purchase_request,
+    purchase_request_line,
+    purchase_type,
+)

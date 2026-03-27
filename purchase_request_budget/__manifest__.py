@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 {
     "name": "Purchase Request Budget",
     "version": "16.0.1.0.0",
@@ -7,7 +6,6 @@
     "author": "Aginix Technologies",
     "website": "https://github.com/aginix/kmitl",
     "depends": [
-        "l10n_th_gov_purchase_request",
         "budget",
         "budget_product",
         "purchase_request_kmitl",
