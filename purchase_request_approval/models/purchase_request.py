@@ -22,13 +22,6 @@ class PurchaseRequest(models.Model):
     )
     hide_create_po_button = fields.Boolean(compute="_hide_create_po_button")
 
-    @api.depends('state')
-    def _hide_create_po_button(self):
-        for rec in self:
-            rec.hide_create_po_button = True
-            if rec.state in ('approved', 'in_progress') and rec.purchase_count == 0:
-                rec.hide_create_po_button = False
-
     def _prepare_approval_vals(self):
         return {
             "request_id": self.id,
@@ -165,9 +158,12 @@ class PurchaseRequest(models.Model):
         for rec in self:
             rec.request_approval_count = len(rec.request_approval_ids)
 
+    @api.depends('state')
     def _hide_create_po_button(self):
-        super()._hide_create_po_button()
         for rec in self:
+            rec.hide_create_po_button = True
+            if rec.state in ('approved', 'in_progress') and rec.purchase_count == 0:
+                rec.hide_create_po_button = False
             if rec.estimated_cost <= 100000:
                 rec.hide_create_po_button = True
 
