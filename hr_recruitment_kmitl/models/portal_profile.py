@@ -44,31 +44,45 @@ class PortalProfile(models.Model):
     # Related partner contact fields
     email = fields.Char(related="partner_id.email", readonly=False)
     phone = fields.Char(related="partner_id.phone", readonly=False)
-    street = fields.Char(related="partner_id.street", readonly=False)
-    street2 = fields.Char(related="partner_id.street2")
-    city = fields.Char(related="partner_id.city")
-    state_id = fields.Many2one(
-        "res.country.state",
-        related="partner_id.state_id",
+
+    # Registered address (ที่อยู่ตามทะเบียนบ้าน)
+    address_street = fields.Char(string="Registered Address")
+    address_zip_id = fields.Many2one("res.city.zip", string="Registered ZIP Location")
+    address_city = fields.Char(compute="_compute_address_fields", store=True)
+    address_state_id = fields.Many2one(
+        "res.country.state", compute="_compute_address_fields", store=True
     )
-    zip = fields.Char(related="partner_id.zip")
-    country_id = fields.Many2one(
-        "res.country",
-        related="partner_id.country_id",
-        readonly=False,
+    address_zip = fields.Char(compute="_compute_address_fields", store=True)
+    address_country_id = fields.Many2one(
+        "res.country", compute="_compute_address_fields", store=True
     )
-    zip_id = fields.Many2one(
-        "res.city.zip",
-        string="ZIP Location",
-        related="partner_id.zip_id",
-        readonly=False,
+    address_address = fields.Char(
+        compute="_compute_address_address", string="Registered Address (Full)"
+    )
+
+    # Current address (ที่อยู่ปัจจุบัน)
+    same_as_registered_address = fields.Boolean(
+        string="Same as Registered Address",
+    )
+    current_street = fields.Char(string="Current Address")
+    current_zip_id = fields.Many2one("res.city.zip", string="Current ZIP Location")
+    current_city = fields.Char(compute="_compute_current_address_fields", store=True)
+    current_state_id = fields.Many2one(
+        "res.country.state", compute="_compute_current_address_fields", store=True
+    )
+    current_zip = fields.Char(compute="_compute_current_address_fields", store=True)
+    current_country_id = fields.Many2one(
+        "res.country", compute="_compute_current_address_fields", store=True
+    )
+    current_address = fields.Char(
+        compute="_compute_current_address", string="Current Address (Full)"
     )
 
     # Computed fields
     age = fields.Integer(compute="_compute_age")
-    address = fields.Char(compute="_compute_address")
 
     # Personal info
+    identification_id = fields.Char(string="Identification No.")
     birthday = fields.Date()
     nationality_id = fields.Many2one("res.country")
     marital = fields.Selection(
@@ -95,13 +109,9 @@ class PortalProfile(models.Model):
     congenital_disease = fields.Text()
 
     # Academic info
-    academic_position = fields.Selection(
-        [
-            ("professor", "Professor"),
-            ("associate_professor", "Associate Professor"),
-            ("assistant_professor", "Assistant Professor"),
-            ("lecturer", "Lecturer"),
-        ],
+    academic_standing_id = fields.Many2one(
+        "hr.employee.academic.standing",
+        string="Academic Position",
     )
     academic_position_date = fields.Date()
     academic_position_institution = fields.Char()
@@ -125,6 +135,15 @@ class PortalProfile(models.Model):
     interests = fields.Text()
 
     # Education history
+    highest_education = fields.Selection(
+        [
+            ("doctor", "ปริญญาเอก"),
+            ("master", "ปริญญาโท"),
+            ("bachelor", "ปริญญาตรี"),
+            ("under_bachelor", "ต่ำกว่าปริญญาตรี"),
+        ],
+        string="Highest Education Level",
+    )
     education_history_ids = fields.One2many("portal.education.history", "profile_id")
 
     # Work history
@@ -139,18 +158,78 @@ class PortalProfile(models.Model):
             else:
                 rec.age = 0
 
-    @api.depends("street", "street2", "city", "state_id", "zip", "country_id")
-    def _compute_address(self):
+    @api.depends("address_zip_id")
+    def _compute_address_fields(self):
+        for rec in self:
+            z = rec.address_zip_id
+            rec.address_city = z.city_id.name if z else False
+            rec.address_state_id = z.city_id.state_id if z else False
+            rec.address_zip = z.name if z else False
+            rec.address_country_id = z.city_id.country_id if z else False
+
+    @api.depends(
+        "address_street",
+        "address_city",
+        "address_state_id",
+        "address_zip",
+        "address_country_id",
+    )
+    def _compute_address_address(self):
         for rec in self:
             parts = [
-                rec.street,
-                rec.street2,
-                rec.city,
-                rec.state_id.name if rec.state_id else False,
-                rec.zip,
-                rec.country_id.name if rec.country_id else False,
+                rec.address_street,
+                rec.address_city,
+                rec.address_state_id.name if rec.address_state_id else False,
+                rec.address_zip,
+                rec.address_country_id.name if rec.address_country_id else False,
             ]
-            rec.address = " ".join(filter(None, parts)) or False
+            rec.address_address = " ".join(filter(None, parts)) or False
+
+    @api.depends("current_zip_id")
+    def _compute_current_address_fields(self):
+        for rec in self:
+            z = rec.current_zip_id
+            rec.current_city = z.city_id.name if z else False
+            rec.current_state_id = z.city_id.state_id if z else False
+            rec.current_zip = z.name if z else False
+            rec.current_country_id = z.city_id.country_id if z else False
+
+    @api.depends(
+        "current_street",
+        "current_city",
+        "current_state_id",
+        "current_zip",
+        "current_country_id",
+    )
+    def _compute_current_address(self):
+        for rec in self:
+            parts = [
+                rec.current_street,
+                rec.current_city,
+                rec.current_state_id.name if rec.current_state_id else False,
+                rec.current_zip,
+                rec.current_country_id.name if rec.current_country_id else False,
+            ]
+            rec.current_address = " ".join(filter(None, parts)) or False
+
+    @api.onchange("same_as_registered_address", "address_street", "address_zip_id")
+    def _onchange_same_as_registered_address(self):
+        if self.same_as_registered_address:
+            self.current_street = self.address_street
+            self.current_zip_id = self.address_zip_id
+
+    def write(self, vals):
+        res = super().write(vals)
+        for rec in self:
+            if rec.same_as_registered_address:
+                current_vals = {}
+                if rec.current_street != rec.address_street:
+                    current_vals["current_street"] = rec.address_street
+                if rec.current_zip_id != rec.address_zip_id:
+                    current_vals["current_zip_id"] = rec.address_zip_id.id
+                if current_vals:
+                    super(PortalProfile, rec).write(current_vals)
+        return res
 
     _sql_constraints = [
         (

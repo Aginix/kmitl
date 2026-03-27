@@ -327,7 +327,46 @@
                                             />
                                         </div>
                                     </div>
-                                    <!-- Row: Birthday | Age | Nationality -->
+                                    <!-- Row: Nationality | Identification No. -->
+                                    <div class="row">
+                                        <div class="mb-3 col-lg-6">
+                                            <label
+                                                class="col-form-label"
+                                                for="nationality_id"
+                                            >สัญชาติ (Nationality)
+                                                *</label>
+                                            <select
+                                                name="nationality_id"
+                                                class="form-select"
+                                            >
+                                                <option value="">-- เลือก --</option>
+                                                <t
+                                                    t-foreach="countries or []"
+                                                    t-as="country"
+                                                >
+                                                    <option
+                                                        t-att-value="country.id"
+                                                        t-att-selected="country.id == profile.nationality_id.id or None"
+                                                    >
+                                                        <t t-esc="country.name" />
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3 col-lg-6">
+                                            <label
+                                                class="col-form-label"
+                                                for="identification_id"
+                                            >เลขบัตรประชาชน (Identification No.)</label>
+                                            <input
+                                                type="text"
+                                                name="identification_id"
+                                                class="form-control"
+                                                t-att-value="profile.identification_id or ''"
+                                            />
+                                        </div>
+                                    </div>
+                                    <!-- Row: Birthday | Age -->
                                     <div class="row">
                                         <div class="mb-3 col-lg-4">
                                             <label
@@ -353,30 +392,6 @@
                                                 class="form-control"
                                                 readonly="readonly"
                                             />
-                                        </div>
-                                        <div class="mb-3 col-lg-6">
-                                            <label
-                                                class="col-form-label"
-                                                for="nationality_id"
-                                            >สัญชาติ (Nationality)
-                                                *</label>
-                                            <select
-                                                name="nationality_id"
-                                                class="form-select"
-                                            >
-                                                <option value="">-- เลือก --</option>
-                                                <t
-                                                    t-foreach="countries or []"
-                                                    t-as="country"
-                                                >
-                                                    <option
-                                                        t-att-value="country.id"
-                                                        t-att-selected="country.id == profile.nationality_id.id or None"
-                                                    >
-                                                        <t t-esc="country.name" />
-                                                    </option>
-                                                </t>
-                                            </select>
                                         </div>
                                     </div>
                                     <!-- Row: Phone | Email -->
@@ -408,39 +423,106 @@
                                             />
                                         </div>
                                     </div>
-                                    <!-- Row: Address -->
+                                    <!-- ที่อยู่ตามทะเบียนบ้าน (Registered Address) -->
+                                    <h6
+                                        class="fw-bold mt-3 mb-2"
+                                    >ที่อยู่ตามทะเบียนบ้าน (Registered Address)</h6>
                                     <div class="row">
                                         <div class="mb-3 col-lg-12">
                                             <label
                                                 class="col-form-label"
-                                                for="street"
-                                            >ที่อยู่ (Address)</label>
+                                                for="address_street"
+                                            >ที่อยู่</label>
                                             <input
                                                 type="text"
-                                                name="street"
+                                                name="address_street"
                                                 class="form-control"
-                                                t-att-value="profile.street or ''"
+                                                t-att-value="profile.address_street or ''"
                                             />
                                         </div>
                                     </div>
-                                    <!-- Row: ZIP Location -->
                                     <div class="row">
                                         <div class="mb-3 col-lg-12">
                                             <label
                                                 class="col-form-label"
-                                                for="zip_id"
+                                                for="address_zip_id"
                                             >ที่ตั้ง (ZIP Location)</label>
-                                            <select name="zip_id" class="form-select">
+                                            <select
+                                                name="address_zip_id"
+                                                class="form-select"
+                                            >
                                                 <option value="">-- เลือก --</option>
                                                 <t t-foreach="zips or []" t-as="z">
                                                     <option
                                                         t-att-value="z.id"
-                                                        t-att-selected="z.id == profile.zip_id.id or None"
+                                                        t-att-selected="z.id == profile.address_zip_id.id or None"
                                                     >
                                                         <t t-esc="z.display_name" />
                                                     </option>
                                                 </t>
                                             </select>
+                                        </div>
+                                    </div>
+                                    <!-- ที่อยู่ปัจจุบัน (Current Address) -->
+                                    <h6
+                                        class="fw-bold mt-3 mb-2"
+                                    >ที่อยู่ปัจจุบัน (Current Address)</h6>
+                                    <div class="form-check mb-3">
+                                        <input
+                                            type="checkbox"
+                                            class="form-check-input"
+                                            id="same_as_registered_address"
+                                            name="same_as_registered_address"
+                                            t-att-checked="profile.same_as_registered_address or None"
+                                        />
+                                        <label
+                                            class="form-check-label"
+                                            for="same_as_registered_address"
+                                        >
+                                            ที่อยู่ปัจจุบันใช้ตามที่อยู่ทะเบียนบ้าน
+                                        </label>
+                                    </div>
+                                    <div
+                                        id="current_address_fields"
+                                        t-att-style="'display:none' if profile.same_as_registered_address else ''"
+                                    >
+                                        <div class="row">
+                                            <div class="mb-3 col-lg-12">
+                                                <label
+                                                    class="col-form-label"
+                                                    for="current_street"
+                                                >ที่อยู่</label>
+                                                <input
+                                                    type="text"
+                                                    name="current_street"
+                                                    class="form-control"
+                                                    t-att-value="profile.current_street or ''"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="mb-3 col-lg-12">
+                                                <label
+                                                    class="col-form-label"
+                                                    for="current_zip_id"
+                                                >ที่ตั้ง (ZIP Location)</label>
+                                                <select
+                                                    name="current_zip_id"
+                                                    class="form-select"
+                                                >
+                                                    <option
+                                                        value=""
+                                                    >-- เลือก --</option>
+                                                    <t t-foreach="zips or []" t-as="z">
+                                                        <option
+                                                            t-att-value="z.id"
+                                                            t-att-selected="z.id == profile.current_zip_id.id or None"
+                                                        >
+                                                            <t t-esc="z.display_name" />
+                                                        </option>
+                                                    </t>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -651,151 +733,103 @@
                                             (Education History)</t>
                                     </t>
 
-                                    <t
-                                        t-foreach="[('doctor', 'Doctoral Degree / ปริญญาเอก'), ('master', 'Master\'s Degree / ปริญญาโท'), ('bachelor', 'Bachelor\'s Degree / ปริญญาตรี'), ('under_bachelor', 'Under Bachelor\'s Degree / ต่ำกว่าปริญญาตรี')]"
-                                        t-as="edu_level"
+                                    <div class="row mb-4">
+                                        <div class="col-md-6">
+                                            <label
+                                                class="col-form-label fw-semibold"
+                                                for="highest_education"
+                                            >วุฒิการศึกษาสูงสุด (Highest Education Level)</label>
+                                            <select
+                                                name="highest_education"
+                                                id="highest_education"
+                                                class="form-select"
+                                            >
+                                                <option value="">-- เลือก --</option>
+                                                <option
+                                                    value="doctor"
+                                                    t-att-selected="profile.highest_education == 'doctor' or None"
+                                                >ปริญญาเอก</option>
+                                                <option
+                                                    value="master"
+                                                    t-att-selected="profile.highest_education == 'master' or None"
+                                                >ปริญญาโท</option>
+                                                <option
+                                                    value="bachelor"
+                                                    t-att-selected="profile.highest_education == 'bachelor' or None"
+                                                >ปริญญาตรี</option>
+                                                <option
+                                                    value="under_bachelor"
+                                                    t-att-selected="profile.highest_education == 'under_bachelor' or None"
+                                                >ต่ำกว่าปริญญาตรี</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        id="education_sections"
+                                        t-att-style="'' if profile.highest_education else 'display: none;'"
                                     >
-                                        <t t-set="edu_key" t-value="edu_level[0]" />
-                                        <t t-set="edu_label" t-value="edu_level[1]" />
+                                        <!-- 1-3: ปริญญาเอก / โท / ตรี (readonly level) -->
+                                        <t
+                                            t-foreach="education_levels or []"
+                                            t-as="edu_level"
+                                        >
+                                            <t t-set="edu_key" t-value="edu_level.id" />
+                                            <t
+                                                t-set="edu_label"
+                                                t-value="edu_level.name"
+                                            />
+                                            <t
+                                                t-set="edu_rec"
+                                                t-value="education_by_level.get(edu_key)"
+                                            />
+                                            <div
+                                                class="edu-section"
+                                                t-att-data-edu-level="edu_level.level"
+                                                t-att-style="'' if (profile.highest_education == 'doctor' and edu_level.level in [70, 80, 90]) or (profile.highest_education == 'master' and edu_level.level in [70, 80]) or (profile.highest_education == 'bachelor' and edu_level.level == 70) else 'display: none;'"
+                                            >
+                                                <t
+                                                    t-call="hr_recruitment_kmitl.profile_education_section"
+                                                >
+                                                    <t
+                                                        t-set="section_index"
+                                                        t-value="edu_level_index + 1"
+                                                    />
+                                                    <t
+                                                        t-set="section_prefix"
+                                                        t-valuef="edu_#{edu_key}_"
+                                                    />
+                                                    <t
+                                                        t-set="show_level_select"
+                                                        t-value="False"
+                                                    />
+                                                </t>
+                                            </div>
+                                        </t>
+
+                                        <!-- 4: ต่ำกว่าปริญญาตรี (selectable level) -->
                                         <t
                                             t-set="edu_rec"
-                                            t-value="education_by_level.get(edu_key)"
+                                            t-value="sub_bachelor_edu_rec"
                                         />
+                                        <t t-set="edu_label">ต่ำกว่าปริญญาตรี</t>
                                         <div
-                                            class="border rounded-12 mb-3 overflow-hidden"
+                                            class="edu-section"
+                                            data-edu-level="sub"
+                                            t-att-style="'' if profile.highest_education == 'under_bachelor' else 'display: none;'"
                                         >
-                                            <div class="row g-0">
-                                                <!-- Left: Degree label -->
-                                                <div
-                                                    class="col-lg-3 d-flex align-items-center justify-content-center p-3 border-end"
-                                                >
-                                                    <div class="text-center">
-                                                        <div
-                                                            class="rounded-circle border border-2 border-primary text-primary d-inline-flex align-items-center justify-content-center mb-2"
-                                                            style="width: 36px; height: 36px; font-weight: bold; font-size: 1.1rem;"
-                                                        >
-                                                            <t
-                                                                t-esc="edu_level_index + 1"
-                                                            />
-                                                        </div>
-                                                        <h6 class="mb-0 fw-bold">
-                                                            <t t-esc="edu_label" />
-                                                        </h6>
-                                                    </div>
-                                                </div>
-                                                <!-- Right: Form fields -->
-                                                <div class="col-lg-9 p-3">
-                                                    <div class="row">
-                                                        <div class="mb-3 col-md-6">
-                                                            <label
-                                                                class="col-form-label"
-                                                            >Program</label>
-                                                            <input
-                                                                type="text"
-                                                                t-attf-name="edu_#{edu_key}_program"
-                                                                class="form-control"
-                                                                t-att-value="edu_rec.program if edu_rec else ''"
-                                                            />
-                                                        </div>
-                                                        <div class="mb-3 col-md-6">
-                                                            <label
-                                                                class="col-form-label"
-                                                            >Major</label>
-                                                            <input
-                                                                type="text"
-                                                                t-attf-name="edu_#{edu_key}_major"
-                                                                class="form-control"
-                                                                t-att-value="edu_rec.major if edu_rec else ''"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="mb-3 col-md-4">
-                                                            <label
-                                                                class="col-form-label"
-                                                            >Institution</label>
-                                                            <input
-                                                                type="text"
-                                                                t-attf-name="edu_#{edu_key}_institution"
-                                                                class="form-control"
-                                                                t-att-value="edu_rec.institution if edu_rec else ''"
-                                                            />
-                                                        </div>
-                                                        <div class="mb-3 col-md-4">
-                                                            <label
-                                                                class="col-form-label"
-                                                            >Country</label>
-                                                            <select
-                                                                t-attf-name="edu_#{edu_key}_country_id"
-                                                                class="form-select"
-                                                            >
-                                                                <option
-                                                                    value=""
-                                                                >-- Select --</option>
-                                                                <t
-                                                                    t-foreach="countries or []"
-                                                                    t-as="country"
-                                                                >
-                                                                    <option
-                                                                        t-att-value="country.id"
-                                                                        t-att-selected="edu_rec and country.id == edu_rec.country_id.id or None"
-                                                                    >
-                                                                        <t
-                                                                            t-esc="country.name"
-                                                                        />
-                                                                    </option>
-                                                                </t>
-                                                            </select>
-                                                        </div>
-                                                        <div class="mb-3 col-md-4">
-                                                            <label
-                                                                class="col-form-label"
-                                                            >Graduation
-                                                                Date</label>
-                                                            <input
-                                                                type="date"
-                                                                t-attf-name="edu_#{edu_key}_graduation_date"
-                                                                class="form-control"
-                                                                t-att-value="edu_rec.graduation_date if edu_rec else ''"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <label class="col-form-label">
-                                                            Upload Certificate / อัปโหลดใบรับรอง
-                                                        </label>
-
-                                                        <div
-                                                            class="d-flex flex-column flex-sm-row align-items-sm-center gap-2 mb-3"
-                                                        >
-                                                            <label
-                                                                class="btn btn-outline-secondary btn-sm px-3 py-2 fw-medium rounded-3 mb-0"
-                                                            >
-                                                                <i
-                                                                    class="fa fa-upload me-2"
-                                                                />
-                                                                <span
-                                                                    class="js-upload-text"
-                                                                >Upload</span>
-                                                                <input
-                                                                    type="file"
-                                                                    class="d-none js-file-input"
-                                                                    name="doc_english_score"
-                                                                    accept=".pdf,.jpg,.jpeg,.png"
-                                                                />
-                                                            </label>
-
-                                                            <div
-                                                                class="small text-muted js-file-name"
-                                                            >
-                                                                ยังไม่ได้เลือกไฟล์
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            <t
+                                                t-call="hr_recruitment_kmitl.profile_education_section"
+                                            >
+                                                <t t-set="section_index" t-value="4" />
+                                                <t t-set="section_prefix">edu_sub_</t>
+                                                <t
+                                                    t-set="show_level_select"
+                                                    t-value="True"
+                                                />
+                                            </t>
                                         </div>
-                                    </t>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1045,139 +1079,92 @@
                                     </t>
 
                                     <div class="row">
-                                        <div class="mb-3 col-lg-12">
-                                            <label
-                                                class="col-form-label d-block"
-                                            >Position</label>
-                                            <div class="form-check form-check-inline">
-                                                <input
-                                                    type="radio"
-                                                    name="academic_position"
-                                                    value=""
-                                                    class="form-check-input"
-                                                    id="acad_none"
-                                                    t-att-checked="not profile.academic_position or None"
-                                                />
-                                                <label
-                                                    class="form-check-label"
-                                                    for="acad_none"
-                                                >-- ไม่ระบุ
-                                                    --</label>
-                                            </div>
-                                            <div class="form-check form-check-inline">
-                                                <input
-                                                    type="radio"
-                                                    name="academic_position"
-                                                    value="professor"
-                                                    class="form-check-input"
-                                                    id="acad_professor"
-                                                    t-att-checked="profile.academic_position == 'professor' or None"
-                                                />
-                                                <label
-                                                    class="form-check-label"
-                                                    for="acad_professor"
-                                                >Professor</label>
-                                            </div>
-                                            <div class="form-check form-check-inline">
-                                                <input
-                                                    type="radio"
-                                                    name="academic_position"
-                                                    value="associate_professor"
-                                                    class="form-check-input"
-                                                    id="acad_associate"
-                                                    t-att-checked="profile.academic_position == 'associate_professor' or None"
-                                                />
-                                                <label
-                                                    class="form-check-label"
-                                                    for="acad_associate"
-                                                >Associate
-                                                    Professor</label>
-                                            </div>
-                                            <div class="form-check form-check-inline">
-                                                <input
-                                                    type="radio"
-                                                    name="academic_position"
-                                                    value="assistant_professor"
-                                                    class="form-check-input"
-                                                    id="acad_assistant"
-                                                    t-att-checked="profile.academic_position == 'assistant_professor' or None"
-                                                />
-                                                <label
-                                                    class="form-check-label"
-                                                    for="acad_assistant"
-                                                >Assistant
-                                                    Professor</label>
-                                            </div>
-                                            <div class="form-check form-check-inline">
-                                                <input
-                                                    type="radio"
-                                                    name="academic_position"
-                                                    value="lecturer"
-                                                    class="form-check-input"
-                                                    id="acad_lecturer"
-                                                    t-att-checked="profile.academic_position == 'lecturer' or None"
-                                                />
-                                                <label
-                                                    class="form-check-label"
-                                                    for="acad_lecturer"
-                                                >Lecturer</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
                                         <div class="mb-3 col-lg-6">
                                             <label
                                                 class="col-form-label"
-                                                for="academic_position_date"
-                                            >แต่งตั้งเมื่อ
-                                                (Appointed
-                                                Date)</label>
-                                            <input
-                                                type="date"
-                                                name="academic_position_date"
-                                                class="form-control"
-                                                t-att-value="profile.academic_position_date or ''"
-                                            />
-                                        </div>
-                                        <div class="mb-3 col-lg-6">
-                                            <label
-                                                class="col-form-label"
-                                                for="academic_position_institution"
-                                            >สถาบันที่ได้รับ
-                                                (Institution)</label>
-                                            <input
-                                                type="text"
-                                                name="academic_position_institution"
-                                                class="form-control"
-                                                t-att-value="profile.academic_position_institution or ''"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <label class="col-form-label">
-                                            แนบสำเนาคำสั่งแต่งตั้งตำแหน่งทางวิชาการ
-                                        </label>
-
-                                        <div
-                                            class="d-flex flex-column flex-sm-row align-items-sm-center gap-2 mb-3"
-                                        >
-                                            <label
-                                                class="btn btn-outline-secondary btn-sm px-3 py-2 fw-medium rounded-3 mb-0"
+                                                for="academic_standing_id"
+                                            >ตำแหน่งทางวิชาการ (Academic Position)</label>
+                                            <select
+                                                name="academic_standing_id"
+                                                id="academic_standing_id"
+                                                class="form-select"
                                             >
-                                                <i class="fa fa-upload me-2" />
-                                                <span
-                                                    class="js-upload-text"
-                                                >Upload</span>
+                                                <option value="">ไม่มี</option>
+                                                <t
+                                                    t-foreach="academic_standings or []"
+                                                    t-as="standing"
+                                                >
+                                                    <option
+                                                        t-att-value="standing.id"
+                                                        t-att-selected="standing.id == profile.academic_standing_id.id or None"
+                                                    >
+                                                        <t t-esc="standing.name" />
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div
+                                        id="academic_position_details"
+                                        t-att-style="'' if profile.academic_standing_id.id else 'display: none;'"
+                                    >
+                                        <div class="row">
+                                            <div class="mb-3 col-lg-6">
+                                                <label
+                                                    class="col-form-label"
+                                                    for="academic_position_date"
+                                                >แต่งตั้งเมื่อ
+                                                    (Appointed
+                                                    Date)</label>
                                                 <input
-                                                    type="file"
-                                                    class="d-none js-file-input"
-                                                    name="doc_english_score"
-                                                    accept=".pdf,.jpg,.jpeg,.png"
+                                                    type="date"
+                                                    name="academic_position_date"
+                                                    class="form-control"
+                                                    t-att-value="profile.academic_position_date or ''"
                                                 />
+                                            </div>
+                                            <div class="mb-3 col-lg-6">
+                                                <label
+                                                    class="col-form-label"
+                                                    for="academic_position_institution"
+                                                >สถาบันที่ได้รับ
+                                                    (Institution)</label>
+                                                <input
+                                                    type="text"
+                                                    name="academic_position_institution"
+                                                    class="form-control"
+                                                    t-att-value="profile.academic_position_institution or ''"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <label class="col-form-label">
+                                                แนบสำเนาคำสั่งแต่งตั้งตำแหน่งทางวิชาการ
                                             </label>
 
-                                            <div class="small text-muted js-file-name">
-                                                ยังไม่ได้เลือกไฟล์
+                                            <div
+                                                class="d-flex flex-column flex-sm-row align-items-sm-center gap-2 mb-3"
+                                            >
+                                                <label
+                                                    class="btn btn-outline-secondary btn-sm px-3 py-2 fw-medium rounded-3 mb-0"
+                                                >
+                                                    <i class="fa fa-upload me-2" />
+                                                    <span
+                                                        class="js-upload-text"
+                                                    >Upload</span>
+                                                    <input
+                                                        type="file"
+                                                        class="d-none js-file-input"
+                                                        name="doc_english_score"
+                                                        accept=".pdf,.jpg,.jpeg,.png"
+                                                    />
+                                                </label>
+
+                                                <div
+                                                    class="small text-muted js-file-name"
+                                                >
+                                                    ยังไม่ได้เลือกไฟล์
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1343,6 +1330,120 @@
                     </div>
                 </form>
             </div>
+            <script>
+                (function () {
+                    var cb = document.getElementById('same_as_registered_address');
+                    var fields = document.getElementById('current_address_fields');
+                    if (!cb || !fields) return;
+                    cb.addEventListener('change', function () {
+                        fields.style.display = cb.checked ? 'none' : '';
+                    });
+                })();
+            </script>
         </t>
+    </template>
+
+    <!-- Reusable education section (used by profile page) -->
+    <template id="profile_education_section">
+        <div class="border rounded-12 mb-3 overflow-hidden">
+            <div class="row g-0">
+                <!-- Left: Degree label -->
+                <div
+                    class="col-lg-3 d-flex align-items-center justify-content-center p-3 border-end"
+                >
+                    <div class="text-center">
+                        <div
+                            class="rounded-circle border border-2 border-primary text-primary d-inline-flex align-items-center justify-content-center mb-2"
+                            style="width: 36px; height: 36px; font-weight: bold; font-size: 1.1rem;"
+                        >
+                            <t t-esc="section_index" />
+                        </div>
+                        <h6 class="mb-0 fw-bold">
+                            <t t-esc="edu_label" />
+                        </h6>
+                    </div>
+                </div>
+                <!-- Right: Form fields -->
+                <div class="col-lg-9 p-3">
+                    <!-- Level select (only for sub-bachelor) -->
+                    <div t-if="show_level_select" class="row">
+                        <div class="mb-3 col-md-6">
+                            <label class="col-form-label">ระดับการศึกษา</label>
+                            <select
+                                t-attf-name="#{section_prefix}education_level_id"
+                                class="form-select"
+                            >
+                                <option value="">-- เลือก --</option>
+                                <t t-foreach="sub_bachelor_levels or []" t-as="sub_lv">
+                                    <option
+                                        t-att-value="sub_lv.id"
+                                        t-att-selected="edu_rec and sub_lv.id == edu_rec.education_level_id.id or None"
+                                    >
+                                        <t t-esc="sub_lv.name" />
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label class="col-form-label">Program</label>
+                            <input
+                                type="text"
+                                t-attf-name="#{section_prefix}program"
+                                class="form-control"
+                                t-att-value="edu_rec.program if edu_rec else ''"
+                            />
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label class="col-form-label">Major</label>
+                            <input
+                                type="text"
+                                t-attf-name="#{section_prefix}major"
+                                class="form-control"
+                                t-att-value="edu_rec.major if edu_rec else ''"
+                            />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-md-4">
+                            <label class="col-form-label">Institution</label>
+                            <input
+                                type="text"
+                                t-attf-name="#{section_prefix}institution"
+                                class="form-control"
+                                t-att-value="edu_rec.institution if edu_rec else ''"
+                            />
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label class="col-form-label">Country</label>
+                            <select
+                                t-attf-name="#{section_prefix}country_id"
+                                class="form-select"
+                            >
+                                <option value="">-- Select --</option>
+                                <t t-foreach="countries or []" t-as="country">
+                                    <option
+                                        t-att-value="country.id"
+                                        t-att-selected="edu_rec and country.id == edu_rec.country_id.id or None"
+                                    >
+                                        <t t-esc="country.name" />
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label class="col-form-label">Graduation Date</label>
+                            <input
+                                type="date"
+                                t-attf-name="#{section_prefix}graduation_date"
+                                class="form-control"
+                                t-att-value="edu_rec.graduation_date if edu_rec else ''"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </template>
 </odoo>

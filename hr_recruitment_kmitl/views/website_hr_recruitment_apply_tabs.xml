@@ -37,30 +37,6 @@
             >
                 <label
                     class="col-form-label col-sm-auto s_website_form_label mb-2"
-                    for="birthday"
-                >
-                    <span class="s_website_form_label_content">วัน/เดือน/ปี เกิด</span>
-                    <span class="s_website_form_mark"> *</span>
-                </label>
-                <div class="col-sm">
-                    <input
-                        id="birthday"
-                        type="text"
-                        class="form-control s_website_form_input text-muted"
-                        name="birthday"
-                        required=""
-                        readonly="readonly"
-                        data-fill-with="birthday"
-                    />
-                </div>
-            </div>
-            <div
-                class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
-                data-type="char"
-                data-name="Field"
-            >
-                <label
-                    class="col-form-label col-sm-auto s_website_form_label mb-2"
                     for="nationality_id"
                 >
                     <span class="s_website_form_label_content">สัญชาติ</span>
@@ -75,6 +51,52 @@
                         required=""
                         readonly="readonly"
                         data-fill-with="nationality_id"
+                    />
+                </div>
+            </div>
+            <div
+                class="col-6 mb-0 py-2 s_website_form_field"
+                data-type="char"
+                data-name="Field"
+            >
+                <label
+                    class="col-form-label col-sm-auto s_website_form_label mb-2"
+                    for="identification_id"
+                >
+                    <span class="s_website_form_label_content">เลขบัตรประชาชน</span>
+                </label>
+                <div class="col-sm">
+                    <input
+                        id="identification_id"
+                        type="text"
+                        class="form-control s_website_form_input text-muted"
+                        name="identification_id"
+                        readonly="readonly"
+                        data-fill-with="identification_id"
+                    />
+                </div>
+            </div>
+            <div
+                class="col-6 mb-0 py-2 s_website_form_field s_website_form_required s_website_form_model_required"
+                data-type="char"
+                data-name="Field"
+            >
+                <label
+                    class="col-form-label col-sm-auto s_website_form_label mb-2"
+                    for="birthday"
+                >
+                    <span class="s_website_form_label_content">วัน/เดือน/ปี เกิด</span>
+                    <span class="s_website_form_mark"> *</span>
+                </label>
+                <div class="col-sm">
+                    <input
+                        id="birthday"
+                        type="text"
+                        class="form-control s_website_form_input text-muted"
+                        name="birthday"
+                        required=""
+                        readonly="readonly"
+                        data-fill-with="birthday"
                     />
                 </div>
             </div>
@@ -133,19 +155,33 @@
             >
                 <label
                     class="col-form-label col-sm-auto s_website_form_label mb-2"
-                    for="address"
+                    for="address_address"
+                >
+                    <span
+                        class="s_website_form_label_content"
+                    >ที่อยู่ตามทะเบียนบ้าน</span>
+                </label>
+                <div class="col-sm">
+                    <textarea
+                        id="address_address"
+                        class="form-control s_website_form_input text-muted"
+                        name="address_address_from"
+                        readonly="readonly"
+                    ><t t-esc="default.get('address_address') or ''" /></textarea>
+                </div>
+                <label
+                    class="col-form-label col-sm-auto s_website_form_label mb-2 mt-3"
+                    for="current_address"
                 >
                     <span class="s_website_form_label_content">ที่อยู่ปัจจุบัน</span>
                 </label>
                 <div class="col-sm">
                     <textarea
-                        id="address"
+                        id="current_address"
                         class="form-control s_website_form_input text-muted"
-                        name="address_from"
+                        name="current_address_from"
                         readonly="readonly"
-                    >
-                        <t t-esc="default.get('address') or ''" />
-                    </textarea>
+                    ><t t-esc="default.get('current_address') or ''" /></textarea>
                 </div>
             </div>
             <hr class="my-4" />
@@ -322,53 +358,51 @@
         <t t-call="hr_recruitment_kmitl.profile_banner" />
         <t t-call="hr_recruitment_kmitl.section_tab_intro">
             <t t-set="title">2. ประวัติการศึกษา (Education History)</t>
-            <t t-set="description">แสดงวุฒิการศึกษาที่ใช้ในการสมัครงาน</t>
+            <t t-set="description">เลือกวุฒิการศึกษาที่ใช้ในการสมัครงาน</t>
         </t>
-        <!-- หา selected degree อัตโนมัติ: สูงสุดก่อน -->
-        <t
-            t-set="selected_education_level"
-            t-value="
-                'doctor' if education_by_level and education_by_level.get('doctor') else
-                'master' if education_by_level and education_by_level.get('master') else
-                'bachelor' if education_by_level and education_by_level.get('bachelor') else
-                'under_bachelor' if education_by_level and education_by_level.get('under_bachelor') else
-                False
-            "
-        />
-        <t t-if="selected_education_level">
+        <!-- หา best degree อัตโนมัติ: สูงสุดก่อน (sorted by level desc) -->
+        <t t-set="best_edu_rec" t-value="False" />
+        <t t-foreach="education_by_level or {}" t-as="edu_id">
+            <t t-set="candidate" t-value="education_by_level[edu_id]" />
             <t
-                t-set="edu_rec"
-                t-value="education_by_level.get(selected_education_level)"
-            />
-            <t
-                t-set="edu_label"
-                t-value="
-                    'ปริญญาเอก' if selected_education_level == 'doctor' else
-                    'ปริญญาโท' if selected_education_level == 'master' else
-                    'ปริญญาตรี' if selected_education_level == 'bachelor' else
-                    'ต่ำกว่าปริญญาตรี'
-                "
-            />
+                t-if="not best_edu_rec or (candidate.education_level_id.level or 0) > (best_edu_rec.education_level_id.level or 0)"
+            >
+                <t t-set="best_edu_rec" t-value="candidate" />
+            </t>
+        </t>
+        <t t-if="education_by_level">
+            <!-- JSON data for JS -->
+            <script type="application/json" id="education_data">
+                <t t-out="education_json" />
+            </script>
+            <t t-set="default_level_id" t-value="best_edu_rec.education_level_id.id" />
             <div class="row g-4 mb-4">
                 <div class="col-md-6">
                     <label
                         class="form-label fw-semibold text-dark small"
-                    >วุฒิการศึกษา *</label>
-                    <input
-                        type="text"
-                        class="form-control text-muted border-0 py-2"
-                        t-att-value="edu_label"
-                        readonly="readonly"
-                    />
+                    >วุฒิการศึกษาสูงสุด *</label>
+                    <select id="edu_level_select" class="form-select py-2">
+                        <t t-foreach="education_by_level or {}" t-as="edu_id">
+                            <t t-set="rec" t-value="education_by_level[edu_id]" />
+                            <option
+                                t-att-value="rec.education_level_id.id"
+                                t-att-selected="rec.education_level_id.id == default_level_id or None"
+                            >
+                                <t t-esc="rec.education_level_id.name" />
+                            </option>
+                        </t>
+                    </select>
                     <input
                         type="hidden"
+                        id="edu_level_hidden"
                         name="selected_education_level"
-                        t-att-value="selected_education_level"
+                        t-att-value="default_level_id"
                     />
                     <input
                         type="hidden"
+                        id="edu_level_hidden2"
                         name="edu_level"
-                        t-att-value="selected_education_level"
+                        t-att-value="default_level_id"
                     />
                 </div>
                 <div class="col-md-6">
@@ -376,15 +410,17 @@
                         class="form-label fw-semibold text-dark small"
                     >หลักสูตร *</label>
                     <input
+                        id="edu_program_display"
                         type="text"
                         class="form-control text-muted border-0 py-2"
-                        t-att-value="edu_rec and edu_rec.program or ''"
+                        t-att-value="best_edu_rec.program or ''"
                         readonly="readonly"
                     />
                     <input
                         type="hidden"
+                        id="edu_program_hidden"
                         name="edu_program"
-                        t-att-value="edu_rec and edu_rec.program or ''"
+                        t-att-value="best_edu_rec.program or ''"
                     />
                 </div>
             </div>
@@ -394,15 +430,17 @@
                         class="form-label fw-semibold text-dark small"
                     >สาขา/วิชาเอก</label>
                     <input
+                        id="edu_major_display"
                         type="text"
                         class="form-control text-muted border-0 py-2"
-                        t-att-value="edu_rec and edu_rec.major or ''"
+                        t-att-value="best_edu_rec.major or ''"
                         readonly="readonly"
                     />
                     <input
                         type="hidden"
+                        id="edu_major_hidden"
                         name="edu_major"
-                        t-att-value="edu_rec and edu_rec.major or ''"
+                        t-att-value="best_edu_rec.major or ''"
                     />
                 </div>
                 <div class="col-md-6">
@@ -410,15 +448,17 @@
                         class="form-label fw-semibold text-dark small"
                     >สถาบัน/มหาวิทยาลัย *</label>
                     <input
+                        id="edu_institution_display"
                         type="text"
                         class="form-control text-muted border-0 py-2"
-                        t-att-value="edu_rec and edu_rec.institution or ''"
+                        t-att-value="best_edu_rec.institution or ''"
                         readonly="readonly"
                     />
                     <input
                         type="hidden"
+                        id="edu_institution_hidden"
                         name="edu_institution"
-                        t-att-value="edu_rec and edu_rec.institution or ''"
+                        t-att-value="best_edu_rec.institution or ''"
                     />
                 </div>
             </div>
@@ -429,9 +469,10 @@
                     >สำเร็จการศึกษาเมื่อ *</label>
                     <div class="input-group">
                         <input
+                            id="edu_graduation_date_display"
                             type="text"
                             class="form-control text-muted border-0 py-2"
-                            t-att-value="edu_rec and edu_rec.graduation_date or ''"
+                            t-att-value="best_edu_rec.graduation_date or ''"
                             readonly="readonly"
                         />
                         <span class="input-group-text border-0">
@@ -440,16 +481,45 @@
                     </div>
                     <input
                         type="hidden"
+                        id="edu_graduation_date_hidden"
                         name="edu_graduation_date"
-                        t-att-value="edu_rec and edu_rec.graduation_date or ''"
+                        t-att-value="best_edu_rec.graduation_date or ''"
                     />
                     <input
                         type="hidden"
+                        id="edu_country_id_hidden"
                         name="edu_country_id"
-                        t-att-value="edu_rec and edu_rec.country_id and edu_rec.country_id.id or ''"
+                        t-att-value="best_edu_rec.country_id.id if best_edu_rec.country_id else ''"
                     />
                 </div>
             </div>
+            <script>
+                (function () {
+                    var dataEl = document.getElementById("education_data");
+                    if (!dataEl) return;
+                    var eduData = JSON.parse(dataEl.textContent);
+                    var select = document.getElementById("edu_level_select");
+                    if (!select) return;
+
+                    function updateFields() {
+                        var rec = eduData[select.value];
+                        if (!rec) return;
+                        document.getElementById("edu_level_hidden").value = rec.level_id;
+                        document.getElementById("edu_level_hidden2").value = rec.level_id;
+                        document.getElementById("edu_program_display").value = rec.program;
+                        document.getElementById("edu_program_hidden").value = rec.program;
+                        document.getElementById("edu_major_display").value = rec.major;
+                        document.getElementById("edu_major_hidden").value = rec.major;
+                        document.getElementById("edu_institution_display").value = rec.institution;
+                        document.getElementById("edu_institution_hidden").value = rec.institution;
+                        document.getElementById("edu_graduation_date_display").value = rec.graduation_date;
+                        document.getElementById("edu_graduation_date_hidden").value = rec.graduation_date;
+                        document.getElementById("edu_country_id_hidden").value = rec.country_id;
+                    }
+
+                    select.addEventListener("change", updateFields);
+                })();
+            </script>
         </t>
         <t t-else="">
             <div class="d-flex align-items-start gap-3 p-4 rounded-4 bg-light border">
@@ -607,8 +677,8 @@
     <template id="apply_tab_academic">
         <t t-call="hr_recruitment_kmitl.profile_banner" />
         <t
-            t-set="academic_position_value"
-            t-value="default and default.get('academic_position') or ''"
+            t-set="academic_standing_value"
+            t-value="default and default.get('academic_standing_id') or ''"
         />
         <t
             t-set="academic_position_date_value"
@@ -653,13 +723,13 @@
                         <input
                             type="text"
                             class="form-control text-muted border-0 py-2"
-                            t-att-value="academic_position_value"
+                            t-att-value="academic_standing_value"
                             readonly="readonly"
                         />
                         <input
                             type="hidden"
-                            name="academic_position"
-                            t-att-value="academic_position_value"
+                            name="academic_standing_id"
+                            t-att-value="academic_standing_value"
                         />
                     </div>
                     <div class="col-md-6">

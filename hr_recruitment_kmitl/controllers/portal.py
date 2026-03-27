@@ -89,18 +89,6 @@ class HrRecruitmentPortal(CustomerPortal):
             )
         return items
 
-    def _education_level_rank(self, level):
-        rank_map = {
-            "high_school": 1,
-            "vocational": 2,
-            "high_vocational": 3,
-            "diploma": 4,
-            "bachelor": 5,
-            "master": 6,
-            "doctorate": 7,
-        }
-        return rank_map.get(level, 0)
-
     def _prepare_education_item(self, application, profile):
         records = getattr(application, "education_history_ids", False)
         if not records and profile:
@@ -118,7 +106,7 @@ class HrRecruitmentPortal(CustomerPortal):
 
         sorted_records = records.sorted(
             key=lambda r: (
-                self._education_level_rank(getattr(r, "level", False)),
+                r.education_level_id.level if r.education_level_id else 0,
                 getattr(r, "graduation_date", False)
                 or fields.Date.from_string("1900-01-01"),
                 r.id,
@@ -128,7 +116,7 @@ class HrRecruitmentPortal(CustomerPortal):
         rec = sorted_records[0]
 
         return {
-            "level": self._selection_label(rec, "level", rec.level) or "-",
+            "level": rec.education_level_id.name if rec.education_level_id else "-",
             "program": getattr(rec, "program", "") or "-",
             "major": getattr(rec, "major", "") or "-",
             "institution": getattr(rec, "institution", "") or "-",
@@ -272,47 +260,23 @@ class HrRecruitmentPortal(CustomerPortal):
                 "-",
             )
 
-        address_parts = [
-            self._first_non_empty(
-                getattr(application, "street", False),
-                profile.street if profile else False,
-                "",
-            ),
-            self._first_non_empty(
-                getattr(application, "street2", False),
-                profile.street2 if profile else False,
-                "",
-            ),
-            self._first_non_empty(
-                getattr(application, "city", False),
-                profile.city if profile else False,
-                "",
-            ),
-            self._first_non_empty(
-                application.state_id.name
-                if getattr(application, "state_id", False)
-                else False,
-                profile.state_id.name if profile and profile.state_id else False,
-                "",
-            ),
-            self._first_non_empty(
-                getattr(application, "zip", False),
-                profile.zip if profile else False,
-                "",
-            ),
-            self._first_non_empty(
-                application.country_id.name
-                if getattr(application, "country_id", False)
-                else False,
-                profile.country_id.name if profile and profile.country_id else False,
-                "",
-            ),
-        ]
-        address = ", ".join(part for part in address_parts if part) or "-"
+        registered_address = self._first_non_empty(
+            getattr(application, "address_address", False),
+            profile.address_address if profile else False,
+            "-",
+        )
+        current_address = self._first_non_empty(
+            getattr(application, "current_address", False),
+            profile.current_address if profile else False,
+            "-",
+        )
 
         academic_source = (
             application
-            if getattr(application, "academic_position", False)
+            if (
+                getattr(application, "academic_standing_id", False)
+                and application.academic_standing_id.id
+            )
             or getattr(application, "has_ocsc_exam", False)
             else profile
         )
@@ -343,10 +307,16 @@ class HrRecruitmentPortal(CustomerPortal):
             "tabs": {
                 "personal": {
                     "full_name": full_name or "-",
+                    "identification_id": self._first_non_empty(
+                        getattr(application, "identification_id", False),
+                        profile.identification_id if profile else False,
+                        "-",
+                    ),
                     "birthday": self._format_date(birthday) or "-",
                     "age": self._compute_age(birthday) or "-",
                     "nationality": nationality or "-",
-                    "address": address,
+                    "address_address": registered_address,
+                    "current_address": current_address,
                     "phone": phone or "-",
                     "email": email or "-",
                     "emergency_contact_name": self._first_non_empty(
@@ -378,12 +348,9 @@ class HrRecruitmentPortal(CustomerPortal):
                 "education": self._prepare_education_item(application, profile),
                 "work_history": self._prepare_work_history_items(application, profile),
                 "academic": {
-                    "academic_position": self._selection_label(
-                        academic_source,
-                        "academic_position",
-                        getattr(academic_source, "academic_position", False),
-                    )
-                    or "-",
+                    "academic_standing_id": academic_source.academic_standing_id.name
+                    if getattr(academic_source, "academic_standing_id", False)
+                    else "-",
                     "academic_position_date": self._format_date(
                         getattr(academic_source, "academic_position_date", False)
                     )

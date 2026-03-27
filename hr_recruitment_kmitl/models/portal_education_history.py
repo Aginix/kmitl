@@ -4,7 +4,7 @@ from odoo import fields, models
 class PortalEducationHistory(models.Model):
     _name = "portal.education.history"
     _description = "Education History"
-    _order = "level"
+    _order = "education_level_id"
 
     profile_id = fields.Many2one(
         "portal.profile",
@@ -12,13 +12,9 @@ class PortalEducationHistory(models.Model):
         ondelete="cascade",
         index=True,
     )
-    level = fields.Selection(
-        [
-            ("doctor", "Doctoral Degree"),
-            ("master", "Master's Degree"),
-            ("bachelor", "Bachelor's Degree"),
-            ("under_bachelor", "Under Bachelor's Degree"),
-        ],
+    education_level_id = fields.Many2one(
+        "resource.education.level",
+        string="Education Level",
         required=True,
     )
     program = fields.Char(required=True)
@@ -29,8 +25,8 @@ class PortalEducationHistory(models.Model):
 
     _sql_constraints = [
         (
-            "profile_level_unique",
-            "unique(profile_id, level)",
+            "profile_education_level_unique",
+            "unique(profile_id, education_level_id)",
             "Only one record per education level is allowed.",
         ),
     ]

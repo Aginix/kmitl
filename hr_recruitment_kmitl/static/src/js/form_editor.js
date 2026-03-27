@@ -50,7 +50,7 @@ odoo.define("hr_recruitment_kmitl.form_editor", function (require) {
         // Health
         {type: "text", name: "congenital_disease", string: _lt("Congenital Disease")},
         // Academic
-        {type: "char", name: "academic_position", string: _lt("Academic Position")},
+        {type: "char", name: "academic_standing_id", string: _lt("Academic Position")},
         {
             type: "char",
             name: "academic_position_date",

@@ -1,19 +1,25 @@
+import json
+
 from odoo import http
 from odoo.addons.website_hr_recruitment.controllers.main import WebsiteHrRecruitment
 from odoo.http import request
 
 
 class WebsiteJobsApply(WebsiteHrRecruitment):
-    def _build_address_text(self, profile):
+    def _build_address_text(self, profile, prefix="address"):
         if not profile:
             return ""
+        street = getattr(profile, f"{prefix}_street", "") or ""
+        city = getattr(profile, f"{prefix}_city", "") or ""
+        state = getattr(profile, f"{prefix}_state_id", False)
+        zip_code = getattr(profile, f"{prefix}_zip", "") or ""
+        country = getattr(profile, f"{prefix}_country_id", False)
         parts = [
-            profile.street or "",
-            profile.street2 or "",
-            profile.city or "",
-            profile.state_id.name if profile.state_id else "",
-            profile.zip or "",
-            profile.country_id.name if profile.country_id else "",
+            street,
+            city,
+            state.name if state else "",
+            zip_code,
+            country.name if country else "",
         ]
         return ", ".join([p for p in parts if p])
 
@@ -28,6 +34,7 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
         error = {}
         default = {}
         education_by_level = {}
+        education_json = "{}"
         work_history_ids = request.env["portal.work.history"]
 
         if "website_hr_recruitment_error" in request.session:
@@ -64,8 +71,9 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                 d("last_name_en", profile.last_name_en or "")
 
                 # Personal
+                d("identification_id", profile.identification_id or "")
                 d("age", str(profile.age) if profile.age else "")
-                d("address", profile.address or "")
+                d("address_address", profile.address_address or "")
                 d("birthday", str(profile.birthday) if profile.birthday else "")
                 d(
                     "nationality_id",
@@ -82,14 +90,37 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                 d("spouse_middle_name", profile.spouse_middle_name or "")
                 d("spouse_last_name", profile.spouse_last_name or "")
 
-                # Address
-                d("street", profile.street or "")
-                d("street2", profile.street2 or "")
-                d("city", profile.city or "")
-                d("state_id", profile.state_id.id if profile.state_id else "")
-                d("zip", profile.zip or "")
-                d("country_id", profile.country_id.name if profile.country_id else "")
-                d("address", self._build_address_text(profile))
+                # Registered address
+                d("address_street", profile.address_street or "")
+                d("address_city", profile.address_city or "")
+                d(
+                    "address_state_id",
+                    profile.address_state_id.id if profile.address_state_id else "",
+                )
+                d("address_zip", profile.address_zip or "")
+                d(
+                    "address_country_id",
+                    profile.address_country_id.name
+                    if profile.address_country_id
+                    else "",
+                )
+                d("address_address", self._build_address_text(profile, "address"))
+
+                # Current address
+                d("current_street", profile.current_street or "")
+                d("current_city", profile.current_city or "")
+                d(
+                    "current_state_id",
+                    profile.current_state_id.id if profile.current_state_id else "",
+                )
+                d("current_zip", profile.current_zip or "")
+                d(
+                    "current_country_id",
+                    profile.current_country_id.name
+                    if profile.current_country_id
+                    else "",
+                )
+                d("current_address", self._build_address_text(profile, "current"))
 
                 # Emergency contact
                 d("emergency_contact_name", profile.emergency_contact_name or "")
@@ -104,7 +135,12 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                 d("congenital_disease", profile.congenital_disease or "")
 
                 # Academic
-                d("academic_position", profile.academic_position or "")
+                d(
+                    "academic_standing_id",
+                    profile.academic_standing_id.name
+                    if profile.academic_standing_id
+                    else "",
+                )
                 d(
                     "academic_position_date",
                     str(profile.academic_position_date)
@@ -132,9 +168,29 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                 d("interests", profile.interests or "")
 
                 # Education
+                edu_sorted = profile.education_history_ids.sorted(
+                    key=lambda r: r.education_level_id.level or 0,
+                    reverse=True,
+                )
                 education_by_level = {
-                    rec.level: rec for rec in profile.education_history_ids
+                    rec.education_level_id.id: rec for rec in edu_sorted
                 }
+                education_json = json.dumps(
+                    {
+                        str(rec.education_level_id.id): {
+                            "level_id": rec.education_level_id.id,
+                            "level_name": rec.education_level_id.name,
+                            "program": rec.program or "",
+                            "major": rec.major or "",
+                            "institution": rec.institution or "",
+                            "graduation_date": str(rec.graduation_date)
+                            if rec.graduation_date
+                            else "",
+                            "country_id": rec.country_id.id if rec.country_id else "",
+                        }
+                        for rec in edu_sorted
+                    }
+                )
 
                 # Work Experience
                 work_history_ids = profile.work_history_ids.sorted(
@@ -148,6 +204,7 @@ class WebsiteJobsApply(WebsiteHrRecruitment):
                 "error": error,
                 "default": default,
                 "education_by_level": education_by_level,
+                "education_json": education_json,
                 "work_history_ids": work_history_ids,
             },
         )

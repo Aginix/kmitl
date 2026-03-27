@@ -7,6 +7,7 @@ _logger = logging.getLogger(__name__)
 
 # Fields to copy from portal.profile to hr.applicant
 PROFILE_CHAR_FIELDS = [
+    "identification_id",
     "first_name_en",
     "middle_name_en",
     "last_name_en",
@@ -20,10 +21,12 @@ PROFILE_CHAR_FIELDS = [
     "emergency_contact_email",
     "ocsc_exam_number",
     "academic_position_institution",
-    "street",
-    "street2",
-    "city",
-    "zip",
+    "address_street",
+    "address_city",
+    "address_zip",
+    "current_street",
+    "current_city",
+    "current_zip",
 ]
 PROFILE_TEXT_FIELDS = [
     "congenital_disease",
@@ -40,14 +43,18 @@ PROFILE_DATE_FIELDS = [
 PROFILE_M2O_FIELDS = [
     "applicant_title",
     "nationality_id",
-    "state_id",
-    "country_id",
-    "zip_id",
+    "address_state_id",
+    "address_country_id",
+    "address_zip_id",
+    "current_state_id",
+    "current_country_id",
+    "current_zip_id",
+    "academic_standing_id",
 ]
 PROFILE_SELECTION_FIELDS = [
     "marital",
-    "academic_position",
     "ocsc_exam_level",
+    "highest_education",
 ]
 
 
@@ -63,16 +70,24 @@ class HrApplicant(models.Model):
     middle_name_en = fields.Char(string="Middle Name (EN)")
     last_name_en = fields.Char(string="Last Name (EN)")
 
-    # Address
-    street = fields.Char()
-    street2 = fields.Char()
-    city = fields.Char()
-    state_id = fields.Many2one("res.country.state")
-    zip = fields.Char()
-    country_id = fields.Many2one("res.country")
-    zip_id = fields.Many2one("res.city.zip", string="ZIP Location")
+    # Registered address
+    address_street = fields.Char(string="Registered Address")
+    address_city = fields.Char()
+    address_state_id = fields.Many2one("res.country.state")
+    address_zip = fields.Char()
+    address_country_id = fields.Many2one("res.country")
+    address_zip_id = fields.Many2one("res.city.zip", string="Registered ZIP Location")
+
+    # Current address
+    current_street = fields.Char(string="Current Address")
+    current_city = fields.Char()
+    current_state_id = fields.Many2one("res.country.state")
+    current_zip = fields.Char()
+    current_country_id = fields.Many2one("res.country")
+    current_zip_id = fields.Many2one("res.city.zip", string="Current ZIP Location")
 
     # Personal
+    identification_id = fields.Char(string="Identification No.")
     birthday = fields.Date()
     nationality_id = fields.Many2one("res.country")
     marital = fields.Selection(
@@ -99,13 +114,9 @@ class HrApplicant(models.Model):
     congenital_disease = fields.Text()
 
     # Academic
-    academic_position = fields.Selection(
-        [
-            ("professor", "Professor"),
-            ("associate_professor", "Associate Professor"),
-            ("assistant_professor", "Assistant Professor"),
-            ("lecturer", "Lecturer"),
-        ],
+    academic_standing_id = fields.Many2one(
+        "hr.employee.academic.standing",
+        string="Academic Position",
     )
     academic_position_date = fields.Date()
     academic_position_institution = fields.Char()
@@ -129,6 +140,15 @@ class HrApplicant(models.Model):
     interests = fields.Text()
 
     # History
+    highest_education = fields.Selection(
+        [
+            ("doctor", "ปริญญาเอก"),
+            ("master", "ปริญญาโท"),
+            ("bachelor", "ปริญญาตรี"),
+            ("under_bachelor", "ต่ำกว่าปริญญาตรี"),
+        ],
+        string="Highest Education Level",
+    )
     education_history_ids = fields.One2many(
         "hr.applicant.education.history", "applicant_id"
     )
@@ -191,9 +211,12 @@ class HrApplicant(models.Model):
         m2o_mapping = {
             "applicant_title": "title",
             "nationality_id": "nationality_id",
-            "state_id": "state_id",
-            "country_id": "country_id",
-            "zip_id": "zip_id",
+            "address_state_id": "address_state_id",
+            "address_country_id": "address_country_id",
+            "address_zip_id": "address_zip_id",
+            "current_state_id": "current_state_id",
+            "current_country_id": "current_country_id",
+            "current_zip_id": "current_zip_id",
         }
         for applicant_field, profile_field in m2o_mapping.items():
             val = getattr(profile, profile_field, False)
@@ -217,7 +240,7 @@ class HrApplicant(models.Model):
             self.env["hr.applicant.education.history"].sudo().create(
                 {
                     "applicant_id": self.id,
-                    "level": edu.level,
+                    "education_level_id": edu.education_level_id.id,
                     "program": edu.program,
                     "major": edu.major,
                     "institution": edu.institution,

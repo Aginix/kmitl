@@ -24,6 +24,7 @@
                     </group>
                     <group>
                         <group string="Personal Info">
+                            <field name="identification_id" />
                             <field name="birthday" />
                             <field name="nationality_id" />
                             <field name="marital" />
@@ -42,14 +43,21 @@
                 <!-- Contact & Address tab -->
                 <page string="Contact &amp; Address" name="contact_address">
                     <group>
-                        <group string="Address">
-                            <field name="street" />
-                            <field name="street2" />
-                            <field name="city" />
-                            <field name="state_id" />
-                            <field name="zip" />
-                            <field name="zip_id" />
-                            <field name="country_id" />
+                        <group string="Registered Address">
+                            <field name="address_street" />
+                            <field name="address_zip_id" />
+                            <field name="address_city" />
+                            <field name="address_state_id" />
+                            <field name="address_zip" />
+                            <field name="address_country_id" />
+                        </group>
+                        <group string="Current Address">
+                            <field name="current_street" />
+                            <field name="current_zip_id" />
+                            <field name="current_city" />
+                            <field name="current_state_id" />
+                            <field name="current_zip" />
+                            <field name="current_country_id" />
                         </group>
                         <group string="Emergency Contact">
                             <field name="emergency_contact_name" />
@@ -64,9 +72,12 @@
                 </page>
                 <!-- Education History tab -->
                 <page string="Education History" name="education_history">
+                    <group>
+                        <field name="highest_education" />
+                    </group>
                     <field name="education_history_ids">
                         <tree editable="bottom">
-                            <field name="level" />
+                            <field name="education_level_id" />
                             <field name="program" />
                             <field name="major" />
                             <field name="institution" />
@@ -92,7 +103,7 @@
                 <page string="Skills &amp; Qualifications" name="skills">
                     <group>
                         <group string="Academic">
-                            <field name="academic_position" />
+                            <field name="academic_standing_id" />
                             <field name="academic_position_date" />
                             <field name="academic_position_institution" />
                         </group>

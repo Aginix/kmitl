@@ -11,6 +11,8 @@
         "base_location",
         "partner_firstname",
         "partner_middlename",
+        "hr_employee_academic_standing_thailand",
+        "hr_employee_education_history",
     ],
     "data": [
         "security/ir.model.access.csv",

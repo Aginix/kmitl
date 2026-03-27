@@ -4,7 +4,7 @@ from odoo import fields, models
 class HrApplicantEducationHistory(models.Model):
     _name = "hr.applicant.education.history"
     _description = "Applicant Education History"
-    _order = "level"
+    _order = "education_level_id"
 
     applicant_id = fields.Many2one(
         "hr.applicant",
@@ -12,13 +12,9 @@ class HrApplicantEducationHistory(models.Model):
         ondelete="cascade",
         index=True,
     )
-    level = fields.Selection(
-        [
-            ("doctor", "Doctoral Degree"),
-            ("master", "Master's Degree"),
-            ("bachelor", "Bachelor's Degree"),
-            ("under_bachelor", "Under Bachelor's Degree"),
-        ],
+    education_level_id = fields.Many2one(
+        "resource.education.level",
+        string="Education Level",
         required=True,
     )
     program = fields.Char()

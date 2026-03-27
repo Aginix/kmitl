@@ -3,12 +3,12 @@ from odoo.addons.portal.controllers.portal import CustomerPortal
 from odoo.http import request
 
 
-EDUCATION_LEVELS = ["doctor", "master", "bachelor", "under_bachelor"]
 EDUCATION_FIELDS = ["program", "major", "institution", "country_id", "graduation_date"]
 
 
 class PortalProfile(CustomerPortal):
     CHAR_FIELDS = [
+        "identification_id",
         "first_name",
         "middle_name",
         "last_name",
@@ -17,7 +17,8 @@ class PortalProfile(CustomerPortal):
         "last_name_en",
         "email",
         "phone",
-        "street",
+        "address_street",
+        "current_street",
         "spouse_first_name",
         "spouse_middle_name",
         "spouse_last_name",
@@ -39,8 +40,8 @@ class PortalProfile(CustomerPortal):
 
     SELECTION_FIELDS = [
         "marital",
-        "academic_position",
         "ocsc_exam_level",
+        "highest_education",
     ]
 
     DATE_FIELDS = [
@@ -53,11 +54,14 @@ class PortalProfile(CustomerPortal):
         "title",
         "spouse_prefix",
         "nationality_id",
-        "zip_id",
+        "address_zip_id",
+        "current_zip_id",
+        "academic_standing_id",
     ]
 
     BOOLEAN_FIELDS = [
         "has_ocsc_exam",
+        "same_as_registered_address",
     ]
 
     def _prepare_profile_render_values(self, partner, profile, error_message=None):
@@ -70,9 +74,31 @@ class PortalProfile(CustomerPortal):
                 "titles": request.env["res.partner.title"].sudo().search([]),
                 "countries": request.env["res.country"].sudo().search([]),
                 "zips": request.env["res.city.zip"].sudo().search([]),
+                "academic_standings": request.env["hr.employee.academic.standing"]
+                .sudo()
+                .search([]),
+                "education_levels": request.env["resource.education.level"]
+                .sudo()
+                .search(
+                    [("level", "in", [90, 80, 70])],
+                    order="level desc",
+                ),
+                "sub_bachelor_levels": request.env["resource.education.level"]
+                .sudo()
+                .search([("level", "<", 70)], order="level desc"),
                 "education_by_level": {
-                    rec.level: rec for rec in profile.education_history_ids
+                    rec.education_level_id.id: rec
+                    for rec in profile.education_history_ids
                 },
+                "sub_bachelor_edu_rec": next(
+                    (
+                        rec
+                        for rec in profile.education_history_ids
+                        if rec.education_level_id.level
+                        and rec.education_level_id.level < 70
+                    ),
+                    False,
+                ),
                 "page_name": "my_profile",
                 "error": {},
                 "error_message": error_message or [],
@@ -118,12 +144,6 @@ class PortalProfile(CustomerPortal):
         response.headers["X-Frame-Options"] = "SAMEORIGIN"
         return response
 
-    EDUCATION_LEVEL_LABELS = {
-        "doctor": "Doctoral Degree",
-        "master": "Master's Degree",
-        "bachelor": "Bachelor's Degree",
-        "under_bachelor": "Under Bachelor's Degree",
-    }
     EDUCATION_FIELD_LABELS = {
         "program": "Program",
         "major": "Major",
@@ -132,50 +152,91 @@ class PortalProfile(CustomerPortal):
         "graduation_date": "Graduation Date",
     }
 
-    def _validate_education_history(self, post):
+    def _get_main_education_levels(self):
+        return (
+            request.env["resource.education.level"]
+            .sudo()
+            .search([("level", "in", [90, 80, 70])], order="level desc")
+        )
+
+    def _validate_education_section(self, post, prefix, label):
+        """Validate a single education section by prefix."""
         errors = []
-        for level in EDUCATION_LEVELS:
-            prefix = f"edu_{level}_"
-            values = {
-                f: post.get(f"{prefix}{f}", "").strip()
-                for f in self.EDUCATION_FIELD_LABELS
-            }
-            has_any = any(values.values())
-            if not has_any:
-                continue
-            empty = [self.EDUCATION_FIELD_LABELS[f] for f, v in values.items() if not v]
-            if empty:
-                label = self.EDUCATION_LEVEL_LABELS[level]
-                errors.append("%s: please fill %s" % (label, ", ".join(empty)))
+        values = {
+            f: post.get(f"{prefix}{f}", "").strip() for f in self.EDUCATION_FIELD_LABELS
+        }
+        has_any = any(values.values())
+        if not has_any:
+            return errors
+        empty = [self.EDUCATION_FIELD_LABELS[f] for f, v in values.items() if not v]
+        if empty:
+            errors.append("%s: please fill %s" % (label, ", ".join(empty)))
         return errors
 
-    def _save_education_history(self, profile, post):
+    def _validate_education_history(self, post):
+        errors = []
+        for level in self._get_main_education_levels():
+            errors.extend(
+                self._validate_education_section(post, f"edu_{level.id}_", level.name)
+            )
+        errors.extend(
+            self._validate_education_section(post, "edu_sub_", "ต่ำกว่าปริญญาตรี")
+        )
+        return errors
+
+    def _save_education_section(self, profile, post, prefix, level_id, existing):
+        """Save a single education section. Returns the level_id if saved."""
         EduHistory = request.env["portal.education.history"].sudo()
-        existing = {rec.level: rec for rec in profile.education_history_ids}
-        for level in EDUCATION_LEVELS:
-            prefix = f"edu_{level}_"
-            program = post.get(f"{prefix}program", "").strip()
-            major = post.get(f"{prefix}major", "").strip()
-            institution = post.get(f"{prefix}institution", "").strip()
-            country_id = int(post.get(f"{prefix}country_id") or 0) or False
-            graduation_date = post.get(f"{prefix}graduation_date") or False
-            has_data = any([program, major, institution, country_id, graduation_date])
-            rec = existing.get(level)
-            if has_data:
-                vals = {
-                    "program": program or False,
-                    "major": major or False,
-                    "institution": institution or False,
-                    "country_id": country_id,
-                    "graduation_date": graduation_date,
-                }
-                if rec:
-                    rec.write(vals)
-                else:
-                    vals.update({"profile_id": profile.id, "level": level})
-                    EduHistory.create(vals)
-            elif rec:
-                rec.unlink()
+        program = post.get(f"{prefix}program", "").strip()
+        major = post.get(f"{prefix}major", "").strip()
+        institution = post.get(f"{prefix}institution", "").strip()
+        country_id = int(post.get(f"{prefix}country_id") or 0) or False
+        graduation_date = post.get(f"{prefix}graduation_date") or False
+        has_data = any([program, major, institution, country_id, graduation_date])
+        rec = existing.get(level_id)
+        if has_data:
+            vals = {
+                "education_level_id": level_id,
+                "program": program or False,
+                "major": major or False,
+                "institution": institution or False,
+                "country_id": country_id,
+                "graduation_date": graduation_date,
+            }
+            if rec:
+                rec.write(vals)
+            else:
+                vals["profile_id"] = profile.id
+                EduHistory.create(vals)
+        elif rec:
+            rec.unlink()
+
+    def _save_education_history(self, profile, post):
+        existing = {
+            rec.education_level_id.id: rec for rec in profile.education_history_ids
+        }
+        for level in self._get_main_education_levels():
+            self._save_education_section(
+                profile, post, f"edu_{level.id}_", level.id, existing
+            )
+        # Sub-bachelor section
+        sub_level_id = int(post.get("edu_sub_education_level_id") or 0) or False
+        # Remove old sub-bachelor record if level changed
+        old_sub = next(
+            (
+                rec
+                for lid, rec in existing.items()
+                if rec.education_level_id.level and rec.education_level_id.level < 70
+            ),
+            False,
+        )
+        if old_sub and old_sub.education_level_id.id != sub_level_id:
+            old_sub.unlink()
+            existing.pop(old_sub.education_level_id.id, None)
+        if sub_level_id:
+            self._save_education_section(
+                profile, post, "edu_sub_", sub_level_id, existing
+            )
 
     WH_REQUIRED_FIELDS = {
         "wh_company_name": "Company",
