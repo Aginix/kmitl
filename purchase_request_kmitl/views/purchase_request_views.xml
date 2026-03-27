@@ -425,7 +425,9 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
-            <xpath expr="//field[@name='requested_by']" position="replace" />
+            <xpath expr="//field[@name='requested_by']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
 
             <xpath expr="//field[@name='exception_ids']" position="attributes">
                 <attribute name="invisible">1</attribute>
